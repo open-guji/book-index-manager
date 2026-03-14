@@ -1,0 +1,21 @@
+/**
+ * CSS 变量默认值
+ * VS Code 环境下会被 --vscode-* 覆盖
+ * 非 VS Code 环境使用这些默认值
+ */
+:root {
+    --bim-bg: var(--vscode-editor-background, #ffffff);
+    --bim-fg: var(--vscode-foreground, #333333);
+    --bim-input-bg: var(--vscode-input-background, #ffffff);
+    --bim-input-fg: var(--vscode-input-foreground, #333333);
+    --bim-input-border: var(--vscode-input-border, #cccccc);
+    --bim-widget-border: var(--vscode-widget-border, #e0e0e0);
+    --bim-link-fg: var(--vscode-textLink-foreground, #0066cc);
+    --bim-desc-fg: var(--vscode-descriptionForeground, #717171);
+    --bim-primary: var(--vscode-button-background, #0078d4);
+    --bim-primary-fg: var(--vscode-button-foreground, #ffffff);
+    --bim-primary-soft: color-mix(in srgb, var(--bim-primary) 15%, transparent);
+    --bim-danger: #f44336;
+    --bim-warning: #ff9800;
+    --bim-success: #4caf50;
+}
