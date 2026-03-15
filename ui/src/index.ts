@@ -48,6 +48,15 @@ export { VscodeTransport } from './transport/vscode-transport';
 export { HttpTransport } from './transport/http-transport';
 export { GithubTransport } from './transport/github-transport';
 export type { GithubTransportConfig } from './transport/github-transport';
+export { LocalTransport } from './transport/local-transport';
+export type { LocalTransportConfig } from './transport/local-transport';
+
+// Core
+export type { FileSystem } from './core/filesystem';
+export { BookIndexStorage } from './core/storage';
+export type { IndexFile, IndexFileEntry } from './core/storage';
+export { IdGenerator } from './core/id-generator';
+export { extractIdFromUrl, validateResource } from './core/schema';
 
 // Components - Existing
 export { ResourceEditor } from './components/ResourceEditor';
