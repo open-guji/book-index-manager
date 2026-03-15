@@ -156,3 +156,55 @@ export interface WorkDetailData extends BaseDetailData {
 
 /** 统一详情数据类型 */
 export type IndexDetailData = BookDetailData | CollectionDetailData | WorkDetailData;
+
+// ── 关联关系类型 ──
+
+/** 关联实体 */
+export interface RelatedEntity {
+    id: string;
+    title: string;
+    type: IndexType;
+}
+
+/** 关联关系数据 */
+export interface RelationData {
+    parentWork?: RelatedEntity;
+    parentCollection?: RelatedEntity;
+    belongsToWork?: RelatedEntity;
+    belongsToCollection?: RelatedEntity;
+    childWorks?: RelatedEntity[];
+    childCollections?: RelatedEntity[];
+    containedBooks?: RelatedEntity[];
+    siblingBooks?: RelatedEntity[];
+}
+
+// ── 实体搜索/选择类型 ──
+
+/** 实体选项（搜索结果、最近使用等） */
+export interface EntityOption {
+    id: string;
+    title: string;
+    type: IndexType | string;
+    author?: string;
+    dynasty?: string;
+}
+
+/** 创建实体参数 */
+export interface CreateEntityParams {
+    type: IndexType;
+    title: string;
+    inheritData?: Record<string, unknown>;
+}
+
+// ── 资料来源类型 ──
+
+/** 资料来源项 */
+export interface SourceItem {
+    id: string;
+    name: string;
+    type: 'bookID' | 'url' | '';
+    details: string;
+    position: string;
+    version: string;
+    processor_version: string;
+}

@@ -26,6 +26,11 @@ export type {
     CollectionDetailData,
     WorkDetailData,
     IndexDetailData,
+    RelatedEntity,
+    RelationData,
+    EntityOption,
+    CreateEntityParams,
+    SourceItem,
 } from './types';
 
 // Transport

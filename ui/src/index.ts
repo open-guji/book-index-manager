@@ -23,6 +23,11 @@ export type {
     CollectionDetailData,
     WorkDetailData,
     IndexDetailData,
+    RelatedEntity,
+    RelationData,
+    EntityOption,
+    CreateEntityParams,
+    SourceItem,
 } from './types';
 
 // ID encoding/decoding
@@ -44,10 +49,26 @@ export { HttpTransport } from './transport/http-transport';
 export { GithubTransport } from './transport/github-transport';
 export type { GithubTransportConfig } from './transport/github-transport';
 
-// Components
+// Components - Existing
 export { ResourceEditor } from './components/ResourceEditor';
 export { ResourceList } from './components/ResourceList';
 export { IndexBrowser } from './components/IndexBrowser';
 export { IndexDetail } from './components/IndexDetail';
 export type { IndexDetailProps } from './components/IndexDetail';
 export { ModeIndicator } from './components/ModeIndicator';
+
+// Components - Editor
+export { IndexEditor } from './components/IndexEditor';
+export type { IndexEditorProps, IndexEditorData } from './components/IndexEditor';
+export { SmartBidInput } from './components/SmartBidInput';
+export { SourceEditor, parseSourceString, stringifySources } from './components/SourceEditor';
+export { RelationPanel } from './components/RelationPanel';
+export { EntitySelector } from './components/EntitySelector';
+export { CreateEntityDialog } from './components/CreateEntityDialog';
+export { EntityPickerDialog } from './components/EntityPickerDialog';
+
+// Common UI components
+export { Section } from './components/common/Section';
+export { FormInput } from './components/common/FormInput';
+export { FormTextArea } from './components/common/FormTextArea';
+export { Badge } from './components/common/Badge';

@@ -1,4 +1,4 @@
-import type { IndexType, IndexEntry, PageResult, LoadOptions } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, RelationData, EntityOption, CreateEntityParams } from '../types';
 
 /**
  * 索引数据传输接口
@@ -28,4 +28,29 @@ export interface IndexTransport {
 
     /** 获取所有索引条目（不分页） */
     getAllEntries?(): Promise<IndexEntry[]>;
+
+    // ── 关联关系（可选） ──
+
+    /** 获取实体的关联关系数据 */
+    getRelations?(id: string): Promise<RelationData | null>;
+
+    /** 关联两个实体 */
+    linkEntity?(sourceId: string, field: string, targetId: string): Promise<void>;
+
+    /** 取消关联 */
+    unlinkEntity?(sourceId: string, field: string): Promise<void>;
+
+    /** 创建新实体并立即建立关联 */
+    createAndLink?(sourceId: string, field: string, newEntity: CreateEntityParams): Promise<{ id: string }>;
+
+    // ── 实体搜索（可选，为选择器服务） ──
+
+    /** 搜索实体（支持跨类型搜索） */
+    searchEntities?(query: string, type?: IndexType | 'all'): Promise<EntityOption[]>;
+
+    /** 获取最近使用的实体 */
+    getRecentEntities?(): Promise<EntityOption[]>;
+
+    /** 记录最近使用的实体 */
+    addRecentEntity?(entity: EntityOption): Promise<void>;
 }

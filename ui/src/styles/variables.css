@@ -18,4 +18,8 @@
     --bim-danger: #f44336;
     --bim-warning: #ff9800;
     --bim-success: #4caf50;
+    --bim-sidebar-bg: var(--vscode-sideBar-background, #f3f3f3);
+    --bim-list-hover-bg: var(--vscode-list-hoverBackground, rgba(0, 0, 0, 0.04));
+    --bim-list-active-bg: var(--vscode-list-activeSelectionBackground, rgba(0, 120, 212, 0.1));
+    --bim-focus-border: var(--vscode-focusBorder, #0078d4);
 }
