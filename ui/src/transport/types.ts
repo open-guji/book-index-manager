@@ -22,4 +22,10 @@ export interface IndexTransport {
 
     /** 生成新 ID */
     generateId(type: IndexType, status: 'draft' | 'official'): Promise<string>;
+
+    /** 获取单个索引条目（从缓存中查找） */
+    getEntry?(id: string): Promise<IndexEntry | null>;
+
+    /** 获取所有索引条目（不分页） */
+    getAllEntries?(): Promise<IndexEntry[]>;
 }

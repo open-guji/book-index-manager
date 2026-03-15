@@ -30,6 +30,7 @@ export interface IndexEntry {
     id: string;
     title: string;
     type: IndexType;
+    isDraft?: boolean;
     author?: string;
     dynasty?: string;
     path?: string;
@@ -72,3 +73,86 @@ export interface SyncConfig {
     remoteName?: string;
     remoteUrl?: string;
 }
+
+// ── 详情数据类型 ──
+
+/** 描述信息 */
+export interface DescriptionInfo {
+    text: string;
+    sources?: string[];
+}
+
+/** 作者信息 */
+export interface AuthorInfo {
+    name: string;
+    role?: string;
+    dynasty?: string;
+}
+
+/** 出版信息 */
+export interface PublicationInfo {
+    year?: string;
+    details?: string;
+}
+
+/** 位置/机构信息 */
+export interface LocationInfo {
+    name: string;
+    start_date?: string;
+    end_date?: string;
+    description?: string;
+}
+
+/** 卷册数 */
+export interface VolumeCount {
+    number?: number;
+    description?: string;
+}
+
+/** 页数 */
+export interface PageCount {
+    number?: number;
+    description?: string;
+}
+
+/** 详情基础数据 */
+export interface BaseDetailData {
+    id: string;
+    title: string;
+    type: IndexType;
+    description?: DescriptionInfo;
+    authors?: AuthorInfo[];
+    publication_info?: PublicationInfo;
+    current_location?: LocationInfo;
+    volume_count?: VolumeCount;
+    page_count?: PageCount;
+    resources?: ResourceEntry[];
+}
+
+/** Book 详情 */
+export interface BookDetailData extends BaseDetailData {
+    type: 'book';
+    work_id?: string;
+    contained_in?: string[];
+    location_history?: LocationInfo[];
+    related_books?: string[];
+}
+
+/** Collection 详情 */
+export interface CollectionDetailData extends BaseDetailData {
+    type: 'collection';
+    contained_in?: string[];
+    history?: string[];
+    books?: string[];
+}
+
+/** Work 详情 */
+export interface WorkDetailData extends BaseDetailData {
+    type: 'work';
+    parent_works?: string[];
+    parent_work?: { id: string; title: string };
+    books?: string[];
+}
+
+/** 统一详情数据类型 */
+export type IndexDetailData = BookDetailData | CollectionDetailData | WorkDetailData;
