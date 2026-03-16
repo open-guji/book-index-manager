@@ -166,10 +166,14 @@ class BookIndexStorage:
         title = metadata.get("title", "未命名")
 
         author_name = ""
+        author_dynasty = ""
+        author_role = ""
         authors = metadata.get("authors", [])
         if isinstance(authors, list) and len(authors) > 0:
             if isinstance(authors[0], dict):
                 author_name = authors[0].get("name", "")
+                author_dynasty = authors[0].get("dynasty", "")
+                author_role = authors[0].get("role", "")
             else:
                 author_name = str(authors[0])
         elif isinstance(authors, str):
@@ -189,7 +193,7 @@ class BookIndexStorage:
         elif isinstance(loc, str):
             holder = loc
 
-        index[type_key][id_str] = {
+        entry: dict = {
             "id": id_str,
             "title": title,
             "type": type_val.name,
@@ -198,6 +202,11 @@ class BookIndexStorage:
             "year": year,
             "holder": holder,
         }
+        if author_dynasty:
+            entry["dynasty"] = author_dynasty
+        if author_role:
+            entry["role"] = author_role
+        index[type_key][id_str] = entry
         self._save_index(index_file, index)
 
     def _load_index(self, index_file: Path) -> dict:
@@ -248,13 +257,20 @@ class BookIndexStorage:
 
                         title = metadata.get("title", "未命名")
                         author_name = ""
+                        author_dynasty = ""
+                        author_role = ""
                         authors = metadata.get("authors", [])
                         if isinstance(authors, list) and len(authors) > 0:
-                            author_name = authors[0].get("name", "") if isinstance(authors[0], dict) else str(authors[0])
+                            if isinstance(authors[0], dict):
+                                author_name = authors[0].get("name", "")
+                                author_dynasty = authors[0].get("dynasty", "")
+                                author_role = authors[0].get("role", "")
+                            else:
+                                author_name = str(authors[0])
                         elif isinstance(authors, str):
                             author_name = authors
 
-                        index[type_key][id_str] = {
+                        entry: dict = {
                             "id": id_str,
                             "title": title,
                             "type": type_val.name,
@@ -263,6 +279,11 @@ class BookIndexStorage:
                             "year": metadata.get("publication_info", {}).get("year", "") if isinstance(metadata.get("publication_info"), dict) else "",
                             "holder": metadata.get("current_location", {}).get("name", "") if isinstance(metadata.get("current_location"), dict) else "",
                         }
+                        if author_dynasty:
+                            entry["dynasty"] = author_dynasty
+                        if author_role:
+                            entry["role"] = author_role
+                        index[type_key][id_str] = entry
                 except Exception as e:
                     logger.warning(f"Error processing {json_file}: {e}")
 

@@ -26,13 +26,20 @@ export interface IndexFileEntry {
     author: string;
     year: string;
     holder: string;
+    dynasty?: string;
+    role?: string;
 }
 
 /**
  * 路径工具函数
  */
 function joinPath(...parts: string[]): string {
-    return parts.join('/').replace(/\/+/g, '/');
+    const joined = parts.join('/');
+    // 保留 UNC 路径开头的 // (如 //wsl$/...)
+    if (joined.startsWith('//')) {
+        return '//' + joined.slice(2).replace(/\/+/g, '/');
+    }
+    return joined.replace(/\/+/g, '/');
 }
 
 function cleanName(name: string): string {
@@ -244,7 +251,8 @@ export class BookIndexStorage {
                     title: entry.title,
                     type,
                     author: entry.author || undefined,
-                    dynasty: entry.year || undefined,
+                    dynasty: entry.dynasty || undefined,
+                    role: entry.role || undefined,
                     path: joinPath(root, entry.path),
                 });
             }

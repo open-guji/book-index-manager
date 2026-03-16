@@ -28,6 +28,8 @@ export type {
     EntityOption,
     CreateEntityParams,
     SourceItem,
+    AdditionalTitle,
+    IndexedByEntry,
 } from './types';
 
 // ID encoding/decoding

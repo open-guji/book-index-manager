@@ -274,11 +274,13 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                     <span style={{ fontSize: '18px' }}>{getConfig(entry.type).icon}</span>
                                     <div style={{ flex: 1 }}>
                                         <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>{entry.title}</div>
-                                        <div style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)', marginTop: '2px', display: 'flex', gap: '8px' }}>
-                                            <span>{entry.id}</span>
-                                            {entry.author && <span>{entry.author}</span>}
-                                            {entry.dynasty && <span>{entry.dynasty}</span>}
-                                        </div>
+                                        {(entry.dynasty || entry.author) && (
+                                            <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginTop: '2px' }}>
+                                                {entry.dynasty && <span>〔{entry.dynasty}〕</span>}
+                                                {entry.author && <span>{entry.author}</span>}
+                                                {entry.role && <span> {entry.role}</span>}
+                                            </div>
+                                        )}
                                     </div>
                                     <span style={{ opacity: 0.4 }}>→</span>
                                 </div>

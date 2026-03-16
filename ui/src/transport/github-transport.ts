@@ -11,6 +11,8 @@ interface GithubIndexItem {
     path: string;
     type?: string;
     author?: string;
+    dynasty?: string;
+    role?: string;
     year?: string;
     holder?: string;
     collection?: string;
@@ -151,6 +153,8 @@ export class GithubTransport implements IndexTransport {
                     type,
                     isDraft,
                     author: item.author,
+                    dynasty: item.dynasty,
+                    role: item.role,
                     path: item.path,
                 });
                 // 记录路径映射，用于 getItem

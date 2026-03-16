@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import type {
     IndexType, IndexDetailData, ResourceEntry, DownloadProgress,
     RelationData, RelatedEntity, EntityOption, SourceItem,
+    AdditionalTitle, IndexedByEntry,
 } from '../types';
 import type { IndexTransport } from '../transport/types';
 import { Section } from './common/Section';
@@ -60,6 +61,9 @@ export interface IndexEditorData {
     provenance?: string;
     otherEditions?: string;
     notes?: string;
+    // 结构化字段
+    additional_titles?: AdditionalTitle[];
+    indexed_by?: IndexedByEntry[];
     // 关联字段
     workId?: string;
     workName?: string;
@@ -239,6 +243,24 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
                 <FormTextArea value={data.description || ''} onChange={v => handleChange('description', v)} placeholder="简要介绍..." />
             </Section>
 
+            {/* 副题/附录 */}
+            {(data.additional_titles?.length || 0) > 0 && (
+                <Section title="📑 副题/附录 (Additional Titles)" onSave={onSave}>
+                    <AdditionalTitlesEditor
+                        items={data.additional_titles || []}
+                        onChange={items => handleChange('additional_titles', items)}
+                    />
+                </Section>
+            )}
+
+            {/* 收录于 */}
+            <Section title="📖 收录于 (Indexed By)" onSave={onSave} onAskAI={onAskAI ? () => onAskAI('收录于') : undefined}>
+                <IndexedByEditor
+                    items={data.indexed_by || []}
+                    onChange={items => handleChange('indexed_by', items)}
+                />
+            </Section>
+
             {/* 资源 */}
             <Section title="🔗 资源 (Resources)" onSave={onSave} onAskAI={onAskAI ? () => onAskAI('资源') : undefined}>
                 <ResourceEditor
@@ -340,3 +362,130 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
         </div>
     );
 };
+
+// ── 副题/附录编辑器 ──
+
+function AdditionalTitlesEditor({ items, onChange }: {
+    items: AdditionalTitle[];
+    onChange: (items: AdditionalTitle[]) => void;
+}) {
+    const update = (index: number, field: keyof AdditionalTitle, value: unknown) => {
+        const next = items.map((item, i) => i === index ? { ...item, [field]: value } : item);
+        onChange(next);
+    };
+    const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
+    const add = () => onChange([...items, { book_title: '' }]);
+
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {items.map((item, i) => (
+                <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <FormInput label="书名" value={item.book_title} onChange={v => update(i, 'book_title', v)} />
+                    <div style={{ width: '100px' }}>
+                        <FormInput label="卷数" value={item.n_juan != null ? String(item.n_juan) : ''} onChange={v => update(i, 'n_juan', v ? parseInt(v, 10) || undefined : undefined)} />
+                    </div>
+                    <button onClick={() => remove(i)} style={{
+                        padding: '4px 8px', fontSize: '12px', border: '1px solid #ddd',
+                        borderRadius: '4px', background: 'transparent', cursor: 'pointer', color: '#999',
+                        marginTop: '18px',
+                    }}>✕</button>
+                </div>
+            ))}
+            <button onClick={add} style={{
+                padding: '6px 12px', fontSize: '12px', border: '1px dashed #ccc',
+                borderRadius: '4px', background: 'transparent', cursor: 'pointer', color: '#666',
+                alignSelf: 'flex-start',
+            }}>+ 添加副题</button>
+        </div>
+    );
+}
+
+// ── 收录于编辑器 ──
+
+function IndexedByEditor({ items, onChange }: {
+    items: IndexedByEntry[];
+    onChange: (items: IndexedByEntry[]) => void;
+}) {
+    const [expandedIndex, setExpandedIndex] = React.useState<number | null>(null);
+
+    const update = (index: number, field: keyof IndexedByEntry, value: string) => {
+        const next = items.map((item, i) => i === index ? { ...item, [field]: value || undefined } : item);
+        onChange(next);
+    };
+    const remove = (index: number) => {
+        onChange(items.filter((_, i) => i !== index));
+        if (expandedIndex === index) setExpandedIndex(null);
+    };
+    const add = () => {
+        onChange([...items, { source: '' }]);
+        setExpandedIndex(items.length);
+    };
+
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {items.map((item, i) => {
+                const isExpanded = expandedIndex === i;
+                return (
+                    <div key={i} style={{
+                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        borderRadius: '6px', overflow: 'hidden',
+                    }}>
+                        {/* Header row */}
+                        <div style={{
+                            display: 'flex', alignItems: 'center', gap: '8px',
+                            padding: '8px 12px',
+                            background: isExpanded ? 'color-mix(in srgb, var(--bim-primary, #0078d4) 5%, transparent)' : 'transparent',
+                            cursor: 'pointer',
+                        }} onClick={() => setExpandedIndex(isExpanded ? null : i)}>
+                            <span style={{
+                                fontSize: '10px', color: 'var(--bim-desc-fg, #717171)',
+                                transition: 'transform 0.2s',
+                                transform: isExpanded ? 'rotate(90deg)' : 'none',
+                            }}>▶</span>
+                            <span style={{ flex: 1, fontSize: '13px', fontWeight: 500 }}>
+                                {item.source || '(未命名来源)'}
+                            </span>
+                            {item.source_bid && (
+                                <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)' }}>
+                                    {item.source_bid}
+                                </span>
+                            )}
+                            <button onClick={e => { e.stopPropagation(); remove(i); }} style={{
+                                padding: '2px 6px', fontSize: '11px', border: '1px solid #ddd',
+                                borderRadius: '3px', background: 'transparent', cursor: 'pointer', color: '#999',
+                            }}>✕</button>
+                        </div>
+                        {/* Collapsed preview */}
+                        {!isExpanded && (item.title_info || item.author_info) && (
+                            <div style={{ padding: '0 12px 8px 28px', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
+                                {item.title_info}{item.title_info && item.author_info && ' — '}{item.author_info}
+                            </div>
+                        )}
+                        {/* Expanded form */}
+                        {isExpanded && (
+                            <div style={{ padding: '8px 12px 12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                    <FormInput label="来源名称" value={item.source} onChange={v => update(i, 'source', v)} />
+                                    <FormInput label="来源 BID" value={item.source_bid || ''} onChange={v => update(i, 'source_bid', v)} />
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                    <FormInput label="题名" value={item.title_info || ''} onChange={v => update(i, 'title_info', v)} />
+                                    <FormInput label="著者" value={item.author_info || ''} onChange={v => update(i, 'author_info', v)} />
+                                </div>
+                                <FormInput label="版本" value={item.version || ''} onChange={v => update(i, 'version', v)} />
+                                <FormTextArea value={item.summary || ''} onChange={v => update(i, 'summary', v)} placeholder="提要..." />
+                                <FormTextArea value={item.comment || ''} onChange={v => update(i, 'comment', v)} placeholder="按語..." />
+                                <FormTextArea value={item.additional_comment || ''} onChange={v => update(i, 'additional_comment', v)} placeholder="附按..." />
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
+            <button onClick={add} style={{
+                padding: '6px 12px', fontSize: '12px', border: '1px dashed #ccc',
+                borderRadius: '4px', background: 'transparent', cursor: 'pointer', color: '#666',
+                alignSelf: 'flex-start',
+            }}>+ 添加收录来源</button>
+        </div>
+    );
+}

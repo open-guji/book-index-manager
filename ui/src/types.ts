@@ -33,6 +33,7 @@ export interface IndexEntry {
     isDraft?: boolean;
     author?: string;
     dynasty?: string;
+    role?: string;
     path?: string;
 }
 
@@ -122,6 +123,8 @@ export interface BaseDetailData {
     type: IndexType;
     description?: DescriptionInfo;
     authors?: AuthorInfo[];
+    additional_titles?: AdditionalTitle[];
+    indexed_by?: IndexedByEntry[];
     publication_info?: PublicationInfo;
     current_location?: LocationInfo;
     volume_count?: VolumeCount;
@@ -194,6 +197,36 @@ export interface CreateEntityParams {
     type: IndexType;
     title: string;
     inheritData?: Record<string, unknown>;
+}
+
+// ── 副题信息 ──
+
+/** 副题/附录条目 */
+export interface AdditionalTitle {
+    book_title: string;
+    n_juan?: number;
+}
+
+// ── 收录信息 ──
+
+/** 收录条目：记录某部作品被某目录/丛书收录时的信息 */
+export interface IndexedByEntry {
+    /** 收录来源名称（繁体全名），如"欽定四庫全書總目" */
+    source: string;
+    /** 收录来源的 Book Index ID */
+    source_bid?: string;
+    /** 收录时的标题信息，如"《子夏易傳》 十一卷" */
+    title_info?: string;
+    /** 收录时的作者信息，如"舊本題「卜子夏撰」" */
+    author_info?: string;
+    /** 收录时的版本信息，如"內府藏本" */
+    version?: string;
+    /** 提要/摘要 */
+    summary?: string;
+    /** 编者评论 */
+    comment?: string;
+    /** 附加评论 */
+    additional_comment?: string;
 }
 
 // ── 资料来源类型 ──

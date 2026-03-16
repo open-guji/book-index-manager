@@ -66,7 +66,7 @@ function Divider() {
     return (
         <div style={{
             height: '1px',
-            margin: '16px 0',
+            margin: '8px 0 20px',
             background: 'linear-gradient(to right, var(--bim-widget-border, #e0e0e0), transparent)',
         }} />
     );
@@ -184,9 +184,6 @@ function DetailHeader({ title, type, authors, meta, headerExtra }: {
                 gap: '12px',
             }}>
                 <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                        <TypeBadge type={type} />
-                    </div>
                     <h1 style={{
                         fontSize: '24px',
                         fontWeight: 700,

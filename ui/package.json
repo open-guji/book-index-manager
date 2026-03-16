@@ -25,6 +25,7 @@
   "scripts": {
     "dev": "vite",
     "build:lib": "vite build --mode lib",
+    "watch:lib": "vite build --mode lib --watch",
     "build:app": "vite build",
     "preview": "vite preview"
   },
