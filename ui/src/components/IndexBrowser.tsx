@@ -139,7 +139,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
             </header>
 
             {/* Tabs */}
-            <div style={{ display: 'flex', gap: '4px', padding: '8px 20px', borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
+            <div style={{ display: 'flex', gap: '4px', padding: '8px 20px' }}>
                 {TYPE_CONFIG.map(({ type, icon, name }) => (
                     <button
                         key={type}
@@ -278,7 +278,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                             <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginTop: '2px' }}>
                                                 {entry.dynasty && <span>〔{entry.dynasty}〕</span>}
                                                 {entry.author && <span>{entry.author}</span>}
-                                                {entry.role && <span> {entry.role}</span>}
+                                                {entry.role && entry.role !== 'author' && <span> {entry.role}</span>}
                                             </div>
                                         )}
                                     </div>
