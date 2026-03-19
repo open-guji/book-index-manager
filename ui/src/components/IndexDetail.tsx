@@ -37,6 +37,37 @@ const TYPE_LABELS: Record<IndexType, string> = {
     collection: '丛编',
 };
 
+// ── 工具函数 ──
+
+const CHINESE_DIGITS = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+const CHINESE_UNITS = ['', '十', '百', '千'];
+
+function numberToChinese(n: number): string {
+    if (n <= 0) return '';
+    if (n >= 10000) return String(n); // 万以上直接用阿拉伯数字
+    const str = String(n);
+    const len = str.length;
+    let result = '';
+    let lastWasZero = false;
+    for (let i = 0; i < len; i++) {
+        const digit = parseInt(str[i]);
+        const unitIndex = len - 1 - i;
+        if (digit === 0) {
+            lastWasZero = true;
+        } else {
+            if (lastWasZero && result) result += '〇';
+            lastWasZero = false;
+            // 十位的一可以省略：10→十，11→十一
+            if (digit === 1 && unitIndex === 1 && i === 0) {
+                result += CHINESE_UNITS[unitIndex];
+            } else {
+                result += CHINESE_DIGITS[digit] + CHINESE_UNITS[unitIndex];
+            }
+        }
+    }
+    return result;
+}
+
 // ── 内部子组件 ──
 
 function TypeBadge({ type }: { type: IndexType }) {
@@ -89,11 +120,7 @@ function SectionLabel({ children, extra }: { children: React.ReactNode; extra?: 
             }}>
                 {children}
             </span>
-            <span style={{
-                flex: 1,
-                height: '1px',
-                background: 'linear-gradient(to right, var(--bim-widget-border, #e0e0e0) 50%, transparent)',
-            }} />
+            <span style={{ flex: 1 }} />
             {extra}
         </div>
     );
@@ -168,10 +195,11 @@ function IdLink({ id, label, onNavigate, renderLink }: {
 
 // ── Header ──
 
-function DetailHeader({ title, type, authors, meta, headerExtra }: {
+function DetailHeader({ title, type, authors, volumeText, meta, headerExtra }: {
     title: string;
     type: IndexType;
     authors?: AuthorInfo[];
+    volumeText?: string;
     meta: React.ReactNode[];
     headerExtra?: React.ReactNode;
 }) {
@@ -193,6 +221,16 @@ function DetailHeader({ title, type, authors, meta, headerExtra }: {
                         letterSpacing: '0.5px',
                     }}>
                         {title}
+                        {volumeText && (
+                            <span style={{
+                                fontSize: '15px',
+                                fontWeight: 400,
+                                color: 'var(--bim-desc-fg, #717171)',
+                                marginLeft: '8px',
+                            }}>
+                                {volumeText}
+                            </span>
+                        )}
                     </h1>
                     {authors && authors.length > 0 && (
                         <AuthorLine authors={authors} type={type} />
@@ -608,6 +646,14 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     const collectionData = detail.type === 'collection' ? detail as CollectionDetailData : null;
     const workData = detail.type === 'work' ? detail as WorkDetailData : null;
 
+    // 卷数文字（显示在标题旁）
+    let volumeText = '';
+    if (detail.volume_count?.number) {
+        volumeText = numberToChinese(detail.volume_count.number) + '卷';
+    } else if (detail.volume_count?.description) {
+        volumeText = detail.volume_count.description;
+    }
+
     // 构建 meta 行
     const meta: React.ReactNode[] = [];
     if (detail.publication_info?.year) {
@@ -615,14 +661,6 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     }
     if (detail.current_location?.name) {
         meta.push(<MetaItem key="loc" label="现藏">{detail.current_location.name}</MetaItem>);
-    }
-    if (detail.volume_count?.number || detail.volume_count?.description) {
-        const vol = detail.volume_count!;
-        meta.push(
-            <MetaItem key="vol" label="卷">
-                {vol.number != null ? `${vol.number}卷` : ''}{vol.description ? ` ${vol.description}` : ''}
-            </MetaItem>
-        );
     }
     if (detail.page_count?.description) {
         meta.push(<MetaItem key="page" label="页">{detail.page_count.description}</MetaItem>);
@@ -663,11 +701,10 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                 title={detail.title}
                 type={detail.type}
                 authors={detail.authors}
+                volumeText={volumeText}
                 meta={meta}
                 headerExtra={headerExtra}
             />
-
-            <Divider />
 
             {detail.description?.text && (
                 <p style={{

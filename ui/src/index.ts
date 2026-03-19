@@ -66,6 +66,8 @@ export { ResourceList } from './components/ResourceList';
 export { IndexBrowser } from './components/IndexBrowser';
 export { IndexDetail } from './components/IndexDetail';
 export type { IndexDetailProps } from './components/IndexDetail';
+export { IndexApp } from './components/IndexApp';
+export type { IndexAppProps } from './components/IndexApp';
 export { ModeIndicator } from './components/ModeIndicator';
 
 // Components - Editor

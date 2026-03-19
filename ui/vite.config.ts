@@ -2,6 +2,10 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
+import { bookIndexApiPlugin } from './server/vite-plugin-api';
+
+/** WSL 工作区路径（Windows 访问 WSL 文件系统） */
+const WSL_WORKSPACE = '//wsl.localhost/Ubuntu/home/lishaodong/workspace';
 
 export default defineConfig(({ mode }) => {
   if (mode === 'lib') {
@@ -36,7 +40,10 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      bookIndexApiPlugin(WSL_WORKSPACE),
+    ],
     build: {
       outDir: 'dist-app',
       emptyOutDir: true,

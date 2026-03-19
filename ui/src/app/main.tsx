@@ -1,159 +1,217 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
+import { IndexBrowser } from '../components/IndexBrowser';
 import { IndexDetail } from '../components/IndexDetail';
-import { IndexEditor } from '../components/IndexEditor';
-import type { IndexEditorData } from '../components/IndexEditor';
-import type { IndexDetailData } from '../types';
+import { HttpTransport } from '../transport/http-transport';
+import { GithubTransport } from '../transport/github-transport';
+import type { IndexTransport } from '../transport/types';
+import type { IndexEntry, IndexDetailData } from '../types';
+import '../styles/variables.css';
 
-// 3 本测试数据
-const SAMPLE_DATA: IndexDetailData[] = [
-    {
-        id: "GYJ3CJh4p5d",
-        type: "work",
-        title: "南北史合注",
-        authors: [{ name: "李清", role: "撰", dynasty: "明" }],
-        volume_count: { number: 191 },
-        indexed_by: [{
-            source: "欽定四庫全書總目",
-            source_bid: "GY4HvsY3w3u",
-            title_info: "《南北史合注》•一百九十一卷",
-            author_info: "明李清撰",
-            summary: "明李清撰。清字心水，號映碧，揚州興化人。禮部尚書思誠之孫，大學士春芳之玄孫；崇禎辛未進士，官至吏科給事中；事蹟附見《明史李春芳傳》。清以南北朝諸史並存，冗雜特甚，李延壽雖並為一書，而諸說兼行，仍多矛盾。嘗與張溥議，欲仿裴松之《三國志》注例，合宋、齊、梁、陳四史為《南史》，魏、齊、周、隋四史為《北史》，未就而溥歿。",
-            comment: "謹案：此書經四庫館臣校訂，收入四庫全書。"
-        }],
-    } as IndexDetailData,
-    {
-        id: "GYJ3CJiQjod",
-        type: "work",
-        title: "南唐書合訂",
-        authors: [{ name: "李清", role: "撰", dynasty: "明" }],
-        volume_count: { number: 25 },
-        indexed_by: [{
-            source: "欽定四庫全書總目",
-            source_bid: "GY4HvsY3w3u",
-            title_info: "《南唐書合訂》•二十五卷",
-            author_info: "明李清撰",
-            summary: "明李清撰。清有南北史合注，巳著錄。是書記南唐一代事蹟，以陸遊書為主，而以馬令書及諸野史輔之。"
-        }],
-    } as IndexDetailData,
-    {
-        id: "GYJ3CJjtj5y",
-        type: "work",
-        title: "閩小紀",
-        authors: [{ name: "周亮工", role: "撰", dynasty: "清" }],
-        volume_count: { number: 4 },
-        additional_titles: [{ book_title: "續閩小紀", n_juan: 4 }],
-        indexed_by: [{
-            source: "欽定四庫全書總目",
-            source_bid: "GY4HvsY3w3u",
-            title_info: "《閩小紀》•四卷",
-            author_info: "國朝周亮工撰",
-            version: "浙江鮑士恭家藏本",
-            summary: "國朝周亮工撰。亮工字元亮，號櫟園，祥符人。前明崇禎庚辰進士，授濰縣知縣。入國朝，官至戶部右侍郎，以事革職，終於江南督糧道。"
-        }],
-    } as IndexDetailData,
-];
+// ── 数据源模式 ──
 
-/** 将 IndexDetailData 转换为 IndexEditorData 扁平格式 */
-function toEditorData(d: IndexDetailData): IndexEditorData {
-    return {
-        id: d.id,
-        title: d.title,
-        type: d.type,
-        author: d.authors?.map(a => {
-            const parts: string[] = [];
-            if (a.dynasty) parts.push(`[${a.dynasty}]`);
-            parts.push(a.name);
-            if (a.role) parts.push(a.role);
-            return parts.join(' ');
-        }).join('、') || '',
-        dynasty: d.authors?.[0]?.dynasty || '',
-        indexed_by: d.indexed_by,
-        additional_titles: d.additional_titles,
-    };
+type DataMode = 'local' | 'github';
+
+function detectMode(): DataMode {
+    // 本地开发 (vite dev server) 使用 local 模式
+    // 部署后（无 /api 端点）使用 github 模式
+    if (import.meta.env.DEV) return 'local';
+    return 'github';
 }
 
-function App() {
-    const [selectedId, setSelectedId] = useState(SAMPLE_DATA[0].id);
-    const [mode, setMode] = useState<'detail' | 'editor'>('detail');
-    const selected = SAMPLE_DATA.find(d => d.id === selectedId)!;
-    const [editorData, setEditorData] = useState<IndexEditorData>(toEditorData(selected));
+function createTransport(mode: DataMode): IndexTransport {
+    if (mode === 'local') {
+        return new HttpTransport('/api');
+    }
+    return new GithubTransport({
+        org: 'open-guji',
+        repos: {
+            draft: 'book-index-draft',
+            official: 'book-index',
+        },
+    });
+}
 
-    const handleSelect = (id: string) => {
-        setSelectedId(id);
-        const item = SAMPLE_DATA.find(d => d.id === id)!;
-        setEditorData(toEditorData(item));
-    };
+// ── 主应用 ──
+
+function App() {
+    const [mode, setMode] = useState<DataMode>(detectMode);
+    const [transport, setTransport] = useState<IndexTransport>(() => createTransport(detectMode()));
+    const [selectedEntry, setSelectedEntry] = useState<IndexEntry | null>(null);
+    const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
+    const [detailLoading, setDetailLoading] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+
+    const switchMode = useCallback((newMode: DataMode) => {
+        setMode(newMode);
+        setTransport(createTransport(newMode));
+        setSelectedEntry(null);
+        setDetailData(null);
+    }, []);
+
+    const handleEntryClick = useCallback(async (entry: IndexEntry) => {
+        setSelectedEntry(entry);
+        setDetailData(null);
+        setDetailLoading(true);
+        try {
+            const data = await transport.getItem(entry.id);
+            if (data) {
+                setDetailData(data as unknown as IndexDetailData);
+            }
+        } catch (err) {
+            console.error('加载详情失败:', err);
+        } finally {
+            setDetailLoading(false);
+        }
+    }, [transport]);
+
+    const handleNavigate = useCallback(async (id: string) => {
+        setDetailData(null);
+        setDetailLoading(true);
+        try {
+            const data = await transport.getItem(id);
+            if (data) {
+                setDetailData(data as unknown as IndexDetailData);
+                setSelectedEntry({
+                    id,
+                    title: (data.title as string) || id,
+                    type: (data.type as any) || 'book',
+                });
+            }
+        } catch (err) {
+            console.error('导航失败:', err);
+        } finally {
+            setDetailLoading(false);
+        }
+    }, [transport]);
 
     return (
         <div style={{
             display: 'flex',
             height: '100vh',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif',
-            background: '#f5f5f5',
+            background: 'var(--bim-bg, #f5f5f5)',
+            color: 'var(--bim-fg, #333)',
         }}>
-            {/* Sidebar */}
-            <div style={{
-                width: '280px',
-                borderRight: '1px solid #e0e0e0',
-                background: '#fff',
-                padding: '16px 0',
-                overflowY: 'auto',
-                flexShrink: 0,
-            }}>
-                {/* Mode tabs */}
-                <div style={{ display: 'flex', gap: '4px', padding: '0 16px', marginBottom: '16px' }}>
-                    {(['detail', 'editor'] as const).map(m => (
-                        <button key={m} onClick={() => setMode(m)} style={{
-                            flex: 1, padding: '6px', fontSize: '12px', fontWeight: 500,
-                            border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer',
-                            background: mode === m ? '#0078d4' : 'transparent',
-                            color: mode === m ? '#fff' : '#666',
-                        }}>
-                            {m === 'detail' ? '详情' : '编辑器'}
+            {/* 左侧：浏览器面板 */}
+            {sidebarOpen && (
+                <div style={{
+                    width: '420px',
+                    flexShrink: 0,
+                    borderRight: '1px solid var(--bim-widget-border, #e0e0e0)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    background: 'var(--bim-input-bg, #fff)',
+                    overflow: 'hidden',
+                }}>
+                    {/* 模式切换 */}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '8px 20px',
+                        borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        fontSize: '12px',
+                        color: 'var(--bim-desc-fg, #717171)',
+                    }}>
+                        <span>数据源：</span>
+                        {(['local', 'github'] as const).map(m => (
+                            <button
+                                key={m}
+                                onClick={() => switchMode(m)}
+                                style={{
+                                    padding: '3px 10px',
+                                    fontSize: '12px',
+                                    border: mode === m ? '1px solid var(--bim-primary, #0078d4)' : '1px solid var(--bim-input-border, #ccc)',
+                                    borderRadius: '3px',
+                                    cursor: 'pointer',
+                                    background: mode === m ? 'var(--bim-primary, #0078d4)' : 'transparent',
+                                    color: mode === m ? 'var(--bim-primary-fg, #fff)' : 'var(--bim-fg, #333)',
+                                }}
+                            >
+                                {m === 'local' ? '本地' : 'GitHub'}
+                            </button>
+                        ))}
+                        <button
+                            onClick={() => setSidebarOpen(false)}
+                            title="收起侧栏"
+                            style={{
+                                marginLeft: 'auto',
+                                padding: '2px 6px',
+                                border: 'none',
+                                borderRadius: '3px',
+                                background: 'transparent',
+                                color: 'var(--bim-desc-fg, #717171)',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                lineHeight: 1,
+                            }}
+                        >
+                            ◀
                         </button>
-                    ))}
+                    </div>
+                    {/* 浏览器 */}
+                    <div style={{ flex: 1, overflow: 'auto' }}>
+                        <IndexBrowser
+                            transport={transport}
+                            onEntryClick={handleEntryClick}
+                            hideModeIndicator
+                        />
+                    </div>
                 </div>
-                <h2 style={{ padding: '0 16px', fontSize: '14px', color: '#717171', marginBottom: '12px' }}>
-                    预览 ({SAMPLE_DATA.length} 部)
-                </h2>
-                {SAMPLE_DATA.map(item => (
-                    <div
-                        key={item.id}
-                        onClick={() => handleSelect(item.id)}
+            )}
+
+            {/* 右侧：详情面板 */}
+            <div style={{ flex: 1, overflow: 'auto', background: 'var(--bim-bg, #f5f5f5)', position: 'relative' }}>
+                {!sidebarOpen && (
+                    <button
+                        onClick={() => setSidebarOpen(true)}
+                        title="展开侧栏"
                         style={{
-                            padding: '12px 16px',
+                            position: 'absolute',
+                            top: '12px',
+                            left: '12px',
+                            zIndex: 10,
+                            padding: '6px 10px',
+                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            borderRadius: '4px',
+                            background: 'var(--bim-input-bg, #fff)',
+                            color: 'var(--bim-fg, #333)',
                             cursor: 'pointer',
-                            background: item.id === selectedId ? '#e8f0fe' : 'transparent',
-                            borderLeft: item.id === selectedId ? '3px solid #0078d4' : '3px solid transparent',
+                            fontSize: '13px',
+                            boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
                         }}
                     >
-                        <div style={{ fontSize: '14px', fontWeight: 600 }}>{item.title}</div>
-                        <div style={{ fontSize: '12px', color: '#717171', marginTop: '2px' }}>
-                            {item.authors?.[0]?.dynasty && `[${item.authors[0].dynasty}] `}
-                            {item.authors?.[0]?.name}
-                            {item.authors?.[0]?.role && ` ${item.authors[0].role}`}
-                            {item.volume_count?.number && ` · ${item.volume_count.number}卷`}
-                        </div>
+                        ▶ 索引
+                    </button>
+                )}
+                {detailLoading ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                        <span style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>加载中...</span>
                     </div>
-                ))}
-            </div>
-            {/* Main */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '32px 48px' }}>
-                {mode === 'detail' ? (
-                    <IndexDetail
-                        data={selected}
-                        onNavigate={id => alert(`Navigate to: ${id}`)}
-                    />
+                ) : detailData ? (
+                    <div style={{ padding: '32px 48px', maxWidth: '900px' }}>
+                        <IndexDetail
+                            data={detailData}
+                            transport={transport}
+                            onNavigate={handleNavigate}
+                        />
+                    </div>
                 ) : (
-                    <IndexEditor
-                        data={editorData}
-                        onChange={setEditorData}
-                        onSave={() => {
-                            console.log('Save:', JSON.stringify(editorData, null, 2));
-                            alert('已保存到 console（查看 DevTools）');
-                        }}
-                    />
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                        color: 'var(--bim-desc-fg, #717171)',
+                    }}>
+                        <div style={{ fontSize: '48px', marginBottom: '16px' }}>📚</div>
+                        <h2 style={{ margin: '0 0 8px', fontWeight: 400, fontSize: '18px' }}>古籍索引浏览器</h2>
+                        <p style={{ margin: 0, fontSize: '14px' }}>
+                            从左侧选择一个条目查看详情
+                        </p>
+                    </div>
                 )}
             </div>
         </div>
