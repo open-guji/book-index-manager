@@ -12,6 +12,7 @@ import type {
     IndexedByEntry,
 } from '../types';
 import type { IndexTransport } from '../transport/types';
+import { extractStatus } from '../id';
 import { ResourceList } from './ResourceList';
 
 export interface IndexDetailProps {
@@ -89,6 +90,70 @@ function TypeBadge({ type }: { type: IndexType }) {
             background: `${colors[type]}08`,
         }}>
             {TYPE_LABELS[type]}
+        </span>
+    );
+}
+
+function StatusBadge({ isDraft }: { isDraft: boolean }) {
+    return (
+        <span style={{
+            display: 'inline-block',
+            padding: '1px 6px',
+            fontSize: '11px',
+            fontWeight: 500,
+            letterSpacing: '1px',
+            color: isDraft ? '#e67e22' : '#27ae60',
+            border: `1px solid ${isDraft ? '#e67e2240' : '#27ae6040'}`,
+            borderRadius: '2px',
+            background: isDraft ? '#e67e2208' : '#27ae6008',
+        }}>
+            {isDraft ? '草稿' : '正式'}
+        </span>
+    );
+}
+
+function IdBadge({ id }: { id: string }) {
+    const [copied, setCopied] = React.useState(false);
+    const handleCopy = () => {
+        navigator.clipboard.writeText(id).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        });
+    };
+    return (
+        <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '3px 8px 3px 10px',
+            fontSize: '12px',
+            color: 'var(--bim-desc-fg, #717171)',
+            background: '#f6f6f6',
+            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            borderRadius: '4px',
+        }}>
+            <span>ID:</span>
+            <span style={{
+                fontFamily: 'monospace',
+                fontSize: '12px',
+                color: 'var(--bim-fg, #333)',
+            }}>
+                {id}
+            </span>
+            <span
+                onClick={handleCopy}
+                title={copied ? '已复制' : '复制 ID'}
+                style={{
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    opacity: copied ? 1 : 0.5,
+                    transition: 'opacity 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = copied ? '1' : '0.5')}
+            >
+                {copied ? '✓' : '⧉'}
+            </span>
         </span>
     );
 }
@@ -195,9 +260,11 @@ function IdLink({ id, label, onNavigate, renderLink }: {
 
 // ── Header ──
 
-function DetailHeader({ title, type, authors, volumeText, meta, headerExtra }: {
+function DetailHeader({ id, title, type, isDraft, authors, volumeText, meta, headerExtra }: {
+    id: string;
     title: string;
     type: IndexType;
+    isDraft: boolean;
     authors?: AuthorInfo[];
     volumeText?: string;
     meta: React.ReactNode[];
@@ -205,53 +272,61 @@ function DetailHeader({ title, type, authors, volumeText, meta, headerExtra }: {
 }) {
     return (
         <div style={{ marginBottom: '4px' }}>
+            {/* 标题行：左侧标题 + 右侧徽章 */}
             <div style={{
                 display: 'flex',
                 alignItems: 'flex-start',
                 justifyContent: 'space-between',
                 gap: '12px',
             }}>
-                <div style={{ flex: 1 }}>
-                    <h1 style={{
-                        fontSize: '24px',
-                        fontWeight: 700,
-                        color: 'var(--bim-fg, #1a1a1a)',
-                        margin: '0 0 6px',
-                        lineHeight: 1.3,
-                        letterSpacing: '0.5px',
-                    }}>
-                        {title}
-                        {volumeText && (
-                            <span style={{
-                                fontSize: '15px',
-                                fontWeight: 400,
-                                color: 'var(--bim-desc-fg, #717171)',
-                                marginLeft: '8px',
-                            }}>
-                                {volumeText}
-                            </span>
-                        )}
-                    </h1>
-                    {authors && authors.length > 0 && (
-                        <AuthorLine authors={authors} type={type} />
-                    )}
-                    {meta.length > 0 && (
-                        <div style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: '12px',
-                            marginTop: '6px',
+                <h1 style={{
+                    fontSize: '24px',
+                    fontWeight: 700,
+                    color: 'var(--bim-fg, #1a1a1a)',
+                    margin: '0 0 6px',
+                    lineHeight: 1.3,
+                    letterSpacing: '0.5px',
+                    flex: 1,
+                    minWidth: 0,
+                }}>
+                    {title}
+                    {volumeText && (
+                        <span style={{
+                            fontSize: '15px',
+                            fontWeight: 400,
+                            color: 'var(--bim-desc-fg, #717171)',
+                            marginLeft: '8px',
                         }}>
-                            {meta}
-                        </div>
+                            {volumeText}
+                        </span>
                     )}
+                </h1>
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    flexShrink: 0,
+                    paddingTop: '4px',
+                }}>
+                    <TypeBadge type={type} />
+                    <StatusBadge isDraft={isDraft} />
+                    <IdBadge id={id} />
+                    {headerExtra}
                 </div>
-                {headerExtra && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                        {headerExtra}
-                    </div>
-                )}
             </div>
+            {authors && authors.length > 0 && (
+                <AuthorLine authors={authors} type={type} />
+            )}
+            {meta.length > 0 && (
+                <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '12px',
+                    marginTop: '6px',
+                }}>
+                    {meta}
+                </div>
+            )}
         </div>
     );
 }
@@ -646,6 +721,10 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     const collectionData = detail.type === 'collection' ? detail as CollectionDetailData : null;
     const workData = detail.type === 'work' ? detail as WorkDetailData : null;
 
+    // 从 ID 解析草稿状态
+    let isDraft = false;
+    try { isDraft = extractStatus(detail.id) === 'draft'; } catch {}
+
     // 卷数文字（显示在标题旁）
     let volumeText = '';
     if (detail.volume_count?.number) {
@@ -698,8 +777,10 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     return (
         <div className={className} style={style}>
             <DetailHeader
+                id={detail.id}
                 title={detail.title}
                 type={detail.type}
+                isDraft={isDraft}
                 authors={detail.authors}
                 volumeText={volumeText}
                 meta={meta}
