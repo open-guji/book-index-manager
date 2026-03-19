@@ -4,6 +4,26 @@ import type { IndexTransport } from '../transport/types';
 import { ModeIndicator } from './ModeIndicator';
 
 const PAGE_SIZE = 50;
+const RECENT_KEY = 'bim-recent-entries';
+const MAX_RECENT = 50;
+
+function loadRecentEntries(): IndexEntry[] {
+    try {
+        const raw = localStorage.getItem(RECENT_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveRecentEntry(entry: IndexEntry) {
+    try {
+        const list = loadRecentEntries().filter(e => e.id !== entry.id);
+        list.unshift(entry);
+        if (list.length > MAX_RECENT) list.length = MAX_RECENT;
+        localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+    } catch { /* ignore */ }
+}
 
 export interface IndexBrowserProps {
     transport: IndexTransport;
@@ -20,8 +40,8 @@ export interface IndexBrowserProps {
 }
 
 const TYPE_CONFIG: { type: IndexType; icon: string; name: string }[] = [
-    { type: 'book', icon: '📖', name: '书籍' },
     { type: 'work', icon: '✍️', name: '作品' },
+    { type: 'book', icon: '📖', name: '书籍' },
     { type: 'collection', icon: '📚', name: '丛编' },
 ];
 
@@ -37,7 +57,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     onSelectFolder,
     hideModeIndicator,
 }) => {
-    const [activeTab, setActiveTab] = useState<IndexType>('book');
+    const [activeTab, setActiveTab] = useState<IndexType>('work');
     const [searchQuery, setSearchQuery] = useState('');
     const [entries, setEntries] = useState<IndexEntry[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -47,6 +67,8 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     const [currentPage, setCurrentPage] = useState(1);
     const [sortBy, setSortBy] = useState('title');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+    const [showingRecent, setShowingRecent] = useState(true);
+    const [recentEntries, setRecentEntries] = useState<IndexEntry[]>(loadRecentEntries);
 
     const buildOptions = useCallback((page: number): LoadOptions => ({
         page,
@@ -73,9 +95,12 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
 
     const handleSearch = useCallback(async (page: number = 1) => {
         if (!searchQuery.trim()) {
-            loadEntries(activeTab, page);
+            setShowingRecent(true);
+            setEntries([]);
+            setTotalCount(0);
             return;
         }
+        setShowingRecent(false);
         setIsLoading(true);
         setErrorMessage('');
         try {
@@ -89,26 +114,26 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         } finally {
             setIsLoading(false);
         }
-    }, [transport, searchQuery, activeTab, buildOptions, loadEntries]);
+    }, [transport, searchQuery, activeTab, buildOptions]);
 
     useEffect(() => {
         setCurrentPage(1);
-        loadEntries(activeTab, 1);
-    }, [activeTab, sortBy, sortOrder, loadEntries]);
+        if (!showingRecent) {
+            loadEntries(activeTab, 1);
+        }
+    }, [activeTab, sortBy, sortOrder, loadEntries, showingRecent]);
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
-        if (searchQuery.trim()) {
-            handleSearch(newPage);
-        } else {
-            loadEntries(activeTab, newPage);
-        }
+        handleSearch(newPage);
     };
 
     const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
     const handleEntryClick = (entry: IndexEntry) => {
         setSelectedId(entry.id);
+        saveRecentEntry(entry);
+        setRecentEntries(loadRecentEntries());
         onEntryClick?.(entry);
     };
 
@@ -171,7 +196,14 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                         type="text"
                         placeholder={`搜索${getConfig(activeTab).name}...`}
                         value={searchQuery}
-                        onChange={e => setSearchQuery(e.target.value)}
+                        onChange={e => {
+                            setSearchQuery(e.target.value);
+                            if (!e.target.value.trim()) {
+                                setShowingRecent(true);
+                                setEntries([]);
+                                setTotalCount(0);
+                            }
+                        }}
                         onKeyDown={e => e.key === 'Enter' && handleSearch()}
                         style={{
                             flex: 1,
@@ -217,7 +249,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
             </div>
 
             {/* Content */}
-            <div style={{ padding: '0 20px 20px', flex: 1 }}>
+            <div style={{ padding: '0 20px 20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                 {isLoading ? (
                     <div style={{ textAlign: 'center', padding: '40px', color: 'var(--bim-desc-fg, #717171)' }}>
                         加载中...
@@ -226,6 +258,54 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     <div style={{ textAlign: 'center', padding: '40px' }}>
                         <div style={{ fontSize: '24px', marginBottom: '8px' }}>⚠️</div>
                         <p style={{ color: 'var(--bim-desc-fg, #717171)' }}>{errorMessage}</p>
+                    </div>
+                ) : showingRecent ? (
+                    /* Recent entries view */
+                    <div style={{ flex: 1 }}>
+                        {recentEntries.length > 0 ? (
+                            <>
+                                <div style={{ padding: '8px 0', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
+                                    最近浏览
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    {recentEntries.map(entry => (
+                                        <div
+                                            key={entry.id}
+                                            onClick={() => handleEntryClick(entry)}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '12px',
+                                                padding: '10px 12px',
+                                                borderRadius: '6px',
+                                                border: selectedId === entry.id ? '1px solid var(--bim-primary, #0078d4)' : '1px solid var(--bim-widget-border, #e0e0e0)',
+                                                cursor: 'pointer',
+                                                background: 'var(--bim-input-bg, #fff)',
+                                            }}
+                                        >
+                                            <span style={{ fontSize: '18px' }}>{getConfig(entry.type).icon}</span>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>{entry.title}</div>
+                                                {(entry.dynasty || entry.author) && (
+                                                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginTop: '2px' }}>
+                                                        {entry.dynasty && <span>〔{entry.dynasty}〕</span>}
+                                                        {entry.author && <span>{entry.author}</span>}
+                                                        {entry.role && entry.role !== 'author' && <span> {entry.role}</span>}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <span style={{ opacity: 0.4 }}>→</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: '40px' }}>
+                                <div style={{ fontSize: '32px', marginBottom: '8px' }}>{getConfig(activeTab).icon}</div>
+                                <h3 style={{ margin: '0 0 8px', color: 'var(--bim-fg, #333)' }}>输入关键词搜索{getConfig(activeTab).name}</h3>
+                                <p style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '13px' }}>浏览过的条目会显示在这里</p>
+                            </div>
+                        )}
                     </div>
                 ) : entries.length > 0 ? (
                     <>
@@ -313,25 +393,22 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                 ) : (
                     <div style={{ textAlign: 'center', padding: '40px' }}>
                         <div style={{ fontSize: '32px', marginBottom: '8px' }}>{getConfig(activeTab).icon}</div>
-                        <h3 style={{ margin: '0 0 8px', color: 'var(--bim-fg, #333)' }}>暂无{getConfig(activeTab).name}</h3>
-                        <p style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '13px' }}>当前目录下没有找到任何{getConfig(activeTab).name}记录</p>
-                        {onNewEntry && (
-                            <button
-                                onClick={() => onNewEntry(activeTab)}
-                                style={{
-                                    marginTop: '12px',
-                                    padding: '8px 20px',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    background: 'var(--bim-primary, #0078d4)',
-                                    color: 'var(--bim-primary-fg, #fff)',
-                                    cursor: 'pointer',
-                                    fontSize: '13px',
-                                }}
-                            >
-                                创建第一个{getConfig(activeTab).name}
-                            </button>
-                        )}
+                        <h3 style={{ margin: '0 0 8px', color: 'var(--bim-fg, #333)' }}>未找到匹配的{getConfig(activeTab).name}</h3>
+                        <p style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '13px' }}>尝试其他搜索关键词</p>
+                    </div>
+                )}
+
+                {/* Footer: total count */}
+                {!isLoading && !errorMessage && totalCount > 0 && !showingRecent && (
+                    <div style={{
+                        textAlign: 'center',
+                        padding: '16px 0 4px',
+                        fontSize: '12px',
+                        color: 'var(--bim-desc-fg, #717171)',
+                        borderTop: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        marginTop: 'auto',
+                    }}>
+                        共收录 {totalCount} 部{getConfig(activeTab).name}
                     </div>
                 )}
             </div>
