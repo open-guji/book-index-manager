@@ -10,6 +10,15 @@ readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
 keywords = ["ancient-books", "book-index", "metadata", "classical-chinese"]
+authors = [
+    { name = "Li Shaodong" },
+]
+
+[project.urls]
+Homepage = "https://github.com/open-guji/book-index-manager"
+Repository = "https://github.com/open-guji/book-index-manager"
+Issues = "https://github.com/open-guji/book-index-manager/issues"
+
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
