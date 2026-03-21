@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, List, Any
 
 from .id_generator import BookIndexIdGenerator, BookIndexStatus, BookIndexType, base58_encode, base58_decode
 from .storage import BookIndexStorage
@@ -101,6 +101,13 @@ class BookIndexManager:
     def delete_item(self, id_str: str) -> bool:
         """Delete an entity by ID."""
         return self.storage.delete_item(id_str)
+
+    def search(self, query: str, type_name: str = "book", status: Optional[BookIndexStatus] = None) -> List[Dict]:
+        """Search entries with relevance ranking.
+
+        Returns entries sorted by match score (title > author > other fields).
+        """
+        return self.storage.search_entries(query, type_name, status)
 
     def rebuild_indices(self):
         """Rebuild index.json for both official and draft."""

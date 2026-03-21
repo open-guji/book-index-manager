@@ -261,17 +261,17 @@ export class BookIndexStorage {
     }
 
     /**
-     * 搜索条目
+     * 搜索条目（带匹配度评分排序）
+     *
+     * 评分规则：
+     * - title 完全匹配 100, 开头匹配 80, 包含匹配 60
+     * - author 完全匹配 50, 包含匹配 40
+     * - 其他字段 (dynasty/role/id) 包含匹配 20
+     * 多字段命中时分数累加，按总分降序排列。
      */
     async searchEntries(query: string, type: IndexType, status?: IndexStatus): Promise<IndexEntry[]> {
         const all = await this.loadEntries(type, status);
-        const q = query.toLowerCase();
-        return all.filter(e =>
-            e.title.toLowerCase().includes(q) ||
-            e.id.toLowerCase().includes(q) ||
-            e.author?.toLowerCase().includes(q) ||
-            e.dynasty?.toLowerCase().includes(q)
-        );
+        return rankByRelevance(all, query);
     }
 
     /**
@@ -348,4 +348,58 @@ export class BookIndexStorage {
         await this.fs.mkdir(dir);
         await this.fs.writeFile(indexFile, JSON.stringify(index, null, 2));
     }
+}
+
+// ── 搜索评分 ──
+
+/**
+ * 计算单条条目与查询的匹配分数。
+ * 多字段命中时分数累加。
+ */
+function scoreEntry(entry: IndexEntry, query: string): number {
+    const q = query.toLowerCase();
+    let score = 0;
+
+    // title（权重最高）
+    const title = entry.title.toLowerCase();
+    if (title === q) {
+        score += 100;
+    } else if (title.startsWith(q)) {
+        score += 80;
+    } else if (title.includes(q)) {
+        score += 60;
+    }
+
+    // author（权重次之）
+    if (entry.author) {
+        const author = entry.author.toLowerCase();
+        if (author === q) {
+            score += 50;
+        } else if (author.includes(q)) {
+            score += 40;
+        }
+    }
+
+    // 其他字段：dynasty, role, id
+    const others = [entry.dynasty, entry.role, entry.id];
+    for (const val of others) {
+        if (val && val.toLowerCase().includes(q)) {
+            score += 20;
+            break;          // 其他字段只加一次
+        }
+    }
+
+    return score;
+}
+
+/**
+ * 对条目列表按匹配度排序，过滤掉无匹配的条目。
+ * 供 BookIndexStorage.searchEntries / GithubStorage.search 等统一调用。
+ */
+export function rankByRelevance(entries: IndexEntry[], query: string): IndexEntry[] {
+    const scored = entries
+        .map(e => ({ entry: e, score: scoreEntry(e, query) }))
+        .filter(s => s.score > 0);
+    scored.sort((a, b) => b.score - a.score);
+    return scored.map(s => s.entry);
 }

@@ -9,6 +9,7 @@ import urllib.request
 import urllib.error
 from typing import Optional, Dict, List, Any
 from .storage_base import IndexStorage, PageResult, LoadOptions
+from .storage import rank_by_relevance
 from .exceptions import StorageError
 
 
@@ -131,20 +132,12 @@ class GithubStorage(IndexStorage):
     def search(self, query: str, type_name: str, options: Optional[LoadOptions] = None) -> PageResult:
         opts = options or LoadOptions()
         all_entries = self._ensure_loaded()
-        lower_q = query.lower()
+        type_filtered = [e for e in all_entries if e["type"] == type_name]
+        ranked = rank_by_relevance(type_filtered, query)
 
-        filtered = [
-            e for e in all_entries
-            if e["type"] == type_name and (
-                lower_q in e.get("title", "").lower() or
-                lower_q in e.get("id", "").lower() or
-                lower_q in e.get("author", "").lower()
-            )
-        ]
-
-        total = len(filtered)
+        total = len(ranked)
         start = (opts.page - 1) * opts.page_size
-        sliced = filtered[start:start + opts.page_size]
+        sliced = ranked[start:start + opts.page_size]
         return PageResult(sliced, total, opts.page, opts.page_size)
 
     def get_item(self, id_str: str) -> Optional[Dict]:

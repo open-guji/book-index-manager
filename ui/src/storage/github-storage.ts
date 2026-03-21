@@ -1,5 +1,6 @@
 import type { IndexStorage } from './types';
 import type { IndexType, IndexEntry, PageResult, LoadOptions } from '../types';
+import { rankByRelevance } from '../core/storage';
 
 /**
  * GitHub index.json 中的条目格式
@@ -190,24 +191,17 @@ export class GithubStorage implements IndexStorage {
 
     async search(query: string, type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>> {
         const all = await this.ensureLoaded();
-        const lowerQuery = query.toLowerCase();
-
-        let filtered = all.filter(e =>
-            e.type === type && (
-                e.title.toLowerCase().includes(lowerQuery) ||
-                e.id.toLowerCase().includes(lowerQuery) ||
-                (e.author && e.author.toLowerCase().includes(lowerQuery))
-            )
-        );
+        const typeFiltered = all.filter(e => e.type === type);
+        const ranked = rankByRelevance(typeFiltered, query);
 
         const page = options.page || 1;
         const pageSize = options.pageSize || 50;
         const start = (page - 1) * pageSize;
-        const pageEntries = filtered.slice(start, start + pageSize);
+        const pageEntries = ranked.slice(start, start + pageSize);
 
         return {
             entries: pageEntries,
-            total: filtered.length,
+            total: ranked.length,
             page,
             pageSize,
         };

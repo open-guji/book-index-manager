@@ -291,6 +291,41 @@ class BookIndexStorage:
         total = sum(len(v) for v in index.values())
         logger.info(f"Index for {status.name} rebuilt with {total} entries.")
 
+    def load_entries(self, type_name: str, status: Optional[BookIndexStatus] = None) -> List[Dict]:
+        """Load entries of a given type from index.json."""
+        type_key = type_name.lower() + "s"
+        roots = (
+            [self.get_root_by_status(status)]
+            if status is not None
+            else [self.official_root, self.draft_root]
+        )
+        entries = []
+        for root in roots:
+            index_file = root / "index.json"
+            index = self._load_index(index_file)
+            section = index.get(type_key, {})
+            for id_str, entry in section.items():
+                entries.append({
+                    "id": id_str,
+                    "title": entry.get("title", "未命名"),
+                    "type": type_name,
+                    "author": entry.get("author", ""),
+                    "dynasty": entry.get("dynasty", ""),
+                    "role": entry.get("role", ""),
+                })
+        return entries
+
+    def search_entries(self, query: str, type_name: str, status: Optional[BookIndexStatus] = None) -> List[Dict]:
+        """Search entries with relevance ranking.
+
+        Scoring:
+        - title exact 100, startswith 80, contains 60
+        - author exact 50, contains 40
+        - other fields (dynasty/role/id) contains 20
+        """
+        all_entries = self.load_entries(type_name, status)
+        return rank_by_relevance(all_entries, query)
+
     def delete_item(self, id_str: str):
         """Delete an item and remove it from the index."""
         file_path = self.find_file_by_id(id_str)
@@ -352,3 +387,44 @@ class BookIndexStorage:
         except Exception as e:
             logger.error(f"Error loading metadata from {file_path}: {e}")
             return {}
+
+
+# ── 搜索评分 ──
+
+def _score_entry(entry: Dict, query: str) -> int:
+    """Calculate relevance score for a single entry against query."""
+    q = query.lower()
+    score = 0
+
+    # title（权重最高）
+    title = entry.get("title", "").lower()
+    if title == q:
+        score += 100
+    elif title.startswith(q):
+        score += 80
+    elif q in title:
+        score += 60
+
+    # author（权重次之）
+    author = entry.get("author", "").lower()
+    if author:
+        if author == q:
+            score += 50
+        elif q in author:
+            score += 40
+
+    # 其他字段：dynasty, role, id
+    for val in [entry.get("dynasty", ""), entry.get("role", ""), entry.get("id", "")]:
+        if val and q in val.lower():
+            score += 20
+            break  # 其他字段只加一次
+
+    return score
+
+
+def rank_by_relevance(entries: List[Dict], query: str) -> List[Dict]:
+    """Filter and sort entries by relevance score (descending)."""
+    scored = [(e, _score_entry(e, query)) for e in entries]
+    scored = [(e, s) for e, s in scored if s > 0]
+    scored.sort(key=lambda x: x[1], reverse=True)
+    return [e for e, _ in scored]
