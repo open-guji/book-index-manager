@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
         lib: {
           entry: {
             index: resolve(__dirname, 'src/index.ts'),
-            transport: resolve(__dirname, 'src/transport-entry.ts'),
+            storage: resolve(__dirname, 'src/storage-entry.ts'),
           },
           name: 'BookIndexUI',
           formats: ['es', 'cjs'],

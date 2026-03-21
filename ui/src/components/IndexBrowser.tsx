@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import type { IndexType, IndexEntry, IndexSource, SyncConfig, LoadOptions, PageResult } from '../types';
-import type { IndexTransport } from '../transport/types';
+import type { IndexStorage } from '../storage/types';
 import { ModeIndicator } from './ModeIndicator';
 
 const PAGE_SIZE = 50;
@@ -26,7 +26,7 @@ function saveRecentEntry(entry: IndexEntry) {
 }
 
 export interface IndexBrowserProps {
-    transport: IndexTransport;
+    transport: IndexStorage;
     indexSource?: IndexSource;
     syncConfig?: SyncConfig;
     onEntryClick?: (entry: IndexEntry) => void;

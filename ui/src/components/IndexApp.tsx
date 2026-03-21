@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { IndexBrowser } from './IndexBrowser';
 import { IndexDetail } from './IndexDetail';
-import type { IndexTransport } from '../transport/types';
+import type { IndexStorage } from '../storage/types';
 import type { IndexEntry, IndexDetailData } from '../types';
 
 export interface IndexAppProps {
-    transport: IndexTransport;
+    transport: IndexStorage;
     /** 隐藏模式切换指示器 */
     hideModeIndicator?: boolean;
     /** 点击条目时的自定义处理（若提供则不显示右侧详情面板） */

@@ -1,18 +1,18 @@
 /**
- * 本地文件系统 Transport 实现
- * 使用 BookIndexStorage + IdGenerator 实现完整的 IndexTransport
+ * 本地文件系统 Storage 实现
+ * 使用 BookIndexStorage + IdGenerator 实现完整的 IndexStorage
  * 适用于 VS Code 插件和 Node.js 环境
  */
 
 import type { IndexType, IndexStatus, IndexEntry, PageResult, LoadOptions, RelationData, EntityOption, CreateEntityParams } from '../types';
-import type { IndexTransport } from './types';
+import type { IndexStorage } from './types';
 import type { FileSystem } from '../core/filesystem';
 import { BookIndexStorage } from '../core/storage';
 import { IdGenerator } from '../core/id-generator';
 import { base58Decode, parseId } from '../id';
 
-/** LocalTransport 配置 */
-export interface LocalTransportConfig {
+/** LocalStorage 配置 */
+export interface LocalStorageConfig {
     /** 文件系统实现 */
     fs: FileSystem;
     /** 工作区根目录 */
@@ -21,12 +21,12 @@ export interface LocalTransportConfig {
     machineId?: number;
 }
 
-export class LocalTransport implements IndexTransport {
+export class LocalStorage implements IndexStorage {
     private storage: BookIndexStorage;
     private idGen: IdGenerator;
     private recentEntities: EntityOption[] = [];
 
-    constructor(config: LocalTransportConfig) {
+    constructor(config: LocalStorageConfig) {
         this.storage = new BookIndexStorage(config.fs, config.workspaceRoot);
         this.idGen = new IdGenerator(config.machineId ?? 0);
     }
@@ -97,7 +97,6 @@ export class LocalTransport implements IndexTransport {
         const type = (metadata.type as IndexType) || this.extractTypeFromId(id);
 
         if (type === 'book') {
-            // Book 可属于 Work 和 Collection
             if (metadata.work_id) {
                 const work = await this.resolveEntity(metadata.work_id as string);
                 if (work) relations.belongsToWork = { ...work, type: 'work' };
@@ -107,7 +106,6 @@ export class LocalTransport implements IndexTransport {
                 if (col) relations.belongsToCollection = { ...col, type: 'collection' };
             }
         } else if (type === 'collection') {
-            // Collection 包含 Books
             if (metadata.books && Array.isArray(metadata.books)) {
                 const books = await Promise.all(
                     (metadata.books as string[]).map(bid => this.resolveEntity(bid))
@@ -116,7 +114,6 @@ export class LocalTransport implements IndexTransport {
                     .map(b => ({ ...b, type: 'book' as IndexType }));
             }
         } else if (type === 'work') {
-            // Work 可有父 Work，包含 Books
             if (metadata.parent_work && typeof metadata.parent_work === 'object') {
                 const pw = metadata.parent_work as { id: string; title: string };
                 relations.parentWork = { id: pw.id, title: pw.title, type: 'work' };
@@ -139,7 +136,6 @@ export class LocalTransport implements IndexTransport {
 
         const type = (metadata.type as IndexType) || this.extractTypeFromId(sourceId);
 
-        // 根据 field 更新对应字段
         switch (field) {
             case 'belongsToWork':
             case 'work_id':
@@ -203,10 +199,8 @@ export class LocalTransport implements IndexTransport {
     }
 
     async createAndLink(sourceId: string, field: string, newEntity: CreateEntityParams): Promise<{ id: string }> {
-        // 生成新 ID
         const newId = this.idGen.nextId('draft', newEntity.type);
 
-        // 创建新实体
         const metadata: Record<string, unknown> = {
             id: newId,
             type: newEntity.type,
@@ -215,7 +209,6 @@ export class LocalTransport implements IndexTransport {
         };
         await this.storage.saveItem(newEntity.type, newId, metadata);
 
-        // 建立关联
         await this.linkEntity(sourceId, field, newId);
 
         return { id: newId };
@@ -248,7 +241,6 @@ export class LocalTransport implements IndexTransport {
     }
 
     async addRecentEntity(entity: EntityOption): Promise<void> {
-        // 去重，最多保留 20 条
         this.recentEntities = [
             entity,
             ...this.recentEntities.filter(e => e.id !== entity.id),
@@ -258,7 +250,7 @@ export class LocalTransport implements IndexTransport {
     // ── 工具方法 ──
 
     /** 获取底层 storage 实例（高级用法） */
-    getStorage(): BookIndexStorage {
+    getBookIndexStorage(): BookIndexStorage {
         return this.storage;
     }
 
@@ -305,7 +297,6 @@ export class LocalTransport implements IndexTransport {
         const page = options.page ?? 1;
         const pageSize = options.pageSize ?? 50;
 
-        // 排序
         if (options.sortBy) {
             const key = options.sortBy as keyof IndexEntry;
             const order = options.sortOrder === 'desc' ? -1 : 1;

@@ -7,5 +7,8 @@ from .id_generator import (
 )
 from .manager import BookIndexManager
 from .storage import BookIndexStorage
+from .storage_base import IndexStorage, PageResult, LoadOptions
+from .storage_github import GithubStorage, GithubStorageConfig
 from .schema import ResourceEntry
-from .exceptions import BookIndexError, StorageError, IdGenerationError, ConfigError
+from .bid_link import BidLink
+from .exceptions import BookIndexError, StorageError, IdGenerationError, ConfigError, MigrationError

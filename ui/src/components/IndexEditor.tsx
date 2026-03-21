@@ -4,7 +4,7 @@ import type {
     RelationData, RelatedEntity, EntityOption, SourceItem,
     AdditionalTitle, IndexedByEntry,
 } from '../types';
-import type { IndexTransport } from '../transport/types';
+import type { IndexStorage } from '../storage/types';
 import { Section } from './common/Section';
 import { FormInput } from './common/FormInput';
 import { FormTextArea } from './common/FormTextArea';
@@ -25,7 +25,7 @@ export interface IndexEditorProps {
     /** 保存回调 */
     onSave: () => void;
     /** Transport（用于搜索实体等） */
-    transport?: IndexTransport;
+    transport?: IndexStorage;
     /** 查看关联实体 */
     onNavigate?: (id: string, type: IndexType) => void;
     /** 删除回调 */

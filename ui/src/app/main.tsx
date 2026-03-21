@@ -2,28 +2,15 @@ import React, { useState, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IndexBrowser } from '../components/IndexBrowser';
 import { IndexDetail } from '../components/IndexDetail';
-import { HttpTransport } from '../transport/http-transport';
-import { GithubTransport } from '../transport/github-transport';
-import type { IndexTransport } from '../transport/types';
+import { GithubStorage } from '../storage/github-storage';
+import type { IndexStorage } from '../storage/types';
 import type { IndexEntry, IndexDetailData } from '../types';
 import '../styles/variables.css';
 
-// ── 数据源模式 ──
+// ── 数据源 ──
 
-type DataMode = 'local' | 'github';
-
-function detectMode(): DataMode {
-    // 本地开发 (vite dev server) 使用 local 模式
-    // 部署后（无 /api 端点）使用 github 模式
-    if (import.meta.env.DEV) return 'local';
-    return 'github';
-}
-
-function createTransport(mode: DataMode): IndexTransport {
-    if (mode === 'local') {
-        return new HttpTransport('/api');
-    }
-    return new GithubTransport({
+function createStorage(): IndexStorage {
+    return new GithubStorage({
         org: 'open-guji',
         repos: {
             draft: 'book-index-draft',
@@ -35,19 +22,11 @@ function createTransport(mode: DataMode): IndexTransport {
 // ── 主应用 ──
 
 function App() {
-    const [mode, setMode] = useState<DataMode>(detectMode);
-    const [transport, setTransport] = useState<IndexTransport>(() => createTransport(detectMode()));
+    const [transport] = useState<IndexStorage>(() => createStorage());
     const [selectedEntry, setSelectedEntry] = useState<IndexEntry | null>(null);
     const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(true);
-
-    const switchMode = useCallback((newMode: DataMode) => {
-        setMode(newMode);
-        setTransport(createTransport(newMode));
-        setSelectedEntry(null);
-        setDetailData(null);
-    }, []);
 
     const handleEntryClick = useCallback(async (entry: IndexEntry) => {
         setSelectedEntry(entry);
@@ -104,34 +83,16 @@ function App() {
                     background: 'var(--bim-input-bg, #fff)',
                     overflow: 'hidden',
                 }}>
-                    {/* 模式切换 */}
+                    {/* 工具栏 */}
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '8px',
                         padding: '8px 20px',
                         borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
                         fontSize: '12px',
                         color: 'var(--bim-desc-fg, #717171)',
                     }}>
-                        <span>数据源：</span>
-                        {(['local', 'github'] as const).map(m => (
-                            <button
-                                key={m}
-                                onClick={() => switchMode(m)}
-                                style={{
-                                    padding: '3px 10px',
-                                    fontSize: '12px',
-                                    border: mode === m ? '1px solid var(--bim-primary, #0078d4)' : '1px solid var(--bim-input-border, #ccc)',
-                                    borderRadius: '3px',
-                                    cursor: 'pointer',
-                                    background: mode === m ? 'var(--bim-primary, #0078d4)' : 'transparent',
-                                    color: mode === m ? 'var(--bim-primary-fg, #fff)' : 'var(--bim-fg, #333)',
-                                }}
-                            >
-                                {m === 'local' ? '本地' : 'GitHub'}
-                            </button>
-                        ))}
+                        <span>古籍索引</span>
                         <button
                             onClick={() => setSidebarOpen(false)}
                             title="收起侧栏"

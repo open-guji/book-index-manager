@@ -1,4 +1,4 @@
-import type { IndexTransport } from './types';
+import type { IndexStorage } from './types';
 import type { IndexType, IndexEntry, PageResult, LoadOptions } from '../types';
 
 /**
@@ -27,7 +27,7 @@ interface GithubIndexResponse {
     works?: Record<string, GithubIndexItem>;
 }
 
-export interface GithubTransportConfig {
+export interface GithubStorageConfig {
     /** GitHub 组织名，如 "open-guji" */
     org: string;
     /** 仓库名称 */
@@ -51,18 +51,18 @@ const DEFAULT_CDN_URLS = [
 const DEFAULT_TIMEOUT = 5000;
 
 /**
- * GitHub 只读 Transport 实现
+ * GitHub 只读 Storage 实现
  *
  * 从 GitHub raw.githubusercontent.com 获取 index.json 和单个 JSON 文件。
  * 支持 jsDelivr CDN fallback（适用于中国大陆）。
  * 写操作（saveItem/deleteItem/generateId）抛出异常。
  */
-export class GithubTransport implements IndexTransport {
-    private config: Required<GithubTransportConfig>;
+export class GithubStorage implements IndexStorage {
+    private config: Required<GithubStorageConfig>;
     private cache: IndexEntry[] | null = null;
     private pathMap: Map<string, { path: string; isDraft: boolean }> = new Map();
 
-    constructor(config: GithubTransportConfig) {
+    constructor(config: GithubStorageConfig) {
         this.config = {
             org: config.org,
             repos: config.repos,
@@ -78,7 +78,6 @@ export class GithubTransport implements IndexTransport {
 
         const allEntries: IndexEntry[] = [];
 
-        // 获取 draft 和 official 两个仓库的 index
         for (const isDraft of [true, false]) {
             try {
                 const repo = isDraft ? this.config.repos.draft : this.config.repos.official;
@@ -90,7 +89,6 @@ export class GithubTransport implements IndexTransport {
             }
         }
 
-        // 去重（以 id 为键，后来的覆盖前面的）
         const map = new Map<string, IndexEntry>();
         for (const entry of allEntries) {
             map.set(entry.id, entry);
@@ -101,7 +99,6 @@ export class GithubTransport implements IndexTransport {
 
     /** 从 GitHub 或 CDN 获取 index.json */
     private async fetchIndex(repo: string): Promise<GithubIndexResponse> {
-        // 策略 1: 直接 GitHub raw
         const githubUrl = `${this.config.baseUrl}/${this.config.org}/${repo}/main/index.json`;
         try {
             return await this.fetchJson(githubUrl);
@@ -109,7 +106,6 @@ export class GithubTransport implements IndexTransport {
             // 降级到 CDN
         }
 
-        // 策略 2: CDN fallback
         for (const cdn of this.config.cdnUrls) {
             const cdnUrl = `${cdn}/${this.config.org}/${repo}@main/index.json`;
             try {
@@ -157,7 +153,6 @@ export class GithubTransport implements IndexTransport {
                     role: item.role,
                     path: item.path,
                 });
-                // 记录路径映射，用于 getItem
                 this.pathMap.set(item.id, { path: item.path, isDraft });
             }
         }
@@ -165,13 +160,12 @@ export class GithubTransport implements IndexTransport {
         return entries;
     }
 
-    // --- IndexTransport 实现 ---
+    // --- IndexStorage 实现 ---
 
     async loadEntries(type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>> {
         const all = await this.ensureLoaded();
         let filtered = all.filter(e => e.type === type);
 
-        // 排序
         const sortBy = options.sortBy || 'title';
         const sortOrder = options.sortOrder || 'asc';
         filtered.sort((a, b) => {
@@ -181,7 +175,6 @@ export class GithubTransport implements IndexTransport {
             return sortOrder === 'asc' ? cmp : -cmp;
         });
 
-        // 分页
         const page = options.page || 1;
         const pageSize = options.pageSize || 50;
         const start = (page - 1) * pageSize;
@@ -207,7 +200,6 @@ export class GithubTransport implements IndexTransport {
             )
         );
 
-        // 分页
         const page = options.page || 1;
         const pageSize = options.pageSize || 50;
         const start = (page - 1) * pageSize;
@@ -222,7 +214,6 @@ export class GithubTransport implements IndexTransport {
     }
 
     async getItem(id: string): Promise<Record<string, unknown> | null> {
-        // 确保 pathMap 已填充
         await this.ensureLoaded();
 
         const info = this.pathMap.get(id);
@@ -230,7 +221,6 @@ export class GithubTransport implements IndexTransport {
 
         const repo = info.isDraft ? this.config.repos.draft : this.config.repos.official;
 
-        // 策略 1: GitHub raw
         const githubUrl = `${this.config.baseUrl}/${this.config.org}/${repo}/main/${encodeURI(info.path)}`;
         try {
             return await this.fetchJson(githubUrl);
@@ -238,7 +228,6 @@ export class GithubTransport implements IndexTransport {
             // 降级到 CDN
         }
 
-        // 策略 2: CDN fallback
         for (const cdn of this.config.cdnUrls) {
             const cdnUrl = `${cdn}/${this.config.org}/${repo}@main/${encodeURI(info.path)}`;
             try {
@@ -261,15 +250,15 @@ export class GithubTransport implements IndexTransport {
     }
 
     async saveItem(): Promise<{ id: string; path: string }> {
-        throw new Error('GithubTransport 为只读模式，不支持保存');
+        throw new Error('GithubStorage 为只读模式，不支持保存');
     }
 
     async deleteItem(): Promise<void> {
-        throw new Error('GithubTransport 为只读模式，不支持删除');
+        throw new Error('GithubStorage 为只读模式，不支持删除');
     }
 
     async generateId(): Promise<string> {
-        throw new Error('GithubTransport 为只读模式，不支持生成 ID');
+        throw new Error('GithubStorage 为只读模式，不支持生成 ID');
     }
 
     /** 清除缓存（用于切换数据源后刷新） */

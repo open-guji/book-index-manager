@@ -44,21 +44,22 @@ export {
 } from './id';
 export type { IdComponents } from './id';
 
-// Transport
-export type { IndexTransport } from './transport/types';
-export { VscodeTransport } from './transport/vscode-transport';
-export { HttpTransport } from './transport/http-transport';
-export { GithubTransport } from './transport/github-transport';
-export type { GithubTransportConfig } from './transport/github-transport';
-export { LocalTransport } from './transport/local-transport';
-export type { LocalTransportConfig } from './transport/local-transport';
+// Storage
+export type { IndexStorage } from './storage/types';
+export { GithubStorage } from './storage/github-storage';
+export type { GithubStorageConfig } from './storage/github-storage';
+export { LocalStorage } from './storage/local-storage';
+export type { LocalStorageConfig } from './storage/local-storage';
 
 // Core
 export type { FileSystem } from './core/filesystem';
+export { BookIndexManager } from './core/manager';
 export { BookIndexStorage } from './core/storage';
 export type { IndexFile, IndexFileEntry } from './core/storage';
 export { IdGenerator } from './core/id-generator';
 export { extractIdFromUrl, validateResource } from './core/schema';
+export { BidLink } from './core/bid-link';
+export { BookIndexError, StorageError, IdGenerationError, ConfigError, MigrationError } from './core/exceptions';
 
 // Components - Existing
 export { ResourceEditor } from './components/ResourceEditor';

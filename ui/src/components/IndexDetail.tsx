@@ -11,7 +11,7 @@ import type {
     AdditionalTitle,
     IndexedByEntry,
 } from '../types';
-import type { IndexTransport } from '../transport/types';
+import type { IndexStorage } from '../storage/types';
 import { extractStatus } from '../id';
 import { ResourceList } from './ResourceList';
 
@@ -21,7 +21,7 @@ export interface IndexDetailProps {
     /** 条目 ID，配合 transport 自动加载 */
     id?: string;
     /** 数据传输层 */
-    transport?: IndexTransport;
+    transport?: IndexStorage;
     /** 点击关联条目时回调 */
     onNavigate?: (id: string) => void;
     /** 自定义关联条目链接渲染 */

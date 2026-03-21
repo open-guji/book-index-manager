@@ -1,10 +1,10 @@
 import type { IndexType, IndexEntry, PageResult, LoadOptions, RelationData, EntityOption, CreateEntityParams } from '../types';
 
 /**
- * 索引数据传输接口
- * 隔离 VS Code postMessage / HTTP REST 等通信方式
+ * 索引数据存储接口
+ * 隔离本地文件系统 / GitHub 只读等数据源
  */
-export interface IndexTransport {
+export interface IndexStorage {
     /** 加载指定类型的条目列表 */
     loadEntries(type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>>;
 
