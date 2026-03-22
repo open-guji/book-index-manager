@@ -1,5 +1,5 @@
 import type { IndexStorage } from './types';
-import type { IndexType, IndexEntry, PageResult, LoadOptions, CeBookMapping } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, VolumeBookMapping } from '../types';
 import { rankByRelevance } from '../core/storage';
 
 /**
@@ -255,25 +255,25 @@ export class GithubStorage implements IndexStorage {
         throw new Error('GithubStorage 为只读模式，不支持生成 ID');
     }
 
-    async getCollectionCatalog(collectionId: string): Promise<CeBookMapping | null> {
+    async getCollectionCatalog(collectionId: string): Promise<VolumeBookMapping | null> {
         await this.ensureLoaded();
         const info = this.pathMap.get(collectionId);
         if (!info) return null;
 
-        // ce_book_mapping.json 与索引文件同目录
+        // volume_book_mapping.json 与索引文件同目录
         const dir = info.path.substring(0, info.path.lastIndexOf('/'));
-        const mappingPath = dir + '/ce_book_mapping.json';
+        const mappingPath = dir + '/volume_book_mapping.json';
         const repo = info.isDraft ? this.config.repos.draft : this.config.repos.official;
 
         const githubUrl = `${this.config.baseUrl}/${this.config.org}/${repo}/main/${encodeURI(mappingPath)}`;
         try {
-            return await this.fetchJson<CeBookMapping>(githubUrl);
+            return await this.fetchJson<VolumeBookMapping>(githubUrl);
         } catch { /* fallback to CDN */ }
 
         for (const cdn of this.config.cdnUrls) {
             const cdnUrl = `${cdn}/${this.config.org}/${repo}@main/${encodeURI(mappingPath)}`;
             try {
-                return await this.fetchJson<CeBookMapping>(cdnUrl);
+                return await this.fetchJson<VolumeBookMapping>(cdnUrl);
             } catch { continue; }
         }
 

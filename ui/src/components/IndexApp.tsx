@@ -4,7 +4,7 @@ import { IndexDetail } from './IndexDetail';
 import { CollectionCatalog } from './CollectionCatalog';
 import { CollatedEdition } from './CollatedEdition';
 import type { IndexStorage } from '../storage/types';
-import type { IndexEntry, IndexDetailData, CeBookMapping, CollatedEditionIndex } from '../types';
+import type { IndexEntry, IndexDetailData, VolumeBookMapping, CollatedEditionIndex } from '../types';
 
 export interface IndexAppProps {
     transport: IndexStorage;
@@ -27,7 +27,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
     const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
     const [activeTab, setActiveTab] = useState<'detail' | 'catalog' | 'collated'>('detail');
-    const [catalogData, setCatalogData] = useState<CeBookMapping | null>(null);
+    const [catalogData, setCatalogData] = useState<VolumeBookMapping | null>(null);
     const [catalogLoading, setCatalogLoading] = useState(false);
     const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
     const [collatedLoading, setCollatedLoading] = useState(false);

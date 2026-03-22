@@ -6,7 +6,7 @@ import { CollectionCatalog } from '../components/CollectionCatalog';
 import { CollatedEdition } from '../components/CollatedEdition';
 import { DevApiStorage } from '../storage/dev-api-storage';
 import type { IndexStorage } from '../storage/types';
-import type { IndexEntry, IndexDetailData, CeBookMapping, CollatedEditionIndex } from '../types';
+import type { IndexEntry, IndexDetailData, VolumeBookMapping, CollatedEditionIndex } from '../types';
 import '../styles/variables.css';
 
 // ── 数据源 ──
@@ -40,7 +40,7 @@ function App() {
     const [detailLoading, setDetailLoading] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [activeTab, setActiveTab] = useState<'detail' | 'catalog' | 'collated'>('detail');
-    const [catalogData, setCatalogData] = useState<CeBookMapping | null>(null);
+    const [catalogData, setCatalogData] = useState<VolumeBookMapping | null>(null);
     const [catalogLoading, setCatalogLoading] = useState(false);
     const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
     const [collatedLoading, setCollatedLoading] = useState(false);

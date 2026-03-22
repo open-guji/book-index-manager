@@ -4,7 +4,7 @@
  * 适用于 VS Code 插件和 Node.js 环境
  */
 
-import type { IndexType, IndexStatus, IndexEntry, PageResult, LoadOptions, RelationData, EntityOption, CreateEntityParams, CeBookMapping } from '../types';
+import type { IndexType, IndexStatus, IndexEntry, PageResult, LoadOptions, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping } from '../types';
 import type { IndexStorage } from './types';
 import type { FileSystem } from '../core/filesystem';
 import { BookIndexStorage } from '../core/storage';
@@ -257,18 +257,18 @@ export class LocalStorage implements IndexStorage {
 
     // ── 丛编目录 ──
 
-    async getCollectionCatalog(collectionId: string): Promise<CeBookMapping | null> {
+    async getCollectionCatalog(collectionId: string): Promise<VolumeBookMapping | null> {
         const filePath = await this.storage.findFileById(collectionId);
         if (!filePath) return null;
 
-        // ce_book_mapping.json 和索引文件在同一目录
+        // volume_book_mapping.json 和索引文件在同一目录
         const dir = filePath.substring(0, filePath.lastIndexOf('/'));
-        const mappingPath = dir + '/ce_book_mapping.json';
+        const mappingPath = dir + '/volume_book_mapping.json';
 
         try {
             const content = await this.storage.loadMetadata(mappingPath);
             if (Object.keys(content).length === 0) return null;
-            return content as unknown as CeBookMapping;
+            return content as unknown as VolumeBookMapping;
         } catch {
             return null;
         }

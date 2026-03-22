@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import type { CeBookMapping, CeBookEntry, CeSection } from '../types';
+import type { VolumeBookMapping, VolumeBookEntry, VolumeSection } from '../types';
 import type { IndexStorage } from '../storage/types';
 
 export interface CollectionCatalogProps {
     /** 直接传入数据 */
-    data?: CeBookMapping;
+    data?: VolumeBookMapping;
     /** 丛编 ID，配合 transport 自动加载 */
     collectionId?: string;
     /** 数据传输层 */
@@ -19,10 +19,10 @@ export interface CollectionCatalogProps {
 
 // ── 内部子组件 ──
 
-function CatalogHeader({ data }: { data: CeBookMapping }) {
+function CatalogHeader({ data }: { data: VolumeBookMapping }) {
     const { stats } = data;
-    const progressPct = data.total_ce > 0
-        ? Math.round((stats.processed_ce / data.total_ce) * 100)
+    const progressPct = data.total_volumes > 0
+        ? Math.round((stats.processed_volumes / data.total_volumes) * 100)
         : 0;
 
     return (
@@ -42,8 +42,8 @@ function CatalogHeader({ data }: { data: CeBookMapping }) {
                 fontSize: '13px',
                 color: 'var(--bim-desc-fg, #717171)',
             }}>
-                <span>共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{data.total_ce}</strong> 册</span>
-                <span>已处理 <strong style={{ color: 'var(--bim-fg, #333)' }}>{stats.processed_ce}</strong> 册 ({progressPct}%)</span>
+                <span>共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{data.total_volumes}</strong> 册</span>
+                <span>已处理 <strong style={{ color: 'var(--bim-fg, #333)' }}>{stats.processed_volumes}</strong> 册 ({progressPct}%)</span>
                 <span>收录 <strong style={{ color: 'var(--bim-fg, #333)' }}>{stats.total_books}</strong> 部</span>
                 <span>已匹配 <strong style={{ color: 'var(--bim-fg, #333)' }}>{stats.matched_works}</strong> 部</span>
                 {stats.unmatched_works > 0 && (
@@ -64,7 +64,7 @@ function SectionNav({
     activeSection,
     onSelect,
 }: {
-    sections: CeSection[];
+    sections: VolumeSection[];
     activeSection: string | null;
     onSelect: (name: string | null) => void;
 }) {
@@ -93,7 +93,7 @@ function SectionNav({
                         opacity: 0.6,
                         marginLeft: '4px',
                     }}>
-                        {s.ce_range[0]}–{s.ce_range[1]}
+                        {s.volume_range[0]}–{s.volume_range[1]}
                     </span>
                 </button>
             ))}
@@ -143,7 +143,7 @@ function BidLink({ id, label, onNavigate, renderLink }: {
 }
 
 function BookRow({ book, onNavigate, renderLink }: {
-    book: CeBookEntry;
+    book: VolumeBookEntry;
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
 }) {
@@ -167,9 +167,9 @@ function BookRow({ book, onNavigate, renderLink }: {
                 color: 'var(--bim-desc-fg, #999)',
                 textAlign: 'right',
             }}>
-                {book.ce.length === 1
-                    ? `第${book.ce[0]}册`
-                    : `${book.ce[0]}–${book.ce[book.ce.length - 1]}册`}
+                {book.volumes.length === 1
+                    ? `第${book.volumes[0]}册`
+                    : `${book.volumes[0]}–${book.volumes[book.volumes.length - 1]}册`}
             </span>
 
             {/* 书名 */}
@@ -224,7 +224,7 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
     className,
     style,
 }) => {
-    const [loaded, setLoaded] = useState<CeBookMapping | null>(null);
+    const [loaded, setLoaded] = useState<VolumeBookMapping | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -270,25 +270,26 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
     }, [data, activeSection, searchQuery]);
 
     // 按册号分组
-    const groupedByCe = useMemo(() => {
-        const groups: { ce: number; books: CeBookEntry[] }[] = [];
-        let currentCe = -1;
-        let currentGroup: CeBookEntry[] = [];
+    const groupedByVolume = useMemo(() => {
+        const groups: { volume: number; books: VolumeBookEntry[] }[] = [];
+        let currentVolume = -1;
+        let currentGroup: VolumeBookEntry[] = [];
 
         for (const book of filteredBooks) {
-            const firstCe = book.ce[0];
-            if (firstCe !== currentCe) {
+            if (!book.volumes || book.volumes.length === 0) continue;
+            const firstVolume = book.volumes[0];
+            if (firstVolume !== currentVolume) {
                 if (currentGroup.length > 0) {
-                    groups.push({ ce: currentCe, books: currentGroup });
+                    groups.push({ volume: currentVolume, books: currentGroup });
                 }
-                currentCe = firstCe;
+                currentVolume = firstVolume;
                 currentGroup = [book];
             } else {
                 currentGroup.push(book);
             }
         }
         if (currentGroup.length > 0) {
-            groups.push({ ce: currentCe, books: currentGroup });
+            groups.push({ volume: currentVolume, books: currentGroup });
         }
 
         return groups;
@@ -364,8 +365,8 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
                 borderRadius: '6px',
                 overflow: 'hidden',
             }}>
-                {groupedByCe.map(group => (
-                    <div key={group.ce}>
+                {groupedByVolume.map(group => (
+                    <div key={group.volume}>
                         {/* 册号标题 */}
                         <div style={{
                             padding: '4px 12px',
@@ -378,11 +379,11 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
                             top: 0,
                             zIndex: 1,
                         }}>
-                            第 {group.ce} 册
+                            第 {group.volume} 册
                         </div>
                         {group.books.map((book, i) => (
                             <BookRow
-                                key={`${group.ce}-${i}`}
+                                key={`${group.volume}-${i}`}
                                 book={book}
                                 onNavigate={onNavigate}
                                 renderLink={renderLink}
@@ -390,7 +391,7 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
                         ))}
                     </div>
                 ))}
-                {groupedByCe.length === 0 && (
+                {groupedByVolume.length === 0 && (
                     <div style={{
                         padding: '32px',
                         textAlign: 'center',

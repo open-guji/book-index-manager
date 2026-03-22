@@ -254,7 +254,7 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     return;
                 }
 
-                // GET /api/catalog/:id — 丛编目录 (ce_book_mapping.json)
+                // GET /api/catalog/:id — 丛编目录 (volume_book_mapping.json)
                 if (pathname.startsWith('/api/catalog/') && req.method === 'GET') {
                     const id = decodeURIComponent(pathname.slice('/api/catalog/'.length));
                     const itemFile = findItemFile(workspaceRoot, id);
@@ -265,7 +265,7 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     }
 
                     const dir = path.dirname(itemFile);
-                    const mappingFile = path.join(dir, 'ce_book_mapping.json');
+                    const mappingFile = path.join(dir, 'volume_book_mapping.json');
 
                     if (!fs.existsSync(mappingFile)) {
                         sendJson({ error: 'No catalog data' }, 404);

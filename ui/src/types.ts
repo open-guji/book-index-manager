@@ -240,42 +240,42 @@ export interface IndexedByEntry {
 
 // ── 资料来源类型 ──
 
-// ── 丛编目录 (ce_book_mapping) ──
+// ── 丛编目录 (volume_book_mapping) ──
 
 /** 丛编分部 */
-export interface CeSection {
+export interface VolumeSection {
     name: string;
-    ce_range: [number, number];
+    volume_range: [number, number];
 }
 
 /** 丛编目录中的书目条目 */
-export interface CeBookEntry {
+export interface VolumeBookEntry {
     title: string;
     book_id: string | null;
     work_id: string | null;
-    ce: number[];
+    volumes: number[];
     section: string;
     sub_items?: string[];
 }
 
 /** 丛编目录统计 */
-export interface CeBookStats {
-    processed_ce: number;
+export interface VolumeBookStats {
+    processed_volumes: number;
     total_books: number;
     matched_works: number;
     unmatched_works: number;
 }
 
-/** 丛编目录数据 (ce_book_mapping.json) */
-export interface CeBookMapping {
+/** 丛编目录数据 (volume_book_mapping.json) */
+export interface VolumeBookMapping {
     collection_id: string;
     title: string;
     source?: string;
-    total_ce: number;
-    sections: CeSection[];
-    stats: CeBookStats;
-    books: CeBookEntry[];
-    ce_index: Record<string, string[]>;
+    total_volumes: number;
+    sections: VolumeSection[];
+    stats: VolumeBookStats;
+    books: VolumeBookEntry[];
+    volume_index: Record<string, string[]>;
 }
 
 // ── 整理本 (collated_edition) ──
