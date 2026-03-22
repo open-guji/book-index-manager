@@ -19,7 +19,7 @@ export type {
     AuthorInfo,
     PublicationInfo,
     LocationInfo,
-    VolumeCount,
+    JuanCount,
     PageCount,
     BaseDetailData,
     BookDetailData,

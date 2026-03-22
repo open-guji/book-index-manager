@@ -723,12 +723,12 @@ function WorkInfoCard({ workData, onNavigate, renderLink }: {
                 }}>
                     <IdLink id={workData.id} label={workData.title} onNavigate={onNavigate} renderLink={renderLink} />
                 </span>
-                {workData.volume_count?.number && (
+                {workData.juan_count?.number && (
                     <span style={{
                         fontSize: '12px',
                         color: 'var(--bim-desc-fg, #717171)',
                     }}>
-                        {numberToChinese(workData.volume_count.number)}卷
+                        {numberToChinese(workData.juan_count.number)}卷
                     </span>
                 )}
             </div>
@@ -935,10 +935,10 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
 
     // 卷数文字（显示在标题旁）
     let volumeText = '';
-    if (detail.volume_count?.number) {
-        volumeText = numberToChinese(detail.volume_count.number) + '卷';
-    } else if (detail.volume_count?.description) {
-        volumeText = detail.volume_count.description;
+    if (detail.juan_count?.number) {
+        volumeText = numberToChinese(detail.juan_count.number) + '卷';
+    } else if (detail.juan_count?.description) {
+        volumeText = detail.juan_count.description;
     }
 
     // 构建 meta 行

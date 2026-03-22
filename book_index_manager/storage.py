@@ -112,7 +112,7 @@ class BookIndexStorage:
             "出版年份": "publication_info",
             "现藏于": "current_location",
             "页数": "page_count",
-            "册数": "volume_count",
+            "册数": "juan_count",
             "首页图片": "first_image",
             "介绍": "description",
         }
@@ -134,7 +134,7 @@ class BookIndexStorage:
                     metadata[en_key] = {"year": str(val), "details": "", "source": None}
                 elif en_key == "current_location":
                     metadata[en_key] = {"name": str(val), "source": None}
-                elif en_key in ("page_count", "volume_count"):
+                elif en_key in ("page_count", "juan_count"):
                     try:
                         num = int(val) if val and str(val).isdigit() else 0
                         metadata[en_key] = {"number": num, "description": str(val) if not str(val).isdigit() else "", "source": None}
@@ -147,6 +147,10 @@ class BookIndexStorage:
                         metadata[en_key] = val
                 else:
                     metadata[en_key] = val
+
+        # Migrate old English key: volume_count → juan_count
+        if "volume_count" in metadata and "juan_count" not in metadata:
+            metadata["juan_count"] = metadata.pop("volume_count")
 
         # Migrate old text_resources/image_resources → unified resources
         migrate_metadata(metadata)
@@ -193,19 +197,25 @@ class BookIndexStorage:
         elif isinstance(loc, str):
             holder = loc
 
-        entry: dict = {
-            "id": id_str,
-            "title": title,
-            "type": type_val.name,
-            "path": relative_path,
-            "author": author_name,
-            "year": year,
-            "holder": holder,
-        }
+        # n_juan: 从 juan_count 提取卷数
+        n_juan = 0
+        vc = metadata.get("juan_count")
+        if isinstance(vc, dict):
+            n_juan = vc.get("number", 0) or 0
+
+        entry: dict = {"id": id_str, "title": title, "type": type_val.name, "path": relative_path}
+        if author_name:
+            entry["author"] = author_name
+        if year:
+            entry["year"] = year
+        if holder:
+            entry["holder"] = holder
         if author_dynasty:
             entry["dynasty"] = author_dynasty
         if author_role:
             entry["role"] = author_role
+        if n_juan:
+            entry["n_juan"] = n_juan
         index[type_key][id_str] = entry
         self._save_index(index_file, index)
 
@@ -291,19 +301,28 @@ class BookIndexStorage:
                         elif isinstance(authors, str):
                             author_name = authors
 
-                        entry: dict = {
-                            "id": id_str,
-                            "title": title,
-                            "type": type_val.name,
-                            "path": rel_path,
-                            "author": author_name,
-                            "year": metadata.get("publication_info", {}).get("year", "") if isinstance(metadata.get("publication_info"), dict) else "",
-                            "holder": metadata.get("current_location", {}).get("name", "") if isinstance(metadata.get("current_location"), dict) else "",
-                        }
+                        year = metadata.get("publication_info", {}).get("year", "") if isinstance(metadata.get("publication_info"), dict) else ""
+                        holder = metadata.get("current_location", {}).get("name", "") if isinstance(metadata.get("current_location"), dict) else ""
+
+                        # n_juan: 从 juan_count 提取卷数
+                        n_juan = 0
+                        vc = metadata.get("juan_count")
+                        if isinstance(vc, dict):
+                            n_juan = vc.get("number", 0) or 0
+
+                        entry: dict = {"id": id_str, "title": title, "type": type_val.name, "path": rel_path}
+                        if author_name:
+                            entry["author"] = author_name
+                        if year:
+                            entry["year"] = year
+                        if holder:
+                            entry["holder"] = holder
                         if author_dynasty:
                             entry["dynasty"] = author_dynasty
                         if author_role:
                             entry["role"] = author_role
+                        if n_juan:
+                            entry["n_juan"] = n_juan
                         index[type_key][id_str] = entry
                 except Exception as e:
                     logger.warning(f"Error processing {json_file}: {e}")

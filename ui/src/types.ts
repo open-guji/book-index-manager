@@ -104,8 +104,8 @@ export interface LocationInfo {
     description?: string;
 }
 
-/** 卷册数 */
-export interface VolumeCount {
+/** 卷数 */
+export interface JuanCount {
     number?: number;
     description?: string;
 }
@@ -127,7 +127,7 @@ export interface BaseDetailData {
     indexed_by?: IndexedByEntry[];
     publication_info?: PublicationInfo;
     current_location?: LocationInfo;
-    volume_count?: VolumeCount;
+    juan_count?: JuanCount;
     page_count?: PageCount;
     resources?: ResourceEntry[];
 }
