@@ -4,7 +4,7 @@
  * 适用于 VS Code 插件和 Node.js 环境
  */
 
-import type { IndexType, IndexStatus, IndexEntry, PageResult, LoadOptions, RelationData, EntityOption, CreateEntityParams } from '../types';
+import type { IndexType, IndexStatus, IndexEntry, PageResult, LoadOptions, RelationData, EntityOption, CreateEntityParams, CeBookMapping } from '../types';
 import type { IndexStorage } from './types';
 import type { FileSystem } from '../core/filesystem';
 import { BookIndexStorage } from '../core/storage';
@@ -102,8 +102,12 @@ export class LocalStorage implements IndexStorage {
                 if (work) relations.belongsToWork = { ...work, type: 'work' };
             }
             if (metadata.contained_in && Array.isArray(metadata.contained_in) && metadata.contained_in.length > 0) {
-                const col = await this.resolveEntity(metadata.contained_in[0] as string);
-                if (col) relations.belongsToCollection = { ...col, type: 'collection' };
+                const first = metadata.contained_in[0];
+                const colId = typeof first === 'string' ? first : (first as any).id;
+                if (colId) {
+                    const col = await this.resolveEntity(colId as string);
+                    if (col) relations.belongsToCollection = { ...col, type: 'collection' };
+                }
             }
         } else if (type === 'collection') {
             if (metadata.books && Array.isArray(metadata.books)) {
@@ -144,8 +148,12 @@ export class LocalStorage implements IndexStorage {
             case 'belongsToCollection':
             case 'contained_in':
                 if (!Array.isArray(metadata.contained_in)) metadata.contained_in = [];
-                if (!(metadata.contained_in as string[]).includes(targetId)) {
-                    (metadata.contained_in as string[]).push(targetId);
+                {
+                    const entries = metadata.contained_in as Array<string | { id: string }>;
+                    const exists = entries.some(e => (typeof e === 'string' ? e : e.id) === targetId);
+                    if (!exists) {
+                        entries.push({ id: targetId });
+                    }
                 }
                 break;
             case 'parentWork':
@@ -245,6 +253,42 @@ export class LocalStorage implements IndexStorage {
             entity,
             ...this.recentEntities.filter(e => e.id !== entity.id),
         ].slice(0, 20);
+    }
+
+    // ── 丛编目录 ──
+
+    async getCollectionCatalog(collectionId: string): Promise<CeBookMapping | null> {
+        const filePath = await this.storage.findFileById(collectionId);
+        if (!filePath) return null;
+
+        // ce_book_mapping.json 和索引文件在同一目录
+        const dir = filePath.substring(0, filePath.lastIndexOf('/'));
+        const mappingPath = dir + '/ce_book_mapping.json';
+
+        try {
+            const content = await this.storage.loadMetadata(mappingPath);
+            if (Object.keys(content).length === 0) return null;
+            return content as unknown as CeBookMapping;
+        } catch {
+            return null;
+        }
+    }
+
+    // ── Asset Directory ──
+
+    /** 获取资源目录路径（不创建） */
+    getAssetDir(idStr: string): string {
+        return this.storage.getAssetDir(idStr);
+    }
+
+    /** 初始化资源目录，返回路径 */
+    async initAssetDir(idStr: string): Promise<string> {
+        return this.storage.initAssetDir(idStr);
+    }
+
+    /** 检查资源目录是否存在 */
+    async hasAssetDir(idStr: string): Promise<boolean> {
+        return this.storage.hasAssetDir(idStr);
     }
 
     // ── 工具方法 ──

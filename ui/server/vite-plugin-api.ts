@@ -179,6 +179,108 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     return;
                 }
 
+                // GET /api/collated/:id — 整理本卷列表
+                if (pathname.match(/^\/api\/collated\/[^/]+$/) && req.method === 'GET') {
+                    const id = decodeURIComponent(pathname.slice('/api/collated/'.length));
+                    const itemFile = findItemFile(workspaceRoot, id);
+                    if (!itemFile) {
+                        sendJson({ error: 'Not found' }, 404);
+                        return;
+                    }
+
+                    const dir = path.dirname(itemFile);
+                    const assetDir = path.join(dir, id, 'collated_edition');
+
+                    if (!fs.existsSync(assetDir)) {
+                        sendJson({ error: 'No collated edition' }, 404);
+                        return;
+                    }
+
+                    try {
+                        const files = fs.readdirSync(assetDir)
+                            .filter((f: string) => f.endsWith('.json'))
+                            .sort((a: string, b: string) => {
+                                // juanshouX < juanXXX < fulu
+                                const order = (name: string) => {
+                                    if (name.startsWith('juanshou')) return 0;
+                                    if (name.startsWith('juan')) return 1;
+                                    return 2; // fulu etc
+                                };
+                                const oa = order(a), ob = order(b);
+                                if (oa !== ob) return oa - ob;
+                                return a.localeCompare(b);
+                            });
+                        sendJson({
+                            work_id: id,
+                            total_juan: files.length,
+                            juan_files: files,
+                        });
+                    } catch {
+                        sendJson({ error: 'Read error' }, 500);
+                    }
+                    return;
+                }
+
+                // GET /api/collated/:id/:juanFile — 整理本单卷内容
+                if (pathname.match(/^\/api\/collated\/[^/]+\/[^/]+$/) && req.method === 'GET') {
+                    const parts = pathname.slice('/api/collated/'.length).split('/');
+                    const id = decodeURIComponent(parts[0]);
+                    const juanFile = decodeURIComponent(parts[1]);
+
+                    // 安全检查
+                    if (juanFile.includes('..') || !juanFile.endsWith('.json')) {
+                        sendJson({ error: 'Invalid file name' }, 400);
+                        return;
+                    }
+
+                    const itemFile = findItemFile(workspaceRoot, id);
+                    if (!itemFile) {
+                        sendJson({ error: 'Not found' }, 404);
+                        return;
+                    }
+
+                    const filePath = path.join(path.dirname(itemFile), id, 'collated_edition', juanFile);
+                    if (!fs.existsSync(filePath)) {
+                        sendJson({ error: 'Juan not found' }, 404);
+                        return;
+                    }
+
+                    try {
+                        const content = fs.readFileSync(filePath, 'utf-8');
+                        sendJson(JSON.parse(content));
+                    } catch {
+                        sendJson({ error: 'Read error' }, 500);
+                    }
+                    return;
+                }
+
+                // GET /api/catalog/:id — 丛编目录 (ce_book_mapping.json)
+                if (pathname.startsWith('/api/catalog/') && req.method === 'GET') {
+                    const id = decodeURIComponent(pathname.slice('/api/catalog/'.length));
+                    const itemFile = findItemFile(workspaceRoot, id);
+
+                    if (!itemFile) {
+                        sendJson({ error: 'Not found' }, 404);
+                        return;
+                    }
+
+                    const dir = path.dirname(itemFile);
+                    const mappingFile = path.join(dir, 'ce_book_mapping.json');
+
+                    if (!fs.existsSync(mappingFile)) {
+                        sendJson({ error: 'No catalog data' }, 404);
+                        return;
+                    }
+
+                    try {
+                        const content = fs.readFileSync(mappingFile, 'utf-8');
+                        sendJson(JSON.parse(content));
+                    } catch {
+                        sendJson({ error: 'Read error' }, 500);
+                    }
+                    return;
+                }
+
                 next();
             });
         },

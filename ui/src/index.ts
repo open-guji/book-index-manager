@@ -30,6 +30,13 @@ export type {
     SourceItem,
     AdditionalTitle,
     IndexedByEntry,
+    CeBookMapping,
+    CeBookEntry,
+    CeSection,
+    CeBookStats,
+    CollatedSection,
+    CollatedJuan,
+    CollatedEditionIndex,
 } from './types';
 
 // ID encoding/decoding
@@ -70,6 +77,10 @@ export type { IndexDetailProps } from './components/IndexDetail';
 export { IndexApp } from './components/IndexApp';
 export type { IndexAppProps } from './components/IndexApp';
 export { ModeIndicator } from './components/ModeIndicator';
+export { CollectionCatalog } from './components/CollectionCatalog';
+export type { CollectionCatalogProps } from './components/CollectionCatalog';
+export { CollatedEdition } from './components/CollatedEdition';
+export type { CollatedEditionProps } from './components/CollatedEdition';
 
 // Components - Editor
 export { IndexEditor } from './components/IndexEditor';

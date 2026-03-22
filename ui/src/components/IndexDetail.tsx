@@ -10,10 +10,18 @@ import type {
     LocationInfo,
     AdditionalTitle,
     IndexedByEntry,
+    ContainedInEntry,
 } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { extractStatus } from '../id';
 import { ResourceList } from './ResourceList';
+
+/** 已解析的收录关联（ID → 标题 + 册号） */
+interface ResolvedContainedIn {
+    id: string;
+    title: string;
+    volume_index?: number | string;
+}
 
 export interface IndexDetailProps {
     /** 详情数据（直接传入，优先于 id+transport） */
@@ -605,13 +613,47 @@ function HistoryList({ items }: { items: string[] }) {
 
 // ── 关联列表 ──
 
-function RelationList({ title, ids, onNavigate, renderLink }: {
+/** 已解析的关联条目 */
+interface ResolvedRelation {
+    id: string;
+    title?: string;
+    version?: string;
+    type?: string;
+}
+
+function RelationList({ title, ids, transport, onNavigate, renderLink }: {
     title: string;
     ids: string[];
+    transport?: IndexStorage;
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
 }) {
+    const [resolved, setResolved] = useState<ResolvedRelation[]>([]);
+
+    useEffect(() => {
+        if (!ids.length) { setResolved([]); return; }
+        if (!transport) {
+            setResolved(ids.map(id => ({ id })));
+            return;
+        }
+        let cancelled = false;
+        Promise.all(
+            ids.map(id =>
+                transport.getItem(id).then(raw => ({
+                    id,
+                    title: raw ? (raw as any).title : undefined,
+                    version: raw ? (raw as any).version : undefined,
+                    type: raw ? (raw as any).type : undefined,
+                })).catch(() => ({ id } as ResolvedRelation))
+            )
+        ).then(items => {
+            if (!cancelled) setResolved(items);
+        });
+        return () => { cancelled = true; };
+    }, [ids, transport]);
+
     if (!ids.length) return null;
+
     return (
         <>
             <SectionLabel>
@@ -625,23 +667,138 @@ function RelationList({ title, ids, onNavigate, renderLink }: {
                 flexWrap: 'wrap',
                 gap: '6px',
             }}>
-                {ids.map(id => (
-                    <span key={id} style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        padding: '3px 10px',
-                        fontSize: '13px',
-                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
-                        borderRadius: '4px',
-                        background: 'var(--bim-input-bg, #fff)',
-                        transition: 'border-color 0.15s',
-                    }}>
-                        <IdLink id={id} onNavigate={onNavigate} renderLink={renderLink} />
-                    </span>
-                ))}
+                {(resolved.length ? resolved : ids.map(id => ({ id } as ResolvedRelation))).map(item => {
+                    const label = item.version
+                        ? `${item.title || item.id}（${item.version}）`
+                        : item.title || undefined;
+                    return (
+                        <span key={item.id} style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            padding: '3px 10px',
+                            fontSize: '13px',
+                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            borderRadius: '4px',
+                            background: 'var(--bim-input-bg, #fff)',
+                            transition: 'border-color 0.15s',
+                        }}>
+                            <IdLink id={item.id} label={label} onNavigate={onNavigate} renderLink={renderLink} />
+                        </span>
+                    );
+                })}
             </div>
         </>
+    );
+}
+
+// ── 作品信息卡片 ──
+
+function WorkInfoCard({ workData, onNavigate, renderLink }: {
+    workData: WorkDetailData;
+    onNavigate?: (id: string) => void;
+    renderLink?: (id: string, label?: string) => React.ReactNode;
+}) {
+    return (
+        <div style={{
+            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            background: 'var(--bim-input-bg, #fff)',
+            marginTop: '4px',
+        }}>
+            <div style={{
+                padding: '12px 16px',
+                borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: 'color-mix(in srgb, var(--bim-primary, #8e6f3e) 4%, transparent)',
+            }}>
+                <TypeBadge type="work" />
+                <span style={{
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    color: 'var(--bim-fg, #333)',
+                }}>
+                    <IdLink id={workData.id} label={workData.title} onNavigate={onNavigate} renderLink={renderLink} />
+                </span>
+                {workData.volume_count?.number && (
+                    <span style={{
+                        fontSize: '12px',
+                        color: 'var(--bim-desc-fg, #717171)',
+                    }}>
+                        {numberToChinese(workData.volume_count.number)}卷
+                    </span>
+                )}
+            </div>
+            <div style={{ padding: '12px 16px' }}>
+                {workData.authors && workData.authors.length > 0 && (
+                    <AuthorLine authors={workData.authors} type="work" />
+                )}
+                {workData.description?.text && (
+                    <p style={{
+                        fontSize: '13px',
+                        color: 'var(--bim-fg, #444)',
+                        lineHeight: 1.8,
+                        margin: workData.authors?.length ? '8px 0 0' : '0',
+                        textAlign: 'justify',
+                    }}>
+                        {workData.description.text}
+                    </p>
+                )}
+                {workData.parent_work && (
+                    <div style={{ marginTop: '8px', fontSize: '13px' }}>
+                        <MetaItem label="上级作品">
+                            <IdLink id={workData.parent_work.id} label={workData.parent_work.title} onNavigate={onNavigate} renderLink={renderLink} />
+                        </MetaItem>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// ── 收录于（BID-link + 册号） ──
+
+function ContainedInLinks({ items, onNavigate, renderLink }: {
+    items: ResolvedContainedIn[];
+    onNavigate?: (id: string) => void;
+    renderLink?: (id: string, label?: string) => React.ReactNode;
+}) {
+    if (!items.length) return null;
+    return (
+        <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '6px',
+            marginTop: '6px',
+        }}>
+            {items.map(item => (
+                <span key={item.id} style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '3px 10px',
+                    fontSize: '13px',
+                    border: '1px solid #2471a340',
+                    borderRadius: '4px',
+                    background: '#2471a308',
+                }}>
+                    <span style={{ fontSize: '11px', color: '#2471a3' }}>丛编</span>
+                    <IdLink id={item.id} label={item.title || item.id} onNavigate={onNavigate} renderLink={renderLink} />
+                    {item.volume_index != null && (
+                        <span style={{
+                            fontSize: '11px',
+                            color: 'var(--bim-desc-fg, #717171)',
+                            marginLeft: '2px',
+                        }}>
+                            第{item.volume_index}册
+                        </span>
+                    )}
+                </span>
+            ))}
+        </div>
     );
 }
 
@@ -660,6 +817,8 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     const [loaded, setLoaded] = useState<IndexDetailData | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [workInfo, setWorkInfo] = useState<WorkDetailData | null>(null);
+    const [containedInResolved, setContainedInResolved] = useState<ResolvedContainedIn[]>([]);
 
     const detail = dataProp || loaded;
 
@@ -682,6 +841,55 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
         });
         return () => { cancelled = true; };
     }, [dataProp, id, transport]);
+
+    // 加载作品信息 & 解析 contained_in
+    useEffect(() => {
+        if (!detail || !transport) {
+            setWorkInfo(null);
+            setContainedInResolved([]);
+            return;
+        }
+
+        let cancelled = false;
+
+        // 书籍：加载所属作品的详细信息
+        if (detail.type === 'book') {
+            const bookData = detail as BookDetailData;
+            if (bookData.work_id) {
+                transport.getItem(bookData.work_id).then(raw => {
+                    if (!cancelled && raw && (raw as any).type === 'work') {
+                        setWorkInfo(raw as unknown as WorkDetailData);
+                    }
+                }).catch(() => {});
+            } else {
+                setWorkInfo(null);
+            }
+
+            // 解析 contained_in → 标题 + 册号
+            if (bookData.contained_in && bookData.contained_in.length > 0) {
+                Promise.all(
+                    bookData.contained_in.map(entry => {
+                        const cid = typeof entry === 'string' ? entry : entry.id;
+                        const volumeIndex = typeof entry === 'string' ? undefined : entry.volume_index;
+                        return transport.getItem(cid).then(raw => ({
+                            id: cid,
+                            title: raw ? (raw as any).title || cid : cid,
+                            volume_index: volumeIndex,
+                        })).catch(() => ({ id: cid, title: cid, volume_index: volumeIndex }));
+                    })
+                ).then(resolved => {
+                    if (!cancelled) setContainedInResolved(resolved);
+                });
+            } else {
+                setContainedInResolved([]);
+            }
+        } else {
+            setWorkInfo(null);
+            setContainedInResolved([]);
+        }
+
+        return () => { cancelled = true; };
+    }, [detail, transport]);
 
     if (loading) {
         return (
@@ -744,15 +952,8 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     if (detail.page_count?.description) {
         meta.push(<MetaItem key="page" label="页">{detail.page_count.description}</MetaItem>);
     }
-    if (bookData?.contained_in && bookData.contained_in.length > 0) {
-        meta.push(<MetaItem key="in" label="收录于">{bookData.contained_in.join('、')}</MetaItem>);
-    }
-    if (bookData?.work_id) {
-        meta.push(
-            <MetaItem key="work" label="所属作品">
-                <IdLink id={bookData.work_id} onNavigate={onNavigate} renderLink={renderLink} />
-            </MetaItem>
-        );
+    if (bookData?.version) {
+        meta.push(<MetaItem key="ver" label="版本">{bookData.version}</MetaItem>);
     }
     if (workData?.parent_work) {
         meta.push(
@@ -799,6 +1000,20 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                 </p>
             )}
 
+            {containedInResolved.length > 0 && (
+                <>
+                    <SectionLabel>收录于</SectionLabel>
+                    <ContainedInLinks items={containedInResolved} onNavigate={onNavigate} renderLink={renderLink} />
+                </>
+            )}
+
+            {workInfo && (
+                <>
+                    <SectionLabel>所属作品</SectionLabel>
+                    <WorkInfoCard workData={workInfo} onNavigate={onNavigate} renderLink={renderLink} />
+                </>
+            )}
+
             {detail.additional_titles && detail.additional_titles.length > 0 && (
                 <AdditionalTitlesList items={detail.additional_titles} />
             )}
@@ -823,15 +1038,15 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
             )}
 
             {bookData?.related_books && bookData.related_books.length > 0 && (
-                <RelationList title="相关版本" ids={bookData.related_books} onNavigate={onNavigate} renderLink={renderLink} />
+                <RelationList title="相关版本" ids={bookData.related_books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
             )}
 
             {collectionData?.books && collectionData.books.length > 0 && (
-                <RelationList title="收录书籍" ids={collectionData.books} onNavigate={onNavigate} renderLink={renderLink} />
+                <RelationList title="收录书籍" ids={collectionData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
             )}
 
             {workData?.books && workData.books.length > 0 && (
-                <RelationList title="相关版本" ids={workData.books} onNavigate={onNavigate} renderLink={renderLink} />
+                <RelationList title="相关版本" ids={workData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
             )}
         </div>
     );

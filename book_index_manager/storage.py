@@ -230,6 +230,27 @@ class BookIndexStorage:
         except Exception as e:
             logger.error(f"Error saving index {index_file}: {e}")
 
+    # ── Asset Directory ──
+
+    def get_asset_dir(self, id_str: str) -> Path:
+        """Get asset directory path: {root}/{Type}/{c1}/{c2}/{c3}/{ID}/"""
+        id_val = base58_decode(id_str)
+        components = BookIndexIdGenerator.parse(id_val)
+        root = self.get_root_by_status(components.status)
+        prefix = id_str.ljust(3, '_')[:3]
+        c1, c2, c3 = prefix[0], prefix[1], prefix[2]
+        return root / components.type.name / c1 / c2 / c3 / id_str
+
+    def init_asset_dir(self, id_str: str) -> Path:
+        """Create asset directory for an ID. Returns the directory path."""
+        asset_dir = self.get_asset_dir(id_str)
+        asset_dir.mkdir(parents=True, exist_ok=True)
+        return asset_dir
+
+    def has_asset_dir(self, id_str: str) -> bool:
+        """Check if asset directory exists."""
+        return self.get_asset_dir(id_str).is_dir()
+
     def rebuild_index(self, status: BookIndexStatus = BookIndexStatus.Official):
         root = self.get_root_by_status(status)
         index_file = root / "index.json"

@@ -145,6 +145,22 @@ class CLIHandler:
         except Exception as e:
             print(f"Error: {e}")
 
+    def handle_init_asset(self):
+        id_str = self.args.bid
+        # Verify entity exists
+        metadata = self.manager.get_item(id_str)
+        if not metadata:
+            print(json.dumps({"status": "error", "message": f"Entity {id_str} not found"}, ensure_ascii=False))
+            return
+
+        asset_dir = self.manager.init_asset_dir(id_str)
+        print(json.dumps({
+            "status": "success",
+            "id": id_str,
+            "title": metadata.get("title", ""),
+            "asset_dir": str(asset_dir).replace("\\", "/"),
+        }, ensure_ascii=False))
+
     def handle_migrate(self):
         from pathlib import Path
         target = self.args.target
@@ -216,7 +232,12 @@ def main():
     p = subparsers.add_parser("delete", parents=[parent_parser])
     p.add_argument("--bid", required=True, help="Item ID to delete")
 
-    # migrate (NEW)
+    # init-asset
+    p = subparsers.add_parser("init-asset", parents=[parent_parser],
+                              help="Create asset directory for a book/work/collection")
+    p.add_argument("--bid", required=True, help="Item ID (Base58)")
+
+    # migrate
     p = subparsers.add_parser("migrate", parents=[parent_parser],
                               help="Migrate old text_resources/image_resources to unified resources")
     p.add_argument("--target", choices=["official", "draft", "all"], default="all")
@@ -239,6 +260,7 @@ def main():
             "save": handler.handle_save,
             "delete": handler.handle_delete,
             "parse-id": handler.handle_parse_id,
+            "init-asset": handler.handle_init_asset,
             "migrate": handler.handle_migrate,
         }
 

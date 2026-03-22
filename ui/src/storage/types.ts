@@ -1,4 +1,4 @@
-import type { IndexType, IndexEntry, PageResult, LoadOptions, RelationData, EntityOption, CreateEntityParams } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, RelationData, EntityOption, CreateEntityParams, CeBookMapping, CollatedEditionIndex, CollatedJuan } from '../types';
 
 /**
  * 索引数据存储接口
@@ -53,4 +53,28 @@ export interface IndexStorage {
 
     /** 记录最近使用的实体 */
     addRecentEntity?(entity: EntityOption): Promise<void>;
+
+    // ── 资源目录（可选） ──
+
+    /** 获取资源目录路径（不创建） */
+    getAssetDir?(idStr: string): string;
+
+    /** 初始化资源目录，返回路径 */
+    initAssetDir?(idStr: string): Promise<string>;
+
+    /** 检查资源目录是否存在 */
+    hasAssetDir?(idStr: string): Promise<boolean>;
+
+    // ── 丛编目录（可选） ──
+
+    /** 获取丛编的册-书映射数据 */
+    getCollectionCatalog?(collectionId: string): Promise<CeBookMapping | null>;
+
+    // ── 整理本（可选） ──
+
+    /** 获取整理本卷列表 */
+    getCollatedEditionIndex?(workId: string): Promise<CollatedEditionIndex | null>;
+
+    /** 获取整理本单卷内容 */
+    getCollatedJuan?(workId: string, juanFile: string): Promise<CollatedJuan | null>;
 }

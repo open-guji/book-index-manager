@@ -46,6 +46,9 @@ BookIndexManager (Facade API)
 | `update_field(id_str, key, content)` | `updateField(idStr, key, content)` |
 | `delete_item(id_str)` | `deleteItem(idStr)` |
 | `rebuild_indices()` | `rebuildIndices()` |
+| `get_asset_dir(id_str)` | `getAssetDir(idStr)` |
+| `init_asset_dir(id_str)` | `initAssetDir(idStr)` |
+| `has_asset_dir(id_str)` | `hasAssetDir(idStr)` |
 
 ## CLI (Python)
 
@@ -59,6 +62,7 @@ book-index delete --bid <ID> --root <path>
 book-index reindex --root <path> --target all
 book-index parse-id <ID>
 book-index migrate --root <path> --target draft
+book-index init-asset --bid <ID> --root <path>
 ```
 
 ## 用法
@@ -88,6 +92,7 @@ import { BookIndexManager, GithubStorage } from 'book-index-ui/storage'
 {workspace}/
 ├── book-index/          # Official
 │   ├── Book/{c1}/{c2}/{c3}/{ID}-{名称}.json
+│   ├── Book/{c1}/{c2}/{c3}/{ID}/              # 资源目录 (可选)
 │   ├── Collection/...
 │   ├── Work/...
 │   └── index.json

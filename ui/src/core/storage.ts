@@ -325,6 +325,41 @@ export class BookIndexStorage {
         await this.saveIndex(joinPath(root, 'index.json'), index);
     }
 
+    // ── Asset Directory ──
+
+    /**
+     * 计算资源目录路径: {root}/{Type}/{c1}/{c2}/{c3}/{ID}/
+     * 与 JSON 文件同级，以 ID 命名
+     */
+    getAssetDir(idStr: string): string {
+        const root = this.getRootById(idStr);
+        const idVal = base58Decode(idStr);
+        const components = parseId(idVal);
+        const type = components.type;
+        const prefix = idStr.padEnd(3, '_').substring(0, 3);
+        const [c1, c2, c3] = [prefix[0], prefix[1], prefix[2]];
+        const folder = TYPE_TO_FOLDER[type];
+        return joinPath(root, folder, c1, c2, c3, idStr);
+    }
+
+    /**
+     * 初始化资源目录：创建 {ID}/ 文件夹
+     * @returns 资源目录路径
+     */
+    async initAssetDir(idStr: string): Promise<string> {
+        const dir = this.getAssetDir(idStr);
+        await this.fs.mkdir(dir);
+        return dir;
+    }
+
+    /**
+     * 检查资源目录是否存在
+     */
+    async hasAssetDir(idStr: string): Promise<boolean> {
+        const dir = this.getAssetDir(idStr);
+        return this.fs.exists(dir);
+    }
+
     // ── Private ──
 
     private async loadIndex(indexFile: string): Promise<IndexFile> {

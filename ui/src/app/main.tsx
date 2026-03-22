@@ -1,22 +1,34 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IndexBrowser } from '../components/IndexBrowser';
 import { IndexDetail } from '../components/IndexDetail';
-import { GithubStorage } from '../storage/github-storage';
+import { CollectionCatalog } from '../components/CollectionCatalog';
+import { CollatedEdition } from '../components/CollatedEdition';
+import { DevApiStorage } from '../storage/dev-api-storage';
 import type { IndexStorage } from '../storage/types';
-import type { IndexEntry, IndexDetailData } from '../types';
+import type { IndexEntry, IndexDetailData, CeBookMapping, CollatedEditionIndex } from '../types';
 import '../styles/variables.css';
 
 // ── 数据源 ──
 
 function createStorage(): IndexStorage {
-    return new GithubStorage({
-        org: 'open-guji',
-        repos: {
-            draft: 'book-index-draft',
-            official: 'book-index',
-        },
-    });
+    return new DevApiStorage();
+}
+
+// ── URL 工具 ──
+
+/** 从当前 URL pathname 提取 book ID（第一段路径） */
+function getIdFromUrl(): string | null {
+    const path = window.location.pathname.replace(/^\/+/, '');
+    return path || null;
+}
+
+/** 更新浏览器 URL（不触发页面刷新） */
+function pushUrl(id: string | null) {
+    const url = id ? `/${id}` : '/';
+    if (window.location.pathname !== url) {
+        window.history.pushState(null, '', url);
+    }
 }
 
 // ── 主应用 ──
@@ -27,25 +39,50 @@ function App() {
     const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [activeTab, setActiveTab] = useState<'detail' | 'catalog' | 'collated'>('detail');
+    const [catalogData, setCatalogData] = useState<CeBookMapping | null>(null);
+    const [catalogLoading, setCatalogLoading] = useState(false);
+    const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
+    const [collatedLoading, setCollatedLoading] = useState(false);
 
-    const handleEntryClick = useCallback(async (entry: IndexEntry) => {
-        setSelectedEntry(entry);
-        setDetailData(null);
-        setDetailLoading(true);
+    const loadCollated = useCallback(async (id: string) => {
+        if (!transport.getCollatedEditionIndex) {
+            setCollatedIndex(null);
+            return;
+        }
+        setCollatedLoading(true);
         try {
-            const data = await transport.getItem(entry.id);
-            if (data) {
-                setDetailData(data as unknown as IndexDetailData);
-            }
-        } catch (err) {
-            console.error('加载详情失败:', err);
+            const idx = await transport.getCollatedEditionIndex(id);
+            setCollatedIndex(idx);
+        } catch {
+            setCollatedIndex(null);
         } finally {
-            setDetailLoading(false);
+            setCollatedLoading(false);
         }
     }, [transport]);
 
-    const handleNavigate = useCallback(async (id: string) => {
+    const loadCatalog = useCallback(async (id: string) => {
+        if (!transport.getCollectionCatalog) {
+            setCatalogData(null);
+            return;
+        }
+        setCatalogLoading(true);
+        try {
+            const catalog = await transport.getCollectionCatalog(id);
+            setCatalogData(catalog);
+        } catch {
+            setCatalogData(null);
+        } finally {
+            setCatalogLoading(false);
+        }
+    }, [transport]);
+
+    /** 通过 ID 加载详情（内部复用，不操作 URL） */
+    const loadById = useCallback(async (id: string) => {
         setDetailData(null);
+        setCatalogData(null);
+        setCollatedIndex(null);
+        setActiveTab('detail');
         setDetailLoading(true);
         try {
             const data = await transport.getItem(id);
@@ -56,13 +93,73 @@ function App() {
                     title: (data.title as string) || id,
                     type: (data.type as any) || 'book',
                 });
+                if (data.type === 'collection') {
+                    loadCatalog(id);
+                } else if (data.type === 'work') {
+                    loadCollated(id);
+                }
             }
         } catch (err) {
-            console.error('导航失败:', err);
+            console.error('加载详情失败:', err);
         } finally {
             setDetailLoading(false);
         }
-    }, [transport]);
+    }, [transport, loadCatalog, loadCollated]);
+
+    const handleEntryClick = useCallback(async (entry: IndexEntry) => {
+        setSelectedEntry(entry);
+        pushUrl(entry.id);
+        setDetailData(null);
+        setCatalogData(null);
+        setCollatedIndex(null);
+        setActiveTab('detail');
+        setDetailLoading(true);
+        try {
+            const data = await transport.getItem(entry.id);
+            if (data) {
+                setDetailData(data as unknown as IndexDetailData);
+                if (data.type === 'collection') {
+                    loadCatalog(entry.id);
+                } else if (data.type === 'work') {
+                    loadCollated(entry.id);
+                }
+            }
+        } catch (err) {
+            console.error('加载详情失败:', err);
+        } finally {
+            setDetailLoading(false);
+        }
+    }, [transport, loadCatalog, loadCollated]);
+
+    const handleNavigate = useCallback(async (id: string) => {
+        pushUrl(id);
+        await loadById(id);
+    }, [loadById]);
+
+    // 初始化：从 URL 加载书籍
+    useEffect(() => {
+        const id = getIdFromUrl();
+        if (id) {
+            loadById(id);
+        }
+    }, [loadById]);
+
+    // 浏览器前进/后退
+    useEffect(() => {
+        const onPopState = () => {
+            const id = getIdFromUrl();
+            if (id) {
+                loadById(id);
+            } else {
+                setSelectedEntry(null);
+                setDetailData(null);
+                setCatalogData(null);
+                setCollatedIndex(null);
+            }
+        };
+        window.addEventListener('popstate', onPopState);
+        return () => window.removeEventListener('popstate', onPopState);
+    }, [loadById]);
 
     return (
         <div style={{
@@ -123,7 +220,7 @@ function App() {
             )}
 
             {/* 右侧：详情面板 */}
-            <div style={{ flex: 1, overflow: 'auto', background: 'var(--bim-bg, #f5f5f5)', position: 'relative' }}>
+            <div style={{ flex: 1, background: 'var(--bim-bg, #f5f5f5)', position: 'relative', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                 {!sidebarOpen && (
                     <button
                         onClick={() => setSidebarOpen(true)}
@@ -151,13 +248,70 @@ function App() {
                         <span style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>加载中...</span>
                     </div>
                 ) : detailData ? (
-                    <div style={{ padding: '32px 48px', maxWidth: '900px' }}>
-                        <IndexDetail
-                            data={detailData}
-                            transport={transport}
-                            onNavigate={handleNavigate}
-                        />
-                    </div>
+                    <>
+                        {/* Tab 栏：丛编目录 / 整理本 */}
+                        {((detailData.type === 'collection' && (catalogData || catalogLoading)) ||
+                          (detailData.type === 'work' && (collatedIndex || collatedLoading))) && (
+                            <div style={{
+                                display: 'flex',
+                                gap: '0',
+                                borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                padding: '0 48px',
+                                background: 'var(--bim-input-bg, #fff)',
+                                flexShrink: 0,
+                            }}>
+                                <button
+                                    onClick={() => setActiveTab('detail')}
+                                    style={tabBtnStyle(activeTab === 'detail')}
+                                >
+                                    基本信息
+                                </button>
+                                {detailData.type === 'collection' && (catalogData || catalogLoading) && (
+                                    <button
+                                        onClick={() => setActiveTab('catalog')}
+                                        style={tabBtnStyle(activeTab === 'catalog')}
+                                    >
+                                        丛编目录
+                                        {catalogLoading && (
+                                            <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
+                                        )}
+                                    </button>
+                                )}
+                                {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
+                                    <button
+                                        onClick={() => setActiveTab('collated')}
+                                        style={tabBtnStyle(activeTab === 'collated')}
+                                    >
+                                        整理本
+                                        {collatedLoading && (
+                                            <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
+                                        )}
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                        <div style={{ padding: '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>
+                            {activeTab === 'detail' ? (
+                                <IndexDetail
+                                    data={detailData}
+                                    transport={transport}
+                                    onNavigate={handleNavigate}
+                                />
+                            ) : activeTab === 'catalog' ? (
+                                <CollectionCatalog
+                                    data={catalogData || undefined}
+                                    onNavigate={handleNavigate}
+                                />
+                            ) : activeTab === 'collated' ? (
+                                <CollatedEdition
+                                    index={collatedIndex || undefined}
+                                    workId={detailData.id}
+                                    transport={transport}
+                                    onNavigate={handleNavigate}
+                                />
+                            ) : null}
+                        </div>
+                    </>
                 ) : (
                     <div style={{
                         display: 'flex',
@@ -177,6 +331,19 @@ function App() {
             </div>
         </div>
     );
+}
+
+function tabBtnStyle(active: boolean): React.CSSProperties {
+    return {
+        padding: '10px 16px',
+        border: 'none',
+        borderBottom: active ? '2px solid var(--bim-primary, #0078d4)' : '2px solid transparent',
+        background: 'transparent',
+        color: active ? 'var(--bim-primary, #0078d4)' : 'var(--bim-desc-fg, #717171)',
+        cursor: 'pointer',
+        fontSize: '13px',
+        fontWeight: active ? 600 : 400,
+    };
 }
 
 const root = createRoot(document.getElementById('root')!);

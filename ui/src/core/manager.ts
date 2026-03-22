@@ -122,6 +122,23 @@ export class BookIndexManager {
         await this.storage.rebuildIndex('draft');
     }
 
+    // ── Asset Directory ──
+
+    /** Get the asset directory path for an ID (without creating it). */
+    getAssetDir(idStr: string): string {
+        return this.storage.getAssetDir(idStr);
+    }
+
+    /** Create the asset directory for an ID. Returns the directory path. */
+    async initAssetDir(idStr: string): Promise<string> {
+        return this.storage.initAssetDir(idStr);
+    }
+
+    /** Check if asset directory exists. */
+    async hasAssetDir(idStr: string): Promise<boolean> {
+        return this.storage.hasAssetDir(idStr);
+    }
+
     /** Access the underlying BookIndexStorage. */
     getStorage(): BookIndexStorage {
         return this.storage;

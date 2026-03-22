@@ -109,6 +109,20 @@ class BookIndexManager:
         """
         return self.storage.search_entries(query, type_name, status)
 
+    # ── Asset Directory ──
+
+    def get_asset_dir(self, id_str: str):
+        """Get the asset directory path for an ID (without creating it)."""
+        return self.storage.get_asset_dir(id_str)
+
+    def init_asset_dir(self, id_str: str):
+        """Create the asset directory for an ID. Returns the directory path."""
+        return self.storage.init_asset_dir(id_str)
+
+    def has_asset_dir(self, id_str: str) -> bool:
+        """Check if asset directory exists."""
+        return self.storage.has_asset_dir(id_str)
+
     def rebuild_indices(self):
         """Rebuild index.json for both official and draft."""
         self.storage.rebuild_index(BookIndexStatus.Official)

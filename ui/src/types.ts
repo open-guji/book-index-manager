@@ -132,11 +132,20 @@ export interface BaseDetailData {
     resources?: ResourceEntry[];
 }
 
+/** 收录关联：书籍被丛编收录的信息 */
+export interface ContainedInEntry {
+    /** 丛编 ID */
+    id: string;
+    /** 在丛编中的册号（单册如 9，跨册如 "9-12"） */
+    volume_index?: number | string;
+}
+
 /** Book 详情 */
 export interface BookDetailData extends BaseDetailData {
     type: 'book';
+    version?: string;
     work_id?: string;
-    contained_in?: string[];
+    contained_in?: ContainedInEntry[];
     location_history?: LocationInfo[];
     related_books?: string[];
 }
@@ -230,6 +239,83 @@ export interface IndexedByEntry {
 }
 
 // ── 资料来源类型 ──
+
+// ── 丛编目录 (ce_book_mapping) ──
+
+/** 丛编分部 */
+export interface CeSection {
+    name: string;
+    ce_range: [number, number];
+}
+
+/** 丛编目录中的书目条目 */
+export interface CeBookEntry {
+    title: string;
+    book_id: string | null;
+    work_id: string | null;
+    ce: number[];
+    section: string;
+    sub_items?: string[];
+}
+
+/** 丛编目录统计 */
+export interface CeBookStats {
+    processed_ce: number;
+    total_books: number;
+    matched_works: number;
+    unmatched_works: number;
+}
+
+/** 丛编目录数据 (ce_book_mapping.json) */
+export interface CeBookMapping {
+    collection_id: string;
+    title: string;
+    source?: string;
+    total_ce: number;
+    sections: CeSection[];
+    stats: CeBookStats;
+    books: CeBookEntry[];
+    ce_index: Record<string, string[]>;
+}
+
+// ── 整理本 (collated_edition) ──
+
+/** 整理本中的一个 section */
+export interface CollatedSection {
+    title: string;
+    level: number;
+    type: '部' | '类' | '书' | '其他';
+    content?: string;
+    version?: string | null;
+    text_status?: string | null;
+    book_title?: string;
+    n_juan?: number | null;
+    additional_titles?: string[] | null;
+    summary?: string | null;
+    comment?: string | null;
+    additional_comment?: string | null;
+    author_info?: string | null;
+    dynasty?: string | null;
+    author?: string | null;
+    author_type?: string | null;
+    note?: string | null;
+    tag?: string | null;
+}
+
+/** 整理本的一卷数据 */
+export interface CollatedJuan {
+    title: string;
+    page_title?: string;
+    source_url?: string;
+    sections: CollatedSection[];
+}
+
+/** 整理本索引（卷列表） */
+export interface CollatedEditionIndex {
+    work_id: string;
+    total_juan: number;
+    juan_files: string[];
+}
 
 /** 资料来源项 */
 export interface SourceItem {
