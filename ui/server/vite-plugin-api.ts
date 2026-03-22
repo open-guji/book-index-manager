@@ -255,6 +255,7 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                 }
 
                 // GET /api/catalog/:id — 丛编目录 (volume_book_mapping.json)
+                // 扫描 {dir}/{id}/{resourceId}/volume_book_mapping.json
                 if (pathname.startsWith('/api/catalog/') && req.method === 'GET') {
                     const id = decodeURIComponent(pathname.slice('/api/catalog/'.length));
                     const itemFile = findItemFile(workspaceRoot, id);
@@ -265,19 +266,47 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     }
 
                     const dir = path.dirname(itemFile);
-                    const mappingFile = path.join(dir, 'volume_book_mapping.json');
+                    const idDir = path.join(dir, id);
 
-                    if (!fs.existsSync(mappingFile)) {
+                    // 读取 Collection JSON 获取资源列表
+                    let resources: Array<{ id: string; short_name?: string }> = [];
+                    try {
+                        const itemContent = fs.readFileSync(itemFile, 'utf-8');
+                        const itemData = JSON.parse(itemContent);
+                        resources = (itemData.resources || []).map((r: any) => ({
+                            id: r.id,
+                            short_name: r.short_name,
+                        }));
+                    } catch { /* ignore */ }
+
+                    const catalogs: Array<{ resource_id: string; short_name?: string; data: any }> = [];
+
+                    if (fs.existsSync(idDir)) {
+                        try {
+                            const subdirs = fs.readdirSync(idDir).filter((f: string) => {
+                                return fs.statSync(path.join(idDir, f)).isDirectory();
+                            });
+                            for (const subdir of subdirs) {
+                                const mappingFile = path.join(idDir, subdir, 'volume_book_mapping.json');
+                                if (fs.existsSync(mappingFile)) {
+                                    const content = fs.readFileSync(mappingFile, 'utf-8');
+                                    const resource = resources.find(r => r.id === subdir);
+                                    catalogs.push({
+                                        resource_id: subdir,
+                                        short_name: resource?.short_name,
+                                        data: JSON.parse(content),
+                                    });
+                                }
+                            }
+                        } catch { /* ignore */ }
+                    }
+
+                    if (catalogs.length === 0) {
                         sendJson({ error: 'No catalog data' }, 404);
                         return;
                     }
 
-                    try {
-                        const content = fs.readFileSync(mappingFile, 'utf-8');
-                        sendJson(JSON.parse(content));
-                    } catch {
-                        sendJson({ error: 'Read error' }, 500);
-                    }
+                    sendJson(catalogs);
                     return;
                 }
 

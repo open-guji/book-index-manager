@@ -11,6 +11,7 @@ export interface CoverageInfo {
 export interface ResourceEntry {
     id: string;
     name: string;
+    short_name?: string;
     url: string;
     type: ResourceType;
     root_type?: 'catalog' | 'search';
@@ -276,6 +277,13 @@ export interface VolumeBookMapping {
     stats: VolumeBookStats;
     books: VolumeBookEntry[];
     volume_index: Record<string, string[]>;
+}
+
+/** 带资源信息的丛编目录 */
+export interface ResourceCatalog {
+    resource_id: string;
+    short_name?: string;
+    data: VolumeBookMapping;
 }
 
 // ── 整理本 (collated_edition) ──

@@ -1,4 +1,4 @@
-import type { IndexType, IndexEntry, PageResult, LoadOptions, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, CollatedEditionIndex, CollatedJuan } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
 
 /**
  * 索引数据存储接口
@@ -67,7 +67,10 @@ export interface IndexStorage {
 
     // ── 丛编目录（可选） ──
 
-    /** 获取丛编的册-书映射数据 */
+    /** 获取丛编的册-书映射数据（返回所有资源的目录） */
+    getCollectionCatalogs?(collectionId: string): Promise<ResourceCatalog[] | null>;
+
+    /** @deprecated 使用 getCollectionCatalogs */
     getCollectionCatalog?(collectionId: string): Promise<VolumeBookMapping | null>;
 
     // ── 整理本（可选） ──

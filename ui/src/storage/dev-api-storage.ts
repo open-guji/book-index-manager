@@ -4,7 +4,7 @@
  */
 
 import type { IndexStorage } from './types';
-import type { IndexType, IndexEntry, PageResult, LoadOptions, VolumeBookMapping, CollatedEditionIndex, CollatedJuan } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
 
 export class DevApiStorage implements IndexStorage {
     private baseUrl: string;
@@ -45,11 +45,16 @@ export class DevApiStorage implements IndexStorage {
         return res.json();
     }
 
-    async getCollectionCatalog(collectionId: string): Promise<VolumeBookMapping | null> {
+    async getCollectionCatalogs(collectionId: string): Promise<ResourceCatalog[] | null> {
         const res = await fetch(`${this.baseUrl}/api/catalog/${encodeURIComponent(collectionId)}`);
         if (res.status === 404) return null;
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
+    }
+
+    async getCollectionCatalog(collectionId: string): Promise<VolumeBookMapping | null> {
+        const catalogs = await this.getCollectionCatalogs(collectionId);
+        return catalogs?.[0]?.data ?? null;
     }
 
     async getCollatedEditionIndex(workId: string): Promise<CollatedEditionIndex | null> {

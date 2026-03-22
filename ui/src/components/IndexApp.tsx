@@ -4,7 +4,7 @@ import { IndexDetail } from './IndexDetail';
 import { CollectionCatalog } from './CollectionCatalog';
 import { CollatedEdition } from './CollatedEdition';
 import type { IndexStorage } from '../storage/types';
-import type { IndexEntry, IndexDetailData, VolumeBookMapping, CollatedEditionIndex } from '../types';
+import type { IndexEntry, IndexDetailData, ResourceCatalog, CollatedEditionIndex } from '../types';
 
 export interface IndexAppProps {
     transport: IndexStorage;
@@ -26,8 +26,8 @@ export const IndexApp: React.FC<IndexAppProps> = ({
     const [selectedEntry, setSelectedEntry] = useState<IndexEntry | null>(null);
     const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState<'detail' | 'catalog' | 'collated'>('detail');
-    const [catalogData, setCatalogData] = useState<VolumeBookMapping | null>(null);
+    const [activeTab, setActiveTab] = useState<string>('detail');
+    const [catalogList, setCatalogList] = useState<ResourceCatalog[]>([]);
     const [catalogLoading, setCatalogLoading] = useState(false);
     const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
     const [collatedLoading, setCollatedLoading] = useState(false);
@@ -49,16 +49,25 @@ export const IndexApp: React.FC<IndexAppProps> = ({
     }, [transport]);
 
     const loadCatalog = useCallback(async (id: string) => {
-        if (!transport.getCollectionCatalog) {
-            setCatalogData(null);
+        if (!transport.getCollectionCatalogs && !transport.getCollectionCatalog) {
+            setCatalogList([]);
             return;
         }
         setCatalogLoading(true);
         try {
-            const catalog = await transport.getCollectionCatalog(id);
-            setCatalogData(catalog);
+            if (transport.getCollectionCatalogs) {
+                const catalogs = await transport.getCollectionCatalogs(id);
+                setCatalogList(catalogs || []);
+            } else if (transport.getCollectionCatalog) {
+                const catalog = await transport.getCollectionCatalog(id);
+                if (catalog) {
+                    setCatalogList([{ resource_id: '', data: catalog }]);
+                } else {
+                    setCatalogList([]);
+                }
+            }
         } catch {
-            setCatalogData(null);
+            setCatalogList([]);
         } finally {
             setCatalogLoading(false);
         }
@@ -71,7 +80,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
         }
         setSelectedEntry(entry);
         setDetailData(null);
-        setCatalogData(null);
+        setCatalogList([]);
         setCollatedIndex(null);
         setActiveTab('detail');
         setDetailLoading(true);
@@ -94,7 +103,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
 
     const handleNavigate = useCallback(async (id: string) => {
         setDetailData(null);
-        setCatalogData(null);
+        setCatalogList([]);
         setCollatedIndex(null);
         setActiveTab('detail');
         setDetailLoading(true);
@@ -120,7 +129,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
         }
     }, [transport, loadCatalog, loadCollated]);
 
-    const showTabs = (detailData?.type === 'collection' && (catalogData || catalogLoading)) ||
+    const showTabs = (detailData?.type === 'collection' && (catalogList.length > 0 || catalogLoading)) ||
                      (detailData?.type === 'work' && (collatedIndex || collatedLoading));
 
     return (
@@ -174,15 +183,23 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                                 >
                                     基本信息
                                 </button>
-                                {detailData.type === 'collection' && (catalogData || catalogLoading) && (
+                                {detailData.type === 'collection' && catalogLoading && catalogList.length === 0 && (
                                     <button
-                                        onClick={() => setActiveTab('catalog')}
-                                        style={tabBtnStyle(activeTab === 'catalog')}
+                                        onClick={() => {}}
+                                        style={tabBtnStyle(false)}
                                     >
-                                        丛编目录
-                                        {catalogLoading && <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>}
+                                        目錄<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
                                     </button>
                                 )}
+                                {detailData.type === 'collection' && catalogList.map((cat) => (
+                                    <button
+                                        key={cat.resource_id}
+                                        onClick={() => setActiveTab(`catalog:${cat.resource_id}`)}
+                                        style={tabBtnStyle(activeTab === `catalog:${cat.resource_id}`)}
+                                    >
+                                        {cat.short_name ? `${cat.short_name}·目錄` : '叢編目錄'}
+                                    </button>
+                                ))}
                                 {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
                                     <button
                                         onClick={() => setActiveTab('collated')}
@@ -201,9 +218,9 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                                     transport={transport}
                                     onNavigate={handleNavigate}
                                 />
-                            ) : activeTab === 'catalog' ? (
+                            ) : activeTab.startsWith('catalog:') ? (
                                 <CollectionCatalog
-                                    data={catalogData || undefined}
+                                    data={catalogList.find(c => `catalog:${c.resource_id}` === activeTab)?.data}
                                     onNavigate={handleNavigate}
                                 />
                             ) : activeTab === 'collated' ? (

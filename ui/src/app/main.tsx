@@ -6,7 +6,7 @@ import { CollectionCatalog } from '../components/CollectionCatalog';
 import { CollatedEdition } from '../components/CollatedEdition';
 import { DevApiStorage } from '../storage/dev-api-storage';
 import type { IndexStorage } from '../storage/types';
-import type { IndexEntry, IndexDetailData, VolumeBookMapping, CollatedEditionIndex } from '../types';
+import type { IndexEntry, IndexDetailData, ResourceCatalog, CollatedEditionIndex } from '../types';
 import '../styles/variables.css';
 
 // ── 数据源 ──
@@ -39,8 +39,8 @@ function App() {
     const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [activeTab, setActiveTab] = useState<'detail' | 'catalog' | 'collated'>('detail');
-    const [catalogData, setCatalogData] = useState<VolumeBookMapping | null>(null);
+    const [activeTab, setActiveTab] = useState<string>('detail');
+    const [catalogList, setCatalogList] = useState<ResourceCatalog[]>([]);
     const [catalogLoading, setCatalogLoading] = useState(false);
     const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
     const [collatedLoading, setCollatedLoading] = useState(false);
@@ -62,16 +62,25 @@ function App() {
     }, [transport]);
 
     const loadCatalog = useCallback(async (id: string) => {
-        if (!transport.getCollectionCatalog) {
-            setCatalogData(null);
+        if (!transport.getCollectionCatalogs && !transport.getCollectionCatalog) {
+            setCatalogList([]);
             return;
         }
         setCatalogLoading(true);
         try {
-            const catalog = await transport.getCollectionCatalog(id);
-            setCatalogData(catalog);
+            if (transport.getCollectionCatalogs) {
+                const catalogs = await transport.getCollectionCatalogs(id);
+                setCatalogList(catalogs || []);
+            } else if (transport.getCollectionCatalog) {
+                const catalog = await transport.getCollectionCatalog(id);
+                if (catalog) {
+                    setCatalogList([{ resource_id: '', data: catalog }]);
+                } else {
+                    setCatalogList([]);
+                }
+            }
         } catch {
-            setCatalogData(null);
+            setCatalogList([]);
         } finally {
             setCatalogLoading(false);
         }
@@ -80,7 +89,7 @@ function App() {
     /** 通过 ID 加载详情（内部复用，不操作 URL） */
     const loadById = useCallback(async (id: string) => {
         setDetailData(null);
-        setCatalogData(null);
+        setCatalogList([]);
         setCollatedIndex(null);
         setActiveTab('detail');
         setDetailLoading(true);
@@ -110,7 +119,7 @@ function App() {
         setSelectedEntry(entry);
         pushUrl(entry.id);
         setDetailData(null);
-        setCatalogData(null);
+        setCatalogList([]);
         setCollatedIndex(null);
         setActiveTab('detail');
         setDetailLoading(true);
@@ -153,7 +162,7 @@ function App() {
             } else {
                 setSelectedEntry(null);
                 setDetailData(null);
-                setCatalogData(null);
+                setCatalogList([]);
                 setCollatedIndex(null);
             }
         };
@@ -250,7 +259,7 @@ function App() {
                 ) : detailData ? (
                     <>
                         {/* Tab 栏：丛编目录 / 整理本 */}
-                        {((detailData.type === 'collection' && (catalogData || catalogLoading)) ||
+                        {((detailData.type === 'collection' && (catalogList.length > 0 || catalogLoading)) ||
                           (detailData.type === 'work' && (collatedIndex || collatedLoading))) && (
                             <div style={{
                                 display: 'flex',
@@ -266,17 +275,23 @@ function App() {
                                 >
                                     基本信息
                                 </button>
-                                {detailData.type === 'collection' && (catalogData || catalogLoading) && (
+                                {detailData.type === 'collection' && catalogLoading && catalogList.length === 0 && (
                                     <button
-                                        onClick={() => setActiveTab('catalog')}
-                                        style={tabBtnStyle(activeTab === 'catalog')}
+                                        onClick={() => {}}
+                                        style={tabBtnStyle(false)}
                                     >
-                                        丛编目录
-                                        {catalogLoading && (
-                                            <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
-                                        )}
+                                        目錄<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
                                     </button>
                                 )}
+                                {detailData.type === 'collection' && catalogList.map((cat) => (
+                                    <button
+                                        key={cat.resource_id}
+                                        onClick={() => setActiveTab(`catalog:${cat.resource_id}`)}
+                                        style={tabBtnStyle(activeTab === `catalog:${cat.resource_id}`)}
+                                    >
+                                        {cat.short_name ? `${cat.short_name}·目錄` : '叢編目錄'}
+                                    </button>
+                                ))}
                                 {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
                                     <button
                                         onClick={() => setActiveTab('collated')}
@@ -297,9 +312,9 @@ function App() {
                                     transport={transport}
                                     onNavigate={handleNavigate}
                                 />
-                            ) : activeTab === 'catalog' ? (
+                            ) : activeTab.startsWith('catalog:') ? (
                                 <CollectionCatalog
-                                    data={catalogData || undefined}
+                                    data={catalogList.find(c => `catalog:${c.resource_id}` === activeTab)?.data}
                                     onNavigate={handleNavigate}
                                 />
                             ) : activeTab === 'collated' ? (
