@@ -59,6 +59,8 @@ export { GithubStorage } from './storage/github-storage';
 export type { GithubStorageConfig } from './storage/github-storage';
 export { LocalStorage } from './storage/local-storage';
 export type { LocalStorageConfig } from './storage/local-storage';
+export { BundleStorage } from './storage/bundle-storage';
+export type { BundleStorageConfig } from './storage/bundle-storage';
 
 // Core
 export type { FileSystem } from './core/filesystem';
