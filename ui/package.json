@@ -1,6 +1,6 @@
 {
   "name": "book-index-ui",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React components for browsing and editing ancient book index metadata",
   "author": "Li Shaodong",
   "repository": {
