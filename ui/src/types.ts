@@ -54,6 +54,17 @@ export interface PageResult<T> {
     pageSize: number;
 }
 
+/** 统一搜索结果（按类型分组） */
+export interface GroupedSearchResult {
+    works: IndexEntry[];
+    books: IndexEntry[];
+    collections: IndexEntry[];
+    /** 各类型的总匹配数（不限于返回条数） */
+    totalWorks: number;
+    totalBooks: number;
+    totalCollections: number;
+}
+
 /** 加载选项 */
 export interface LoadOptions {
     page?: number;

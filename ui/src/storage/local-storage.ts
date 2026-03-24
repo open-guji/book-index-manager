@@ -4,7 +4,7 @@
  * 适用于 VS Code 插件和 Node.js 环境
  */
 
-import type { IndexType, IndexStatus, IndexEntry, PageResult, LoadOptions, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping } from '../types';
+import type { IndexType, IndexStatus, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping } from '../types';
 import type { IndexStorage } from './types';
 import type { FileSystem } from '../core/filesystem';
 import { BookIndexStorage } from '../core/storage';
@@ -39,6 +39,10 @@ export class LocalStorage implements IndexStorage {
     async search(query: string, type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>> {
         const results = await this.storage.searchEntries(query, type);
         return this.paginate(results, options);
+    }
+
+    async searchAll(query: string, limit?: number): Promise<GroupedSearchResult> {
+        return this.storage.searchAll(query, limit);
     }
 
     async getItem(id: string): Promise<Record<string, unknown> | null> {

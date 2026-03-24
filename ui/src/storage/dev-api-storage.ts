@@ -4,7 +4,7 @@
  */
 
 import type { IndexStorage } from './types';
-import type { IndexType, IndexEntry, PageResult, LoadOptions, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
 
 export class DevApiStorage implements IndexStorage {
     private baseUrl: string;
@@ -34,6 +34,13 @@ export class DevApiStorage implements IndexStorage {
             pageSize: String(options.pageSize ?? 50),
         });
         const res = await fetch(`${this.baseUrl}/api/search?${params}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    }
+
+    async searchAll(query: string, limit: number = 5): Promise<GroupedSearchResult> {
+        const params = new URLSearchParams({ q: query, limit: String(limit) });
+        const res = await fetch(`${this.baseUrl}/api/search-all?${params}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
     }

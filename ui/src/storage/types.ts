@@ -1,4 +1,4 @@
-import type { IndexType, IndexEntry, PageResult, LoadOptions, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
 
 /**
  * 索引数据存储接口
@@ -8,8 +8,11 @@ export interface IndexStorage {
     /** 加载指定类型的条目列表 */
     loadEntries(type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>>;
 
-    /** 搜索条目 */
+    /** 搜索条目（按类型） */
     search(query: string, type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>>;
+
+    /** 统一搜索（同时搜索所有类型，返回分组结果） */
+    searchAll?(query: string, limit?: number): Promise<GroupedSearchResult>;
 
     /** 获取单条元数据 */
     getItem(id: string): Promise<Record<string, unknown> | null>;

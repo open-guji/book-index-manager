@@ -70,6 +70,10 @@ function getAllEntries(workspaceRoot: string, type: string) {
                 dynasty: entry.dynasty || undefined,
                 role: entry.role || undefined,
                 path: entry.path,
+                additional_titles: (entry as any).additional_titles,
+                juan_count: (entry as any).juan_count,
+                has_text: (entry as any).has_text,
+                has_image: (entry as any).has_image,
             });
         }
     }
@@ -157,6 +161,30 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     const sliced = entries.slice(start, start + pageSize);
 
                     sendJson({ entries: sliced, total, page, pageSize });
+                    return;
+                }
+
+                // GET /api/search-all?q=xxx&limit=5
+                if (pathname === '/api/search-all' && req.method === 'GET') {
+                    const query = (url.searchParams.get('q') || '').toLowerCase();
+                    const limit = parseInt(url.searchParams.get('limit') || '5');
+
+                    const result: Record<string, unknown> = {};
+                    for (const [type, key] of [['work', 'works'], ['book', 'books'], ['collection', 'collections']] as const) {
+                        let entries = getAllEntries(workspaceRoot, type);
+                        if (query) {
+                            entries = entries.filter((e: any) =>
+                                e.title?.toLowerCase().includes(query) ||
+                                e.id?.toLowerCase().includes(query) ||
+                                e.author?.toLowerCase().includes(query) ||
+                                (e.additional_titles || []).some((t: string) => t?.toLowerCase().includes(query))
+                            );
+                        }
+                        result[key] = entries.slice(0, limit);
+                        result[`total${key.charAt(0).toUpperCase() + key.slice(1)}` as string] = entries.length;
+                    }
+
+                    sendJson(result);
                     return;
                 }
 

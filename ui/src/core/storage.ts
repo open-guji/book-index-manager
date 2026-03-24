@@ -4,7 +4,7 @@
  * 使用 FileSystem 抽象接口，不直接依赖 node:fs
  */
 
-import type { IndexType, IndexEntry, IndexStatus } from '../types';
+import type { IndexType, IndexEntry, IndexStatus, GroupedSearchResult } from '../types';
 import type { FileSystem } from './filesystem';
 import { base58Encode, base58Decode, parseId } from '../id';
 
@@ -314,6 +314,25 @@ export class BookIndexStorage {
     async searchEntries(query: string, type: IndexType, status?: IndexStatus): Promise<IndexEntry[]> {
         const all = await this.loadEntries(type, status);
         return rankByRelevance(all, query);
+    }
+
+    /**
+     * 统一搜索：同时搜索三种类型，返回分组结果
+     * @param limit 每组最多返回的条数，默认 5
+     */
+    async searchAll(query: string, limit: number = 5, status?: IndexStatus): Promise<GroupedSearchResult> {
+        const types: IndexType[] = ['work', 'book', 'collection'];
+        const results = await Promise.all(
+            types.map(t => this.searchEntries(query, t, status))
+        );
+        return {
+            works: results[0].slice(0, limit),
+            books: results[1].slice(0, limit),
+            collections: results[2].slice(0, limit),
+            totalWorks: results[0].length,
+            totalBooks: results[1].length,
+            totalCollections: results[2].length,
+        };
     }
 
     /**

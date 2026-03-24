@@ -1,5 +1,5 @@
 import type { IndexStorage } from './types';
-import type { IndexType, IndexEntry, PageResult, LoadOptions, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
 import { rankByRelevance } from '../core/storage';
 
 /**
@@ -144,6 +144,12 @@ export class GithubStorage implements IndexStorage {
             const items = data[key];
             if (!items) continue;
             for (const item of Object.values(items)) {
+                const raw = item as GithubIndexItem & {
+                    additional_titles?: string[];
+                    juan_count?: number;
+                    has_text?: boolean;
+                    has_image?: boolean;
+                };
                 entries.push({
                     id: item.id,
                     title: item.title || item.name || item.id,
@@ -153,6 +159,10 @@ export class GithubStorage implements IndexStorage {
                     dynasty: item.dynasty,
                     role: item.role,
                     path: item.path,
+                    additional_titles: raw.additional_titles,
+                    juan_count: raw.juan_count,
+                    has_text: raw.has_text,
+                    has_image: raw.has_image,
                 });
                 this.pathMap.set(item.id, { path: item.path, isDraft });
             }
@@ -204,6 +214,20 @@ export class GithubStorage implements IndexStorage {
             total: ranked.length,
             page,
             pageSize,
+        };
+    }
+
+    async searchAll(query: string, limit: number = 5): Promise<GroupedSearchResult> {
+        const all = await this.ensureLoaded();
+        const types: IndexType[] = ['work', 'book', 'collection'];
+        const results = types.map(t => rankByRelevance(all.filter(e => e.type === t), query));
+        return {
+            works: results[0].slice(0, limit),
+            books: results[1].slice(0, limit),
+            collections: results[2].slice(0, limit),
+            totalWorks: results[0].length,
+            totalBooks: results[1].length,
+            totalCollections: results[2].length,
         };
     }
 
