@@ -463,7 +463,15 @@ export class BookIndexStorage {
 
 /**
  * 计算单条条目与查询的匹配分数。
- * 多字段命中时分数累加。
+ *
+ * 评分模型：
+ * - 标题：完全=200, 前缀=150, 包含=100
+ * - 别名：完全=120, 前缀=90, 包含=60
+ * - 作者：完全=80, 包含=50
+ * - 朝代：包含=30
+ * - 类型加成：work ×1.1, collection ×1.05
+ * - 资源加成：有文字+15, 有图片+10
+ * - 同分按标题长度升序（更短=更精确）
  */
 function scoreEntry(entry: IndexEntry, query: string): number {
     const q = query.toLowerCase();
@@ -472,31 +480,57 @@ function scoreEntry(entry: IndexEntry, query: string): number {
     // title（权重最高）
     const title = entry.title.toLowerCase();
     if (title === q) {
-        score += 100;
+        score += 200;
     } else if (title.startsWith(q)) {
-        score += 80;
+        score += 150;
     } else if (title.includes(q)) {
-        score += 60;
+        score += 100;
     }
 
-    // author（权重次之）
+    // additional_titles（别名）
+    if (entry.additional_titles) {
+        let bestAlias = 0;
+        for (const alias of entry.additional_titles) {
+            const a = alias.toLowerCase();
+            if (a === q) {
+                bestAlias = Math.max(bestAlias, 120);
+            } else if (a.startsWith(q)) {
+                bestAlias = Math.max(bestAlias, 90);
+            } else if (a.includes(q)) {
+                bestAlias = Math.max(bestAlias, 60);
+            }
+        }
+        score += bestAlias;
+    }
+
+    // author
     if (entry.author) {
         const author = entry.author.toLowerCase();
         if (author === q) {
-            score += 50;
+            score += 80;
         } else if (author.includes(q)) {
-            score += 40;
+            score += 50;
         }
     }
 
-    // 其他字段：dynasty, role, id
-    const others = [entry.dynasty, entry.role, entry.id];
-    for (const val of others) {
-        if (val && val.toLowerCase().includes(q)) {
-            score += 20;
-            break;          // 其他字段只加一次
-        }
+    // dynasty
+    if (entry.dynasty && entry.dynasty.toLowerCase().includes(q)) {
+        score += 30;
     }
+
+    // 无匹配则直接返回 0
+    if (score === 0) return 0;
+
+    // 类型加成
+    if (entry.type === 'work') {
+        score = Math.round(score * 1.1);
+    } else if (entry.type === 'collection') {
+        score = Math.round(score * 1.05);
+    }
+
+    // 资源加成
+    if (entry.has_text) score += 15;
+    if (entry.has_image) score += 10;
 
     return score;
 }
@@ -516,6 +550,10 @@ export function rankByRelevance(entries: IndexEntry[], query: string): IndexEntr
     const scored = entries
         .map(e => ({ entry: e, score: scoreEntry(e, query) }))
         .filter(s => s.score > 0);
-    scored.sort((a, b) => b.score - a.score);
+    scored.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        // 同分按标题长度升序（更短=更精确的匹配）
+        return a.entry.title.length - b.entry.title.length;
+    });
     return scored.map(s => s.entry);
 }
