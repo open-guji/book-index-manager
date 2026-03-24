@@ -101,8 +101,8 @@ export class BookIndexStorage {
         metadata.id = idStr;
         metadata.type = type;
 
-        // 写入文件
-        await this.fs.writeFile(filePath, JSON.stringify(metadata, null, 2));
+        // 写入文件（过滤 null 值以节省空间）
+        await this.fs.writeFile(filePath, JSON.stringify(metadata, stripNulls, 2));
 
         // 更新索引
         const root = this.getRootById(idStr);
@@ -433,6 +433,13 @@ function scoreEntry(entry: IndexEntry, query: string): number {
  * 对条目列表按匹配度排序，过滤掉无匹配的条目。
  * 供 BookIndexStorage.searchEntries / GithubStorage.search 等统一调用。
  */
+/**
+ * JSON.stringify replacer：过滤值为 null 的字段
+ */
+function stripNulls(_key: string, value: unknown): unknown {
+    return value === null ? undefined : value;
+}
+
 export function rankByRelevance(entries: IndexEntry[], query: string): IndexEntry[] {
     const scored = entries
         .map(e => ({ entry: e, score: scoreEntry(e, query) }))

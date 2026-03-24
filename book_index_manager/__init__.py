@@ -6,7 +6,7 @@ from .id_generator import (
     base58_decode,
 )
 from .manager import BookIndexManager
-from .storage import BookIndexStorage
+from .storage import BookIndexStorage, strip_nulls
 from .storage_base import IndexStorage, PageResult, LoadOptions
 from .storage_github import GithubStorage, GithubStorageConfig
 from .schema import ResourceEntry

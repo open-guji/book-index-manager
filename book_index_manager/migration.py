@@ -10,6 +10,15 @@ from .schema import ResourceEntry, extract_id_from_url
 logger = logging.getLogger(__name__)
 
 
+def _strip_nulls(obj):
+    """递归移除 dict 中值为 None 的字段。"""
+    if isinstance(obj, dict):
+        return {k: _strip_nulls(v) for k, v in obj.items() if v is not None}
+    if isinstance(obj, list):
+        return [_strip_nulls(item) for item in obj]
+    return obj
+
+
 def migrate_old_resource(item: dict, resource_type: str) -> dict:
     """Convert a single old-format resource item to new ResourceEntry dict.
 
@@ -108,7 +117,7 @@ def migrate_file(file_path: Path, dry_run: bool = False) -> bool:
 
     try:
         with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(migrated, f, indent=2, ensure_ascii=False)
+            json.dump(_strip_nulls(migrated), f, indent=2, ensure_ascii=False)
         logger.info(f"Migrated: {file_path}")
         return True
     except Exception as e:

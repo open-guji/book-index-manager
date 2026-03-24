@@ -9,6 +9,15 @@ from .exceptions import StorageError
 from .migration import migrate_metadata
 
 
+def strip_nulls(obj):
+    """递归移除 dict 中值为 None 的字段。"""
+    if isinstance(obj, dict):
+        return {k: strip_nulls(v) for k, v in obj.items() if v is not None}
+    if isinstance(obj, list):
+        return [strip_nulls(item) for item in obj]
+    return obj
+
+
 class BookIndexStorage:
     def __init__(self, workspace_root: str):
         """
@@ -93,7 +102,7 @@ class BookIndexStorage:
             self._migrate_keys(metadata)
 
             with open(file_path, "w", encoding="utf-8") as f:
-                json.dump(metadata, f, indent=2, ensure_ascii=False)
+                json.dump(strip_nulls(metadata), f, indent=2, ensure_ascii=False)
 
             root = self.get_root_by_id(id_val)
             rel_path = str(file_path.relative_to(root)).replace("\\", "/")
@@ -134,15 +143,15 @@ class BookIndexStorage:
                     else:
                         metadata[en_key] = val
                 elif en_key == "publication_info":
-                    metadata[en_key] = {"year": str(val), "details": "", "source": None}
+                    metadata[en_key] = {"year": str(val), "details": ""}
                 elif en_key == "current_location":
-                    metadata[en_key] = {"name": str(val), "source": None}
+                    metadata[en_key] = {"name": str(val)}
                 elif en_key in ("page_count", "juan_count"):
                     try:
                         num = int(val) if val and str(val).isdigit() else 0
-                        metadata[en_key] = {"number": num, "description": str(val) if not str(val).isdigit() else "", "source": None}
+                        metadata[en_key] = {"number": num, "description": str(val) if not str(val).isdigit() else ""}
                     except Exception:
-                        metadata[en_key] = {"number": 0, "description": str(val), "source": None}
+                        metadata[en_key] = {"number": 0, "description": str(val)}
                 elif en_key == "contained_in":
                     if isinstance(val, str):
                         metadata[en_key] = [val]
