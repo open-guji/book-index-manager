@@ -28,6 +28,10 @@ export interface IndexFileEntry {
     holder: string;
     dynasty?: string;
     role?: string;
+    additional_titles?: string[];
+    juan_count?: number;
+    has_text?: boolean;
+    has_image?: boolean;
 }
 
 /**
@@ -153,7 +157,33 @@ export class BookIndexStorage {
             holder = loc;
         }
 
-        (index[typeKey] as Record<string, IndexFileEntry>)[idStr] = {
+        // 提取 additional_titles
+        const additionalTitles = Array.isArray(metadata.additional_titles)
+            ? (metadata.additional_titles as string[]).filter(t => typeof t === 'string' && t)
+            : undefined;
+
+        // 提取 juan_count
+        let juanCount: number | undefined;
+        const jc = metadata.juan_count;
+        if (typeof jc === 'number') {
+            juanCount = jc;
+        } else if (typeof jc === 'object' && jc !== null) {
+            juanCount = (jc as any).number || undefined;
+        }
+
+        // 提取资源类型标记
+        let hasText = false;
+        let hasImage = false;
+        const resources = metadata.resources;
+        if (Array.isArray(resources)) {
+            for (const r of resources) {
+                const rt = typeof r === 'object' && r !== null ? (r as any).type : '';
+                if (rt === 'text' || rt === 'text+image') hasText = true;
+                if (rt === 'image' || rt === 'text+image') hasImage = true;
+            }
+        }
+
+        const entry: IndexFileEntry = {
             id: idStr,
             title: (metadata.title as string) || '未命名',
             type: TYPE_TO_FOLDER[type],
@@ -162,6 +192,12 @@ export class BookIndexStorage {
             year,
             holder,
         };
+        if (additionalTitles && additionalTitles.length > 0) entry.additional_titles = additionalTitles;
+        if (juanCount) entry.juan_count = juanCount;
+        if (hasText) entry.has_text = true;
+        if (hasImage) entry.has_image = true;
+
+        (index[typeKey] as Record<string, IndexFileEntry>)[idStr] = entry;
 
         await this.saveIndex(indexFile, index);
     }
@@ -256,6 +292,10 @@ export class BookIndexStorage {
                     dynasty: entry.dynasty || undefined,
                     role: entry.role || undefined,
                     path: joinPath(root, entry.path),
+                    additional_titles: entry.additional_titles,
+                    juan_count: entry.juan_count,
+                    has_text: entry.has_text,
+                    has_image: entry.has_image,
                 });
             }
         }
@@ -311,7 +351,33 @@ export class BookIndexStorage {
                         author = typeof first === 'object' && first !== null ? (first as any).name || '' : String(first);
                     }
 
-                    (index[typeKey] as Record<string, IndexFileEntry>)[idStr] = {
+                    // 提取 additional_titles
+                    const additionalTitles = Array.isArray(metadata.additional_titles)
+                        ? (metadata.additional_titles as string[]).filter(t => typeof t === 'string' && t)
+                        : undefined;
+
+                    // 提取 juan_count
+                    let juanCount: number | undefined;
+                    const jc = metadata.juan_count;
+                    if (typeof jc === 'number') {
+                        juanCount = jc;
+                    } else if (typeof jc === 'object' && jc !== null) {
+                        juanCount = (jc as any).number || undefined;
+                    }
+
+                    // 提取资源类型标记
+                    let hasText = false;
+                    let hasImage = false;
+                    const resources = metadata.resources;
+                    if (Array.isArray(resources)) {
+                        for (const r of resources) {
+                            const rt = typeof r === 'object' && r !== null ? (r as any).type : '';
+                            if (rt === 'text' || rt === 'text+image') hasText = true;
+                            if (rt === 'image' || rt === 'text+image') hasImage = true;
+                        }
+                    }
+
+                    const entry: IndexFileEntry = {
                         id: idStr,
                         title: (metadata.title as string) || '未命名',
                         type: typeDir,
@@ -320,6 +386,12 @@ export class BookIndexStorage {
                         year: typeof metadata.publication_info === 'object' ? ((metadata.publication_info as any)?.year || '') : '',
                         holder: typeof metadata.current_location === 'object' ? ((metadata.current_location as any)?.name || '') : '',
                     };
+                    if (additionalTitles && additionalTitles.length > 0) entry.additional_titles = additionalTitles;
+                    if (juanCount) entry.juan_count = juanCount;
+                    if (hasText) entry.has_text = true;
+                    if (hasImage) entry.has_image = true;
+
+                    (index[typeKey] as Record<string, IndexFileEntry>)[idStr] = entry;
                 } catch { /* skip invalid files */ }
             }
         }
