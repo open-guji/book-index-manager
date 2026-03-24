@@ -36,6 +36,14 @@ export interface IndexEntry {
     dynasty?: string;
     role?: string;
     path?: string;
+    /** 别名列表 */
+    additional_titles?: string[];
+    /** 卷数 */
+    juan_count?: number;
+    /** 是否有文字资源 */
+    has_text?: boolean;
+    /** 是否有图片资源 */
+    has_image?: boolean;
 }
 
 /** 分页结果 */
@@ -166,7 +174,7 @@ export interface WorkDetailData extends BaseDetailData {
     parent_works?: string[];
     parent_work?: { id: string; title: string };
     books?: string[];
-    related_works?: { id: string; title: string }[];
+    related_works?: { id: string; title: string; relation?: 'part_of' | 'has_part' }[];
 }
 
 /** 统一详情数据类型 */
