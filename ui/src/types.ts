@@ -124,7 +124,8 @@ export interface BaseDetailData {
     type: IndexType;
     description?: DescriptionInfo;
     authors?: AuthorInfo[];
-    additional_titles?: AdditionalTitle[];
+    additional_titles?: string[];
+    additional_works?: AdditionalWork[];
     indexed_by?: IndexedByEntry[];
     publication_info?: PublicationInfo;
     current_location?: LocationInfo;
@@ -210,10 +211,10 @@ export interface CreateEntityParams {
     inheritData?: Record<string, unknown>;
 }
 
-// ── 副题信息 ──
+// ── 附属作品信息 ──
 
-/** 副题/附录条目 */
-export interface AdditionalTitle {
+/** 附属作品条目（序言、附录、卷图等） */
+export interface AdditionalWork {
     book_title: string;
     n_juan?: number;
 }

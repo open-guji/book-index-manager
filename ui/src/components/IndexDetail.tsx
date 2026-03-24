@@ -8,7 +8,7 @@ import type {
     WorkDetailData,
     AuthorInfo,
     LocationInfo,
-    AdditionalTitle,
+    AdditionalWork,
     IndexedByEntry,
     ContainedInEntry,
 } from '../types';
@@ -504,9 +504,41 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
     );
 }
 
-// ── 附录/副题 ──
+// ── 别名 ──
 
-function AdditionalTitlesList({ items }: { items: AdditionalTitle[] }) {
+function AdditionalTitlesList({ items }: { items: string[] }) {
+    if (!items.length) return null;
+    return (
+        <>
+            <SectionLabel>别名</SectionLabel>
+            <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '6px',
+            }}>
+                {items.map((t, i) => (
+                    <span key={i} style={{
+                        display: 'inline-flex',
+                        alignItems: 'baseline',
+                        gap: '3px',
+                        padding: '3px 8px',
+                        fontSize: '13px',
+                        color: 'var(--bim-fg, #333)',
+                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        borderRadius: '4px',
+                        background: 'var(--bim-input-bg, #fff)',
+                    }}>
+                        {t}
+                    </span>
+                ))}
+            </div>
+        </>
+    );
+}
+
+// ── 附属作品 ──
+
+function AdditionalWorksList({ items }: { items: AdditionalWork[] }) {
     if (!items.length) return null;
     return (
         <>
@@ -1093,6 +1125,10 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                     <SectionLabel>所属作品</SectionLabel>
                     <WorkInfoCard workData={workInfo} onNavigate={onNavigate} renderLink={renderLink} />
                 </>
+            )}
+
+            {detail.additional_works && detail.additional_works.length > 0 && (
+                <AdditionalWorksList items={detail.additional_works} />
             )}
 
             {detail.additional_titles && detail.additional_titles.length > 0 && (

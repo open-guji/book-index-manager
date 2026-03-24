@@ -28,7 +28,7 @@ export type {
     EntityOption,
     CreateEntityParams,
     SourceItem,
-    AdditionalTitle,
+    AdditionalWork,
     IndexedByEntry,
     VolumeBookMapping,
     VolumeBookEntry,
@@ -37,6 +37,7 @@ export type {
     CollatedSection,
     CollatedJuan,
     CollatedEditionIndex,
+    ResourceCatalog,
 } from './types';
 
 // ID encoding/decoding

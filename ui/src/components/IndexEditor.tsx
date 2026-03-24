@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import type {
     IndexType, IndexDetailData, ResourceEntry, DownloadProgress,
     RelationData, RelatedEntity, EntityOption, SourceItem,
-    AdditionalTitle, IndexedByEntry,
+    AdditionalWork, IndexedByEntry,
 } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { Section } from './common/Section';
@@ -62,7 +62,7 @@ export interface IndexEditorData {
     otherEditions?: string;
     notes?: string;
     // 结构化字段
-    additional_titles?: AdditionalTitle[];
+    additional_works?: AdditionalWork[];
     indexed_by?: IndexedByEntry[];
     // 关联字段
     workId?: string;
@@ -243,12 +243,12 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
                 <FormTextArea value={data.description || ''} onChange={v => handleChange('description', v)} placeholder="简要介绍..." />
             </Section>
 
-            {/* 副题/附录 */}
-            {(data.additional_titles?.length || 0) > 0 && (
-                <Section title="📑 副题/附录 (Additional Titles)" onSave={onSave}>
-                    <AdditionalTitlesEditor
-                        items={data.additional_titles || []}
-                        onChange={items => handleChange('additional_titles', items)}
+            {/* 附属作品 */}
+            {(data.additional_works?.length || 0) > 0 && (
+                <Section title="📑 附属作品 (Additional Works)" onSave={onSave}>
+                    <AdditionalWorksEditor
+                        items={data.additional_works || []}
+                        onChange={items => handleChange('additional_works', items)}
                     />
                 </Section>
             )}
@@ -375,13 +375,13 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
     );
 };
 
-// ── 副题/附录编辑器 ──
+// ── 附属作品编辑器 ──
 
-function AdditionalTitlesEditor({ items, onChange }: {
-    items: AdditionalTitle[];
-    onChange: (items: AdditionalTitle[]) => void;
+function AdditionalWorksEditor({ items, onChange }: {
+    items: AdditionalWork[];
+    onChange: (items: AdditionalWork[]) => void;
 }) {
-    const update = (index: number, field: keyof AdditionalTitle, value: unknown) => {
+    const update = (index: number, field: keyof AdditionalWork, value: unknown) => {
         const next = items.map((item, i) => i === index ? { ...item, [field]: value } : item);
         onChange(next);
     };
@@ -407,7 +407,7 @@ function AdditionalTitlesEditor({ items, onChange }: {
                 padding: '6px 12px', fontSize: '12px', border: '1px dashed #ccc',
                 borderRadius: '4px', background: 'transparent', cursor: 'pointer', color: '#666',
                 alignSelf: 'flex-start',
-            }}>+ 添加副题</button>
+            }}>+ 添加附属作品</button>
         </div>
     );
 }
