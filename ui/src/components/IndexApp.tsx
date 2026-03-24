@@ -3,6 +3,8 @@ import { IndexBrowser } from './IndexBrowser';
 import { IndexDetail } from './IndexDetail';
 import { CollectionCatalog } from './CollectionCatalog';
 import { CollatedEdition } from './CollatedEdition';
+import { HomePage } from './HomePage';
+import type { RecommendedItem } from './HomePage';
 import type { IndexStorage } from '../storage/types';
 import type { IndexEntry, IndexDetailData, ResourceCatalog, CollatedEditionIndex } from '../types';
 
@@ -12,6 +14,8 @@ export interface IndexAppProps {
     hideModeIndicator?: boolean;
     /** 点击条目时的自定义处理（若提供则不显示右侧详情面板） */
     onEntryClick?: (entry: IndexEntry) => void;
+    /** 首页推荐条目 */
+    recommendedIds?: RecommendedItem[];
 }
 
 /**
@@ -22,6 +26,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
     transport,
     hideModeIndicator = true,
     onEntryClick: externalEntryClick,
+    recommendedIds,
 }) => {
     const [selectedEntry, setSelectedEntry] = useState<IndexEntry | null>(null);
     const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
@@ -234,20 +239,11 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                         </div>
                     </>
                 ) : (
-                    <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        height: '100%',
-                        color: 'var(--bim-desc-fg, #717171)',
-                    }}>
-                        <div style={{ fontSize: '48px', marginBottom: '16px' }}>📚</div>
-                        <h2 style={{ margin: '0 0 8px', fontWeight: 400, fontSize: '18px' }}>古籍索引浏览器</h2>
-                        <p style={{ margin: 0, fontSize: '14px' }}>
-                            从左侧选择一个条目查看详情
-                        </p>
-                    </div>
+                    <HomePage
+                        transport={transport}
+                        onNavigate={handleNavigate}
+                        recommendedIds={recommendedIds}
+                    />
                 )}
             </div>
         </div>

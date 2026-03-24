@@ -7,6 +7,7 @@ export type {
     IndexStatus,
     IndexEntry,
     PageResult,
+    GroupedSearchResult,
     LoadOptions,
     DownloadStatus,
     DownloadProgress,
@@ -77,6 +78,8 @@ export { IndexDetail } from './components/IndexDetail';
 export type { IndexDetailProps } from './components/IndexDetail';
 export { IndexApp } from './components/IndexApp';
 export type { IndexAppProps } from './components/IndexApp';
+export { HomePage } from './components/HomePage';
+export type { HomePageProps, RecommendedItem } from './components/HomePage';
 export { ModeIndicator } from './components/ModeIndicator';
 export { CollectionCatalog } from './components/CollectionCatalog';
 export type { CollectionCatalogProps } from './components/CollectionCatalog';
