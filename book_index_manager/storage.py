@@ -316,11 +316,32 @@ class BookIndexStorage:
                         year = metadata.get("publication_info", {}).get("year", "") if isinstance(metadata.get("publication_info"), dict) else ""
                         holder = metadata.get("current_location", {}).get("name", "") if isinstance(metadata.get("current_location"), dict) else ""
 
-                        # n_juan: 从 juan_count 提取卷数
-                        n_juan = 0
+                        # juan_count: 从 juan_count 提取卷数
+                        juan_count = 0
                         vc = metadata.get("juan_count")
                         if isinstance(vc, dict):
-                            n_juan = vc.get("number", 0) or 0
+                            juan_count = vc.get("number", 0) or 0
+                        elif isinstance(vc, (int, float)):
+                            juan_count = int(vc)
+
+                        # additional_titles: 别名列表
+                        additional_titles = metadata.get("additional_titles", [])
+                        if not isinstance(additional_titles, list):
+                            additional_titles = []
+                        additional_titles = [t for t in additional_titles if isinstance(t, str) and t]
+
+                        # 资源类型标记
+                        has_text = False
+                        has_image = False
+                        resources = metadata.get("resources", [])
+                        if isinstance(resources, list):
+                            for r in resources:
+                                if isinstance(r, dict):
+                                    rt = r.get("type", "")
+                                    if rt in ("text", "text+image"):
+                                        has_text = True
+                                    if rt in ("image", "text+image"):
+                                        has_image = True
 
                         entry: dict = {"id": id_str, "title": title, "type": type_val.name, "path": rel_path}
                         if author_name:
@@ -333,8 +354,14 @@ class BookIndexStorage:
                             entry["dynasty"] = author_dynasty
                         if author_role:
                             entry["role"] = author_role
-                        if n_juan:
-                            entry["n_juan"] = n_juan
+                        if juan_count:
+                            entry["juan_count"] = juan_count
+                        if additional_titles:
+                            entry["additional_titles"] = additional_titles
+                        if has_text:
+                            entry["has_text"] = True
+                        if has_image:
+                            entry["has_image"] = True
                         index[type_key][id_str] = entry
                 except Exception as e:
                     logger.warning(f"Error processing {json_file}: {e}")
