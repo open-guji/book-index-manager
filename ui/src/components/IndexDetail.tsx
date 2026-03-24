@@ -1166,32 +1166,41 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                 <BookVersionList ids={workData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
             )}
 
-            {workData?.related_works && workData.related_works.length > 0 && (
-                <>
-                    <SectionLabel>
-                        相关作品
-                        <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #aaa)', fontWeight: 400 }}>
-                            ({workData.related_works.length})
-                        </span>
-                    </SectionLabel>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                        {workData.related_works.map(rw => (
-                            <span key={rw.id} style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                padding: '3px 10px',
-                                fontSize: '13px',
-                                border: '1px solid var(--bim-widget-border, #e0e0e0)',
-                                borderRadius: '4px',
-                                background: 'var(--bim-input-bg, #fff)',
-                            }}>
-                                <IdLink id={rw.id} label={rw.title} onNavigate={onNavigate} renderLink={renderLink} />
+            {workData?.related_works && workData.related_works.length > 0 && (() => {
+                const groups: { label: string; items: typeof workData.related_works }[] = [];
+                const partOf = workData.related_works!.filter(rw => rw.relation === 'part_of');
+                const hasPart = workData.related_works!.filter(rw => rw.relation === 'has_part');
+                const other = workData.related_works!.filter(rw => !rw.relation);
+                if (partOf.length > 0) groups.push({ label: '所属作品', items: partOf });
+                if (hasPart.length > 0) groups.push({ label: '包含作品', items: hasPart });
+                if (other.length > 0) groups.push({ label: '相关作品', items: other });
+                return groups.map(group => (
+                    <div key={group.label}>
+                        <SectionLabel>
+                            {group.label}
+                            <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #aaa)', fontWeight: 400 }}>
+                                ({group.items!.length})
                             </span>
-                        ))}
+                        </SectionLabel>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                            {group.items!.map(rw => (
+                                <span key={rw.id} style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    padding: '3px 10px',
+                                    fontSize: '13px',
+                                    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                    borderRadius: '4px',
+                                    background: 'var(--bim-input-bg, #fff)',
+                                }}>
+                                    <IdLink id={rw.id} label={rw.title} onNavigate={onNavigate} renderLink={renderLink} />
+                                </span>
+                            ))}
+                        </div>
                     </div>
-                </>
-            )}
+                ));
+            })()}
         </div>
     );
 };

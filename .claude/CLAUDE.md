@@ -32,6 +32,9 @@ book-index-manager/
 - 三层目录结构：`{Type}/{c1}/{c2}/{c3}/{ID}-{名称}.json`
 - ID 体系：Work → Collection → Book，Snowflake 64-bit + Base58 编码
 
+## UI 组件设计
+详见 [ui/DESIGN.md](../ui/DESIGN.md)，描述了组件职责划分、消费者组合方式和数据传输层设计。
+
 ## 关联项目
-- **guji-platform**：VS Code 插件，调用本包的 Python 模块进行索引管理
-- **kaiyuanguji-web**：古籍网站，将复用本包的 React 组件
+- **guji-platform**（`D:\workspace\guji-platform`）：VS Code 插件，调用本包的 Python 模块和 React 组件
+- **kaiyuanguji-web**（`\\wsl.localhost\Ubuntu\home\lishaodong\workspace\kaiyuanguji-web`）：古籍网站，复用本包的 React 组件和存储层
