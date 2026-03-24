@@ -57,9 +57,16 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
 }) => {
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
-    const displayItems = filterType
-        ? items.map((item, i) => ({ item, originalIndex: i })).filter(({ item }) => item.type === filterType)
-        : items.map((item, i) => ({ item, originalIndex: i }));
+    const matchesFilter = (type: string) => {
+        if (!filterType) return true;
+        if (filterType === 'text') return type === 'text' || type === 'text+image';
+        if (filterType === 'image') return type === 'image' || type === 'text+image' || type === 'physical';
+        return type === filterType;
+    };
+
+    const displayItems = items
+        .map((item, i) => ({ item, originalIndex: i }))
+        .filter(({ item }) => matchesFilter(item.type));
 
     const handleAdd = () => {
         const entry = createEmptyEntry();

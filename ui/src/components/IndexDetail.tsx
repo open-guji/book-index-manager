@@ -210,7 +210,7 @@ function MetaItem({ label, children }: { label: string; children: React.ReactNod
 
 function AuthorLine({ authors, type }: { authors: AuthorInfo[]; type: IndexType }) {
     return (
-        <div style={{
+        <span style={{
             fontSize: '14px',
             color: 'var(--bim-fg, #333)',
             lineHeight: 1.6,
@@ -234,7 +234,7 @@ function AuthorLine({ authors, type }: { authors: AuthorInfo[]; type: IndexType 
                     )}
                 </span>
             ))}
-        </div>
+        </span>
     );
 }
 
@@ -322,16 +322,17 @@ function DetailHeader({ id, title, type, isDraft, authors, volumeText, meta, hea
                     {headerExtra}
                 </div>
             </div>
-            {authors && authors.length > 0 && (
-                <AuthorLine authors={authors} type={type} />
-            )}
-            {meta.length > 0 && (
+            {(authors?.length || meta.length > 0) && (
                 <div style={{
                     display: 'flex',
                     flexWrap: 'wrap',
+                    alignItems: 'baseline',
                     gap: '12px',
                     marginTop: '6px',
                 }}>
+                    {authors && authors.length > 0 && (
+                        <AuthorLine authors={authors} type={type} />
+                    )}
                     {meta}
                 </div>
             )}
@@ -685,6 +686,86 @@ function RelationList({ title, ids, transport, onNavigate, renderLink }: {
                         }}>
                             <IdLink id={item.id} label={label} onNavigate={onNavigate} renderLink={renderLink} />
                         </span>
+                    );
+                })}
+            </div>
+        </>
+    );
+}
+
+// ── 相关版本（纵向卡片 + 资源） ──
+
+interface ResolvedBook {
+    id: string;
+    title?: string;
+    version?: string;
+    resources?: ResourceEntry[];
+}
+
+function BookVersionList({ ids, transport, onNavigate, renderLink }: {
+    ids: string[];
+    transport?: IndexStorage;
+    onNavigate?: (id: string) => void;
+    renderLink?: (id: string, label?: string) => React.ReactNode;
+}) {
+    const [books, setBooks] = useState<ResolvedBook[]>([]);
+
+    useEffect(() => {
+        if (!ids.length) { setBooks([]); return; }
+        if (!transport) { setBooks(ids.map(id => ({ id }))); return; }
+        let cancelled = false;
+        Promise.all(
+            ids.map(id =>
+                transport.getItem(id).then(raw => ({
+                    id,
+                    title: raw ? (raw as any).title : undefined,
+                    version: raw ? (raw as any).version : undefined,
+                    resources: raw ? (raw as any).resources as ResourceEntry[] | undefined : undefined,
+                })).catch(() => ({ id } as ResolvedBook))
+            )
+        ).then(items => { if (!cancelled) setBooks(items); });
+        return () => { cancelled = true; };
+    }, [ids, transport]);
+
+    if (!ids.length) return null;
+
+    return (
+        <>
+            <SectionLabel>
+                相关版本
+                <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #aaa)', fontWeight: 400 }}>
+                    ({ids.length})
+                </span>
+            </SectionLabel>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {(books.length ? books : ids.map(id => ({ id } as ResolvedBook))).map(book => {
+                    const label = book.version
+                        ? `${book.title || book.id}（${book.version}）`
+                        : book.title || undefined;
+                    return (
+                        <div key={book.id} style={{
+                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            borderRadius: '6px',
+                            overflow: 'hidden',
+                            background: 'var(--bim-input-bg, #fff)',
+                        }}>
+                            <div style={{
+                                padding: '10px 14px',
+                                borderBottom: book.resources?.length
+                                    ? '1px solid var(--bim-widget-border, #e0e0e0)'
+                                    : 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                            }}>
+                                <IdLink id={book.id} label={label} onNavigate={onNavigate} renderLink={renderLink} />
+                            </div>
+                            {book.resources && book.resources.length > 0 && (
+                                <div style={{ padding: '10px 14px' }}>
+                                    <ResourceList items={book.resources} groupByType />
+                                </div>
+                            )}
+                        </div>
                     );
                 })}
             </div>
@@ -1046,7 +1127,34 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
             )}
 
             {workData?.books && workData.books.length > 0 && (
-                <RelationList title="相关版本" ids={workData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
+                <BookVersionList ids={workData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
+            )}
+
+            {workData?.related_works && workData.related_works.length > 0 && (
+                <>
+                    <SectionLabel>
+                        相关作品
+                        <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #aaa)', fontWeight: 400 }}>
+                            ({workData.related_works.length})
+                        </span>
+                    </SectionLabel>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {workData.related_works.map(rw => (
+                            <span key={rw.id} style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                padding: '3px 10px',
+                                fontSize: '13px',
+                                border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                borderRadius: '4px',
+                                background: 'var(--bim-input-bg, #fff)',
+                            }}>
+                                <IdLink id={rw.id} label={rw.title} onNavigate={onNavigate} renderLink={renderLink} />
+                            </span>
+                        ))}
+                    </div>
+                </>
             )}
         </div>
     );

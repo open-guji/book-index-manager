@@ -198,7 +198,7 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
 
                     try {
                         const files = fs.readdirSync(assetDir)
-                            .filter((f: string) => f.endsWith('.json'))
+                            .filter((f: string) => f.endsWith('.json') && f !== 'juan_groups.json')
                             .sort((a: string, b: string) => {
                                 // juanshouX < juanXXX < fulu
                                 const order = (name: string) => {
@@ -210,11 +210,18 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                                 if (oa !== ob) return oa - ob;
                                 return a.localeCompare(b);
                             });
-                        sendJson({
+                        const result: Record<string, unknown> = {
                             work_id: id,
                             total_juan: files.length,
                             juan_files: files,
-                        });
+                        };
+                        const groupsFile = path.join(assetDir, 'juan_groups.json');
+                        if (fs.existsSync(groupsFile)) {
+                            try {
+                                result.juan_groups = JSON.parse(fs.readFileSync(groupsFile, 'utf-8'));
+                            } catch { /* ignore */ }
+                        }
+                        sendJson(result);
                     } catch {
                         sendJson({ error: 'Read error' }, 500);
                     }

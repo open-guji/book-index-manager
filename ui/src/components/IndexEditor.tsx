@@ -261,13 +261,25 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
                 />
             </Section>
 
-            {/* 资源 */}
-            <Section title="🔗 资源 (Resources)" onSave={onSave} onAskAI={onAskAI ? () => onAskAI('资源') : undefined}>
+            {/* 文字资源 */}
+            <Section title="📝 文字资源 (Text Resources)" onSave={onSave} onAskAI={onAskAI ? () => onAskAI('资源') : undefined}>
                 <ResourceEditor
                     items={data.resources || []}
                     onChange={(items: ResourceEntry[]) => handleChange('resources', items)}
                     onDownload={onDownloadResource}
                     downloadStatuses={downloadStatuses}
+                    filterType="text"
+                />
+            </Section>
+
+            {/* 图片资源 */}
+            <Section title="🖼️ 图片资源 (Image Resources)" onSave={onSave}>
+                <ResourceEditor
+                    items={data.resources || []}
+                    onChange={(items: ResourceEntry[]) => handleChange('resources', items)}
+                    onDownload={onDownloadResource}
+                    downloadStatuses={downloadStatuses}
+                    filterType="image"
                 />
             </Section>
 

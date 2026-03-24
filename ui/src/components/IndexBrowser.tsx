@@ -4,22 +4,32 @@ import type { IndexStorage } from '../storage/types';
 import { ModeIndicator } from './ModeIndicator';
 
 const PAGE_SIZE = 50;
-const RECENT_KEY = 'bim-recent-entries';
+const RECENT_KEY = 'bim-recent-ids';
+const RECENT_KEY_LEGACY = 'bim-recent-entries';
 const MAX_RECENT = 50;
 
-function loadRecentEntries(): IndexEntry[] {
+function loadRecentIds(): string[] {
     try {
         const raw = localStorage.getItem(RECENT_KEY);
-        return raw ? JSON.parse(raw) : [];
+        if (raw) return JSON.parse(raw);
+        // 迁移旧格式：从完整 entry 中提取 ID
+        const legacy = localStorage.getItem(RECENT_KEY_LEGACY);
+        if (legacy) {
+            const ids = (JSON.parse(legacy) as { id: string }[]).map(e => e.id);
+            localStorage.setItem(RECENT_KEY, JSON.stringify(ids));
+            localStorage.removeItem(RECENT_KEY_LEGACY);
+            return ids;
+        }
+        return [];
     } catch {
         return [];
     }
 }
 
-function saveRecentEntry(entry: IndexEntry) {
+function saveRecentId(id: string) {
     try {
-        const list = loadRecentEntries().filter(e => e.id !== entry.id);
-        list.unshift(entry);
+        const list = loadRecentIds().filter(i => i !== id);
+        list.unshift(id);
         if (list.length > MAX_RECENT) list.length = MAX_RECENT;
         localStorage.setItem(RECENT_KEY, JSON.stringify(list));
     } catch { /* ignore */ }
@@ -68,7 +78,9 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     const [sortBy, setSortBy] = useState('title');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [showingRecent, setShowingRecent] = useState(true);
-    const [recentEntries, setRecentEntries] = useState<IndexEntry[]>(loadRecentEntries);
+    const [recentIds, setRecentIds] = useState<string[]>(loadRecentIds);
+    const [recentEntries, setRecentEntries] = useState<IndexEntry[]>([]);
+    const [recentLoading, setRecentLoading] = useState(false);
 
     const buildOptions = useCallback((page: number): LoadOptions => ({
         page,
@@ -116,6 +128,41 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         }
     }, [transport, searchQuery, activeTab, buildOptions]);
 
+    // 从 ID 列表解析最近浏览条目
+    useEffect(() => {
+        if (!recentIds.length) { setRecentEntries([]); return; }
+        let cancelled = false;
+        setRecentLoading(true);
+        Promise.all(
+            recentIds.map(async id => {
+                try {
+                    if (transport.getEntry) {
+                        const entry = await transport.getEntry(id);
+                        if (entry) return entry;
+                    }
+                    const raw = await transport.getItem(id);
+                    if (raw) {
+                        const authors = raw.authors as { name?: string; dynasty?: string; role?: string }[] | undefined;
+                        return {
+                            id,
+                            title: (raw.title as string) || id,
+                            type: (raw.type as IndexType) || 'work',
+                            author: authors?.[0]?.name,
+                            dynasty: authors?.[0]?.dynasty,
+                            role: authors?.[0]?.role,
+                        } as IndexEntry;
+                    }
+                } catch { /* ignore */ }
+                return null;
+            })
+        ).then(results => {
+            if (cancelled) return;
+            setRecentEntries(results.filter((e): e is IndexEntry => e !== null));
+            setRecentLoading(false);
+        });
+        return () => { cancelled = true; };
+    }, [recentIds, transport]);
+
     useEffect(() => {
         setCurrentPage(1);
         if (!showingRecent) {
@@ -132,8 +179,8 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
 
     const handleEntryClick = (entry: IndexEntry) => {
         setSelectedId(entry.id);
-        saveRecentEntry(entry);
-        setRecentEntries(loadRecentEntries());
+        saveRecentId(entry.id);
+        setRecentIds(loadRecentIds());
         onEntryClick?.(entry);
     };
 
@@ -262,7 +309,11 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                 ) : showingRecent ? (
                     /* Recent entries view */
                     <div style={{ flex: 1 }}>
-                        {recentEntries.length > 0 ? (
+                        {recentLoading ? (
+                            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--bim-desc-fg, #717171)' }}>
+                                加载中...
+                            </div>
+                        ) : recentEntries.length > 0 ? (
                             <>
                                 <div style={{ padding: '8px 0', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
                                     最近浏览

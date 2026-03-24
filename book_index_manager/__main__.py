@@ -161,6 +161,48 @@ class CLIHandler:
             "asset_dir": str(asset_dir).replace("\\", "/"),
         }, ensure_ascii=False))
 
+    def handle_add_resource(self):
+        bid = self.args.bid
+        metadata = self.manager.get_item(bid)
+        if not metadata:
+            print(json.dumps({"status": "error", "message": f"Item {bid} not found"}, ensure_ascii=False))
+            sys.exit(1)
+
+        resource = {"name": self.args.name, "type": self.args.res_type}
+        if self.args.id:
+            resource["id"] = self.args.id
+        if self.args.url:
+            resource["url"] = self.args.url
+            if not self.args.id:
+                from .schema import extract_id_from_url
+                resource["id"] = extract_id_from_url(self.args.url)
+        if self.args.details:
+            resource["details"] = self.args.details
+
+        resources = metadata.get("resources", [])
+        # Replace existing resource with same id, or append
+        replaced = False
+        if resource.get("id"):
+            for i, r in enumerate(resources):
+                if r.get("id") == resource["id"]:
+                    resources[i] = resource
+                    replaced = True
+                    break
+        if not replaced:
+            resources.append(resource)
+
+        metadata["resources"] = resources
+        id_val = self.manager.decode_id(bid)
+        type_val = BookIndexIdGenerator.parse(id_val).type
+        self.manager.storage.save_item(type_val, id_val, metadata)
+        action = "replaced" if replaced else "added"
+        print(json.dumps({
+            "status": "success",
+            "action": action,
+            "resource_id": resource.get("id", ""),
+            "total_resources": len(resources),
+        }, ensure_ascii=False))
+
     def handle_migrate(self):
         from pathlib import Path
         target = self.args.target
@@ -237,6 +279,17 @@ def main():
                               help="Create asset directory for a book/work/collection")
     p.add_argument("--bid", required=True, help="Item ID (Base58)")
 
+    # add-resource
+    p = subparsers.add_parser("add-resource", parents=[parent_parser],
+                              help="Add or replace a resource on an item")
+    p.add_argument("--bid", required=True, help="Item ID (Base58)")
+    p.add_argument("--id", default=None, help="Resource short ID (e.g. 'wikisource', 'archive')")
+    p.add_argument("--name", required=True, help="Resource display name")
+    p.add_argument("--url", default=None, help="Resource URL")
+    p.add_argument("--type", dest="res_type", choices=["text", "image", "text+image", "physical"],
+                   default="text", help="Resource type")
+    p.add_argument("--details", default=None, help="Additional details")
+
     # migrate
     p = subparsers.add_parser("migrate", parents=[parent_parser],
                               help="Migrate old text_resources/image_resources to unified resources")
@@ -261,6 +314,7 @@ def main():
             "delete": handler.handle_delete,
             "parse-id": handler.handle_parse_id,
             "init-asset": handler.handle_init_asset,
+            "add-resource": handler.handle_add_resource,
             "migrate": handler.handle_migrate,
         }
 

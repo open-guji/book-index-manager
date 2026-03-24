@@ -165,6 +165,7 @@ export interface WorkDetailData extends BaseDetailData {
     parent_works?: string[];
     parent_work?: { id: string; title: string };
     books?: string[];
+    related_works?: { id: string; title: string }[];
 }
 
 /** 统一详情数据类型 */
@@ -308,6 +309,7 @@ export interface CollatedSection {
     author_type?: string | null;
     note?: string | null;
     tag?: string | null;
+    work_id?: string | null;
 }
 
 /** 整理本的一卷数据 */
@@ -318,11 +320,19 @@ export interface CollatedJuan {
     sections: CollatedSection[];
 }
 
+/** 整理本卷分组 */
+export interface JuanGroup {
+    label: string;
+    files: string[];
+    children?: JuanGroup[];
+}
+
 /** 整理本索引（卷列表） */
 export interface CollatedEditionIndex {
     work_id: string;
     total_juan: number;
     juan_files: string[];
+    juan_groups?: JuanGroup[];
 }
 
 /** 资料来源项 */

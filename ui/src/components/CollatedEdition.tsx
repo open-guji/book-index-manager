@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import type { CollatedEditionIndex, CollatedJuan, CollatedSection } from '../types';
+import type { CollatedEditionIndex, CollatedJuan, CollatedSection, JuanGroup } from '../types';
 import type { IndexStorage } from '../storage/types';
 
 export interface CollatedEditionProps {
@@ -26,30 +26,149 @@ const SECTION_TYPE_COLORS: Record<string, string> = {
 
 // ── 子组件 ──
 
+/** 将文件名转为显示名 */
+function juanDisplayName(f: string): string {
+    const name = f.replace('.json', '');
+    if (name === 'fulu') return '附錄';
+    if (name.startsWith('juanshou')) {
+        const n = name.replace('juanshou', '');
+        return `卷首${n}`;
+    }
+    if (name.startsWith('juan')) {
+        const n = name.replace('juan', '').replace(/^0+/, '');
+        return `卷${n}`;
+    }
+    return name;
+}
+
+function JuanButton({ file, isActive, onSelect }: {
+    file: string; isActive: boolean; onSelect: (f: string) => void;
+}) {
+    return (
+        <button
+            onClick={() => onSelect(file)}
+            style={{
+                padding: '3px 8px',
+                border: isActive
+                    ? '1px solid var(--bim-primary, #8e6f3e)'
+                    : '1px solid var(--bim-widget-border, #e0e0e0)',
+                borderRadius: '3px',
+                background: isActive
+                    ? 'color-mix(in srgb, var(--bim-primary, #8e6f3e) 10%, transparent)'
+                    : 'transparent',
+                color: isActive
+                    ? 'var(--bim-primary, #8e6f3e)'
+                    : 'var(--bim-fg, #333)',
+                cursor: 'pointer',
+                fontSize: '12px',
+                fontWeight: isActive ? 600 : 400,
+                lineHeight: 1.4,
+            }}
+        >
+            {juanDisplayName(file)}
+        </button>
+    );
+}
+
+function groupContainsFile(group: JuanGroup, file: string): boolean {
+    if (group.files.includes(file)) return true;
+    return !!group.children?.some(c => groupContainsFile(c, file));
+}
+
+function groupFileCount(group: JuanGroup): number {
+    const own = group.files.length;
+    const childCount = group.children?.reduce((sum, c) => sum + groupFileCount(c), 0) || 0;
+    return own + childCount;
+}
+
+function JuanGroupNav({ group, activeFile, onSelect, depth = 0 }: {
+    group: JuanGroup; activeFile: string | null; onSelect: (f: string) => void; depth?: number;
+}) {
+    const hasActive = groupContainsFile(group, activeFile || '');
+    const [expanded, setExpanded] = useState(hasActive);
+    const count = groupFileCount(group);
+    const hasChildren = !!group.children?.length;
+
+    useEffect(() => {
+        if (hasActive) setExpanded(true);
+    }, [hasActive]);
+
+    return (
+        <div style={{ marginBottom: depth === 0 ? '4px' : '2px' }}>
+            <div
+                onClick={() => setExpanded(!expanded)}
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: depth === 0 ? '4px 8px' : '2px 8px',
+                    paddingLeft: `${8 + depth * 16}px`,
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                    fontSize: depth === 0 ? '13px' : '12px',
+                    fontWeight: depth === 0 ? 600 : 500,
+                    color: hasActive ? 'var(--bim-primary, #8e6f3e)' : 'var(--bim-fg, #333)',
+                }}
+            >
+                <span style={{
+                    fontSize: '9px',
+                    transition: 'transform 0.15s',
+                    transform: expanded ? 'rotate(90deg)' : 'none',
+                    display: 'inline-block',
+                }}>&#9654;</span>
+                <span>{group.label}</span>
+                <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--bim-desc-fg, #999)' }}>
+                    ({count})
+                </span>
+            </div>
+            {expanded && (
+                <>
+                    {/* 直属文件 */}
+                    {group.files.length > 0 && (
+                        <div style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '4px',
+                            padding: `4px 0 4px ${24 + depth * 16}px`,
+                        }}>
+                            {group.files.map(f => (
+                                <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} />
+                            ))}
+                        </div>
+                    )}
+                    {/* 子分组 */}
+                    {hasChildren && group.children!.map((child, i) => (
+                        <JuanGroupNav key={i} group={child} activeFile={activeFile} onSelect={onSelect} depth={depth + 1} />
+                    ))}
+                </>
+            )}
+        </div>
+    );
+}
+
 function JuanNav({
     files,
+    groups,
     activeFile,
     onSelect,
 }: {
     files: string[];
+    groups?: JuanGroup[];
     activeFile: string | null;
     onSelect: (file: string) => void;
 }) {
-    // 将文件名转为显示名
-    const displayName = (f: string): string => {
-        const name = f.replace('.json', '');
-        if (name === 'fulu') return '附錄';
-        if (name.startsWith('juanshou')) {
-            const n = name.replace('juanshou', '');
-            return `卷首${n}`;
-        }
-        if (name.startsWith('juan')) {
-            const n = name.replace('juan', '').replace(/^0+/, '');
-            return `卷${n}`;
-        }
-        return name;
-    };
+    // 有分组信息时按分组显示
+    if (groups && groups.length > 0) {
+        return (
+            <div style={{ marginBottom: '16px' }}>
+                {groups.map((g, i) => (
+                    <JuanGroupNav key={i} group={g} activeFile={activeFile} onSelect={onSelect} />
+                ))}
+            </div>
+        );
+    }
 
+    // 无分组时平铺显示
     return (
         <div style={{
             display: 'flex',
@@ -60,34 +179,9 @@ function JuanNav({
             overflow: 'auto',
             padding: '4px 0',
         }}>
-            {files.map(f => {
-                const isActive = activeFile === f;
-                return (
-                    <button
-                        key={f}
-                        onClick={() => onSelect(f)}
-                        style={{
-                            padding: '3px 8px',
-                            border: isActive
-                                ? '1px solid var(--bim-primary, #8e6f3e)'
-                                : '1px solid var(--bim-widget-border, #e0e0e0)',
-                            borderRadius: '3px',
-                            background: isActive
-                                ? 'color-mix(in srgb, var(--bim-primary, #8e6f3e) 10%, transparent)'
-                                : 'transparent',
-                            color: isActive
-                                ? 'var(--bim-primary, #8e6f3e)'
-                                : 'var(--bim-fg, #333)',
-                            cursor: 'pointer',
-                            fontSize: '12px',
-                            fontWeight: isActive ? 600 : 400,
-                            lineHeight: 1.4,
-                        }}
-                    >
-                        {displayName(f)}
-                    </button>
-                );
-            })}
+            {files.map(f => (
+                <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} />
+            ))}
         </div>
     );
 }
@@ -111,7 +205,7 @@ function SectionTypeBadge({ type }: { type: string }) {
     );
 }
 
-function BookSection({ section }: { section: CollatedSection }) {
+function BookSection({ section, onNavigate }: { section: CollatedSection; onNavigate?: (id: string) => void }) {
     const [expanded, setExpanded] = useState(false);
     const hasSummary = !!section.summary;
     const hasComment = !!section.comment;
@@ -171,27 +265,26 @@ function BookSection({ section }: { section: CollatedSection }) {
                         {section.version}
                     </span>
                 )}
-                {section.text_status && (
-                    <span style={{
-                        fontSize: '11px',
-                        padding: '1px 5px',
-                        borderRadius: '2px',
-                        background: section.text_status === '好'
-                            ? '#27ae6015'
-                            : '#e67e2215',
-                        color: section.text_status === '好'
-                            ? '#27ae60'
-                            : '#e67e22',
-                    }}>
-                        {section.text_status}
-                    </span>
-                )}
                 {section.tag && (
                     <span style={{
                         fontSize: '11px',
                         color: '#e74c3c',
                     }}>
                         {section.tag === 'triangle' ? '△' : section.tag}
+                    </span>
+                )}
+                {section.work_id && onNavigate && (
+                    <span
+                        onClick={e => { e.stopPropagation(); onNavigate(section.work_id!); }}
+                        style={{
+                            fontSize: '11px',
+                            color: 'var(--bim-link-fg, #0066cc)',
+                            cursor: 'pointer',
+                            flexShrink: 0,
+                        }}
+                        title="查看作品"
+                    >
+                        →作品
                     </span>
                 )}
             </div>
@@ -287,35 +380,73 @@ function BookSection({ section }: { section: CollatedSection }) {
 }
 
 function CategoryHeader({ section }: { section: CollatedSection }) {
+    const [expanded, setExpanded] = useState(false);
+    const hasContent = !!section.content;
+
     return (
-        <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '12px 0 6px',
-        }}>
-            <SectionTypeBadge type={section.type} />
-            <span style={{
-                fontSize: '15px',
-                fontWeight: 600,
-                color: 'var(--bim-fg, #1a1a1a)',
-            }}>
-                {section.title}
-            </span>
+        <div style={{ padding: '12px 0 6px' }}>
+            <div
+                onClick={() => hasContent && setExpanded(!expanded)}
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: hasContent ? 'pointer' : 'default',
+                    userSelect: 'none',
+                }}
+            >
+                <SectionTypeBadge type={section.type} />
+                <span style={{
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    color: 'var(--bim-fg, #1a1a1a)',
+                }}>
+                    {section.title}
+                </span>
+                {hasContent && (
+                    <span style={{
+                        fontSize: '9px',
+                        color: 'var(--bim-desc-fg, #999)',
+                        transition: 'transform 0.15s',
+                        transform: expanded ? 'rotate(90deg)' : 'none',
+                        display: 'inline-block',
+                    }}>&#9654;</span>
+                )}
+            </div>
+            {expanded && hasContent && (
+                <div style={{
+                    marginTop: '8px',
+                    padding: '10px 14px',
+                    borderLeft: `3px solid ${SECTION_TYPE_COLORS[section.type] || '#717171'}40`,
+                    borderRadius: '0 4px 4px 0',
+                    background: 'var(--bim-bg, #fafafa)',
+                }}>
+                    <p style={{
+                        fontSize: '13px',
+                        color: 'var(--bim-fg, #333)',
+                        lineHeight: 1.9,
+                        margin: 0,
+                        textAlign: 'justify',
+                        whiteSpace: 'pre-line',
+                    }}>{section.content}</p>
+                </div>
+            )}
         </div>
     );
 }
 
 function OtherSection({ section }: { section: CollatedSection }) {
     if (!section.content && !section.title) return null;
+    const text = (section.content || section.title || '').replace(/\n{2,}/g, '\n');
     return (
         <div style={{
             padding: '6px 0',
             fontSize: '13px',
             color: 'var(--bim-desc-fg, #717171)',
             lineHeight: 1.7,
+            whiteSpace: 'pre-line',
         }}>
-            {section.content || section.title}
+            {text}
         </div>
     );
 }
@@ -323,9 +454,11 @@ function OtherSection({ section }: { section: CollatedSection }) {
 function JuanContent({
     juan,
     searchQuery,
+    onNavigate,
 }: {
     juan: CollatedJuan;
     searchQuery: string;
+    onNavigate?: (id: string) => void;
 }) {
     const filteredSections = useMemo(() => {
         if (!searchQuery.trim()) return juan.sections;
@@ -384,7 +517,7 @@ function JuanContent({
             {/* Sections */}
             {filteredSections.map((section, i) => {
                 if (section.type === '书') {
-                    return <BookSection key={i} section={section} />;
+                    return <BookSection key={i} section={section} onNavigate={onNavigate} />;
                 }
                 if (section.type === '部' || section.type === '类') {
                     return <CategoryHeader key={i} section={section} />;
@@ -527,6 +660,7 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
             {/* 卷导航 */}
             <JuanNav
                 files={index.juan_files}
+                groups={index.juan_groups}
                 activeFile={activeFile}
                 onSelect={handleSelectFile}
             />
@@ -566,6 +700,7 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
                 <JuanContent
                     juan={juanData}
                     searchQuery={searchQuery}
+                    onNavigate={onNavigate}
                 />
             ) : activeFile ? (
                 <div style={{
