@@ -19,6 +19,56 @@ export interface CollatedEditionProps {
     style?: React.CSSProperties;
 }
 
+// ── 工具函数 ──
+
+const CN_DIGITS = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+const CN_UNITS = ['', '十', '百', '千'];
+const CN_BIG_UNITS = ['', '萬', '億'];
+
+function toChineseNumeral(n: number): string {
+    if (n === 0) return '〇';
+    if (n < 0) return `負${toChineseNumeral(-n)}`;
+
+    const parts: string[] = [];
+    let remaining = n;
+    let bigIdx = 0;
+
+    while (remaining > 0) {
+        const segment = remaining % 10000;
+        if (segment > 0) {
+            parts.unshift(segmentToChinese(segment, bigIdx > 0) + CN_BIG_UNITS[bigIdx]);
+        } else if (parts.length > 0) {
+            parts.unshift('〇');
+        }
+        remaining = Math.floor(remaining / 10000);
+        bigIdx++;
+    }
+
+    return parts.join('').replace(/〇+/g, '〇').replace(/〇$/, '');
+}
+
+function segmentToChinese(n: number, needLeadingZero: boolean): string {
+    const digits: number[] = [];
+    let v = n;
+    while (v > 0) { digits.unshift(v % 10); v = Math.floor(v / 10); }
+
+    let result = '';
+    for (let i = 0; i < digits.length; i++) {
+        const d = digits[i];
+        const unitIdx = digits.length - 1 - i;
+        if (d === 0) {
+            if (result && !result.endsWith('〇')) result += '〇';
+        } else {
+            if (d === 1 && unitIdx === 1 && (i === 0 && !needLeadingZero)) {
+                result += CN_UNITS[unitIdx];
+            } else {
+                result += CN_DIGITS[d] + CN_UNITS[unitIdx];
+            }
+        }
+    }
+    return result.replace(/〇$/, '');
+}
+
 // ── 样式常量 ──
 
 const SECTION_TYPE_COLORS: Record<string, string> = {
@@ -251,16 +301,18 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                     color: 'var(--bim-fg, #1a1a1a)',
                     flex: 1,
                 }}>
-                    {section.title}
+                    {section.book_title ? `《${section.book_title}》` : section.title}
+                    {section.n_juan != null && (
+                        <span style={{
+                            fontSize: '12px',
+                            fontWeight: 400,
+                            color: 'var(--bim-desc-fg, #999)',
+                            marginLeft: '6px',
+                        }}>
+                            {toChineseNumeral(section.n_juan)}卷
+                        </span>
+                    )}
                 </span>
-                {section.n_juan != null && (
-                    <span style={{
-                        fontSize: '12px',
-                        color: 'var(--bim-desc-fg, #999)',
-                    }}>
-                        {section.n_juan}卷
-                    </span>
-                )}
                 {section.version && (
                     <span style={{
                         fontSize: '11px',
