@@ -23,12 +23,44 @@ function getIdFromUrl(): string | null {
     return path || null;
 }
 
+/** 从 URL search params 提取参数 */
+function getParamsFromUrl(): { tab?: string; juan?: string } {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        tab: params.get('tab') || undefined,
+        juan: params.get('juan') || undefined,
+    };
+}
+
 /** 更新浏览器 URL（不触发页面刷新） */
-function pushUrl(id: string | null) {
-    const url = id ? `/${id}` : '/';
-    if (window.location.pathname !== url) {
+function pushUrl(id: string | null, params?: Record<string, string | undefined>) {
+    let url = id ? `/${id}` : '/';
+    if (params) {
+        const sp = new URLSearchParams();
+        for (const [k, v] of Object.entries(params)) {
+            if (v) sp.set(k, v);
+        }
+        const qs = sp.toString();
+        if (qs) url += `?${qs}`;
+    }
+    const current = window.location.pathname + window.location.search;
+    if (current !== url) {
         window.history.pushState(null, '', url);
     }
+}
+
+/** replaceState 版本，用于不产生历史记录的更新 */
+function replaceUrl(id: string | null, params?: Record<string, string | undefined>) {
+    let url = id ? `/${id}` : '/';
+    if (params) {
+        const sp = new URLSearchParams();
+        for (const [k, v] of Object.entries(params)) {
+            if (v) sp.set(k, v);
+        }
+        const qs = sp.toString();
+        if (qs) url += `?${qs}`;
+    }
+    window.history.replaceState(null, '', url);
 }
 
 // ── 主应用 ──
@@ -39,11 +71,28 @@ function App() {
     const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [activeTab, setActiveTab] = useState<string>('detail');
+    const [activeTab, setActiveTabState] = useState<string>('detail');
+    const [activeJuan, setActiveJuanState] = useState<string | null>(null);
     const [catalogList, setCatalogList] = useState<ResourceCatalog[]>([]);
     const [catalogLoading, setCatalogLoading] = useState(false);
     const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
     const [collatedLoading, setCollatedLoading] = useState(false);
+
+    /** 获取当前 entity ID */
+    const currentId = selectedEntry?.id || getIdFromUrl();
+
+    /** 切换 tab 并同步 URL */
+    const setActiveTab = useCallback((tab: string) => {
+        setActiveTabState(tab);
+        const juan = tab === 'collated' ? activeJuan : undefined;
+        pushUrl(currentId, { tab: tab !== 'detail' ? tab : undefined, juan: juan || undefined });
+    }, [currentId, activeJuan]);
+
+    /** 切换卷并同步 URL */
+    const setActiveJuan = useCallback((juan: string | null) => {
+        setActiveJuanState(juan);
+        replaceUrl(currentId, { tab: 'collated', juan: juan || undefined });
+    }, [currentId]);
 
     const loadCollated = useCallback(async (id: string) => {
         if (!transport.getCollatedEditionIndex) {
@@ -87,11 +136,12 @@ function App() {
     }, [transport]);
 
     /** 通过 ID 加载详情（内部复用，不操作 URL） */
-    const loadById = useCallback(async (id: string) => {
+    const loadById = useCallback(async (id: string, restoreParams?: { tab?: string; juan?: string }) => {
         setDetailData(null);
         setCatalogList([]);
         setCollatedIndex(null);
-        setActiveTab('detail');
+        setActiveTabState(restoreParams?.tab || 'detail');
+        setActiveJuanState(restoreParams?.juan || null);
         setDetailLoading(true);
         try {
             const data = await transport.getItem(id);
@@ -121,7 +171,8 @@ function App() {
         setDetailData(null);
         setCatalogList([]);
         setCollatedIndex(null);
-        setActiveTab('detail');
+        setActiveTabState('detail');
+        setActiveJuanState(null);
         setDetailLoading(true);
         try {
             const data = await transport.getItem(entry.id);
@@ -149,7 +200,8 @@ function App() {
     useEffect(() => {
         const id = getIdFromUrl();
         if (id) {
-            loadById(id);
+            const params = getParamsFromUrl();
+            loadById(id, params);
         }
     }, [loadById]);
 
@@ -158,7 +210,8 @@ function App() {
         const onPopState = () => {
             const id = getIdFromUrl();
             if (id) {
-                loadById(id);
+                const params = getParamsFromUrl();
+                loadById(id, params);
             } else {
                 setSelectedEntry(null);
                 setDetailData(null);
@@ -323,6 +376,8 @@ function App() {
                                     workId={detailData.id}
                                     transport={transport}
                                     onNavigate={handleNavigate}
+                                    activeJuan={activeJuan}
+                                    onJuanChange={setActiveJuan}
                                 />
                             ) : null}
                         </div>

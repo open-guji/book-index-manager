@@ -11,6 +11,10 @@ export interface CollatedEditionProps {
     transport?: IndexStorage;
     /** 点击关联条目时回调 */
     onNavigate?: (id: string) => void;
+    /** 外部控制当前激活的卷文件 */
+    activeJuan?: string | null;
+    /** 卷切换回调（同步 URL 等） */
+    onJuanChange?: (juan: string | null) => void;
     className?: string;
     style?: React.CSSProperties;
 }
@@ -546,16 +550,25 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
     workId,
     transport,
     onNavigate,
+    activeJuan: externalActiveJuan,
+    onJuanChange,
     className,
     style,
 }) => {
     const [indexData, setIndexData] = useState<CollatedEditionIndex | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [activeFile, setActiveFile] = useState<string | null>(null);
+    const [internalActiveFile, setInternalActiveFile] = useState<string | null>(null);
     const [juanData, setJuanData] = useState<CollatedJuan | null>(null);
     const [juanLoading, setJuanLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
+    // 如果外部传了 activeJuan 就用外部的，否则用内部状态
+    const activeFile = externalActiveJuan ?? internalActiveFile;
+    const setActiveFile = useCallback((file: string | null) => {
+        setInternalActiveFile(file);
+        onJuanChange?.(file);
+    }, [onJuanChange]);
 
     const index = indexProp || indexData;
 
@@ -571,8 +584,8 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
                 setError('未找到整理本数据');
             } else {
                 setIndexData(result);
-                // 默认选第一卷
-                if (result.juan_files.length > 0) {
+                // 默认选第一卷（仅当外部没有指定时）
+                if (!externalActiveJuan && result.juan_files.length > 0) {
                     setActiveFile(result.juan_files[0]);
                 }
             }
@@ -582,14 +595,14 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
             if (!cancelled) setLoading(false);
         });
         return () => { cancelled = true; };
-    }, [indexProp, workId, transport]);
+    }, [indexProp, workId, transport, externalActiveJuan, setActiveFile]);
 
     // 自动选第一卷（当 indexProp 变化时）
     useEffect(() => {
         if (indexProp && indexProp.juan_files.length > 0 && !activeFile) {
             setActiveFile(indexProp.juan_files[0]);
         }
-    }, [indexProp, activeFile]);
+    }, [indexProp, activeFile, setActiveFile]);
 
     const effectiveWorkId = workId || index?.work_id;
 

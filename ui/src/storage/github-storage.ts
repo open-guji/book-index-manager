@@ -1,5 +1,5 @@
 import type { IndexStorage } from './types';
-import type { IndexType, IndexEntry, PageResult, LoadOptions, VolumeBookMapping } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
 import { rankByRelevance } from '../core/storage';
 
 /**
@@ -255,29 +255,82 @@ export class GithubStorage implements IndexStorage {
         throw new Error('GithubStorage 为只读模式，不支持生成 ID');
     }
 
-    async getCollectionCatalog(collectionId: string): Promise<VolumeBookMapping | null> {
-        await this.ensureLoaded();
-        const info = this.pathMap.get(collectionId);
-        if (!info) return null;
-
-        // volume_book_mapping.json 与索引文件同目录
-        const dir = info.path.substring(0, info.path.lastIndexOf('/'));
-        const mappingPath = dir + '/volume_book_mapping.json';
-        const repo = info.isDraft ? this.config.repos.draft : this.config.repos.official;
-
-        const githubUrl = `${this.config.baseUrl}/${this.config.org}/${repo}/main/${encodeURI(mappingPath)}`;
+    /** 通过相对路径获取文件（自动尝试 GitHub raw + CDN fallback） */
+    private async fetchFile<T>(repo: string, filePath: string): Promise<T | null> {
+        const githubUrl = `${this.config.baseUrl}/${this.config.org}/${repo}/main/${encodeURI(filePath)}`;
         try {
-            return await this.fetchJson<VolumeBookMapping>(githubUrl);
+            return await this.fetchJson<T>(githubUrl);
         } catch { /* fallback to CDN */ }
 
         for (const cdn of this.config.cdnUrls) {
-            const cdnUrl = `${cdn}/${this.config.org}/${repo}@main/${encodeURI(mappingPath)}`;
+            const cdnUrl = `${cdn}/${this.config.org}/${repo}@main/${encodeURI(filePath)}`;
             try {
-                return await this.fetchJson<VolumeBookMapping>(cdnUrl);
+                return await this.fetchJson<T>(cdnUrl);
             } catch { continue; }
         }
 
         return null;
+    }
+
+    /** 获取条目对应的 repo 和目录信息 */
+    private async resolveItemPath(id: string): Promise<{ repo: string; dir: string } | null> {
+        await this.ensureLoaded();
+        const info = this.pathMap.get(id);
+        if (!info) return null;
+        const repo = info.isDraft ? this.config.repos.draft : this.config.repos.official;
+        const dir = info.path.substring(0, info.path.lastIndexOf('/'));
+        return { repo, dir };
+    }
+
+    async getCollectionCatalogs(collectionId: string): Promise<ResourceCatalog[] | null> {
+        const resolved = await this.resolveItemPath(collectionId);
+        if (!resolved) return null;
+
+        // 先获取 collection 数据以读取 resources 列表
+        const item = await this.getItem(collectionId);
+        if (!item) return null;
+
+        const resources = (item.resources as Array<{ id: string; short_name?: string }>) || [];
+        if (resources.length === 0) return null;
+
+        const catalogs: ResourceCatalog[] = [];
+        for (const res of resources) {
+            const mappingPath = `${resolved.dir}/${collectionId}/${res.id}/volume_book_mapping.json`;
+            const data = await this.fetchFile<VolumeBookMapping>(resolved.repo, mappingPath);
+            if (data) {
+                catalogs.push({
+                    resource_id: res.id,
+                    short_name: res.short_name,
+                    data,
+                });
+            }
+        }
+
+        return catalogs.length > 0 ? catalogs : null;
+    }
+
+    async getCollectionCatalog(collectionId: string): Promise<VolumeBookMapping | null> {
+        const catalogs = await this.getCollectionCatalogs(collectionId);
+        return catalogs?.[0]?.data ?? null;
+    }
+
+    async getCollatedEditionIndex(workId: string): Promise<CollatedEditionIndex | null> {
+        const resolved = await this.resolveItemPath(workId);
+        if (!resolved) return null;
+
+        const indexPath = `${resolved.dir}/${workId}/collated_edition_index.json`;
+        return this.fetchFile<CollatedEditionIndex>(resolved.repo, indexPath);
+    }
+
+    async getCollatedJuan(workId: string, juanFile: string): Promise<CollatedJuan | null> {
+        // 安全检查
+        if (juanFile.includes('..') || !juanFile.endsWith('.json')) return null;
+
+        const resolved = await this.resolveItemPath(workId);
+        if (!resolved) return null;
+
+        const juanPath = `${resolved.dir}/${workId}/collated_edition/${juanFile}`;
+        return this.fetchFile<CollatedJuan>(resolved.repo, juanPath);
     }
 
     /** 清除缓存（用于切换数据源后刷新） */
