@@ -362,6 +362,12 @@ class BookIndexStorage:
                             entry["has_text"] = True
                         if has_image:
                             entry["has_image"] = True
+
+                        # 检测整理本目录
+                        collated_dir = json_file.parent / id_str / "collated_edition"
+                        if collated_dir.is_dir():
+                            entry["has_collated"] = True
+
                         index[type_key][id_str] = entry
                 except Exception as e:
                     logger.warning(f"Error processing {json_file}: {e}")

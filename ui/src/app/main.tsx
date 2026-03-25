@@ -154,7 +154,7 @@ function App() {
                 });
                 if (data.type === 'collection') {
                     loadCatalog(id);
-                } else if (data.type === 'work') {
+                } else if (data.type === 'work' && data.has_collated) {
                     loadCollated(id);
                 }
             }
@@ -180,7 +180,7 @@ function App() {
                 setDetailData(data as unknown as IndexDetailData);
                 if (data.type === 'collection') {
                     loadCatalog(entry.id);
-                } else if (data.type === 'work') {
+                } else if (data.type === 'work' && data.has_collated) {
                     loadCollated(entry.id);
                 }
             }

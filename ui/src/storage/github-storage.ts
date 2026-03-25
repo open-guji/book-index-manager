@@ -152,6 +152,7 @@ export class GithubStorage implements IndexStorage {
                     juan_count?: number;
                     has_text?: boolean;
                     has_image?: boolean;
+                    has_collated?: boolean;
                 };
                 entries.push({
                     id: item.id,
@@ -166,6 +167,7 @@ export class GithubStorage implements IndexStorage {
                     juan_count: raw.juan_count,
                     has_text: raw.has_text,
                     has_image: raw.has_image,
+                    has_collated: raw.has_collated,
                 });
                 this.pathMap.set(item.id, { path: item.path, isDraft });
             }
@@ -304,30 +306,40 @@ export class GithubStorage implements IndexStorage {
     }
 
     async getItem(id: string): Promise<Record<string, unknown> | null> {
-        await this.ensureLoaded();
+        const entries = await this.ensureLoaded();
 
         const info = this.pathMap.get(id);
         if (!info) return null;
 
         const repo = info.isDraft ? this.config.repos.draft : this.config.repos.official;
 
+        let item: Record<string, unknown> | null = null;
         const githubUrl = `${this.config.baseUrl}/${this.config.org}/${repo}/main/${encodeURI(info.path)}`;
         try {
-            return await this.fetchJson(githubUrl);
+            item = await this.fetchJson(githubUrl);
         } catch {
             // 降级到 CDN
         }
 
-        for (const cdn of this.config.cdnUrls) {
-            const cdnUrl = `${cdn}/${this.config.org}/${repo}@main/${encodeURI(info.path)}`;
-            try {
-                return await this.fetchJson(cdnUrl);
-            } catch {
-                continue;
+        if (!item) {
+            for (const cdn of this.config.cdnUrls) {
+                const cdnUrl = `${cdn}/${this.config.org}/${repo}@main/${encodeURI(info.path)}`;
+                try {
+                    item = await this.fetchJson(cdnUrl);
+                    break;
+                } catch {
+                    continue;
+                }
             }
         }
 
-        return null;
+        if (item) {
+            // 从 index 条目合并 has_collated 标记
+            const entry = entries.find(e => e.id === id);
+            if (entry?.has_collated) item.has_collated = true;
+        }
+
+        return item;
     }
 
     async getEntry(id: string): Promise<IndexEntry | null> {

@@ -8,6 +8,44 @@ import type { Plugin, ViteDevServer } from 'vite';
 import * as fs from 'fs';
 import * as path from 'path';
 
+/** 繁→简转换器（懒加载 opencc-js） */
+let t2sConverter: ((text: string) => string) | null | false = null; // null=未加载, false=不可用
+
+async function ensureT2S(): Promise<((text: string) => string) | null> {
+    if (t2sConverter === false) return null;
+    if (t2sConverter) return t2sConverter;
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const OpenCC = await (Function('return import("opencc-js")')() as Promise<any>);
+        t2sConverter = OpenCC.Converter({ from: 'tw', to: 'cn' }) as (text: string) => string;
+        return t2sConverter as (text: string) => string;
+    } catch {
+        t2sConverter = false;
+        return null;
+    }
+}
+
+/**
+ * 搜索匹配：统一在简体空间比较。
+ * query 是原文小写，queryS 是简体小写，textS 是字段文本的简体小写。
+ * 原文匹配 OR 简体匹配。
+ */
+function matchesQuery(
+    text: string | undefined,
+    query: string,
+    queryS: string | undefined,
+    t2s: ((t: string) => string) | null,
+): boolean {
+    if (!text) return false;
+    const lower = text.toLowerCase();
+    if (lower.includes(query)) return true;
+    if (queryS && t2s) {
+        const textS = t2s(text).toLowerCase();
+        if (textS.includes(queryS)) return true;
+    }
+    return false;
+}
+
 /** index.json 中的条目 */
 interface IndexFileEntry {
     id: string;
@@ -61,6 +99,13 @@ function getAllEntries(workspaceRoot: string, type: string) {
         const isDraft = folder === 'book-index-draft';
 
         for (const [id, entry] of Object.entries(section)) {
+            // has_collated：优先读 index.json，否则运行时检测目录
+            let hasCollated = (entry as any).has_collated;
+            if (hasCollated === undefined && entry.path && type === 'work') {
+                const entryDir = path.join(workspaceRoot, folder, path.dirname(entry.path), id, 'collated_edition');
+                hasCollated = fs.existsSync(entryDir) || undefined;
+            }
+
             entries.push({
                 id,
                 title: entry.title,
@@ -74,6 +119,7 @@ function getAllEntries(workspaceRoot: string, type: string) {
                 juan_count: (entry as any).juan_count,
                 has_text: (entry as any).has_text,
                 has_image: (entry as any).has_image,
+                has_collated: hasCollated || undefined,
             });
         }
     }
@@ -141,50 +187,60 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
 
                 // GET /api/search?q=xxx&type=book&page=1&pageSize=50
                 if (pathname === '/api/search' && req.method === 'GET') {
-                    const query = (url.searchParams.get('q') || '').toLowerCase();
-                    const type = url.searchParams.get('type') || 'book';
-                    const page = parseInt(url.searchParams.get('page') || '1');
-                    const pageSize = parseInt(url.searchParams.get('pageSize') || '50');
+                    (async () => {
+                        const query = (url.searchParams.get('q') || '').toLowerCase();
+                        const type = url.searchParams.get('type') || 'book';
+                        const page = parseInt(url.searchParams.get('page') || '1');
+                        const pageSize = parseInt(url.searchParams.get('pageSize') || '50');
 
-                    let entries = getAllEntries(workspaceRoot, type);
+                        const t2s = await ensureT2S();
+                        const queryS = t2s ? t2s(query).toLowerCase() : undefined;
 
-                    if (query) {
-                        entries = entries.filter((e: any) =>
-                            e.title?.toLowerCase().includes(query) ||
-                            e.id?.toLowerCase().includes(query) ||
-                            e.author?.toLowerCase().includes(query)
-                        );
-                    }
+                        let entries = getAllEntries(workspaceRoot, type);
 
-                    const total = entries.length;
-                    const start = (page - 1) * pageSize;
-                    const sliced = entries.slice(start, start + pageSize);
+                        if (query) {
+                            entries = entries.filter((e: any) =>
+                                matchesQuery(e.title, query, queryS, t2s) ||
+                                matchesQuery(e.id, query, queryS, t2s) ||
+                                matchesQuery(e.author, query, queryS, t2s)
+                            );
+                        }
 
-                    sendJson({ entries: sliced, total, page, pageSize });
+                        const total = entries.length;
+                        const start = (page - 1) * pageSize;
+                        const sliced = entries.slice(start, start + pageSize);
+
+                        sendJson({ entries: sliced, total, page, pageSize });
+                    })().catch(() => sendJson({ error: 'Search error' }, 500));
                     return;
                 }
 
                 // GET /api/search-all?q=xxx&limit=5
                 if (pathname === '/api/search-all' && req.method === 'GET') {
-                    const query = (url.searchParams.get('q') || '').toLowerCase();
-                    const limit = parseInt(url.searchParams.get('limit') || '5');
+                    (async () => {
+                        const query = (url.searchParams.get('q') || '').toLowerCase();
+                        const limit = parseInt(url.searchParams.get('limit') || '5');
 
-                    const result: Record<string, unknown> = {};
-                    for (const [type, key] of [['work', 'works'], ['book', 'books'], ['collection', 'collections']] as const) {
-                        let entries = getAllEntries(workspaceRoot, type);
-                        if (query) {
-                            entries = entries.filter((e: any) =>
-                                e.title?.toLowerCase().includes(query) ||
-                                e.id?.toLowerCase().includes(query) ||
-                                e.author?.toLowerCase().includes(query) ||
-                                (e.additional_titles || []).some((t: string) => t?.toLowerCase().includes(query))
-                            );
+                        const t2s = await ensureT2S();
+                        const queryS = t2s ? t2s(query).toLowerCase() : undefined;
+
+                        const result: Record<string, unknown> = {};
+                        for (const [type, key] of [['work', 'works'], ['book', 'books'], ['collection', 'collections']] as const) {
+                            let entries = getAllEntries(workspaceRoot, type);
+                            if (query) {
+                                entries = entries.filter((e: any) =>
+                                    matchesQuery(e.title, query, queryS, t2s) ||
+                                    matchesQuery(e.id, query, queryS, t2s) ||
+                                    matchesQuery(e.author, query, queryS, t2s) ||
+                                    (e.additional_titles || []).some((at: string) => matchesQuery(at, query, queryS, t2s))
+                                );
+                            }
+                            result[key] = entries.slice(0, limit);
+                            result[`total${key.charAt(0).toUpperCase() + key.slice(1)}` as string] = entries.length;
                         }
-                        result[key] = entries.slice(0, limit);
-                        result[`total${key.charAt(0).toUpperCase() + key.slice(1)}` as string] = entries.length;
-                    }
 
-                    sendJson(result);
+                        sendJson(result);
+                    })().catch(() => sendJson({ error: 'Search error' }, 500));
                     return;
                 }
 
@@ -200,7 +256,15 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
 
                     try {
                         const content = fs.readFileSync(filePath, 'utf-8');
-                        sendJson(JSON.parse(content));
+                        const data = JSON.parse(content);
+                        // 附加 has_collated：检测 collated_edition 子目录
+                        if (data.type === 'Work') {
+                            const collatedDir = path.join(path.dirname(filePath), id, 'collated_edition');
+                            if (fs.existsSync(collatedDir)) {
+                                data.has_collated = true;
+                            }
+                        }
+                        sendJson(data);
                     } catch {
                         sendJson({ error: 'Read error' }, 500);
                     }

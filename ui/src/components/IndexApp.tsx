@@ -95,7 +95,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                 setDetailData(data as unknown as IndexDetailData);
                 if (data.type === 'collection') {
                     loadCatalog(entry.id);
-                } else if (data.type === 'work') {
+                } else if (data.type === 'work' && data.has_collated) {
                     loadCollated(entry.id);
                 }
             }
@@ -123,7 +123,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                 });
                 if (data.type === 'collection') {
                     loadCatalog(id);
-                } else if (data.type === 'work') {
+                } else if (data.type === 'work' && data.has_collated) {
                     loadCollated(id);
                 }
             }

@@ -44,6 +44,8 @@ export interface IndexEntry {
     has_text?: boolean;
     /** 是否有图片资源 */
     has_image?: boolean;
+    /** 是否有整理本 */
+    has_collated?: boolean;
 }
 
 /** 分页结果 */

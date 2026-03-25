@@ -31,6 +31,7 @@ interface BundleIndexItem {
     juan_count?: number;
     has_text?: boolean;
     has_image?: boolean;
+    has_collated?: boolean;
 }
 
 interface BundleIndexResponse {
@@ -73,6 +74,7 @@ export class BundleStorage implements IndexStorage {
     private tiyaoCache = new Map<string, Record<string, unknown>>();
     private searchSCache: SearchSIndex | null = null;
     private searchSLoaded = false;
+    private t2sConverter: ((text: string) => string) | null | false = null; // null=未加载, false=不可用
 
     constructor(config: BundleStorageConfig = {}) {
         this.basePath = config.basePath ?? DEFAULT_BASE_PATH;
@@ -124,6 +126,7 @@ export class BundleStorage implements IndexStorage {
                     juan_count: item.juan_count,
                     has_text: item.has_text,
                     has_image: item.has_image,
+                    has_collated: item.has_collated,
                 });
                 this.pathMap.set(item.id, { path: item.path, isDraft: true });
             }
@@ -145,6 +148,20 @@ export class BundleStorage implements IndexStorage {
             this.searchSCache = {};
         }
         return this.searchSCache!;
+    }
+
+    /** 懒加载 opencc-js 繁→简转换器，不可用时降级 */
+    private async ensureT2S(): Promise<((text: string) => string) | null> {
+        if (this.t2sConverter === false) return null;
+        if (this.t2sConverter) return this.t2sConverter;
+        try {
+            const OpenCC = await import('opencc-js');
+            this.t2sConverter = OpenCC.Converter({ from: 'tw', to: 'cn' });
+            return this.t2sConverter;
+        } catch {
+            this.t2sConverter = false;
+            return null;
+        }
     }
 
     // ─── L1: 详情 chunk ───
@@ -203,11 +220,13 @@ export class BundleStorage implements IndexStorage {
     async search(query: string, type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>> {
         const all = await this.ensureLoaded();
         const searchS = await this.ensureSearchSLoaded();
+        const t2s = await this.ensureT2S();
         const typeFiltered = all.filter(e => e.type === type);
 
+        const queryS = t2s ? t2s(query) : undefined;
         const hasSimplified = Object.keys(searchS).length > 0;
         const ranked = hasSimplified
-            ? rankByRelevanceWithSimplified(typeFiltered, query, query, searchS)
+            ? rankByRelevanceWithSimplified(typeFiltered, query, queryS, searchS)
             : rankByRelevance(typeFiltered, query);
 
         const page = options.page || 1;
@@ -225,13 +244,15 @@ export class BundleStorage implements IndexStorage {
     async searchAll(query: string, limit: number = 5): Promise<GroupedSearchResult> {
         const all = await this.ensureLoaded();
         const searchS = await this.ensureSearchSLoaded();
+        const t2s = await this.ensureT2S();
         const types: IndexType[] = ['work', 'book', 'collection'];
 
+        const queryS = t2s ? t2s(query) : undefined;
         const hasSimplified = Object.keys(searchS).length > 0;
         const results = types.map(t => {
             const filtered = all.filter(e => e.type === t);
             return hasSimplified
-                ? rankByRelevanceWithSimplified(filtered, query, query, searchS)
+                ? rankByRelevanceWithSimplified(filtered, query, queryS, searchS)
                 : rankByRelevance(filtered, query);
         });
 
@@ -249,7 +270,13 @@ export class BundleStorage implements IndexStorage {
         const prefix = id.slice(0, 2);
         try {
             const chunk = await this.loadChunk(prefix);
-            return (chunk[id] as Record<string, unknown>) || null;
+            const item = (chunk[id] as Record<string, unknown>) || null;
+            if (item) {
+                // 从 index 条目合并 has_collated 标记
+                const entry = (await this.ensureLoaded()).find(e => e.id === id);
+                if (entry?.has_collated) item.has_collated = true;
+            }
+            return item;
         } catch {
             return null;
         }
@@ -357,5 +384,6 @@ export class BundleStorage implements IndexStorage {
         this.tiyaoCache.clear();
         this.searchSCache = null;
         this.searchSLoaded = false;
+        this.t2sConverter = null;
     }
 }
