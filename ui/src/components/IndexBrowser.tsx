@@ -237,29 +237,13 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
 
             {/* Search bar */}
             <div style={{ display: 'flex', gap: '8px', padding: '12px 20px', alignItems: 'center' }}>
-                <div style={{ display: 'flex', flex: 1, gap: '4px' }}>
-                    <input
-                        type="text"
-                        placeholder="搜索作品、书籍、丛编..."
-                        value={searchQuery}
-                        onChange={e => handleInputChange(e.target.value)}
-                        onKeyDown={e => {
-                            if (e.key === 'Enter') {
-                                if (debounceRef.current) clearTimeout(debounceRef.current);
-                                doSearch(searchQuery);
-                            }
-                        }}
-                        style={{
-                            flex: 1,
-                            padding: '8px 12px',
-                            border: '1px solid var(--bim-input-border, #ccc)',
-                            borderRadius: '6px',
-                            background: 'var(--bim-input-bg, #fff)',
-                            color: 'var(--bim-input-fg, #333)',
-                            fontSize: '14px',
-                        }}
-                    />
-                </div>
+                <SearchInput
+                    transport={transport}
+                    value={searchQuery}
+                    onChange={handleInputChange}
+                    onSearch={handleSearchCommit}
+                    onEntrySelect={handleEntryClick}
+                />
                 {onNewEntry && (
                     <button
                         onClick={() => onNewEntry('work')}

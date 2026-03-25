@@ -82,6 +82,8 @@ export { IndexApp } from './components/IndexApp';
 export type { IndexAppProps } from './components/IndexApp';
 export { HomePage } from './components/HomePage';
 export type { HomePageProps, RecommendedItem } from './components/HomePage';
+export { SearchInput } from './components/SearchInput';
+export type { SearchInputProps } from './components/SearchInput';
 export { ModeIndicator } from './components/ModeIndicator';
 export { CollectionCatalog } from './components/CollectionCatalog';
 export type { CollectionCatalogProps } from './components/CollectionCatalog';
