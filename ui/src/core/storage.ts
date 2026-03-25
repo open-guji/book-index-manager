@@ -492,7 +492,20 @@ export class BookIndexStorage {
  * - 资源加成：有文字+15, 有图片+10
  * - 同分按标题长度升序（更短=更精确）
  */
-function scoreEntry(entry: IndexEntry, query: string): number {
+/** 简体搜索索引中每条记录的格式 */
+export interface SearchSEntry {
+    /** 简体标题 */
+    t?: string;
+    /** 简体作者 */
+    a?: string;
+    /** 简体别名列表 */
+    at?: string[];
+}
+
+/** 简体搜索索引：id → 简体文本字段 */
+export type SearchSIndex = Record<string, SearchSEntry>;
+
+export function scoreEntry(entry: IndexEntry, query: string): number {
     const q = query.toLowerCase();
     let score = 0;
 
@@ -574,5 +587,50 @@ export function rankByRelevance(entries: IndexEntry[], query: string): IndexEntr
         // 同分按标题长度升序（更短=更精确的匹配）
         return a.entry.title.length - b.entry.title.length;
     });
+    return scored.map(s => s.entry);
+}
+
+/**
+ * 带繁简双索引的相关度排序。
+ *
+ * 对每条记录同时用原文和简体文本评分，取较高分。
+ * simplifiedMap 来自预构建的 search_s.json 或运行时 opencc-js 转换。
+ *
+ * @param entries 原始索引条目
+ * @param query 用户查询词（原文）
+ * @param queryS 简体化的查询词（若与 query 相同可省略）
+ * @param simplifiedMap 简体搜索索引
+ */
+export function rankByRelevanceWithSimplified(
+    entries: IndexEntry[],
+    query: string,
+    queryS: string | undefined,
+    simplifiedMap: SearchSIndex,
+): IndexEntry[] {
+    const scored = entries.map(e => {
+        // 原文匹配
+        const originalScore = scoreEntry(e, query);
+
+        // 简体匹配
+        let simplifiedScore = 0;
+        const s = simplifiedMap[e.id];
+        if (s && queryS) {
+            const sEntry: IndexEntry = {
+                ...e,
+                title: s.t ?? e.title,
+                author: s.a ?? e.author,
+                additional_titles: s.at ?? e.additional_titles,
+            };
+            simplifiedScore = scoreEntry(sEntry, queryS);
+        }
+
+        return { entry: e, score: Math.max(originalScore, simplifiedScore) };
+    }).filter(s => s.score > 0);
+
+    scored.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.entry.title.length - b.entry.title.length;
+    });
+
     return scored.map(s => s.entry);
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { IndexType, IndexEntry, IndexSource, SyncConfig, GroupedSearchResult } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { ModeIndicator } from './ModeIndicator';
+import { SearchInput } from './SearchInput';
 
 const RECENT_KEY = 'bim-recent-ids';
 const RECENT_KEY_LEGACY = 'bim-recent-entries';
@@ -47,6 +48,10 @@ export interface IndexBrowserProps {
     onConfigurePath?: () => void;
     onSelectFolder?: () => void;
     hideModeIndicator?: boolean;
+    /** 初始搜索词（用于从 URL 恢复搜索状态） */
+    initialQuery?: string;
+    /** 搜索词变化回调（用于同步到 URL） */
+    onQueryChange?: (query: string) => void;
 }
 
 const TYPE_CONFIG: { type: IndexType; icon: string; name: string; key: keyof GroupedSearchResult }[] = [
@@ -72,18 +77,21 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     onConfigurePath,
     onSelectFolder,
     hideModeIndicator,
+    initialQuery,
+    onQueryChange,
 }) => {
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState(initialQuery ?? '');
     const [searchResults, setSearchResults] = useState<GroupedSearchResult | null>(null);
     const [expandedType, setExpandedType] = useState<IndexType | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState('');
-    const [showingRecent, setShowingRecent] = useState(true);
+    const [showingRecent, setShowingRecent] = useState(!initialQuery);
     const [recentIds, setRecentIds] = useState<string[]>(loadRecentIds);
     const [recentEntries, setRecentEntries] = useState<IndexEntry[]>([]);
     const [recentLoading, setRecentLoading] = useState(false);
     const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+    const initialSearchDone = useRef(false);
 
     const doSearch = useCallback(async (query: string, limit?: number) => {
         if (!query.trim()) {
@@ -122,8 +130,16 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         }
     }, [transport]);
 
+    // Execute initial search from URL query
+    useEffect(() => {
+        if (initialSearchDone.current || !initialQuery?.trim()) return;
+        initialSearchDone.current = true;
+        doSearch(initialQuery);
+    }, [initialQuery, doSearch]);
+
     const handleInputChange = useCallback((value: string) => {
         setSearchQuery(value);
+        onQueryChange?.(value);
         if (!value.trim()) {
             setShowingRecent(true);
             setSearchResults(null);
@@ -136,7 +152,13 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
             setExpandedType(null);
             doSearch(value);
         }, DEBOUNCE_MS);
-    }, [doSearch]);
+    }, [doSearch, onQueryChange]);
+
+    const handleSearchCommit = useCallback((query: string) => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        onQueryChange?.(query);
+        doSearch(query);
+    }, [doSearch, onQueryChange]);
 
     const handleExpandType = useCallback((type: IndexType) => {
         setExpandedType(type);

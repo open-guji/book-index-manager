@@ -1,6 +1,7 @@
 import type { IndexStorage } from './types';
 import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
-import { rankByRelevance } from '../core/storage';
+import { rankByRelevance, rankByRelevanceWithSimplified } from '../core/storage';
+import type { SearchSIndex } from '../core/storage';
 
 /**
  * GitHub index.json 中的条目格式
@@ -62,6 +63,8 @@ export class GithubStorage implements IndexStorage {
     private config: Required<GithubStorageConfig>;
     private cache: IndexEntry[] | null = null;
     private pathMap: Map<string, { path: string; isDraft: boolean }> = new Map();
+    private searchSCache: SearchSIndex | null = null;
+    private t2sConverter: ((text: string) => string) | null | false = null; // null=未加载, false=不可用
 
     constructor(config: GithubStorageConfig) {
         this.config = {
@@ -171,6 +174,60 @@ export class GithubStorage implements IndexStorage {
         return entries;
     }
 
+    /**
+     * 懒加载 opencc-js 并构建简体搜索索引缓存。
+     * 首次调用时动态 import opencc-js，将所有条目的文本字段转为简体。
+     * 如果 opencc-js 不可用（未安装），降级为不做繁简转换。
+     */
+    private async ensureSearchSBuilt(): Promise<{ searchS: SearchSIndex; converter: ((text: string) => string) | null }> {
+        if (this.searchSCache) {
+            return { searchS: this.searchSCache, converter: this.t2sConverter || null };
+        }
+        if (this.t2sConverter === false) {
+            // opencc-js 不可用，跳过
+            return { searchS: {}, converter: null };
+        }
+
+        try {
+            const OpenCC = await import('opencc-js');
+            this.t2sConverter = OpenCC.Converter({ from: 'tw', to: 'cn' });
+        } catch {
+            this.t2sConverter = false;
+            this.searchSCache = {};
+            return { searchS: {}, converter: null };
+        }
+
+        const entries = await this.ensureLoaded();
+        const t2s = this.t2sConverter as (text: string) => string;
+        const searchS: SearchSIndex = {};
+
+        for (const entry of entries) {
+            const simplified: { t?: string; a?: string; at?: string[] } = {};
+
+            const ts = t2s(entry.title);
+            if (ts !== entry.title) simplified.t = ts;
+
+            if (entry.author) {
+                const as = t2s(entry.author);
+                if (as !== entry.author) simplified.a = as;
+            }
+
+            if (entry.additional_titles?.length) {
+                const ats = entry.additional_titles.map(t2s);
+                if (ats.some((s, i) => s !== entry.additional_titles![i])) {
+                    simplified.at = ats;
+                }
+            }
+
+            if (Object.keys(simplified).length > 0) {
+                searchS[entry.id] = simplified;
+            }
+        }
+
+        this.searchSCache = searchS;
+        return { searchS, converter: t2s };
+    }
+
     // --- IndexStorage 实现 ---
 
     async loadEntries(type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>> {
@@ -201,16 +258,21 @@ export class GithubStorage implements IndexStorage {
 
     async search(query: string, type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>> {
         const all = await this.ensureLoaded();
+        const { searchS, converter } = await this.ensureSearchSBuilt();
         const typeFiltered = all.filter(e => e.type === type);
-        const ranked = rankByRelevance(typeFiltered, query);
+
+        const queryS = converter ? converter(query) : undefined;
+        const hasSimplified = Object.keys(searchS).length > 0;
+        const ranked = hasSimplified
+            ? rankByRelevanceWithSimplified(typeFiltered, query, queryS, searchS)
+            : rankByRelevance(typeFiltered, query);
 
         const page = options.page || 1;
         const pageSize = options.pageSize || 50;
         const start = (page - 1) * pageSize;
-        const pageEntries = ranked.slice(start, start + pageSize);
 
         return {
-            entries: pageEntries,
+            entries: ranked.slice(start, start + pageSize),
             total: ranked.length,
             page,
             pageSize,
@@ -219,8 +281,18 @@ export class GithubStorage implements IndexStorage {
 
     async searchAll(query: string, limit: number = 5): Promise<GroupedSearchResult> {
         const all = await this.ensureLoaded();
+        const { searchS, converter } = await this.ensureSearchSBuilt();
         const types: IndexType[] = ['work', 'book', 'collection'];
-        const results = types.map(t => rankByRelevance(all.filter(e => e.type === t), query));
+
+        const queryS = converter ? converter(query) : undefined;
+        const hasSimplified = Object.keys(searchS).length > 0;
+        const results = types.map(t => {
+            const filtered = all.filter(e => e.type === t);
+            return hasSimplified
+                ? rankByRelevanceWithSimplified(filtered, query, queryS, searchS)
+                : rankByRelevance(filtered, query);
+        });
+
         return {
             works: results[0].slice(0, limit),
             books: results[1].slice(0, limit),
@@ -361,5 +433,7 @@ export class GithubStorage implements IndexStorage {
     clearCache(): void {
         this.cache = null;
         this.pathMap.clear();
+        this.searchSCache = null;
+        this.t2sConverter = null;
     }
 }

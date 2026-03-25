@@ -365,8 +365,8 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
                 borderRadius: '6px',
                 overflow: 'hidden',
             }}>
-                {groupedByVolume.map(group => (
-                    <div key={group.volume}>
+                {groupedByVolume.map((group, gi) => (
+                    <div key={`${group.volume}-${gi}`}>
                         {/* 册号标题 */}
                         <div style={{
                             padding: '4px 12px',

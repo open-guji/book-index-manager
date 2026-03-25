@@ -28,7 +28,7 @@ book-index-manager/
 ```
 
 ## 数据存储位置
-- 索引数据在 `\\wsl.localhost\Ubuntu\home\lishaodong\workspace` 下的 `book-index/` 和 `book-index-draft/`
+- 索引数据在 `D:\workspace` 下的 `book-index/` 和 `book-index-draft/`
 - 三层目录结构：`{Type}/{c1}/{c2}/{c3}/{ID}-{名称}.json`
 - ID 体系：Work → Collection → Book，Snowflake 64-bit + Base58 编码
 

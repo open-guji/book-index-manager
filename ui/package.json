@@ -46,7 +46,13 @@
   },
   "peerDependencies": {
     "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "react-dom": ">=18.0.0",
+    "opencc-js": ">=1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "opencc-js": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

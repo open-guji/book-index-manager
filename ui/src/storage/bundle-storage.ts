@@ -10,7 +10,8 @@ import type {
     CollatedEditionIndex,
     CollatedJuan,
 } from '../types';
-import { rankByRelevance } from '../core/storage';
+import { rankByRelevance, rankByRelevanceWithSimplified } from '../core/storage';
+import type { SearchSIndex } from '../core/storage';
 
 /**
  * index.json 中的条目格式（与 GithubStorage 相同）
@@ -70,6 +71,8 @@ export class BundleStorage implements IndexStorage {
     private pathMap: Map<string, { path: string; isDraft: boolean }> = new Map();
     private chunkCache = new Map<string, Record<string, unknown>>();
     private tiyaoCache = new Map<string, Record<string, unknown>>();
+    private searchSCache: SearchSIndex | null = null;
+    private searchSLoaded = false;
 
     constructor(config: BundleStorageConfig = {}) {
         this.basePath = config.basePath ?? DEFAULT_BASE_PATH;
@@ -130,6 +133,20 @@ export class BundleStorage implements IndexStorage {
         return entries;
     }
 
+    /** 加载简体搜索索引（search_s.json），加载失败时降级为空对象 */
+    private async ensureSearchSLoaded(): Promise<SearchSIndex> {
+        if (this.searchSLoaded) return this.searchSCache ?? {};
+        this.searchSLoaded = true;
+        try {
+            this.searchSCache = await this.fetchJson<SearchSIndex>(
+                `${this.basePath}/search_s.json`
+            );
+        } catch {
+            this.searchSCache = {};
+        }
+        return this.searchSCache!;
+    }
+
     // ─── L1: 详情 chunk ───
 
     private async loadChunk(prefix: string): Promise<Record<string, unknown>> {
@@ -185,8 +202,13 @@ export class BundleStorage implements IndexStorage {
 
     async search(query: string, type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>> {
         const all = await this.ensureLoaded();
+        const searchS = await this.ensureSearchSLoaded();
         const typeFiltered = all.filter(e => e.type === type);
-        const ranked = rankByRelevance(typeFiltered, query);
+
+        const hasSimplified = Object.keys(searchS).length > 0;
+        const ranked = hasSimplified
+            ? rankByRelevanceWithSimplified(typeFiltered, query, query, searchS)
+            : rankByRelevance(typeFiltered, query);
 
         const page = options.page || 1;
         const pageSize = options.pageSize || 50;
@@ -202,8 +224,17 @@ export class BundleStorage implements IndexStorage {
 
     async searchAll(query: string, limit: number = 5): Promise<GroupedSearchResult> {
         const all = await this.ensureLoaded();
+        const searchS = await this.ensureSearchSLoaded();
         const types: IndexType[] = ['work', 'book', 'collection'];
-        const results = types.map(t => rankByRelevance(all.filter(e => e.type === t), query));
+
+        const hasSimplified = Object.keys(searchS).length > 0;
+        const results = types.map(t => {
+            const filtered = all.filter(e => e.type === t);
+            return hasSimplified
+                ? rankByRelevanceWithSimplified(filtered, query, query, searchS)
+                : rankByRelevance(filtered, query);
+        });
+
         return {
             works: results[0].slice(0, limit),
             books: results[1].slice(0, limit),
@@ -324,5 +355,7 @@ export class BundleStorage implements IndexStorage {
         this.pathMap.clear();
         this.chunkCache.clear();
         this.tiyaoCache.clear();
+        this.searchSCache = null;
+        this.searchSLoaded = false;
     }
 }
