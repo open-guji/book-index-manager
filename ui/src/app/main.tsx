@@ -4,6 +4,7 @@ import { IndexBrowser } from '../components/IndexBrowser';
 import { IndexDetail } from '../components/IndexDetail';
 import { CollectionCatalog } from '../components/CollectionCatalog';
 import { CollatedEdition } from '../components/CollatedEdition';
+import { HomePage } from '../components/HomePage';
 import { DevApiStorage } from '../storage/dev-api-storage';
 import type { IndexStorage } from '../storage/types';
 import type { IndexEntry, IndexDetailData, ResourceCatalog, CollatedEditionIndex } from '../types';
@@ -70,7 +71,6 @@ function App() {
     const [selectedEntry, setSelectedEntry] = useState<IndexEntry | null>(null);
     const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
-    const [sidebarOpen, setSidebarOpen] = useState(true);
     const [activeTab, setActiveTabState] = useState<string>('detail');
     const [activeJuan, setActiveJuanState] = useState<string | null>(null);
     const [catalogList, setCatalogList] = useState<ResourceCatalog[]>([]);
@@ -223,182 +223,143 @@ function App() {
         return () => window.removeEventListener('popstate', onPopState);
     }, [loadById]);
 
+    /** 返回首页 */
+    const handleBack = useCallback(() => {
+        setSelectedEntry(null);
+        setDetailData(null);
+        setCatalogList([]);
+        setCollatedIndex(null);
+        pushUrl(null);
+    }, []);
+
+    // 是否在详情页
+    const showDetail = detailLoading || detailData;
+
     return (
         <div style={{
-            display: 'flex',
-            height: '100vh',
+            minHeight: '100vh',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif',
             background: 'var(--bim-bg, #f5f5f5)',
             color: 'var(--bim-fg, #333)',
         }}>
-            {/* 左侧：浏览器面板 */}
-            {sidebarOpen && (
-                <div style={{
-                    width: '420px',
-                    flexShrink: 0,
-                    borderRight: '1px solid var(--bim-widget-border, #e0e0e0)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    background: 'var(--bim-input-bg, #fff)',
-                    overflow: 'hidden',
-                }}>
-                    {/* 工具栏 */}
+            {showDetail ? (
+                /* ── 详情页 ── */
+                <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                    {/* 顶部返回栏 */}
                     <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '8px 20px',
+                        padding: '12px 48px',
                         borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
-                        fontSize: '12px',
-                        color: 'var(--bim-desc-fg, #717171)',
+                        background: 'var(--bim-input-bg, #fff)',
+                        flexShrink: 0,
                     }}>
-                        <span>古籍索引</span>
                         <button
-                            onClick={() => setSidebarOpen(false)}
-                            title="收起侧栏"
+                            onClick={handleBack}
                             style={{
-                                marginLeft: 'auto',
-                                padding: '2px 6px',
-                                border: 'none',
-                                borderRadius: '3px',
+                                padding: '4px 12px',
+                                border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                borderRadius: '4px',
                                 background: 'transparent',
-                                color: 'var(--bim-desc-fg, #717171)',
+                                color: 'var(--bim-fg, #333)',
                                 cursor: 'pointer',
-                                fontSize: '14px',
-                                lineHeight: 1,
+                                fontSize: '13px',
                             }}
                         >
-                            ◀
+                            ← 返回索引
                         </button>
                     </div>
-                    {/* 浏览器 */}
-                    <div style={{ flex: 1, overflow: 'auto' }}>
-                        <IndexBrowser
-                            transport={transport}
-                            onEntryClick={handleEntryClick}
-                            hideModeIndicator
-                        />
-                    </div>
+                    {detailLoading ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                            <span style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>加载中...</span>
+                        </div>
+                    ) : detailData ? (
+                        <>
+                            {/* Tab 栏：丛编目录 / 整理本 */}
+                            {((detailData.type === 'collection' && (catalogList.length > 0 || catalogLoading)) ||
+                              (detailData.type === 'work' && (collatedIndex || collatedLoading))) && (
+                                <div style={{
+                                    display: 'flex',
+                                    gap: '0',
+                                    borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                    padding: '0 48px',
+                                    background: 'var(--bim-input-bg, #fff)',
+                                    flexShrink: 0,
+                                }}>
+                                    <button
+                                        onClick={() => setActiveTab('detail')}
+                                        style={tabBtnStyle(activeTab === 'detail')}
+                                    >
+                                        基本信息
+                                    </button>
+                                    {detailData.type === 'collection' && catalogLoading && catalogList.length === 0 && (
+                                        <button
+                                            onClick={() => {}}
+                                            style={tabBtnStyle(false)}
+                                        >
+                                            目錄<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
+                                        </button>
+                                    )}
+                                    {detailData.type === 'collection' && catalogList.map((cat) => (
+                                        <button
+                                            key={cat.resource_id}
+                                            onClick={() => setActiveTab(`catalog:${cat.resource_id}`)}
+                                            style={tabBtnStyle(activeTab === `catalog:${cat.resource_id}`)}
+                                        >
+                                            {cat.short_name ? `${cat.short_name}·目錄` : '叢編目錄'}
+                                        </button>
+                                    ))}
+                                    {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
+                                        <button
+                                            onClick={() => setActiveTab('collated')}
+                                            style={tabBtnStyle(activeTab === 'collated')}
+                                        >
+                                            整理本
+                                            {collatedLoading && (
+                                                <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
+                                            )}
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                            <div style={{ padding: '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>
+                                {activeTab === 'detail' ? (
+                                    <IndexDetail
+                                        data={detailData}
+                                        transport={transport}
+                                        onNavigate={handleNavigate}
+                                    />
+                                ) : activeTab.startsWith('catalog:') ? (
+                                    <CollectionCatalog
+                                        data={catalogList.find(c => `catalog:${c.resource_id}` === activeTab)?.data}
+                                        onNavigate={handleNavigate}
+                                    />
+                                ) : activeTab === 'collated' ? (
+                                    <CollatedEdition
+                                        index={collatedIndex || undefined}
+                                        workId={detailData.id}
+                                        transport={transport}
+                                        onNavigate={handleNavigate}
+                                        activeJuan={activeJuan}
+                                        onJuanChange={setActiveJuan}
+                                    />
+                                ) : null}
+                            </div>
+                        </>
+                    ) : null}
+                </div>
+            ) : (
+                /* ── 首页：搜索 + 推荐 ── */
+                <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 16px' }}>
+                    <IndexBrowser
+                        transport={transport}
+                        onEntryClick={handleEntryClick}
+                        hideModeIndicator
+                    />
+                    <HomePage
+                        transport={transport}
+                        onNavigate={handleNavigate}
+                    />
                 </div>
             )}
-
-            {/* 右侧：详情面板 */}
-            <div style={{ flex: 1, background: 'var(--bim-bg, #f5f5f5)', position: 'relative', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                {!sidebarOpen && (
-                    <button
-                        onClick={() => setSidebarOpen(true)}
-                        title="展开侧栏"
-                        style={{
-                            position: 'absolute',
-                            top: '12px',
-                            left: '12px',
-                            zIndex: 10,
-                            padding: '6px 10px',
-                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
-                            borderRadius: '4px',
-                            background: 'var(--bim-input-bg, #fff)',
-                            color: 'var(--bim-fg, #333)',
-                            cursor: 'pointer',
-                            fontSize: '13px',
-                            boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-                        }}
-                    >
-                        ▶ 索引
-                    </button>
-                )}
-                {detailLoading ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <span style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>加载中...</span>
-                    </div>
-                ) : detailData ? (
-                    <>
-                        {/* Tab 栏：丛编目录 / 整理本 */}
-                        {((detailData.type === 'collection' && (catalogList.length > 0 || catalogLoading)) ||
-                          (detailData.type === 'work' && (collatedIndex || collatedLoading))) && (
-                            <div style={{
-                                display: 'flex',
-                                gap: '0',
-                                borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
-                                padding: '0 48px',
-                                background: 'var(--bim-input-bg, #fff)',
-                                flexShrink: 0,
-                            }}>
-                                <button
-                                    onClick={() => setActiveTab('detail')}
-                                    style={tabBtnStyle(activeTab === 'detail')}
-                                >
-                                    基本信息
-                                </button>
-                                {detailData.type === 'collection' && catalogLoading && catalogList.length === 0 && (
-                                    <button
-                                        onClick={() => {}}
-                                        style={tabBtnStyle(false)}
-                                    >
-                                        目錄<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
-                                    </button>
-                                )}
-                                {detailData.type === 'collection' && catalogList.map((cat) => (
-                                    <button
-                                        key={cat.resource_id}
-                                        onClick={() => setActiveTab(`catalog:${cat.resource_id}`)}
-                                        style={tabBtnStyle(activeTab === `catalog:${cat.resource_id}`)}
-                                    >
-                                        {cat.short_name ? `${cat.short_name}·目錄` : '叢編目錄'}
-                                    </button>
-                                ))}
-                                {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
-                                    <button
-                                        onClick={() => setActiveTab('collated')}
-                                        style={tabBtnStyle(activeTab === 'collated')}
-                                    >
-                                        整理本
-                                        {collatedLoading && (
-                                            <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
-                                        )}
-                                    </button>
-                                )}
-                            </div>
-                        )}
-                        <div style={{ padding: '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>
-                            {activeTab === 'detail' ? (
-                                <IndexDetail
-                                    data={detailData}
-                                    transport={transport}
-                                    onNavigate={handleNavigate}
-                                />
-                            ) : activeTab.startsWith('catalog:') ? (
-                                <CollectionCatalog
-                                    data={catalogList.find(c => `catalog:${c.resource_id}` === activeTab)?.data}
-                                    onNavigate={handleNavigate}
-                                />
-                            ) : activeTab === 'collated' ? (
-                                <CollatedEdition
-                                    index={collatedIndex || undefined}
-                                    workId={detailData.id}
-                                    transport={transport}
-                                    onNavigate={handleNavigate}
-                                    activeJuan={activeJuan}
-                                    onJuanChange={setActiveJuan}
-                                />
-                            ) : null}
-                        </div>
-                    </>
-                ) : (
-                    <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        height: '100%',
-                        color: 'var(--bim-desc-fg, #717171)',
-                    }}>
-                        <div style={{ fontSize: '48px', marginBottom: '16px' }}>📚</div>
-                        <h2 style={{ margin: '0 0 8px', fontWeight: 400, fontSize: '18px' }}>古籍索引浏览器</h2>
-                        <p style={{ margin: 0, fontSize: '14px' }}>
-                            从左侧选择一个条目查看详情
-                        </p>
-                    </div>
-                )}
-            </div>
         </div>
     );
 }

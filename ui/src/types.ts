@@ -7,6 +7,18 @@ export interface CoverageInfo {
     ranges: string;
 }
 
+/** 资源元数据 key → 中文显示名 */
+export const RESOURCE_METADATA_LABELS: Record<string, string> = {
+    edition: '版本',
+    quality: '资源质量',
+    image_source: '影像来源',
+    team: '所属团队',
+    publisher: '出版社',
+    year: '出版年份',
+    format: '格式',
+    note: '备注',
+};
+
 /** 统一资源条目 */
 export interface ResourceEntry {
     id: string;
@@ -18,6 +30,8 @@ export interface ResourceEntry {
     structure?: string[];
     coverage?: CoverageInfo;
     details?: string;
+    /** 结构化元数据 */
+    metadata?: Record<string, string>;
 }
 
 /** 索引类型 */

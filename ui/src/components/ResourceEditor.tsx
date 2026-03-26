@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { ResourceEntry, ResourceType, DownloadProgress } from '../types';
+import { RESOURCE_METADATA_LABELS } from '../types';
 
 /** 从 URL 提取默认 id */
 function extractIdFromUrl(url: string): string {
@@ -89,6 +90,17 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
             if (autoId) newItems[originalIndex].id = autoId;
         }
         onChange(newItems);
+    };
+
+    const handleMetadataChange = (originalIndex: number, key: string, value: string) => {
+        const item = items[originalIndex];
+        const meta = { ...(item.metadata || {}) };
+        if (value) {
+            meta[key] = value;
+        } else {
+            delete meta[key];
+        }
+        handleUpdate(originalIndex, 'metadata', Object.keys(meta).length > 0 ? meta : undefined);
     };
 
     const handleStructureChange = (originalIndex: number, text: string) => {
@@ -279,6 +291,25 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                                     placeholder="详细说明"
                                     style={{ ...inputStyle, minHeight: '60px', resize: 'vertical' }}
                                 />
+
+                                {/* metadata */}
+                                <div style={{ borderTop: '1px solid var(--bim-widget-border, #e0e0e0)', paddingTop: '8px', marginTop: '4px' }}>
+                                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginBottom: '6px' }}>元数据</div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                                        {Object.entries(RESOURCE_METADATA_LABELS).map(([key, label]) => (
+                                            <label key={key} style={{ ...labelStyle, gap: '4px' }}>
+                                                <span style={{ ...labelTextStyle, minWidth: '56px' }}>{label}</span>
+                                                <input
+                                                    type="text"
+                                                    value={item.metadata?.[key] || ''}
+                                                    onChange={e => handleMetadataChange(originalIndex, key, e.target.value)}
+                                                    placeholder={label}
+                                                    style={{ ...inputStyle, flex: 1 }}
+                                                />
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}

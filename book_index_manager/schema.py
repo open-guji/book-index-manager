@@ -89,6 +89,7 @@ class ResourceEntry:
     structure: Optional[List[str]] = None
     coverage: Optional[CoverageInfo] = None
     details: str = ""
+    metadata: Optional[dict] = None  # key-value pairs for structured resource info
 
     def to_dict(self) -> dict:
         """Serialize to a JSON-compatible dict, omitting default/empty optional fields."""
@@ -101,6 +102,8 @@ class ResourceEntry:
             d["coverage"] = self.coverage.to_dict()
         if self.details:
             d["details"] = self.details
+        if self.metadata:
+            d["metadata"] = self.metadata
         # physical resources may have no url
         if not self.url:
             d.pop("url", None)
@@ -120,6 +123,7 @@ class ResourceEntry:
             structure=data.get("structure"),
             coverage=coverage,
             details=data.get("details", ""),
+            metadata=data.get("metadata"),
         )
 
     def validate(self) -> List[str]:

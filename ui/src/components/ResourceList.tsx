@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ResourceEntry, ResourceType } from '../types';
+import { RESOURCE_METADATA_LABELS } from '../types';
 
 export interface ResourceListProps {
     items: ResourceEntry[];
@@ -83,6 +84,9 @@ export const ResourceList: React.FC<ResourceListProps> = ({
     );
 };
 
+const hasExtra = (item: ResourceEntry) =>
+    item.details || item.structure || item.coverage || (item.metadata && Object.keys(item.metadata).length > 0);
+
 const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => (
     <div style={{
         padding: '10px 14px',
@@ -90,7 +94,7 @@ const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => (
         borderRadius: '6px',
         background: 'var(--bim-input-bg, #fff)',
     }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: item.details || item.structure ? '6px' : '0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: hasExtra(item) ? '6px' : '0' }}>
             <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>{item.name}</span>
             {item.url && (
                 <a
@@ -103,8 +107,11 @@ const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => (
                 </a>
             )}
         </div>
-        {(item.details || item.structure || item.coverage) && (
+        {hasExtra(item) && (
             <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                {item.metadata && Object.entries(item.metadata).map(([key, value]) => (
+                    <span key={key}>{RESOURCE_METADATA_LABELS[key] || key}: {value}</span>
+                ))}
                 {item.details && <span>{item.details}</span>}
                 {item.structure && <span>层级: {item.structure.join(' → ')}</span>}
                 {item.coverage && <span>覆盖: L{item.coverage.level} {item.coverage.ranges}</span>}
