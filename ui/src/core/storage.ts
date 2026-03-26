@@ -87,8 +87,8 @@ export class BookIndexStorage {
      */
     async saveItem(type: IndexType, idStr: string, metadata: Record<string, unknown>): Promise<string> {
         const title = (metadata.title as string) || (metadata['书名'] as string) || '未命名';
-        const version = (metadata.version as string) || '';
-        const name = version ? `${title}${version}` : title;
+        const edition = (metadata.edition as string) || '';
+        const name = edition ? `${title}${edition}` : title;
         const filePath = this.getPath(type, idStr, name);
 
         // 检查是否已存在，需要重命名

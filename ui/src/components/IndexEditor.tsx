@@ -484,7 +484,7 @@ function IndexedByEditor({ items, onChange }: {
                                     <FormInput label="题名" value={item.title_info || ''} onChange={v => update(i, 'title_info', v)} />
                                     <FormInput label="著者" value={item.author_info || ''} onChange={v => update(i, 'author_info', v)} />
                                 </div>
-                                <FormInput label="版本" value={item.version || ''} onChange={v => update(i, 'version', v)} />
+                                <FormInput label="版本" value={item.edition || ''} onChange={v => update(i, 'edition', v)} />
                                 <FormTextArea value={item.summary || ''} onChange={v => update(i, 'summary', v)} placeholder="提要..." />
                                 <FormTextArea value={item.comment || ''} onChange={v => update(i, 'comment', v)} placeholder="按語..." />
                                 <FormTextArea value={item.additional_comment || ''} onChange={v => update(i, 'additional_comment', v)} placeholder="附按..." />

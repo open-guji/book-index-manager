@@ -76,9 +76,9 @@ class BookIndexStorage:
     def save_item(self, type_val: BookIndexType, id_val: int, metadata: dict):
         """Save an item (book, collection, or work) and update the index."""
         name = metadata.get("title") or metadata.get("书名") or metadata.get("名称") or "未命名"
-        version = metadata.get("version") or ""
-        if version:
-            name = f"{name}{version}"
+        edition = metadata.get("edition") or ""
+        if edition:
+            name = f"{name}{edition}"
         file_path = self.get_path(type_val, id_val, name)
         id_str = base58_encode(id_val)
 

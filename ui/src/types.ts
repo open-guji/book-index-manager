@@ -180,7 +180,7 @@ export interface ContainedInEntry {
 /** Book 详情 */
 export interface BookDetailData extends BaseDetailData {
     type: 'book';
-    version?: string;
+    edition?: string;
     work_id?: string;
     contained_in?: ContainedInEntry[];
     location_history?: LocationInfo[];
@@ -267,7 +267,7 @@ export interface IndexedByEntry {
     /** 收录时的作者信息，如"舊本題「卜子夏撰」" */
     author_info?: string;
     /** 收录时的版本信息，如"內府藏本" */
-    version?: string;
+    edition?: string;
     /** 提要/摘要 */
     summary?: string;
     /** 编者评论 */
@@ -331,7 +331,7 @@ export interface CollatedSection {
     level: number;
     type: '部' | '类' | '书' | '其他';
     content?: string;
-    version?: string | null;
+    edition?: string | null;
     text_status?: string | null;
     book_title?: string;
     n_juan?: number | null;

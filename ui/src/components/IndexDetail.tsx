@@ -411,7 +411,7 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
                             </div>
                             {isExpanded && (
                                 <div style={{ padding: '4px 12px 12px', borderTop: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
-                                    {(entry.title_info || entry.author_info || entry.version) && (
+                                    {(entry.title_info || entry.author_info || entry.edition) && (
                                         <div style={{
                                             display: 'flex',
                                             flexWrap: 'wrap',
@@ -421,7 +421,7 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
                                         }}>
                                             {entry.title_info && <MetaItem label="题名">{entry.title_info}</MetaItem>}
                                             {entry.author_info && <MetaItem label="著者">{entry.author_info}</MetaItem>}
-                                            {entry.version && <MetaItem label="版本">{entry.version}</MetaItem>}
+                                            {entry.edition && <MetaItem label="版本">{entry.edition}</MetaItem>}
                                         </div>
                                     )}
                                     {entry.summary && (
@@ -650,7 +650,7 @@ function HistoryList({ items }: { items: string[] }) {
 interface ResolvedRelation {
     id: string;
     title?: string;
-    version?: string;
+    edition?: string;
     type?: string;
 }
 
@@ -675,7 +675,7 @@ function RelationList({ title, ids, transport, onNavigate, renderLink }: {
                 transport.getItem(id).then(raw => ({
                     id,
                     title: raw ? (raw as any).title : undefined,
-                    version: raw ? (raw as any).version : undefined,
+                    edition: raw ? (raw as any).edition : undefined,
                     type: raw ? (raw as any).type : undefined,
                 })).catch(() => ({ id } as ResolvedRelation))
             )
@@ -701,8 +701,8 @@ function RelationList({ title, ids, transport, onNavigate, renderLink }: {
                 gap: '6px',
             }}>
                 {(resolved.length ? resolved : ids.map(id => ({ id } as ResolvedRelation))).map(item => {
-                    const label = item.version
-                        ? `${item.title || item.id}（${item.version}）`
+                    const label = item.edition
+                        ? `${item.title || item.id}（${item.edition}）`
                         : item.title || undefined;
                     return (
                         <span key={item.id} style={{
@@ -730,7 +730,7 @@ function RelationList({ title, ids, transport, onNavigate, renderLink }: {
 interface ResolvedBook {
     id: string;
     title?: string;
-    version?: string;
+    edition?: string;
     resources?: ResourceEntry[];
 }
 
@@ -751,7 +751,7 @@ function BookVersionList({ ids, transport, onNavigate, renderLink }: {
                 transport.getItem(id).then(raw => ({
                     id,
                     title: raw ? (raw as any).title : undefined,
-                    version: raw ? (raw as any).version : undefined,
+                    edition: raw ? (raw as any).edition : undefined,
                     resources: raw ? (raw as any).resources as ResourceEntry[] | undefined : undefined,
                 })).catch(() => ({ id } as ResolvedBook))
             )
@@ -771,8 +771,8 @@ function BookVersionList({ ids, transport, onNavigate, renderLink }: {
             </SectionLabel>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {(books.length ? books : ids.map(id => ({ id } as ResolvedBook))).map(book => {
-                    const label = book.version
-                        ? `${book.title || book.id}（${book.version}）`
+                    const label = book.edition
+                        ? `${book.title || book.id}（${book.edition}）`
                         : book.title || undefined;
                     return (
                         <div key={book.id} style={{
@@ -1065,8 +1065,8 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     if (detail.page_count?.description) {
         meta.push(<MetaItem key="page" label="页">{detail.page_count.description}</MetaItem>);
     }
-    if (bookData?.version) {
-        meta.push(<MetaItem key="ver" label="版本">{bookData.version}</MetaItem>);
+    if (bookData?.edition) {
+        meta.push(<MetaItem key="ver" label="版本">{bookData.edition}</MetaItem>);
     }
     if (workData?.parent_work) {
         meta.push(

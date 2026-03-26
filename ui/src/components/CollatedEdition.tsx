@@ -313,12 +313,12 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                         </span>
                     )}
                 </span>
-                {section.version && (
+                {section.edition && (
                     <span style={{
                         fontSize: '11px',
                         color: 'var(--bim-desc-fg, #aaa)',
                     }}>
-                        {section.version}
+                        {section.edition}
                     </span>
                 )}
                 {section.tag && (
