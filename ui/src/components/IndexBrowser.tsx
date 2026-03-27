@@ -421,6 +421,12 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                         {entry.has_text && <span title="文字资源">📝</span>}
                         {entry.has_image && <span title="图片资源">🖼️</span>}
                     </span>
+                    {/* 版本 */}
+                    {entry.edition && (
+                        <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)' }}>
+                            {entry.edition}
+                        </span>
+                    )}
                     {/* 卷数 */}
                     {entry.juan_count != null && entry.juan_count > 0 && (
                         <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)' }}>

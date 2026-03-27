@@ -28,6 +28,7 @@ interface BundleIndexItem {
     year?: string;
     holder?: string;
     additional_titles?: string[];
+    edition?: string;
     juan_count?: number;
     has_text?: boolean;
     has_image?: boolean;
@@ -123,6 +124,7 @@ export class BundleStorage implements IndexStorage {
                     role: item.role,
                     path: item.path,
                     additional_titles: item.additional_titles,
+                    edition: item.edition,
                     juan_count: item.juan_count,
                     has_text: item.has_text,
                     has_image: item.has_image,

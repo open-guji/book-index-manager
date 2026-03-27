@@ -149,6 +149,7 @@ export class GithubStorage implements IndexStorage {
             for (const item of Object.values(items)) {
                 const raw = item as GithubIndexItem & {
                     additional_titles?: string[];
+                    edition?: string;
                     juan_count?: number;
                     has_text?: boolean;
                     has_image?: boolean;
@@ -164,6 +165,7 @@ export class GithubStorage implements IndexStorage {
                     role: item.role,
                     path: item.path,
                     additional_titles: raw.additional_titles,
+                    edition: raw.edition,
                     juan_count: raw.juan_count,
                     has_text: raw.has_text,
                     has_image: raw.has_image,

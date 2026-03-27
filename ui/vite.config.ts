@@ -4,8 +4,8 @@ import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
 import { bookIndexApiPlugin } from './server/vite-plugin-api';
 
-/** WSL 工作区路径（Windows 访问 WSL 文件系统） */
-const WSL_WORKSPACE = '//wsl.localhost/Ubuntu/home/lishaodong/workspace';
+/** 数据工作区路径 */
+const DATA_WORKSPACE = 'D:/workspace';
 
 export default defineConfig(({ mode }) => {
   if (mode === 'lib') {
@@ -42,7 +42,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
-      bookIndexApiPlugin(WSL_WORKSPACE),
+      bookIndexApiPlugin(DATA_WORKSPACE),
     ],
     build: {
       outDir: 'dist-app',

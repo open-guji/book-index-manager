@@ -46,7 +46,7 @@ function matchesQuery(
     return false;
 }
 
-/** index.json 中的条目 */
+/** index.json 中的条目（允许任意扩展字段） */
 interface IndexFileEntry {
     id: string;
     title: string;
@@ -57,6 +57,7 @@ interface IndexFileEntry {
     holder: string;
     dynasty?: string;
     role?: string;
+    [key: string]: unknown;
 }
 
 interface IndexFile {
@@ -106,19 +107,12 @@ function getAllEntries(workspaceRoot: string, type: string) {
                 hasCollated = fs.existsSync(entryDir) || undefined;
             }
 
+            // 透传索引中所有字段，覆盖 type/isDraft/has_collated
             entries.push({
+                ...entry,
                 id,
-                title: entry.title,
                 type,
                 isDraft,
-                author: entry.author || undefined,
-                dynasty: entry.dynasty || undefined,
-                role: entry.role || undefined,
-                path: entry.path,
-                additional_titles: (entry as any).additional_titles,
-                juan_count: (entry as any).juan_count,
-                has_text: (entry as any).has_text,
-                has_image: (entry as any).has_image,
                 has_collated: hasCollated || undefined,
             });
         }

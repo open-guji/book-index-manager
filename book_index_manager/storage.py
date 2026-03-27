@@ -228,6 +228,9 @@ class BookIndexStorage:
             entry["role"] = author_role
         if n_juan:
             entry["n_juan"] = n_juan
+        edition = metadata.get("edition", "")
+        if edition:
+            entry["edition"] = edition
         index[type_key][id_str] = entry
         self._save_index(index_file, index)
 
@@ -324,6 +327,9 @@ class BookIndexStorage:
                         elif isinstance(vc, (int, float)):
                             juan_count = int(vc)
 
+                        # edition: 版本
+                        edition = metadata.get("edition", "")
+
                         # additional_titles: 别名列表
                         additional_titles = metadata.get("additional_titles", [])
                         if not isinstance(additional_titles, list):
@@ -362,6 +368,8 @@ class BookIndexStorage:
                             entry["has_text"] = True
                         if has_image:
                             entry["has_image"] = True
+                        if edition:
+                            entry["edition"] = edition
 
                         # 检测整理本目录
                         collated_dir = json_file.parent / id_str / "collated_edition"
@@ -390,14 +398,11 @@ class BookIndexStorage:
             index = self._load_index(index_file)
             section = index.get(type_key, {})
             for id_str, entry in section.items():
-                entries.append({
-                    "id": id_str,
-                    "title": entry.get("title", "未命名"),
-                    "type": type_name,
-                    "author": entry.get("author", ""),
-                    "dynasty": entry.get("dynasty", ""),
-                    "role": entry.get("role", ""),
-                })
+                # 透传索引中所有字段，覆盖 id/type
+                item = dict(entry)
+                item["id"] = id_str
+                item["type"] = type_name
+                entries.append(item)
         return entries
 
     def search_entries(self, query: str, type_name: str, status: Optional[BookIndexStatus] = None) -> List[Dict]:

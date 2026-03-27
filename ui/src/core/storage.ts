@@ -29,6 +29,7 @@ export interface IndexFileEntry {
     dynasty?: string;
     role?: string;
     additional_titles?: string[];
+    edition?: string;
     juan_count?: number;
     has_text?: boolean;
     has_image?: boolean;
@@ -194,6 +195,8 @@ export class BookIndexStorage {
         };
         if (additionalTitles && additionalTitles.length > 0) entry.additional_titles = additionalTitles;
         if (juanCount) entry.juan_count = juanCount;
+        const edition = typeof metadata.edition === 'string' ? metadata.edition : '';
+        if (edition) entry.edition = edition;
         if (hasText) entry.has_text = true;
         if (hasImage) entry.has_image = true;
 
@@ -293,6 +296,7 @@ export class BookIndexStorage {
                     role: entry.role || undefined,
                     path: joinPath(root, entry.path),
                     additional_titles: entry.additional_titles,
+                    edition: entry.edition,
                     juan_count: entry.juan_count,
                     has_text: entry.has_text,
                     has_image: entry.has_image,
@@ -407,6 +411,8 @@ export class BookIndexStorage {
                     };
                     if (additionalTitles && additionalTitles.length > 0) entry.additional_titles = additionalTitles;
                     if (juanCount) entry.juan_count = juanCount;
+                    const edition = typeof metadata.edition === 'string' ? metadata.edition : '';
+                    if (edition) entry.edition = edition;
                     if (hasText) entry.has_text = true;
                     if (hasImage) entry.has_image = true;
 

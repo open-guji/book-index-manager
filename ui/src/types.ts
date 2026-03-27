@@ -52,6 +52,8 @@ export interface IndexEntry {
     path?: string;
     /** 别名列表 */
     additional_titles?: string[];
+    /** 版本 */
+    edition?: string;
     /** 卷数 */
     juan_count?: number;
     /** 是否有文字资源 */
