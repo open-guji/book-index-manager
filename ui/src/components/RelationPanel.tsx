@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { IndexType, RelatedEntity } from '../types';
+import { useT } from '../i18n';
 
 export interface RelationPanelProps {
     entityType: IndexType;
@@ -26,6 +27,8 @@ export const RelationPanel: React.FC<RelationPanelProps> = ({
     childWorks, childCollections, containedBooks, siblingBooks,
     onLinkEntity, onUnlinkEntity, onViewEntity, onCreateAndLink, onSaveRelations,
 }) => {
+    const t = useT();
+
     return (
         <div style={{
             background: 'var(--bim-bg, #fff)',
@@ -40,73 +43,89 @@ export const RelationPanel: React.FC<RelationPanelProps> = ({
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span>🔗</span><span>关联关系</span>
+                    <span>🔗</span><span>{t.section.relations}</span>
                 </div>
                 {onSaveRelations && (
-                    <button onClick={onSaveRelations} style={saveBtnStyle}>保存</button>
+                    <button onClick={onSaveRelations} style={saveBtnStyle}>{t.action.save}</button>
                 )}
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {entityType === 'book' && (
                     <>
-                        <RelationSection direction="up" title="所属作品 (Work)" entity={belongsToWork}
+                        <RelationSection direction="up" title={t.relation.belongsToWork} entity={belongsToWork}
                             onView={onViewEntity} onUnlink={() => onUnlinkEntity('workId')}
                             onLink={() => onLinkEntity('workId', 'work')}
-                            onCreate={() => onCreateAndLink('workId', 'work', { title: entityTitle })} />
-                        <RelationSection direction="up" title="收录于丛编 (Collection)" entity={belongsToCollection}
+                            onCreate={() => onCreateAndLink('workId', 'work', { title: entityTitle })}
+                            linkLabel={t.action.linkExisting} createLabel={t.action.createAndLink}
+                            notLinkedLabel={t.relation.notLinked} viewLabel={t.action.viewEntity} unlinkLabel={t.action.unlink} />
+                        <RelationSection direction="up" title={t.relation.containedInCollection} entity={belongsToCollection}
                             onView={onViewEntity} onUnlink={() => onUnlinkEntity('collectionId')}
                             onLink={() => onLinkEntity('collectionId', 'collection')}
-                            onCreate={() => onCreateAndLink('collectionId', 'collection', { title: entityTitle })} />
+                            onCreate={() => onCreateAndLink('collectionId', 'collection', { title: entityTitle })}
+                            linkLabel={t.action.linkExisting} createLabel={t.action.createAndLink}
+                            notLinkedLabel={t.relation.notLinked} viewLabel={t.action.viewEntity} unlinkLabel={t.action.unlink} />
                         {belongsToWork && siblingBooks && siblingBooks.length > 0 && (
-                            <RelationListSection direction="horizontal" title={`同作品其他版本 (${siblingBooks.length})`}
+                            <RelationListSection direction="horizontal" title={`${t.relation.siblingVersions} (${siblingBooks.length})`}
                                 entities={siblingBooks} onView={onViewEntity}
-                                onAdd={() => onCreateAndLink('siblingBook', 'book', { workId: belongsToWork.id })} addLabel="为此作品添加新版本" />
+                                onAdd={() => onCreateAndLink('siblingBook', 'book', { workId: belongsToWork.id })} addLabel={t.relation.addVersionForWork}
+                                noneLabel={t.relation.none} expandMoreLabel={t.action.expandMore} />
                         )}
                     </>
                 )}
 
                 {entityType === 'work' && (
                     <>
-                        <RelationSection direction="up" title="父作品 (Parent Work)" entity={parentWork}
+                        <RelationSection direction="up" title={t.relation.parentWork} entity={parentWork}
                             onView={onViewEntity} onUnlink={() => onUnlinkEntity('parentWorkId')}
                             onLink={() => onLinkEntity('parentWorkId', 'work')}
-                            onCreate={() => onCreateAndLink('parentWorkId', 'work')} />
+                            onCreate={() => onCreateAndLink('parentWorkId', 'work')}
+                            linkLabel={t.action.linkExisting} createLabel={t.action.createAndLink}
+                            notLinkedLabel={t.relation.notLinked} viewLabel={t.action.viewEntity} unlinkLabel={t.action.unlink} />
                         {childWorks && childWorks.length > 0 && (
-                            <RelationListSection direction="down" title={`子作品 (${childWorks.length})`}
+                            <RelationListSection direction="down" title={`${t.relation.childWorks} (${childWorks.length})`}
                                 entities={childWorks} onView={onViewEntity}
-                                onAdd={() => onCreateAndLink('childWork', 'work', { parentWorkId: entityId })} addLabel="添加子作品" />
+                                onAdd={() => onCreateAndLink('childWork', 'work', { parentWorkId: entityId })} addLabel={t.action.addSubWork}
+                                noneLabel={t.relation.none} expandMoreLabel={t.action.expandMore} />
                         )}
                         {childCollections && childCollections.length > 0 && (
-                            <RelationListSection direction="down" title={`丛编实现 (${childCollections.length})`}
+                            <RelationListSection direction="down" title={`${t.relation.collectionImpl} (${childCollections.length})`}
                                 entities={childCollections} onView={onViewEntity}
-                                onAdd={() => onCreateAndLink('childCollection', 'collection', { workId: entityId })} addLabel="添加丛编实现" />
+                                onAdd={() => onCreateAndLink('childCollection', 'collection', { workId: entityId })} addLabel={t.action.addCollectionImpl}
+                                noneLabel={t.relation.none} expandMoreLabel={t.action.expandMore} />
                         )}
                         <RelationListSection direction="down"
-                            title={`所有版本 (${containedBooks?.length ?? 0})`}
+                            title={`${t.relation.allVersions} (${containedBooks?.length ?? 0})`}
                             entities={containedBooks || []} onView={onViewEntity}
-                            onAdd={() => onCreateAndLink('childBook', 'book', { workId: entityId })} addLabel="添加新版本" />
+                            onAdd={() => onCreateAndLink('childBook', 'book', { workId: entityId })} addLabel={t.action.addVersion}
+                            noneLabel={t.relation.none} expandMoreLabel={t.action.expandMore} />
                     </>
                 )}
 
                 {entityType === 'collection' && (
                     <>
-                        <RelationSection direction="up" title="对应作品 (Work)" entity={belongsToWork}
+                        <RelationSection direction="up" title={t.relation.correspondingWork} entity={belongsToWork}
                             onView={onViewEntity} onUnlink={() => onUnlinkEntity('workId')}
                             onLink={() => onLinkEntity('workId', 'work')}
-                            onCreate={() => onCreateAndLink('workId', 'work', { title: entityTitle })} />
-                        <RelationSection direction="up" title="父丛编 (Parent Collection)" entity={parentCollection}
+                            onCreate={() => onCreateAndLink('workId', 'work', { title: entityTitle })}
+                            linkLabel={t.action.linkExisting} createLabel={t.action.createAndLink}
+                            notLinkedLabel={t.relation.notLinked} viewLabel={t.action.viewEntity} unlinkLabel={t.action.unlink} />
+                        <RelationSection direction="up" title={t.relation.parentCollection} entity={parentCollection}
                             onView={onViewEntity} onUnlink={() => onUnlinkEntity('parentCollectionId')}
                             onLink={() => onLinkEntity('parentCollectionId', 'collection')}
-                            onCreate={() => onCreateAndLink('parentCollectionId', 'collection')} />
+                            onCreate={() => onCreateAndLink('parentCollectionId', 'collection')}
+                            linkLabel={t.action.linkExisting} createLabel={t.action.createAndLink}
+                            notLinkedLabel={t.relation.notLinked} viewLabel={t.action.viewEntity} unlinkLabel={t.action.unlink} />
                         <RelationListSection direction="down"
-                            title={`子丛编 (${childCollections?.length ?? 0})`}
+                            title={`${t.relation.childCollections} (${childCollections?.length ?? 0})`}
                             entities={childCollections || []} onView={onViewEntity}
-                            onAdd={() => onCreateAndLink('childCollection', 'collection', { parentCollectionId: entityId })} addLabel="添加子丛编" />
+                            onAdd={() => onCreateAndLink('childCollection', 'collection', { parentCollectionId: entityId })} addLabel={t.action.addSubCollection}
+                            noneLabel={t.relation.none} expandMoreLabel={t.action.expandMore} />
                         <RelationListSection direction="down"
-                            title={`包含书籍 (${containedBooks?.length ?? 0})`}
+                            title={`${t.relation.containedBooks} (${containedBooks?.length ?? 0})`}
                             entities={containedBooks || []} onView={onViewEntity}
-                            onAdd={() => onCreateAndLink('childBook', 'book', { collectionId: entityId })} addLabel="添加书籍" />
+                            onAdd={() => onCreateAndLink('childBook', 'book', { collectionId: entityId })} addLabel={t.action.addBook}
+                            noneLabel={t.relation.none} expandMoreLabel={t.action.expandMore} />
                     </>
                 )}
             </div>
@@ -124,7 +143,12 @@ const RelationSection: React.FC<{
     onUnlink: () => void;
     onLink: () => void;
     onCreate: () => void;
-}> = ({ direction, title, entity, onView, onUnlink, onLink, onCreate }) => {
+    linkLabel: string;
+    createLabel: string;
+    notLinkedLabel: string;
+    viewLabel: string;
+    unlinkLabel: string;
+}> = ({ direction, title, entity, onView, onUnlink, onLink, onCreate, linkLabel, createLabel, notLinkedLabel, viewLabel, unlinkLabel }) => {
     const dirColor = direction === 'up' ? '#2196f3' : direction === 'down' ? '#4caf50' : '#ff9800';
     const dirIcon = direction === 'up' ? '\u2B06\uFE0F' : direction === 'down' ? '\u2B07\uFE0F' : '\u2194\uFE0F';
 
@@ -141,18 +165,18 @@ const RelationSection: React.FC<{
                         <span style={{ fontSize: '11px', opacity: 0.6 }}>{entity.id}</span>
                     </div>
                     <div style={{ display: 'flex', gap: '4px' }}>
-                        <ActionBtn onClick={() => onView(entity)} title="查看">👁️</ActionBtn>
-                        <ActionBtn onClick={onUnlink} title="解除关联" danger>✕</ActionBtn>
+                        <ActionBtn onClick={() => onView(entity)} title={viewLabel}>👁️</ActionBtn>
+                        <ActionBtn onClick={onUnlink} title={unlinkLabel} danger>✕</ActionBtn>
                     </div>
                 </div>
             ) : (
                 <div style={{ padding: '8px', background: 'var(--bim-bg, #fff)', borderRadius: '4px', color: 'var(--bim-desc-fg, #717171)', fontSize: '12px', textAlign: 'center' }}>
-                    (未关联)
+                    {notLinkedLabel}
                 </div>
             )}
             <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                <SmallBtn onClick={onLink}>+ 关联现有</SmallBtn>
-                <SmallBtn onClick={onCreate} primary>+ 创建并关联</SmallBtn>
+                <SmallBtn onClick={onLink}>{linkLabel}</SmallBtn>
+                <SmallBtn onClick={onCreate} primary>{createLabel}</SmallBtn>
             </div>
         </div>
     );
@@ -165,7 +189,9 @@ const RelationListSection: React.FC<{
     onView: (entity: RelatedEntity) => void;
     onAdd: () => void;
     addLabel: string;
-}> = ({ direction, title, entities, onView, onAdd, addLabel }) => {
+    noneLabel: string;
+    expandMoreLabel: string;
+}> = ({ direction, title, entities, onView, onAdd, addLabel, noneLabel, expandMoreLabel }) => {
     const [expanded, setExpanded] = useState(false);
     const dirColor = direction === 'up' ? '#2196f3' : direction === 'down' ? '#4caf50' : '#ff9800';
     const dirIcon = direction === 'up' ? '\u2B06\uFE0F' : direction === 'down' ? '\u2B07\uFE0F' : '\u2194\uFE0F';
@@ -185,13 +211,13 @@ const RelationListSection: React.FC<{
                     ))}
                     {entities.length > 5 && !expanded && (
                         <div onClick={() => setExpanded(true)} style={{ padding: '4px 8px', textAlign: 'center', fontSize: '12px', color: 'var(--bim-link-fg, #0066cc)', cursor: 'pointer' }}>
-                            展开更多 ({entities.length - 5} 项)
+                            {expandMoreLabel} ({entities.length - 5})
                         </div>
                     )}
                 </div>
             ) : (
                 <div style={{ padding: '8px', background: 'var(--bim-bg, #fff)', borderRadius: '4px', color: 'var(--bim-desc-fg, #717171)', fontSize: '12px', textAlign: 'center' }}>
-                    (暂无)
+                    {noneLabel}
                 </div>
             )}
             <div style={{ marginTop: '8px' }}>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { ResourceEntry, ResourceType, DownloadProgress } from '../types';
-import { RESOURCE_METADATA_LABELS } from '../types';
+import { useT } from '../i18n';
+import type { LocaleMessages } from '../i18n';
 
 /** 从 URL 提取默认 id */
 function extractIdFromUrl(url: string): string {
@@ -24,18 +25,6 @@ function extractIdFromUrl(url: string): string {
     }
 }
 
-const RESOURCE_TYPES: { value: ResourceType; label: string }[] = [
-    { value: 'text', label: '文字' },
-    { value: 'image', label: '图片' },
-    { value: 'text+image', label: '文字+图片' },
-    { value: 'physical', label: '实体' },
-];
-
-const ROOT_TYPES = [
-    { value: 'catalog', label: '目录式' },
-    { value: 'search', label: '搜索式' },
-];
-
 export interface ResourceEditorProps {
     items: ResourceEntry[];
     onChange: (items: ResourceEntry[]) => void;
@@ -56,7 +45,20 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
     downloadStatuses,
     filterType,
 }) => {
+    const t = useT();
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
+    const RESOURCE_TYPES: { value: ResourceType; label: string }[] = [
+        { value: 'text', label: t.resourceTypeShort.text },
+        { value: 'image', label: t.resourceTypeShort.image },
+        { value: 'text+image', label: t.resourceTypeShort.textImage },
+        { value: 'physical', label: t.resourceTypeShort.physical },
+    ];
+
+    const ROOT_TYPES = [
+        { value: 'catalog', label: t.rootType.catalog },
+        { value: 'search', label: t.rootType.search },
+    ];
 
     const matchesFilter = (type: string) => {
         if (!filterType) return true;
@@ -152,10 +154,10 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                             background: typeColor(item.type),
                             color: '#fff',
                         }}>
-                            {RESOURCE_TYPES.find(t => t.value === item.type)?.label || item.type}
+                            {RESOURCE_TYPES.find(rt => rt.value === item.type)?.label || item.type}
                         </span>
                         <span style={{ flex: 1, fontSize: '13px', fontWeight: 500 }}>
-                            {item.name || `资源 ${originalIndex + 1}`}
+                            {item.name || `${t.editor.resourcePlaceholder} ${originalIndex + 1}`}
                         </span>
                         {item.id && (
                             <span style={{ fontSize: '11px', opacity: 0.5 }}>{item.id}</span>
@@ -171,7 +173,7 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                                 🔗
                             </a>
                         )}
-                        {onDownload && item.url && renderDownloadBtn(originalIndex, downloadStatuses?.[originalIndex], onDownload)}
+                        {onDownload && item.url && renderDownloadBtn(originalIndex, downloadStatuses?.[originalIndex], onDownload, t)}
                         <button
                             onClick={e => { e.stopPropagation(); handleRemove(originalIndex); }}
                             style={{
@@ -182,7 +184,7 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                                 padding: '2px 6px',
                                 fontSize: '14px',
                             }}
-                            title="删除此资源"
+                            title={t.editor.deleteThisResource}
                         >
                             ✕
                         </button>
@@ -192,32 +194,32 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                     {expandedIndex === originalIndex && (
                         <div style={{ padding: '12px', borderTop: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
                             {/* 图片预览 */}
-                            {(item.type === 'image' || item.type === 'text+image') && item.url && renderImagePreview(item)}
+                            {(item.type === 'image' || item.type === 'text+image') && item.url && renderImagePreview(item, t)}
 
                             <div style={{ display: 'grid', gap: '8px' }}>
                                 {/* 第一行：type + root_type */}
                                 <div style={{ display: 'flex', gap: '8px' }}>
                                     <label style={labelStyle}>
-                                        <span style={labelTextStyle}>类型</span>
+                                        <span style={labelTextStyle}>{t.label.type}</span>
                                         <select
                                             value={item.type}
                                             onChange={e => handleUpdate(originalIndex, 'type', e.target.value)}
                                             style={{ ...inputStyle, flex: 1 }}
                                         >
-                                            {RESOURCE_TYPES.map(t => (
-                                                <option key={t.value} value={t.value}>{t.label}</option>
+                                            {RESOURCE_TYPES.map(rt => (
+                                                <option key={rt.value} value={rt.value}>{rt.label}</option>
                                             ))}
                                         </select>
                                     </label>
                                     <label style={labelStyle}>
-                                        <span style={labelTextStyle}>根类型</span>
+                                        <span style={labelTextStyle}>{t.label.rootType}</span>
                                         <select
                                             value={item.root_type || 'catalog'}
                                             onChange={e => handleUpdate(originalIndex, 'root_type', e.target.value)}
                                             style={{ ...inputStyle, flex: 1 }}
                                         >
-                                            {ROOT_TYPES.map(t => (
-                                                <option key={t.value} value={t.value}>{t.label}</option>
+                                            {ROOT_TYPES.map(rt => (
+                                                <option key={rt.value} value={rt.value}>{rt.label}</option>
                                             ))}
                                         </select>
                                     </label>
@@ -229,14 +231,14 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                                         type="text"
                                         value={item.id}
                                         onChange={e => handleUpdate(originalIndex, 'id', e.target.value)}
-                                        placeholder="ID (自动从URL提取)"
+                                        placeholder={t.editor.idAutoExtract}
                                         style={{ ...inputStyle, width: '140px', flexShrink: 0 }}
                                     />
                                     <input
                                         type="text"
                                         value={item.name}
                                         onChange={e => handleUpdate(originalIndex, 'name', e.target.value)}
-                                        placeholder="资源名称"
+                                        placeholder={t.editor.resourceName}
                                         style={{ ...inputStyle, flex: 1 }}
                                     />
                                 </div>
@@ -246,7 +248,7 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                                     type="text"
                                     value={item.url}
                                     onChange={e => handleUpdate(originalIndex, 'url', e.target.value)}
-                                    placeholder="资源链接 (URL)"
+                                    placeholder={t.editor.resourceUrl}
                                     style={inputStyle}
                                 />
 
@@ -255,14 +257,14 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                                     type="text"
                                     value={item.structure?.join('、') || ''}
                                     onChange={e => handleStructureChange(originalIndex, e.target.value)}
-                                    placeholder="层级结构 (如: 册、卷)"
+                                    placeholder={t.editor.structurePlaceholder}
                                     style={inputStyle}
                                 />
 
                                 {/* coverage */}
                                 <div style={{ display: 'flex', gap: '8px' }}>
                                     <label style={labelStyle}>
-                                        <span style={labelTextStyle}>覆盖层级</span>
+                                        <span style={labelTextStyle}>{t.label.coverageLevel}</span>
                                         <input
                                             type="number"
                                             min={1}
@@ -273,12 +275,12 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                                         />
                                     </label>
                                     <label style={{ ...labelStyle, flex: 1 }}>
-                                        <span style={labelTextStyle}>覆盖范围</span>
+                                        <span style={labelTextStyle}>{t.label.coverageRange}</span>
                                         <input
                                             type="text"
                                             value={item.coverage?.ranges || ''}
                                             onChange={e => handleCoverageChange(originalIndex, 'ranges', e.target.value)}
-                                            placeholder="如: 2,3,5-8"
+                                            placeholder={t.editor.coverageRangePlaceholder}
                                             style={{ ...inputStyle, flex: 1 }}
                                         />
                                     </label>
@@ -288,15 +290,15 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                                 <textarea
                                     value={item.details || ''}
                                     onChange={e => handleUpdate(originalIndex, 'details', e.target.value)}
-                                    placeholder="详细说明"
+                                    placeholder={t.editor.detailsPlaceholder}
                                     style={{ ...inputStyle, minHeight: '60px', resize: 'vertical' }}
                                 />
 
                                 {/* metadata */}
                                 <div style={{ borderTop: '1px solid var(--bim-widget-border, #e0e0e0)', paddingTop: '8px', marginTop: '4px' }}>
-                                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginBottom: '6px' }}>元数据</div>
+                                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginBottom: '6px' }}>{t.label.metadata}</div>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
-                                        {Object.entries(RESOURCE_METADATA_LABELS).map(([key, label]) => (
+                                        {Object.entries(t.metadata).map(([key, label]) => (
                                             <label key={key} style={{ ...labelStyle, gap: '4px' }}>
                                                 <span style={{ ...labelTextStyle, minWidth: '56px' }}>{label}</span>
                                                 <input
@@ -334,7 +336,7 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                 }}
             >
                 <span>+</span>
-                <span>添加资源</span>
+                <span>{t.action.addResource}</span>
             </button>
         </div>
     );
@@ -353,6 +355,7 @@ function renderDownloadBtn(
     index: number,
     ds: DownloadProgress | undefined,
     onDownload: (index: number, url: string) => void,
+    t: LocaleMessages,
 ) {
     const isDownloading = ds?.status === 'downloading';
     const isCompleted = ds?.status === 'completed';
@@ -369,14 +372,14 @@ function renderDownloadBtn(
                 fontSize: '12px',
                 opacity: isDownloading ? 0.6 : 0.9,
             }}
-            title={isCompleted ? '下载完成' : isDownloading ? `下载中 ${ds?.progress || 0}%` : '下载此资源'}
+            title={isCompleted ? t.download.completed : isDownloading ? `${t.download.downloading} ${ds?.progress || 0}%` : t.download.downloadThis}
         >
             {isCompleted ? '✓' : isDownloading ? '⏳' : '⬇'}
         </button>
     );
 }
 
-function renderImagePreview(item: ResourceEntry) {
+function renderImagePreview(item: ResourceEntry, t: LocaleMessages) {
     const isImageUrl = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(item.url) ||
         item.url.includes('iiif') || item.url.includes('image');
 
@@ -393,7 +396,7 @@ function renderImagePreview(item: ResourceEntry) {
                 </div>
             ) : (
                 <div style={{ padding: '12px', background: '#00000010', borderRadius: '4px', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
-                    图片资源链接
+                    {t.editor.imageResourceLink}
                 </div>
             )}
         </div>

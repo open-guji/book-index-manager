@@ -5,6 +5,8 @@ import { IndexDetail } from '../components/IndexDetail';
 import { CollectionCatalog } from '../components/CollectionCatalog';
 import { CollatedEdition } from '../components/CollatedEdition';
 import { HomePage } from '../components/HomePage';
+import { LocaleToggle } from '../components/LocaleToggle';
+import { LocaleProvider } from '../i18n/provider';
 import { DevApiStorage } from '../storage/dev-api-storage';
 import type { IndexStorage } from '../storage/types';
 import type { IndexEntry, IndexDetailData, ResourceCatalog, CollatedEditionIndex } from '../types';
@@ -251,6 +253,9 @@ function App() {
                         borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
                         background: 'var(--bim-input-bg, #fff)',
                         flexShrink: 0,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
                     }}>
                         <button
                             onClick={handleBack}
@@ -266,6 +271,7 @@ function App() {
                         >
                             ← 返回索引
                         </button>
+                        <LocaleToggle />
                     </div>
                     {detailLoading ? (
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
@@ -348,7 +354,8 @@ function App() {
                 </div>
             ) : (
                 /* ── 首页：搜索 + 推荐 ── */
-                <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 16px' }}>
+                <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 16px', position: 'relative' }}>
+                    <LocaleToggle style={{ position: 'absolute', top: '32px', right: '16px' }} />
                     <IndexBrowser
                         transport={transport}
                         onEntryClick={handleEntryClick}
@@ -378,4 +385,8 @@ function tabBtnStyle(active: boolean): React.CSSProperties {
 }
 
 const root = createRoot(document.getElementById('root')!);
-root.render(<App />);
+root.render(
+    <LocaleProvider>
+        <App />
+    </LocaleProvider>
+);

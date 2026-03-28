@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import type { VolumeBookMapping, VolumeBookEntry, VolumeSection } from '../types';
 import type { IndexStorage } from '../storage/types';
+import { useT, formatTemplate } from '../i18n';
 
 export interface CollectionCatalogProps {
     /** 直接传入数据 */
@@ -20,6 +21,7 @@ export interface CollectionCatalogProps {
 // ── 内部子组件 ──
 
 function CatalogHeader({ data }: { data: VolumeBookMapping }) {
+    const t = useT();
     const { stats } = data;
     const progressPct = data.total_volumes > 0
         ? Math.round((stats.processed_volumes / data.total_volumes) * 100)
@@ -42,17 +44,17 @@ function CatalogHeader({ data }: { data: VolumeBookMapping }) {
                 fontSize: '13px',
                 color: 'var(--bim-desc-fg, #717171)',
             }}>
-                <span>共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{data.total_volumes}</strong> 册</span>
-                <span>已处理 <strong style={{ color: 'var(--bim-fg, #333)' }}>{stats.processed_volumes}</strong> 册 ({progressPct}%)</span>
-                <span>收录 <strong style={{ color: 'var(--bim-fg, #333)' }}>{stats.total_books}</strong> 部</span>
-                <span>已匹配 <strong style={{ color: 'var(--bim-fg, #333)' }}>{stats.matched_works}</strong> 部</span>
+                <span>{t.catalog.totalVolumes} <strong style={{ color: 'var(--bim-fg, #333)' }}>{data.total_volumes}</strong> {t.unit.volume}</span>
+                <span>{t.catalog.processed} <strong style={{ color: 'var(--bim-fg, #333)' }}>{stats.processed_volumes}</strong> {t.unit.volume} ({progressPct}%)</span>
+                <span>{t.catalog.contains} <strong style={{ color: 'var(--bim-fg, #333)' }}>{stats.total_books}</strong> {t.unit.bu}</span>
+                <span>{t.catalog.matched} <strong style={{ color: 'var(--bim-fg, #333)' }}>{stats.matched_works}</strong> {t.unit.bu}</span>
                 {stats.unmatched_works > 0 && (
-                    <span>待匹配 <strong style={{ color: '#e67e22' }}>{stats.unmatched_works}</strong> 部</span>
+                    <span>{t.catalog.unmatched} <strong style={{ color: '#e67e22' }}>{stats.unmatched_works}</strong> {t.unit.bu}</span>
                 )}
             </div>
             {data.source && (
                 <div style={{ marginTop: '6px', fontSize: '12px', color: 'var(--bim-desc-fg, #999)' }}>
-                    来源: {data.source}
+                    {t.catalog.source} {data.source}
                 </div>
             )}
         </div>
@@ -68,6 +70,8 @@ function SectionNav({
     activeSection: string | null;
     onSelect: (name: string | null) => void;
 }) {
+    const t = useT();
+
     return (
         <div style={{
             display: 'flex',
@@ -79,7 +83,7 @@ function SectionNav({
                 onClick={() => onSelect(null)}
                 style={navBtnStyle(activeSection === null)}
             >
-                全部
+                {t.catalog.all}
             </button>
             {sections.map(s => (
                 <button
@@ -147,6 +151,7 @@ function BookRow({ book, onNavigate, renderLink }: {
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
 }) {
+    const t = useT();
     const linkId = book.book_id || book.work_id;
 
     return (
@@ -168,8 +173,8 @@ function BookRow({ book, onNavigate, renderLink }: {
                 textAlign: 'right',
             }}>
                 {book.volumes.length === 1
-                    ? `第${book.volumes[0]}册`
-                    : `${book.volumes[0]}–${book.volumes[book.volumes.length - 1]}册`}
+                    ? formatTemplate(t.catalog.volume, { n: book.volumes[0] })
+                    : `${book.volumes[0]}–${book.volumes[book.volumes.length - 1]}${t.unit.volume}`}
             </span>
 
             {/* 书名 */}
@@ -195,7 +200,7 @@ function BookRow({ book, onNavigate, renderLink }: {
             {linkId && (
                 <BidLink
                     id={linkId}
-                    label={book.book_id ? '书籍' : '作品'}
+                    label={book.book_id ? t.indexType.book : t.indexType.work}
                     onNavigate={onNavigate}
                     renderLink={renderLink}
                 />
@@ -206,7 +211,7 @@ function BookRow({ book, onNavigate, renderLink }: {
                     color: 'var(--bim-desc-fg, #ccc)',
                     flexShrink: 0,
                 }}>
-                    未匹配
+                    {t.catalog.unmatched_label}
                 </span>
             )}
         </div>
@@ -224,6 +229,7 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
     className,
     style,
 }) => {
+    const t = useT();
     const [loaded, setLoaded] = useState<VolumeBookMapping | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -240,17 +246,17 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
         transport.getCollectionCatalog(collectionId).then(result => {
             if (cancelled) return;
             if (!result) {
-                setError('未找到丛编目录数据');
+                setError(t.catalog.notFound);
             } else {
                 setLoaded(result);
             }
         }).catch(err => {
-            if (!cancelled) setError(err instanceof Error ? err.message : '加载失败');
+            if (!cancelled) setError(err instanceof Error ? err.message : t.catalog.loadFailed);
         }).finally(() => {
             if (!cancelled) setLoading(false);
         });
         return () => { cancelled = true; };
-    }, [dataProp, collectionId, transport]);
+    }, [dataProp, collectionId, transport, t]);
 
     // 过滤书目
     const filteredBooks = useMemo(() => {
@@ -299,7 +305,7 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
         return (
             <div className={className} style={{ ...style, padding: '24px' }}>
                 <div style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '13px' }}>
-                    加载丛编目录...
+                    {t.catalog.loading}
                 </div>
             </div>
         );
@@ -335,7 +341,7 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
             <div style={{ marginBottom: '12px' }}>
                 <input
                     type="text"
-                    placeholder="搜索书名..."
+                    placeholder={t.search.searchBookName}
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     style={{
@@ -355,7 +361,7 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
                     fontSize: '12px',
                     color: 'var(--bim-desc-fg, #999)',
                 }}>
-                    {filteredBooks.length} 部
+                    {filteredBooks.length} {t.unit.bu}
                 </span>
             </div>
 
@@ -379,7 +385,7 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
                             top: 0,
                             zIndex: 1,
                         }}>
-                            第 {group.volume} 册
+                            {formatTemplate(t.catalog.volume, { n: group.volume })}
                         </div>
                         {group.books.map((book, i) => (
                             <BookRow
@@ -398,7 +404,7 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
                         color: 'var(--bim-desc-fg, #999)',
                         fontSize: '13px',
                     }}>
-                        无匹配结果
+                        {t.catalog.noMatch}
                     </div>
                 )}
             </div>

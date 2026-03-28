@@ -1,4 +1,5 @@
 import React from 'react';
+import { useT } from '../../i18n';
 
 export interface SectionProps {
     title: string;
@@ -11,36 +12,40 @@ export interface SectionProps {
     children: React.ReactNode;
 }
 
-export const Section: React.FC<SectionProps> = ({ title, onSave, onAskAI, extraButtons, children }) => (
-    <div style={{
-        background: 'var(--bim-bg, #fff)',
-        border: '1px solid var(--bim-widget-border, #e0e0e0)',
-        borderRadius: '4px',
-        padding: '16px',
-        marginBottom: '12px',
-    }}>
+export const Section: React.FC<SectionProps> = ({ title, onSave, onAskAI, extraButtons, children }) => {
+    const t = useT();
+
+    return (
         <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            background: 'var(--bim-bg, #fff)',
+            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            borderRadius: '4px',
+            padding: '16px',
             marginBottom: '12px',
-            paddingBottom: '8px',
-            borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
         }}>
-            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--bim-fg, #333)' }}>{title}</div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-                {extraButtons}
-                {onAskAI && (
-                    <button onClick={onAskAI} style={secondaryBtnStyle}>AI</button>
-                )}
-                {onSave && (
-                    <button onClick={onSave} style={primaryBtnStyle}>保存</button>
-                )}
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '12px',
+                paddingBottom: '8px',
+                borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+            }}>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--bim-fg, #333)' }}>{title}</div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                    {extraButtons}
+                    {onAskAI && (
+                        <button onClick={onAskAI} style={secondaryBtnStyle}>AI</button>
+                    )}
+                    {onSave && (
+                        <button onClick={onSave} style={primaryBtnStyle}>{t.action.save}</button>
+                    )}
+                </div>
             </div>
+            {children}
         </div>
-        {children}
-    </div>
-);
+    );
+};
 
 const primaryBtnStyle: React.CSSProperties = {
     padding: '4px 12px',

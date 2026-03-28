@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { IndexEntry, IndexType } from '../types';
 import type { IndexStorage } from '../storage/types';
+import { useT } from '../i18n';
 
 export interface RecommendedItem {
     id: string;
@@ -40,6 +41,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     onNavigate,
     recommendedIds,
 }) => {
+    const t = useT();
     const [stats, setStats] = useState<Stats | null>(null);
     const [recommended, setRecommended] = useState<(IndexEntry & { group?: string; fallbackDescription?: string })[]>([]);
 
@@ -122,10 +124,10 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div style={{ textAlign: 'center', marginBottom: '40px' }}>
                 <div style={{ fontSize: '48px', marginBottom: '12px' }}>📚</div>
                 <h1 style={{ margin: '0 0 8px', fontSize: '24px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>
-                    古籍索引
+                    {t.home.title}
                 </h1>
                 <p style={{ margin: 0, fontSize: '14px', color: 'var(--bim-desc-fg, #717171)' }}>
-                    从左侧搜索框输入关键词，查找作品、书籍或丛编
+                    {t.home.subtitle}
                 </p>
             </div>
 
@@ -135,7 +137,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     {(() => {
                         const groups = new Map<string, typeof recommended>();
                         for (const entry of recommended) {
-                            const group = entry.group || '推薦瀏覽';
+                            const group = entry.group || t.home.recommendedBrowse;
                             if (!groups.has(group)) groups.set(group, []);
                             groups.get(group)!.push(entry);
                         }
@@ -202,9 +204,9 @@ export const HomePage: React.FC<HomePageProps> = ({
                     padding: '16px 0',
                     borderTop: '1px solid var(--bim-widget-border, #e0e0e0)',
                 }}>
-                    <StatItem icon="✍️" label="作品" count={stats.works} />
-                    <StatItem icon="📖" label="书籍" count={stats.books} />
-                    <StatItem icon="📚" label="丛编" count={stats.collections} />
+                    <StatItem icon="✍️" label={t.indexType.work} count={stats.works} />
+                    <StatItem icon="📖" label={t.indexType.book} count={stats.books} />
+                    <StatItem icon="📚" label={t.indexType.collection} count={stats.collections} />
                 </div>
             )}
         </div>

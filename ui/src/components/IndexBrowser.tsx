@@ -3,6 +3,7 @@ import type { IndexType, IndexEntry, IndexSource, SyncConfig, GroupedSearchResul
 import type { IndexStorage } from '../storage/types';
 import { ModeIndicator } from './ModeIndicator';
 import { SearchInput } from './SearchInput';
+import { useT, formatTemplate } from '../i18n';
 
 const RECENT_KEY = 'bim-recent-ids';
 const RECENT_KEY_LEGACY = 'bim-recent-entries';
@@ -54,12 +55,6 @@ export interface IndexBrowserProps {
     onQueryChange?: (query: string) => void;
 }
 
-const TYPE_CONFIG: { type: IndexType; icon: string; name: string; key: keyof GroupedSearchResult }[] = [
-    { type: 'work', icon: '✍️', name: '作品', key: 'works' },
-    { type: 'book', icon: '📖', name: '书籍', key: 'books' },
-    { type: 'collection', icon: '📚', name: '丛编', key: 'collections' },
-];
-
 const TOTAL_KEYS: Record<string, keyof GroupedSearchResult> = {
     works: 'totalWorks',
     books: 'totalBooks',
@@ -80,6 +75,14 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     initialQuery,
     onQueryChange,
 }) => {
+    const t = useT();
+
+    const TYPE_CONFIG: { type: IndexType; icon: string; name: string; key: keyof GroupedSearchResult }[] = [
+        { type: 'work', icon: '✍️', name: t.indexType.work, key: 'works' },
+        { type: 'book', icon: '📖', name: t.indexType.book, key: 'books' },
+        { type: 'collection', icon: '📚', name: t.indexType.collection, key: 'collections' },
+    ];
+
     const [searchQuery, setSearchQuery] = useState(initialQuery ?? '');
     const [searchResults, setSearchResults] = useState<GroupedSearchResult | null>(null);
     const [expandedType, setExpandedType] = useState<IndexType | null>(null);
@@ -90,6 +93,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     const [recentIds, setRecentIds] = useState<string[]>(loadRecentIds);
     const [recentEntries, setRecentEntries] = useState<IndexEntry[]>([]);
     const [recentLoading, setRecentLoading] = useState(false);
+    const [recentExpanded, setRecentExpanded] = useState(false);
     const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
     const initialSearchDone = useRef(false);
 
@@ -171,7 +175,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         let cancelled = false;
         setRecentLoading(true);
         Promise.all(
-            recentIds.slice(0, 8).map(async id => {
+            recentIds.slice(0, 10).map(async id => {
                 try {
                     if (transport.getEntry) {
                         const entry = await transport.getEntry(id);
@@ -216,9 +220,9 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
             <header style={{ padding: '16px 20px', borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                        <h1 style={{ margin: 0, fontSize: '18px', color: 'var(--bim-fg, #333)' }}>索引浏览器</h1>
+                        <h1 style={{ margin: 0, fontSize: '18px', color: 'var(--bim-fg, #333)' }}>{t.browser.title}</h1>
                         <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
-                            浏览和管理古籍元数据
+                            {t.browser.subtitle}
                         </p>
                     </div>
                     {!hideModeIndicator && (
@@ -257,7 +261,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                             fontSize: '13px',
                         }}
                     >
-                        + 新建
+                        {t.action.newEntry}
                     </button>
                 )}
             </div>
@@ -266,7 +270,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
             <div style={{ padding: '0 20px 20px', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
                 {isLoading ? (
                     <div style={{ textAlign: 'center', padding: '40px', color: 'var(--bim-desc-fg, #717171)' }}>
-                        搜索中...
+                        {t.search.searching}
                     </div>
                 ) : errorMessage ? (
                     <div style={{ textAlign: 'center', padding: '40px' }}>
@@ -278,15 +282,15 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     <div style={{ flex: 1 }}>
                         {recentLoading ? (
                             <div style={{ textAlign: 'center', padding: '40px', color: 'var(--bim-desc-fg, #717171)' }}>
-                                加载中...
+                                {t.search.loading}
                             </div>
                         ) : recentEntries.length > 0 ? (
                             <>
                                 <div style={{ padding: '8px 0', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
-                                    最近浏览
+                                    {t.search.recentBrowse}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                    {recentEntries.map(entry => (
+                                    {recentEntries.slice(0, recentExpanded ? 10 : 3).map(entry => (
                                         <EntryCard
                                             key={entry.id}
                                             entry={entry}
@@ -296,12 +300,30 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                         />
                                     ))}
                                 </div>
+                                {!recentExpanded && recentEntries.length > 3 && (
+                                    <button
+                                        onClick={() => setRecentExpanded(true)}
+                                        style={{
+                                            display: 'block',
+                                            margin: '8px auto 0',
+                                            padding: '4px 16px',
+                                            fontSize: '12px',
+                                            color: 'var(--bim-primary, #0078d4)',
+                                            background: 'transparent',
+                                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                        }}
+                                    >
+                                        {t.action.expandMore}
+                                    </button>
+                                )}
                             </>
                         ) : (
                             <div style={{ textAlign: 'center', padding: '40px' }}>
                                 <div style={{ fontSize: '32px', marginBottom: '8px' }}>📚</div>
-                                <h3 style={{ margin: '0 0 8px', color: 'var(--bim-fg, #333)' }}>搜索古籍索引</h3>
-                                <p style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '13px' }}>输入关键词搜索作品、书籍或丛编</p>
+                                <h3 style={{ margin: '0 0 8px', color: 'var(--bim-fg, #333)' }}>{t.search.searchTitle}</h3>
+                                <p style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '13px' }}>{t.search.searchSubtitle}</p>
                             </div>
                         )}
                     </div>
@@ -330,7 +352,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                         <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--bim-fg, #333)' }}>
                                             {icon} {name}
                                             <span style={{ fontWeight: 400, color: 'var(--bim-desc-fg, #717171)', marginLeft: '6px' }}>
-                                                {total} 条
+                                                {total} {t.unit.items}
                                             </span>
                                         </span>
                                         {showExpandBtn && (
@@ -344,7 +366,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                                     fontSize: '12px',
                                                 }}
                                             >
-                                                查看全部 →
+                                                {t.action.viewAll}
                                             </button>
                                         )}
                                     </div>
@@ -368,10 +390,10 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     <div style={{ textAlign: 'center', padding: '40px' }}>
                         <div style={{ fontSize: '32px', marginBottom: '8px' }}>📚</div>
                         <h3 style={{ margin: '0 0 8px', color: 'var(--bim-fg, #333)' }}>
-                            未找到与「{searchQuery}」相关的结果
+                            {formatTemplate(t.search.noResultsFor, { query: searchQuery })}
                         </h3>
                         <p style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '13px' }}>
-                            试试其他关键词、别名或作者名
+                            {t.search.tryOther}
                         </p>
                     </div>
                 )}
@@ -391,6 +413,8 @@ interface EntryCardProps {
 }
 
 const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConfig, query }) => {
+    const t = useT();
+
     // 检查是否通过别名匹配
     const matchedAlias = query && entry.additional_titles
         ? entry.additional_titles.find(a => a.toLowerCase().includes(query.toLowerCase()))
@@ -418,8 +442,8 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                     </span>
                     {/* 资源图标 */}
                     <span style={{ display: 'flex', gap: '2px', fontSize: '12px', opacity: 0.7 }}>
-                        {entry.has_text && <span title="文字资源">📝</span>}
-                        {entry.has_image && <span title="图片资源">🖼️</span>}
+                        {entry.has_text && <span title={t.misc.textResource}>📝</span>}
+                        {entry.has_image && <span title={t.misc.imageResource}>🖼️</span>}
                     </span>
                     {/* 版本 */}
                     {entry.edition && (
@@ -430,7 +454,7 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                     {/* 卷数 */}
                     {entry.juan_count != null && entry.juan_count > 0 && (
                         <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)' }}>
-                            {entry.juan_count}卷
+                            {entry.juan_count}{t.unit.juan}
                         </span>
                     )}
                 </div>
@@ -445,7 +469,7 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                 {/* 别名匹配提示 */}
                 {matchedAlias && (
                     <div style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)', marginTop: '2px' }}>
-                        别名：{matchedAlias}
+                        {t.search.alias}：{matchedAlias}
                     </div>
                 )}
             </div>

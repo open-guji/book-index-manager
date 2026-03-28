@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { IndexEntry, IndexType } from '../types';
 import type { IndexStorage } from '../storage/types';
+import { useT } from '../i18n';
 
 const HISTORY_KEY = 'bim-search-history';
 const MAX_HISTORY = 10;
@@ -60,20 +61,23 @@ export interface SearchInputProps {
     placeholder?: string;
 }
 
-const TYPE_LABEL: Record<IndexType, string> = {
-    work: '作品',
-    book: '书籍',
-    collection: '丛编',
-};
-
 export const SearchInput: React.FC<SearchInputProps> = ({
     transport,
     value,
     onChange,
     onSearch,
     onEntrySelect,
-    placeholder = '搜索作品、书籍、丛编...',
+    placeholder: placeholderProp,
 }) => {
+    const t = useT();
+    const placeholder = placeholderProp ?? t.search.placeholder;
+
+    const TYPE_LABEL: Record<IndexType, string> = {
+        work: t.indexType.work,
+        book: t.indexType.book,
+        collection: t.indexType.collection,
+    };
+
     const [showDropdown, setShowDropdown] = useState(false);
     const [suggestions, setSuggestions] = useState<SuggestionItem[]>([]);
     const [activeIndex, setActiveIndex] = useState(-1);
@@ -296,7 +300,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                             color: 'var(--bim-desc-fg, #717171)',
                             borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
                         }}>
-                            <span>搜索历史</span>
+                            <span>{t.search.history}</span>
                             <button
                                 onClick={handleClearHistory}
                                 style={{
@@ -308,7 +312,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                                     padding: '0 4px',
                                 }}
                             >
-                                清除全部
+                                {t.search.clearAll}
                             </button>
                         </div>
                     )}
@@ -353,7 +357,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                                         padding: '0 2px',
                                         lineHeight: 1,
                                     }}
-                                    title="删除"
+                                    title={t.action.remove}
                                 >
                                     ×
                                 </button>

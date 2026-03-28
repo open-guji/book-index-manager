@@ -1,5 +1,6 @@
 import React from 'react';
 import type { IndexSource, SyncConfig } from '../types';
+import { useT } from '../i18n';
 
 export interface ModeIndicatorProps {
     indexSource: IndexSource;
@@ -24,6 +25,7 @@ export const ModeIndicator: React.FC<ModeIndicatorProps> = ({
     onConfigurePath,
     onSelectFolder,
 }) => {
+    const t = useT();
     const isLocal = indexSource === 'local';
     const isDraft = syncConfig?.isDraft ?? true;
     const folderPath = syncConfig?.repoPath || '';
@@ -52,7 +54,7 @@ export const ModeIndicator: React.FC<ModeIndicatorProps> = ({
     const draftToggle = (
         <div
             onClick={onToggleDraft}
-            title={`点击切换到 ${isDraft ? 'official' : 'draft'} 仓库`}
+            title={isDraft ? t.mode.switchToOfficial : t.mode.switchToDraft}
             style={{
                 ...buttonStyle,
                 background: isDraft ? 'var(--bim-warning, #ff9800)' : 'var(--bim-success, #4caf50)',
@@ -72,17 +74,17 @@ export const ModeIndicator: React.FC<ModeIndicatorProps> = ({
                     {draftToggle}
                     <div
                         onClick={onSwitchMode}
-                        title="点击切换到同步模式"
+                        title={t.mode.switchToSync}
                         style={buttonStyle}
                         {...hoverHandlers}
                     >
                         <span>📁</span>
-                        <span>本地模式</span>
+                        <span>{t.mode.localMode}</span>
                         <span style={{ opacity: 0.6, marginLeft: '4px' }}>⇄</span>
                     </div>
                     <div
                         onClick={onSelectFolder}
-                        title={folderPath || '选择本地文件夹'}
+                        title={folderPath || t.mode.selectFolder}
                         style={{ ...buttonStyle, paddingLeft: '8px', paddingRight: '8px' }}
                         {...hoverHandlers}
                     >
@@ -97,14 +99,14 @@ export const ModeIndicator: React.FC<ModeIndicatorProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {draftToggle}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <div onClick={onSwitchMode} title="点击切换到本地模式" style={buttonStyle} {...hoverHandlers}>
+                    <div onClick={onSwitchMode} title={t.mode.switchToLocal} style={buttonStyle} {...hoverHandlers}>
                         <span>🌐</span>
-                        <span>同步模式:</span>
+                        <span>{t.mode.syncMode}</span>
                         <span style={{ opacity: 0.6, marginLeft: '4px' }}>⇄</span>
                     </div>
                     <div
                         onClick={onConfigurePath}
-                        title={shortName || '配置同步路径'}
+                        title={shortName || t.mode.configurePath}
                         style={{ ...buttonStyle, background: 'transparent', padding: '6px', fontSize: '12px' }}
                         {...hoverHandlers}
                     >
@@ -120,18 +122,18 @@ export const ModeIndicator: React.FC<ModeIndicatorProps> = ({
         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
             <div
                 onClick={onSwitchMode}
-                title={isLocal ? '点击切换到 GitHub 同步模式' : '点击切换到本地模式'}
+                title={isLocal ? t.mode.switchToGithub : t.mode.switchToLocal}
                 style={buttonStyle}
                 {...hoverHandlers}
             >
                 <span>{isLocal ? '📁' : '🌐'}</span>
-                <span>{isLocal ? '本地模式' : 'GitHub 同步'}</span>
+                <span>{isLocal ? t.mode.localMode : t.mode.githubSync}</span>
                 <span style={{ opacity: 0.6 }}>⇄</span>
             </div>
             {isLocal && (
                 <div
                     onClick={onSelectFolder}
-                    title={folderPath || '选择本地文件夹'}
+                    title={folderPath || t.mode.selectFolder}
                     style={{ ...buttonStyle, paddingLeft: '8px', paddingRight: '8px', minWidth: folderPath ? '100px' : 'auto', justifyContent: 'space-between' }}
                     {...hoverHandlers}
                 >

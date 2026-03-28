@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { SourceItem, EntityOption } from '../types';
+import { useT } from '../i18n';
 
 export interface SourceEditorProps {
     items: SourceItem[];
@@ -25,6 +26,7 @@ function getTypeName(type: string): string {
 }
 
 export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onOpenEntityPicker }) => {
+    const t = useT();
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
     const handleAdd = () => {
@@ -83,7 +85,7 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
                     >
                         <span style={{ opacity: 0.6, fontSize: '12px' }}>{expandedIndex === index ? '\u25BC' : '\u25B6'}</span>
                         <span style={{ flex: 1, fontSize: '13px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>
-                            {item.name || `来源 ${index + 1}`}
+                            {item.name || `${t.editor.sourcePlaceholder} ${index + 1}`}
                         </span>
                         {item.type && (
                             <span style={{ fontSize: '11px', padding: '2px 8px', background: getTypeColor(item.type), color: 'white', borderRadius: '3px', fontWeight: 500 }}>
@@ -93,7 +95,7 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
                         <button
                             onClick={e => { e.stopPropagation(); handleRemove(index); }}
                             style={{ background: 'transparent', border: 'none', color: 'var(--bim-danger, #f44336)', cursor: 'pointer', padding: '2px 6px', fontSize: '14px' }}
-                            title="删除此来源"
+                            title={t.editor.deleteThisSource}
                         >
                             ✕
                         </button>
@@ -106,17 +108,17 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
                                 {/* Type selection */}
                                 {!item.type && (
                                     <div>
-                                        <label style={labelStyle}>选择来源类型</label>
+                                        <label style={labelStyle}>{t.editor.selectSourceType}</label>
                                         <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                                             <button onClick={() => handleTypeSelect(index, 'bookID')} style={{ ...typeButtonStyle, borderColor: '#4caf50', color: '#4caf50' }}>
                                                 <span style={{ fontSize: '18px' }}>📚</span>
                                                 <span>Book ID</span>
-                                                <span style={{ fontSize: '11px', opacity: 0.7 }}>从现有书籍选择</span>
+                                                <span style={{ fontSize: '11px', opacity: 0.7 }}>{t.editor.fromExistingBook}</span>
                                             </button>
                                             <button onClick={() => handleTypeSelect(index, 'url')} style={{ ...typeButtonStyle, borderColor: '#2196f3', color: '#2196f3' }}>
                                                 <span style={{ fontSize: '18px' }}>🔗</span>
                                                 <span>URL</span>
-                                                <span style={{ fontSize: '11px', opacity: 0.7 }}>输入网址链接</span>
+                                                <span style={{ fontSize: '11px', opacity: 0.7 }}>{t.editor.enterUrl}</span>
                                             </button>
                                         </div>
                                     </div>
@@ -127,8 +129,8 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
                                     <>
                                         <div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <label style={labelStyle}>选择书籍/作品</label>
-                                                <button onClick={() => { const n = [...items]; n[index] = { ...n[index], type: '', id: '', name: '' }; onChange(n); }} style={changeTypeBtnStyle}>更换类型</button>
+                                                <label style={labelStyle}>{t.action.selectBookOrWork}</label>
+                                                <button onClick={() => { const n = [...items]; n[index] = { ...n[index], type: '', id: '', name: '' }; onChange(n); }} style={changeTypeBtnStyle}>{t.action.changeType}</button>
                                             </div>
                                             {item.id && item.name ? (
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: 'var(--bim-bg, #fff)', border: '1px solid #4caf50', borderRadius: '6px' }}>
@@ -137,11 +139,11 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
                                                         <div style={{ fontWeight: 500 }}>{item.name}</div>
                                                         <code style={{ fontSize: '11px', background: 'var(--bim-primary-soft, rgba(0,120,212,0.15))', padding: '2px 6px', borderRadius: '3px' }}>{item.id}</code>
                                                     </div>
-                                                    <button onClick={() => handleSelectBook(index)} style={{ background: 'transparent', border: '1px solid var(--bim-widget-border, #e0e0e0)', color: 'var(--bim-fg, #333)', cursor: 'pointer', padding: '4px 10px', borderRadius: '4px', fontSize: '12px' }}>重选</button>
+                                                    <button onClick={() => handleSelectBook(index)} style={{ background: 'transparent', border: '1px solid var(--bim-widget-border, #e0e0e0)', color: 'var(--bim-fg, #333)', cursor: 'pointer', padding: '4px 10px', borderRadius: '4px', fontSize: '12px' }}>{t.action.reselect}</button>
                                                 </div>
                                             ) : (
                                                 <button onClick={() => handleSelectBook(index)} style={{ width: '100%', padding: '14px', border: '2px dashed var(--bim-widget-border, #e0e0e0)', borderRadius: '6px', background: 'transparent', color: 'var(--bim-fg, #333)', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                                                    <span>🔍</span><span>点击选择书籍/作品</span>
+                                                    <span>🔍</span><span>{t.action.clickToSelectBookOrWork}</span>
                                                 </button>
                                             )}
                                         </div>
@@ -153,13 +155,13 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
                                     <>
                                         <div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <label style={labelStyle}>来源名称</label>
-                                                <button onClick={() => { const n = [...items]; n[index] = { ...n[index], type: '', id: '', name: '' }; onChange(n); }} style={changeTypeBtnStyle}>更换类型</button>
+                                                <label style={labelStyle}>{t.label.sourceName}</label>
+                                                <button onClick={() => { const n = [...items]; n[index] = { ...n[index], type: '', id: '', name: '' }; onChange(n); }} style={changeTypeBtnStyle}>{t.action.changeType}</button>
                                             </div>
-                                            <input type="text" value={item.name} onChange={e => handleUpdate(index, 'name', e.target.value)} placeholder="如: 维基文库、中国基本古籍库" style={inputStyle} />
+                                            <input type="text" value={item.name} onChange={e => handleUpdate(index, 'name', e.target.value)} placeholder={t.editor.sourceNamePlaceholder} style={inputStyle} />
                                         </div>
                                         <div>
-                                            <label style={labelStyle}>URL 地址</label>
+                                            <label style={labelStyle}>{t.label.urlAddress}</label>
                                             <input type="text" value={item.id} onChange={e => handleUpdate(index, 'id', e.target.value)} placeholder="https://..." style={inputStyle} />
                                         </div>
                                     </>
@@ -169,25 +171,25 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
                                 {item.type && (
                                     <>
                                         <div style={{ borderTop: '1px dashed var(--bim-widget-border, #e0e0e0)', paddingTop: '12px', marginTop: '4px' }}>
-                                            <label style={{ ...labelStyle, opacity: 0.7 }}>可选信息</label>
+                                            <label style={{ ...labelStyle, opacity: 0.7 }}>{t.label.optionalInfo}</label>
                                         </div>
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                                             <div>
-                                                <label style={labelStyle}>详细说明 <span style={{ opacity: 0.5 }}>(可选)</span></label>
-                                                <input type="text" value={item.details} onChange={e => handleUpdate(index, 'details', e.target.value)} placeholder="补充说明" style={inputStyle} />
+                                                <label style={labelStyle}>{t.label.detailsOptional}</label>
+                                                <input type="text" value={item.details} onChange={e => handleUpdate(index, 'details', e.target.value)} placeholder={t.editor.detailsPlaceholder} style={inputStyle} />
                                             </div>
                                             <div>
-                                                <label style={labelStyle}>位置/页码 <span style={{ opacity: 0.5 }}>(可选)</span></label>
+                                                <label style={labelStyle}>{t.label.positionOptional}</label>
                                                 <input type="text" value={item.position} onChange={e => handleUpdate(index, 'position', e.target.value)} placeholder="如: 卷三, p.52" style={inputStyle} />
                                             </div>
                                         </div>
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                                             <div>
-                                                <label style={labelStyle}>数据版本 <span style={{ opacity: 0.5 }}>(可选)</span></label>
+                                                <label style={labelStyle}>{t.label.dataVersionOptional}</label>
                                                 <input type="text" value={item.version} onChange={e => handleUpdate(index, 'version', e.target.value)} placeholder="如: v1.0, 2024-01" style={inputStyle} />
                                             </div>
                                             <div>
-                                                <label style={labelStyle}>处理器版本 <span style={{ opacity: 0.5 }}>(可选)</span></label>
+                                                <label style={labelStyle}>{t.label.processorVersionOptional}</label>
                                                 <input type="text" value={item.processor_version} onChange={e => handleUpdate(index, 'processor_version', e.target.value)} placeholder="如: v0.1" style={inputStyle} />
                                             </div>
                                         </div>
@@ -204,7 +206,7 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
                 padding: '8px 16px', border: '1px dashed var(--bim-widget-border, #e0e0e0)', borderRadius: '4px',
                 background: 'transparent', color: 'var(--bim-fg, #333)', cursor: 'pointer', fontSize: '13px', opacity: 0.8,
             }}>
-                <span>+</span><span>添加来源</span>
+                <span>+</span><span>{t.action.addSource}</span>
             </button>
         </div>
     );

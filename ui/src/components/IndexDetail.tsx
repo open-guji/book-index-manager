@@ -15,6 +15,8 @@ import type {
 import type { IndexStorage } from '../storage/types';
 import { extractStatus } from '../id';
 import { ResourceList } from './ResourceList';
+import { useT, useConvert } from '../i18n';
+import { formatTemplate } from '../i18n';
 
 /** 已解析的收录关联（ID → 标题 + 册号） */
 interface ResolvedContainedIn {
@@ -39,12 +41,6 @@ export interface IndexDetailProps {
     className?: string;
     style?: React.CSSProperties;
 }
-
-const TYPE_LABELS: Record<IndexType, string> = {
-    book: '书籍',
-    work: '作品',
-    collection: '丛编',
-};
 
 // ── 工具函数 ──
 
@@ -80,6 +76,7 @@ function numberToChinese(n: number): string {
 // ── 内部子组件 ──
 
 function TypeBadge({ type }: { type: IndexType }) {
+    const t = useT();
     const colors: Record<IndexType, string> = {
         book: '#c0392b',
         work: '#8e6f3e',
@@ -97,12 +94,13 @@ function TypeBadge({ type }: { type: IndexType }) {
             borderRadius: '2px',
             background: `${colors[type]}08`,
         }}>
-            {TYPE_LABELS[type]}
+            {t.indexType[type]}
         </span>
     );
 }
 
 function StatusBadge({ isDraft }: { isDraft: boolean }) {
+    const t = useT();
     return (
         <span style={{
             display: 'inline-block',
@@ -115,12 +113,13 @@ function StatusBadge({ isDraft }: { isDraft: boolean }) {
             borderRadius: '2px',
             background: isDraft ? '#e67e2208' : '#27ae6008',
         }}>
-            {isDraft ? '草稿' : '正式'}
+            {isDraft ? t.status.draft : t.status.official}
         </span>
     );
 }
 
 function IdBadge({ id }: { id: string }) {
+    const t = useT();
     const [copied, setCopied] = React.useState(false);
     const handleCopy = () => {
         navigator.clipboard.writeText(id).then(() => {
@@ -140,7 +139,7 @@ function IdBadge({ id }: { id: string }) {
             border: '1px solid var(--bim-widget-border, #e0e0e0)',
             borderRadius: '4px',
         }}>
-            <span>ID:</span>
+            <span>{t.label.id}</span>
             <span style={{
                 fontFamily: 'monospace',
                 fontSize: '12px',
@@ -150,7 +149,7 @@ function IdBadge({ id }: { id: string }) {
             </span>
             <span
                 onClick={handleCopy}
-                title={copied ? '已复制' : '复制 ID'}
+                title={copied ? t.action.copied : t.action.copy}
                 style={{
                     cursor: 'pointer',
                     fontSize: '13px',
@@ -209,6 +208,7 @@ function MetaItem({ label, children }: { label: string; children: React.ReactNod
 }
 
 function AuthorLine({ authors, type }: { authors: AuthorInfo[]; type: IndexType }) {
+    const { convert } = useConvert();
     return (
         <span style={{
             fontSize: '14px',
@@ -222,15 +222,15 @@ function AuthorLine({ authors, type }: { authors: AuthorInfo[]; type: IndexType 
                         <span style={{
                             color: 'var(--bim-desc-fg, #717171)',
                             fontSize: '12px',
-                        }}>〔{a.dynasty}〕</span>
+                        }}>〔{convert(a.dynasty)}〕</span>
                     )}
-                    <span style={{ fontWeight: 500 }}>{a.name}</span>
+                    <span style={{ fontWeight: 500 }}>{convert(a.name)}</span>
                     {a.role && (
                         <span style={{
                             color: 'var(--bim-desc-fg, #999)',
                             fontSize: '12px',
                             marginLeft: '2px',
-                        }}> {a.role}</span>
+                        }}> {convert(a.role)}</span>
                     )}
                 </span>
             ))}
@@ -347,12 +347,14 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
 }) {
+    const t = useT();
+    const { convert } = useConvert();
     if (!items.length) return null;
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
     return (
         <>
-            <SectionLabel>收录</SectionLabel>
+            <SectionLabel>{t.section.indexed}</SectionLabel>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {items.map((entry, i) => {
                     const isExpanded = expandedIndex === i;
@@ -389,7 +391,7 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
                                     fontWeight: 600,
                                     color: 'var(--bim-fg, #333)',
                                 }}>
-                                    {entry.source}
+                                    {convert(entry.source)}
                                 </span>
                                 {!isExpanded && entry.title_info && (
                                     <span style={{
@@ -399,13 +401,13 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
                                     }}>
-                                        {entry.title_info}
+                                        {convert(entry.title_info)}
                                     </span>
                                 )}
                                 {entry.source_bid && (
                                     <span onClick={e => e.stopPropagation()}
                                         style={{ fontSize: '11px', marginLeft: 'auto', flexShrink: 0 }}>
-                                        <IdLink id={entry.source_bid} label="查看 →" onNavigate={onNavigate} renderLink={renderLink} />
+                                        <IdLink id={entry.source_bid} label={t.action.view} onNavigate={onNavigate} renderLink={renderLink} />
                                     </span>
                                 )}
                             </div>
@@ -419,9 +421,9 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
                                             padding: '8px 0',
                                             fontSize: '13px',
                                         }}>
-                                            {entry.title_info && <MetaItem label="题名">{entry.title_info}</MetaItem>}
-                                            {entry.author_info && <MetaItem label="著者">{entry.author_info}</MetaItem>}
-                                            {entry.edition && <MetaItem label="版本">{entry.edition}</MetaItem>}
+                                            {entry.title_info && <MetaItem label={t.label.titleInfo}>{convert(entry.title_info)}</MetaItem>}
+                                            {entry.author_info && <MetaItem label={t.label.authorInfo}>{convert(entry.author_info)}</MetaItem>}
+                                            {entry.edition && <MetaItem label={t.label.edition}>{convert(entry.edition)}</MetaItem>}
                                         </div>
                                     )}
                                     {entry.summary && (
@@ -438,14 +440,14 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
                                                 color: 'var(--bim-desc-fg, #717171)',
                                                 marginBottom: '4px',
                                                 letterSpacing: '1px',
-                                            }}>提要</div>
+                                            }}>{t.section.summary}</div>
                                             <p style={{
                                                 fontSize: '13px',
                                                 color: 'var(--bim-fg, #333)',
                                                 lineHeight: 1.9,
                                                 margin: 0,
                                                 textAlign: 'justify',
-                                            }}>{entry.summary}</p>
+                                            }}>{convert(entry.summary)}</p>
                                         </div>
                                     )}
                                     {entry.comment && (
@@ -461,14 +463,14 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
                                                 color: 'var(--bim-desc-fg, #717171)',
                                                 marginBottom: '4px',
                                                 letterSpacing: '1px',
-                                            }}>按語</div>
+                                            }}>{t.section.comment}</div>
                                             <p style={{
                                                 fontSize: '13px',
                                                 color: 'var(--bim-fg, #555)',
                                                 lineHeight: 1.8,
                                                 margin: 0,
                                                 fontStyle: 'italic',
-                                            }}>{entry.comment}</p>
+                                            }}>{convert(entry.comment)}</p>
                                         </div>
                                     )}
                                     {entry.additional_comment && (
@@ -484,14 +486,14 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
                                                 color: 'var(--bim-desc-fg, #717171)',
                                                 marginBottom: '4px',
                                                 letterSpacing: '1px',
-                                            }}>附按</div>
+                                            }}>{t.section.additionalComment}</div>
                                             <p style={{
                                                 fontSize: '13px',
                                                 color: 'var(--bim-fg, #555)',
                                                 lineHeight: 1.8,
                                                 margin: 0,
                                                 fontStyle: 'italic',
-                                            }}>{entry.additional_comment}</p>
+                                            }}>{convert(entry.additional_comment)}</p>
                                         </div>
                                     )}
                                 </div>
@@ -507,16 +509,18 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
 // ── 别名 ──
 
 function AdditionalTitlesList({ items }: { items: string[] }) {
+    const t = useT();
+    const { convert } = useConvert();
     if (!items.length) return null;
     return (
         <>
-            <SectionLabel>别名</SectionLabel>
+            <SectionLabel>{t.section.aliases}</SectionLabel>
             <div style={{
                 display: 'flex',
                 flexWrap: 'wrap',
                 gap: '6px',
             }}>
-                {items.map((t, i) => (
+                {items.map((title, i) => (
                     <span key={i} style={{
                         display: 'inline-flex',
                         alignItems: 'baseline',
@@ -528,7 +532,7 @@ function AdditionalTitlesList({ items }: { items: string[] }) {
                         borderRadius: '4px',
                         background: 'var(--bim-input-bg, #fff)',
                     }}>
-                        {t}
+                        {convert(title)}
                     </span>
                 ))}
             </div>
@@ -539,16 +543,18 @@ function AdditionalTitlesList({ items }: { items: string[] }) {
 // ── 附属作品 ──
 
 function AdditionalWorksList({ items }: { items: AdditionalWork[] }) {
+    const t = useT();
+    const { convert } = useConvert();
     if (!items.length) return null;
     return (
         <>
-            <SectionLabel>附录</SectionLabel>
+            <SectionLabel>{t.section.appendix}</SectionLabel>
             <div style={{
                 display: 'flex',
                 flexWrap: 'wrap',
                 gap: '6px',
             }}>
-                {items.map((t, i) => (
+                {items.map((aw, i) => (
                     <span key={i} style={{
                         display: 'inline-flex',
                         alignItems: 'baseline',
@@ -560,9 +566,9 @@ function AdditionalWorksList({ items }: { items: AdditionalWork[] }) {
                         borderRadius: '4px',
                         background: 'var(--bim-input-bg, #fff)',
                     }}>
-                        《{t.book_title}》
-                        {t.n_juan != null && (
-                            <span style={{ color: 'var(--bim-desc-fg, #999)', fontSize: '12px' }}>{t.n_juan}卷</span>
+                        《{convert(aw.book_title)}》
+                        {aw.n_juan != null && (
+                            <span style={{ color: 'var(--bim-desc-fg, #999)', fontSize: '12px' }}>{aw.n_juan}{t.unit.juan}</span>
                         )}
                     </span>
                 ))}
@@ -574,10 +580,12 @@ function AdditionalWorksList({ items }: { items: AdditionalWork[] }) {
 // ── 流转历史 ──
 
 function HistoryTimeline({ items }: { items: LocationInfo[] }) {
+    const t = useT();
+    const { convert } = useConvert();
     if (!items.length) return null;
     return (
         <>
-            <SectionLabel>流转历史</SectionLabel>
+            <SectionLabel>{t.section.locationHistory}</SectionLabel>
             <div style={{ position: 'relative', paddingLeft: '18px' }}>
                 <div style={{
                     position: 'absolute',
@@ -600,11 +608,11 @@ function HistoryTimeline({ items }: { items: LocationInfo[] }) {
                             border: '1.5px solid var(--bim-input-bg, #fff)',
                         }} />
                         <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>
-                            {loc.name}
+                            {convert(loc.name)}
                         </span>
                         {loc.description && (
                             <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #999)', marginLeft: '8px' }}>
-                                {loc.description}
+                                {convert(loc.description)}
                             </span>
                         )}
                     </div>
@@ -617,10 +625,12 @@ function HistoryTimeline({ items }: { items: LocationInfo[] }) {
 // ── 历史沿革 ──
 
 function HistoryList({ items }: { items: string[] }) {
+    const t = useT();
+    const { convert } = useConvert();
     if (!items.length) return null;
     return (
         <>
-            <SectionLabel>历史沿革</SectionLabel>
+            <SectionLabel>{t.section.historyOverview}</SectionLabel>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {items.map((item, i) => (
                     <div key={i} style={{
@@ -636,7 +646,7 @@ function HistoryList({ items }: { items: string[] }) {
                             top: 0,
                             color: 'var(--bim-desc-fg, #ccc)',
                         }}>·</span>
-                        {item}
+                        {convert(item)}
                     </div>
                 ))}
             </div>
@@ -661,6 +671,7 @@ function RelationList({ title, ids, transport, onNavigate, renderLink }: {
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
 }) {
+    const { convert } = useConvert();
     const [resolved, setResolved] = useState<ResolvedRelation[]>([]);
 
     useEffect(() => {
@@ -702,8 +713,8 @@ function RelationList({ title, ids, transport, onNavigate, renderLink }: {
             }}>
                 {(resolved.length ? resolved : ids.map(id => ({ id } as ResolvedRelation))).map(item => {
                     const label = item.edition
-                        ? `${item.title || item.id}（${item.edition}）`
-                        : item.title || undefined;
+                        ? `${convert(item.title) || item.id}（${convert(item.edition)}）`
+                        : convert(item.title) || undefined;
                     return (
                         <span key={item.id} style={{
                             display: 'inline-flex',
@@ -739,11 +750,13 @@ function BookVersionCard({ book, onNavigate, renderLink }: {
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
 }) {
+    const t = useT();
+    const { convert } = useConvert();
     const [collapsed, setCollapsed] = useState(false);
     const hasDetails = book.resources && book.resources.length > 0;
-    const label = book.edition
-        ? `${book.title || book.id}（${book.edition}）`
-        : book.title || undefined;
+    const cardLabel = book.edition
+        ? `${convert(book.title) || book.id}（${convert(book.edition)}）`
+        : convert(book.title) || undefined;
 
     return (
         <div style={{
@@ -762,7 +775,7 @@ function BookVersionCard({ book, onNavigate, renderLink }: {
                 gap: '8px',
             }}>
                 <div style={{ flex: 1 }}>
-                    <IdLink id={book.id} label={label} onNavigate={onNavigate} renderLink={renderLink} />
+                    <IdLink id={book.id} label={cardLabel} onNavigate={onNavigate} renderLink={renderLink} />
                 </div>
                 {hasDetails && (
                     <span
@@ -776,7 +789,7 @@ function BookVersionCard({ book, onNavigate, renderLink }: {
                             transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
                             display: 'inline-block',
                         }}
-                        title={collapsed ? '展开' : '收起'}
+                        title={collapsed ? t.action.expand : t.action.collapse}
                     >▼</span>
                 )}
             </div>
@@ -795,6 +808,7 @@ function BookVersionList({ ids, transport, onNavigate, renderLink }: {
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
 }) {
+    const t = useT();
     const [books, setBooks] = useState<ResolvedBook[]>([]);
 
     useEffect(() => {
@@ -819,7 +833,7 @@ function BookVersionList({ ids, transport, onNavigate, renderLink }: {
     return (
         <>
             <SectionLabel>
-                相关版本
+                {t.section.relatedVersions}
                 <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #aaa)', fontWeight: 400 }}>
                     ({ids.length})
                 </span>
@@ -840,6 +854,8 @@ function WorkInfoCard({ workData, onNavigate, renderLink }: {
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
 }) {
+    const t = useT();
+    const { convert } = useConvert();
     return (
         <div style={{
             border: '1px solid var(--bim-widget-border, #e0e0e0)',
@@ -862,14 +878,14 @@ function WorkInfoCard({ workData, onNavigate, renderLink }: {
                     fontWeight: 600,
                     color: 'var(--bim-fg, #333)',
                 }}>
-                    <IdLink id={workData.id} label={workData.title} onNavigate={onNavigate} renderLink={renderLink} />
+                    <IdLink id={workData.id} label={convert(workData.title)} onNavigate={onNavigate} renderLink={renderLink} />
                 </span>
                 {workData.juan_count?.number && (
                     <span style={{
                         fontSize: '12px',
                         color: 'var(--bim-desc-fg, #717171)',
                     }}>
-                        {numberToChinese(workData.juan_count.number)}卷
+                        {numberToChinese(workData.juan_count.number)}{t.unit.juan}
                     </span>
                 )}
             </div>
@@ -885,13 +901,13 @@ function WorkInfoCard({ workData, onNavigate, renderLink }: {
                         margin: workData.authors?.length ? '8px 0 0' : '0',
                         textAlign: 'justify',
                     }}>
-                        {workData.description.text}
+                        {convert(workData.description.text)}
                     </p>
                 )}
                 {workData.parent_work && (
                     <div style={{ marginTop: '8px', fontSize: '13px' }}>
-                        <MetaItem label="上级作品">
-                            <IdLink id={workData.parent_work.id} label={workData.parent_work.title} onNavigate={onNavigate} renderLink={renderLink} />
+                        <MetaItem label={t.label.parentWork}>
+                            <IdLink id={workData.parent_work.id} label={convert(workData.parent_work.title)} onNavigate={onNavigate} renderLink={renderLink} />
                         </MetaItem>
                     </div>
                 )}
@@ -907,6 +923,8 @@ function ContainedInLinks({ items, onNavigate, renderLink }: {
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
 }) {
+    const t = useT();
+    const { convert } = useConvert();
     if (!items.length) return null;
     return (
         <div style={{
@@ -926,15 +944,15 @@ function ContainedInLinks({ items, onNavigate, renderLink }: {
                     borderRadius: '4px',
                     background: '#2471a308',
                 }}>
-                    <span style={{ fontSize: '11px', color: '#2471a3' }}>丛编</span>
-                    <IdLink id={item.id} label={item.title || item.id} onNavigate={onNavigate} renderLink={renderLink} />
+                    <span style={{ fontSize: '11px', color: '#2471a3' }}>{t.indexType.collection}</span>
+                    <IdLink id={item.id} label={convert(item.title) || item.id} onNavigate={onNavigate} renderLink={renderLink} />
                     {item.volume_index != null && (
                         <span style={{
                             fontSize: '11px',
                             color: 'var(--bim-desc-fg, #717171)',
                             marginLeft: '2px',
                         }}>
-                            第{item.volume_index}册
+                            {formatTemplate(t.catalog.volume, { n: item.volume_index })}
                         </span>
                     )}
                 </span>
@@ -955,6 +973,8 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     className,
     style,
 }) => {
+    const t = useT();
+    const { convert } = useConvert();
     const [loaded, setLoaded] = useState<IndexDetailData | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -971,12 +991,12 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
         transport.getItem(id).then(raw => {
             if (cancelled) return;
             if (!raw) {
-                setError('未找到该条目');
+                setError(t.misc.notFoundEntry);
             } else {
                 setLoaded(raw as unknown as IndexDetailData);
             }
         }).catch(err => {
-            if (!cancelled) setError(err instanceof Error ? err.message : '加载失败');
+            if (!cancelled) setError(err instanceof Error ? err.message : t.misc.loadFailed);
         }).finally(() => {
             if (!cancelled) setLoading(false);
         });
@@ -1077,35 +1097,35 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     // 卷数文字（显示在标题旁）
     let volumeText = '';
     if (detail.juan_count?.number) {
-        volumeText = numberToChinese(detail.juan_count.number) + '卷';
+        volumeText = numberToChinese(detail.juan_count.number) + t.unit.juan;
     } else if (detail.juan_count?.description) {
-        volumeText = detail.juan_count.description;
+        volumeText = convert(detail.juan_count.description);
     }
 
     // 构建 meta 行
     const meta: React.ReactNode[] = [];
     if (detail.publication_info?.year) {
-        meta.push(<MetaItem key="year" label="年代">{detail.publication_info.year}</MetaItem>);
+        meta.push(<MetaItem key="year" label={t.label.year}>{detail.publication_info.year}</MetaItem>);
     }
     if (detail.current_location?.name) {
-        meta.push(<MetaItem key="loc" label="现藏">{detail.current_location.name}</MetaItem>);
+        meta.push(<MetaItem key="loc" label={t.label.currentLocation}>{convert(detail.current_location.name)}</MetaItem>);
     }
     if (detail.page_count?.description) {
-        meta.push(<MetaItem key="page" label="页">{detail.page_count.description}</MetaItem>);
+        meta.push(<MetaItem key="page" label={t.label.pageCount}>{detail.page_count.description}</MetaItem>);
     }
     if (bookData?.edition) {
-        meta.push(<MetaItem key="ver" label="版本">{bookData.edition}</MetaItem>);
+        meta.push(<MetaItem key="ver" label={t.label.edition}>{convert(bookData.edition)}</MetaItem>);
     }
     if (workData?.parent_work) {
         meta.push(
-            <MetaItem key="pw" label="上级作品">
-                <IdLink id={workData.parent_work.id} label={workData.parent_work.title} onNavigate={onNavigate} renderLink={renderLink} />
+            <MetaItem key="pw" label={t.label.parentWork}>
+                <IdLink id={workData.parent_work.id} label={convert(workData.parent_work.title)} onNavigate={onNavigate} renderLink={renderLink} />
             </MetaItem>
         );
     }
     if (workData?.parent_works && workData.parent_works.length > 0 && !workData.parent_work) {
         meta.push(
-            <MetaItem key="pws" label="上级作品">
+            <MetaItem key="pws" label={t.label.parentWork}>
                 {workData.parent_works.map((pid, i) => (
                     <span key={pid}>
                         {i > 0 && '、'}
@@ -1120,7 +1140,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
         <div className={className} style={style}>
             <DetailHeader
                 id={detail.id}
-                title={detail.title}
+                title={convert(detail.title)}
                 type={detail.type}
                 isDraft={isDraft}
                 authors={detail.authors}
@@ -1137,20 +1157,20 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                     margin: '0 0 4px',
                     textAlign: 'justify',
                 }}>
-                    {detail.description.text}
+                    {convert(detail.description.text)}
                 </p>
             )}
 
             {containedInResolved.length > 0 && (
                 <>
-                    <SectionLabel>收录于</SectionLabel>
+                    <SectionLabel>{t.section.containedIn}</SectionLabel>
                     <ContainedInLinks items={containedInResolved} onNavigate={onNavigate} renderLink={renderLink} />
                 </>
             )}
 
             {workInfo && (
                 <>
-                    <SectionLabel>所属作品</SectionLabel>
+                    <SectionLabel>{t.section.belongsToWork}</SectionLabel>
                     <WorkInfoCard workData={workInfo} onNavigate={onNavigate} renderLink={renderLink} />
                 </>
             )}
@@ -1169,7 +1189,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
 
             {detail.resources && detail.resources.length > 0 && (
                 <>
-                    <SectionLabel>资源</SectionLabel>
+                    <SectionLabel>{t.section.resources}</SectionLabel>
                     <ResourceList items={detail.resources} groupByType />
                 </>
             )}
@@ -1183,11 +1203,11 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
             )}
 
             {bookData?.related_books && bookData.related_books.length > 0 && (
-                <RelationList title="相关版本" ids={bookData.related_books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
+                <RelationList title={t.section.relatedVersions} ids={bookData.related_books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
             )}
 
             {collectionData?.books && collectionData.books.length > 0 && (
-                <RelationList title="收录书籍" ids={collectionData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
+                <RelationList title={t.section.containedBooks} ids={collectionData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
             )}
 
             {workData?.books && workData.books.length > 0 && (
@@ -1199,9 +1219,9 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                 const partOf = workData.related_works!.filter(rw => rw.relation === 'part_of');
                 const hasPart = workData.related_works!.filter(rw => rw.relation === 'has_part');
                 const other = workData.related_works!.filter(rw => !rw.relation);
-                if (partOf.length > 0) groups.push({ label: '所属作品', items: partOf });
-                if (hasPart.length > 0) groups.push({ label: '包含作品', items: hasPart });
-                if (other.length > 0) groups.push({ label: '相关作品', items: other });
+                if (partOf.length > 0) groups.push({ label: t.section.belongsToWork, items: partOf });
+                if (hasPart.length > 0) groups.push({ label: t.section.containedWorks, items: hasPart });
+                if (other.length > 0) groups.push({ label: t.section.relatedWorks, items: other });
                 return groups.map(group => (
                     <div key={group.label}>
                         <SectionLabel>
@@ -1222,7 +1242,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                                     borderRadius: '4px',
                                     background: 'var(--bim-input-bg, #fff)',
                                 }}>
-                                    <IdLink id={rw.id} label={rw.title} onNavigate={onNavigate} renderLink={renderLink} />
+                                    <IdLink id={rw.id} label={convert(rw.title)} onNavigate={onNavigate} renderLink={renderLink} />
                                 </span>
                             ))}
                         </div>

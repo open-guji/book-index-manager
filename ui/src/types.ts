@@ -7,7 +7,10 @@ export interface CoverageInfo {
     ranges: string;
 }
 
-/** 资源元数据 key → 中文显示名 */
+/**
+ * 资源元数据 key → 中文显示名
+ * @deprecated 使用 `useT().metadata` 代替，支持繁简切换
+ */
 export const RESOURCE_METADATA_LABELS: Record<string, string> = {
     edition: '版本',
     version: '修订版本',

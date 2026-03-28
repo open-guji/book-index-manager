@@ -1,19 +1,13 @@
 import React from 'react';
 import type { ResourceEntry, ResourceType } from '../types';
-import { RESOURCE_METADATA_LABELS } from '../types';
+import { useT } from '../i18n';
+import type { LocaleMessages } from '../i18n/types';
 
 export interface ResourceListProps {
     items: ResourceEntry[];
     /** 按类型分组显示，默认 true */
     groupByType?: boolean;
 }
-
-const TYPE_LABELS: Record<ResourceType, string> = {
-    text: '文字资源',
-    image: '图片资源',
-    'text+image': '文字+图片资源',
-    physical: '实体资源',
-};
 
 const TYPE_COLORS: Record<ResourceType, string> = {
     text: '#2196f3',
@@ -32,10 +26,19 @@ export const ResourceList: React.FC<ResourceListProps> = ({
     items,
     groupByType = true,
 }) => {
+    const t = useT();
+
+    const TYPE_LABELS: Record<ResourceType, string> = {
+        text: t.resourceType.text,
+        image: t.resourceType.image,
+        'text+image': t.resourceType.textImage,
+        physical: t.resourceType.physical,
+    };
+
     if (!items || items.length === 0) {
         return (
             <div style={{ padding: '16px', color: 'var(--bim-desc-fg, #717171)', fontSize: '13px', textAlign: 'center' }}>
-                暂无资源信息
+                {t.misc.noResources}
             </div>
         );
     }
@@ -87,15 +90,10 @@ export const ResourceList: React.FC<ResourceListProps> = ({
 const hasExtra = (item: ResourceEntry) =>
     item.details || item.structure || item.coverage || (item.metadata && Object.keys(item.metadata).length > 0);
 
-const CHECK_TYPE_COLORS: Record<string, { bg: string; fg: string }> = {
-    '精校': { bg: '#e8f5e9', fg: '#2e7d32' },
-    '粗校': { bg: '#fff3e0', fg: '#e65100' },
-    'AI整理': { bg: '#e3f2fd', fg: '#1565c0' },
-};
-
 const CheckTypeBadge: React.FC<{ value: string }> = ({ value }) => {
-    const colors = CHECK_TYPE_COLORS[value];
-    if (!colors) return <span>{value}</span>;
+    const t = useT();
+    const checkInfo = t.checkType[value];
+    if (!checkInfo) return <span>{value}</span>;
     return (
         <span style={{
             display: 'inline-block',
@@ -103,52 +101,56 @@ const CheckTypeBadge: React.FC<{ value: string }> = ({ value }) => {
             borderRadius: '3px',
             fontSize: '11px',
             fontWeight: 500,
-            background: colors.bg,
-            color: colors.fg,
+            background: checkInfo.bg,
+            color: checkInfo.fg,
         }}>
-            {value}
+            {checkInfo.label}
         </span>
     );
 };
 
-const formatMetaValue = (key: string, value: unknown): React.ReactNode => {
+const formatMetaValue = (key: string, value: unknown, t: LocaleMessages): React.ReactNode => {
     if (key === 'check_type' && typeof value === 'string') return <CheckTypeBadge value={value} />;
-    if (key === 'has_translation') return value ? '有' : '无';
+    if (key === 'has_translation') return value ? t.misc.hasTranslation : t.misc.noTranslation;
     return String(value);
 };
 
-const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => (
-    <div style={{
-        padding: '10px 14px',
-        border: '1px solid var(--bim-widget-border, #e0e0e0)',
-        borderRadius: '6px',
-        background: 'var(--bim-input-bg, #fff)',
-    }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: hasExtra(item) ? '6px' : '0' }}>
-            <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>{item.name}</span>
-            {item.metadata?.check_type && <CheckTypeBadge value={item.metadata.check_type as string} />}
-            {item.url && (
-                <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ fontSize: '12px', color: 'var(--bim-link-fg, #0066cc)', textDecoration: 'none' }}
-                >
-                    访问 →
-                </a>
+const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => {
+    const t = useT();
+
+    return (
+        <div style={{
+            padding: '10px 14px',
+            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            borderRadius: '6px',
+            background: 'var(--bim-input-bg, #fff)',
+        }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: hasExtra(item) ? '6px' : '0' }}>
+                <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>{item.name}</span>
+                {item.metadata?.check_type && <CheckTypeBadge value={item.metadata.check_type as string} />}
+                {item.url && (
+                    <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: '12px', color: 'var(--bim-link-fg, #0066cc)', textDecoration: 'none' }}
+                    >
+                        {t.action.visit}
+                    </a>
+                )}
+            </div>
+            {hasExtra(item) && (
+                <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                    {item.metadata && Object.entries(item.metadata)
+                        .filter(([key]) => key !== 'check_type')
+                        .map(([key, value]) => (
+                            <span key={key}>{t.metadata[key] || key}: {formatMetaValue(key, value, t)}</span>
+                        ))}
+                    {item.details && <span>{item.details}</span>}
+                    {item.structure && <span>{t.misc.structure}: {item.structure.join(' → ')}</span>}
+                    {item.coverage && <span>{t.misc.coverage}: L{item.coverage.level} {item.coverage.ranges}</span>}
+                </div>
             )}
         </div>
-        {hasExtra(item) && (
-            <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                {item.metadata && Object.entries(item.metadata)
-                    .filter(([key]) => key !== 'check_type')
-                    .map(([key, value]) => (
-                        <span key={key}>{RESOURCE_METADATA_LABELS[key] || key}: {formatMetaValue(key, value)}</span>
-                    ))}
-                {item.details && <span>{item.details}</span>}
-                {item.structure && <span>层级: {item.structure.join(' → ')}</span>}
-                {item.coverage && <span>覆盖: L{item.coverage.level} {item.coverage.ranges}</span>}
-            </div>
-        )}
-    </div>
-);
+    );
+};

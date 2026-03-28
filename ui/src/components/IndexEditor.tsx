@@ -5,6 +5,7 @@ import type {
     AdditionalWork, IndexedByEntry,
 } from '../types';
 import type { IndexStorage } from '../storage/types';
+import { useT } from '../i18n';
 import { Section } from './common/Section';
 import { FormInput } from './common/FormInput';
 import { FormTextArea } from './common/FormTextArea';
@@ -75,7 +76,6 @@ export interface IndexEditorData {
 }
 
 const TYPE_COLORS: Record<IndexType, string> = { work: '#4caf50', collection: '#2196f3', book: '#ff9800' };
-const TYPE_LABELS: Record<IndexType, string> = { work: '作品', collection: '丛书', book: '书籍' };
 const TYPE_ICONS: Record<IndexType, string> = { work: '📜', collection: '📚', book: '📖' };
 
 export const IndexEditor: React.FC<IndexEditorProps> = ({
@@ -84,6 +84,8 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
     onDownloadResource, downloadStatuses,
     relations, onRelationsChange,
 }) => {
+    const t = useT();
+
     // 实体选择器状态
     const [selectorOpen, setSelectorOpen] = useState(false);
     const [selectorType, setSelectorType] = useState<IndexType>('work');
@@ -117,11 +119,10 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
     const handleLinkEntity = useCallback((relationField: string, targetType: IndexType) => {
         setSelectorField(relationField);
         setSelectorType(targetType);
-        const label = TYPE_LABELS[targetType];
-        setSelectorTitle(`选择要关联的${label}`);
+        setSelectorTitle(t.editor.selectToLink + t.indexType[targetType]);
         setSearchResults([]);
         setSelectorOpen(true);
-    }, []);
+    }, [t]);
 
     const handleUnlinkEntity = useCallback((relationField: string) => {
         if (transport?.unlinkEntity) {
@@ -205,47 +206,47 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
             }}>
                 <h1 style={{ fontSize: '20px', fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>{TYPE_ICONS[entityType]}</span>
-                    <span>{data.title || '未命名'}</span>
+                    <span>{data.title || t.editor.untitled}</span>
                     <Badge>{data.id}</Badge>
-                    <Badge color={TYPE_COLORS[entityType]}>{TYPE_LABELS[entityType]}</Badge>
+                    <Badge color={TYPE_COLORS[entityType]}>{t.indexType[entityType]}</Badge>
                 </h1>
             </div>
 
             {/* 基本信息 */}
-            <Section title="📊 基本信息" onSave={onSave} onAskAI={onAskAI ? () => onAskAI('基本信息') : undefined}
+            <Section title={t.section.basicInfo} onSave={onSave} onAskAI={onAskAI ? () => onAskAI('基本信息') : undefined}
                 extraButtons={renderSectionActions?.('基本信息')}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <SmartBidInput
-                        label={isWork ? '作品名 (Work Title)' : isCollection ? '丛书名 (Collection Title)' : '书名 (Book Title)'}
+                        label={isWork ? t.editor.workTitle : isCollection ? t.editor.collectionTitle : t.editor.bookTitle}
                         value={data.title} onChange={v => handleChange('title', v)} />
                     {isBook && (
-                        <SmartBidInput label="所属作品 (Work)" value={data.workName || ''} onChange={v => handleChange('workName', v)} />
+                        <SmartBidInput label={t.editor.belongsToWork} value={data.workName || ''} onChange={v => handleChange('workName', v)} />
                     )}
-                    <FormInput label="作者 (Author)" value={data.author || ''} onChange={v => handleChange('author', v)} />
-                    <FormInput label="朝代/年份 (Dynasty/Year)" value={data.dynasty || ''} onChange={v => handleChange('dynasty', v)} />
+                    <FormInput label={t.editor.authorLabel} value={data.author || ''} onChange={v => handleChange('author', v)} />
+                    <FormInput label={t.editor.dynastyLabel} value={data.dynasty || ''} onChange={v => handleChange('dynasty', v)} />
                     {(isBook || isCollection) && (
-                        <SmartBidInput label="收录于 (Collection)" value={data.collection || ''} onChange={v => handleChange('collection', v)} />
-                    )}
-                    {(isBook || isCollection) && (
-                        <FormInput label="现藏于 (Holder)" value={data.holder || ''} onChange={v => handleChange('holder', v)} />
+                        <SmartBidInput label={t.editor.containedIn} value={data.collection || ''} onChange={v => handleChange('collection', v)} />
                     )}
                     {(isBook || isCollection) && (
-                        <FormInput label={isBook ? '页数 (Pages)' : '册数 (Volumes)'} value={data.pages || ''} onChange={v => handleChange('pages', v)} />
+                        <FormInput label={t.editor.holderLabel} value={data.holder || ''} onChange={v => handleChange('holder', v)} />
+                    )}
+                    {(isBook || isCollection) && (
+                        <FormInput label={isBook ? t.editor.pageLabel : t.editor.volumeLabel} value={data.pages || ''} onChange={v => handleChange('pages', v)} />
                     )}
                     <div style={{ gridColumn: '1 / -1' }}>
-                        <FormInput label="首页图片 (First Image URL)" value={data.firstImage || ''} onChange={v => handleChange('firstImage', v)} />
+                        <FormInput label={t.editor.firstImageLabel} value={data.firstImage || ''} onChange={v => handleChange('firstImage', v)} />
                     </div>
                 </div>
             </Section>
 
             {/* 描述 */}
-            <Section title="📝 介绍 (Description)" onSave={onSave} onAskAI={onAskAI ? () => onAskAI('介绍') : undefined}>
-                <FormTextArea value={data.description || ''} onChange={v => handleChange('description', v)} placeholder="简要介绍..." />
+            <Section title={t.section.description} onSave={onSave} onAskAI={onAskAI ? () => onAskAI('介绍') : undefined}>
+                <FormTextArea value={data.description || ''} onChange={v => handleChange('description', v)} placeholder={t.editor.descriptionPlaceholder} />
             </Section>
 
             {/* 附属作品 */}
             {(data.additional_works?.length || 0) > 0 && (
-                <Section title="📑 附属作品 (Additional Works)" onSave={onSave}>
+                <Section title={t.section.additionalWorks} onSave={onSave}>
                     <AdditionalWorksEditor
                         items={data.additional_works || []}
                         onChange={items => handleChange('additional_works', items)}
@@ -254,7 +255,7 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
             )}
 
             {/* 收录于 */}
-            <Section title="📖 收录于 (Indexed By)" onSave={onSave} onAskAI={onAskAI ? () => onAskAI('收录于') : undefined}>
+            <Section title={t.section.indexedBy} onSave={onSave} onAskAI={onAskAI ? () => onAskAI('收录于') : undefined}>
                 <IndexedByEditor
                     items={data.indexed_by || []}
                     onChange={items => handleChange('indexed_by', items)}
@@ -262,7 +263,7 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
             </Section>
 
             {/* 文字资源 */}
-            <Section title="📝 文字资源 (Text Resources)" onSave={onSave} onAskAI={onAskAI ? () => onAskAI('资源') : undefined}>
+            <Section title={t.section.textResources} onSave={onSave} onAskAI={onAskAI ? () => onAskAI('资源') : undefined}>
                 <ResourceEditor
                     items={data.resources || []}
                     onChange={(items: ResourceEntry[]) => handleChange('resources', items)}
@@ -273,7 +274,7 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
             </Section>
 
             {/* 图片资源 */}
-            <Section title="🖼️ 图片资源 (Image Resources)" onSave={onSave}>
+            <Section title={t.section.imageResources} onSave={onSave}>
                 <ResourceEditor
                     items={data.resources || []}
                     onChange={(items: ResourceEntry[]) => handleChange('resources', items)}
@@ -284,7 +285,7 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
             </Section>
 
             {/* 资料来源 */}
-            <Section title="📚 资料来源 (Sources)" onSave={onSave} onAskAI={onAskAI ? () => onAskAI('资料来源') : undefined}>
+            <Section title={t.section.sources} onSave={onSave} onAskAI={onAskAI ? () => onAskAI('资料来源') : undefined}>
                 <SourceEditor
                     items={parseSourceString(data.sources || '')}
                     onChange={(items: SourceItem[]) => handleChange('sources', stringifySources(items))}
@@ -294,15 +295,15 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
 
             {/* 收藏历史 */}
             {(isBook || isCollection) && (
-                <Section title="📜 收藏历史 (Provenance)" onSave={onSave} onAskAI={onAskAI ? () => onAskAI('收藏历史') : undefined}>
-                    <FormTextArea value={data.provenance || ''} onChange={v => handleChange('provenance', v)} placeholder="该资源的流传与收藏记录..." />
+                <Section title={t.section.provenance} onSave={onSave} onAskAI={onAskAI ? () => onAskAI('收藏历史') : undefined}>
+                    <FormTextArea value={data.provenance || ''} onChange={v => handleChange('provenance', v)} placeholder={t.editor.provenancePlaceholder} />
                 </Section>
             )}
 
             {/* 其他版本 */}
             {isBook && (
-                <Section title="📚 其他版本 (Other Editions)" onSave={onSave} onAskAI={onAskAI ? () => onAskAI('其他版本') : undefined}>
-                    <FormTextArea value={data.otherEditions || ''} onChange={v => handleChange('otherEditions', v)} placeholder="相关版本的 ID..." />
+                <Section title={t.section.otherEditions} onSave={onSave} onAskAI={onAskAI ? () => onAskAI('其他版本') : undefined}>
+                    <FormTextArea value={data.otherEditions || ''} onChange={v => handleChange('otherEditions', v)} placeholder={t.editor.otherEditionsPlaceholder} />
                 </Section>
             )}
 
@@ -333,10 +334,10 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
                     border: '1px solid rgba(244,67,54,0.13)', background: 'rgba(244,67,54,0.03)', borderRadius: '4px',
                 }}>
                     <div style={{ color: 'var(--bim-danger, #f44336)', fontWeight: 600, marginBottom: '8px' }}>
-                        危险区域 (Danger Zone)
+                        {t.section.dangerZone}
                     </div>
                     <p style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginBottom: '12px' }}>
-                        从索引库中永久删除该实体的所有元数据文件。
+                        {t.editor.dangerZoneDesc}
                     </p>
                     <button onClick={onDelete} style={{
                         padding: '8px 16px', fontSize: '13px',
@@ -344,7 +345,7 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
                         borderRadius: '4px', background: 'transparent',
                         color: 'var(--bim-danger, #f44336)', cursor: 'pointer',
                     }}>
-                        删除该实体 (Delete Entity)
+                        {t.editor.deleteEntity}
                     </button>
                 </div>
             )}
@@ -365,7 +366,7 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
             />
 
             <EntityPickerDialog
-                isOpen={pickerOpen} title="选择书籍/作品" filterType="all"
+                isOpen={pickerOpen} title={t.action.selectBookOrWork} filterType="all"
                 recentEntities={recentEntities} excludeId={data.id}
                 onSelect={handleEntityPickerSelect}
                 onCancel={() => { setPickerOpen(false); setPickerCallback(null); }}
@@ -381,6 +382,7 @@ function AdditionalWorksEditor({ items, onChange }: {
     items: AdditionalWork[];
     onChange: (items: AdditionalWork[]) => void;
 }) {
+    const t = useT();
     const update = (index: number, field: keyof AdditionalWork, value: unknown) => {
         const next = items.map((item, i) => i === index ? { ...item, [field]: value } : item);
         onChange(next);
@@ -392,9 +394,9 @@ function AdditionalWorksEditor({ items, onChange }: {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {items.map((item, i) => (
                 <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <FormInput label="书名" value={item.book_title} onChange={v => update(i, 'book_title', v)} />
+                    <FormInput label={t.editor.bookNameLabel} value={item.book_title} onChange={v => update(i, 'book_title', v)} />
                     <div style={{ width: '100px' }}>
-                        <FormInput label="卷数" value={item.n_juan != null ? String(item.n_juan) : ''} onChange={v => update(i, 'n_juan', v ? parseInt(v, 10) || undefined : undefined)} />
+                        <FormInput label={t.label.juanCount} value={item.n_juan != null ? String(item.n_juan) : ''} onChange={v => update(i, 'n_juan', v ? parseInt(v, 10) || undefined : undefined)} />
                     </div>
                     <button onClick={() => remove(i)} style={{
                         padding: '4px 8px', fontSize: '12px', border: '1px solid #ddd',
@@ -407,7 +409,7 @@ function AdditionalWorksEditor({ items, onChange }: {
                 padding: '6px 12px', fontSize: '12px', border: '1px dashed #ccc',
                 borderRadius: '4px', background: 'transparent', cursor: 'pointer', color: '#666',
                 alignSelf: 'flex-start',
-            }}>+ 添加附属作品</button>
+            }}>{t.action.addAdditionalWork}</button>
         </div>
     );
 }
@@ -418,6 +420,7 @@ function IndexedByEditor({ items, onChange }: {
     items: IndexedByEntry[];
     onChange: (items: IndexedByEntry[]) => void;
 }) {
+    const t = useT();
     const [expandedIndex, setExpandedIndex] = React.useState<number | null>(null);
 
     const update = (index: number, field: keyof IndexedByEntry, value: string) => {
@@ -455,7 +458,7 @@ function IndexedByEditor({ items, onChange }: {
                                 transform: isExpanded ? 'rotate(90deg)' : 'none',
                             }}>▶</span>
                             <span style={{ flex: 1, fontSize: '13px', fontWeight: 500 }}>
-                                {item.source || '(未命名来源)'}
+                                {item.source || t.editor.unnamedSource}
                             </span>
                             {item.source_bid && (
                                 <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)' }}>
@@ -477,17 +480,17 @@ function IndexedByEditor({ items, onChange }: {
                         {isExpanded && (
                             <div style={{ padding: '8px 12px 12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                                    <FormInput label="来源名称" value={item.source} onChange={v => update(i, 'source', v)} />
-                                    <FormInput label="来源 BID" value={item.source_bid || ''} onChange={v => update(i, 'source_bid', v)} />
+                                    <FormInput label={t.label.sourceName} value={item.source} onChange={v => update(i, 'source', v)} />
+                                    <FormInput label={t.label.sourceBid} value={item.source_bid || ''} onChange={v => update(i, 'source_bid', v)} />
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                                    <FormInput label="题名" value={item.title_info || ''} onChange={v => update(i, 'title_info', v)} />
-                                    <FormInput label="著者" value={item.author_info || ''} onChange={v => update(i, 'author_info', v)} />
+                                    <FormInput label={t.label.titleInfo} value={item.title_info || ''} onChange={v => update(i, 'title_info', v)} />
+                                    <FormInput label={t.label.authorInfo} value={item.author_info || ''} onChange={v => update(i, 'author_info', v)} />
                                 </div>
-                                <FormInput label="版本" value={item.edition || ''} onChange={v => update(i, 'edition', v)} />
-                                <FormTextArea value={item.summary || ''} onChange={v => update(i, 'summary', v)} placeholder="提要..." />
-                                <FormTextArea value={item.comment || ''} onChange={v => update(i, 'comment', v)} placeholder="按語..." />
-                                <FormTextArea value={item.additional_comment || ''} onChange={v => update(i, 'additional_comment', v)} placeholder="附按..." />
+                                <FormInput label={t.label.edition} value={item.edition || ''} onChange={v => update(i, 'edition', v)} />
+                                <FormTextArea value={item.summary || ''} onChange={v => update(i, 'summary', v)} placeholder={t.editor.summaryPlaceholder} />
+                                <FormTextArea value={item.comment || ''} onChange={v => update(i, 'comment', v)} placeholder={t.editor.commentPlaceholder} />
+                                <FormTextArea value={item.additional_comment || ''} onChange={v => update(i, 'additional_comment', v)} placeholder={t.editor.additionalCommentPlaceholder} />
                             </div>
                         )}
                     </div>
@@ -497,7 +500,7 @@ function IndexedByEditor({ items, onChange }: {
                 padding: '6px 12px', fontSize: '12px', border: '1px dashed #ccc',
                 borderRadius: '4px', background: 'transparent', cursor: 'pointer', color: '#666',
                 alignSelf: 'flex-start',
-            }}>+ 添加收录来源</button>
+            }}>{t.action.addIndexedBy}</button>
         </div>
     );
 }

@@ -100,8 +100,16 @@ export { EntitySelector } from './components/EntitySelector';
 export { CreateEntityDialog } from './components/CreateEntityDialog';
 export { EntityPickerDialog } from './components/EntityPickerDialog';
 
+// i18n
+export { LocaleProvider } from './i18n/provider';
+export type { LocaleProviderProps } from './i18n/provider';
+export { useT, useConvert, formatTemplate, LocaleContext } from './i18n';
+export type { Locale, LocaleMessages, LocaleContextValue } from './i18n';
+
 // Common UI components
 export { Section } from './components/common/Section';
 export { FormInput } from './components/common/FormInput';
 export { FormTextArea } from './components/common/FormTextArea';
 export { Badge } from './components/common/Badge';
+export { LocaleToggle } from './components/LocaleToggle';
+export type { LocaleToggleProps } from './components/LocaleToggle';
