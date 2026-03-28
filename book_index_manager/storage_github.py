@@ -1,6 +1,6 @@
 """
 GitHub read-only storage implementation.
-Fetches index.json and individual JSON files from GitHub / jsDelivr CDN.
+Fetches sharded index files and individual JSON files from GitHub / jsDelivr CDN.
 Port of TypeScript GithubStorage.
 """
 
@@ -9,7 +9,7 @@ import urllib.request
 import urllib.error
 from typing import Optional, Dict, List, Any
 from .storage_base import IndexStorage, PageResult, LoadOptions
-from .storage import rank_by_relevance
+from .storage import rank_by_relevance, NUM_SHARDS
 from .exceptions import StorageError
 
 
@@ -58,22 +58,44 @@ class GithubStorage(IndexStorage):
         except (urllib.error.URLError, json.JSONDecodeError, OSError) as e:
             raise StorageError(f"Failed to fetch {url}: {e}")
 
-    def _fetch_index(self, repo: str) -> dict:
-        """Fetch index.json from GitHub raw or CDN fallback."""
-        github_url = f"{self.config.base_url}/{self.config.org}/{repo}/main/index.json"
+    def _fetch_url_with_fallback(self, repo: str, path: str) -> Any:
+        """Fetch a file from GitHub raw, falling back to CDN."""
+        github_url = f"{self.config.base_url}/{self.config.org}/{repo}/main/{path}"
         try:
             return self._fetch_json(github_url)
         except StorageError:
             pass
 
         for cdn in self.config.cdn_urls:
-            cdn_url = f"{cdn}/{self.config.org}/{repo}@main/index.json"
+            cdn_url = f"{cdn}/{self.config.org}/{repo}@main/{path}"
             try:
                 return self._fetch_json(cdn_url)
             except StorageError:
                 continue
 
-        raise StorageError(f"Failed to fetch index.json for {repo} from all sources")
+        raise StorageError(f"Failed to fetch {path} for {repo} from all sources")
+
+    def _fetch_index(self, repo: str) -> dict:
+        """Fetch all sharded index files and merge into {books:{}, works:{}, collections:{}}."""
+        merged = {"books": {}, "collections": {}, "works": {}}
+
+        # collections (single file)
+        try:
+            merged["collections"] = self._fetch_url_with_fallback(repo, "index/collections.json")
+        except StorageError:
+            pass
+
+        # books and works (16 shards each)
+        for type_key in ["books", "works"]:
+            for shard in range(NUM_SHARDS):
+                path = f"index/{type_key}/{shard:x}.json"
+                try:
+                    data = self._fetch_url_with_fallback(repo, path)
+                    merged[type_key].update(data)
+                except StorageError:
+                    continue
+
+        return merged
 
     def _ensure_loaded(self) -> List[Dict]:
         """Ensure index data is loaded into cache."""

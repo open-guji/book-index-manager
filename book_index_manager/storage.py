@@ -9,6 +9,17 @@ from .exceptions import StorageError
 from .migration import migrate_metadata
 
 
+NUM_SHARDS = 16
+
+
+def shard_of(id_str: str, n: int = NUM_SHARDS) -> int:
+    """Deterministic hash: same result in Python and JS (Math.imul+>>>0)."""
+    h = 0
+    for c in id_str:
+        h = ((h * 31) + ord(c)) & 0xFFFFFFFF
+    return h % n
+
+
 def strip_nulls(obj):
     """递归移除 dict 中值为 None 的字段。"""
     if isinstance(obj, dict):
@@ -168,16 +179,12 @@ class BookIndexStorage:
         migrate_metadata(metadata)
 
     def update_index_entry(self, root: Path, metadata: dict, type_val: BookIndexType, relative_path: str):
-        index_file = root / "index.json"
-        index = self._load_index(index_file)
-
         id_str = metadata.get("id") or metadata.get("ID")
         if not id_str:
             return
 
         type_key = type_val.name.lower() + "s"
-        if type_key not in index:
-            index[type_key] = {}
+        shard_data = self._load_shard(root, type_key, id_str)
 
         title = metadata.get("title", "未命名")
 
@@ -231,29 +238,61 @@ class BookIndexStorage:
         edition = metadata.get("edition", "")
         if edition:
             entry["edition"] = edition
-        index[type_key][id_str] = entry
-        self._save_index(index_file, index)
+        shard_data[id_str] = entry
+        self._save_shard(root, type_key, id_str, shard_data)
 
-    def _load_index(self, index_file: Path) -> dict:
-        default_index = {"books": {}, "collections": {}, "works": {}}
-        if index_file.exists():
+    # ── Sharded index I/O ──
+
+    def _shard_path(self, root: Path, type_key: str, shard: int) -> Path:
+        """Return path for a shard file: root/index/{type_key}/{shard_hex}.json"""
+        if type_key == "collections":
+            return root / "index" / "collections.json"
+        return root / "index" / type_key / f"{shard:x}.json"
+
+    def _load_shard(self, root: Path, type_key: str, id_str: str) -> dict:
+        """Load the shard file that contains the given ID."""
+        shard = shard_of(id_str)
+        path = self._shard_path(root, type_key, shard)
+        if path.exists():
             try:
-                with open(index_file, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                    for k in default_index:
-                        if k not in data:
-                            data[k] = {}
-                    return data
+                with open(path, "r", encoding="utf-8") as f:
+                    return json.load(f)
             except Exception as e:
-                logger.error(f"Error loading index {index_file}: {e}")
-        return default_index
+                logger.error(f"Error loading shard {path}: {e}")
+        return {}
 
-    def _save_index(self, index_file: Path, index_data: dict):
+    def _save_shard(self, root: Path, type_key: str, id_str: str, data: dict):
+        """Save data to the shard file for the given ID."""
+        shard = shard_of(id_str)
+        path = self._shard_path(root, type_key, shard)
         try:
-            with open(index_file, "w", encoding="utf-8") as f:
-                json.dump(index_data, f, indent=2, ensure_ascii=False)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
         except Exception as e:
-            logger.error(f"Error saving index {index_file}: {e}")
+            logger.error(f"Error saving shard {path}: {e}")
+
+    def _load_all_shards(self, root: Path, type_key: str) -> dict:
+        """Load and merge all shards for a type. Returns flat {id: entry}."""
+        merged = {}
+        if type_key == "collections":
+            path = self._shard_path(root, type_key, 0)
+            if path.exists():
+                try:
+                    with open(path, "r", encoding="utf-8") as f:
+                        merged = json.load(f)
+                except Exception as e:
+                    logger.error(f"Error loading {path}: {e}")
+            return merged
+        for shard in range(NUM_SHARDS):
+            path = self._shard_path(root, type_key, shard)
+            if path.exists():
+                try:
+                    with open(path, "r", encoding="utf-8") as f:
+                        merged.update(json.load(f))
+                except Exception as e:
+                    logger.error(f"Error loading shard {path}: {e}")
+        return merged
 
     # ── Asset Directory ──
 
@@ -278,10 +317,16 @@ class BookIndexStorage:
 
     def rebuild_index(self, status: BookIndexStatus = BookIndexStatus.Official):
         root = self.get_root_by_status(status)
-        index_file = root / "index.json"
         logger.info(f"Rebuilding index in {root}...")
 
-        index = {"books": {}, "collections": {}, "works": {}}
+        # Collect entries per type, then split into shards
+        # shards[type_key][shard_num] = {id: entry}
+        shards: Dict[str, Dict[int, Dict]] = {
+            "books": {i: {} for i in range(NUM_SHARDS)},
+            "collections": {0: {}},
+            "works": {i: {} for i in range(NUM_SHARDS)},
+        }
+
         for type_val in [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work]:
             type_dir = root / type_val.name
             type_key = type_val.name.lower() + "s"
@@ -289,8 +334,12 @@ class BookIndexStorage:
                 continue
 
             for json_file in type_dir.glob("**/*.json"):
-                if json_file.name == "index.json":
+                # Skip index shard files
+                try:
+                    json_file.relative_to(root / "index")
                     continue
+                except ValueError:
+                    pass
                 try:
                     metadata = self.load_metadata(json_file)
                     id_str = metadata.get("id") or metadata.get("ID")
@@ -319,7 +368,6 @@ class BookIndexStorage:
                         year = metadata.get("publication_info", {}).get("year", "") if isinstance(metadata.get("publication_info"), dict) else ""
                         holder = metadata.get("current_location", {}).get("name", "") if isinstance(metadata.get("current_location"), dict) else ""
 
-                        # juan_count: 从 juan_count 提取卷数
                         juan_count = 0
                         vc = metadata.get("juan_count")
                         if isinstance(vc, dict):
@@ -327,16 +375,13 @@ class BookIndexStorage:
                         elif isinstance(vc, (int, float)):
                             juan_count = int(vc)
 
-                        # edition: 版本
                         edition = metadata.get("edition", "")
 
-                        # additional_titles: 别名列表
                         additional_titles = metadata.get("additional_titles", [])
                         if not isinstance(additional_titles, list):
                             additional_titles = []
                         additional_titles = [t for t in additional_titles if isinstance(t, str) and t]
 
-                        # 资源类型标记
                         has_text = False
                         has_image = False
                         resources = metadata.get("resources", [])
@@ -371,21 +416,29 @@ class BookIndexStorage:
                         if edition:
                             entry["edition"] = edition
 
-                        # 检测整理本目录
                         collated_dir = json_file.parent / id_str / "collated_edition"
                         if collated_dir.is_dir():
                             entry["has_collated"] = True
 
-                        index[type_key][id_str] = entry
+                        shard_num = 0 if type_key == "collections" else shard_of(id_str)
+                        shards[type_key][shard_num][id_str] = entry
                 except Exception as e:
                     logger.warning(f"Error processing {json_file}: {e}")
 
-        self._save_index(index_file, index)
-        total = sum(len(v) for v in index.values())
-        logger.info(f"Index for {status.name} rebuilt with {total} entries.")
+        # Write all shard files
+        total = 0
+        for type_key, type_shards in shards.items():
+            for shard_num, data in type_shards.items():
+                path = self._shard_path(root, type_key, shard_num)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                with open(path, "w", encoding="utf-8") as f:
+                    json.dump(data, f, indent=2, ensure_ascii=False)
+                total += len(data)
+
+        logger.info(f"Index for {status.name} rebuilt with {total} entries across sharded files.")
 
     def load_entries(self, type_name: str, status: Optional[BookIndexStatus] = None) -> List[Dict]:
-        """Load entries of a given type from index.json."""
+        """Load entries of a given type from sharded index files."""
         type_key = type_name.lower() + "s"
         roots = (
             [self.get_root_by_status(status)]
@@ -394,11 +447,8 @@ class BookIndexStorage:
         )
         entries = []
         for root in roots:
-            index_file = root / "index.json"
-            index = self._load_index(index_file)
-            section = index.get(type_key, {})
+            section = self._load_all_shards(root, type_key)
             for id_str, entry in section.items():
-                # 透传索引中所有字段，覆盖 id/type
                 item = dict(entry)
                 item["id"] = id_str
                 item["type"] = type_name
@@ -427,14 +477,12 @@ class BookIndexStorage:
             id_val = base58_decode(id_str)
             components = BookIndexIdGenerator.parse(id_val)
             root = self.get_root_by_status(components.status)
-            index_file = root / "index.json"
+            type_key = components.type.name.lower() + "s"
 
-            if index_file.exists():
-                index = self._load_index(index_file)
-                type_key = components.type.name.lower() + "s"
-                if type_key in index and id_str in index[type_key]:
-                    del index[type_key][id_str]
-                    self._save_index(index_file, index)
+            shard_data = self._load_shard(root, type_key, id_str)
+            if id_str in shard_data:
+                del shard_data[id_str]
+                self._save_shard(root, type_key, id_str, shard_data)
 
             file_path.unlink()
             logger.info(f"Deleted {id_str}: {file_path}")

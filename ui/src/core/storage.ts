@@ -11,6 +11,17 @@ import { base58Encode, base58Decode, parseId } from '../id';
 const TYPE_TO_FOLDER: Record<IndexType, string> = { book: 'Book', collection: 'Collection', work: 'Work' };
 const FOLDER_TO_TYPE: Record<string, IndexType> = { Book: 'book', Collection: 'collection', Work: 'work' };
 
+export const NUM_SHARDS = 16;
+
+/** Deterministic hash — identical results in Python (h*31+ord(c)) & 0xFFFFFFFF */
+export function shardOf(id: string, n = NUM_SHARDS): number {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) {
+        h = (Math.imul(h, 31) + id.charCodeAt(i)) >>> 0;
+    }
+    return h % n;
+}
+
 /** index.json 结构 */
 export interface IndexFile {
     books: Record<string, IndexFileEntry>;
@@ -118,17 +129,14 @@ export class BookIndexStorage {
     }
 
     /**
-     * 更新 index.json 中的条目
+     * 更新索引分片中的条目
      */
     async updateIndexEntry(root: string, metadata: Record<string, unknown>, type: IndexType, relativePath: string): Promise<void> {
-        const indexFile = joinPath(root, 'index.json');
-        const index = await this.loadIndex(indexFile);
-
         const idStr = (metadata.id as string) || '';
         if (!idStr) return;
 
-        const typeKey = `${type}s` as keyof IndexFile;
-        if (!index[typeKey]) index[typeKey] = {} as any;
+        const typeKey = `${type}s`;
+        const shardData = await this.loadShard(root, typeKey, idStr);
 
         // 提取 author
         let author = '';
@@ -200,9 +208,8 @@ export class BookIndexStorage {
         if (hasText) entry.has_text = true;
         if (hasImage) entry.has_image = true;
 
-        (index[typeKey] as Record<string, IndexFileEntry>)[idStr] = entry;
-
-        await this.saveIndex(indexFile, index);
+        shardData[idStr] = entry;
+        await this.saveShard(root, typeKey, idStr, shardData);
     }
 
     /**
@@ -215,14 +222,13 @@ export class BookIndexStorage {
         const idVal = base58Decode(idStr);
         const components = parseId(idVal);
         const root = this.getRootByStatus(components.status);
-        const indexFile = joinPath(root, 'index.json');
+        const typeKey = `${components.type}s`;
 
-        // 从索引中移除
-        const index = await this.loadIndex(indexFile);
-        const typeKey = `${components.type}s` as keyof IndexFile;
-        if (index[typeKey] && (index[typeKey] as Record<string, IndexFileEntry>)[idStr]) {
-            delete (index[typeKey] as Record<string, IndexFileEntry>)[idStr];
-            await this.saveIndex(indexFile, index);
+        // 从索引分片中移除
+        const shardData = await this.loadShard(root, typeKey, idStr);
+        if (shardData[idStr]) {
+            delete shardData[idStr];
+            await this.saveShard(root, typeKey, idStr, shardData);
         }
 
         // 删除文件
@@ -274,17 +280,15 @@ export class BookIndexStorage {
     }
 
     /**
-     * 加载指定类型的所有条目（从 index.json）
+     * 加载指定类型的所有条目（从分片索引文件）
      */
     async loadEntries(type: IndexType, status?: IndexStatus): Promise<IndexEntry[]> {
         const roots = status ? [this.getRootByStatus(status)] : [this.officialRoot, this.draftRoot];
         const entries: IndexEntry[] = [];
+        const typeKey = `${type}s`;
 
         for (const root of roots) {
-            const indexFile = joinPath(root, 'index.json');
-            const index = await this.loadIndex(indexFile);
-            const typeKey = `${type}s` as keyof IndexFile;
-            const section = index[typeKey] || {};
+            const section = await this.loadAllShards(root, typeKey);
 
             for (const [id, entry] of Object.entries(section)) {
                 entries.push({
@@ -340,22 +344,29 @@ export class BookIndexStorage {
     }
 
     /**
-     * 重建 index.json
+     * 重建索引分片文件
      */
     async rebuildIndex(status: IndexStatus): Promise<void> {
         const root = this.getRootByStatus(status);
-        const index: IndexFile = { books: {}, collections: {}, works: {} };
+
+        // shards[typeKey][shardNum] = {id: entry}
+        const shards: Record<string, Record<number, Record<string, IndexFileEntry>>> = {
+            books: Object.fromEntries(Array.from({ length: NUM_SHARDS }, (_, i) => [i, {}])),
+            collections: { 0: {} },
+            works: Object.fromEntries(Array.from({ length: NUM_SHARDS }, (_, i) => [i, {}])),
+        };
 
         for (const typeDir of ['Book', 'Collection', 'Work']) {
             const typePath = joinPath(root, typeDir);
             if (!(await this.fs.exists(typePath))) continue;
 
             const type = FOLDER_TO_TYPE[typeDir];
-            const typeKey = `${type}s` as keyof IndexFile;
+            const typeKey = `${type}s`;
 
             const files = await this.fs.glob(typePath, '**/*.json');
             for (const file of files) {
-                if (file.endsWith('index.json')) continue;
+                // Skip index shard files
+                if (file.includes('/index/')) continue;
                 try {
                     const metadata = await this.loadMetadata(file);
                     let idStr = (metadata.id as string) || (metadata.ID as string) || '';
@@ -374,12 +385,10 @@ export class BookIndexStorage {
                         author = typeof first === 'object' && first !== null ? (first as any).name || '' : String(first);
                     }
 
-                    // 提取 additional_titles
                     const additionalTitles = Array.isArray(metadata.additional_titles)
                         ? (metadata.additional_titles as string[]).filter(t => typeof t === 'string' && t)
                         : undefined;
 
-                    // 提取 juan_count
                     let juanCount: number | undefined;
                     const jc = metadata.juan_count;
                     if (typeof jc === 'number') {
@@ -388,7 +397,6 @@ export class BookIndexStorage {
                         juanCount = (jc as any).number || undefined;
                     }
 
-                    // 提取资源类型标记
                     let hasText = false;
                     let hasImage = false;
                     const resources = metadata.resources;
@@ -416,12 +424,21 @@ export class BookIndexStorage {
                     if (hasText) entry.has_text = true;
                     if (hasImage) entry.has_image = true;
 
-                    (index[typeKey] as Record<string, IndexFileEntry>)[idStr] = entry;
+                    const shardNum = typeKey === 'collections' ? 0 : shardOf(idStr);
+                    shards[typeKey][shardNum][idStr] = entry;
                 } catch { /* skip invalid files */ }
             }
         }
 
-        await this.saveIndex(joinPath(root, 'index.json'), index);
+        // Write all shard files
+        for (const [typeKey, typeShards] of Object.entries(shards)) {
+            for (const [shardNum, data] of Object.entries(typeShards)) {
+                const shardPath = this.shardPath(root, typeKey, Number(shardNum));
+                const dir = shardPath.substring(0, shardPath.lastIndexOf('/'));
+                await this.fs.mkdir(dir);
+                await this.fs.writeFile(shardPath, JSON.stringify(data, null, 2));
+            }
+        }
     }
 
     // ── Asset Directory ──
@@ -459,28 +476,57 @@ export class BookIndexStorage {
         return this.fs.exists(dir);
     }
 
-    // ── Private ──
+    // ── Sharded index I/O ──
 
-    private async loadIndex(indexFile: string): Promise<IndexFile> {
-        const defaultIndex: IndexFile = { books: {}, collections: {}, works: {} };
+    private shardPath(root: string, typeKey: string, shard: number): string {
+        if (typeKey === 'collections') {
+            return joinPath(root, 'index', 'collections.json');
+        }
+        return joinPath(root, 'index', typeKey, `${shard.toString(16)}.json`);
+    }
+
+    private async loadShard(root: string, typeKey: string, idStr: string): Promise<Record<string, IndexFileEntry>> {
+        const shard = shardOf(idStr);
+        const path = this.shardPath(root, typeKey, shard);
         try {
-            if (!(await this.fs.exists(indexFile))) return defaultIndex;
-            const content = await this.fs.readFile(indexFile);
-            const data = JSON.parse(content);
-            return {
-                books: data.books || {},
-                collections: data.collections || {},
-                works: data.works || {},
-            };
+            if (!(await this.fs.exists(path))) return {};
+            const content = await this.fs.readFile(path);
+            return JSON.parse(content);
         } catch {
-            return defaultIndex;
+            return {};
         }
     }
 
-    private async saveIndex(indexFile: string, index: IndexFile): Promise<void> {
-        const dir = indexFile.substring(0, indexFile.lastIndexOf('/'));
+    private async saveShard(root: string, typeKey: string, idStr: string, data: Record<string, IndexFileEntry>): Promise<void> {
+        const shard = shardOf(idStr);
+        const path = this.shardPath(root, typeKey, shard);
+        const dir = path.substring(0, path.lastIndexOf('/'));
         await this.fs.mkdir(dir);
-        await this.fs.writeFile(indexFile, JSON.stringify(index, null, 2));
+        await this.fs.writeFile(path, JSON.stringify(data, null, 2));
+    }
+
+    private async loadAllShards(root: string, typeKey: string): Promise<Record<string, IndexFileEntry>> {
+        const merged: Record<string, IndexFileEntry> = {};
+        if (typeKey === 'collections') {
+            const path = this.shardPath(root, typeKey, 0);
+            try {
+                if (await this.fs.exists(path)) {
+                    const content = await this.fs.readFile(path);
+                    Object.assign(merged, JSON.parse(content));
+                }
+            } catch { /* ignore */ }
+            return merged;
+        }
+        for (let shard = 0; shard < NUM_SHARDS; shard++) {
+            const path = this.shardPath(root, typeKey, shard);
+            try {
+                if (await this.fs.exists(path)) {
+                    const content = await this.fs.readFile(path);
+                    Object.assign(merged, JSON.parse(content));
+                }
+            } catch { /* ignore */ }
+        }
+        return merged;
     }
 }
 

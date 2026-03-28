@@ -46,7 +46,7 @@ function matchesQuery(
     return false;
 }
 
-/** index.json 中的条目（允许任意扩展字段） */
+/** 索引条目（允许任意扩展字段） */
 interface IndexFileEntry {
     id: string;
     title: string;
@@ -72,20 +72,33 @@ const TYPE_MAP: Record<string, keyof IndexFile> = {
     work: 'works',
 };
 
-function loadIndex(indexPath: string): IndexFile {
-    const defaultIndex: IndexFile = { books: {}, collections: {}, works: {} };
+const NUM_SHARDS = 16;
+
+/** 从分片文件加载合并索引 */
+function loadIndex(repoRoot: string): IndexFile {
+    const result: IndexFile = { books: {}, collections: {}, works: {} };
+
+    // collections (single file)
+    const colPath = path.join(repoRoot, 'index', 'collections.json');
     try {
-        if (!fs.existsSync(indexPath)) return defaultIndex;
-        const content = fs.readFileSync(indexPath, 'utf-8');
-        const data = JSON.parse(content);
-        return {
-            books: data.books || {},
-            collections: data.collections || {},
-            works: data.works || {},
-        };
-    } catch {
-        return defaultIndex;
+        if (fs.existsSync(colPath)) {
+            result.collections = JSON.parse(fs.readFileSync(colPath, 'utf-8'));
+        }
+    } catch { /* ignore */ }
+
+    // books and works (16 shards each)
+    for (const typeKey of ['books', 'works'] as const) {
+        for (let i = 0; i < NUM_SHARDS; i++) {
+            const shardPath = path.join(repoRoot, 'index', typeKey, `${i.toString(16)}.json`);
+            try {
+                if (fs.existsSync(shardPath)) {
+                    Object.assign(result[typeKey], JSON.parse(fs.readFileSync(shardPath, 'utf-8')));
+                }
+            } catch { /* ignore */ }
+        }
     }
+
+    return result;
 }
 
 function getAllEntries(workspaceRoot: string, type: string) {
@@ -94,20 +107,19 @@ function getAllEntries(workspaceRoot: string, type: string) {
 
     const entries: any[] = [];
     for (const folder of ['book-index', 'book-index-draft']) {
-        const indexPath = path.join(workspaceRoot, folder, 'index.json');
-        const index = loadIndex(indexPath);
+        const repoRoot = path.join(workspaceRoot, folder);
+        const index = loadIndex(repoRoot);
         const section = index[typeKey] || {};
         const isDraft = folder === 'book-index-draft';
 
         for (const [id, entry] of Object.entries(section)) {
-            // has_collated：优先读 index.json，否则运行时检测目录
+            // has_collated：优先读索引，否则运行时检测目录
             let hasCollated = (entry as any).has_collated;
             if (hasCollated === undefined && entry.path && type === 'work') {
                 const entryDir = path.join(workspaceRoot, folder, path.dirname(entry.path), id, 'collated_edition');
                 hasCollated = fs.existsSync(entryDir) || undefined;
             }
 
-            // 透传索引中所有字段，覆盖 type/isDraft/has_collated
             entries.push({
                 ...entry,
                 id,

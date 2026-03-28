@@ -1,10 +1,10 @@
 import type { IndexStorage } from './types';
 import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
-import { rankByRelevance, rankByRelevanceWithSimplified } from '../core/storage';
+import { rankByRelevance, rankByRelevanceWithSimplified, NUM_SHARDS } from '../core/storage';
 import type { SearchSIndex } from '../core/storage';
 
 /**
- * GitHub index.json 中的条目格式
+ * 索引分片文件中的条目格式
  */
 interface GithubIndexItem {
     id: string;
@@ -21,7 +21,7 @@ interface GithubIndexItem {
 }
 
 /**
- * GitHub index.json 响应格式
+ * 合并后的索引格式
  */
 interface GithubIndexResponse {
     books?: Record<string, GithubIndexItem>;
@@ -101,9 +101,9 @@ export class GithubStorage implements IndexStorage {
         return this.cache;
     }
 
-    /** 从 GitHub 或 CDN 获取 index.json */
-    private async fetchIndex(repo: string): Promise<GithubIndexResponse> {
-        const githubUrl = `${this.config.baseUrl}/${this.config.org}/${repo}/main/index.json`;
+    /** 从 GitHub 或 CDN 获取单个文件 */
+    private async fetchFileWithFallback<T>(repo: string, path: string): Promise<T> {
+        const githubUrl = `${this.config.baseUrl}/${this.config.org}/${repo}/main/${encodeURI(path)}`;
         try {
             return await this.fetchJson(githubUrl);
         } catch {
@@ -111,7 +111,7 @@ export class GithubStorage implements IndexStorage {
         }
 
         for (const cdn of this.config.cdnUrls) {
-            const cdnUrl = `${cdn}/${this.config.org}/${repo}@main/index.json`;
+            const cdnUrl = `${cdn}/${this.config.org}/${repo}@main/${encodeURI(path)}`;
             try {
                 return await this.fetchJson(cdnUrl);
             } catch {
@@ -119,7 +119,34 @@ export class GithubStorage implements IndexStorage {
             }
         }
 
-        throw new Error(`Failed to fetch index.json for ${repo} from all sources`);
+        throw new Error(`Failed to fetch ${path} for ${repo} from all sources`);
+    }
+
+    /** 从分片文件加载并合并索引 */
+    private async fetchIndex(repo: string): Promise<GithubIndexResponse> {
+        const merged: GithubIndexResponse = { books: {}, collections: {}, works: {} };
+
+        // collections (single file)
+        try {
+            const data = await this.fetchFileWithFallback<Record<string, GithubIndexItem>>(repo, 'index/collections.json');
+            merged.collections = data;
+        } catch { /* skip */ }
+
+        // books and works (16 shards each, parallel)
+        const fetches: Promise<void>[] = [];
+        for (const typeKey of ['books', 'works'] as const) {
+            for (let shard = 0; shard < NUM_SHARDS; shard++) {
+                const path = `index/${typeKey}/${shard.toString(16)}.json`;
+                fetches.push(
+                    this.fetchFileWithFallback<Record<string, GithubIndexItem>>(repo, path)
+                        .then(data => { Object.assign(merged[typeKey]!, data); })
+                        .catch(() => { /* skip failed shards */ })
+                );
+            }
+        }
+        await Promise.all(fetches);
+
+        return merged;
     }
 
     /** 通用 JSON fetch */
