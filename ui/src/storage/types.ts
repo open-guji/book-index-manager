@@ -1,4 +1,4 @@
-import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress } from '../types';
 
 /**
  * 索引数据存储接口
@@ -83,4 +83,9 @@ export interface IndexStorage {
 
     /** 获取整理本单卷内容 */
     getCollatedJuan?(workId: string, juanFile: string): Promise<CollatedJuan | null>;
+
+    // ── 资源导入进度（可选） ──
+
+    /** 获取资源导入进度数据 */
+    getResourceProgress?(): Promise<ResourceProgress | null>;
 }

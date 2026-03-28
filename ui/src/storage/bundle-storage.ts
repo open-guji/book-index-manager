@@ -6,6 +6,7 @@ import type {
     LoadOptions,
     GroupedSearchResult,
     ResourceCatalog,
+    ResourceProgress,
     VolumeBookMapping,
     CollatedEditionIndex,
     CollatedJuan,
@@ -372,6 +373,16 @@ export class BundleStorage implements IndexStorage {
         try {
             const data = await this.loadTiyaoGroup(start, end);
             return (data[juanFile] as CollatedJuan) || null;
+        } catch {
+            return null;
+        }
+    }
+
+    // ─── 资源导入进度 ───
+
+    async getResourceProgress(): Promise<ResourceProgress | null> {
+        try {
+            return await this.fetchJson<ResourceProgress>(`${this.basePath}/resource.json`);
         } catch {
             return null;
         }

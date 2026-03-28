@@ -391,3 +391,32 @@ export interface SourceItem {
     version: string;
     processor_version: string;
 }
+
+// ── 资源导入进度 ──
+
+/** 资源导入状态 */
+export type ResourceImportStatus = 'todo' | 'in_progress' | 'done';
+
+/** 资源导入类型 */
+export type ResourceImportType = 'catalog' | 'collection';
+
+/** 资源导入进度条目 */
+export interface ResourceProgressItem {
+    id: string;
+    name: string;
+    type: ResourceImportType;
+    description?: string;
+    url?: string;
+    total: number;
+    imported: number;
+    status: ResourceImportStatus;
+    priority: number;
+    start_date?: string;
+    end_date?: string;
+    notes?: string;
+}
+
+/** 资源导入进度数据 */
+export interface ResourceProgress {
+    resources: ResourceProgressItem[];
+}

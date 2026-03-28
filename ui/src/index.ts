@@ -39,6 +39,10 @@ export type {
     CollatedJuan,
     CollatedEditionIndex,
     ResourceCatalog,
+    ResourceImportStatus,
+    ResourceImportType,
+    ResourceProgressItem,
+    ResourceProgress,
 } from './types';
 
 // ID encoding/decoding

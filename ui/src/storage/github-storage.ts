@@ -1,5 +1,5 @@
 import type { IndexStorage } from './types';
-import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress } from '../types';
 import { rankByRelevance, rankByRelevanceWithSimplified, NUM_SHARDS } from '../core/storage';
 import type { SearchSIndex } from '../core/storage';
 
@@ -468,6 +468,10 @@ export class GithubStorage implements IndexStorage {
 
         const juanPath = `${resolved.dir}/${workId}/collated_edition/${juanFile}`;
         return this.fetchFile<CollatedJuan>(resolved.repo, juanPath);
+    }
+
+    async getResourceProgress(): Promise<ResourceProgress | null> {
+        return this.fetchFile<ResourceProgress>(this.config.repos.draft, 'resource.json');
     }
 
     /** 清除缓存（用于切换数据源后刷新） */
