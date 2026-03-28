@@ -734,6 +734,61 @@ interface ResolvedBook {
     resources?: ResourceEntry[];
 }
 
+function BookVersionCard({ book, onNavigate, renderLink }: {
+    book: ResolvedBook;
+    onNavigate?: (id: string) => void;
+    renderLink?: (id: string, label?: string) => React.ReactNode;
+}) {
+    const [collapsed, setCollapsed] = useState(false);
+    const hasDetails = book.resources && book.resources.length > 0;
+    const label = book.edition
+        ? `${book.title || book.id}（${book.edition}）`
+        : book.title || undefined;
+
+    return (
+        <div style={{
+            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            borderRadius: '6px',
+            overflow: 'hidden',
+            background: 'var(--bim-input-bg, #fff)',
+        }}>
+            <div style={{
+                padding: '10px 14px',
+                borderBottom: hasDetails && !collapsed
+                    ? '1px solid var(--bim-widget-border, #e0e0e0)'
+                    : 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+            }}>
+                <div style={{ flex: 1 }}>
+                    <IdLink id={book.id} label={label} onNavigate={onNavigate} renderLink={renderLink} />
+                </div>
+                {hasDetails && (
+                    <span
+                        onClick={() => setCollapsed(v => !v)}
+                        style={{
+                            cursor: 'pointer',
+                            fontSize: '10px',
+                            color: 'var(--bim-desc-fg, #999)',
+                            userSelect: 'none',
+                            transition: 'transform 0.15s',
+                            transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                            display: 'inline-block',
+                        }}
+                        title={collapsed ? '展开' : '收起'}
+                    >▼</span>
+                )}
+            </div>
+            {hasDetails && !collapsed && (
+                <div style={{ padding: '10px 14px' }}>
+                    <ResourceList items={book.resources!} groupByType />
+                </div>
+            )}
+        </div>
+    );
+}
+
 function BookVersionList({ ids, transport, onNavigate, renderLink }: {
     ids: string[];
     transport?: IndexStorage;
@@ -770,36 +825,9 @@ function BookVersionList({ ids, transport, onNavigate, renderLink }: {
                 </span>
             </SectionLabel>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {(books.length ? books : ids.map(id => ({ id } as ResolvedBook))).map(book => {
-                    const label = book.edition
-                        ? `${book.title || book.id}（${book.edition}）`
-                        : book.title || undefined;
-                    return (
-                        <div key={book.id} style={{
-                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
-                            borderRadius: '6px',
-                            overflow: 'hidden',
-                            background: 'var(--bim-input-bg, #fff)',
-                        }}>
-                            <div style={{
-                                padding: '10px 14px',
-                                borderBottom: book.resources?.length
-                                    ? '1px solid var(--bim-widget-border, #e0e0e0)'
-                                    : 'none',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                            }}>
-                                <IdLink id={book.id} label={label} onNavigate={onNavigate} renderLink={renderLink} />
-                            </div>
-                            {book.resources && book.resources.length > 0 && (
-                                <div style={{ padding: '10px 14px' }}>
-                                    <ResourceList items={book.resources} groupByType />
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
+                {(books.length ? books : ids.map(id => ({ id } as ResolvedBook))).map(book => (
+                    <BookVersionCard key={book.id} book={book} onNavigate={onNavigate} renderLink={renderLink} />
+                ))}
             </div>
         </>
     );
