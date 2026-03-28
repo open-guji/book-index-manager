@@ -3,7 +3,7 @@ import type { IndexType, IndexEntry, IndexSource, SyncConfig, GroupedSearchResul
 import type { IndexStorage } from '../storage/types';
 import { ModeIndicator } from './ModeIndicator';
 import { SearchInput } from './SearchInput';
-import { useT, formatTemplate } from '../i18n';
+import { useT, useConvert, formatTemplate } from '../i18n';
 
 const RECENT_KEY = 'bim-recent-ids';
 const RECENT_KEY_LEGACY = 'bim-recent-entries';
@@ -414,6 +414,7 @@ interface EntryCardProps {
 
 const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConfig, query }) => {
     const t = useT();
+    const { convert } = useConvert();
 
     // 检查是否通过别名匹配
     const matchedAlias = query && entry.additional_titles
@@ -438,7 +439,7 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
             <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>
-                        {entry.title}
+                        {convert(entry.title)}
                     </span>
                     {/* 资源图标 */}
                     <span style={{ display: 'flex', gap: '2px', fontSize: '12px', opacity: 0.7 }}>
@@ -448,7 +449,7 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                     {/* 版本 */}
                     {entry.edition && (
                         <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)' }}>
-                            {entry.edition}
+                            {convert(entry.edition)}
                         </span>
                     )}
                     {/* 卷数 */}
@@ -461,15 +462,15 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                 {/* 作者朝代 */}
                 {(entry.dynasty || entry.author) && (
                     <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginTop: '2px' }}>
-                        {entry.dynasty && <span>〔{entry.dynasty}〕</span>}
-                        {entry.author && <span>{entry.author}</span>}
-                        {entry.role && entry.role !== 'author' && <span> {entry.role}</span>}
+                        {entry.dynasty && <span>〔{convert(entry.dynasty)}〕</span>}
+                        {entry.author && <span>{convert(entry.author)}</span>}
+                        {entry.role && entry.role !== 'author' && <span> {convert(entry.role)}</span>}
                     </div>
                 )}
                 {/* 别名匹配提示 */}
                 {matchedAlias && (
                     <div style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)', marginTop: '2px' }}>
-                        {t.search.alias}：{matchedAlias}
+                        {t.search.alias}：{convert(matchedAlias)}
                     </div>
                 )}
             </div>
