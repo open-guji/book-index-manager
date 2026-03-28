@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import type { IndexEntry, IndexType } from '../types';
+import type { IndexEntry, IndexType, ResourceProgress, ResourceProgressItem, ResourceImportStatus } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { useT } from '../i18n';
+import { formatTemplate } from '../i18n';
 
 export interface RecommendedItem {
     id: string;
@@ -22,6 +23,8 @@ interface Stats {
     books: number;
     collections: number;
 }
+
+type TabKey = 'recommend' | 'progress';
 
 const DEFAULT_RECOMMENDED: RecommendedItem[] = [
     // 重要叢編
@@ -44,6 +47,8 @@ export const HomePage: React.FC<HomePageProps> = ({
     const t = useT();
     const [stats, setStats] = useState<Stats | null>(null);
     const [recommended, setRecommended] = useState<(IndexEntry & { group?: string; fallbackDescription?: string })[]>([]);
+    const [activeTab, setActiveTab] = useState<TabKey>('recommend');
+    const [progress, setProgress] = useState<ResourceProgress | null>(null);
 
     // 加载统计数据
     useEffect(() => {
@@ -102,6 +107,17 @@ export const HomePage: React.FC<HomePageProps> = ({
         return () => { cancelled = true; };
     }, [transport, recommendedIds]);
 
+    // 加载资源导入进度
+    useEffect(() => {
+        if (!transport.getResourceProgress) return;
+        let cancelled = false;
+        transport.getResourceProgress().then(data => {
+            if (cancelled) return;
+            setProgress(data);
+        }).catch(() => {});
+        return () => { cancelled = true; };
+    }, [transport]);
+
     const getIcon = (type: IndexType) => {
         switch (type) {
             case 'work': return '✍️';
@@ -131,70 +147,38 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </p>
             </div>
 
-            {/* Recommended */}
-            {recommended.length > 0 && (
-                <div style={{ width: '100%', maxWidth: '600px', marginBottom: '32px' }}>
-                    {(() => {
-                        const groups = new Map<string, typeof recommended>();
-                        for (const entry of recommended) {
-                            const group = entry.group || t.home.recommendedBrowse;
-                            if (!groups.has(group)) groups.set(group, []);
-                            groups.get(group)!.push(entry);
-                        }
-                        return Array.from(groups.entries()).map(([groupName, entries]) => (
-                            <div key={groupName} style={{ marginBottom: '20px' }}>
-                                <div style={{
-                                    fontSize: '13px',
-                                    fontWeight: 500,
-                                    color: 'var(--bim-desc-fg, #717171)',
-                                    marginBottom: '8px',
-                                }}>
-                                    {groupName}
-                                </div>
-                                <div style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-                                    gap: '8px',
-                                }}>
-                                    {entries.map(entry => {
-                                        const desc = entry.dynasty || entry.author
-                                            ? `${entry.dynasty ? `〔${entry.dynasty}〕` : ''}${entry.author || ''}`
-                                            : entry.fallbackDescription;
-                                        return (
-                                            <div
-                                                key={entry.id}
-                                                onClick={() => onNavigate?.(entry.id)}
-                                                style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '12px',
-                                                    padding: '12px 16px',
-                                                    borderRadius: '8px',
-                                                    border: '1px solid var(--bim-widget-border, #e0e0e0)',
-                                                    cursor: 'pointer',
-                                                    background: 'var(--bim-input-bg, #fff)',
-                                                }}
-                                            >
-                                                <span style={{ fontSize: '20px' }}>{getIcon(entry.type)}</span>
-                                                <div style={{ minWidth: 0 }}>
-                                                    <div style={{ fontSize: '14px', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                        {entry.title}
-                                                    </div>
-                                                    {desc && (
-                                                        <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                            {desc}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        ));
-                    })()}
+            {/* Tabs */}
+            <div style={{ width: '100%', maxWidth: '600px', marginBottom: '24px' }}>
+                <div style={{
+                    display: 'flex',
+                    borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                    marginBottom: '16px',
+                }}>
+                    <TabButton
+                        label={t.home.recommendTab}
+                        active={activeTab === 'recommend'}
+                        onClick={() => setActiveTab('recommend')}
+                    />
+                    <TabButton
+                        label={t.home.progressTab}
+                        active={activeTab === 'progress'}
+                        onClick={() => setActiveTab('progress')}
+                    />
                 </div>
-            )}
+
+                {activeTab === 'recommend' && (
+                    <RecommendContent
+                        recommended={recommended}
+                        onNavigate={onNavigate}
+                        getIcon={getIcon}
+                        t={t}
+                    />
+                )}
+
+                {activeTab === 'progress' && (
+                    <ProgressContent progress={progress} t={t} />
+                )}
+            </div>
 
             {/* Stats */}
             {stats && (
@@ -207,6 +191,233 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <StatItem icon="✍️" label={t.indexType.work} count={stats.works} />
                     <StatItem icon="📖" label={t.indexType.book} count={stats.books} />
                     <StatItem icon="📚" label={t.indexType.collection} count={stats.collections} />
+                </div>
+            )}
+        </div>
+    );
+};
+
+// ── 子组件 ──
+
+const TabButton: React.FC<{ label: string; active: boolean; onClick: () => void }> = ({ label, active, onClick }) => (
+    <button
+        onClick={onClick}
+        style={{
+            padding: '8px 16px',
+            fontSize: '14px',
+            fontWeight: active ? 600 : 400,
+            color: active ? 'var(--bim-primary, #2563eb)' : 'var(--bim-desc-fg, #717171)',
+            background: 'none',
+            border: 'none',
+            borderBottom: active ? '2px solid var(--bim-primary, #2563eb)' : '2px solid transparent',
+            cursor: 'pointer',
+            marginBottom: '-1px',
+        }}
+    >
+        {label}
+    </button>
+);
+
+const RecommendContent: React.FC<{
+    recommended: (IndexEntry & { group?: string; fallbackDescription?: string })[];
+    onNavigate?: (id: string) => void;
+    getIcon: (type: IndexType) => string;
+    t: ReturnType<typeof useT>;
+}> = ({ recommended, onNavigate, getIcon, t }) => {
+    if (recommended.length === 0) return null;
+
+    const groups = new Map<string, typeof recommended>();
+    for (const entry of recommended) {
+        const group = entry.group || t.home.recommendedBrowse;
+        if (!groups.has(group)) groups.set(group, []);
+        groups.get(group)!.push(entry);
+    }
+
+    return (
+        <>
+            {Array.from(groups.entries()).map(([groupName, entries]) => (
+                <div key={groupName} style={{ marginBottom: '20px' }}>
+                    <div style={{
+                        fontSize: '13px',
+                        fontWeight: 500,
+                        color: 'var(--bim-desc-fg, #717171)',
+                        marginBottom: '8px',
+                    }}>
+                        {groupName}
+                    </div>
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                        gap: '8px',
+                    }}>
+                        {entries.map(entry => {
+                            const desc = entry.dynasty || entry.author
+                                ? `${entry.dynasty ? `〔${entry.dynasty}〕` : ''}${entry.author || ''}`
+                                : entry.fallbackDescription;
+                            return (
+                                <div
+                                    key={entry.id}
+                                    onClick={() => onNavigate?.(entry.id)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        padding: '12px 16px',
+                                        borderRadius: '8px',
+                                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                        cursor: 'pointer',
+                                        background: 'var(--bim-input-bg, #fff)',
+                                    }}
+                                >
+                                    <span style={{ fontSize: '20px' }}>{getIcon(entry.type)}</span>
+                                    <div style={{ minWidth: 0 }}>
+                                        <div style={{ fontSize: '14px', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            {entry.title}
+                                        </div>
+                                        {desc && (
+                                            <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                {desc}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            ))}
+        </>
+    );
+};
+
+const ProgressContent: React.FC<{
+    progress: ResourceProgress | null;
+    t: ReturnType<typeof useT>;
+}> = ({ progress, t }) => {
+    if (!progress) {
+        return (
+            <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>
+                ...
+            </div>
+        );
+    }
+
+    const sorted = [...progress.resources].sort((a, b) => a.priority - b.priority);
+
+    const statusOrder: ResourceImportStatus[] = ['in_progress', 'done', 'todo'];
+    const statusLabels: Record<ResourceImportStatus, string> = {
+        in_progress: t.home.statusInProgress,
+        done: t.home.statusDone,
+        todo: t.home.statusTodo,
+    };
+    const statusColors: Record<ResourceImportStatus, string> = {
+        in_progress: '#f59e0b',
+        done: '#10b981',
+        todo: '#9ca3af',
+    };
+
+    return (
+        <div>
+            {statusOrder.map(status => {
+                const items = sorted.filter(r => r.status === status);
+                if (items.length === 0) return null;
+                return (
+                    <div key={status} style={{ marginBottom: '20px' }}>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontSize: '13px',
+                            fontWeight: 500,
+                            color: 'var(--bim-desc-fg, #717171)',
+                            marginBottom: '8px',
+                        }}>
+                            <span style={{
+                                display: 'inline-block',
+                                width: '8px',
+                                height: '8px',
+                                borderRadius: '50%',
+                                background: statusColors[status],
+                            }} />
+                            {statusLabels[status]} ({items.length})
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {items.map(item => (
+                                <ProgressItem key={item.id} item={item} t={t} statusColor={statusColors[status]} />
+                            ))}
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+};
+
+const ProgressItem: React.FC<{
+    item: ResourceProgressItem;
+    t: ReturnType<typeof useT>;
+    statusColor: string;
+}> = ({ item, t, statusColor }) => {
+    const percent = item.total > 0 ? Math.round((item.imported / item.total) * 100) : 0;
+    const typeLabel = item.type === 'catalog' ? t.home.typeCatalog : t.home.typeCollection;
+
+    return (
+        <div style={{
+            padding: '12px 16px',
+            borderRadius: '8px',
+            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            background: 'var(--bim-input-bg, #fff)',
+        }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                    <span style={{ fontSize: '14px', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {item.url ? (
+                            <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>
+                                {item.name}
+                            </a>
+                        ) : item.name}
+                    </span>
+                    <span style={{
+                        fontSize: '11px',
+                        padding: '1px 6px',
+                        borderRadius: '4px',
+                        background: 'var(--bim-widget-border, #e0e0e0)',
+                        color: 'var(--bim-desc-fg, #717171)',
+                        whiteSpace: 'nowrap',
+                    }}>
+                        {typeLabel}
+                    </span>
+                </div>
+                <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', whiteSpace: 'nowrap', marginLeft: '8px' }}>
+                    {item.total > 0
+                        ? formatTemplate(t.home.progressFormat, { imported: String(item.imported), total: String(item.total) })
+                        : t.home.totalPending
+                    }
+                </span>
+            </div>
+
+            {/* Progress bar */}
+            {item.total > 0 && (
+                <div style={{
+                    height: '4px',
+                    borderRadius: '2px',
+                    background: 'var(--bim-widget-border, #e0e0e0)',
+                    overflow: 'hidden',
+                    marginBottom: '4px',
+                }}>
+                    <div style={{
+                        height: '100%',
+                        width: `${percent}%`,
+                        borderRadius: '2px',
+                        background: statusColor,
+                        transition: 'width 0.3s ease',
+                    }} />
+                </div>
+            )}
+
+            {item.description && (
+                <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginTop: '4px' }}>
+                    {item.description}
                 </div>
             )}
         </div>

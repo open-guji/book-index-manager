@@ -134,6 +134,15 @@ export interface LocaleMessages {
         title: string;
         subtitle: string;
         recommendedBrowse: string;
+        progressTab: string;
+        recommendTab: string;
+        statusInProgress: string;
+        statusDone: string;
+        statusTodo: string;
+        typeCatalog: string;
+        typeCollection: string;
+        totalPending: string;
+        progressFormat: string;
     };
     browser: {
         title: string;
