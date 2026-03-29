@@ -415,6 +415,22 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     return;
                 }
 
+                // GET /api/resource-progress — 资源整理进度
+                if (pathname === '/api/resource-progress' && req.method === 'GET') {
+                    const resourceFile = path.join(workspaceRoot, 'book-index-draft', 'resource.json');
+                    if (!fs.existsSync(resourceFile)) {
+                        sendJson({ error: 'Not found' }, 404);
+                        return;
+                    }
+                    try {
+                        const content = fs.readFileSync(resourceFile, 'utf-8');
+                        sendJson(JSON.parse(content));
+                    } catch {
+                        sendJson({ error: 'Failed to read resource.json' }, 500);
+                    }
+                    return;
+                }
+
                 next();
             });
         },

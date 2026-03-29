@@ -4,7 +4,7 @@
  */
 
 import type { IndexStorage } from './types';
-import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress } from '../types';
 
 export class DevApiStorage implements IndexStorage {
     private baseUrl: string;
@@ -88,5 +88,12 @@ export class DevApiStorage implements IndexStorage {
 
     async generateId(): Promise<string> {
         throw new Error('DevApiStorage: 开发模式暂不支持生成 ID');
+    }
+
+    async getResourceProgress(): Promise<ResourceProgress | null> {
+        const res = await fetch(`${this.baseUrl}/api/resource-progress`);
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
     }
 }
