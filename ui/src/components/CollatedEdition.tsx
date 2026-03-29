@@ -330,18 +330,20 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                     </span>
                 )}
                 {section.work_id && onNavigate && (
-                    <span
-                        onClick={e => { e.stopPropagation(); onNavigate(section.work_id!); }}
+                    <a
+                        href={`/${section.work_id}`}
+                        onClick={e => { e.preventDefault(); e.stopPropagation(); onNavigate(section.work_id!); }}
                         style={{
                             fontSize: '11px',
                             color: 'var(--bim-link-fg, #0066cc)',
                             cursor: 'pointer',
+                            textDecoration: 'none',
                             flexShrink: 0,
                         }}
                         title="查看作品"
                     >
                         →作品
-                    </span>
+                    </a>
                 )}
             </div>
 

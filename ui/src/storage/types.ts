@@ -86,8 +86,14 @@ export interface IndexStorage {
 
     // ── 资源导入进度（可选） ──
 
-    /** 获取资源导入进度数据 */
+    /** 获取 Work 下的分类目录 */
+    getWorkCatalog?(workId: string): Promise<Array<{ source: string; data: unknown }> | null>;
+
+    /** 获取叢書目錄整理進度 */
     getResourceProgress?(): Promise<ResourceProgress | null>;
+
+    /** 获取在線資源網站整理進度 */
+    getSiteProgress?(): Promise<ResourceProgress | null>;
 
     /** 获取推荐古籍数据 */
     getRecommended?(): Promise<RecommendedData | null>;

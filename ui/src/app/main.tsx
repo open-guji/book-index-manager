@@ -4,7 +4,9 @@ import { IndexBrowser } from '../components/IndexBrowser';
 import { IndexDetail } from '../components/IndexDetail';
 import { CollectionCatalog } from '../components/CollectionCatalog';
 import { CollatedEdition } from '../components/CollatedEdition';
+import { WorkCatalog } from '../components/WorkCatalog';
 import { HomePage } from '../components/HomePage';
+import type { TabKey } from '../components/HomePage';
 import { LocaleToggle } from '../components/LocaleToggle';
 import { LocaleProvider } from '../i18n/provider';
 import { DevApiStorage } from '../storage/dev-api-storage';
@@ -79,6 +81,15 @@ function App() {
     const [catalogLoading, setCatalogLoading] = useState(false);
     const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
     const [collatedLoading, setCollatedLoading] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [workCatalog, setWorkCatalog] = useState<any>(null);
+    const [workCatalogLoading, setWorkCatalogLoading] = useState(false);
+    const [homeTab, setHomeTab] = useState<TabKey>(() => {
+        const id = getIdFromUrl();
+        if (id) return 'recommend';
+        const params = getParamsFromUrl();
+        return ((params.tab === 'catalog' || params.tab === 'site') ? params.tab : 'recommend') as TabKey;
+    });
 
     /** 获取当前 entity ID */
     const currentId = selectedEntry?.id || getIdFromUrl();
@@ -112,6 +123,19 @@ function App() {
         }
     }, [transport]);
 
+    const loadWorkCatalog = useCallback(async (id: string) => {
+        if (!transport.getWorkCatalog) return;
+        setWorkCatalogLoading(true);
+        try {
+            const results = await transport.getWorkCatalog(id);
+            setWorkCatalog(results?.[0]?.data ?? null);
+        } catch {
+            setWorkCatalog(null);
+        } finally {
+            setWorkCatalogLoading(false);
+        }
+    }, [transport]);
+
     const loadCatalog = useCallback(async (id: string) => {
         if (!transport.getCollectionCatalogs && !transport.getCollectionCatalog) {
             setCatalogList([]);
@@ -142,6 +166,7 @@ function App() {
         setDetailData(null);
         setCatalogList([]);
         setCollatedIndex(null);
+        setWorkCatalog(null);
         setActiveTabState(restoreParams?.tab || 'detail');
         setActiveJuanState(restoreParams?.juan || null);
         setDetailLoading(true);
@@ -156,8 +181,10 @@ function App() {
                 });
                 if (data.type === 'collection') {
                     loadCatalog(id);
-                } else if (data.type === 'work' && data.has_collated) {
-                    loadCollated(id);
+                }
+                if (data.type === 'work') {
+                    if (data.has_collated) loadCollated(id);
+                    if (data.has_catalog) loadWorkCatalog(id);
                 }
             }
         } catch (err) {
@@ -165,7 +192,7 @@ function App() {
         } finally {
             setDetailLoading(false);
         }
-    }, [transport, loadCatalog, loadCollated]);
+    }, [transport, loadCatalog, loadCollated, loadWorkCatalog]);
 
     const handleEntryClick = useCallback(async (entry: IndexEntry) => {
         setSelectedEntry(entry);
@@ -173,6 +200,7 @@ function App() {
         setDetailData(null);
         setCatalogList([]);
         setCollatedIndex(null);
+        setWorkCatalog(null);
         setActiveTabState('detail');
         setActiveJuanState(null);
         setDetailLoading(true);
@@ -182,8 +210,10 @@ function App() {
                 setDetailData(data as unknown as IndexDetailData);
                 if (data.type === 'collection') {
                     loadCatalog(entry.id);
-                } else if (data.type === 'work' && data.has_collated) {
-                    loadCollated(entry.id);
+                }
+                if (data.type === 'work') {
+                    if (data.has_collated) loadCollated(entry.id);
+                    if (data.has_catalog) loadWorkCatalog(entry.id);
                 }
             }
         } catch (err) {
@@ -219,11 +249,19 @@ function App() {
                 setDetailData(null);
                 setCatalogList([]);
                 setCollatedIndex(null);
+                const params = getParamsFromUrl();
+                setHomeTab(((params.tab === 'catalog' || params.tab === 'site') ? params.tab : 'recommend') as TabKey);
             }
         };
         window.addEventListener('popstate', onPopState);
         return () => window.removeEventListener('popstate', onPopState);
     }, [loadById]);
+
+    /** 首页 tab 切换 */
+    const handleHomeTabChange = useCallback((tab: TabKey) => {
+        setHomeTab(tab);
+        pushUrl(null, tab !== 'recommend' ? { tab } : undefined);
+    }, []);
 
     /** 返回首页 */
     const handleBack = useCallback(() => {
@@ -231,8 +269,16 @@ function App() {
         setDetailData(null);
         setCatalogList([]);
         setCollatedIndex(null);
+        setWorkCatalog(null);
         pushUrl(null);
     }, []);
+
+    // 更新浏览器标签页标题
+    useEffect(() => {
+        document.title = detailData?.title
+            ? `${detailData.title} - 古籍索引`
+            : '古籍索引';
+    }, [detailData?.title]);
 
     // 是否在详情页
     const showDetail = detailLoading || detailData;
@@ -279,9 +325,9 @@ function App() {
                         </div>
                     ) : detailData ? (
                         <>
-                            {/* Tab 栏：丛编目录 / 整理本 */}
+                            {/* Tab 栏：丛编目录 / 整理本 / 分类目录 */}
                             {((detailData.type === 'collection' && (catalogList.length > 0 || catalogLoading)) ||
-                              (detailData.type === 'work' && (collatedIndex || collatedLoading))) && (
+                              (detailData.type === 'work' && (collatedIndex || collatedLoading || workCatalog || workCatalogLoading))) && (
                                 <div style={{
                                     display: 'flex',
                                     gap: '0',
@@ -324,6 +370,17 @@ function App() {
                                             )}
                                         </button>
                                     )}
+                                    {detailData.type === 'work' && (workCatalog || workCatalogLoading) && (
+                                        <button
+                                            onClick={() => setActiveTab('work-catalog')}
+                                            style={tabBtnStyle(activeTab === 'work-catalog')}
+                                        >
+                                            分類目錄
+                                            {workCatalogLoading && (
+                                                <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
+                                            )}
+                                        </button>
+                                    )}
                                 </div>
                             )}
                             <div style={{ padding: '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>
@@ -347,6 +404,11 @@ function App() {
                                         activeJuan={activeJuan}
                                         onJuanChange={setActiveJuan}
                                     />
+                                ) : activeTab === 'work-catalog' && workCatalog ? (
+                                    <WorkCatalog
+                                        data={workCatalog}
+                                        onNavigate={handleNavigate}
+                                    />
                                 ) : null}
                             </div>
                         </>
@@ -364,6 +426,8 @@ function App() {
                     <HomePage
                         transport={transport}
                         onNavigate={handleNavigate}
+                        activeTab={homeTab}
+                        onTabChange={handleHomeTabChange}
                     />
                 </div>
             )}

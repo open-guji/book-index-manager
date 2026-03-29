@@ -2,6 +2,7 @@ import type { IndexStorage } from './types';
 import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress, RecommendedData } from '../types';
 import { rankByRelevance, rankByRelevanceWithSimplified, NUM_SHARDS } from '../core/storage';
 import type { SearchSIndex } from '../core/storage';
+import { normalizeCatalog } from '../core/normalize-catalog';
 
 /**
  * 索引分片文件中的条目格式
@@ -433,12 +434,12 @@ export class GithubStorage implements IndexStorage {
         const catalogs: ResourceCatalog[] = [];
         for (const res of resources) {
             const mappingPath = `${resolved.dir}/${collectionId}/${res.id}/volume_book_mapping.json`;
-            const data = await this.fetchFile<VolumeBookMapping>(resolved.repo, mappingPath);
+            const data = await this.fetchFile<Record<string, unknown>>(resolved.repo, mappingPath);
             if (data) {
                 catalogs.push({
                     resource_id: res.id,
                     short_name: res.short_name,
-                    data,
+                    data: normalizeCatalog(data),
                 });
             }
         }

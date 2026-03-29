@@ -247,8 +247,9 @@ function IdLink({ id, label, onNavigate, renderLink }: {
     if (renderLink) return <>{renderLink(id, label)}</>;
     if (onNavigate) {
         return (
-            <span
-                onClick={() => onNavigate(id)}
+            <a
+                href={`/${id}`}
+                onClick={e => { e.preventDefault(); onNavigate(id); }}
                 style={{
                     color: 'var(--bim-link-fg, #0066cc)',
                     cursor: 'pointer',
@@ -260,7 +261,7 @@ function IdLink({ id, label, onNavigate, renderLink }: {
                 onMouseLeave={e => (e.currentTarget.style.borderBottomStyle = 'dashed')}
             >
                 {label || id}
-            </span>
+            </a>
         );
     }
     return <span>{label || id}</span>;

@@ -27,6 +27,16 @@ export const RESOURCE_METADATA_LABELS: Record<string, string> = {
     has_translation: '翻译',
 };
 
+/** 资源分册条目 */
+export interface ResourceVolume {
+    volume: number;
+    url?: string;
+    status?: 'found' | 'missing' | string;
+    label?: string;
+    /** 允许数据源携带额外 URL 字段（tw_url, wiki_url 等） */
+    [key: string]: unknown;
+}
+
 /** 统一资源条目 */
 export interface ResourceEntry {
     id: string;
@@ -40,6 +50,10 @@ export interface ResourceEntry {
     details?: string;
     /** 结构化元数据 */
     metadata?: Record<string, string>;
+    /** 分册信息（可选） */
+    volumes?: ResourceVolume[];
+    /** 预期册数 */
+    expected_volumes?: number;
 }
 
 /** 索引类型 */
@@ -296,34 +310,52 @@ export interface VolumeSection {
     volume_range: [number, number];
 }
 
-/** 丛编目录中的书目条目 */
+/** 册级详细信息（来源 URL、状态等） */
+export interface VolumeDetail {
+    volume: number;
+    status?: string;
+    urls?: Record<string, string>;
+    file?: string;
+}
+
+/** 丛编目录中的书目条目（统一格式，归一化后） */
 export interface VolumeBookEntry {
     title: string;
-    book_id: string | null;
-    work_id: string | null;
+    book_id?: string | null;
+    work_id?: string | null;
+    /** 册号列表，始终为 number[]（归一化后） */
     volumes: number[];
-    section: string;
+    /** 册级详细信息（可选） */
+    volume_details?: VolumeDetail[];
+    section?: string;
     sub_items?: string[];
+    edition?: string;
+    expected_volumes?: number;
+    found_volumes?: number;
+    missing_volumes?: number[];
 }
 
-/** 丛编目录统计 */
+/** 丛编目录统计（统一格式，字段均可选） */
 export interface VolumeBookStats {
-    processed_volumes: number;
     total_books: number;
-    matched_works: number;
-    unmatched_works: number;
+    processed_volumes?: number;
+    matched_works?: number;
+    unmatched_works?: number;
+    total_found_volumes?: number;
 }
 
-/** 丛编目录数据 (volume_book_mapping.json) */
+/** 丛编目录数据 (volume_book_mapping.json)，归一化后的统一格式 */
 export interface VolumeBookMapping {
     collection_id: string;
     title: string;
     source?: string;
+    resource_id?: string;
+    resource_name?: string;
     total_volumes: number;
-    sections: VolumeSection[];
+    sections?: VolumeSection[];
     stats: VolumeBookStats;
     books: VolumeBookEntry[];
-    volume_index: Record<string, string[]>;
+    volume_index?: Record<string, string[]>;
 }
 
 /** 带资源信息的丛编目录 */
@@ -404,9 +436,15 @@ export type ResourceImportType = 'catalog' | 'collection';
 export interface ResourceProgressItem {
     id: string;
     name: string;
+    /** 版本（如"文淵閣本"、"百衲本"） */
+    edition?: string;
     type: ResourceImportType;
     description?: string;
     url?: string;
+    /** 关联的叢編 ID */
+    collection_id?: string;
+    /** 关联的作品 ID */
+    work_id?: string;
     total: number;
     imported: number;
     status: ResourceImportStatus;

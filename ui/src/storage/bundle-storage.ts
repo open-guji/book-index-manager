@@ -14,6 +14,7 @@ import type {
 } from '../types';
 import { rankByRelevance, rankByRelevanceWithSimplified } from '../core/storage';
 import type { SearchSIndex } from '../core/storage';
+import { normalizeCatalog } from '../core/normalize-catalog';
 
 /**
  * index.json 中的条目格式（与 GithubStorage 相同）
@@ -325,12 +326,12 @@ export class BundleStorage implements IndexStorage {
             const prefix = collectionId.slice(0, 2);
             try {
                 const chunk = await this.loadChunk(prefix);
-                const data = chunk[mappingKey] as VolumeBookMapping;
+                const data = chunk[mappingKey];
                 if (data) {
                     catalogs.push({
                         resource_id: res.id,
                         short_name: res.short_name,
-                        data,
+                        data: normalizeCatalog(data),
                     });
                 }
             } catch {

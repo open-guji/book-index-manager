@@ -5,6 +5,7 @@
 
 import type { IndexStorage } from './types';
 import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress } from '../types';
+import { normalizeCatalog } from '../core/normalize-catalog';
 
 export class DevApiStorage implements IndexStorage {
     private baseUrl: string;
@@ -56,7 +57,8 @@ export class DevApiStorage implements IndexStorage {
         const res = await fetch(`${this.baseUrl}/api/catalog/${encodeURIComponent(collectionId)}`);
         if (res.status === 404) return null;
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
+        const catalogs: ResourceCatalog[] = await res.json();
+        return catalogs.map(c => ({ ...c, data: normalizeCatalog(c.data) }));
     }
 
     async getCollectionCatalog(collectionId: string): Promise<VolumeBookMapping | null> {
@@ -92,6 +94,20 @@ export class DevApiStorage implements IndexStorage {
 
     async getResourceProgress(): Promise<ResourceProgress | null> {
         const res = await fetch(`${this.baseUrl}/api/resource-progress`);
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    }
+
+    async getWorkCatalog(workId: string): Promise<Array<{ source: string; data: unknown }> | null> {
+        const res = await fetch(`${this.baseUrl}/api/work-catalog/${encodeURIComponent(workId)}`);
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    }
+
+    async getSiteProgress(): Promise<ResourceProgress | null> {
+        const res = await fetch(`${this.baseUrl}/api/resource-site-progress`);
         if (res.status === 404) return null;
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();

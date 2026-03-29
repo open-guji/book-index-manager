@@ -435,7 +435,10 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                 background: 'var(--bim-input-bg, #fff)',
             }}
         >
-            <span style={{ fontSize: '16px', marginTop: '2px' }}>{getConfig(entry.type).icon}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', marginTop: '2px' }}>
+                <span style={{ fontSize: '16px' }}>{getConfig(entry.type).icon}</span>
+                <span style={{ fontSize: '9px', color: 'var(--bim-desc-fg, #999)', lineHeight: 1 }}>{getConfig(entry.type).name}</span>
+            </div>
             <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>

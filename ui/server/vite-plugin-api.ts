@@ -150,6 +150,155 @@ function findItemFile(workspaceRoot: string, id: string): string | null {
     return null;
 }
 
+// ── Catalog volume 缓存 ──
+
+interface CatalogVolumeInfo {
+    resource_name: string;
+    resource_id: string;
+    expected_volumes?: number;
+    missing_vols?: number[];
+    volumes: Array<{ volume: number; status?: string; url?: string; label?: string }>;
+}
+
+/** book_id → CatalogVolumeInfo[] 缓存（懒加载） */
+let catalogVolumeCache: Map<string, CatalogVolumeInfo[]> | null = null;
+
+function buildCatalogVolumeCache(workspaceRoot: string): Map<string, CatalogVolumeInfo[]> {
+    const cache = new Map<string, CatalogVolumeInfo[]>();
+
+    for (const folder of ['book-index', 'book-index-draft']) {
+        const collectionBase = path.join(workspaceRoot, folder, 'Collection');
+        if (!fs.existsSync(collectionBase)) continue;
+        walkCatalogs(collectionBase, (catalogData, resourceId) => {
+            const books = catalogData.books as Array<Record<string, unknown>> | undefined;
+            if (!books) return;
+            const resName = (catalogData.resource_name || '') as string;
+
+            for (const book of books) {
+                const bookId = book.book_id as string;
+                if (!bookId) continue;
+                const rawVolumes = book.volumes as unknown[];
+                if (!rawVolumes || rawVolumes.length === 0) continue;
+                // 只处理对象数组格式（有 URL 的）
+                if (typeof rawVolumes[0] !== 'object') continue;
+
+                const volumes: CatalogVolumeInfo['volumes'] = [];
+                for (const v of rawVolumes as Array<Record<string, unknown>>) {
+                    // 根据 resource_id 选择最匹配的 URL
+                    let url: string | undefined;
+                    if (resourceId === 'ntul' && v.tw_url) {
+                        url = v.tw_url as string;
+                    } else {
+                        url = (v.url || v.wiki_url || v.tw_url) as string | undefined;
+                    }
+                    volumes.push({
+                        volume: v.volume as number,
+                        status: (v.status as string) || 'found',
+                        url,
+                        label: v.file as string | undefined,
+                    });
+                }
+
+                const info: CatalogVolumeInfo = {
+                    resource_name: resName,
+                    resource_id: resourceId,
+                    expected_volumes: book.expected_volumes as number | undefined,
+                    missing_vols: book.missing_vols as number[] | undefined,
+                    volumes,
+                };
+
+                if (!cache.has(bookId)) cache.set(bookId, []);
+                cache.get(bookId)!.push(info);
+            }
+        });
+    }
+
+    return cache;
+}
+
+function walkCatalogs(
+    base: string,
+    callback: (data: Record<string, unknown>, resourceId: string) => void,
+): void {
+    for (const c1 of safeReaddir(base)) {
+        const c1p = path.join(base, c1);
+        if (!safeStat(c1p)?.isDirectory()) continue;
+        for (const c2 of safeReaddir(c1p)) {
+            const c2p = path.join(c1p, c2);
+            if (!safeStat(c2p)?.isDirectory()) continue;
+            for (const c3 of safeReaddir(c2p)) {
+                const c3p = path.join(c2p, c3);
+                if (!safeStat(c3p)?.isDirectory()) continue;
+                for (const idDir of safeReaddir(c3p)) {
+                    const idp = path.join(c3p, idDir);
+                    if (!safeStat(idp)?.isDirectory()) continue;
+                    for (const resDir of safeReaddir(idp)) {
+                        const f = path.join(idp, resDir, 'volume_book_mapping.json');
+                        if (fs.existsSync(f)) {
+                            try { callback(JSON.parse(fs.readFileSync(f, 'utf-8')), resDir); }
+                            catch { /* ignore */ }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+function safeReaddir(dir: string): string[] {
+    try { return fs.readdirSync(dir); } catch { return []; }
+}
+
+function safeStat(p: string) {
+    try { return fs.statSync(p); } catch { return null; }
+}
+
+/**
+ * 从缓存中查找 catalog volume 信息并注入到 Book 资源中。
+ */
+function enrichResourcesFromCatalog(
+    workspaceRoot: string,
+    bookId: string,
+    data: Record<string, unknown>,
+): void {
+    const resources = data.resources as Array<Record<string, unknown>> | undefined;
+    if (!resources || resources.length === 0) return;
+
+    if (!catalogVolumeCache) {
+        catalogVolumeCache = buildCatalogVolumeCache(workspaceRoot);
+    }
+
+    const infos = catalogVolumeCache.get(bookId);
+    if (!infos) return;
+
+    for (const info of infos) {
+        // 匹配资源：按 resource_name 或 id
+        let target = resources.find(r =>
+            r.short_name === info.resource_name || r.name === info.resource_name
+        );
+        if (!target && info.resource_name) {
+            target = resources.find(r =>
+                typeof r.name === 'string' && r.name.includes(info.resource_name.slice(0, 4))
+            );
+        }
+        if (!target) continue;
+
+        // 构建完整的 volumes 列表（包含缺失册）
+        const allVolumes = [...info.volumes];
+        if (info.missing_vols) {
+            for (const mv of info.missing_vols) {
+                if (!allVolumes.find(v => v.volume === mv)) {
+                    allVolumes.push({ volume: mv, status: 'missing' });
+                }
+            }
+            allVolumes.sort((a, b) => a.volume - b.volume);
+        }
+
+        target.volumes = allVolumes;
+        target.expected_volumes = info.expected_volumes || allVolumes.length;
+    }
+}
+
 export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
     return {
         name: 'book-index-api',
@@ -270,6 +419,27 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                                 data.has_collated = true;
                             }
                         }
+                        // 附加 has_catalog：检测子目录下的 *_catalog.json
+                        {
+                            const itemDir = path.join(path.dirname(filePath), id);
+                            if (fs.existsSync(itemDir)) {
+                                try {
+                                    for (const sub of fs.readdirSync(itemDir)) {
+                                        const subDir = path.join(itemDir, sub);
+                                        if (!fs.statSync(subDir).isDirectory()) continue;
+                                        const catalogFiles = fs.readdirSync(subDir).filter((f: string) => f.endsWith('_catalog.json'));
+                                        if (catalogFiles.length > 0) {
+                                            data.has_catalog = true;
+                                            break;
+                                        }
+                                    }
+                                } catch { /* ignore */ }
+                            }
+                        }
+                        // Book 类型：从 catalog 注入分册信息
+                        if (data.type === 'Book') {
+                            enrichResourcesFromCatalog(workspaceRoot, id, data);
+                        }
                         sendJson(data);
                     } catch {
                         sendJson({ error: 'Read error' }, 500);
@@ -359,6 +529,38 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     return;
                 }
 
+                // GET /api/work-catalog/:id — Work 下的分类目录 (*_catalog.json)
+                if (pathname.startsWith('/api/work-catalog/') && req.method === 'GET') {
+                    const id = decodeURIComponent(pathname.slice('/api/work-catalog/'.length));
+                    const itemFile = findItemFile(workspaceRoot, id);
+                    if (!itemFile) {
+                        sendJson({ error: 'Not found' }, 404);
+                        return;
+                    }
+                    const itemDir = path.join(path.dirname(itemFile), id);
+                    const results: Array<{ source: string; data: unknown }> = [];
+                    if (fs.existsSync(itemDir)) {
+                        try {
+                            for (const sub of fs.readdirSync(itemDir)) {
+                                const subDir = path.join(itemDir, sub);
+                                if (!fs.statSync(subDir).isDirectory()) continue;
+                                for (const file of fs.readdirSync(subDir)) {
+                                    if (file.endsWith('_catalog.json')) {
+                                        const content = fs.readFileSync(path.join(subDir, file), 'utf-8');
+                                        results.push({ source: sub, data: JSON.parse(content) });
+                                    }
+                                }
+                            }
+                        } catch { /* ignore */ }
+                    }
+                    if (results.length === 0) {
+                        sendJson({ error: 'No catalog data' }, 404);
+                        return;
+                    }
+                    sendJson(results);
+                    return;
+                }
+
                 // GET /api/catalog/:id — 丛编目录 (volume_book_mapping.json)
                 // 扫描 {dir}/{id}/{resourceId}/volume_book_mapping.json
                 if (pathname.startsWith('/api/catalog/') && req.method === 'GET') {
@@ -415,7 +617,7 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     return;
                 }
 
-                // GET /api/resource-progress — 资源整理进度
+                // GET /api/resource-progress — 叢書目錄整理進度
                 if (pathname === '/api/resource-progress' && req.method === 'GET') {
                     const resourceFile = path.join(workspaceRoot, 'book-index-draft', 'resource.json');
                     if (!fs.existsSync(resourceFile)) {
@@ -427,6 +629,22 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                         sendJson(JSON.parse(content));
                     } catch {
                         sendJson({ error: 'Failed to read resource.json' }, 500);
+                    }
+                    return;
+                }
+
+                // GET /api/resource-site-progress — 在線資源網站整理進度
+                if (pathname === '/api/resource-site-progress' && req.method === 'GET') {
+                    const resourceFile = path.join(workspaceRoot, 'book-index-draft', 'resource-site.json');
+                    if (!fs.existsSync(resourceFile)) {
+                        sendJson({ error: 'Not found' }, 404);
+                        return;
+                    }
+                    try {
+                        const content = fs.readFileSync(resourceFile, 'utf-8');
+                        sendJson(JSON.parse(content));
+                    } catch {
+                        sendJson({ error: 'Failed to read resource-site.json' }, 500);
                     }
                     return;
                 }

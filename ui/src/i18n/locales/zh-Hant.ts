@@ -136,7 +136,8 @@ export const zhHant: LocaleMessages = {
         title: '古籍索引',
         subtitle: '從左側搜索框輸入關鍵詞，查找作品、書籍或叢編',
         recommendedBrowse: '推薦瀏覽',
-        progressTab: '整理進度',
+        catalogTab: '叢書目錄',
+        siteTab: '在線資源',
         recommendTab: '推薦',
         statusInProgress: '進行中',
         statusDone: '已完成',
@@ -145,6 +146,7 @@ export const zhHant: LocaleMessages = {
         typeCollection: '資源集合',
         totalPending: '待統計',
         progressFormat: '{imported} / {total}',
+        siteCoverage: '資源覆蓋',
     },
     browser: {
         title: '索引瀏覽器',

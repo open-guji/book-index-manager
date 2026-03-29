@@ -136,7 +136,8 @@ export const zhHans: LocaleMessages = {
         title: '古籍索引',
         subtitle: '从左侧搜索框输入关键词，查找作品、书籍或丛编',
         recommendedBrowse: '推荐浏览',
-        progressTab: '整理进度',
+        catalogTab: '丛书目录',
+        siteTab: '在线资源',
         recommendTab: '推荐',
         statusInProgress: '进行中',
         statusDone: '已完成',
@@ -145,6 +146,7 @@ export const zhHans: LocaleMessages = {
         typeCollection: '资源集合',
         totalPending: '待统计',
         progressFormat: '{imported} / {total}',
+        siteCoverage: '资源覆盖',
     },
     browser: {
         title: '索引浏览器',

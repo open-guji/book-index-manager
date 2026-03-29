@@ -3,6 +3,7 @@ export type {
     ResourceType,
     CoverageInfo,
     ResourceEntry,
+    ResourceVolume,
     IndexType,
     IndexStatus,
     IndexEntry,
@@ -33,6 +34,7 @@ export type {
     IndexedByEntry,
     VolumeBookMapping,
     VolumeBookEntry,
+    VolumeDetail,
     VolumeSection,
     VolumeBookStats,
     CollatedSection,
@@ -78,6 +80,7 @@ export { IdGenerator } from './core/id-generator';
 export { extractIdFromUrl, validateResource } from './core/schema';
 export { BidLink } from './core/bid-link';
 export { BookIndexError, StorageError, IdGenerationError, ConfigError, MigrationError } from './core/exceptions';
+export { normalizeCatalog } from './core/normalize-catalog';
 
 // Components - Existing
 export { ResourceEditor } from './components/ResourceEditor';
@@ -95,6 +98,8 @@ export { ModeIndicator } from './components/ModeIndicator';
 export { CollectionCatalog } from './components/CollectionCatalog';
 export type { CollectionCatalogProps } from './components/CollectionCatalog';
 export { CollatedEdition } from './components/CollatedEdition';
+export { WorkCatalog } from './components/WorkCatalog';
+export type { WorkCatalogProps } from './components/WorkCatalog';
 export type { CollatedEditionProps } from './components/CollatedEdition';
 
 // Components - Editor
