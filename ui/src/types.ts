@@ -420,3 +420,23 @@ export interface ResourceProgressItem {
 export interface ResourceProgress {
     resources: ResourceProgressItem[];
 }
+
+// ── 推荐数据 ──
+
+/** 推荐条目 */
+export interface RecommendedEntry {
+    id: string;
+    title: string;
+    description?: string;
+}
+
+/** 推荐分组 */
+export interface RecommendedGroup {
+    name: string;
+    items: RecommendedEntry[];
+}
+
+/** 推荐数据 */
+export interface RecommendedData {
+    groups: RecommendedGroup[];
+}

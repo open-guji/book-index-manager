@@ -7,6 +7,7 @@ import type {
     GroupedSearchResult,
     ResourceCatalog,
     ResourceProgress,
+    RecommendedData,
     VolumeBookMapping,
     CollatedEditionIndex,
     CollatedJuan,
@@ -383,6 +384,14 @@ export class BundleStorage implements IndexStorage {
     async getResourceProgress(): Promise<ResourceProgress | null> {
         try {
             return await this.fetchJson<ResourceProgress>(`${this.basePath}/resource.json`);
+        } catch {
+            return null;
+        }
+    }
+
+    async getRecommended(): Promise<RecommendedData | null> {
+        try {
+            return await this.fetchJson<RecommendedData>(`${this.basePath}/recommended.json`);
         } catch {
             return null;
         }

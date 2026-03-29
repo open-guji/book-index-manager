@@ -43,6 +43,9 @@ export type {
     ResourceImportType,
     ResourceProgressItem,
     ResourceProgress,
+    RecommendedEntry,
+    RecommendedGroup,
+    RecommendedData,
 } from './types';
 
 // ID encoding/decoding

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { IndexEntry, IndexType, ResourceProgress, ResourceProgressItem, ResourceImportStatus } from '../types';
+import type { IndexEntry, IndexType, ResourceProgress, ResourceProgressItem, ResourceImportStatus, RecommendedData } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { useT } from '../i18n';
 import { formatTemplate } from '../i18n';
@@ -64,45 +64,62 @@ export const HomePage: React.FC<HomePageProps> = ({
         return () => { cancelled = true; };
     }, [transport]);
 
-    // 加载推荐条目
+    // 加载推荐条目：优先从 transport 加载 recommended.json，其次用 props，最后用默认值
     useEffect(() => {
-        const ids = recommendedIds ?? DEFAULT_RECOMMENDED;
-        const validIds = ids.filter(r => r.id);
-        if (validIds.length === 0) return;
-
         let cancelled = false;
-        Promise.all(
-            validIds.map(async r => {
+
+        const resolveIds = async (): Promise<RecommendedItem[]> => {
+            if (recommendedIds) return recommendedIds;
+            if (transport.getRecommended) {
                 try {
-                    let entry: IndexEntry | null = null;
-                    if (transport.getEntry) {
-                        entry = await transport.getEntry(r.id);
-                    } else {
-                        const raw = await transport.getItem(r.id);
-                        if (raw) {
-                            entry = {
-                                id: r.id,
-                                title: (raw.title as string) || r.id,
-                                type: (raw.type as IndexType) || 'work',
-                            } as IndexEntry;
-                        }
+                    const data = await transport.getRecommended();
+                    if (data?.groups) {
+                        return data.groups.flatMap(g =>
+                            g.items.map(item => ({ ...item, group: g.name }))
+                        );
                     }
-                    if (entry) {
-                        return { ...entry, group: r.group, fallbackDescription: r.description };
-                    }
-                } catch { /* ignore */ }
-                // fallback：即使 transport 无法获取，也显示静态信息
-                return {
-                    id: r.id,
-                    title: r.title,
-                    type: r.id.startsWith('FC') ? 'collection' as IndexType : 'work' as IndexType,
-                    group: r.group,
-                    fallbackDescription: r.description,
-                };
-            })
-        ).then(results => {
+                } catch { /* fallback */ }
+            }
+            return DEFAULT_RECOMMENDED;
+        };
+
+        resolveIds().then(async ids => {
             if (cancelled) return;
-            setRecommended(results.filter((e): e is NonNullable<typeof e> => e !== null));
+            const validIds = ids.filter(r => r.id);
+            if (validIds.length === 0) return;
+
+            const results = await Promise.all(
+                validIds.map(async r => {
+                    try {
+                        let entry: IndexEntry | null = null;
+                        if (transport.getEntry) {
+                            entry = await transport.getEntry(r.id);
+                        } else {
+                            const raw = await transport.getItem(r.id);
+                            if (raw) {
+                                entry = {
+                                    id: r.id,
+                                    title: (raw.title as string) || r.id,
+                                    type: (raw.type as IndexType) || 'work',
+                                } as IndexEntry;
+                            }
+                        }
+                        if (entry) {
+                            return { ...entry, group: r.group, fallbackDescription: r.description };
+                        }
+                    } catch { /* ignore */ }
+                    return {
+                        id: r.id,
+                        title: r.title,
+                        type: r.id.startsWith('FC') ? 'collection' as IndexType : 'work' as IndexType,
+                        group: r.group,
+                        fallbackDescription: r.description,
+                    };
+                })
+            );
+            if (!cancelled) {
+                setRecommended(results.filter((e): e is NonNullable<typeof e> => e !== null));
+            }
         });
         return () => { cancelled = true; };
     }, [transport, recommendedIds]);

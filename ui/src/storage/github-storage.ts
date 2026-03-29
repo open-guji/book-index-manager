@@ -1,5 +1,5 @@
 import type { IndexStorage } from './types';
-import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress, RecommendedData } from '../types';
 import { rankByRelevance, rankByRelevanceWithSimplified, NUM_SHARDS } from '../core/storage';
 import type { SearchSIndex } from '../core/storage';
 
@@ -472,6 +472,10 @@ export class GithubStorage implements IndexStorage {
 
     async getResourceProgress(): Promise<ResourceProgress | null> {
         return this.fetchFile<ResourceProgress>(this.config.repos.draft, 'resource.json');
+    }
+
+    async getRecommended(): Promise<RecommendedData | null> {
+        return this.fetchFile<RecommendedData>(this.config.repos.draft, 'recommended.json');
     }
 
     /** 清除缓存（用于切换数据源后刷新） */

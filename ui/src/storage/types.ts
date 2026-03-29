@@ -1,4 +1,4 @@
-import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress, RecommendedData } from '../types';
 
 /**
  * 索引数据存储接口
@@ -88,4 +88,7 @@ export interface IndexStorage {
 
     /** 获取资源导入进度数据 */
     getResourceProgress?(): Promise<ResourceProgress | null>;
+
+    /** 获取推荐古籍数据 */
+    getRecommended?(): Promise<RecommendedData | null>;
 }
