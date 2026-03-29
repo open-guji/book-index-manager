@@ -498,8 +498,8 @@ const SiteProgressContent: React.FC<{
     }
 
     const sorted = [...progress.resources].sort((a, b) => a.priority - b.priority);
-    const active = sorted.filter(r => r.status !== 'todo');
-    const todo = sorted.filter(r => r.status === 'todo');
+    const active = sorted.filter(r => r.imported > 0);
+    const todo = sorted.filter(r => r.imported === 0);
 
     // 总覆盖统计：所有站点的 imported 去重后的覆盖数（简化用最大值近似）
     const totalCovered = active.reduce((max, r) => Math.max(max, r.imported), 0);
