@@ -54,6 +54,10 @@ export interface ResourceEntry {
     volumes?: ResourceVolume[];
     /** 预期册数 */
     expected_volumes?: number;
+    /** 色彩模式：黑白 / 彩色 */
+    color_mode?: 'bw' | 'color';
+    /** 来源标注（如"來源：臺灣華文電子書庫"） */
+    source_label?: string;
 }
 
 /** 索引类型 */

@@ -4,7 +4,6 @@ import { IndexBrowser } from '../components/IndexBrowser';
 import { IndexDetail } from '../components/IndexDetail';
 import { CollectionCatalog } from '../components/CollectionCatalog';
 import { CollatedEdition } from '../components/CollatedEdition';
-import { WorkCatalog } from '../components/WorkCatalog';
 import { HomePage } from '../components/HomePage';
 import type { TabKey } from '../components/HomePage';
 import { LocaleToggle } from '../components/LocaleToggle';
@@ -81,9 +80,6 @@ function App() {
     const [catalogLoading, setCatalogLoading] = useState(false);
     const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
     const [collatedLoading, setCollatedLoading] = useState(false);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [workCatalog, setWorkCatalog] = useState<any>(null);
-    const [workCatalogLoading, setWorkCatalogLoading] = useState(false);
     const [homeTab, setHomeTab] = useState<TabKey>(() => {
         const id = getIdFromUrl();
         if (id) return 'recommend';
@@ -123,19 +119,6 @@ function App() {
         }
     }, [transport]);
 
-    const loadWorkCatalog = useCallback(async (id: string) => {
-        if (!transport.getWorkCatalog) return;
-        setWorkCatalogLoading(true);
-        try {
-            const results = await transport.getWorkCatalog(id);
-            setWorkCatalog(results?.[0]?.data ?? null);
-        } catch {
-            setWorkCatalog(null);
-        } finally {
-            setWorkCatalogLoading(false);
-        }
-    }, [transport]);
-
     const loadCatalog = useCallback(async (id: string) => {
         if (!transport.getCollectionCatalogs && !transport.getCollectionCatalog) {
             setCatalogList([]);
@@ -166,7 +149,6 @@ function App() {
         setDetailData(null);
         setCatalogList([]);
         setCollatedIndex(null);
-        setWorkCatalog(null);
         setActiveTabState(restoreParams?.tab || 'detail');
         setActiveJuanState(restoreParams?.juan || null);
         setDetailLoading(true);
@@ -182,9 +164,8 @@ function App() {
                 if (data.type === 'collection') {
                     loadCatalog(id);
                 }
-                if (data.type === 'work') {
-                    if (data.has_collated) loadCollated(id);
-                    if (data.has_catalog) loadWorkCatalog(id);
+                if (data.type === 'work' && data.has_collated) {
+                    loadCollated(id);
                 }
             }
         } catch (err) {
@@ -192,7 +173,7 @@ function App() {
         } finally {
             setDetailLoading(false);
         }
-    }, [transport, loadCatalog, loadCollated, loadWorkCatalog]);
+    }, [transport, loadCatalog, loadCollated]);
 
     const handleEntryClick = useCallback(async (entry: IndexEntry) => {
         setSelectedEntry(entry);
@@ -200,7 +181,6 @@ function App() {
         setDetailData(null);
         setCatalogList([]);
         setCollatedIndex(null);
-        setWorkCatalog(null);
         setActiveTabState('detail');
         setActiveJuanState(null);
         setDetailLoading(true);
@@ -211,9 +191,8 @@ function App() {
                 if (data.type === 'collection') {
                     loadCatalog(entry.id);
                 }
-                if (data.type === 'work') {
-                    if (data.has_collated) loadCollated(entry.id);
-                    if (data.has_catalog) loadWorkCatalog(entry.id);
+                if (data.type === 'work' && data.has_collated) {
+                    loadCollated(entry.id);
                 }
             }
         } catch (err) {
@@ -269,7 +248,6 @@ function App() {
         setDetailData(null);
         setCatalogList([]);
         setCollatedIndex(null);
-        setWorkCatalog(null);
         pushUrl(null);
     }, []);
 
@@ -327,7 +305,7 @@ function App() {
                         <>
                             {/* Tab 栏：丛编目录 / 整理本 / 分类目录 */}
                             {((detailData.type === 'collection' && (catalogList.length > 0 || catalogLoading)) ||
-                              (detailData.type === 'work' && (collatedIndex || collatedLoading || workCatalog || workCatalogLoading))) && (
+                              (detailData.type === 'work' && (collatedIndex || collatedLoading))) && (
                                 <div style={{
                                     display: 'flex',
                                     gap: '0',
@@ -370,17 +348,6 @@ function App() {
                                             )}
                                         </button>
                                     )}
-                                    {detailData.type === 'work' && (workCatalog || workCatalogLoading) && (
-                                        <button
-                                            onClick={() => setActiveTab('work-catalog')}
-                                            style={tabBtnStyle(activeTab === 'work-catalog')}
-                                        >
-                                            分類目錄
-                                            {workCatalogLoading && (
-                                                <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
-                                            )}
-                                        </button>
-                                    )}
                                 </div>
                             )}
                             <div style={{ padding: '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>
@@ -403,11 +370,6 @@ function App() {
                                         onNavigate={handleNavigate}
                                         activeJuan={activeJuan}
                                         onJuanChange={setActiveJuan}
-                                    />
-                                ) : activeTab === 'work-catalog' && workCatalog ? (
-                                    <WorkCatalog
-                                        data={workCatalog}
-                                        onNavigate={handleNavigate}
                                     />
                                 ) : null}
                             </div>

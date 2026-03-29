@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import type { CollatedEditionIndex, CollatedJuan, CollatedSection, JuanGroup } from '../types';
 import type { IndexStorage } from '../storage/types';
+import { useConvert } from '../i18n';
 
 export interface CollatedEditionProps {
     /** 直接传入卷列表索引 */
@@ -260,6 +261,7 @@ function SectionTypeBadge({ type }: { type: string }) {
 }
 
 function BookSection({ section, onNavigate }: { section: CollatedSection; onNavigate?: (id: string) => void }) {
+    const { convert } = useConvert();
     const [expanded, setExpanded] = useState(false);
     const hasSummary = !!section.summary;
     const hasComment = !!section.comment;
@@ -301,7 +303,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                     color: 'var(--bim-fg, #1a1a1a)',
                     flex: 1,
                 }}>
-                    {section.book_title ? `《${section.book_title}》` : section.title}
+                    {section.book_title ? `《${convert(section.book_title)}》` : convert(section.title)}
                     {section.n_juan != null && (
                         <span style={{
                             fontSize: '12px',
@@ -318,7 +320,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                         fontSize: '11px',
                         color: 'var(--bim-desc-fg, #aaa)',
                     }}>
-                        {section.edition}
+                        {convert(section.edition)}
                     </span>
                 )}
                 {section.tag && (
@@ -359,7 +361,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                             color: 'var(--bim-desc-fg, #717171)',
                             marginBottom: '8px',
                         }}>
-                            {section.author_info}
+                            {convert(section.author_info)}
                         </div>
                     )}
                     {section.summary && (
@@ -383,7 +385,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                                 lineHeight: 1.9,
                                 margin: 0,
                                 textAlign: 'justify',
-                            }}>{section.summary}</p>
+                            }}>{convert(section.summary)}</p>
                         </div>
                     )}
                     {section.comment && (
@@ -406,7 +408,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                                 lineHeight: 1.8,
                                 margin: 0,
                                 fontStyle: 'italic',
-                            }}>{section.comment}</p>
+                            }}>{convert(section.comment)}</p>
                         </div>
                     )}
                     {section.additional_comment && (
@@ -428,7 +430,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                                 lineHeight: 1.8,
                                 margin: 0,
                                 fontStyle: 'italic',
-                            }}>{section.additional_comment}</p>
+                            }}>{convert(section.additional_comment)}</p>
                         </div>
                     )}
                 </div>
@@ -438,6 +440,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
 }
 
 function CategoryHeader({ section }: { section: CollatedSection }) {
+    const { convert } = useConvert();
     const [expanded, setExpanded] = useState(false);
     const hasContent = !!section.content;
 
@@ -459,7 +462,7 @@ function CategoryHeader({ section }: { section: CollatedSection }) {
                     fontWeight: 600,
                     color: 'var(--bim-fg, #1a1a1a)',
                 }}>
-                    {section.title}
+                    {convert(section.title)}
                 </span>
                 {hasContent && (
                     <span style={{
@@ -486,7 +489,7 @@ function CategoryHeader({ section }: { section: CollatedSection }) {
                         margin: 0,
                         textAlign: 'justify',
                         whiteSpace: 'pre-line',
-                    }}>{section.content}</p>
+                    }}>{convert(section.content!)}</p>
                 </div>
             )}
         </div>
@@ -494,8 +497,9 @@ function CategoryHeader({ section }: { section: CollatedSection }) {
 }
 
 function OtherSection({ section }: { section: CollatedSection }) {
+    const { convert } = useConvert();
     if (!section.content && !section.title) return null;
-    const text = (section.content || section.title || '').replace(/\n{2,}/g, '\n');
+    const text = convert((section.content || section.title || '').replace(/\n{2,}/g, '\n'));
     return (
         <div style={{
             padding: '6px 0',
@@ -518,6 +522,7 @@ function JuanContent({
     searchQuery: string;
     onNavigate?: (id: string) => void;
 }) {
+    const { convert } = useConvert();
     const filteredSections = useMemo(() => {
         if (!searchQuery.trim()) return juan.sections;
         const q = searchQuery.trim().toLowerCase();
@@ -547,7 +552,7 @@ function JuanContent({
                     color: 'var(--bim-fg, #1a1a1a)',
                     margin: 0,
                 }}>
-                    {juan.title}
+                    {convert(juan.title)}
                 </h3>
                 {juan.source_url && (
                     <a

@@ -245,6 +245,7 @@ export const zhHans: LocaleMessages = {
         bu: '部',
         items: '条',
     },
+    colorMode: { bw: '黑白', color: '彩色' },
     misc: {
         noResources: '暂无资源信息',
         hasTranslation: '有',

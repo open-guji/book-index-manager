@@ -245,6 +245,7 @@ export const zhHant: LocaleMessages = {
         bu: '部',
         items: '條',
     },
+    colorMode: { bw: '黑白', color: '彩色' },
     misc: {
         noResources: '暫無資源信息',
         hasTranslation: '有',

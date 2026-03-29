@@ -229,6 +229,7 @@ export interface LocaleMessages {
         bu: string;
         items: string;
     };
+    colorMode: { bw: string; color: string };
     misc: {
         noResources: string;
         hasTranslation: string;

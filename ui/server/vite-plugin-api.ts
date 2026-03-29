@@ -413,27 +413,10 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                         const content = fs.readFileSync(filePath, 'utf-8');
                         const data = JSON.parse(content);
                         // 附加 has_collated：检测 collated_edition 子目录
-                        if (data.type === 'Work') {
+                        if (data.type === 'Work' || data.type === 'work') {
                             const collatedDir = path.join(path.dirname(filePath), id, 'collated_edition');
                             if (fs.existsSync(collatedDir)) {
                                 data.has_collated = true;
-                            }
-                        }
-                        // 附加 has_catalog：检测子目录下的 *_catalog.json
-                        {
-                            const itemDir = path.join(path.dirname(filePath), id);
-                            if (fs.existsSync(itemDir)) {
-                                try {
-                                    for (const sub of fs.readdirSync(itemDir)) {
-                                        const subDir = path.join(itemDir, sub);
-                                        if (!fs.statSync(subDir).isDirectory()) continue;
-                                        const catalogFiles = fs.readdirSync(subDir).filter((f: string) => f.endsWith('_catalog.json'));
-                                        if (catalogFiles.length > 0) {
-                                            data.has_catalog = true;
-                                            break;
-                                        }
-                                    }
-                                } catch { /* ignore */ }
                             }
                         }
                         // Book 类型：从 catalog 注入分册信息

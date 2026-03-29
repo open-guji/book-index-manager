@@ -9,6 +9,24 @@ export interface ResourceListProps {
     groupByType?: boolean;
 }
 
+/** 域名 → 显示名称映射 */
+const DOMAIN_NAME_MAP: Record<string, string> = {
+    'commons.wikimedia.org': '維基共享',
+    'zh.wikisource.org': '維基文庫',
+    'taiwanebook.ncl.edu.tw': '臺灣華文電子書庫',
+    'ctext.org': '中國哲學書電子化計劃',
+};
+
+/** 从 URL 提取域名并映射为显示名称 */
+function getDisplayNameFromUrl(url: string): string | undefined {
+    try {
+        const hostname = new URL(url).hostname;
+        return DOMAIN_NAME_MAP[hostname];
+    } catch {
+        return undefined;
+    }
+}
+
 const TYPE_COLORS: Record<ResourceType, string> = {
     text: '#2196f3',
     image: '#ff9800',
@@ -204,10 +222,21 @@ function extractVolumeUrl(v: ResourceVolume): string | undefined {
     return undefined;
 }
 
+const COLOR_MODE_STYLES: Record<string, { label: string; bg: string; fg: string }> = {
+    bw: { label: '', bg: '#f5f5f5', fg: '#757575' },
+    color: { label: '', bg: '#fff8e1', fg: '#f57f17' },
+};
+
 const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => {
     const t = useT();
     const { convert } = useConvert();
     const [expanded, setExpanded] = useState(false);
+
+    // 域名映射显示名称
+    const displayName = useMemo(() => {
+        const domainName = item.url ? getDisplayNameFromUrl(item.url) : undefined;
+        return domainName || convert(item.name);
+    }, [item.url, item.name, convert]);
 
     // 归一化 volumes：提取 URL，补充 missing 状态
     const volumes = useMemo(() => {
@@ -223,6 +252,12 @@ const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => {
     const missingCount = hasVolumes ? volumes.length - foundCount : 0;
     const expectedTotal = item.expected_volumes ?? (hasVolumes ? volumes.length : 0);
 
+    // color_mode badge 样式
+    const colorModeInfo = item.color_mode ? {
+        ...COLOR_MODE_STYLES[item.color_mode],
+        label: t.colorMode[item.color_mode],
+    } : null;
+
     return (
         <div style={{
             padding: '10px 14px',
@@ -232,7 +267,29 @@ const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => {
         }}>
             {/* 标题行 */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: (hasExtra(item) || hasVolumes) ? '6px' : '0' }}>
-                <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>{convert(item.name)}</span>
+                <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>{displayName}</span>
+                {colorModeInfo && (
+                    <span style={{
+                        display: 'inline-block',
+                        padding: '1px 6px',
+                        borderRadius: '3px',
+                        fontSize: '11px',
+                        fontWeight: 500,
+                        background: colorModeInfo.bg,
+                        color: colorModeInfo.fg,
+                    }}>
+                        {colorModeInfo.label}
+                    </span>
+                )}
+                {item.source_label && (
+                    <span style={{
+                        fontSize: '11px',
+                        color: 'var(--bim-desc-fg, #717171)',
+                        fontStyle: 'italic',
+                    }}>
+                        {item.source_label}
+                    </span>
+                )}
                 {item.metadata?.check_type && <CheckTypeBadge value={item.metadata.check_type as string} />}
 
                 {/* 分册摘要 */}
