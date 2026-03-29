@@ -148,22 +148,10 @@ export const HomePage: React.FC<HomePageProps> = ({
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
             height: '100%',
-            padding: '40px 20px',
+            padding: '20px',
             color: 'var(--bim-fg, #333)',
         }}>
-            {/* Title */}
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                <div style={{ fontSize: '48px', marginBottom: '12px' }}>📚</div>
-                <h1 style={{ margin: '0 0 8px', fontSize: '24px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>
-                    {t.home.title}
-                </h1>
-                <p style={{ margin: 0, fontSize: '14px', color: 'var(--bim-desc-fg, #717171)' }}>
-                    {t.home.subtitle}
-                </p>
-            </div>
-
             {/* Tabs */}
             <div style={{ width: '100%', maxWidth: '600px', marginBottom: '24px' }}>
                 <div style={{
