@@ -184,6 +184,7 @@ export interface PageCount {
 export interface BaseDetailData {
     id: string;
     title: string;
+    edition?: string;
     type: IndexType;
     description?: DescriptionInfo;
     authors?: AuthorInfo[];
@@ -208,7 +209,6 @@ export interface ContainedInEntry {
 /** Book 详情 */
 export interface BookDetailData extends BaseDetailData {
     type: 'book';
-    edition?: string;
     work_id?: string;
     contained_in?: ContainedInEntry[];
     location_history?: LocationInfo[];
@@ -262,6 +262,7 @@ export interface RelationData {
 export interface EntityOption {
     id: string;
     title: string;
+    edition?: string;
     type: IndexType | string;
     author?: string;
     dynasty?: string;

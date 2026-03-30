@@ -342,6 +342,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                             {item.entry && (
                                 <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)', flexShrink: 0 }}>
                                     {TYPE_LABEL[item.entry.type]}
+                                    {item.entry.edition && ` · ${item.entry.edition}`}
                                     {item.entry.author && ` · ${item.entry.author}`}
                                 </span>
                             )}

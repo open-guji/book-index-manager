@@ -269,9 +269,10 @@ function IdLink({ id, label, onNavigate, renderLink }: {
 
 // ── Header ──
 
-function DetailHeader({ id, title, type, isDraft, authors, volumeText, meta, headerExtra }: {
+function DetailHeader({ id, title, edition, type, isDraft, authors, volumeText, meta, headerExtra }: {
     id: string;
     title: string;
+    edition?: string;
     type: IndexType;
     isDraft: boolean;
     authors?: AuthorInfo[];
@@ -299,6 +300,16 @@ function DetailHeader({ id, title, type, isDraft, authors, volumeText, meta, hea
                     minWidth: 0,
                 }}>
                     {title}
+                    {edition && (
+                        <span style={{
+                            fontSize: '14px',
+                            fontWeight: 400,
+                            color: 'var(--bim-desc-fg, #717171)',
+                            marginLeft: '6px',
+                        }}>
+                            {edition}
+                        </span>
+                    )}
                     {volumeText && (
                         <span style={{
                             fontSize: '15px',
@@ -1142,6 +1153,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
             <DetailHeader
                 id={detail.id}
                 title={convert(detail.title)}
+                edition={detail.edition ? convert(detail.edition) : undefined}
                 type={detail.type}
                 isDraft={isDraft}
                 authors={detail.authors}

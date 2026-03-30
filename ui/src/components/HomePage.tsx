@@ -313,6 +313,11 @@ const RecommendContent: React.FC<{
                                     <div style={{ minWidth: 0 }}>
                                         <div style={{ fontSize: '14px', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                             {entry.title}
+                                            {entry.edition && (
+                                                <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--bim-desc-fg, #717171)', marginLeft: '4px' }}>
+                                                    {entry.edition}
+                                                </span>
+                                            )}
                                         </div>
                                         {desc && (
                                             <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

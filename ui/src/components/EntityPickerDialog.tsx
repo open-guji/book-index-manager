@@ -151,7 +151,10 @@ const EntityItem: React.FC<{ entity: EntityOption; onClick: () => void }> = ({ e
             }}>
             <span style={{ fontSize: '18px' }}>{getTypeIcon(entity.type)}</span>
             <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 500, fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{entity.title}</div>
+                <div style={{ fontWeight: 500, fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {entity.title}
+                    {entity.edition && <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--bim-desc-fg, #717171)', marginLeft: '4px' }}>{entity.edition}</span>}
+                </div>
                 <div style={{ fontSize: '11px', opacity: 0.7, display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
                     <code style={{ fontSize: '10px', background: 'var(--bim-primary-soft, rgba(0,120,212,0.15))', padding: '1px 4px', borderRadius: '2px' }}>{entity.id}</code>
                     {entity.author && <span>{entity.author}</span>}

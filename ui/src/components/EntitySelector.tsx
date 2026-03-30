@@ -63,7 +63,10 @@ export const EntitySelector: React.FC<EntitySelectorProps> = ({
                                 <div key={entity.id} onClick={() => onSelect(entity)} style={itemStyle}>
                                     <span style={{ fontSize: '16px' }}>{typeIcon}</span>
                                     <div style={{ flex: 1 }}>
-                                        <div style={{ fontWeight: 500 }}>{entity.title}</div>
+                                        <div style={{ fontWeight: 500 }}>
+                                            {entity.title}
+                                            {entity.edition && <span style={{ fontSize: '11px', fontWeight: 400, opacity: 0.6, marginLeft: '4px' }}>{entity.edition}</span>}
+                                        </div>
                                         <div style={{ fontSize: '11px', opacity: 0.7 }}>
                                             {entity.id}{entity.author && ` · ${entity.author}`}{entity.dynasty && ` · ${entity.dynasty}`}
                                         </div>

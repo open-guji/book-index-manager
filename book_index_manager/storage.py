@@ -120,9 +120,37 @@ class BookIndexStorage:
             self.update_index_entry(root, metadata, type_val, rel_path)
 
             logger.info(f"Saved {type_val.name}: {name} -> {file_path}")
+
+            # Bidirectional link: Book.work_id → Work.books
+            if type_val == BookIndexType.Book:
+                self._sync_work_books_link(id_str, metadata)
+
             return file_path
         except Exception as e:
             raise StorageError(f"Failed to save item {name}: {e}")
+
+    def _sync_work_books_link(self, book_id: str, book_metadata: dict):
+        """When saving a Book with work_id, ensure the Work's books array includes this Book."""
+        work_id = book_metadata.get("work_id")
+        if not work_id:
+            return
+        try:
+            work_id_val = base58_decode(work_id)
+            work_path = self.find_file_by_id(work_id)
+            if not work_path:
+                logger.warning(f"Work {work_id} not found for bidirectional link from Book {book_id}")
+                return
+            with open(work_path, "r", encoding="utf-8") as f:
+                work_data = json.load(f)
+            books = work_data.get("books", [])
+            if book_id not in books:
+                books.append(book_id)
+                work_data["books"] = books
+                with open(work_path, "w", encoding="utf-8") as f:
+                    json.dump(work_data, f, indent=2, ensure_ascii=False)
+                logger.info(f"Added Book {book_id} to Work {work_id}.books")
+        except Exception as e:
+            logger.warning(f"Failed to sync Work.books link for Book {book_id} -> Work {work_id}: {e}")
 
     def _migrate_keys(self, metadata: dict):
         """Migrate old Chinese keys and old resource format to new schema."""
