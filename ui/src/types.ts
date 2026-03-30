@@ -218,6 +218,7 @@ export interface BookDetailData extends BaseDetailData {
 /** Collection 详情 */
 export interface CollectionDetailData extends BaseDetailData {
     type: 'collection';
+    work_id?: string;
     contained_in?: string[];
     history?: string[];
     books?: string[];

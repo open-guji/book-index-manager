@@ -1025,19 +1025,22 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
 
         let cancelled = false;
 
-        // 书籍：加载所属作品的详细信息
+        // 书籍/丛编：加载所属作品的详细信息
+        const workId = detail.type === 'book' ? (detail as BookDetailData).work_id
+            : detail.type === 'collection' ? (detail as CollectionDetailData).work_id
+            : undefined;
+        if (workId) {
+            transport.getItem(workId).then(raw => {
+                if (!cancelled && raw && (raw as any).type === 'work') {
+                    setWorkInfo(raw as unknown as WorkDetailData);
+                }
+            }).catch(() => {});
+        } else {
+            setWorkInfo(null);
+        }
+
         if (detail.type === 'book') {
             const bookData = detail as BookDetailData;
-            if (bookData.work_id) {
-                transport.getItem(bookData.work_id).then(raw => {
-                    if (!cancelled && raw && (raw as any).type === 'work') {
-                        setWorkInfo(raw as unknown as WorkDetailData);
-                    }
-                }).catch(() => {});
-            } else {
-                setWorkInfo(null);
-            }
-
             // 解析 contained_in → 标题 + 册号
             if (bookData.contained_in && bookData.contained_in.length > 0) {
                 Promise.all(
@@ -1057,7 +1060,6 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                 setContainedInResolved([]);
             }
         } else {
-            setWorkInfo(null);
             setContainedInResolved([]);
         }
 
