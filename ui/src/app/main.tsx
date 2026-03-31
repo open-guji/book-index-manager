@@ -74,6 +74,7 @@ function App() {
     const [selectedEntry, setSelectedEntry] = useState<IndexEntry | null>(null);
     const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
+    const [detailNotFound, setDetailNotFound] = useState(false);
     const [activeTab, setActiveTabState] = useState<string>('detail');
     const [activeJuan, setActiveJuanState] = useState<string | null>(null);
     const [catalogList, setCatalogList] = useState<ResourceCatalog[]>([]);
@@ -147,6 +148,7 @@ function App() {
     /** 通过 ID 加载详情（内部复用，不操作 URL） */
     const loadById = useCallback(async (id: string, restoreParams?: { tab?: string; juan?: string }) => {
         setDetailData(null);
+        setDetailNotFound(false);
         setCatalogList([]);
         setCollatedIndex(null);
         setActiveTabState(restoreParams?.tab || 'detail');
@@ -167,9 +169,12 @@ function App() {
                 if (data.type === 'work' && data.has_collated) {
                     loadCollated(id);
                 }
+            } else {
+                setDetailNotFound(true);
             }
         } catch (err) {
             console.error('加载详情失败:', err);
+            setDetailNotFound(true);
         } finally {
             setDetailLoading(false);
         }
@@ -179,6 +184,7 @@ function App() {
         setSelectedEntry(entry);
         pushUrl(entry.id);
         setDetailData(null);
+        setDetailNotFound(false);
         setCatalogList([]);
         setCollatedIndex(null);
         setActiveTabState('detail');
@@ -194,6 +200,8 @@ function App() {
                 if (data.type === 'work' && data.has_collated) {
                     loadCollated(entry.id);
                 }
+            } else {
+                setDetailNotFound(true);
             }
         } catch (err) {
             console.error('加载详情失败:', err);
@@ -246,6 +254,7 @@ function App() {
     const handleBack = useCallback(() => {
         setSelectedEntry(null);
         setDetailData(null);
+        setDetailNotFound(false);
         setCatalogList([]);
         setCollatedIndex(null);
         pushUrl(null);
@@ -259,7 +268,7 @@ function App() {
     }, [detailData?.title]);
 
     // 是否在详情页
-    const showDetail = detailLoading || detailData;
+    const showDetail = detailLoading || detailData || detailNotFound;
 
     return (
         <div style={{
@@ -300,6 +309,27 @@ function App() {
                     {detailLoading ? (
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
                             <span style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>加载中...</span>
+                        </div>
+                    ) : detailNotFound ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: '12px' }}>
+                            <span style={{ fontSize: '32px' }}>📭</span>
+                            <span style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>
+                                找不到該條目，可能已被刪除或 ID 不正確
+                            </span>
+                            <button
+                                onClick={handleBack}
+                                style={{
+                                    padding: '6px 16px',
+                                    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                    borderRadius: '4px',
+                                    background: 'transparent',
+                                    color: 'var(--bim-primary, #0078d4)',
+                                    cursor: 'pointer',
+                                    fontSize: '13px',
+                                }}
+                            >
+                                返回首頁
+                            </button>
                         </div>
                     ) : detailData ? (
                         <>
