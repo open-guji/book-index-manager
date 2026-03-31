@@ -31,16 +31,16 @@ interface Stats {
 export type TabKey = 'recommend' | 'catalog' | 'site';
 
 const DEFAULT_RECOMMENDED: RecommendedItem[] = [
-    // 重要叢編
-    { id: 'FCNcSJbF77V', title: '欽定四庫全書·文淵閣本', description: '清·紀昀等編，藏於臺灣國立故宮博物院', group: '重要叢編' },
-    { id: 'FCPFLm7Uie3', title: '欽定四庫全書·文源閣本', description: '清·紀昀等編，已毀於英法聯軍', group: '重要叢編' },
-    { id: 'FCPFLywwwNP', title: '欽定四庫全書·文溯閣本', description: '清·紀昀等編，藏於甘肅省圖書館', group: '重要叢編' },
-    { id: 'FCPFMeX1suq', title: '欽定四庫全書·文津閣本', description: '清·紀昀等編，藏於中國國家圖書館', group: '重要叢編' },
+    // 推薦叢編
+    { id: 'FCNcSJbF77V', title: '欽定四庫全書·文淵閣本', description: '清·紀昀等編，藏於臺灣國立故宮博物院', group: '推薦叢編' },
+    { id: 'FCmH8kWxMhR', title: '二十四史百衲本', description: '民國·張元濟輯，商務印書館影印', group: '推薦叢編' },
+    { id: 'FCmYiXcTfuZ', title: '二十四史武英殿本', description: '清乾隆四年武英殿刻本', group: '推薦叢編' },
+    { id: 'FCmbeajrbJw', title: '武英殿聚珍版叢書', description: '清乾隆間武英殿活字印本', group: '推薦叢編' },
     // 經典作品
     { id: 'GY4HvsY3w3u', title: '欽定四庫全書總目', description: '清·紀昀等編，200卷', group: '經典作品' },
-    { id: 'GY4JLP3nDUB', title: '欽定四庫全書', description: '清乾隆38-52年，紀昀等編纂', group: '經典作品' },
+    { id: 'GY4JKKQaPYB', title: '欽定四庫全書簡明目錄', description: '清·紀昀等編，20卷', group: '經典作品' },
+    { id: 'GY4JM7j7yi7', title: '史記', description: '西漢·司馬遷，130卷', group: '經典作品' },
     { id: 'GY3ty2LN9ro', title: '易經', description: '西周·周文王', group: '經典作品' },
-    { id: 'GY4JM7j7yi7', title: '史記', description: '西漢·司馬遷', group: '經典作品' },
 ];
 
 export const HomePage: React.FC<HomePageProps> = ({
@@ -217,19 +217,6 @@ export const HomePage: React.FC<HomePageProps> = ({
                 )}
             </div>
 
-            {/* Stats */}
-            {stats && (
-                <div style={{
-                    display: 'flex',
-                    gap: '32px',
-                    padding: '16px 0',
-                    borderTop: '1px solid var(--bim-widget-border, #e0e0e0)',
-                }}>
-                    <StatItem icon="✍️" label={t.indexType.work} count={stats.works} />
-                    <StatItem icon="📖" label={t.indexType.book} count={stats.books} />
-                    <StatItem icon="📚" label={t.indexType.collection} count={stats.collections} />
-                </div>
-            )}
         </div>
     );
 };
@@ -621,12 +608,4 @@ const SiteItem: React.FC<{
     );
 };
 
-const StatItem: React.FC<{ icon: string; label: string; count: number }> = ({ icon, label, count }) => (
-    <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: '20px', marginBottom: '4px' }}>{icon}</div>
-        <div style={{ fontSize: '18px', fontWeight: 600, color: 'var(--bim-fg, #333)' }}>
-            {count.toLocaleString()}
-        </div>
-        <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>{label}</div>
-    </div>
-);
+
