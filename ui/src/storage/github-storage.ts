@@ -475,6 +475,10 @@ export class GithubStorage implements IndexStorage {
         return this.fetchFile<ResourceProgress>(this.config.repos.draft, 'resource.json');
     }
 
+    async getSiteProgress(): Promise<ResourceProgress | null> {
+        return this.fetchFile<ResourceProgress>(this.config.repos.draft, 'resource-site.json');
+    }
+
     async getRecommended(): Promise<RecommendedData | null> {
         return this.fetchFile<RecommendedData>(this.config.repos.draft, 'recommended.json');
     }

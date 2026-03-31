@@ -390,6 +390,14 @@ export class BundleStorage implements IndexStorage {
         }
     }
 
+    async getSiteProgress(): Promise<ResourceProgress | null> {
+        try {
+            return await this.fetchJson<ResourceProgress>(`${this.basePath}/resource-site.json`);
+        } catch {
+            return null;
+        }
+    }
+
     async getRecommended(): Promise<RecommendedData | null> {
         try {
             return await this.fetchJson<RecommendedData>(`${this.basePath}/recommended.json`);
