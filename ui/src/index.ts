@@ -111,6 +111,12 @@ export { RelationPanel } from './components/RelationPanel';
 export { EntitySelector } from './components/EntitySelector';
 export { CreateEntityDialog } from './components/CreateEntityDialog';
 export { EntityPickerDialog } from './components/EntityPickerDialog';
+export { FeedbackDialog } from './components/FeedbackDialog';
+export type { FeedbackDialogProps, FeedbackData, FeedbackType } from './components/FeedbackDialog';
+export { FeedbackButton } from './components/FeedbackButton';
+export type { FeedbackButtonProps } from './components/FeedbackButton';
+export { FeedbackList } from './components/FeedbackList';
+export type { FeedbackListProps, FeedbackItem } from './components/FeedbackList';
 
 // i18n
 export { LocaleProvider } from './i18n/provider';

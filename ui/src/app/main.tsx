@@ -378,12 +378,12 @@ function App() {
                 </div>
             ) : (
                 /* ── 首页：搜索 + 推荐 ── */
-                <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 16px', position: 'relative' }}>
-                    <LocaleToggle style={{ position: 'absolute', top: '32px', right: '16px' }} />
+                <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 16px' }}>
                     <IndexBrowser
                         transport={transport}
                         onEntryClick={handleEntryClick}
                         hideModeIndicator
+                        headerRight={<LocaleToggle />}
                     />
                     <HomePage
                         transport={transport}

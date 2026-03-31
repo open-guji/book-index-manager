@@ -105,13 +105,15 @@ function SectionNav({
                     style={navBtnStyle(activeSection === s.name)}
                 >
                     {s.name}
-                    <span style={{
-                        fontSize: '11px',
-                        opacity: 0.6,
-                        marginLeft: '4px',
-                    }}>
-                        {s.volume_range[0]}–{s.volume_range[1]}
-                    </span>
+                    {s.volume_range && (
+                        <span style={{
+                            fontSize: '11px',
+                            opacity: 0.6,
+                            marginLeft: '4px',
+                        }}>
+                            {s.volume_range[0]}–{s.volume_range[1]}
+                        </span>
+                    )}
                 </button>
             ))}
         </div>

@@ -53,6 +53,8 @@ export interface IndexBrowserProps {
     initialQuery?: string;
     /** 搜索词变化回调（用于同步到 URL） */
     onQueryChange?: (query: string) => void;
+    /** 标题栏右侧自定义内容 */
+    headerRight?: React.ReactNode;
 }
 
 const TOTAL_KEYS: Record<string, keyof GroupedSearchResult> = {
@@ -74,6 +76,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     hideModeIndicator,
     initialQuery,
     onQueryChange,
+    headerRight,
 }) => {
     const t = useT();
 
@@ -94,6 +97,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     const [recentEntries, setRecentEntries] = useState<IndexEntry[]>([]);
     const [recentLoading, setRecentLoading] = useState(false);
     const [recentExpanded, setRecentExpanded] = useState(false);
+    const [stats, setStats] = useState<{ works: number; books: number; collections: number } | null>(null);
     const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
     const initialSearchDone = useRef(false);
 
@@ -132,6 +136,23 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         } finally {
             setIsLoading(false);
         }
+    }, [transport]);
+
+    // 加载总数统计
+    useEffect(() => {
+        let cancelled = false;
+        const types: IndexType[] = ['work', 'book', 'collection'];
+        Promise.all(
+            types.map(t => transport.loadEntries(t, { page: 1, pageSize: 1 }).catch(() => ({ total: 0 })))
+        ).then(results => {
+            if (cancelled) return;
+            setStats({
+                works: results[0].total,
+                books: results[1].total,
+                collections: results[2].total,
+            });
+        });
+        return () => { cancelled = true; };
     }, [transport]);
 
     // Execute initial search from URL query
@@ -191,6 +212,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                             author: authors?.[0]?.name,
                             dynasty: authors?.[0]?.dynasty,
                             role: authors?.[0]?.role,
+                            edition: (raw.edition as string) || undefined,
                         } as IndexEntry;
                     }
                 } catch { /* ignore */ }
@@ -217,25 +239,23 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
 
     return (
         <div className="bim-browser-container">
-            <header style={{ padding: '16px 20px', borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
+            <header style={{ padding: '12px 20px', borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <h1 style={{ margin: 0, fontSize: '18px', color: 'var(--bim-fg, #333)' }}>{t.browser.title}</h1>
-                        <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
-                            {t.browser.subtitle}
-                        </p>
+                    <h1 style={{ margin: 0, fontSize: '18px', color: 'var(--bim-fg, #333)' }}>{t.browser.title}</h1>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {headerRight}
+                        {!hideModeIndicator && (
+                            <ModeIndicator
+                                variant="index-browser"
+                                indexSource={indexSource}
+                                syncConfig={syncConfig}
+                                onSwitchMode={onSwitchMode}
+                                onToggleDraft={onToggleDraft}
+                                onConfigurePath={onConfigurePath}
+                                onSelectFolder={onSelectFolder}
+                            />
+                        )}
                     </div>
-                    {!hideModeIndicator && (
-                        <ModeIndicator
-                            variant="index-browser"
-                            indexSource={indexSource}
-                            syncConfig={syncConfig}
-                            onSwitchMode={onSwitchMode}
-                            onToggleDraft={onToggleDraft}
-                            onConfigurePath={onConfigurePath}
-                            onSelectFolder={onSelectFolder}
-                        />
-                    )}
                 </div>
             </header>
 
@@ -265,6 +285,21 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     </button>
                 )}
             </div>
+
+            {/* 统计摘要 */}
+            {stats && showingRecent && (
+                <div style={{
+                    padding: '0 20px 8px',
+                    fontSize: '12px',
+                    color: 'var(--bim-desc-fg, #999)',
+                }}>
+                    {t.indexType.work} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.works.toLocaleString()}</strong>
+                    <span style={{ margin: '0 6px' }}>·</span>
+                    {t.indexType.book} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.books.toLocaleString()}</strong>
+                    <span style={{ margin: '0 6px' }}>·</span>
+                    {t.indexType.collection} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.collections.toLocaleString()}</strong>
+                </div>
+            )}
 
             {/* Content */}
             <div style={{ padding: '0 20px 20px', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
