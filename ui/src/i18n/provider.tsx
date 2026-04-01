@@ -10,6 +10,20 @@ const MESSAGES: Record<Locale, LocaleMessages> = {
     'zh-Hans': zhHans,
 };
 
+const LOCALE_STORAGE_KEY = 'bim-locale';
+
+function loadLocale(): Locale | undefined {
+    try {
+        const v = localStorage.getItem(LOCALE_STORAGE_KEY);
+        if (v === 'zh-Hant' || v === 'zh-Hans') return v;
+    } catch { /* SSR / 无权限 */ }
+    return undefined;
+}
+
+function saveLocale(locale: Locale) {
+    try { localStorage.setItem(LOCALE_STORAGE_KEY, locale); } catch { /* ignore */ }
+}
+
 export interface LocaleProviderProps {
     /** 受控模式：由外部控制 locale */
     locale?: Locale;
@@ -23,7 +37,7 @@ export const LocaleProvider: React.FC<LocaleProviderProps> = ({
     onLocaleChange,
     children,
 }) => {
-    const [internalLocale, setInternalLocale] = useState<Locale>(controlledLocale ?? 'zh-Hant');
+    const [internalLocale, setInternalLocale] = useState<Locale>(controlledLocale ?? loadLocale() ?? 'zh-Hant');
     const locale = controlledLocale ?? internalLocale;
 
     // 延迟加载 opencc-js converter
@@ -45,6 +59,7 @@ export const LocaleProvider: React.FC<LocaleProviderProps> = ({
 
     const setLocale = useCallback((newLocale: Locale) => {
         setInternalLocale(newLocale);
+        saveLocale(newLocale);
         onLocaleChange?.(newLocale);
     }, [onLocaleChange]);
 
