@@ -448,31 +448,39 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     }
 
                     try {
-                        const files = fs.readdirSync(assetDir)
-                            .filter((f: string) => f.endsWith('.json') && f !== 'juan_groups.json')
-                            .sort((a: string, b: string) => {
-                                // juanshouX < juanXXX < fulu
-                                const order = (name: string) => {
-                                    if (name.startsWith('juanshou')) return 0;
-                                    if (name.startsWith('juan')) return 1;
-                                    return 2; // fulu etc
-                                };
-                                const oa = order(a), ob = order(b);
-                                if (oa !== ob) return oa - ob;
-                                return a.localeCompare(b);
-                            });
-                        const result: Record<string, unknown> = {
-                            work_id: id,
-                            total_juan: files.length,
-                            juan_files: files,
-                        };
-                        const groupsFile = path.join(assetDir, 'juan_groups.json');
-                        if (fs.existsSync(groupsFile)) {
-                            try {
-                                result.juan_groups = JSON.parse(fs.readFileSync(groupsFile, 'utf-8'));
-                            } catch { /* ignore */ }
+                        // 优先读取 collated_edition_index.json（保留原始顺序）
+                        const indexFile = path.join(assetDir, '..', 'collated_edition_index.json');
+                        if (fs.existsSync(indexFile)) {
+                            const indexData = JSON.parse(fs.readFileSync(indexFile, 'utf-8'));
+                            sendJson(indexData);
+                        } else {
+                            // 回退：扫描目录文件
+                            const files = fs.readdirSync(assetDir)
+                                .filter((f: string) => f.endsWith('.json') && f !== 'juan_groups.json')
+                                .sort((a: string, b: string) => {
+                                    // juanshouX < juanXXX < fulu
+                                    const order = (name: string) => {
+                                        if (name.startsWith('juanshou')) return 0;
+                                        if (name.startsWith('juan')) return 1;
+                                        return 2; // fulu etc
+                                    };
+                                    const oa = order(a), ob = order(b);
+                                    if (oa !== ob) return oa - ob;
+                                    return a.localeCompare(b);
+                                });
+                            const result: Record<string, unknown> = {
+                                work_id: id,
+                                total_juan: files.length,
+                                juan_files: files,
+                            };
+                            const groupsFile = path.join(assetDir, 'juan_groups.json');
+                            if (fs.existsSync(groupsFile)) {
+                                try {
+                                    result.juan_groups = JSON.parse(fs.readFileSync(groupsFile, 'utf-8'));
+                                } catch { /* ignore */ }
+                            }
+                            sendJson(result);
                         }
-                        sendJson(result);
                     } catch {
                         sendJson({ error: 'Read error' }, 500);
                     }
