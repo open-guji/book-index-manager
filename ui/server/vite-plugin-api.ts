@@ -46,6 +46,57 @@ function matchesQuery(
     return false;
 }
 
+/**
+ * 搜索评分：精确匹配 > 前缀匹配 > 包含匹配。
+ * 标题和别名取最高分（不累加），标题短的优先。
+ */
+function scoreResult(
+    entry: { title?: string; author?: string; additional_titles?: string[]; [key: string]: unknown },
+    query: string,
+    queryS: string | undefined,
+    t2s: ((t: string) => string) | null,
+): number {
+    const q = query;
+
+    const scoreText = (text: string | undefined, exactW: number, prefixW: number, containsW: number): number => {
+        if (!text) return 0;
+        const t = text.toLowerCase();
+        if (t === q) return exactW;
+        if (t.startsWith(q)) return prefixW;
+        if (t.includes(q)) return containsW;
+        if (queryS && t2s) {
+            const tS = t2s(text).toLowerCase();
+            if (tS === queryS) return exactW;
+            if (tS.startsWith(queryS)) return prefixW;
+            if (tS.includes(queryS)) return containsW;
+        }
+        return 0;
+    };
+
+    // 标题和别名取最高分
+    let nameScore = scoreText(entry.title as string, 200, 150, 100);
+    if (entry.additional_titles) {
+        for (const alias of entry.additional_titles as string[]) {
+            nameScore = Math.max(nameScore, scoreText(alias, 120, 90, 60));
+        }
+    }
+
+    // 作者独立维度，仅在名称无匹配时作为主分
+    let score = nameScore;
+    if (score === 0) {
+        score = scoreText(entry.author as string, 80, 50, 50);
+    }
+
+    if (score === 0) return 0;
+
+    // 标题越短 = 匹配越精确
+    if (entry.title) {
+        score += Math.max(0, 20 - (entry.title as string).length);
+    }
+
+    return score;
+}
+
 /** 索引条目（允许任意扩展字段） */
 interface IndexFileEntry {
     id: string;
@@ -390,6 +441,13 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                                     (e.additional_titles || []).some((at: string) => matchesQuery(at, query, queryS, t2s))
                                 );
                             }
+                            // 按相关度排序
+                            entries.sort((a: any, b: any) => {
+                                const sa = scoreResult(a, query, queryS, t2s);
+                                const sb = scoreResult(b, query, queryS, t2s);
+                                if (sb !== sa) return sb - sa;
+                                return (a.title || '').length - (b.title || '').length;
+                            });
                             result[key] = entries.slice(0, limit);
                             result[`total${key.charAt(0).toUpperCase() + key.slice(1)}` as string] = entries.length;
                         }

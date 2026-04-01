@@ -282,7 +282,7 @@ const RecommendContent: React.FC<{
                                 <a
                                     key={entry.id}
                                     href={`/${entry.id}`}
-                                    onClick={e => { e.preventDefault(); onNavigate?.(entry.id); }}
+                                    onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate?.(entry.id); }}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -413,7 +413,7 @@ const ProgressItem: React.FC<{
                                 return (
                                     <a
                                         href={`/${linkId}`}
-                                        onClick={e => { e.preventDefault(); onNavigate(linkId); }}
+                                        onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(linkId); }}
                                         style={{ color: 'inherit', textDecoration: 'none', borderBottom: '1px dashed var(--bim-link-fg, #0066cc)' }}
                                         onMouseEnter={e => (e.currentTarget.style.borderBottomStyle = 'solid')}
                                         onMouseLeave={e => (e.currentTarget.style.borderBottomStyle = 'dashed')}

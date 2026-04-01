@@ -559,62 +559,69 @@ export type SearchSIndex = Record<string, SearchSEntry>;
 
 export function scoreEntry(entry: IndexEntry, query: string): number {
     const q = query.toLowerCase();
-    let score = 0;
 
-    // title（权重最高）
+    // 标题和别名取最高分（不累加）
+    let nameScore = 0;
     const title = entry.title.toLowerCase();
     if (title === q) {
-        score += 200;
+        nameScore = 200;
     } else if (title.startsWith(q)) {
-        score += 150;
+        nameScore = 150;
     } else if (title.includes(q)) {
-        score += 100;
+        nameScore = 100;
     }
 
-    // additional_titles（别名）
     if (entry.additional_titles) {
-        let bestAlias = 0;
         for (const alias of entry.additional_titles) {
             const a = alias.toLowerCase();
             if (a === q) {
-                bestAlias = Math.max(bestAlias, 120);
+                nameScore = Math.max(nameScore, 120);
             } else if (a.startsWith(q)) {
-                bestAlias = Math.max(bestAlias, 90);
+                nameScore = Math.max(nameScore, 90);
             } else if (a.includes(q)) {
-                bestAlias = Math.max(bestAlias, 60);
+                nameScore = Math.max(nameScore, 60);
             }
         }
-        score += bestAlias;
     }
 
-    // author
+    // author（独立维度）
+    let authorScore = 0;
     if (entry.author) {
         const author = entry.author.toLowerCase();
         if (author === q) {
-            score += 80;
+            authorScore = 80;
         } else if (author.includes(q)) {
-            score += 50;
+            authorScore = 50;
         }
     }
 
     // dynasty
+    let dynastyScore = 0;
     if (entry.dynasty && entry.dynasty.toLowerCase().includes(q)) {
-        score += 30;
+        dynastyScore = 30;
     }
 
-    // 无匹配则直接返回 0
+    // 总分 = 名称得分（最高） + 作者/朝代（仅当名称未匹配时作为主分，否则不加）
+    let score = nameScore;
+    if (score === 0) {
+        score = Math.max(authorScore, dynastyScore);
+    }
+
     if (score === 0) return 0;
+
+    // 标题越短 = 匹配越精确，微调
+    score += Math.max(0, 20 - title.length);
 
     // 类型加成
     if (entry.type === 'work') {
-        score = Math.round(score * 1.1);
-    } else if (entry.type === 'collection') {
         score = Math.round(score * 1.05);
+    } else if (entry.type === 'collection') {
+        score = Math.round(score * 1.02);
     }
 
-    // 资源加成
-    if (entry.has_text) score += 15;
-    if (entry.has_image) score += 10;
+    // 资源加成（微小，不应反转排序）
+    if (entry.has_text) score += 3;
+    if (entry.has_image) score += 2;
 
     return score;
 }

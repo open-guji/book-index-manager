@@ -334,7 +334,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                 {section.work_id && onNavigate && (
                     <a
                         href={`/${section.work_id}`}
-                        onClick={e => { e.preventDefault(); e.stopPropagation(); onNavigate(section.work_id!); }}
+                        onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(section.work_id!); }}
                         style={{
                             fontSize: '11px',
                             color: 'var(--bim-link-fg, #0066cc)',

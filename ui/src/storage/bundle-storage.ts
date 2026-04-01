@@ -362,18 +362,37 @@ export class BundleStorage implements IndexStorage {
 
     async getCollatedJuan(workId: string, juanFile: string): Promise<CollatedJuan | null> {
         if (juanFile.includes('..') || !juanFile.endsWith('.json')) return null;
+        const name = juanFile.replace('.json', '');
 
-        const match = juanFile.match(/juan(\d+)/);
-        if (!match) return null;
+        // 普通卷: juanNNN → tiyao/juan-001-010.json
+        const juanMatch = name.match(/^juan(\d+)$/);
+        if (juanMatch) {
+            const juanNum = parseInt(juanMatch[1]);
+            const groupSize = 10;
+            const group = Math.ceil(juanNum / groupSize);
+            const start = (group - 1) * groupSize + 1;
+            const end = group * groupSize;
+            try {
+                const data = await this.loadTiyaoGroup(start, end);
+                return (data[juanFile] as CollatedJuan) || null;
+            } catch {
+                return null;
+            }
+        }
 
-        const juanNum = parseInt(match[1]);
-        const groupSize = 10;
-        const group = Math.ceil(juanNum / groupSize);
-        const start = (group - 1) * groupSize + 1;
-        const end = group * groupSize;
-
+        // 特殊文件: juanshou* → tiyao/juanshou.json, fulu → tiyao/fulu.json
+        let specialKey: string;
+        if (name.startsWith('juanshou')) {
+            specialKey = 'juanshou';
+        } else if (name === 'fulu') {
+            specialKey = 'fulu';
+        } else {
+            specialKey = 'other';
+        }
         try {
-            const data = await this.loadTiyaoGroup(start, end);
+            const data = await this.fetchJson<Record<string, unknown>>(
+                `${this.basePath}/tiyao/${specialKey}.json`
+            );
             return (data[juanFile] as CollatedJuan) || null;
         } catch {
             return null;

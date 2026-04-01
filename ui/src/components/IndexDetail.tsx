@@ -249,7 +249,7 @@ function IdLink({ id, label, onNavigate, renderLink }: {
         return (
             <a
                 href={`/${id}`}
-                onClick={e => { e.preventDefault(); onNavigate(id); }}
+                onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(id); }}
                 style={{
                     color: 'var(--bim-link-fg, #0066cc)',
                     cursor: 'pointer',
@@ -892,7 +892,7 @@ function WorkInfoCard({ workData, onNavigate, renderLink }: {
                 }}>
                     <IdLink id={workData.id} label={convert(workData.title)} onNavigate={onNavigate} renderLink={renderLink} />
                 </span>
-                {workData.juan_count?.number && (
+                {workData.juan_count?.number != null && workData.juan_count.number > 0 && (
                     <span style={{
                         fontSize: '12px',
                         color: 'var(--bim-desc-fg, #717171)',

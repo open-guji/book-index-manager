@@ -144,7 +144,7 @@ function BidLink({ id, label, onNavigate, renderLink }: {
         return (
             <a
                 href={`/${id}`}
-                onClick={e => { e.preventDefault(); onNavigate(id); }}
+                onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(id); }}
                 style={{
                     color: 'var(--bim-link-fg, #0066cc)',
                     cursor: 'pointer',
