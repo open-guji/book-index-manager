@@ -656,12 +656,13 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
         return () => { cancelled = true; };
     }, [indexProp, workId, transport, externalActiveJuan, setActiveFile]);
 
-    // 自动选第一卷（当 indexProp 变化时）
+    // 自动选第一卷（当 index 可用且尚未选择时）
     useEffect(() => {
-        if (indexProp && indexProp.juan_files.length > 0 && !activeFile) {
-            setActiveFile(indexProp.juan_files[0]);
+        const idx = indexProp || indexData;
+        if (idx && idx.juan_files && idx.juan_files.length > 0 && !activeFile) {
+            setActiveFile(idx.juan_files[0]);
         }
-    }, [indexProp, activeFile, setActiveFile]);
+    }, [indexProp, indexData, activeFile, setActiveFile]);
 
     const effectiveWorkId = workId || index?.work_id;
 
