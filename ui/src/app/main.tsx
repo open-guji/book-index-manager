@@ -11,6 +11,7 @@ import { LocaleProvider } from '../i18n/provider';
 import { DevApiStorage } from '../storage/dev-api-storage';
 import type { IndexStorage } from '../storage/types';
 import type { IndexEntry, IndexDetailData, ResourceCatalog, CollatedEditionIndex } from '../types';
+import { useT, useConvert } from '../i18n';
 import '../styles/variables.css';
 
 // ── 数据源 ──
@@ -70,6 +71,8 @@ function replaceUrl(id: string | null, params?: Record<string, string | undefine
 // ── 主应用 ──
 
 function App() {
+    const t = useT();
+    const { convert } = useConvert();
     const [transport] = useState<IndexStorage>(() => createStorage());
     const [selectedEntry, setSelectedEntry] = useState<IndexEntry | null>(null);
     const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
@@ -348,14 +351,14 @@ function App() {
                                         onClick={() => setActiveTab('detail')}
                                         style={tabBtnStyle(activeTab === 'detail')}
                                     >
-                                        基本信息
+                                        {t.detailTab.basicInfo}
                                     </button>
                                     {detailData.type === 'collection' && catalogLoading && catalogList.length === 0 && (
                                         <button
                                             onClick={() => {}}
                                             style={tabBtnStyle(false)}
                                         >
-                                            目錄<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
+                                            {t.detailTab.catalog}<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
                                         </button>
                                     )}
                                     {detailData.type === 'collection' && catalogList.map((cat) => (
@@ -364,7 +367,7 @@ function App() {
                                             onClick={() => setActiveTab(`catalog:${cat.resource_id}`)}
                                             style={tabBtnStyle(activeTab === `catalog:${cat.resource_id}`)}
                                         >
-                                            {cat.short_name ? `${cat.short_name}·目錄` : '叢編目錄'}
+                                            {cat.short_name ? `${convert(cat.short_name)}${t.detailTab.catalogSuffix}` : t.detailTab.collectionCatalog}
                                         </button>
                                     ))}
                                     {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
@@ -372,7 +375,7 @@ function App() {
                                             onClick={() => setActiveTab('collated')}
                                             style={tabBtnStyle(activeTab === 'collated')}
                                         >
-                                            整理本
+                                            {t.detailTab.collatedEdition}
                                             {collatedLoading && (
                                                 <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
                                             )}

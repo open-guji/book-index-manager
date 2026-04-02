@@ -7,6 +7,7 @@ import { HomePage } from './HomePage';
 import type { RecommendedItem } from './HomePage';
 import type { IndexStorage } from '../storage/types';
 import type { IndexEntry, IndexDetailData, ResourceCatalog, CollatedEditionIndex } from '../types';
+import { useT, useConvert } from '../i18n';
 
 export interface IndexAppProps {
     transport: IndexStorage;
@@ -28,6 +29,8 @@ export const IndexApp: React.FC<IndexAppProps> = ({
     onEntryClick: externalEntryClick,
     recommendedIds,
 }) => {
+    const t = useT();
+    const { convert } = useConvert();
     const [selectedEntry, setSelectedEntry] = useState<IndexEntry | null>(null);
     const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
@@ -186,14 +189,14 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                                     onClick={() => setActiveTab('detail')}
                                     style={tabBtnStyle(activeTab === 'detail')}
                                 >
-                                    基本信息
+                                    {t.detailTab.basicInfo}
                                 </button>
                                 {detailData.type === 'collection' && catalogLoading && catalogList.length === 0 && (
                                     <button
                                         onClick={() => {}}
                                         style={tabBtnStyle(false)}
                                     >
-                                        目錄<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
+                                        {t.detailTab.catalog}<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
                                     </button>
                                 )}
                                 {detailData.type === 'collection' && catalogList.map((cat) => (
@@ -202,7 +205,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                                         onClick={() => setActiveTab(`catalog:${cat.resource_id}`)}
                                         style={tabBtnStyle(activeTab === `catalog:${cat.resource_id}`)}
                                     >
-                                        {cat.short_name ? `${cat.short_name}·目錄` : '叢編目錄'}
+                                        {cat.short_name ? `${convert(cat.short_name)}${t.detailTab.catalogSuffix}` : t.detailTab.collectionCatalog}
                                     </button>
                                 ))}
                                 {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
@@ -210,7 +213,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                                         onClick={() => setActiveTab('collated')}
                                         style={tabBtnStyle(activeTab === 'collated')}
                                     >
-                                        整理本
+                                        {t.detailTab.collatedEdition}
                                         {collatedLoading && <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>}
                                     </button>
                                 )}

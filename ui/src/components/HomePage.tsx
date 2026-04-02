@@ -59,6 +59,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         setInternalTab(tab);
         onTabChange?.(tab);
     };
+    const [recommendLoading, setRecommendLoading] = useState(true);
     const [catalogProgress, setCatalogProgress] = useState<ResourceProgress | null>(null);
     const [siteProgress, setSiteProgress] = useState<ResourceProgress | null>(null);
 
@@ -98,7 +99,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         resolveIds().then(async ids => {
             if (cancelled) return;
             const validIds = ids.filter(r => r.id);
-            if (validIds.length === 0) return;
+            if (validIds.length === 0) { setRecommendLoading(false); return; }
 
             const results = await Promise.all(
                 validIds.map(async r => {
@@ -131,6 +132,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             );
             if (!cancelled) {
                 setRecommended(results.filter((e): e is NonNullable<typeof e> => e !== null));
+                setRecommendLoading(false);
             }
         });
         return () => { cancelled = true; };
@@ -202,6 +204,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 {activeTab === 'recommend' && (
                     <RecommendContent
                         recommended={recommended}
+                        loading={recommendLoading}
                         onNavigate={onNavigate}
                         getIcon={getIcon}
                         t={t}
@@ -244,10 +247,18 @@ const TabButton: React.FC<{ label: string; active: boolean; onClick: () => void 
 
 const RecommendContent: React.FC<{
     recommended: (IndexEntry & { group?: string; fallbackDescription?: string })[];
+    loading?: boolean;
     onNavigate?: (id: string) => void;
     getIcon: (type: IndexType) => string;
     t: ReturnType<typeof useT>;
-}> = ({ recommended, onNavigate, getIcon, t }) => {
+}> = ({ recommended, loading, onNavigate, getIcon, t }) => {
+    if (loading) {
+        return (
+            <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>
+                ...
+            </div>
+        );
+    }
     if (recommended.length === 0) return null;
 
     const groups = new Map<string, typeof recommended>();

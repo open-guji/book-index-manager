@@ -150,6 +150,13 @@ export interface LocaleMessages {
         title: string;
         subtitle: string;
     };
+    detailTab: {
+        basicInfo: string;
+        catalog: string;
+        collectionCatalog: string;
+        collatedEdition: string;
+        catalogSuffix: string;
+    };
     metadata: Record<string, string>;
     editor: {
         untitled: string;

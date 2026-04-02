@@ -152,6 +152,13 @@ export const zhHans: LocaleMessages = {
         title: '古籍资源索引',
         subtitle: '',
     },
+    detailTab: {
+        basicInfo: '基本信息',
+        catalog: '目录',
+        collectionCatalog: '丛编目录',
+        collatedEdition: '整理本',
+        catalogSuffix: '·目录',
+    },
     metadata: {
         edition: '版本',
         version: '修订版本',
