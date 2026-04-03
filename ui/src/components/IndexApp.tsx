@@ -8,6 +8,7 @@ import type { RecommendedItem } from './HomePage';
 import type { IndexStorage } from '../storage/types';
 import type { IndexEntry, IndexDetailData, ResourceCatalog, CollatedEditionIndex } from '../types';
 import { useT, useConvert } from '../i18n';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 export interface IndexAppProps {
     transport: IndexStorage;
@@ -31,6 +32,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
 }) => {
     const t = useT();
     const { convert } = useConvert();
+    const isMobile = useIsMobile();
     const [selectedEntry, setSelectedEntry] = useState<IndexEntry | null>(null);
     const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
@@ -140,6 +142,159 @@ export const IndexApp: React.FC<IndexAppProps> = ({
     const showTabs = (detailData?.type === 'collection' && (catalogList.length > 0 || catalogLoading)) ||
                      (detailData?.type === 'work' && (collatedIndex || collatedLoading));
 
+    // 手机端：选中条目后只显示详情，否则显示浏览器
+    const mobileShowDetail = isMobile && (detailLoading || detailData);
+
+    const handleMobileBack = useCallback(() => {
+        setSelectedEntry(null);
+        setDetailData(null);
+        setCatalogList([]);
+        setCollatedIndex(null);
+        setActiveTab('detail');
+    }, []);
+
+    const detailContent = (
+        <>
+            {detailLoading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                    <span style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>加载中...</span>
+                </div>
+            ) : detailData ? (
+                <>
+                    {/* Tab 栏 */}
+                    {showTabs && (
+                        <div style={{
+                            display: 'flex',
+                            gap: '0',
+                            borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            padding: isMobile ? '0 12px' : '0 48px',
+                            background: 'var(--bim-input-bg, #fff)',
+                            flexShrink: 0,
+                            overflowX: isMobile ? 'auto' : undefined,
+                        }}>
+                            <button
+                                onClick={() => setActiveTab('detail')}
+                                style={tabBtnStyle(activeTab === 'detail')}
+                            >
+                                {t.detailTab.basicInfo}
+                            </button>
+                            {detailData.type === 'collection' && catalogLoading && catalogList.length === 0 && (
+                                <button
+                                    onClick={() => {}}
+                                    style={tabBtnStyle(false)}
+                                >
+                                    {t.detailTab.catalog}<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
+                                </button>
+                            )}
+                            {detailData.type === 'collection' && catalogList.map((cat) => (
+                                <button
+                                    key={cat.resource_id}
+                                    onClick={() => setActiveTab(`catalog:${cat.resource_id}`)}
+                                    style={tabBtnStyle(activeTab === `catalog:${cat.resource_id}`)}
+                                >
+                                    {cat.short_name ? `${convert(cat.short_name)}${t.detailTab.catalogSuffix}` : t.detailTab.collectionCatalog}
+                                </button>
+                            ))}
+                            {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
+                                <button
+                                    onClick={() => setActiveTab('collated')}
+                                    style={tabBtnStyle(activeTab === 'collated')}
+                                >
+                                    {t.detailTab.collatedEdition}
+                                    {collatedLoading && <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>}
+                                </button>
+                            )}
+                        </div>
+                    )}
+                    <div style={{ padding: isMobile ? '16px 12px' : '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>
+                        {activeTab === 'detail' ? (
+                            <IndexDetail
+                                data={detailData}
+                                transport={transport}
+                                onNavigate={handleNavigate}
+                            />
+                        ) : activeTab.startsWith('catalog:') ? (
+                            <CollectionCatalog
+                                data={catalogList.find(c => `catalog:${c.resource_id}` === activeTab)?.data}
+                                onNavigate={handleNavigate}
+                            />
+                        ) : activeTab === 'collated' ? (
+                            <CollatedEdition
+                                index={collatedIndex || undefined}
+                                workId={detailData.id}
+                                transport={transport}
+                                onNavigate={handleNavigate}
+                            />
+                        ) : null}
+                    </div>
+                </>
+            ) : (
+                <HomePage
+                    transport={transport}
+                    onNavigate={handleNavigate}
+                    recommendedIds={recommendedIds}
+                />
+            )}
+        </>
+    );
+
+    if (isMobile) {
+        return (
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif',
+                background: 'var(--bim-bg, #f5f5f5)',
+                color: 'var(--bim-fg, #333)',
+            }}>
+                {mobileShowDetail ? (
+                    <>
+                        <div style={{
+                            padding: '8px 12px',
+                            borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            background: 'var(--bim-input-bg, #fff)',
+                            flexShrink: 0,
+                        }}>
+                            <button
+                                onClick={handleMobileBack}
+                                style={{
+                                    padding: '4px 12px',
+                                    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                    borderRadius: '4px',
+                                    background: 'transparent',
+                                    color: 'var(--bim-fg, #333)',
+                                    cursor: 'pointer',
+                                    fontSize: '13px',
+                                }}
+                            >
+                                ← {t.detailTab.basicInfo}
+                            </button>
+                        </div>
+                        <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+                            {detailContent}
+                        </div>
+                    </>
+                ) : (
+                    <div style={{ flex: 1, overflow: 'auto' }}>
+                        <IndexBrowser
+                            transport={transport}
+                            onEntryClick={handleEntryClick}
+                            hideModeIndicator={hideModeIndicator}
+                        />
+                        {!detailData && (
+                            <HomePage
+                                transport={transport}
+                                onNavigate={handleNavigate}
+                                recommendedIds={recommendedIds}
+                            />
+                        )}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
     return (
         <div style={{
             display: 'flex',
@@ -169,85 +324,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
 
             {/* 右侧：详情面板 */}
             <div style={{ flex: 1, overflow: 'auto', background: 'var(--bim-bg, #f5f5f5)', display: 'flex', flexDirection: 'column' }}>
-                {detailLoading ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <span style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>加载中...</span>
-                    </div>
-                ) : detailData ? (
-                    <>
-                        {/* Tab 栏 */}
-                        {showTabs && (
-                            <div style={{
-                                display: 'flex',
-                                gap: '0',
-                                borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
-                                padding: '0 48px',
-                                background: 'var(--bim-input-bg, #fff)',
-                                flexShrink: 0,
-                            }}>
-                                <button
-                                    onClick={() => setActiveTab('detail')}
-                                    style={tabBtnStyle(activeTab === 'detail')}
-                                >
-                                    {t.detailTab.basicInfo}
-                                </button>
-                                {detailData.type === 'collection' && catalogLoading && catalogList.length === 0 && (
-                                    <button
-                                        onClick={() => {}}
-                                        style={tabBtnStyle(false)}
-                                    >
-                                        {t.detailTab.catalog}<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
-                                    </button>
-                                )}
-                                {detailData.type === 'collection' && catalogList.map((cat) => (
-                                    <button
-                                        key={cat.resource_id}
-                                        onClick={() => setActiveTab(`catalog:${cat.resource_id}`)}
-                                        style={tabBtnStyle(activeTab === `catalog:${cat.resource_id}`)}
-                                    >
-                                        {cat.short_name ? `${convert(cat.short_name)}${t.detailTab.catalogSuffix}` : t.detailTab.collectionCatalog}
-                                    </button>
-                                ))}
-                                {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
-                                    <button
-                                        onClick={() => setActiveTab('collated')}
-                                        style={tabBtnStyle(activeTab === 'collated')}
-                                    >
-                                        {t.detailTab.collatedEdition}
-                                        {collatedLoading && <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>}
-                                    </button>
-                                )}
-                            </div>
-                        )}
-                        <div style={{ padding: '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>
-                            {activeTab === 'detail' ? (
-                                <IndexDetail
-                                    data={detailData}
-                                    transport={transport}
-                                    onNavigate={handleNavigate}
-                                />
-                            ) : activeTab.startsWith('catalog:') ? (
-                                <CollectionCatalog
-                                    data={catalogList.find(c => `catalog:${c.resource_id}` === activeTab)?.data}
-                                    onNavigate={handleNavigate}
-                                />
-                            ) : activeTab === 'collated' ? (
-                                <CollatedEdition
-                                    index={collatedIndex || undefined}
-                                    workId={detailData.id}
-                                    transport={transport}
-                                    onNavigate={handleNavigate}
-                                />
-                            ) : null}
-                        </div>
-                    </>
-                ) : (
-                    <HomePage
-                        transport={transport}
-                        onNavigate={handleNavigate}
-                        recommendedIds={recommendedIds}
-                    />
-                )}
+                {detailContent}
             </div>
         </div>
     );

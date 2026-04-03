@@ -42,7 +42,9 @@
     "watch:lib": "vite build --mode lib --watch",
     "build:app": "vite build",
     "preview": "vite preview",
-    "prepublishOnly": "npm run build:lib"
+    "prepublishOnly": "npm run build:lib",
+    "test:e2e": "playwright test",
+    "test:e2e:mobile": "playwright test --project=mobile"
   },
   "peerDependencies": {
     "opencc-js": ">=1.0.0",
@@ -55,6 +57,7 @@
     }
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.0",

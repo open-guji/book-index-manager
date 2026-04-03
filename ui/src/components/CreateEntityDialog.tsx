@@ -103,7 +103,7 @@ const overlayStyle: React.CSSProperties = {
 
 const dialogStyle: React.CSSProperties = {
     background: 'var(--bim-bg, #fff)', border: '1px solid var(--bim-widget-border, #e0e0e0)',
-    borderRadius: '8px', padding: '20px', minWidth: '400px', maxWidth: '500px',
+    borderRadius: '8px', padding: '20px', width: '100%', maxWidth: 'min(500px, calc(100vw - 32px))',
     boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
 };
 

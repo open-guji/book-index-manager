@@ -12,6 +12,7 @@ import { DevApiStorage } from '../storage/dev-api-storage';
 import type { IndexStorage } from '../storage/types';
 import type { IndexEntry, IndexDetailData, ResourceCatalog, CollatedEditionIndex } from '../types';
 import { useT, useConvert } from '../i18n';
+import { useIsMobile } from '../hooks/useIsMobile';
 import '../styles/variables.css';
 
 // ── 数据源 ──
@@ -73,6 +74,7 @@ function replaceUrl(id: string | null, params?: Record<string, string | undefine
 function App() {
     const t = useT();
     const { convert } = useConvert();
+    const isMobile = useIsMobile();
     const [transport] = useState<IndexStorage>(() => createStorage());
     const [selectedEntry, setSelectedEntry] = useState<IndexEntry | null>(null);
     const [detailData, setDetailData] = useState<IndexDetailData | null>(null);
@@ -285,7 +287,7 @@ function App() {
                 <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
                     {/* 顶部返回栏 */}
                     <div style={{
-                        padding: '12px 48px',
+                        padding: isMobile ? '12px 16px' : '12px 48px',
                         borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
                         background: 'var(--bim-input-bg, #fff)',
                         flexShrink: 0,
@@ -343,9 +345,10 @@ function App() {
                                     display: 'flex',
                                     gap: '0',
                                     borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
-                                    padding: '0 48px',
+                                    padding: isMobile ? '0 12px' : '0 48px',
                                     background: 'var(--bim-input-bg, #fff)',
                                     flexShrink: 0,
+                                    overflowX: isMobile ? 'auto' : undefined,
                                 }}>
                                     <button
                                         onClick={() => setActiveTab('detail')}
@@ -383,7 +386,7 @@ function App() {
                                     )}
                                 </div>
                             )}
-                            <div style={{ padding: '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>
+                            <div style={{ padding: isMobile ? '16px 12px' : '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>
                                 {activeTab === 'detail' ? (
                                     <IndexDetail
                                         data={detailData}
@@ -411,7 +414,7 @@ function App() {
                 </div>
             ) : (
                 /* ── 首页：搜索 + 推荐 ── */
-                <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 16px' }}>
+                <div style={{ maxWidth: '800px', margin: '0 auto', padding: isMobile ? '16px 12px' : '32px 16px' }}>
                     <IndexBrowser
                         transport={transport}
                         onEntryClick={handleEntryClick}

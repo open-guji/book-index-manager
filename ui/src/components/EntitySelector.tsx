@@ -98,7 +98,7 @@ const overlayStyle: React.CSSProperties = {
 
 const dialogStyle: React.CSSProperties = {
     background: 'var(--bim-bg, #fff)', border: '1px solid var(--bim-widget-border, #e0e0e0)',
-    borderRadius: '8px', width: '500px', maxHeight: '70vh',
+    borderRadius: '8px', width: '500px', maxWidth: 'calc(100vw - 32px)', maxHeight: '70vh',
     display: 'flex', flexDirection: 'column', boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
 };
 

@@ -1,0 +1,5 @@
+node_modules/
+dist/
+dist-app/
+tests/screenshots/
+tests/test-results/

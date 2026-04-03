@@ -207,11 +207,46 @@ const CheckTypeBadge: React.FC<{ value: string }> = ({ value }) => {
     );
 };
 
-const formatMetaValue = (key: string, value: unknown, t: LocaleMessages): React.ReactNode => {
+const formatMetaValue = (key: string, value: unknown, t: LocaleMessages, convert?: (s: string) => string): React.ReactNode => {
     if (key === 'check_type' && typeof value === 'string') return <CheckTypeBadge value={value} />;
     if (key === 'has_translation') return value ? t.misc.hasTranslation : t.misc.noTranslation;
-    return String(value);
+    const str = String(value);
+    return convert ? convert(str) : str;
 };
+
+/** Build a URL that navigates to a specific page, based on the site */
+function buildPageUrl(baseUrl: string, pageNum: number): string {
+    try {
+        const url = new URL(baseUrl);
+        const host = url.hostname;
+        // Wikimedia Commons: /w/index.php?title=File:...&page=N
+        if (host.includes('wikimedia.org')) {
+            // Extract file title from wiki/File:xxx or already in index.php format
+            const wikiFileMatch = baseUrl.match(/\/wiki\/File:(.+?)(?:#|$)/);
+            if (wikiFileMatch) {
+                const fileTitle = encodeURIComponent(decodeURIComponent(wikiFileMatch[1]));
+                return `https://commons.wikimedia.org/w/index.php?title=File%3A${fileTitle}&page=${pageNum}`;
+            }
+            // Already in index.php format, just update/add page param
+            const u = new URL(baseUrl);
+            u.searchParams.set('page', String(pageNum));
+            return u.toString();
+        }
+        // Other sites: return as-is (no known page navigation)
+        return baseUrl;
+    } catch {
+        return baseUrl;
+    }
+}
+
+/** Extract the start page number from metadata (page_range or file_page_range) */
+function getStartPage(metadata?: Record<string, unknown>): number | undefined {
+    if (!metadata) return undefined;
+    const range = (metadata.file_page_range || metadata.page_range) as string | undefined;
+    if (!range || typeof range !== 'string') return undefined;
+    const match = range.match(/^(\d+)/);
+    return match ? parseInt(match[1], 10) : undefined;
+}
 
 /** 从 volume 对象中提取最佳 URL（兼容 url / tw_url / wiki_url 等字段） */
 function extractVolumeUrl(v: ResourceVolume): string | undefined {
@@ -312,10 +347,13 @@ const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => {
                     </button>
                 )}
 
-                {/* 总链接（仅在有 url 且不是分册展开时显示） */}
+                {/* 总链接（仅在有 url 且不是分册展开时显示），如有页码范围则直接导航到起始页 */}
                 {item.url && (
                     <a
-                        href={item.url}
+                        href={(() => {
+                            const startPage = getStartPage(item.metadata);
+                            return startPage ? buildPageUrl(item.url!, startPage) : item.url!;
+                        })()}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ fontSize: '12px', color: 'var(--bim-link-fg, #0066cc)', textDecoration: 'none' }}
@@ -331,9 +369,9 @@ const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => {
                     {item.metadata && Object.entries(item.metadata)
                         .filter(([key]) => key !== 'check_type')
                         .map(([key, value]) => (
-                            <span key={key}>{t.metadata[key] || key}: {formatMetaValue(key, value, t)}</span>
+                            <span key={key}>{t.metadata[key] || key}: {formatMetaValue(key, value, t, convert)}</span>
                         ))}
-                    {item.details && !hasVolumes && <span>{item.details}</span>}
+                    {item.details && !hasVolumes && <span>{convert(item.details)}</span>}
                     {item.structure && <span>{t.misc.structure}: {item.structure.join(' → ')}</span>}
                     {item.coverage && <span>{t.misc.coverage}: L{item.coverage.level} {item.coverage.ranges}</span>}
                 </div>
