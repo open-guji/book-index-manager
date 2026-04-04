@@ -102,6 +102,10 @@ export { WorkCatalog } from './components/WorkCatalog';
 export type { WorkCatalogProps } from './components/WorkCatalog';
 export type { CollatedEditionProps } from './components/CollatedEdition';
 
+// Components - Unified View
+export { IndexView, detailToEditor, editorToDetail } from './components/IndexView';
+export type { IndexViewProps } from './components/IndexView';
+
 // Components - Editor
 export { IndexEditor } from './components/IndexEditor';
 export type { IndexEditorProps, IndexEditorData } from './components/IndexEditor';
