@@ -174,11 +174,28 @@ export class BundleStorage implements IndexStorage {
     private async loadChunk(prefix: string): Promise<Record<string, unknown>> {
         if (this.chunkCache.has(prefix)) return this.chunkCache.get(prefix)!;
 
-        const data = await this.fetchJson<Record<string, unknown>>(
-            `${this.basePath}/chunks/${prefix}.json`
-        );
-        this.chunkCache.set(prefix, data);
-        return data;
+        try {
+            const data = await this.fetchJson<Record<string, unknown>>(
+                `${this.basePath}/chunks/${prefix}.json`
+            );
+            this.chunkCache.set(prefix, data);
+            return data;
+        } catch {
+            // Chunk was split — not found means empty for this prefix
+            this.chunkCache.set(prefix, {});
+            return {};
+        }
+    }
+
+    /** Load chunk for a specific ID, trying 3-char prefix if 2-char fails */
+    private async loadChunkForId(id: string): Promise<Record<string, unknown>> {
+        const prefix2 = id.substring(0, 2);
+        const chunk = await this.loadChunk(prefix2);
+        if (Object.keys(chunk).length > 0) return chunk;
+
+        // 2-char chunk was empty/missing — try 3-char sub-chunk
+        const prefix3 = id.substring(0, 3);
+        return this.loadChunk(prefix3);
     }
 
     // ─── L2: 提要 chunk ───
@@ -272,9 +289,8 @@ export class BundleStorage implements IndexStorage {
     }
 
     async getItem(id: string): Promise<Record<string, unknown> | null> {
-        const prefix = id.slice(0, 2);
         try {
-            const chunk = await this.loadChunk(prefix);
+            const chunk = await this.loadChunkForId(id);
             const item = (chunk[id] as Record<string, unknown>) || null;
             if (item) {
                 // 从 index 条目合并 has_collated 标记
@@ -323,9 +339,8 @@ export class BundleStorage implements IndexStorage {
         const catalogs: ResourceCatalog[] = [];
         for (const res of resources) {
             const mappingKey = `${collectionId}/${res.id}/volume_book_mapping`;
-            const prefix = collectionId.slice(0, 2);
             try {
-                const chunk = await this.loadChunk(prefix);
+                const chunk = await this.loadChunkForId(collectionId);
                 const data = chunk[mappingKey];
                 if (data) {
                     catalogs.push({
@@ -350,9 +365,8 @@ export class BundleStorage implements IndexStorage {
     // ─── 整理本 ───
 
     async getCollatedEditionIndex(workId: string): Promise<CollatedEditionIndex | null> {
-        const prefix = workId.slice(0, 2);
         try {
-            const chunk = await this.loadChunk(prefix);
+            const chunk = await this.loadChunkForId(workId);
             const key = `${workId}/collated_edition_index`;
             return (chunk[key] as CollatedEditionIndex) || null;
         } catch {
@@ -365,9 +379,8 @@ export class BundleStorage implements IndexStorage {
         const name = juanFile.replace('.json', '');
 
         // Work-specific collated edition: stored in L1 chunks as {workId}/collated_edition/{juanFile}
-        const prefix = workId.substring(0, 2);
         try {
-            const chunk = await this.loadChunk(prefix);
+            const chunk = await this.loadChunkForId(workId);
             const key = `${workId}/collated_edition/${juanFile}`;
             if (chunk[key]) {
                 return chunk[key] as CollatedJuan;
