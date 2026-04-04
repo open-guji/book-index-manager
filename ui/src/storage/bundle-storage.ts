@@ -75,6 +75,7 @@ export class BundleStorage implements IndexStorage {
     private indexCache: IndexEntry[] | null = null;
     private pathMap: Map<string, { path: string; isDraft: boolean }> = new Map();
     private chunkCache = new Map<string, Record<string, unknown>>();
+    private manifest: string[] | null = null;
     private tiyaoCache = new Map<string, Record<string, unknown>>();
     private searchSCache: SearchSIndex | null = null;
     private searchSLoaded = false;
@@ -171,9 +172,44 @@ export class BundleStorage implements IndexStorage {
 
     // ─── L1: 详情 chunk ───
 
+    /** Load manifest listing all chunk prefixes */
+    private async loadManifest(): Promise<string[]> {
+        if (this.manifest) return this.manifest;
+        try {
+            this.manifest = await this.fetchJson<string[]>(
+                `${this.basePath}/chunks/_manifest.json`
+            );
+        } catch {
+            this.manifest = [];
+        }
+        return this.manifest;
+    }
+
+    /** Find the chunk prefix for a given ID using the manifest */
+    private async resolvePrefix(id: string): Promise<string | null> {
+        const manifest = await this.loadManifest();
+        // Binary search: find the last prefix that is <= id
+        let lo = 0, hi = manifest.length - 1, best: string | null = null;
+        while (lo <= hi) {
+            const mid = (lo + hi) >> 1;
+            if (manifest[mid] <= id) {
+                best = manifest[mid];
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        // Verify the prefix actually matches
+        if (best && id.startsWith(best)) return best;
+        // Fallback: linear scan for any matching prefix
+        for (const p of manifest) {
+            if (id.startsWith(p)) return p;
+        }
+        return null;
+    }
+
     private async loadChunk(prefix: string): Promise<Record<string, unknown>> {
         if (this.chunkCache.has(prefix)) return this.chunkCache.get(prefix)!;
-
         try {
             const data = await this.fetchJson<Record<string, unknown>>(
                 `${this.basePath}/chunks/${prefix}.json`
@@ -181,21 +217,16 @@ export class BundleStorage implements IndexStorage {
             this.chunkCache.set(prefix, data);
             return data;
         } catch {
-            // Chunk was split — not found means empty for this prefix
             this.chunkCache.set(prefix, {});
             return {};
         }
     }
 
-    /** Load chunk for a specific ID, trying 3-char prefix if 2-char fails */
+    /** Load chunk for a specific ID using manifest-based prefix resolution */
     private async loadChunkForId(id: string): Promise<Record<string, unknown>> {
-        const prefix2 = id.substring(0, 2);
-        const chunk = await this.loadChunk(prefix2);
-        if (Object.keys(chunk).length > 0) return chunk;
-
-        // 2-char chunk was empty/missing — try 3-char sub-chunk
-        const prefix3 = id.substring(0, 3);
-        return this.loadChunk(prefix3);
+        const prefix = await this.resolvePrefix(id);
+        if (!prefix) return {};
+        return this.loadChunk(prefix);
     }
 
     // ─── L2: 提要 chunk ───
@@ -456,6 +487,7 @@ export class BundleStorage implements IndexStorage {
         this.indexCache = null;
         this.pathMap.clear();
         this.chunkCache.clear();
+        this.manifest = null;
         this.tiyaoCache.clear();
         this.searchSCache = null;
         this.searchSLoaded = false;
