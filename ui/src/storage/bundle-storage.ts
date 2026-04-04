@@ -357,7 +357,7 @@ export class BundleStorage implements IndexStorage {
         throw new Error('BundleStorage 为只读模式，不支持生成 ID');
     }
 
-    // ─── 丛编目录 ───
+    // ─── 关联文件：直接从 items/{id}/ 加载 ───
 
     async getCollectionCatalogs(collectionId: string): Promise<ResourceCatalog[] | null> {
         const item = await this.getItem(collectionId);
@@ -366,13 +366,12 @@ export class BundleStorage implements IndexStorage {
         const resources = (item.resources as Array<{ id: string; short_name?: string }>) || [];
         if (resources.length === 0) return null;
 
-        // 丛编目录数据在 chunk 中以 {collectionId}/{resourceId}/volume_book_mapping 形式存储
         const catalogs: ResourceCatalog[] = [];
         for (const res of resources) {
-            const mappingKey = `${collectionId}/${res.id}/volume_book_mapping`;
             try {
-                const chunk = await this.loadChunkForId(collectionId);
-                const data = chunk[mappingKey];
+                const data = await this.fetchJson<unknown>(
+                    `${this.basePath}/items/${collectionId}/${res.id}/volume_book_mapping.json`
+                );
                 if (data) {
                     catalogs.push({
                         resource_id: res.id,
@@ -381,7 +380,7 @@ export class BundleStorage implements IndexStorage {
                     });
                 }
             } catch {
-                // skip
+                // skip — this resource has no mapping
             }
         }
 
@@ -397,9 +396,9 @@ export class BundleStorage implements IndexStorage {
 
     async getCollatedEditionIndex(workId: string): Promise<CollatedEditionIndex | null> {
         try {
-            const chunk = await this.loadChunkForId(workId);
-            const key = `${workId}/collated_edition_index`;
-            return (chunk[key] as CollatedEditionIndex) || null;
+            return await this.fetchJson<CollatedEditionIndex>(
+                `${this.basePath}/items/${workId}/collated_edition_index.json`
+            );
         } catch {
             return null;
         }
@@ -407,49 +406,12 @@ export class BundleStorage implements IndexStorage {
 
     async getCollatedJuan(workId: string, juanFile: string): Promise<CollatedJuan | null> {
         if (juanFile.includes('..') || !juanFile.endsWith('.json')) return null;
-        const name = juanFile.replace('.json', '');
 
-        // Work-specific collated edition: stored in L1 chunks as {workId}/collated_edition/{juanFile}
+        // 直接从 items/{workId}/collated_edition/{juanFile} 加载
         try {
-            const chunk = await this.loadChunkForId(workId);
-            const key = `${workId}/collated_edition/${juanFile}`;
-            if (chunk[key]) {
-                return chunk[key] as CollatedJuan;
-            }
-        } catch {
-            // fall through to tiyao paths
-        }
-
-        // 普通卷: juanNNN → tiyao/juan-001-010.json
-        const juanMatch = name.match(/^juan(\d+)$/);
-        if (juanMatch) {
-            const juanNum = parseInt(juanMatch[1]);
-            const groupSize = 10;
-            const group = Math.ceil(juanNum / groupSize);
-            const start = (group - 1) * groupSize + 1;
-            const end = group * groupSize;
-            try {
-                const data = await this.loadTiyaoGroup(start, end);
-                return (data[juanFile] as CollatedJuan) || null;
-            } catch {
-                return null;
-            }
-        }
-
-        // 特殊文件: juanshou* → tiyao/juanshou.json, fulu → tiyao/fulu.json
-        let specialKey: string;
-        if (name.startsWith('juanshou')) {
-            specialKey = 'juanshou';
-        } else if (name === 'fulu') {
-            specialKey = 'fulu';
-        } else {
-            specialKey = 'other';
-        }
-        try {
-            const data = await this.fetchJson<Record<string, unknown>>(
-                `${this.basePath}/tiyao/${specialKey}.json`
+            return await this.fetchJson<CollatedJuan>(
+                `${this.basePath}/items/${workId}/collated_edition/${juanFile}`
             );
-            return (data[juanFile] as CollatedJuan) || null;
         } catch {
             return null;
         }
