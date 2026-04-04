@@ -364,6 +364,18 @@ export class BundleStorage implements IndexStorage {
         if (juanFile.includes('..') || !juanFile.endsWith('.json')) return null;
         const name = juanFile.replace('.json', '');
 
+        // Work-specific collated edition: stored in L1 chunks as {workId}/collated_edition/{juanFile}
+        const prefix = workId.substring(0, 2);
+        try {
+            const chunk = await this.loadChunk(prefix);
+            const key = `${workId}/collated_edition/${juanFile}`;
+            if (chunk[key]) {
+                return chunk[key] as CollatedJuan;
+            }
+        } catch {
+            // fall through to tiyao paths
+        }
+
         // 普通卷: juanNNN → tiyao/juan-001-010.json
         const juanMatch = name.match(/^juan(\d+)$/);
         if (juanMatch) {
