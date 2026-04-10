@@ -3,6 +3,8 @@ import type { IndexEntry, IndexType, ResourceProgress, ResourceProgressItem, Res
 import type { IndexStorage } from '../storage/types';
 import { useT } from '../i18n';
 import { formatTemplate } from '../i18n';
+import { FeedbackList } from './FeedbackList';
+import type { FeedbackItem } from './FeedbackList';
 
 export interface RecommendedItem {
     id: string;
@@ -20,6 +22,8 @@ export interface HomePageProps {
     activeTab?: TabKey;
     /** tab 切换回调 */
     onTabChange?: (tab: TabKey) => void;
+    /** 反馈 API 地址（传入则显示反馈 tab） */
+    feedbackApiUrl?: string;
 }
 
 interface Stats {
@@ -28,7 +32,7 @@ interface Stats {
     collections: number;
 }
 
-export type TabKey = 'recommend' | 'catalog' | 'site';
+export type TabKey = 'recommend' | 'catalog' | 'site' | 'feedback';
 
 const DEFAULT_RECOMMENDED: RecommendedItem[] = [
     // 推薦叢編
@@ -49,11 +53,14 @@ export const HomePage: React.FC<HomePageProps> = ({
     recommendedIds,
     activeTab: controlledTab,
     onTabChange,
+    feedbackApiUrl,
 }) => {
     const t = useT();
     const [stats, setStats] = useState<Stats | null>(null);
     const [recommended, setRecommended] = useState<(IndexEntry & { group?: string; fallbackDescription?: string })[]>([]);
     const [internalTab, setInternalTab] = useState<TabKey>('recommend');
+    const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
+    const [feedbackLoading, setFeedbackLoading] = useState(false);
     const activeTab = controlledTab ?? internalTab;
     const setActiveTab = (tab: TabKey) => {
         setInternalTab(tab);
@@ -160,6 +167,21 @@ export const HomePage: React.FC<HomePageProps> = ({
         return () => { cancelled = true; };
     }, [transport]);
 
+    // 加载反馈列表
+    useEffect(() => {
+        if (!feedbackApiUrl || activeTab !== 'feedback') return;
+        let cancelled = false;
+        setFeedbackLoading(true);
+        fetch(feedbackApiUrl)
+            .then(r => r.json())
+            .then(data => {
+                if (!cancelled && data.success) setFeedbackItems(data.items || []);
+            })
+            .catch(() => {})
+            .finally(() => { if (!cancelled) setFeedbackLoading(false); });
+        return () => { cancelled = true; };
+    }, [feedbackApiUrl, activeTab]);
+
     const getIcon = (type: IndexType) => {
         switch (type) {
             case 'work': return '✍️';
@@ -199,6 +221,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                         active={activeTab === 'site'}
                         onClick={() => setActiveTab('site')}
                     />
+                    {feedbackApiUrl && (
+                        <TabButton
+                            label={t.home.feedbackTab}
+                            active={activeTab === 'feedback'}
+                            onClick={() => setActiveTab('feedback')}
+                        />
+                    )}
                 </div>
 
                 {activeTab === 'recommend' && (
@@ -217,6 +246,10 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                 {activeTab === 'site' && (
                     <SiteProgressContent progress={siteProgress} t={t} totalWorks={stats?.works ?? 0} />
+                )}
+
+                {activeTab === 'feedback' && feedbackApiUrl && (
+                    <FeedbackList items={feedbackItems} loading={feedbackLoading} />
                 )}
             </div>
 

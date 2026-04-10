@@ -139,6 +139,7 @@ export const zhHant: LocaleMessages = {
         catalogTab: '叢書目錄',
         siteTab: '在線資源',
         recommendTab: '推薦',
+        feedbackTab: '反饋',
         statusInProgress: '進行中',
         statusDone: '已完成',
         statusTodo: '未開始',

@@ -18,6 +18,8 @@ export interface IndexAppProps {
     onEntryClick?: (entry: IndexEntry) => void;
     /** 首页推荐条目 */
     recommendedIds?: RecommendedItem[];
+    /** 详情面板 tab 栏右侧自定义内容（如繁简切换） */
+    headerRight?: React.ReactNode;
 }
 
 /**
@@ -29,6 +31,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
     hideModeIndicator = true,
     onEntryClick: externalEntryClick,
     recommendedIds,
+    headerRight,
 }) => {
     const t = useT();
     const { convert } = useConvert();
@@ -161,48 +164,57 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                 </div>
             ) : detailData ? (
                 <>
-                    {/* Tab 栏 */}
-                    {showTabs && (
+                    {/* Tab 栏 + headerRight */}
+                    {(showTabs || headerRight) && (
                         <div style={{
                             display: 'flex',
-                            gap: '0',
+                            alignItems: 'center',
                             borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
                             padding: isMobile ? '0 12px' : '0 48px',
                             background: 'var(--bim-input-bg, #fff)',
                             flexShrink: 0,
                             overflowX: isMobile ? 'auto' : undefined,
                         }}>
-                            <button
-                                onClick={() => setActiveTab('detail')}
-                                style={tabBtnStyle(activeTab === 'detail')}
-                            >
-                                {t.detailTab.basicInfo}
-                            </button>
-                            {detailData.type === 'collection' && catalogLoading && catalogList.length === 0 && (
-                                <button
-                                    onClick={() => {}}
-                                    style={tabBtnStyle(false)}
-                                >
-                                    {t.detailTab.catalog}<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
-                                </button>
+                            {showTabs && (
+                                <>
+                                    <button
+                                        onClick={() => setActiveTab('detail')}
+                                        style={tabBtnStyle(activeTab === 'detail')}
+                                    >
+                                        {t.detailTab.basicInfo}
+                                    </button>
+                                    {detailData.type === 'collection' && catalogLoading && catalogList.length === 0 && (
+                                        <button
+                                            onClick={() => {}}
+                                            style={tabBtnStyle(false)}
+                                        >
+                                            {t.detailTab.catalog}<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
+                                        </button>
+                                    )}
+                                    {detailData.type === 'collection' && catalogList.map((cat) => (
+                                        <button
+                                            key={cat.resource_id}
+                                            onClick={() => setActiveTab(`catalog:${cat.resource_id}`)}
+                                            style={tabBtnStyle(activeTab === `catalog:${cat.resource_id}`)}
+                                        >
+                                            {cat.short_name ? `${convert(cat.short_name)}${t.detailTab.catalogSuffix}` : t.detailTab.collectionCatalog}
+                                        </button>
+                                    ))}
+                                    {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
+                                        <button
+                                            onClick={() => setActiveTab('collated')}
+                                            style={tabBtnStyle(activeTab === 'collated')}
+                                        >
+                                            {t.detailTab.collatedEdition}
+                                            {collatedLoading && <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>}
+                                        </button>
+                                    )}
+                                </>
                             )}
-                            {detailData.type === 'collection' && catalogList.map((cat) => (
-                                <button
-                                    key={cat.resource_id}
-                                    onClick={() => setActiveTab(`catalog:${cat.resource_id}`)}
-                                    style={tabBtnStyle(activeTab === `catalog:${cat.resource_id}`)}
-                                >
-                                    {cat.short_name ? `${convert(cat.short_name)}${t.detailTab.catalogSuffix}` : t.detailTab.collectionCatalog}
-                                </button>
-                            ))}
-                            {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
-                                <button
-                                    onClick={() => setActiveTab('collated')}
-                                    style={tabBtnStyle(activeTab === 'collated')}
-                                >
-                                    {t.detailTab.collatedEdition}
-                                    {collatedLoading && <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>}
-                                </button>
+                            {headerRight && (
+                                <div style={{ marginLeft: 'auto', flexShrink: 0, padding: '4px 0' }}>
+                                    {headerRight}
+                                </div>
                             )}
                         </div>
                     )}

@@ -97,4 +97,7 @@ export interface IndexStorage {
 
     /** 获取推荐古籍数据 */
     getRecommended?(): Promise<RecommendedData | null>;
+
+    /** 获取资源类型统计（有图片/文字资源的作品数） */
+    getResourceCounts?(): Promise<{ hasText: number; hasImage: number }>;
 }

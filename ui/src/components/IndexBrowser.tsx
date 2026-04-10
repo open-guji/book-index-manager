@@ -97,7 +97,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     const [recentEntries, setRecentEntries] = useState<IndexEntry[]>([]);
     const [recentLoading, setRecentLoading] = useState(false);
     const [recentExpanded, setRecentExpanded] = useState(false);
-    const [stats, setStats] = useState<{ works: number; books: number; collections: number } | null>(null);
+    const [stats, setStats] = useState<{ works: number; books: number; collections: number; hasText?: number; hasImage?: number } | null>(null);
     const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
     const initialSearchDone = useRef(false);
 
@@ -142,14 +142,18 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     useEffect(() => {
         let cancelled = false;
         const types: IndexType[] = ['work', 'book', 'collection'];
-        Promise.all(
+        const entriesP = Promise.all(
             types.map(t => transport.loadEntries(t, { page: 1, pageSize: 1 }).catch(() => ({ total: 0 })))
-        ).then(results => {
+        );
+        const countsP = transport.getResourceCounts?.().catch(() => null) ?? Promise.resolve(null);
+        Promise.all([entriesP, countsP]).then(([results, counts]) => {
             if (cancelled) return;
             setStats({
                 works: results[0].total,
                 books: results[1].total,
                 collections: results[2].total,
+                hasText: counts?.hasText,
+                hasImage: counts?.hasImage,
             });
         });
         return () => { cancelled = true; };
@@ -292,12 +296,23 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     padding: '0 20px 8px',
                     fontSize: '12px',
                     color: 'var(--bim-desc-fg, #999)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
                 }}>
-                    {t.indexType.work} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.works.toLocaleString()}</strong>
-                    <span style={{ margin: '0 6px' }}>·</span>
-                    {t.indexType.book} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.books.toLocaleString()}</strong>
-                    <span style={{ margin: '0 6px' }}>·</span>
-                    {t.indexType.collection} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.collections.toLocaleString()}</strong>
+                    <span>
+                        {t.indexType.work} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.works.toLocaleString()}</strong>
+                        <span style={{ margin: '0 6px' }}>·</span>
+                        {t.indexType.book} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.books.toLocaleString()}</strong>
+                        <span style={{ margin: '0 6px' }}>·</span>
+                        {t.indexType.collection} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.collections.toLocaleString()}</strong>
+                    </span>
+                    {stats.hasImage != null && stats.hasText != null && (
+                        <span>
+                            {t.resourceType.image} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.hasImage.toLocaleString()}</strong>
+                            <span style={{ margin: '0 6px' }}>·</span>
+                            {t.resourceType.text} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.hasText.toLocaleString()}</strong>
+                        </span>
+                    )}
                 </div>
             )}
 

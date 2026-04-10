@@ -11,6 +11,8 @@ export interface FeedbackDialogProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (data: FeedbackData) => Promise<void>;
+    /** 反馈列表链接，提交成功后展示 */
+    feedbackListUrl?: string;
 }
 
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
@@ -20,7 +22,7 @@ const TYPE_OPTIONS: { value: FeedbackType; label: string; icon: string; placehol
     { value: 'resource', label: '添加资源', icon: '📚', placeholder: '请提供完整资源链接和简要版本说明' },
 ];
 
-export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose, onSubmit }) => {
+export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose, onSubmit, feedbackListUrl }) => {
     const [type, setType] = useState<FeedbackType | null>(null);
     const [content, setContent] = useState('');
     const [state, setState] = useState<SubmitState>('idle');
@@ -89,6 +91,11 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose,
                     <div style={successStyle}>
                         <span style={{ fontSize: '32px' }}>✓</span>
                         <div style={{ fontSize: '15px', fontWeight: 500 }}>感谢您的反馈！</div>
+                        {feedbackListUrl && (
+                            <a href={feedbackListUrl} style={{ fontSize: '13px', color: 'var(--bim-primary, #2563eb)', marginTop: '8px' }}>
+                                查看反馈列表 →
+                            </a>
+                        )}
                     </div>
                 ) : (
                     <>

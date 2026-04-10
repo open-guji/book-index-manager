@@ -245,6 +245,17 @@ export class BundleStorage implements IndexStorage {
 
     // ─── IndexStorage 实现 ───
 
+    async getResourceCounts(): Promise<{ hasText: number; hasImage: number }> {
+        const all = await this.ensureLoaded();
+        let hasText = 0, hasImage = 0;
+        for (const e of all) {
+            if (e.type !== 'work') continue;
+            if (e.has_text) hasText++;
+            if (e.has_image) hasImage++;
+        }
+        return { hasText, hasImage };
+    }
+
     async loadEntries(type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>> {
         const all = await this.ensureLoaded();
         let filtered = all.filter(e => e.type === type);

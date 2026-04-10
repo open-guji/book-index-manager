@@ -5,11 +5,14 @@ import type { FeedbackData } from './FeedbackDialog';
 export interface FeedbackButtonProps {
     onSubmit: (data: FeedbackData) => Promise<void>;
     position?: { bottom?: number; right?: number };
+    /** 反馈列表链接，提交成功后展示 */
+    feedbackListUrl?: string;
 }
 
 export const FeedbackButton: React.FC<FeedbackButtonProps> = ({
     onSubmit,
     position = { bottom: 24, right: 24 },
+    feedbackListUrl,
 }) => {
     const [open, setOpen] = useState(false);
 
@@ -29,7 +32,7 @@ export const FeedbackButton: React.FC<FeedbackButtonProps> = ({
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                 </svg>
             </button>
-            <FeedbackDialog isOpen={open} onClose={() => setOpen(false)} onSubmit={onSubmit} />
+            <FeedbackDialog isOpen={open} onClose={() => setOpen(false)} onSubmit={onSubmit} feedbackListUrl={feedbackListUrl} />
         </>
     );
 };

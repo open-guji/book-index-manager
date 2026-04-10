@@ -343,7 +343,7 @@ function App() {
                               (detailData.type === 'work' && (collatedIndex || collatedLoading))) && (
                                 <div style={{
                                     display: 'flex',
-                                    gap: '0',
+                                    alignItems: 'center',
                                     borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
                                     padding: isMobile ? '0 12px' : '0 48px',
                                     background: 'var(--bim-input-bg, #fff)',
@@ -384,6 +384,9 @@ function App() {
                                             )}
                                         </button>
                                     )}
+                                    <div style={{ marginLeft: 'auto', flexShrink: 0, padding: '4px 0' }}>
+                                        <LocaleToggle />
+                                    </div>
                                 </div>
                             )}
                             <div style={{ padding: isMobile ? '16px 12px' : '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>

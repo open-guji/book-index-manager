@@ -112,4 +112,10 @@ export class DevApiStorage implements IndexStorage {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
     }
+
+    async getResourceCounts(): Promise<{ hasText: number; hasImage: number }> {
+        const res = await fetch(`${this.baseUrl}/api/resource-counts`);
+        if (!res.ok) return { hasText: 0, hasImage: 0 };
+        return res.json();
+    }
 }

@@ -32,13 +32,25 @@ export interface LocaleProviderProps {
     children: React.ReactNode;
 }
 
+const DEFAULT_LOCALE: Locale = 'zh-Hant';
+
 export const LocaleProvider: React.FC<LocaleProviderProps> = ({
     locale: controlledLocale,
     onLocaleChange,
     children,
 }) => {
-    const [internalLocale, setInternalLocale] = useState<Locale>(controlledLocale ?? loadLocale() ?? 'zh-Hant');
+    // SSR 安全：初始渲染始终用默认值，mount 后再从 localStorage 读取
+    const [internalLocale, setInternalLocale] = useState<Locale>(controlledLocale ?? DEFAULT_LOCALE);
     const locale = controlledLocale ?? internalLocale;
+
+    // mount 后从 localStorage 恢复用户偏好
+    useEffect(() => {
+        if (controlledLocale) return;
+        const stored = loadLocale();
+        if (stored && stored !== internalLocale) {
+            setInternalLocale(stored);
+        }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // 延迟加载 opencc-js converter
     const [converter, setConverter] = useState<((text: string) => string) | null>(null);

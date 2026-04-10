@@ -139,6 +139,7 @@ export const zhHans: LocaleMessages = {
         catalogTab: '丛书目录',
         siteTab: '在线资源',
         recommendTab: '推荐',
+        feedbackTab: '反馈',
         statusInProgress: '进行中',
         statusDone: '已完成',
         statusTodo: '未开始',

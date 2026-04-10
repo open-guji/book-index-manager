@@ -137,6 +137,7 @@ export interface LocaleMessages {
         catalogTab: string;
         siteTab: string;
         recommendTab: string;
+        feedbackTab: string;
         statusInProgress: string;
         statusDone: string;
         statusTodo: string;

@@ -682,6 +682,18 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     return;
                 }
 
+                // GET /api/resource-counts — 资源类型统计
+                if (pathname === '/api/resource-counts' && req.method === 'GET') {
+                    const entries = getAllEntries(workspaceRoot, 'work');
+                    let hasText = 0, hasImage = 0;
+                    for (const e of entries) {
+                        if (e.has_text) hasText++;
+                        if (e.has_image) hasImage++;
+                    }
+                    sendJson({ hasText, hasImage });
+                    return;
+                }
+
                 // GET /api/resource-site-progress — 在線資源網站整理進度
                 if (pathname === '/api/resource-site-progress' && req.method === 'GET') {
                     const resourceFile = path.join(workspaceRoot, 'book-index-draft', 'resource-site.json');

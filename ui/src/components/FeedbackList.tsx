@@ -7,6 +7,8 @@ export interface FeedbackItem {
     createdAt: string;
     status: 'pending' | 'resolved';
     reply?: string;
+    pageUrl?: string;
+    resourceId?: string;
 }
 
 export interface FeedbackListProps {
@@ -63,6 +65,22 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({ items, loading }) =>
                             <span style={timeStyle}>{formatTime(item.createdAt)}</span>
                         </div>
 
+                        {/* Source info */}
+                        {(item.resourceId || item.pageUrl) && (
+                            <div style={sourceStyle}>
+                                {item.resourceId && (
+                                    <a href={`/book-index?id=${item.resourceId}`} style={sourceLinkStyle}>
+                                        {item.resourceId}
+                                    </a>
+                                )}
+                                {item.pageUrl && !item.resourceId && (
+                                    <a href={item.pageUrl} style={sourceLinkStyle}>
+                                        {item.pageUrl.replace(/^https?:\/\/[^/]+/, '')}
+                                    </a>
+                                )}
+                            </div>
+                        )}
+
                         {/* Content */}
                         <div style={contentStyle}>{item.content}</div>
 
@@ -105,6 +123,15 @@ const badgeStyle: React.CSSProperties = {
 
 const timeStyle: React.CSSProperties = {
     fontSize: '12px', color: 'var(--bim-desc-fg, #999)',
+};
+
+const sourceStyle: React.CSSProperties = {
+    fontSize: '12px', marginBottom: '6px',
+};
+
+const sourceLinkStyle: React.CSSProperties = {
+    color: 'var(--bim-primary, #0078d4)', textDecoration: 'none',
+    borderBottom: '1px dashed var(--bim-primary, #0078d4)',
 };
 
 const contentStyle: React.CSSProperties = {
