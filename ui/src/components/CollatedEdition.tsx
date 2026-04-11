@@ -534,6 +534,68 @@ function OtherSection({ section }: { section: CollatedSection }) {
     );
 }
 
+/** 原文模式：将 sections 渲染为连续文本 */
+function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; onNavigate?: (id: string) => void }) {
+    const { convert } = useConvert();
+    // Group sections by 类
+    const groups: { category: string; items: CollatedSection[] }[] = [];
+    let current: { category: string; items: CollatedSection[] } | null = null;
+
+    for (const s of sections) {
+        if (s.type === '类') {
+            if (current) groups.push(current);
+            current = { category: s.title, items: [] };
+        } else if (s.type === '书' && current) {
+            current.items.push(s);
+        } else if (s.type === '序') {
+            if (current) {
+                current.items.push(s);
+                groups.push(current);
+                current = null;
+            } else {
+                groups.push({ category: '', items: [s] });
+            }
+        }
+    }
+    if (current) groups.push(current);
+
+    return (
+        <div style={{ fontSize: '15px', lineHeight: 2.2, color: 'var(--bim-fg, #333)', textAlign: 'justify' }}>
+            {groups.map((g, gi) => (
+                <div key={gi} style={{ marginBottom: '20px' }}>
+                    {g.category && (
+                        <h4 style={{ fontSize: '15px', fontWeight: 600, margin: '16px 0 8px', color: 'var(--bim-fg, #1a1a1a)' }}>
+                            {convert(g.category.replace(/^[^·]*·?/, ''))}
+                        </h4>
+                    )}
+                    {g.items.map((s, si) => {
+                        if (s.type === '序') {
+                            return <p key={si} style={{ margin: '12px 0', textIndent: '2em' }}>{convert(s.content || '')}</p>;
+                        }
+                        const text = s.content || s.title;
+                        return (
+                            <span key={si}>
+                                {onNavigate && s.work_id ? (
+                                    <a
+                                        href={`/${s.work_id}`}
+                                        onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(s.work_id!); }}
+                                        style={{ color: 'var(--bim-fg, #333)', textDecoration: 'underline', textDecorationColor: 'var(--bim-widget-border, #ddd)', textUnderlineOffset: '3px', cursor: 'pointer' }}
+                                        title={convert(s.title)}
+                                    >
+                                        {convert(text)}
+                                    </a>
+                                ) : (
+                                    convert(text)
+                                )}
+                            </span>
+                        );
+                    })}
+                </div>
+            ))}
+        </div>
+    );
+}
+
 function JuanContent({
     juan,
     searchQuery,
@@ -544,6 +606,8 @@ function JuanContent({
     onNavigate?: (id: string) => void;
 }) {
     const { convert } = useConvert();
+    const [viewMode, setViewMode] = useState<'catalog' | 'raw'>('catalog');
+
     const filteredSections = useMemo(() => {
         if (!searchQuery.trim()) return juan.sections;
         const q = searchQuery.trim().toLowerCase();
@@ -552,7 +616,8 @@ function JuanContent({
             s.book_title?.toLowerCase().includes(q) ||
             s.author?.toLowerCase().includes(q) ||
             s.author_info?.toLowerCase().includes(q) ||
-            s.summary?.toLowerCase().includes(q)
+            s.summary?.toLowerCase().includes(q) ||
+            s.content?.toLowerCase().includes(q)
         );
     }, [juan.sections, searchQuery]);
 
@@ -560,7 +625,7 @@ function JuanContent({
 
     return (
         <div>
-            {/* 卷标题 */}
+            {/* 卷标题 + 模式切换 */}
             <div style={{
                 display: 'flex',
                 alignItems: 'baseline',
@@ -575,6 +640,25 @@ function JuanContent({
                 }}>
                     {convert(juan.title)}
                 </h3>
+                <div style={{ display: 'flex', gap: '2px', marginLeft: '8px' }}>
+                    {(['catalog', 'raw'] as const).map(mode => (
+                        <button
+                            key={mode}
+                            onClick={() => setViewMode(mode)}
+                            style={{
+                                padding: '2px 8px',
+                                fontSize: '11px',
+                                border: '1px solid var(--bim-widget-border, #ddd)',
+                                borderRadius: mode === 'catalog' ? '3px 0 0 3px' : '0 3px 3px 0',
+                                background: viewMode === mode ? 'var(--bim-primary, #8e6f3e)' : 'var(--bim-input-bg, #fff)',
+                                color: viewMode === mode ? '#fff' : 'var(--bim-desc-fg, #999)',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            {mode === 'catalog' ? '目錄' : '原文'}
+                        </button>
+                    ))}
+                </div>
                 <span style={{
                     fontSize: '12px',
                     color: 'var(--bim-desc-fg, #999)',
@@ -584,8 +668,13 @@ function JuanContent({
                 </span>
             </div>
 
-            {/* Sections */}
-            {filteredSections.map((section, i) => {
+            {/* 原文模式 */}
+            {viewMode === 'raw' && (
+                <RawTextView sections={filteredSections} onNavigate={onNavigate} />
+            )}
+
+            {/* 目录模式 */}
+            {viewMode === 'catalog' && filteredSections.map((section, i) => {
                 if (section.type === '书') {
                     return <BookSection key={i} section={section} onNavigate={onNavigate} />;
                 }
