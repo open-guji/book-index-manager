@@ -148,6 +148,39 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0 }: {
         if (hasActive) setExpanded(true);
     }, [hasActive]);
 
+    // 叶子分组且只有1个文件：直接渲染为按钮，不需要展开层级
+    if (group.files.length === 1 && !hasChildren) {
+        const f = group.files[0];
+        const isActive = activeFile === f;
+        return (
+            <button
+                onClick={() => onSelect(f)}
+                style={{
+                    display: 'inline-block',
+                    padding: '3px 8px',
+                    margin: '2px 0',
+                    marginLeft: `${8 + depth * 16}px`,
+                    border: isActive
+                        ? '1px solid var(--bim-primary, #8e6f3e)'
+                        : '1px solid var(--bim-widget-border, #e0e0e0)',
+                    borderRadius: '3px',
+                    background: isActive
+                        ? 'color-mix(in srgb, var(--bim-primary, #8e6f3e) 10%, transparent)'
+                        : 'transparent',
+                    color: isActive
+                        ? 'var(--bim-primary, #8e6f3e)'
+                        : 'var(--bim-fg, #333)',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: isActive ? 600 : 400,
+                    lineHeight: 1.4,
+                }}
+            >
+                {group.label}
+            </button>
+        );
+    }
+
     return (
         <div style={{ marginBottom: depth === 0 ? '4px' : '2px' }}>
             <div
@@ -277,7 +310,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
     const hasSummary = !!section.summary;
     const hasComment = !!section.comment;
     const hasAdditionalComment = !!section.additional_comment;
-    const annotation = extractAnnotation(section.content);
+    const annotation = section.author_info ? null : extractAnnotation(section.content);
     const hasContent = hasSummary || hasComment || hasAdditionalComment;
 
     return (
@@ -327,11 +360,27 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                         </span>
                     )}
                 </span>
+                {(section.author_info || section.author) && (
+                    <span style={{
+                        fontSize: '12px',
+                        fontWeight: 400,
+                        color: 'var(--bim-desc-fg, #999)',
+                        flexShrink: 0,
+                        whiteSpace: 'nowrap',
+                    }}>
+                        {convert(section.author_info || section.author)}
+                    </span>
+                )}
                 {annotation && (
                     <span style={{
                         fontSize: '12px',
                         fontWeight: 400,
                         color: 'var(--bim-desc-fg, #999)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        maxWidth: '50%',
+                        flexShrink: 1,
                     }}>
                         {convert(annotation)}
                     </span>
@@ -545,7 +594,8 @@ function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; on
         if (s.type === '类') {
             if (current) groups.push(current);
             current = { category: s.title, items: [] };
-        } else if (s.type === '书' && current) {
+        } else if (s.type === '书') {
+            if (!current) current = { category: '', items: [] };
             current.items.push(s);
         } else if (s.type === '序') {
             if (current) {
@@ -726,6 +776,14 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
     }, [onJuanChange]);
 
     const index = indexProp || indexData;
+
+    // 当外部 indexProp 到达时，清除内部 loading 状态
+    useEffect(() => {
+        if (indexProp) {
+            setLoading(false);
+            setError(null);
+        }
+    }, [indexProp]);
 
     // 加载卷列表
     useEffect(() => {
