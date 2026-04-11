@@ -260,12 +260,24 @@ function SectionTypeBadge({ type }: { type: string }) {
     );
 }
 
+/** 从 content 中提取班固自注（书名篇数之后的注文） */
+function extractAnnotation(content?: string): string | null {
+    if (!content) return null;
+    // Pattern: 书名+篇数+句号 后面的文字就是班固自注
+    // e.g. "《易傳周氏》二篇。字王孫也。" → annotation = "字王孫也。"
+    // e.g. "《服氏》二篇。" → no annotation
+    const m = content.match(/^[^。]*。(.+)$/s);
+    if (m && m[1].trim()) return m[1].trim();
+    return null;
+}
+
 function BookSection({ section, onNavigate }: { section: CollatedSection; onNavigate?: (id: string) => void }) {
     const { convert } = useConvert();
     const [expanded, setExpanded] = useState(false);
     const hasSummary = !!section.summary;
     const hasComment = !!section.comment;
     const hasAdditionalComment = !!section.additional_comment;
+    const annotation = extractAnnotation(section.content);
     const hasContent = hasSummary || hasComment || hasAdditionalComment;
 
     return (
@@ -315,6 +327,15 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                         </span>
                     )}
                 </span>
+                {annotation && (
+                    <span style={{
+                        fontSize: '12px',
+                        fontWeight: 400,
+                        color: 'var(--bim-desc-fg, #999)',
+                    }}>
+                        {convert(annotation)}
+                    </span>
+                )}
                 {section.edition && (
                     <span style={{
                         fontSize: '11px',
@@ -554,20 +575,6 @@ function JuanContent({
                 }}>
                     {convert(juan.title)}
                 </h3>
-                {juan.source_url && (
-                    <a
-                        href={juan.source_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                            fontSize: '12px',
-                            color: 'var(--bim-link-fg, #0066cc)',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        原文 ↗
-                    </a>
-                )}
                 <span style={{
                     fontSize: '12px',
                     color: 'var(--bim-desc-fg, #999)',
