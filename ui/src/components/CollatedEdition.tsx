@@ -881,6 +881,58 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
                     选择一卷查看内容
                 </div>
             ) : null}
+
+            {/* 参考文献 */}
+            {index.references && index.references.length > 0 && (
+                <div style={{
+                    marginTop: '32px',
+                    paddingTop: '16px',
+                    borderTop: '1px solid var(--bim-widget-border, #eee)',
+                }}>
+                    <div style={{
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: 'var(--bim-desc-fg, #aaa)',
+                        marginBottom: '8px',
+                        letterSpacing: '2px',
+                    }}>
+                        參考文獻
+                    </div>
+                    {index.references.map((ref, i) => (
+                        <div key={i} style={{
+                            fontSize: '12px',
+                            color: 'var(--bim-desc-fg, #999)',
+                            lineHeight: 1.8,
+                            paddingLeft: '12px',
+                        }}>
+                            <span>{i + 1}. </span>
+                            {ref.url ? (
+                                <a
+                                    href={ref.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        color: 'var(--bim-desc-fg, #999)',
+                                        textDecoration: 'underline',
+                                        textDecorationColor: 'var(--bim-widget-border, #ddd)',
+                                        textUnderlineOffset: '2px',
+                                    }}
+                                >
+                                    {ref.title}
+                                </a>
+                            ) : (
+                                <span>{ref.title}</span>
+                            )}
+                            {ref.author && (
+                                <span>，{ref.author}</span>
+                            )}
+                            {ref.note && (
+                                <span>。{ref.note}</span>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

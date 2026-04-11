@@ -411,12 +411,26 @@ export interface JuanGroup {
     children?: JuanGroup[];
 }
 
+/** 整理本参考文献 */
+export interface CollatedReference {
+    /** 文献标题 */
+    title: string;
+    /** 作者 */
+    author?: string;
+    /** URL（网络资源） */
+    url?: string;
+    /** 备注说明 */
+    note?: string;
+}
+
 /** 整理本索引（卷列表） */
 export interface CollatedEditionIndex {
     work_id: string;
     total_juan: number;
     juan_files: string[];
     juan_groups?: JuanGroup[];
+    /** 参考文献 */
+    references?: CollatedReference[];
 }
 
 /** 资料来源项 */
