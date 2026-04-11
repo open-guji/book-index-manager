@@ -4,6 +4,9 @@ import { IndexBrowser } from '../components/IndexBrowser';
 import { IndexDetail } from '../components/IndexDetail';
 import { CollectionCatalog } from '../components/CollectionCatalog';
 import { CollatedEdition } from '../components/CollatedEdition';
+import { FeedbackList } from '../components/FeedbackList';
+import { FeedbackForm } from '../components/FeedbackForm';
+import type { FeedbackItem } from '../components/FeedbackList';
 import { HomePage } from '../components/HomePage';
 import type { TabKey } from '../components/HomePage';
 import { LocaleToggle } from '../components/LocaleToggle';
@@ -338,57 +341,60 @@ function App() {
                         </div>
                     ) : detailData ? (
                         <>
-                            {/* Tab 栏：丛编目录 / 整理本 / 分类目录 */}
-                            {((detailData.type === 'collection' && (catalogList.length > 0 || catalogLoading)) ||
-                              (detailData.type === 'work' && (collatedIndex || collatedLoading))) && (
-                                <div style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
-                                    padding: isMobile ? '0 12px' : '0 48px',
-                                    background: 'var(--bim-input-bg, #fff)',
-                                    flexShrink: 0,
-                                    overflowX: isMobile ? 'auto' : undefined,
-                                }}>
+                            {/* Tab 栏 */}
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                padding: isMobile ? '0 12px' : '0 48px',
+                                background: 'var(--bim-input-bg, #fff)',
+                                flexShrink: 0,
+                                overflowX: isMobile ? 'auto' : undefined,
+                            }}>
+                                <button
+                                    onClick={() => setActiveTab('detail')}
+                                    style={tabBtnStyle(activeTab === 'detail')}
+                                >
+                                    {t.detailTab.basicInfo}
+                                </button>
+                                {detailData.type === 'collection' && catalogLoading && catalogList.length === 0 && (
                                     <button
-                                        onClick={() => setActiveTab('detail')}
-                                        style={tabBtnStyle(activeTab === 'detail')}
+                                        onClick={() => {}}
+                                        style={tabBtnStyle(false)}
                                     >
-                                        {t.detailTab.basicInfo}
+                                        {t.detailTab.catalog}<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
                                     </button>
-                                    {detailData.type === 'collection' && catalogLoading && catalogList.length === 0 && (
-                                        <button
-                                            onClick={() => {}}
-                                            style={tabBtnStyle(false)}
-                                        >
-                                            {t.detailTab.catalog}<span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
-                                        </button>
-                                    )}
-                                    {detailData.type === 'collection' && catalogList.map((cat) => (
-                                        <button
-                                            key={cat.resource_id}
-                                            onClick={() => setActiveTab(`catalog:${cat.resource_id}`)}
-                                            style={tabBtnStyle(activeTab === `catalog:${cat.resource_id}`)}
-                                        >
-                                            {cat.short_name ? `${convert(cat.short_name)}${t.detailTab.catalogSuffix}` : t.detailTab.collectionCatalog}
-                                        </button>
-                                    ))}
-                                    {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
-                                        <button
-                                            onClick={() => setActiveTab('collated')}
-                                            style={tabBtnStyle(activeTab === 'collated')}
-                                        >
-                                            {t.detailTab.collatedEdition}
-                                            {collatedLoading && (
-                                                <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
-                                            )}
-                                        </button>
-                                    )}
-                                    <div style={{ marginLeft: 'auto', flexShrink: 0, padding: '4px 0' }}>
-                                        <LocaleToggle />
-                                    </div>
+                                )}
+                                {detailData.type === 'collection' && catalogList.map((cat) => (
+                                    <button
+                                        key={cat.resource_id}
+                                        onClick={() => setActiveTab(`catalog:${cat.resource_id}`)}
+                                        style={tabBtnStyle(activeTab === `catalog:${cat.resource_id}`)}
+                                    >
+                                        {cat.short_name ? `${convert(cat.short_name)}${t.detailTab.catalogSuffix}` : t.detailTab.collectionCatalog}
+                                    </button>
+                                ))}
+                                {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
+                                    <button
+                                        onClick={() => setActiveTab('collated')}
+                                        style={tabBtnStyle(activeTab === 'collated')}
+                                    >
+                                        {t.detailTab.collatedEdition}
+                                        {collatedLoading && (
+                                            <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
+                                        )}
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => setActiveTab('feedback')}
+                                    style={tabBtnStyle(activeTab === 'feedback')}
+                                >
+                                    反馈
+                                </button>
+                                <div style={{ marginLeft: 'auto', flexShrink: 0, padding: '4px 0' }}>
+                                    <LocaleToggle />
                                 </div>
-                            )}
+                            </div>
                             <div style={{ padding: isMobile ? '16px 12px' : '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>
                                 {activeTab === 'detail' ? (
                                     <IndexDetail
@@ -410,6 +416,8 @@ function App() {
                                         activeJuan={activeJuan}
                                         onJuanChange={setActiveJuan}
                                     />
+                                ) : activeTab === 'feedback' ? (
+                                    <FeedbackTabContent resourceId={detailData.id} />
                                 ) : null}
                             </div>
                         </>
@@ -432,6 +440,47 @@ function App() {
                     />
                 </div>
             )}
+        </div>
+    );
+}
+
+const FEEDBACK_API = '/api/feedback';
+
+function FeedbackTabContent({ resourceId }: { resourceId: string }) {
+    const [items, setItems] = React.useState<FeedbackItem[]>([]);
+    const [loading, setLoading] = React.useState(true);
+
+    const loadFeedback = React.useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await fetch(`${FEEDBACK_API}?resourceId=${encodeURIComponent(resourceId)}`);
+            const data = await res.json();
+            if (data.success) setItems(data.items);
+        } catch { /* ignore */ }
+        finally { setLoading(false); }
+    }, [resourceId]);
+
+    React.useEffect(() => { loadFeedback(); }, [loadFeedback]);
+
+    const handleSubmit = async (data: { type: string; content: string }) => {
+        const res = await fetch(FEEDBACK_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...data, pageUrl: window.location.href, resourceId }),
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => null);
+            throw new Error(err?.error || '提交失败');
+        }
+        setTimeout(() => loadFeedback(), 500);
+    };
+
+    return (
+        <div>
+            <FeedbackList items={items} loading={loading} />
+            <div style={{ marginTop: '24px' }}>
+                <FeedbackForm onSubmit={handleSubmit} />
+            </div>
         </div>
     );
 }

@@ -44,6 +44,14 @@ export default defineConfig(({ mode }) => {
       react(),
       bookIndexApiPlugin(DATA_WORKSPACE),
     ],
+    server: {
+      proxy: {
+        '/api/feedback': {
+          target: 'https://www.kaiyuanguji.com',
+          changeOrigin: true,
+        },
+      },
+    },
     build: {
       outDir: 'dist-app',
       emptyOutDir: true,

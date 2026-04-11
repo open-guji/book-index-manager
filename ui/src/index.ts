@@ -119,6 +119,8 @@ export { FeedbackDialog } from './components/FeedbackDialog';
 export type { FeedbackDialogProps, FeedbackData, FeedbackType } from './components/FeedbackDialog';
 export { FeedbackButton } from './components/FeedbackButton';
 export type { FeedbackButtonProps } from './components/FeedbackButton';
+export { FeedbackForm } from './components/FeedbackForm';
+export type { FeedbackFormProps } from './components/FeedbackForm';
 export { FeedbackList } from './components/FeedbackList';
 export type { FeedbackListProps, FeedbackItem } from './components/FeedbackList';
 
