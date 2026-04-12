@@ -127,7 +127,7 @@ export class BundleStorage implements IndexStorage {
                     dynasty: item.dynasty,
                     role: item.role,
                     path: item.path,
-                    additional_titles: item.additional_titles,
+                    additional_titles: item.additional_titles?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
                     edition: item.edition,
                     juan_count: item.juan_count,
                     has_text: item.has_text,

@@ -188,7 +188,7 @@ export interface BaseDetailData {
     type: IndexType;
     description?: DescriptionInfo;
     authors?: AuthorInfo[];
-    additional_titles?: string[];
+    additional_titles?: (string | { book_title: string })[];
     additional_works?: AdditionalWork[];
     indexed_by?: IndexedByEntry[];
     publication_info?: PublicationInfo;

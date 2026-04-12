@@ -520,7 +520,7 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
 
 // ── 别名 ──
 
-function AdditionalTitlesList({ items }: { items: string[] }) {
+function AdditionalTitlesList({ items }: { items: (string | { book_title: string })[] }) {
     const t = useT();
     const { convert } = useConvert();
     if (!items.length) return null;
@@ -532,21 +532,24 @@ function AdditionalTitlesList({ items }: { items: string[] }) {
                 flexWrap: 'wrap',
                 gap: '6px',
             }}>
-                {items.map((title, i) => (
-                    <span key={i} style={{
-                        display: 'inline-flex',
-                        alignItems: 'baseline',
-                        gap: '3px',
-                        padding: '3px 8px',
-                        fontSize: '13px',
-                        color: 'var(--bim-fg, #333)',
-                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
-                        borderRadius: '4px',
-                        background: 'var(--bim-input-bg, #fff)',
-                    }}>
-                        {convert(title)}
-                    </span>
-                ))}
+                {items.map((item, i) => {
+                    const title = typeof item === 'string' ? item : item.book_title;
+                    return (
+                        <span key={i} style={{
+                            display: 'inline-flex',
+                            alignItems: 'baseline',
+                            gap: '3px',
+                            padding: '3px 8px',
+                            fontSize: '13px',
+                            color: 'var(--bim-fg, #333)',
+                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            borderRadius: '4px',
+                            background: 'var(--bim-input-bg, #fff)',
+                        }}>
+                            {convert(title)}
+                        </span>
+                    );
+                })}
             </div>
         </>
     );

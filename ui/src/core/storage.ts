@@ -166,9 +166,9 @@ export class BookIndexStorage {
             holder = loc;
         }
 
-        // 提取 additional_titles
+        // 提取 additional_titles（兼容 string 和 {book_title} 两种格式）
         const additionalTitles = Array.isArray(metadata.additional_titles)
-            ? (metadata.additional_titles as string[]).filter(t => typeof t === 'string' && t)
+            ? (metadata.additional_titles as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
             : undefined;
 
         // 提取 juan_count
@@ -386,7 +386,7 @@ export class BookIndexStorage {
                     }
 
                     const additionalTitles = Array.isArray(metadata.additional_titles)
-                        ? (metadata.additional_titles as string[]).filter(t => typeof t === 'string' && t)
+                        ? (metadata.additional_titles as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
                         : undefined;
 
                     let juanCount: number | undefined;

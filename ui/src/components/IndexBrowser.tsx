@@ -468,7 +468,10 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
 
     // 检查是否通过别名匹配
     const matchedAlias = query && entry.additional_titles
-        ? entry.additional_titles.find(a => a.toLowerCase().includes(query.toLowerCase()))
+        ? entry.additional_titles.find(a => {
+            const s = typeof a === 'string' ? a : (a as any)?.book_title;
+            return s?.toLowerCase().includes(query.toLowerCase());
+        })
         : undefined;
 
     return (

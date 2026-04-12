@@ -248,7 +248,7 @@ export class GithubStorage implements IndexStorage {
                     dynasty: item.dynasty,
                     role: item.role,
                     path: item.path,
-                    additional_titles: raw.additional_titles,
+                    additional_titles: raw.additional_titles?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
                     edition: raw.edition,
                     juan_count: raw.juan_count,
                     has_text: raw.has_text,
