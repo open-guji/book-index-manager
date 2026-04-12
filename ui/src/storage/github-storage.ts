@@ -123,8 +123,64 @@ export class GithubStorage implements IndexStorage {
         throw new Error(`Failed to fetch ${path} for ${repo} from all sources`);
     }
 
+    /** 探测 repo 是否存在索引目录（用轻量 HEAD 请求避免大量 404） */
+    private async probeIndex(repo: string): Promise<boolean> {
+        // 依次尝试各数据源，任一返回 2xx 即认为索引存在
+        const probePath = 'index/collections.json';
+
+        const githubUrl = `${this.config.baseUrl}/${this.config.org}/${repo}/main/${encodeURI(probePath)}`;
+        try {
+            const res = await fetch(githubUrl, {
+                method: 'HEAD',
+                signal: AbortSignal.timeout(this.config.timeout),
+            });
+            if (res.ok) return true;
+        } catch { /* try CDN */ }
+
+        for (const cdn of this.config.cdnUrls) {
+            const cdnUrl = `${cdn}/${this.config.org}/${repo}@main/${encodeURI(probePath)}`;
+            try {
+                const res = await fetch(cdnUrl, {
+                    method: 'HEAD',
+                    signal: AbortSignal.timeout(this.config.timeout),
+                });
+                if (res.ok) return true;
+            } catch { continue; }
+        }
+
+        // collections 可能不存在，再试 works/0.json
+        const worksProbe = 'index/works/0.json';
+        const githubUrl2 = `${this.config.baseUrl}/${this.config.org}/${repo}/main/${encodeURI(worksProbe)}`;
+        try {
+            const res = await fetch(githubUrl2, {
+                method: 'HEAD',
+                signal: AbortSignal.timeout(this.config.timeout),
+            });
+            if (res.ok) return true;
+        } catch { /* try CDN */ }
+
+        for (const cdn of this.config.cdnUrls) {
+            const cdnUrl = `${cdn}/${this.config.org}/${repo}@main/${encodeURI(worksProbe)}`;
+            try {
+                const res = await fetch(cdnUrl, {
+                    method: 'HEAD',
+                    signal: AbortSignal.timeout(this.config.timeout),
+                });
+                if (res.ok) return true;
+            } catch { continue; }
+        }
+
+        return false;
+    }
+
     /** 从分片文件加载并合并索引 */
     private async fetchIndex(repo: string): Promise<GithubIndexResponse> {
+        // 先探测 repo 是否有索引数据，避免大量 404
+        const hasIndex = await this.probeIndex(repo);
+        if (!hasIndex) {
+            return { books: {}, collections: {}, works: {} };
+        }
+
         const merged: GithubIndexResponse = { books: {}, collections: {}, works: {} };
 
         // collections (single file)

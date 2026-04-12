@@ -767,7 +767,7 @@ function BookVersionCard({ book, onNavigate, renderLink }: {
     const [collapsed, setCollapsed] = useState(false);
     const hasDetails = book.resources && book.resources.length > 0;
     const cardLabel = book.edition
-        ? `${convert(book.title) || book.id}（${convert(book.edition)}）`
+        ? convert(book.edition)
         : convert(book.title) || undefined;
 
     return (

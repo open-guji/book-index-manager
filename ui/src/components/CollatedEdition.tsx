@@ -624,7 +624,7 @@ function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; on
                         }
                         const text = s.content || s.title;
                         return (
-                            <span key={si}>
+                            <div key={si}>
                                 {onNavigate && s.work_id ? (
                                     <a
                                         href={`/${s.work_id}`}
@@ -637,7 +637,7 @@ function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; on
                                 ) : (
                                     convert(text)
                                 )}
-                            </span>
+                            </div>
                         );
                     })}
                 </div>
