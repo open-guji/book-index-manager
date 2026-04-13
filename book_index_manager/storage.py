@@ -476,6 +476,51 @@ class BookIndexStorage:
 
         logger.info(f"Index for {status.name} rebuilt with {total} entries across sharded files.")
 
+    def check_index(self, status: BookIndexStatus = BookIndexStatus.Draft) -> List[Dict]:
+        """Check that every item file has a corresponding index entry.
+
+        Returns a list of dicts with keys 'id' and 'path' for each missing item.
+        An empty list means the index is consistent.
+        """
+        import re
+        ITEM_FILE_RE = re.compile(r'^[A-Za-z0-9]{11}-.+\.json$')
+
+        root = self.get_root_by_status(status)
+
+        # Load all indexed IDs
+        indexed: set = set()
+        index_dir = root / "index"
+
+        col_path = index_dir / "collections.json"
+        if col_path.exists():
+            with open(col_path, encoding="utf-8") as f:
+                indexed.update(json.load(f).keys())
+
+        for type_key in ["books", "works"]:
+            type_dir = index_dir / type_key
+            if not type_dir.exists():
+                continue
+            for shard_file in type_dir.glob("*.json"):
+                with open(shard_file, encoding="utf-8") as f:
+                    indexed.update(json.load(f).keys())
+
+        # Scan item files
+        missing = []
+        for type_val in [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work]:
+            type_dir = root / type_val.name
+            if not type_dir.exists():
+                continue
+            for json_file in type_dir.glob("**/*.json"):
+                if ITEM_FILE_RE.match(json_file.name):
+                    id_str = json_file.name[:11]
+                    if id_str not in indexed:
+                        missing.append({
+                            "id": id_str,
+                            "path": str(json_file.relative_to(root)).replace("\\", "/"),
+                        })
+
+        return missing
+
     def load_entries(self, type_name: str, status: Optional[BookIndexStatus] = None) -> List[Dict]:
         """Load entries of a given type from sharded index files."""
         type_key = type_name.lower() + "s"

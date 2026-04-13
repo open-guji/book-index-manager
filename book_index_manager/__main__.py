@@ -203,6 +203,33 @@ class CLIHandler:
             "total_resources": len(resources),
         }, ensure_ascii=False))
 
+    def handle_check_index(self):
+        from .storage import BookIndexStatus
+        target = self.args.target
+        statuses = []
+        if target in ["draft", "all"]:
+            statuses.append(BookIndexStatus.Draft)
+        if target in ["official", "all"]:
+            statuses.append(BookIndexStatus.Official)
+
+        total_missing = []
+        for status in statuses:
+            missing = self.manager.storage.check_index(status)
+            total_missing.extend(missing)
+            if missing:
+                print(f"[{status.name}] {len(missing)} item(s) missing from index:")
+                for item in missing:
+                    print(f"  {item['id']}  {item['path']}")
+            else:
+                root = self.manager.storage.get_root_by_status(status)
+                print(f"[{status.name}] index consistent ({root})")
+
+        if total_missing:
+            print(f"\n[FAIL] {len(total_missing)} item(s) not indexed. Run: book-index reindex")
+            sys.exit(1)
+        else:
+            print("\n[OK] All items are indexed.")
+
     def handle_migrate(self):
         from pathlib import Path
         target = self.args.target
@@ -290,6 +317,11 @@ def main():
                    default="text", help="Resource type")
     p.add_argument("--details", default=None, help="Additional details")
 
+    # check-index
+    p = subparsers.add_parser("check-index", parents=[parent_parser],
+                              help="Check that every item file has a corresponding index entry")
+    p.add_argument("--target", choices=["official", "draft", "all"], default="draft")
+
     # migrate
     p = subparsers.add_parser("migrate", parents=[parent_parser],
                               help="Migrate old text_resources/image_resources to unified resources")
@@ -315,6 +347,7 @@ def main():
             "parse-id": handler.handle_parse_id,
             "init-asset": handler.handle_init_asset,
             "add-resource": handler.handle_add_resource,
+            "check-index": handler.handle_check_index,
             "migrate": handler.handle_migrate,
         }
 
