@@ -1,4 +1,5 @@
 import React from 'react';
+import { LoadingDots } from './common/LoadingDots';
 
 export interface FeedbackItem {
     id: string;
@@ -38,7 +39,7 @@ function formatTime(iso: string): string {
 
 export const FeedbackList: React.FC<FeedbackListProps> = ({ items, loading }) => {
     if (loading) {
-        return <div style={emptyStyle}>加载中...</div>;
+        return <LoadingDots />;
     }
 
     if (items.length === 0) {

@@ -3,6 +3,7 @@ import { IndexBrowser } from './IndexBrowser';
 import { IndexDetail } from './IndexDetail';
 import { CollectionCatalog } from './CollectionCatalog';
 import { CollatedEdition } from './CollatedEdition';
+import { LoadingDots } from './common/LoadingDots';
 import { HomePage } from './HomePage';
 import type { RecommendedItem } from './HomePage';
 import type { IndexStorage } from '../storage/types';
@@ -159,9 +160,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
     const detailContent = (
         <>
             {detailLoading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                    <span style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>加载中...</span>
-                </div>
+                <LoadingDots />
             ) : detailData ? (
                 <>
                     {/* Tab 栏 + headerRight */}

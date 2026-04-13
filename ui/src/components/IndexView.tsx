@@ -15,6 +15,7 @@ import type { IndexDetailProps } from './IndexDetail';
 import { IndexEditor } from './IndexEditor';
 import type { IndexEditorData, IndexEditorProps } from './IndexEditor';
 import { useT } from '../i18n';
+import { LoadingDots } from './common/LoadingDots';
 
 // ── 数据转换 ──
 
@@ -230,7 +231,7 @@ export const IndexView: React.FC<IndexViewProps> = (props) => {
     );
 
     if (!detailData && !editorData) {
-        return <div style={{ padding: '24px', textAlign: 'center', color: '#999' }}>加载中...</div>;
+        return <LoadingDots />;
     }
 
     // ── View 模式 ──

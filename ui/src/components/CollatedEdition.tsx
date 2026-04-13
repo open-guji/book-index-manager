@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import type { CollatedEditionIndex, CollatedJuan, CollatedSection, JuanGroup } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { useConvert } from '../i18n';
+import { LoadingDots } from './common/LoadingDots';
 
 export interface CollatedEditionProps {
     /** 直接传入卷列表索引 */
@@ -915,14 +916,7 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
 
             {/* 卷内容 */}
             {juanLoading ? (
-                <div style={{
-                    padding: '24px',
-                    textAlign: 'center',
-                    color: 'var(--bim-desc-fg, #717171)',
-                    fontSize: '13px',
-                }}>
-                    加载中...
-                </div>
+                <LoadingDots />
             ) : juanData ? (
                 <JuanContent
                     juan={juanData}

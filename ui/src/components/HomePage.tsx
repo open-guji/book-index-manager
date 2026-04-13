@@ -6,6 +6,8 @@ import { formatTemplate } from '../i18n';
 import { FeedbackList } from './FeedbackList';
 import type { FeedbackItem } from './FeedbackList';
 
+import { LoadingDots } from './common/LoadingDots';
+
 export interface RecommendedItem {
     id: string;
     title: string;
@@ -286,11 +288,7 @@ const RecommendContent: React.FC<{
     t: ReturnType<typeof useT>;
 }> = ({ recommended, loading, onNavigate, getIcon, t }) => {
     if (loading) {
-        return (
-            <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>
-                ...
-            </div>
-        );
+        return <LoadingDots />;
     }
     if (recommended.length === 0) return null;
 
@@ -372,11 +370,7 @@ const ProgressContent: React.FC<{
     onNavigate?: (id: string) => void;
 }> = ({ progress, t, onNavigate }) => {
     if (!progress) {
-        return (
-            <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>
-                ...
-            </div>
-        );
+        return <LoadingDots />;
     }
 
     const sorted = [...progress.resources].sort((a, b) => a.priority - b.priority);
@@ -526,11 +520,7 @@ const SiteProgressContent: React.FC<{
     totalWorks: number;
 }> = ({ progress, t, totalWorks }) => {
     if (!progress) {
-        return (
-            <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>
-                ...
-            </div>
-        );
+        return <LoadingDots />;
     }
 
     const sorted = [...progress.resources].sort((a, b) => a.priority - b.priority);
