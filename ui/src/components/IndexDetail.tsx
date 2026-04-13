@@ -131,18 +131,18 @@ function IdBadge({ id }: { id: string }) {
         <span style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '6px',
-            padding: '3px 8px 3px 10px',
-            fontSize: '12px',
+            gap: '4px',
+            padding: '1px 6px',
+            fontSize: '11px',
             color: 'var(--bim-desc-fg, #717171)',
             background: '#f6f6f6',
             border: '1px solid var(--bim-widget-border, #e0e0e0)',
-            borderRadius: '4px',
+            borderRadius: '2px',
         }}>
             <span>{t.label.id}</span>
             <span style={{
                 fontFamily: 'monospace',
-                fontSize: '12px',
+                fontSize: '11px',
                 color: 'var(--bim-fg, #333)',
             }}>
                 {id}
@@ -152,7 +152,7 @@ function IdBadge({ id }: { id: string }) {
                 title={copied ? t.action.copied : t.action.copy}
                 style={{
                     cursor: 'pointer',
-                    fontSize: '13px',
+                    fontSize: '11px',
                     opacity: copied ? 1 : 0.5,
                     transition: 'opacity 0.15s',
                 }}
@@ -282,24 +282,18 @@ function DetailHeader({ id, title, edition, type, isDraft, authors, volumeText, 
 }) {
     return (
         <div style={{ marginBottom: '4px' }}>
-            {/* 标题行：左侧标题 + 右侧徽章 */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'space-between',
-                gap: '12px',
-                flexWrap: 'wrap',
-            }}>
+            {/* 标题行 + 右上角 headerExtra */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
                 <h1 style={{
                     fontSize: 'clamp(18px, 4vw, 24px)',
                     fontWeight: 700,
                     color: 'var(--bim-fg, #1a1a1a)',
                     margin: '0 0 6px',
-                    lineHeight: 1.3,
+                    lineHeight: 1.4,
                     letterSpacing: '0.5px',
+                    wordBreak: 'break-word',
                     flex: 1,
                     minWidth: 0,
-                    wordBreak: 'break-word',
                 }}>
                     {title}
                     {edition && (
@@ -323,18 +317,23 @@ function DetailHeader({ id, title, edition, type, isDraft, authors, volumeText, 
                         </span>
                     )}
                 </h1>
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    flexShrink: 0,
-                    paddingTop: '4px',
-                }}>
-                    <TypeBadge type={type} />
-                    <StatusBadge isDraft={isDraft} />
-                    <IdBadge id={id} />
-                    {headerExtra}
-                </div>
+                {headerExtra && (
+                    <div style={{ flexShrink: 0, paddingTop: '2px' }}>
+                        {headerExtra}
+                    </div>
+                )}
+            </div>
+            {/* 徽章行 */}
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                flexWrap: 'wrap',
+                marginBottom: '4px',
+            }}>
+                <TypeBadge type={type} />
+                <StatusBadge isDraft={isDraft} />
+                <IdBadge id={id} />
             </div>
             {(authors?.length || meta.length > 0) && (
                 <div style={{
