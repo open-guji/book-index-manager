@@ -288,9 +288,10 @@ function DetailHeader({ id, title, edition, type, isDraft, authors, volumeText, 
                 alignItems: 'flex-start',
                 justifyContent: 'space-between',
                 gap: '12px',
+                flexWrap: 'wrap',
             }}>
                 <h1 style={{
-                    fontSize: '24px',
+                    fontSize: 'clamp(18px, 4vw, 24px)',
                     fontWeight: 700,
                     color: 'var(--bim-fg, #1a1a1a)',
                     margin: '0 0 6px',
@@ -298,6 +299,7 @@ function DetailHeader({ id, title, edition, type, isDraft, authors, volumeText, 
                     letterSpacing: '0.5px',
                     flex: 1,
                     minWidth: 0,
+                    wordBreak: 'break-word',
                 }}>
                     {title}
                     {edition && (
