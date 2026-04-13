@@ -51,7 +51,7 @@ function matchesQuery(
  * 标题和别名取最高分（不累加），标题短的优先。
  */
 function scoreResult(
-    entry: { title?: string; author?: string; additional_titles?: string[]; [key: string]: unknown },
+    entry: { title?: string; author?: string; additional_titles?: string[]; attached_texts?: string[]; [key: string]: unknown },
     query: string,
     queryS: string | undefined,
     t2s: ((t: string) => string) | null,
@@ -73,12 +73,11 @@ function scoreResult(
         return 0;
     };
 
-    // 标题和别名取最高分
+    // 标题和别名/附载篇目取最高分
     let nameScore = scoreText(entry.title as string, 200, 150, 100);
-    if (entry.additional_titles) {
-        for (const alias of entry.additional_titles as string[]) {
-            nameScore = Math.max(nameScore, scoreText(alias, 120, 90, 60));
-        }
+    const allAliases = [...(entry.additional_titles || []), ...(entry.attached_texts || [])];
+    for (const alias of allAliases) {
+        nameScore = Math.max(nameScore, scoreText(alias, 120, 90, 60));
     }
 
     // 作者独立维度，仅在名称无匹配时作为主分
@@ -438,7 +437,8 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                                     matchesQuery(e.title, query, queryS, t2s) ||
                                     matchesQuery(e.id, query, queryS, t2s) ||
                                     matchesQuery(e.author, query, queryS, t2s) ||
-                                    (e.additional_titles || []).some((at: string) => matchesQuery(at, query, queryS, t2s))
+                                    (e.additional_titles || []).some((at: string) => matchesQuery(at, query, queryS, t2s)) ||
+                                    (e.attached_texts || []).some((at: string) => matchesQuery(at, query, queryS, t2s))
                                 );
                             }
                             // 按相关度排序

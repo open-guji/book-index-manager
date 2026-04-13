@@ -85,6 +85,7 @@ export interface LocaleMessages {
         otherEditions: string;
         dangerZone: string;
         aliases: string;
+        attachedTexts: string;
         appendix: string;
         containedIn: string;
         belongsToWork: string;

@@ -466,9 +466,10 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
     const t = useT();
     const { convert } = useConvert();
 
-    // 检查是否通过别名匹配
-    const matchedAlias = query && entry.additional_titles
-        ? entry.additional_titles.find(a => {
+    // 检查是否通过别名或附载篇目匹配
+    const allAliases = [...(entry.additional_titles || []), ...(entry.attached_texts || [])];
+    const matchedAlias = query && allAliases.length
+        ? allAliases.find(a => {
             const s = typeof a === 'string' ? a : (a as any)?.book_title;
             return s?.toLowerCase().includes(query.toLowerCase());
         })

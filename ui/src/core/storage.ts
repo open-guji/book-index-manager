@@ -39,7 +39,10 @@ export interface IndexFileEntry {
     holder: string;
     dynasty?: string;
     role?: string;
+    /** Work 别名 */
     additional_titles?: string[];
+    /** Book 附载篇目 */
+    attached_texts?: string[];
     edition?: string;
     juan_count?: number;
     has_text?: boolean;
@@ -166,9 +169,14 @@ export class BookIndexStorage {
             holder = loc;
         }
 
-        // 提取 additional_titles（兼容 string 和 {book_title} 两种格式）
+        // 提取 additional_titles（Work 别名，兼容 string 和 {book_title} 两种格式）
         const additionalTitles = Array.isArray(metadata.additional_titles)
             ? (metadata.additional_titles as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
+            : undefined;
+
+        // 提取 attached_texts（Book 附载篇目，兼容 string 和 {book_title} 两种格式）
+        const attachedTexts = Array.isArray(metadata.attached_texts)
+            ? (metadata.attached_texts as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
             : undefined;
 
         // 提取 juan_count
@@ -202,6 +210,7 @@ export class BookIndexStorage {
             holder,
         };
         if (additionalTitles && additionalTitles.length > 0) entry.additional_titles = additionalTitles;
+        if (attachedTexts && attachedTexts.length > 0) entry.attached_texts = attachedTexts;
         if (juanCount) entry.juan_count = juanCount;
         const edition = typeof metadata.edition === 'string' ? metadata.edition : '';
         if (edition) entry.edition = edition;
@@ -300,6 +309,7 @@ export class BookIndexStorage {
                     role: entry.role || undefined,
                     path: joinPath(root, entry.path),
                     additional_titles: entry.additional_titles,
+                    attached_texts: entry.attached_texts,
                     edition: entry.edition,
                     juan_count: entry.juan_count,
                     has_text: entry.has_text,
@@ -389,6 +399,10 @@ export class BookIndexStorage {
                         ? (metadata.additional_titles as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
                         : undefined;
 
+                    const attachedTexts = Array.isArray(metadata.attached_texts)
+                        ? (metadata.attached_texts as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
+                        : undefined;
+
                     let juanCount: number | undefined;
                     const jc = metadata.juan_count;
                     if (typeof jc === 'number') {
@@ -418,6 +432,7 @@ export class BookIndexStorage {
                         holder: typeof metadata.current_location === 'object' ? ((metadata.current_location as any)?.name || '') : '',
                     };
                     if (additionalTitles && additionalTitles.length > 0) entry.additional_titles = additionalTitles;
+                    if (attachedTexts && attachedTexts.length > 0) entry.attached_texts = attachedTexts;
                     if (juanCount) entry.juan_count = juanCount;
                     const edition = typeof metadata.edition === 'string' ? metadata.edition : '';
                     if (edition) entry.edition = edition;
@@ -552,6 +567,8 @@ export interface SearchSEntry {
     a?: string;
     /** 简体别名列表 */
     at?: string[];
+    /** 简体附载篇目列表 */
+    axt?: string[];
 }
 
 /** 简体搜索索引：id → 简体文本字段 */
@@ -571,16 +588,16 @@ export function scoreEntry(entry: IndexEntry, query: string): number {
         nameScore = 100;
     }
 
-    if (entry.additional_titles) {
-        for (const alias of entry.additional_titles) {
-            const a = alias.toLowerCase();
-            if (a === q) {
-                nameScore = Math.max(nameScore, 120);
-            } else if (a.startsWith(q)) {
-                nameScore = Math.max(nameScore, 90);
-            } else if (a.includes(q)) {
-                nameScore = Math.max(nameScore, 60);
-            }
+    // 别名 + 附载篇目均参与匹配
+    const allAliases = [...(entry.additional_titles || []), ...(entry.attached_texts || [])];
+    for (const alias of allAliases) {
+        const a = alias.toLowerCase();
+        if (a === q) {
+            nameScore = Math.max(nameScore, 120);
+        } else if (a.startsWith(q)) {
+            nameScore = Math.max(nameScore, 90);
+        } else if (a.includes(q)) {
+            nameScore = Math.max(nameScore, 60);
         }
     }
 
@@ -679,6 +696,7 @@ export function rankByRelevanceWithSimplified(
                 title: s.t ?? e.title,
                 author: s.a ?? e.author,
                 additional_titles: s.at ?? e.additional_titles,
+                attached_texts: s.axt ?? e.attached_texts,
             };
             simplifiedScore = scoreEntry(sEntry, queryS);
         }

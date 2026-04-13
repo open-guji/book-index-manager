@@ -405,10 +405,19 @@ class BookIndexStorage:
 
                         edition = metadata.get("edition", "")
 
-                        additional_titles = metadata.get("additional_titles", [])
-                        if not isinstance(additional_titles, list):
-                            additional_titles = []
-                        additional_titles = [t for t in additional_titles if isinstance(t, str) and t]
+                        def _extract_titles(raw):
+                            if not isinstance(raw, list):
+                                return []
+                            result = []
+                            for t in raw:
+                                if isinstance(t, str) and t:
+                                    result.append(t)
+                                elif isinstance(t, dict) and t.get("book_title"):
+                                    result.append(t["book_title"])
+                            return result
+
+                        additional_titles = _extract_titles(metadata.get("additional_titles", []))
+                        attached_texts = _extract_titles(metadata.get("attached_texts", []))
 
                         has_text = False
                         has_image = False
@@ -437,6 +446,8 @@ class BookIndexStorage:
                             entry["juan_count"] = juan_count
                         if additional_titles:
                             entry["additional_titles"] = additional_titles
+                        if attached_texts:
+                            entry["attached_texts"] = attached_texts
                         if has_text:
                             entry["has_text"] = True
                         if has_image:

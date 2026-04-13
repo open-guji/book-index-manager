@@ -87,6 +87,7 @@ export const zhHant: LocaleMessages = {
         otherEditions: '📚 其他版本 (Other Editions)',
         dangerZone: '危險區域 (Danger Zone)',
         aliases: '別名',
+        attachedTexts: '附載篇目',
         appendix: '附錄',
         containedIn: '收入',
         belongsToWork: '所屬作品',

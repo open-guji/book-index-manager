@@ -121,9 +121,10 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                 prefixMatches.push({ type: 'entry', text: entry.title, entry });
             } else if (title.includes(q)) {
                 containMatches.push({ type: 'entry', text: entry.title, entry });
-            } else if (entry.additional_titles) {
-                // Check aliases
-                for (const item of entry.additional_titles) {
+            } else {
+                // Check aliases + attached_texts
+                const allAliases = [...(entry.additional_titles || []), ...(entry.attached_texts || [])];
+                for (const item of allAliases) {
                     const alias = typeof item === 'string' ? item : (item as any)?.book_title;
                     if (alias?.toLowerCase().includes(q)) {
                         prefixMatches.push({ type: 'entry', text: `${entry.title}`, entry });

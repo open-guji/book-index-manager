@@ -233,6 +233,7 @@ export class GithubStorage implements IndexStorage {
             for (const item of Object.values(items)) {
                 const raw = item as GithubIndexItem & {
                     additional_titles?: string[];
+                    attached_texts?: string[];
                     edition?: string;
                     juan_count?: number;
                     has_text?: boolean;
@@ -249,6 +250,7 @@ export class GithubStorage implements IndexStorage {
                     role: item.role,
                     path: item.path,
                     additional_titles: raw.additional_titles?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
+                    attached_texts: raw.attached_texts?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
                     edition: raw.edition,
                     juan_count: raw.juan_count,
                     has_text: raw.has_text,
@@ -290,7 +292,7 @@ export class GithubStorage implements IndexStorage {
         const searchS: SearchSIndex = {};
 
         for (const entry of entries) {
-            const simplified: { t?: string; a?: string; at?: string[] } = {};
+            const simplified: { t?: string; a?: string; at?: string[]; axt?: string[] } = {};
 
             const ts = t2s(entry.title);
             if (ts !== entry.title) simplified.t = ts;
@@ -304,6 +306,13 @@ export class GithubStorage implements IndexStorage {
                 const ats = entry.additional_titles.map(t2s);
                 if (ats.some((s, i) => s !== entry.additional_titles![i])) {
                     simplified.at = ats;
+                }
+            }
+
+            if (entry.attached_texts?.length) {
+                const axts = entry.attached_texts.map(t2s);
+                if (axts.some((s, i) => s !== entry.attached_texts![i])) {
+                    simplified.axt = axts;
                 }
             }
 

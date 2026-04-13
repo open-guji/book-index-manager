@@ -76,8 +76,10 @@ export interface IndexEntry {
     dynasty?: string;
     role?: string;
     path?: string;
-    /** 别名列表 */
+    /** Work 别名列表 */
     additional_titles?: string[];
+    /** Book 附载篇目 */
+    attached_texts?: string[];
     /** 版本 */
     edition?: string;
     /** 卷数 */
@@ -189,6 +191,8 @@ export interface BaseDetailData {
     description?: DescriptionInfo;
     authors?: AuthorInfo[];
     additional_titles?: (string | { book_title: string })[];
+    /** Book 附载篇目 */
+    attached_texts?: (string | { book_title: string })[];
     additional_works?: AdditionalWork[];
     indexed_by?: IndexedByEntry[];
     publication_info?: PublicationInfo;

@@ -31,6 +31,7 @@ interface BundleIndexItem {
     year?: string;
     holder?: string;
     additional_titles?: string[];
+    attached_texts?: string[];
     edition?: string;
     juan_count?: number;
     has_text?: boolean;
@@ -128,6 +129,7 @@ export class BundleStorage implements IndexStorage {
                     role: item.role,
                     path: item.path,
                     additional_titles: item.additional_titles?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
+                    attached_texts: item.attached_texts?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
                     edition: item.edition,
                     juan_count: item.juan_count,
                     has_text: item.has_text,

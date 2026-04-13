@@ -518,15 +518,14 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
     );
 }
 
-// ── 别名 ──
+// ── 别名 / 附载篇目 ──
 
-function AdditionalTitlesList({ items }: { items: (string | { book_title: string })[] }) {
-    const t = useT();
+function TitleTagList({ label, items }: { label: string; items: (string | { book_title: string })[] }) {
     const { convert } = useConvert();
     if (!items.length) return null;
     return (
         <>
-            <SectionLabel>{t.section.aliases}</SectionLabel>
+            <SectionLabel>{label}</SectionLabel>
             <div style={{
                 display: 'flex',
                 flexWrap: 'wrap',
@@ -553,6 +552,16 @@ function AdditionalTitlesList({ items }: { items: (string | { book_title: string
             </div>
         </>
     );
+}
+
+function AdditionalTitlesList({ items }: { items: (string | { book_title: string })[] }) {
+    const t = useT();
+    return <TitleTagList label={t.section.aliases} items={items} />;
+}
+
+function AttachedTextsList({ items }: { items: (string | { book_title: string })[] }) {
+    const t = useT();
+    return <TitleTagList label={t.section.attachedTexts} items={items} />;
 }
 
 // ── 附属作品 ──
@@ -1199,6 +1208,10 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
 
             {detail.additional_titles && detail.additional_titles.length > 0 && (
                 <AdditionalTitlesList items={detail.additional_titles} />
+            )}
+
+            {detail.attached_texts && detail.attached_texts.length > 0 && (
+                <AttachedTextsList items={detail.attached_texts} />
             )}
 
             {detail.indexed_by && detail.indexed_by.length > 0 && (
