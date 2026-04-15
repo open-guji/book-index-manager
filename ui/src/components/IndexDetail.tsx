@@ -1242,6 +1242,33 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                 <RelationList title={t.section.containedBooks} ids={collectionData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
             )}
 
+            {collectionData?.contained_works && collectionData.contained_works.length > 0 && (
+                <div>
+                    <SectionLabel>
+                        {t.section.containedWorks}
+                        <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #aaa)', fontWeight: 400 }}>
+                            ({collectionData.contained_works.length})
+                        </span>
+                    </SectionLabel>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {collectionData.contained_works.map(cw => (
+                            <span key={cw.id} style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                padding: '3px 10px',
+                                fontSize: '13px',
+                                border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                borderRadius: '4px',
+                                background: 'var(--bim-input-bg, #fff)',
+                            }}>
+                                <IdLink id={cw.id} label={convert(cw.title)} onNavigate={onNavigate} renderLink={renderLink} />
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {workData?.books && workData.books.length > 0 && (
                 <BookVersionList ids={workData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
             )}

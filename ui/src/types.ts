@@ -226,6 +226,7 @@ export interface CollectionDetailData extends BaseDetailData {
     contained_in?: string[];
     history?: string[];
     books?: string[];
+    contained_works?: { id: string; title: string; volume_index?: number }[];
 }
 
 /** Work 详情 */

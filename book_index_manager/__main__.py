@@ -58,11 +58,21 @@ class CLIHandler:
 
     def handle_reindex(self):
         target = self.args.target
+        workers = getattr(self.args, "workers", 4)
         if target in ["official", "all"]:
-            self.manager.storage.rebuild_index(BookIndexStatus.Official)
+            self.manager.storage.rebuild_index(BookIndexStatus.Official, workers=workers)
         if target in ["draft", "all"]:
-            self.manager.storage.rebuild_index(BookIndexStatus.Draft)
-        print(f"Re-indexing of {target} completed.")
+            self.manager.storage.rebuild_index(BookIndexStatus.Draft, workers=workers)
+        print(f"Deep reindex of {target} completed.")
+
+    def handle_shadow_reindex(self):
+        target = self.args.target
+        workers = getattr(self.args, "workers", 8)
+        if target in ["official", "all"]:
+            self.manager.storage.shadow_reindex(BookIndexStatus.Official, workers=workers)
+        if target in ["draft", "all"]:
+            self.manager.storage.shadow_reindex(BookIndexStatus.Draft, workers=workers)
+        print(f"Shadow reindex of {target} completed.")
 
     def handle_draft(self):
         type_map = {"book": BookIndexType.Book, "collection": BookIndexType.Collection, "work": BookIndexType.Work}
@@ -268,9 +278,16 @@ def main():
     p.add_argument("--type", choices=["book", "work", "collection"], default="book")
     p.add_argument("--raw", action="store_true", help="Print only the Base58 ID")
 
-    # reindex
+    # reindex (deep)
     p = subparsers.add_parser("reindex", parents=[parent_parser])
     p.add_argument("--target", choices=["official", "draft", "all"], default="all")
+    p.add_argument("--workers", type=int, default=4, help="Parallel worker threads (default: 4)")
+
+    # shadow-reindex (fast, additive only)
+    p = subparsers.add_parser("shadow-reindex", parents=[parent_parser],
+                              help="Fast incremental reindex: only add files missing from index")
+    p.add_argument("--target", choices=["official", "draft", "all"], default="all")
+    p.add_argument("--workers", type=int, default=8, help="Parallel worker threads (default: 8)")
 
     # get
     p = subparsers.add_parser("get", parents=[parent_parser])
@@ -338,6 +355,7 @@ def main():
         cmd_map = {
             "gen-id": handler.handle_gen_id,
             "reindex": handler.handle_reindex,
+            "shadow-reindex": handler.handle_shadow_reindex,
             "get": handler.handle_get,
             "get-config": handler.handle_get_config,
             "draft": handler.handle_draft,

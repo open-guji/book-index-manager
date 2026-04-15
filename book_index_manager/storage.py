@@ -1,6 +1,7 @@
 import os
 import json
 import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional, Dict, List, Any
 from .id_generator import BookIndexType, BookIndexStatus, BookIndexIdGenerator, base58_encode, base58_decode
@@ -343,130 +344,165 @@ class BookIndexStorage:
         """Check if asset directory exists."""
         return self.get_asset_dir(id_str).is_dir()
 
-    def rebuild_index(self, status: BookIndexStatus = BookIndexStatus.Official):
-        root = self.get_root_by_status(status)
-        logger.info(f"Rebuilding index in {root}...")
+    # ── Entry extraction ──
 
-        # Collect entries per type, then split into shards
-        # shards[type_key][shard_num] = {id: entry}
-        shards: Dict[str, Dict[int, Dict]] = {
-            "books": {i: {} for i in range(NUM_SHARDS)},
-            "collections": {0: {}},
-            "works": {i: {} for i in range(NUM_SHARDS)},
-        }
+    @staticmethod
+    def _extract_titles_list(raw) -> List[str]:
+        if not isinstance(raw, list):
+            return []
+        result = []
+        for t in raw:
+            if isinstance(t, str) and t:
+                result.append(t)
+            elif isinstance(t, dict) and t.get("book_title"):
+                result.append(t["book_title"])
+        return result
 
-        for type_val in [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work]:
-            type_dir = root / type_val.name
-            type_key = type_val.name.lower() + "s"
-            if not type_dir.exists():
+    def _build_index_entry(self, metadata: dict, type_val: BookIndexType, rel_path: str) -> dict:
+        """Extract all index fields from a metadata dict. Returns the index entry."""
+        id_str = metadata.get("id") or metadata.get("ID", "")
+        title = metadata.get("title", "未命名")
+
+        author_name = ""
+        author_dynasty = ""
+        author_role = ""
+        authors = metadata.get("authors", [])
+        if isinstance(authors, list) and len(authors) > 0:
+            if isinstance(authors[0], dict):
+                author_name = authors[0].get("name", "")
+                author_dynasty = authors[0].get("dynasty", "")
+                author_role = authors[0].get("role", "")
+            else:
+                author_name = str(authors[0])
+        elif isinstance(authors, str):
+            author_name = authors
+
+        year = ""
+        pub = metadata.get("publication_info")
+        if isinstance(pub, dict):
+            year = pub.get("year", "")
+        elif isinstance(pub, str):
+            year = pub
+
+        holder = ""
+        loc = metadata.get("current_location")
+        if isinstance(loc, dict):
+            holder = loc.get("name", "")
+        elif isinstance(loc, str):
+            holder = loc
+
+        juan_count = 0
+        vc = metadata.get("juan_count")
+        if isinstance(vc, dict):
+            juan_count = vc.get("number", 0) or 0
+        elif isinstance(vc, (int, float)):
+            juan_count = int(vc)
+
+        edition = metadata.get("edition", "")
+        additional_titles = self._extract_titles_list(metadata.get("additional_titles", []))
+        attached_texts = self._extract_titles_list(metadata.get("attached_texts", []))
+
+        has_text = False
+        has_image = False
+        resources = metadata.get("resources", [])
+        if isinstance(resources, list):
+            for r in resources:
+                if isinstance(r, dict):
+                    rt = r.get("type", "")
+                    if rt in ("text", "text+image"):
+                        has_text = True
+                    if rt in ("image", "text+image"):
+                        has_image = True
+
+        entry: dict = {"id": id_str, "title": title, "type": type_val.name, "path": rel_path}
+        if author_name:
+            entry["author"] = author_name
+        if year:
+            entry["year"] = year
+        if holder:
+            entry["holder"] = holder
+        if author_dynasty:
+            entry["dynasty"] = author_dynasty
+        if author_role:
+            entry["role"] = author_role
+        if juan_count:
+            entry["juan_count"] = juan_count
+        if additional_titles:
+            entry["additional_titles"] = additional_titles
+        if attached_texts:
+            entry["attached_texts"] = attached_texts
+        if has_text:
+            entry["has_text"] = True
+        if has_image:
+            entry["has_image"] = True
+        if edition:
+            entry["edition"] = edition
+        return entry
+
+    def _process_type_for_rebuild(self, root: Path, type_val: BookIndexType) -> Dict[int, Dict]:
+        """Scan one type directory and return shard_num → {id: entry} for deep reindex."""
+        type_key = type_val.name.lower() + "s"
+        type_dir = root / type_val.name
+        num_shards = 1 if type_key == "collections" else NUM_SHARDS
+        type_shards: Dict[int, Dict] = {i: {} for i in range(num_shards)}
+
+        if not type_dir.exists():
+            return type_shards
+
+        index_dir = root / "index"
+        for json_file in type_dir.glob("**/*.json"):
+            # Skip files inside the index directory
+            try:
+                json_file.relative_to(index_dir)
                 continue
-
-            for json_file in type_dir.glob("**/*.json"):
-                # Skip index shard files
-                try:
-                    json_file.relative_to(root / "index")
+            except ValueError:
+                pass
+            try:
+                metadata = self.load_metadata(json_file)
+                id_str = metadata.get("id") or metadata.get("ID")
+                if not id_str:
+                    if "-" in json_file.name:
+                        id_str = json_file.name.split("-")[0]
+                if not id_str:
                     continue
-                except ValueError:
-                    pass
+
+                rel_path = str(json_file.relative_to(root)).replace("\\", "/")
+                entry = self._build_index_entry(metadata, type_val, rel_path)
+
+                collated_dir = json_file.parent / id_str / "collated_edition"
+                if collated_dir.is_dir():
+                    entry["has_collated"] = True
+
+                shard_num = 0 if type_key == "collections" else shard_of(id_str)
+                type_shards[shard_num][id_str] = entry
+            except Exception as e:
+                logger.warning(f"Error processing {json_file}: {e}")
+
+        return type_shards
+
+    def rebuild_index(self, status: BookIndexStatus = BookIndexStatus.Official, workers: int = 4):
+        """Deep reindex: fully rebuild index from all JSON files in parallel."""
+        root = self.get_root_by_status(status)
+        logger.info(f"Deep reindex in {root} (workers={workers})...")
+
+        types = [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work]
+        # Run each type in parallel
+        results: Dict[str, Dict[int, Dict]] = {}
+        with ThreadPoolExecutor(max_workers=min(workers, len(types))) as ex:
+            futures = {ex.submit(self._process_type_for_rebuild, root, t): t for t in types}
+            for fut in as_completed(futures):
+                type_val = futures[fut]
+                type_key = type_val.name.lower() + "s"
                 try:
-                    metadata = self.load_metadata(json_file)
-                    id_str = metadata.get("id") or metadata.get("ID")
-                    if not id_str:
-                        if "-" in json_file.name:
-                            id_str = json_file.name.split("-")[0]
-
-                    if id_str:
-                        rel_path = str(json_file.relative_to(root)).replace("\\", "/")
-
-                        title = metadata.get("title", "未命名")
-                        author_name = ""
-                        author_dynasty = ""
-                        author_role = ""
-                        authors = metadata.get("authors", [])
-                        if isinstance(authors, list) and len(authors) > 0:
-                            if isinstance(authors[0], dict):
-                                author_name = authors[0].get("name", "")
-                                author_dynasty = authors[0].get("dynasty", "")
-                                author_role = authors[0].get("role", "")
-                            else:
-                                author_name = str(authors[0])
-                        elif isinstance(authors, str):
-                            author_name = authors
-
-                        year = metadata.get("publication_info", {}).get("year", "") if isinstance(metadata.get("publication_info"), dict) else ""
-                        holder = metadata.get("current_location", {}).get("name", "") if isinstance(metadata.get("current_location"), dict) else ""
-
-                        juan_count = 0
-                        vc = metadata.get("juan_count")
-                        if isinstance(vc, dict):
-                            juan_count = vc.get("number", 0) or 0
-                        elif isinstance(vc, (int, float)):
-                            juan_count = int(vc)
-
-                        edition = metadata.get("edition", "")
-
-                        def _extract_titles(raw):
-                            if not isinstance(raw, list):
-                                return []
-                            result = []
-                            for t in raw:
-                                if isinstance(t, str) and t:
-                                    result.append(t)
-                                elif isinstance(t, dict) and t.get("book_title"):
-                                    result.append(t["book_title"])
-                            return result
-
-                        additional_titles = _extract_titles(metadata.get("additional_titles", []))
-                        attached_texts = _extract_titles(metadata.get("attached_texts", []))
-
-                        has_text = False
-                        has_image = False
-                        resources = metadata.get("resources", [])
-                        if isinstance(resources, list):
-                            for r in resources:
-                                if isinstance(r, dict):
-                                    rt = r.get("type", "")
-                                    if rt in ("text", "text+image"):
-                                        has_text = True
-                                    if rt in ("image", "text+image"):
-                                        has_image = True
-
-                        entry: dict = {"id": id_str, "title": title, "type": type_val.name, "path": rel_path}
-                        if author_name:
-                            entry["author"] = author_name
-                        if year:
-                            entry["year"] = year
-                        if holder:
-                            entry["holder"] = holder
-                        if author_dynasty:
-                            entry["dynasty"] = author_dynasty
-                        if author_role:
-                            entry["role"] = author_role
-                        if juan_count:
-                            entry["juan_count"] = juan_count
-                        if additional_titles:
-                            entry["additional_titles"] = additional_titles
-                        if attached_texts:
-                            entry["attached_texts"] = attached_texts
-                        if has_text:
-                            entry["has_text"] = True
-                        if has_image:
-                            entry["has_image"] = True
-                        if edition:
-                            entry["edition"] = edition
-
-                        collated_dir = json_file.parent / id_str / "collated_edition"
-                        if collated_dir.is_dir():
-                            entry["has_collated"] = True
-
-                        shard_num = 0 if type_key == "collections" else shard_of(id_str)
-                        shards[type_key][shard_num][id_str] = entry
+                    results[type_key] = fut.result()
                 except Exception as e:
-                    logger.warning(f"Error processing {json_file}: {e}")
+                    logger.error(f"Error processing type {type_val.name}: {e}")
+                    num_shards = 1 if type_key == "collections" else NUM_SHARDS
+                    results[type_key] = {i: {} for i in range(num_shards)}
 
         # Write all shard files
         total = 0
-        for type_key, type_shards in shards.items():
+        for type_key, type_shards in results.items():
             for shard_num, data in type_shards.items():
                 path = self._shard_path(root, type_key, shard_num)
                 path.parent.mkdir(parents=True, exist_ok=True)
@@ -474,7 +510,126 @@ class BookIndexStorage:
                     json.dump(data, f, indent=2, ensure_ascii=False)
                 total += len(data)
 
-        logger.info(f"Index for {status.name} rebuilt with {total} entries across sharded files.")
+        logger.info(f"Deep reindex for {status.name} complete: {total} entries.")
+
+    def shadow_reindex(self, status: BookIndexStatus = BookIndexStatus.Official, workers: int = 8):
+        """Shadow reindex: add only files missing from the index, without re-reading existing entries.
+
+        For each item file whose ID is not yet in the index, parse its JSON and add it.
+        Existing index entries are preserved as-is (no title/author refresh).
+        Processing is parallelised per shard bucket.
+        """
+        root = self.get_root_by_status(status)
+        index_dir = root / "index"
+        logger.info(f"Shadow reindex in {root} (workers={workers})...")
+
+        # Load current index into memory: type_key → shard_num → {id: entry}
+        current: Dict[str, Dict[int, Dict]] = {
+            "books": {},
+            "collections": {0: {}},
+            "works": {},
+        }
+        for type_key in ("books", "works"):
+            type_dir = index_dir / type_key
+            if type_dir.exists():
+                for shard_file in type_dir.glob("*.json"):
+                    try:
+                        sn = int(shard_file.stem, 16)
+                    except ValueError:
+                        continue
+                    try:
+                        with open(shard_file, encoding="utf-8") as f:
+                            current[type_key][sn] = json.load(f)
+                    except Exception as e:
+                        logger.error(f"Error loading shard {shard_file}: {e}")
+                        current[type_key][sn] = {}
+            # Initialise missing shards
+            for sn in range(NUM_SHARDS):
+                current[type_key].setdefault(sn, {})
+        col_path = index_dir / "collections.json"
+        if col_path.exists():
+            try:
+                with open(col_path, encoding="utf-8") as f:
+                    current["collections"][0] = json.load(f)
+            except Exception as e:
+                logger.error(f"Error loading collections index: {e}")
+
+        # Build set of already-indexed IDs for fast lookup
+        indexed_ids: set = set()
+        for type_shards in current.values():
+            for shard_data in type_shards.values():
+                indexed_ids.update(shard_data.keys())
+
+        ITEM_FILE_RE = re.compile(r'^[A-Za-z0-9]{11}-.+\.json$')
+
+        # Collect all unindexed files grouped by (type_val, shard_num)
+        # so we can parallelise per bucket
+        # bucket_key → list of (json_file, type_val)
+        buckets: Dict[tuple, List] = {}
+        for type_val in [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work]:
+            type_dir = root / type_val.name
+            if not type_dir.exists():
+                continue
+            type_key = type_val.name.lower() + "s"
+            for json_file in type_dir.glob("**/*.json"):
+                try:
+                    json_file.relative_to(index_dir)
+                    continue
+                except ValueError:
+                    pass
+                if not ITEM_FILE_RE.match(json_file.name):
+                    continue
+                id_str = json_file.name[:11]
+                if id_str in indexed_ids:
+                    continue
+                shard_num = 0 if type_key == "collections" else shard_of(id_str)
+                bucket_key = (type_key, shard_num)
+                buckets.setdefault(bucket_key, []).append((json_file, type_val, id_str))
+
+        if not buckets:
+            logger.info("Shadow reindex: index is up-to-date, nothing to add.")
+            return
+
+        total_missing = sum(len(v) for v in buckets.values())
+        logger.info(f"Shadow reindex: {total_missing} unindexed files across {len(buckets)} buckets.")
+
+        def _process_bucket(bucket_key: tuple, files: List) -> tuple:
+            """Parse unindexed files for one bucket. Returns (bucket_key, list_of_(id, entry))."""
+            added = []
+            for json_file, type_val, id_str in files:
+                try:
+                    metadata = self.load_metadata(json_file)
+                    rel_path = str(json_file.relative_to(root)).replace("\\", "/")
+                    entry = self._build_index_entry(metadata, type_val, rel_path)
+                    collated_dir = json_file.parent / id_str / "collated_edition"
+                    if collated_dir.is_dir():
+                        entry["has_collated"] = True
+                    added.append((id_str, entry))
+                except Exception as e:
+                    logger.warning(f"Shadow reindex error {json_file}: {e}")
+            return bucket_key, added
+
+        # Parallelise across buckets
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            futures = {ex.submit(_process_bucket, bk, files): bk for bk, files in buckets.items()}
+            for fut in as_completed(futures):
+                bucket_key, added = fut.result()
+                type_key, shard_num = bucket_key
+                for id_str, entry in added:
+                    current[type_key][shard_num][id_str] = entry
+
+        # Write only the modified shards
+        modified_shards: set = set(buckets.keys())
+        written = 0
+        for type_key, shard_num in modified_shards:
+            data = current[type_key][shard_num]
+            path = self._shard_path(root, type_key, shard_num)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            written += len(data)
+
+        logger.info(f"Shadow reindex for {status.name} complete: added {total_missing} entries.")
 
     def check_index(self, status: BookIndexStatus = BookIndexStatus.Draft) -> List[Dict]:
         """Check that every item file has a corresponding index entry.
