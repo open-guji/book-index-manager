@@ -9,7 +9,7 @@ import type { IndexType, IndexStatus } from '../types';
 import type { FileSystem } from './filesystem';
 import { BookIndexStorage } from './storage';
 import { IdGenerator } from './id-generator';
-import { base58Encode, base58Decode, decodeIdString } from '../id';
+import { base36Encode, smartDecode, decodeIdString } from '../id';
 import { BookIndexError } from './exceptions';
 
 export class BookIndexManager {
@@ -26,14 +26,14 @@ export class BookIndexManager {
         return this.idGen.nextIdRaw(status, type);
     }
 
-    /** Encode a bigint ID to Base58 string. */
+    /** Encode a bigint ID to Base36 string. */
     encodeId(idVal: bigint): string {
-        return base58Encode(idVal);
+        return base36Encode(idVal);
     }
 
-    /** Decode a Base58 string to bigint ID. */
+    /** Decode an ID string to bigint (supports base36 and legacy base58). */
     decodeId(idStr: string): bigint {
-        return base58Decode(idStr);
+        return smartDecode(idStr);
     }
 
     /** Save a book/collection/work record. Auto-generates ID if not present. */
