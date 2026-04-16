@@ -3,7 +3,7 @@ import argparse
 import json
 import logging
 
-from .id_generator import BookIndexStatus, BookIndexType, BookIndexIdGenerator, base58_encode, base58_decode
+from .id_generator import BookIndexStatus, BookIndexType, BookIndexIdGenerator, base36_encode, smart_decode
 from .manager import BookIndexManager
 from .config import AppConfig
 from .logger import setup_logger, logger
@@ -139,7 +139,7 @@ class CLIHandler:
     def handle_parse_id(self):
         try:
             id_str = self.args.id
-            val = base58_decode(id_str)
+            val = smart_decode(id_str)
             comp = BookIndexIdGenerator.parse(val)
             dt = BookIndexIdGenerator.to_datetime(val)
 

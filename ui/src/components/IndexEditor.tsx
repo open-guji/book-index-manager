@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import type {
     IndexType, IndexDetailData, ResourceEntry, DownloadProgress,
     RelationData, RelatedEntity, EntityOption, SourceItem,
-    AdditionalWork, IndexedByEntry,
+    AdditionalWork, IndexedByEntry, EmendatedByEntry,
 } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { useT } from '../i18n';
@@ -65,6 +65,7 @@ export interface IndexEditorData {
     // 结构化字段
     additional_works?: AdditionalWork[];
     indexed_by?: IndexedByEntry[];
+    emendated_by?: EmendatedByEntry[];
     // 关联字段
     workId?: string;
     workName?: string;
@@ -262,6 +263,14 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
                 />
             </Section>
 
+            {/* 考证 */}
+            <Section title={t.section.emendatedBy} onSave={onSave} onAskAI={onAskAI ? () => onAskAI('考证') : undefined}>
+                <EmendatedByEditor
+                    items={data.emendated_by || []}
+                    onChange={items => handleChange('emendated_by', items)}
+                />
+            </Section>
+
             {/* 文字资源 */}
             <Section title={t.section.textResources} onSave={onSave} onAskAI={onAskAI ? () => onAskAI('资源') : undefined}>
                 <ResourceEditor
@@ -416,14 +425,28 @@ function AdditionalWorksEditor({ items, onChange }: {
 
 // ── 收录于编辑器 ──
 
-function IndexedByEditor({ items, onChange }: {
-    items: IndexedByEntry[];
-    onChange: (items: IndexedByEntry[]) => void;
+interface AnnotationEditorEntry {
+    source: string;
+    source_bid?: string;
+    title_info?: string;
+    author_info?: string;
+    edition?: string;
+    summary?: string;
+    comment?: string;
+    additional_comment?: string;
+}
+
+function AnnotationEditor({ items, onChange, showMeta, addLabel }: {
+    items: AnnotationEditorEntry[];
+    onChange: (items: AnnotationEditorEntry[]) => void;
+    /** 是否显示 title_info/author_info/edition 字段（indexed_by 需要，emendated_by 不需要） */
+    showMeta?: boolean;
+    addLabel: string;
 }) {
     const t = useT();
     const [expandedIndex, setExpandedIndex] = React.useState<number | null>(null);
 
-    const update = (index: number, field: keyof IndexedByEntry, value: string) => {
+    const update = (index: number, field: string, value: string) => {
         const next = items.map((item, i) => i === index ? { ...item, [field]: value || undefined } : item);
         onChange(next);
     };
@@ -471,7 +494,7 @@ function IndexedByEditor({ items, onChange }: {
                             }}>✕</button>
                         </div>
                         {/* Collapsed preview */}
-                        {!isExpanded && (item.title_info || item.author_info) && (
+                        {!isExpanded && showMeta && (item.title_info || item.author_info) && (
                             <div style={{ padding: '0 12px 8px 28px', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
                                 {item.title_info}{item.title_info && item.author_info && ' — '}{item.author_info}
                             </div>
@@ -483,11 +506,15 @@ function IndexedByEditor({ items, onChange }: {
                                     <FormInput label={t.label.sourceName} value={item.source} onChange={v => update(i, 'source', v)} />
                                     <FormInput label={t.label.sourceBid} value={item.source_bid || ''} onChange={v => update(i, 'source_bid', v)} />
                                 </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                                    <FormInput label={t.label.titleInfo} value={item.title_info || ''} onChange={v => update(i, 'title_info', v)} />
-                                    <FormInput label={t.label.authorInfo} value={item.author_info || ''} onChange={v => update(i, 'author_info', v)} />
-                                </div>
-                                <FormInput label={t.label.edition} value={item.edition || ''} onChange={v => update(i, 'edition', v)} />
+                                {showMeta && (
+                                    <>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                            <FormInput label={t.label.titleInfo} value={item.title_info || ''} onChange={v => update(i, 'title_info', v)} />
+                                            <FormInput label={t.label.authorInfo} value={item.author_info || ''} onChange={v => update(i, 'author_info', v)} />
+                                        </div>
+                                        <FormInput label={t.label.edition} value={item.edition || ''} onChange={v => update(i, 'edition', v)} />
+                                    </>
+                                )}
                                 <FormTextArea value={item.summary || ''} onChange={v => update(i, 'summary', v)} placeholder={t.editor.summaryPlaceholder} />
                                 <FormTextArea value={item.comment || ''} onChange={v => update(i, 'comment', v)} placeholder={t.editor.commentPlaceholder} />
                                 <FormTextArea value={item.additional_comment || ''} onChange={v => update(i, 'additional_comment', v)} placeholder={t.editor.additionalCommentPlaceholder} />
@@ -500,7 +527,23 @@ function IndexedByEditor({ items, onChange }: {
                 padding: '6px 12px', fontSize: '12px', border: '1px dashed #ccc',
                 borderRadius: '4px', background: 'transparent', cursor: 'pointer', color: '#666',
                 alignSelf: 'flex-start',
-            }}>{t.action.addIndexedBy}</button>
+            }}>{addLabel}</button>
         </div>
     );
+}
+
+function IndexedByEditor({ items, onChange }: {
+    items: IndexedByEntry[];
+    onChange: (items: IndexedByEntry[]) => void;
+}) {
+    const t = useT();
+    return <AnnotationEditor items={items} onChange={onChange as (items: AnnotationEditorEntry[]) => void} showMeta addLabel={t.action.addIndexedBy} />;
+}
+
+function EmendatedByEditor({ items, onChange }: {
+    items: EmendatedByEntry[];
+    onChange: (items: EmendatedByEntry[]) => void;
+}) {
+    const t = useT();
+    return <AnnotationEditor items={items} onChange={onChange as (items: AnnotationEditorEntry[]) => void} addLabel={t.action.addEmendatedBy} />;
 }

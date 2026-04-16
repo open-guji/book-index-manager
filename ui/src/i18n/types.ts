@@ -36,6 +36,7 @@ export interface LocaleMessages {
         addSource: string;
         addResource: string;
         addIndexedBy: string;
+        addEmendatedBy: string;
         addAdditionalWork: string;
         selectBookOrWork: string;
         clickToSelectBookOrWork: string;
@@ -76,6 +77,7 @@ export interface LocaleMessages {
         description: string;
         additionalWorks: string;
         indexedBy: string;
+        emendatedBy: string;
         resources: string;
         textResources: string;
         imageResources: string;
@@ -97,6 +99,7 @@ export interface LocaleMessages {
         comment: string;
         additionalComment: string;
         indexed: string;
+        emendated: string;
         relatedWorks: string;
         containedWorks: string;
     };

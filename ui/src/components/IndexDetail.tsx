@@ -10,6 +10,7 @@ import type {
     LocationInfo,
     AdditionalWork,
     IndexedByEntry,
+    EmendatedByEntry,
     ContainedInEntry,
 } from '../types';
 import type { IndexStorage } from '../storage/types';
@@ -353,10 +354,24 @@ function DetailHeader({ id, title, edition, type, isDraft, authors, volumeText, 
     );
 }
 
-// ── 收录于 ──
+// ── 收录/考证 通用卡片 ──
 
-function IndexedBySection({ items, onNavigate, renderLink }: {
-    items: IndexedByEntry[];
+interface AnnotationEntry {
+    source: string;
+    source_bid?: string;
+    title_info?: string;
+    author_info?: string;
+    edition?: string;
+    summary?: string;
+    comment?: string;
+    additional_comment?: string;
+}
+
+function AnnotationSection({ items, label, showMeta, onNavigate, renderLink }: {
+    items: AnnotationEntry[];
+    label: string;
+    /** 是否显示 title_info/author_info/edition 元数据行（indexed_by 需要，emendated_by 不需要） */
+    showMeta?: boolean;
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
 }) {
@@ -367,7 +382,7 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
 
     return (
         <>
-            <SectionLabel>{t.section.indexed}</SectionLabel>
+            <SectionLabel>{label}</SectionLabel>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {items.map((entry, i) => {
                     const isExpanded = expandedIndex === i;
@@ -406,7 +421,7 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
                                 }}>
                                     {convert(entry.source)}
                                 </span>
-                                {!isExpanded && entry.title_info && (
+                                {!isExpanded && showMeta && entry.title_info && (
                                     <span style={{
                                         fontSize: '12px',
                                         color: 'var(--bim-desc-fg, #999)',
@@ -426,7 +441,7 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
                             </div>
                             {isExpanded && (
                                 <div style={{ padding: '4px 12px 12px', borderTop: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
-                                    {(entry.title_info || entry.author_info || entry.edition) && (
+                                    {showMeta && (entry.title_info || entry.author_info || entry.edition) && (
                                         <div style={{
                                             display: 'flex',
                                             flexWrap: 'wrap',
@@ -517,6 +532,24 @@ function IndexedBySection({ items, onNavigate, renderLink }: {
             </div>
         </>
     );
+}
+
+function IndexedBySection({ items, onNavigate, renderLink }: {
+    items: IndexedByEntry[];
+    onNavigate?: (id: string) => void;
+    renderLink?: (id: string, label?: string) => React.ReactNode;
+}) {
+    const t = useT();
+    return <AnnotationSection items={items} label={t.section.indexed} showMeta onNavigate={onNavigate} renderLink={renderLink} />;
+}
+
+export function EmendatedBySection({ items, onNavigate, renderLink }: {
+    items: EmendatedByEntry[];
+    onNavigate?: (id: string) => void;
+    renderLink?: (id: string, label?: string) => React.ReactNode;
+}) {
+    const t = useT();
+    return <AnnotationSection items={items} label={t.section.emendated} onNavigate={onNavigate} renderLink={renderLink} />;
 }
 
 // ── 别名 / 附载篇目 ──
@@ -1217,6 +1250,10 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
 
             {detail.indexed_by && detail.indexed_by.length > 0 && (
                 <IndexedBySection items={detail.indexed_by} onNavigate={onNavigate} renderLink={renderLink} />
+            )}
+
+            {detail.emendated_by && detail.emendated_by.length > 0 && (
+                <EmendatedBySection items={detail.emendated_by} onNavigate={onNavigate} renderLink={renderLink} />
             )}
 
             {detail.resources && detail.resources.length > 0 && (

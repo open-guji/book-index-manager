@@ -4,7 +4,7 @@ import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional, Dict, List, Any
-from .id_generator import BookIndexType, BookIndexStatus, BookIndexIdGenerator, base58_encode, base58_decode
+from .id_generator import BookIndexType, BookIndexStatus, BookIndexIdGenerator, base36_encode, base36_decode, smart_decode
 from .logger import logger
 from .exceptions import StorageError
 from .migration import migrate_metadata
@@ -73,7 +73,7 @@ class BookIndexStorage:
             raise StorageError(f"Invalid ID for root lookup: {id_val} ({e})")
 
     def get_path(self, type_val: BookIndexType, id_val: int, name: str) -> Path:
-        id_str = base58_encode(id_val)
+        id_str = base36_encode(id_val)
         root = self.get_root_by_id(id_val)
 
         prefix = id_str.ljust(3, '_')[:3]
@@ -92,7 +92,7 @@ class BookIndexStorage:
         if edition:
             name = f"{name}{edition}"
         file_path = self.get_path(type_val, id_val, name)
-        id_str = base58_encode(id_val)
+        id_str = base36_encode(id_val)
 
         # Check if ID already exists and handle rename if needed
         existing_path = self.find_file_by_id(id_str)
@@ -105,6 +105,16 @@ class BookIndexStorage:
 
         try:
             file_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # On case-insensitive filesystems (Windows), a file with a
+            # different-case ID but the same title would silently collide.
+            # Detect and raise early to avoid overwriting another entry.
+            for f in file_path.parent.iterdir():
+                if f.suffix == '.json' and f.name != file_path.name and f.name.lower() == file_path.name.lower():
+                    raise StorageError(
+                        f"Case collision: {f.name} already exists, cannot create {file_path.name}. "
+                        f"On case-insensitive filesystems these map to the same file."
+                    )
 
             metadata["id"] = id_str
             metadata["type"] = type_val.name.lower()
@@ -136,7 +146,7 @@ class BookIndexStorage:
         if not work_id:
             return
         try:
-            work_id_val = base58_decode(work_id)
+            work_id_val = smart_decode(work_id)
             work_path = self.find_file_by_id(work_id)
             if not work_path:
                 logger.warning(f"Work {work_id} not found for bidirectional link from Book {book_id}")
@@ -327,7 +337,7 @@ class BookIndexStorage:
 
     def get_asset_dir(self, id_str: str) -> Path:
         """Get asset directory path: {root}/{Type}/{c1}/{c2}/{c3}/{ID}/"""
-        id_val = base58_decode(id_str)
+        id_val = smart_decode(id_str)
         components = BookIndexIdGenerator.parse(id_val)
         root = self.get_root_by_status(components.status)
         prefix = id_str.ljust(3, '_')[:3]
@@ -560,7 +570,7 @@ class BookIndexStorage:
             for shard_data in type_shards.values():
                 indexed_ids.update(shard_data.keys())
 
-        ITEM_FILE_RE = re.compile(r'^[A-Za-z0-9]{11}-.+\.json$')
+        ITEM_FILE_RE = re.compile(r'^[A-Za-z0-9]{11,13}-.+\.json$')
 
         # Collect all unindexed files grouped by (type_val, shard_num)
         # so we can parallelise per bucket
@@ -579,7 +589,7 @@ class BookIndexStorage:
                     pass
                 if not ITEM_FILE_RE.match(json_file.name):
                     continue
-                id_str = json_file.name[:11]
+                id_str = json_file.name.split('-', 1)[0]
                 if id_str in indexed_ids:
                     continue
                 shard_num = 0 if type_key == "collections" else shard_of(id_str)
@@ -638,7 +648,7 @@ class BookIndexStorage:
         An empty list means the index is consistent.
         """
         import re
-        ITEM_FILE_RE = re.compile(r'^[A-Za-z0-9]{11}-.+\.json$')
+        ITEM_FILE_RE = re.compile(r'^[A-Za-z0-9]{11,13}-.+\.json$')
 
         root = self.get_root_by_status(status)
 
@@ -667,7 +677,7 @@ class BookIndexStorage:
                 continue
             for json_file in type_dir.glob("**/*.json"):
                 if ITEM_FILE_RE.match(json_file.name):
-                    id_str = json_file.name[:11]
+                    id_str = json_file.name.split('-', 1)[0]
                     if id_str not in indexed:
                         missing.append({
                             "id": id_str,
@@ -713,7 +723,7 @@ class BookIndexStorage:
             return False
 
         try:
-            id_val = base58_decode(id_str)
+            id_val = smart_decode(id_str)
             components = BookIndexIdGenerator.parse(id_val)
             root = self.get_root_by_status(components.status)
             type_key = components.type.name.lower() + "s"
@@ -732,7 +742,7 @@ class BookIndexStorage:
     def find_file_by_id(self, id_str: str) -> Optional[Path]:
         """Search for a book file in both official and draft roots."""
         try:
-            id_val = base58_decode(id_str)
+            id_val = smart_decode(id_str)
             logger.debug(f"Searching for ID: {id_str} (decoded={id_val})")
         except Exception as e:
             logger.error(f"Failed to decode ID {id_str}: {e}")

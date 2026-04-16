@@ -43,6 +43,7 @@ export function detailToEditor(data: IndexDetailData): IndexEditorData {
         resources: data.resources,
         additional_works: data.additional_works,
         indexed_by: data.indexed_by,
+        emendated_by: data.emendated_by,
     };
 
     // Work 特有字段
@@ -84,6 +85,7 @@ export function editorToDetail(data: IndexEditorData): IndexDetailData {
         resources: data.resources,
         additional_works: data.additional_works,
         indexed_by: data.indexed_by,
+        emendated_by: data.emendated_by,
     };
 
     if (data.type === 'work') {

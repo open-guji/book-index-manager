@@ -1,11 +1,11 @@
 /**
  * Snowflake ID 生成器
  * 翻译自 Python book_index_manager.id_generator
- * 复用 id.ts 的 buildId + base58Encode
+ * 复用 id.ts 的 buildId + base36Encode
  */
 
 import type { IndexStatus, IndexType } from '../types';
-import { buildId, base58Encode } from '../id';
+import { buildId, base36Encode } from '../id';
 
 const MASK_SEQUENCE = 0xFF; // 8 bits
 
@@ -23,7 +23,7 @@ export class IdGenerator {
     }
 
     /**
-     * 生成下一个 ID（Base58 编码字符串）
+     * 生成下一个 ID（Base36 编码字符串）
      */
     nextId(status: IndexStatus, type: IndexType): string {
         let timestamp = this._getCurrentTimestamp(status);
@@ -45,7 +45,7 @@ export class IdGenerator {
         this.lastStatus = status;
 
         const id = buildId(status, type, BigInt(timestamp), this.machineId, this.sequence);
-        return base58Encode(id);
+        return base36Encode(id);
     }
 
     /**

@@ -6,7 +6,7 @@
  */
 
 import type { IndexType } from '../types';
-import { base58Encode, base58Decode, decodeIdString } from '../id';
+import { base36Encode, smartDecode, decodeIdString } from '../id';
 
 export class BidLink {
     static readonly PROTOCOL = 'bid:\\\\';
@@ -27,13 +27,13 @@ export class BidLink {
             }
             this.idStr = idVal;
             try {
-                this.idInt = base58Decode(idVal);
+                this.idInt = smartDecode(idVal);
             } catch {
                 this.idInt = 0n;
             }
         } else {
             this.idInt = idVal;
-            this.idStr = base58Encode(idVal);
+            this.idStr = base36Encode(idVal);
         }
 
         if (this.idInt > 0n) {

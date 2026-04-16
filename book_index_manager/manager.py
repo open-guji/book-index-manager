@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from typing import Optional, Dict, List, Any
 
-from .id_generator import BookIndexIdGenerator, BookIndexStatus, BookIndexType, base58_encode, base58_decode
+from .id_generator import BookIndexIdGenerator, BookIndexStatus, BookIndexType, base36_encode, smart_decode
 from .storage import BookIndexStorage
 from .exceptions import BookIndexError
 
@@ -24,10 +24,10 @@ class BookIndexManager:
         return self.id_gen.next_id(status, type_val)
 
     def encode_id(self, id_val: int) -> str:
-        return base58_encode(id_val)
+        return base36_encode(id_val)
 
     def decode_id(self, id_str: str) -> int:
-        return base58_decode(id_str)
+        return smart_decode(id_str)
 
     def save_item(self, metadata: Dict, type_val: Optional[BookIndexType] = None, status: BookIndexStatus = BookIndexStatus.Draft) -> Path:
         """Save a book/collection/work record. Auto-generates ID if not present."""

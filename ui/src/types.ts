@@ -195,6 +195,7 @@ export interface BaseDetailData {
     attached_texts?: (string | { book_title: string })[];
     additional_works?: AdditionalWork[];
     indexed_by?: IndexedByEntry[];
+    emendated_by?: EmendatedByEntry[];
     publication_info?: PublicationInfo;
     current_location?: LocationInfo;
     juan_count?: JuanCount;
@@ -304,6 +305,22 @@ export interface IndexedByEntry {
     /** 收录时的版本信息，如"內府藏本" */
     edition?: string;
     /** 提要/摘要 */
+    summary?: string;
+    /** 编者评论 */
+    comment?: string;
+    /** 附加评论 */
+    additional_comment?: string;
+}
+
+// ── 考证信息 ──
+
+/** 考证条目：记录某部作品被某考证著作校勘/注释时的信息 */
+export interface EmendatedByEntry {
+    /** 考证来源名称（繁体全名），如"隋書經籍志考證" */
+    source: string;
+    /** 考证来源的 Book Index ID */
+    source_bid?: string;
+    /** 考证正文/摘要 */
     summary?: string;
     /** 编者评论 */
     comment?: string;

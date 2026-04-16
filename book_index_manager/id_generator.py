@@ -123,20 +123,40 @@ class BookIndexIdGenerator:
             full_ts_s = now_s - ((now_s - components.timestamp) % MOD)
             return datetime.fromtimestamp(full_ts_s)
 
-# Base58 implementation
-ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+# Base36 implementation (case-insensitive safe: digits + lowercase only)
+ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz"
 
-def base58_encode(num: int) -> str:
+def base36_encode(num: int) -> str:
     if num == 0:
         return ALPHABET[0]
     res = ""
     while num > 0:
-        num, rem = divmod(num, 58)
+        num, rem = divmod(num, 36)
         res = ALPHABET[rem] + res
     return res
 
-def base58_decode(s: str) -> int:
+def base36_decode(s: str) -> int:
     num = 0
     for char in s:
-        num = num * 58 + ALPHABET.index(char)
+        num = num * 36 + ALPHABET.index(char)
     return num
+
+# Legacy base58 support (for migration / backward compatibility)
+_ALPHABET_58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+
+def base58_decode(s: str) -> int:
+    """Decode a legacy base58-encoded ID string."""
+    num = 0
+    for char in s:
+        num = num * 58 + _ALPHABET_58.index(char)
+    return num
+
+def smart_decode(s: str) -> int:
+    """Auto-detect base58 or base36 and decode."""
+    if any(c.isupper() for c in s):
+        return base58_decode(s)
+    return base36_decode(s)
+
+# Aliases for backward compatibility
+encode_id = base36_encode
+decode_id = base36_decode

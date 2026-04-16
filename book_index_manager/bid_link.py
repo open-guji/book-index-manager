@@ -1,6 +1,6 @@
 import re
 from typing import Optional, Union
-from .id_generator import BookIndexIdGenerator, BookIndexType, base58_encode, base58_decode
+from .id_generator import BookIndexIdGenerator, BookIndexType, base36_encode, smart_decode
 
 
 class BidLink:
@@ -19,12 +19,12 @@ class BidLink:
                 id_val = id_val[len(self.PREFIX):]
             self.id_str = id_val
             try:
-                self.id_int = base58_decode(id_val)
+                self.id_int = smart_decode(id_val)
             except ValueError:
                 self.id_int = 0
         else:
             self.id_int = id_val
-            self.id_str = base58_encode(id_val)
+            self.id_str = base36_encode(id_val)
 
         self._type = None
         if self.id_int > 0:

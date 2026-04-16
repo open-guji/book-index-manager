@@ -1,5 +1,6 @@
 /**
- * Base58 ID encoding/decoding for book-index.
+ * Base36 ID encoding/decoding for book-index.
+ * Case-insensitive safe: uses only digits + lowercase letters.
  * Port of Python book_index_manager.id_generator
  */
 
@@ -29,28 +30,48 @@ const MASK_TYPE = (1n << 3n) - 1n;
 const MASK_MACHINE = (1n << 11n) - 1n;
 const MASK_SEQUENCE = (1n << 8n) - 1n;
 
-// --- Base58 ---
+// --- Base36 ---
 
-const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz';
 const ALPHABET_MAP = new Map<string, bigint>();
 for (let i = 0; i < ALPHABET.length; i++) {
   ALPHABET_MAP.set(ALPHABET[i], BigInt(i));
 }
 
-export function base58Encode(num: bigint): string {
+export function base36Encode(num: bigint): string {
   if (num === 0n) return ALPHABET[0];
   let result = '';
   while (num > 0n) {
-    result = ALPHABET[Number(num % 58n)] + result;
-    num = num / 58n;
+    result = ALPHABET[Number(num % 36n)] + result;
+    num = num / 36n;
   }
   return result;
+}
+
+export function base36Decode(s: string): bigint {
+  let num = 0n;
+  for (const char of s) {
+    const val = ALPHABET_MAP.get(char);
+    if (val === undefined) {
+      throw new Error(`Invalid Base36 character: ${char}`);
+    }
+    num = num * 36n + val;
+  }
+  return num;
+}
+
+// --- Legacy base58 support (for migration / backward compatibility) ---
+
+const _ALPHABET_58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+const _ALPHABET_58_MAP = new Map<string, bigint>();
+for (let i = 0; i < _ALPHABET_58.length; i++) {
+  _ALPHABET_58_MAP.set(_ALPHABET_58[i], BigInt(i));
 }
 
 export function base58Decode(s: string): bigint {
   let num = 0n;
   for (const char of s) {
-    const val = ALPHABET_MAP.get(char);
+    const val = _ALPHABET_58_MAP.get(char);
     if (val === undefined) {
       throw new Error(`Invalid Base58 character: ${char}`);
     }
@@ -58,6 +79,18 @@ export function base58Decode(s: string): bigint {
   }
   return num;
 }
+
+/** Auto-detect base58 or base36 and decode. */
+export function smartDecode(s: string): bigint {
+  if (/[A-Z]/.test(s)) {
+    return base58Decode(s);
+  }
+  return base36Decode(s);
+}
+
+// Aliases
+export const encodeId = base36Encode;
+export const decodeId = base36Decode;
 
 // --- ID Components ---
 
@@ -103,17 +136,17 @@ export function buildId(
 
 // --- Convenience ---
 
-/** Decode a Base58 ID string and extract its components */
+/** Decode an ID string and extract its components. Supports both base36 and legacy base58. */
 export function decodeIdString(encoded: string): IdComponents {
-  return parseId(base58Decode(encoded));
+  return parseId(smartDecode(encoded));
 }
 
-/** Extract type from a Base58 ID string */
+/** Extract type from an ID string */
 export function extractType(encoded: string): IndexType {
   return decodeIdString(encoded).type;
 }
 
-/** Extract status from a Base58 ID string */
+/** Extract status from an ID string */
 export function extractStatus(encoded: string): IndexStatus {
   return decodeIdString(encoded).status;
 }

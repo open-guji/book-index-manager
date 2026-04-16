@@ -6,7 +6,7 @@
 
 import type { IndexType, IndexEntry, IndexStatus, GroupedSearchResult } from '../types';
 import type { FileSystem } from './filesystem';
-import { base58Encode, base58Decode, parseId } from '../id';
+import { base36Encode, smartDecode, parseId } from '../id';
 
 const TYPE_TO_FOLDER: Record<IndexType, string> = { book: 'Book', collection: 'Collection', work: 'Work' };
 const FOLDER_TO_TYPE: Record<string, IndexType> = { Book: 'book', Collection: 'collection', Work: 'work' };
@@ -81,7 +81,7 @@ export class BookIndexStorage {
     }
 
     getRootById(idStr: string): string {
-        const idVal = base58Decode(idStr);
+        const idVal = smartDecode(idStr);
         const components = parseId(idVal);
         return this.getRootByStatus(components.status);
     }
@@ -228,7 +228,7 @@ export class BookIndexStorage {
         const filePath = await this.findFileById(idStr);
         if (!filePath) return false;
 
-        const idVal = base58Decode(idStr);
+        const idVal = smartDecode(idStr);
         const components = parseId(idVal);
         const root = this.getRootByStatus(components.status);
         const typeKey = `${components.type}s`;
@@ -464,7 +464,7 @@ export class BookIndexStorage {
      */
     getAssetDir(idStr: string): string {
         const root = this.getRootById(idStr);
-        const idVal = base58Decode(idStr);
+        const idVal = smartDecode(idStr);
         const components = parseId(idVal);
         const type = components.type;
         const prefix = idStr.padEnd(3, '_').substring(0, 3);
