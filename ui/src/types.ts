@@ -398,8 +398,8 @@ export interface ResourceCatalog {
 /** 整理本中的一个 section */
 export interface CollatedSection {
     title: string;
-    level: number;
-    type: '部' | '类' | '书' | '其他';
+    level?: number;
+    type: string;  // catalog: '部'|'类'|'书'|'其他'|'序'  kaozhen: '考證'|'序論'|'按語'|'統計'|'亡佚'|'重出'
     content?: string;
     edition?: string | null;
     text_status?: string | null;
@@ -415,7 +415,14 @@ export interface CollatedSection {
     author_type?: string | null;
     note?: string | null;
     tag?: string | null;
+    /** catalog 类型：单个关联作品 ID */
     work_id?: string | null;
+    /** kaozhen 类型：关联的作品 ID 列表 */
+    work_ids?: string[];
+    /** kaozhen 类型：原文标题行 */
+    header_line?: string;
+    /** AI 生成的备注 */
+    ai_note?: string;
 }
 
 /** 整理本的一卷数据 */
@@ -447,12 +454,27 @@ export interface CollatedReference {
 
 /** 整理本索引（卷列表） */
 export interface CollatedEditionIndex {
+    /** 整理本类型：catalog（目录志书）| kaozhen（考证） */
+    type?: 'catalog' | 'kaozhen';
     work_id: string;
-    total_juan: number;
-    juan_files: string[];
+    total_juan?: number;
+    juan_files?: string[];
     juan_groups?: JuanGroup[];
     /** 参考文献 */
     references?: CollatedReference[];
+    /** kaozhen: 考证对象（如"漢書藝文志"） */
+    target_source?: string;
+    target_source_id?: string;
+    /** kaozhen: 文本来源说明 */
+    text_source?: string;
+    /** 文件列表（替代 juan_files 的详细版） */
+    files?: Array<{
+        filename: string;
+        title: string;
+        source_juan?: string;
+        sections?: number;
+        status?: string;
+    }>;
 }
 
 /** 资料来源项 */
