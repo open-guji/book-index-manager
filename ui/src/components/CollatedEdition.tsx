@@ -80,6 +80,17 @@ const SECTION_TYPE_COLORS: Record<string, string> = {
     '其他': '#717171',
 };
 
+const KAOZHEN_TYPE_COLORS: Record<string, string> = {
+    '考証': '#5d6d7e',
+    '考证': '#5d6d7e',
+    '序論': '#1a5276',
+    '序论': '#1a5276',
+    '按語': '#7d6608',
+    '按语': '#7d6608',
+    '亡佚': '#922b21',
+    '重出': '#6c3483',
+};
+
 // ── 子组件 ──
 
 /** 将文件名转为显示名 */
@@ -94,6 +105,7 @@ function juanDisplayName(f: string): string {
         const n = name.replace('juan', '').replace(/^0+/, '');
         return `卷${n}`;
     }
+    // 中文文件名（考证类）：直接去掉扩展名返回
     return name;
 }
 
@@ -241,11 +253,13 @@ function JuanNav({
     activeFile,
     onSelect,
 }: {
-    files: string[];
+    files: string[] | undefined;
     groups?: JuanGroup[];
     activeFile: string | null;
     onSelect: (file: string) => void;
 }) {
+    const fileList = files || [];
+
     // 有分组信息时按分组显示
     if (groups && groups.length > 0) {
         return (
@@ -256,6 +270,8 @@ function JuanNav({
             </div>
         );
     }
+
+    if (fileList.length === 0) return null;
 
     // 无分组时平铺显示
     return (
@@ -268,7 +284,7 @@ function JuanNav({
             overflow: 'auto',
             padding: '4px 0',
         }}>
-            {files.map(f => (
+            {fileList.map(f => (
                 <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} />
             ))}
         </div>
@@ -584,6 +600,230 @@ function OtherSection({ section }: { section: CollatedSection }) {
     );
 }
 
+/** 考证条目：展示考证正文和关联作品链接 */
+function KaozhenSection({ section, onNavigate }: { section: CollatedSection; onNavigate?: (id: string) => void }) {
+    const { convert } = useConvert();
+    const [expanded, setExpanded] = useState(false);
+    const typeKey = section.type;
+    const typeColor = KAOZHEN_TYPE_COLORS[typeKey] || '#717171';
+    const hasContent = !!section.content;
+    const workIds = section.work_ids || [];
+
+    // 截取前80字作为预览
+    const preview = hasContent && !expanded
+        ? (section.content!.length > 80 ? section.content!.slice(0, 80) + '……' : null)
+        : null;
+
+    return (
+        <div style={{
+            borderBottom: '1px solid var(--bim-widget-border, #f0f0f0)',
+            padding: '10px 0',
+        }}>
+            {/* 标题行 */}
+            <div
+                onClick={() => hasContent && setExpanded(!expanded)}
+                style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '8px',
+                    cursor: hasContent ? 'pointer' : 'default',
+                    userSelect: 'none',
+                }}
+            >
+                {hasContent && (
+                    <span style={{
+                        fontSize: '9px',
+                        color: 'var(--bim-desc-fg, #aaa)',
+                        marginTop: '5px',
+                        transition: 'transform 0.15s',
+                        transform: expanded ? 'rotate(90deg)' : 'none',
+                        display: 'inline-block',
+                        flexShrink: 0,
+                    }}>&#9654;</span>
+                )}
+                <div style={{ flex: 1 }}>
+                    <span style={{
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        color: 'var(--bim-fg, #1a1a1a)',
+                        lineHeight: 1.6,
+                    }}>
+                        {section.header_line ? convert(section.header_line) : convert(section.title)}
+                    </span>
+                    {/* 折叠时的内容预览 */}
+                    {!expanded && preview && (
+                        <p style={{
+                            margin: '4px 0 0',
+                            fontSize: '12px',
+                            color: 'var(--bim-desc-fg, #aaa)',
+                            lineHeight: 1.7,
+                        }}>
+                            {convert(preview)}
+                        </p>
+                    )}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                    {workIds.length > 0 && onNavigate && workIds.map(wid => (
+                        <a
+                            key={wid}
+                            href={`/book-index?id=${wid}`}
+                            onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(wid); }}
+                            style={{
+                                fontSize: '11px',
+                                color: 'var(--bim-link-fg, #0066cc)',
+                                cursor: 'pointer',
+                                textDecoration: 'none',
+                                flexShrink: 0,
+                            }}
+                            title="查看作品"
+                        >
+                            →作品
+                        </a>
+                    ))}
+                    <span style={{
+                        display: 'inline-block',
+                        padding: '1px 5px',
+                        fontSize: '10px',
+                        fontWeight: 500,
+                        color: typeColor,
+                        border: `1px solid ${typeColor}40`,
+                        borderRadius: '2px',
+                        background: `${typeColor}08`,
+                    }}>
+                        {typeKey}
+                    </span>
+                </div>
+            </div>
+
+            {/* 展开的考证正文 */}
+            {expanded && hasContent && (
+                <div style={{
+                    marginTop: '10px',
+                    padding: '12px 16px',
+                    borderLeft: `3px solid ${typeColor}40`,
+                    borderRadius: '0 4px 4px 0',
+                    background: 'var(--bim-bg, #fafafa)',
+                }}>
+                    <p style={{
+                        fontSize: '13px',
+                        color: 'var(--bim-fg, #333)',
+                        lineHeight: 2.0,
+                        margin: 0,
+                        textAlign: 'justify',
+                        whiteSpace: 'pre-line',
+                    }}>
+                        {convert(section.content!)}
+                    </p>
+                    {section.comment && (
+                        <div style={{
+                            marginTop: '10px',
+                            paddingTop: '8px',
+                            borderTop: '1px solid var(--bim-widget-border, #eee)',
+                            fontSize: '12px',
+                            color: 'var(--bim-desc-fg, #717171)',
+                            lineHeight: 1.8,
+                            fontStyle: 'italic',
+                        }}>
+                            {convert(section.comment)}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
+
+/** 考证内容视图（替代 JuanContent 用于 kaozhen 类型） */
+function KaozhenContent({
+    juan,
+    searchQuery,
+    onNavigate,
+}: {
+    juan: CollatedJuan;
+    searchQuery: string;
+    onNavigate?: (id: string) => void;
+}) {
+    const { convert } = useConvert();
+
+    const filteredSections = useMemo(() => {
+        if (!searchQuery.trim()) return juan.sections;
+        const q = searchQuery.trim().toLowerCase();
+        return juan.sections.filter(s =>
+            s.title?.toLowerCase().includes(q) ||
+            s.content?.toLowerCase().includes(q) ||
+            s.comment?.toLowerCase().includes(q)
+        );
+    }, [juan.sections, searchQuery]);
+
+    const sectionCount = filteredSections.filter(s => s.type === '考証' || s.type === '考证').length;
+
+    return (
+        <div>
+            {/* 章标题 */}
+            <div style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: '12px',
+                marginBottom: '4px',
+            }}>
+                <h3 style={{
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    color: 'var(--bim-fg, #1a1a1a)',
+                    margin: 0,
+                }}>
+                    {convert(juan.title)}
+                </h3>
+                {sectionCount > 0 && (
+                    <span style={{
+                        fontSize: '12px',
+                        color: 'var(--bim-desc-fg, #999)',
+                        marginLeft: 'auto',
+                    }}>
+                        {sectionCount} 條
+                    </span>
+                )}
+            </div>
+            {juan.source_url && (
+                <div style={{ marginBottom: '12px' }}>
+                    <a
+                        href={juan.source_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                            fontSize: '11px',
+                            color: 'var(--bim-desc-fg, #aaa)',
+                            textDecoration: 'underline',
+                            textDecorationColor: 'var(--bim-widget-border, #ddd)',
+                            textUnderlineOffset: '2px',
+                        }}
+                    >
+                        原文來源
+                    </a>
+                </div>
+            )}
+
+            {/* 考证条目列表 */}
+            <div>
+                {filteredSections.map((section, i) => (
+                    <KaozhenSection key={i} section={section} onNavigate={onNavigate} />
+                ))}
+            </div>
+
+            {filteredSections.length === 0 && (
+                <div style={{
+                    padding: '32px',
+                    textAlign: 'center',
+                    color: 'var(--bim-desc-fg, #999)',
+                    fontSize: '13px',
+                }}>
+                    无匹配结果
+                </div>
+            )}
+        </div>
+    );
+}
+
 /** 原文模式：将 sections 渲染为连续文本 */
 function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; onNavigate?: (id: string) => void }) {
     const { convert } = useConvert();
@@ -749,6 +989,21 @@ function JuanContent({
     );
 }
 
+// ── 工具：统一获取文件列表（兼容 catalog/kaozhen） ──
+
+/** 从索引获取文件名列表（catalog 用 juan_files，kaozhen 用 files[].filename） */
+function getIndexFiles(idx: import('../types').CollatedEditionIndex): string[] {
+    if (idx.juan_files && idx.juan_files.length > 0) return idx.juan_files;
+    if (idx.files && idx.files.length > 0) return idx.files.map(f => f.filename);
+    return [];
+}
+
+/** 获取索引的第一个文件名 */
+function getFirstFile(idx: import('../types').CollatedEditionIndex): string | null {
+    const files = getIndexFiles(idx);
+    return files.length > 0 ? files[0] : null;
+}
+
 // ── 主组件 ──
 
 export const CollatedEdition: React.FC<CollatedEditionProps> = ({
@@ -799,8 +1054,9 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
             } else {
                 setIndexData(result);
                 // 默认选第一卷（仅当外部没有指定时）
-                if (!externalActiveJuan && result.juan_files.length > 0) {
-                    setActiveFile(result.juan_files[0]);
+                const firstFile = getFirstFile(result);
+                if (!externalActiveJuan && firstFile) {
+                    setActiveFile(firstFile);
                 }
             }
         }).catch(err => {
@@ -814,8 +1070,9 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
     // 自动选第一卷（当 index 可用且尚未选择时）
     useEffect(() => {
         const idx = indexProp || indexData;
-        if (idx && idx.juan_files && idx.juan_files.length > 0 && !activeFile) {
-            setActiveFile(idx.juan_files[0]);
+        if (idx && !activeFile) {
+            const firstFile = getFirstFile(idx);
+            if (firstFile) setActiveFile(firstFile);
         }
     }, [indexProp, indexData, activeFile, setActiveFile]);
 
@@ -873,21 +1130,30 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
 
     if (!index) return null;
 
+    const isKaozhen = index.type === 'kaozhen';
+    const allFiles = getIndexFiles(index);
+
     return (
         <div className={className} style={style}>
             {/* 头部统计 */}
             <div style={{ marginBottom: '16px' }}>
-                <div style={{
-                    fontSize: '13px',
-                    color: 'var(--bim-desc-fg, #717171)',
-                }}>
-                    共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{index.total_juan}</strong> 卷
-                </div>
+                {isKaozhen ? (
+                    <div style={{ fontSize: '13px', color: 'var(--bim-desc-fg, #717171)' }}>
+                        {index.target_source && (
+                            <span>考證對象：<strong style={{ color: 'var(--bim-fg, #333)' }}>{index.target_source}</strong>　</span>
+                        )}
+                        共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{allFiles.length}</strong> 章
+                    </div>
+                ) : (
+                    <div style={{ fontSize: '13px', color: 'var(--bim-desc-fg, #717171)' }}>
+                        共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{index.total_juan}</strong> 卷
+                    </div>
+                )}
             </div>
 
-            {/* 卷导航 */}
+            {/* 卷/章导航 */}
             <JuanNav
-                files={index.juan_files}
+                files={allFiles}
                 groups={index.juan_groups}
                 activeFile={activeFile}
                 onSelect={handleSelectFile}
@@ -897,7 +1163,7 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
             <div style={{ marginBottom: '12px' }}>
                 <input
                     type="text"
-                    placeholder="搜索书名、作者..."
+                    placeholder={isKaozhen ? '搜索条目、考证内容...' : '搜索书名、作者...'}
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     style={{
@@ -918,11 +1184,19 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
             {juanLoading ? (
                 <LoadingDots />
             ) : juanData ? (
-                <JuanContent
-                    juan={juanData}
-                    searchQuery={searchQuery}
-                    onNavigate={onNavigate}
-                />
+                isKaozhen ? (
+                    <KaozhenContent
+                        juan={juanData}
+                        searchQuery={searchQuery}
+                        onNavigate={onNavigate}
+                    />
+                ) : (
+                    <JuanContent
+                        juan={juanData}
+                        searchQuery={searchQuery}
+                        onNavigate={onNavigate}
+                    />
+                )
             ) : activeFile ? (
                 <div style={{
                     padding: '24px',
