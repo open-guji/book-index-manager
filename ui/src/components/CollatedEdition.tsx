@@ -404,7 +404,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                 )}
                 {section.work_id && onNavigate && (
                     <a
-                        href={`/${section.work_id}`}
+                        href={`/book-index?id=${section.work_id}`}
                         onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(section.work_id!); }}
                         style={{
                             fontSize: '11px',
@@ -628,7 +628,7 @@ function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; on
                             <div key={si}>
                                 {onNavigate && s.work_id ? (
                                     <a
-                                        href={`/${s.work_id}`}
+                                        href={`/book-index?id=${s.work_id}`}
                                         onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(s.work_id!); }}
                                         style={{ color: 'var(--bim-fg, #333)', textDecoration: 'underline', textDecorationColor: 'var(--bim-widget-border, #ddd)', textUnderlineOffset: '3px', cursor: 'pointer' }}
                                         title={convert(s.title)}

@@ -323,7 +323,7 @@ const RecommendContent: React.FC<{
                             return (
                                 <a
                                     key={entry.id}
-                                    href={`/${entry.id}`}
+                                    href={`/book-index?id=${entry.id}`}
                                     onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate?.(entry.id); }}
                                     style={{
                                         display: 'flex',
@@ -450,7 +450,7 @@ const ProgressItem: React.FC<{
                             if (linkId && onNavigate) {
                                 return (
                                     <a
-                                        href={`/${linkId}`}
+                                        href={`/book-index?id=${linkId}`}
                                         onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(linkId); }}
                                         style={{ color: 'inherit', textDecoration: 'none', borderBottom: '1px dashed var(--bim-link-fg, #0066cc)' }}
                                         onMouseEnter={e => (e.currentTarget.style.borderBottomStyle = 'solid')}

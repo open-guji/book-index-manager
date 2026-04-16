@@ -143,7 +143,7 @@ function BidLink({ id, label, onNavigate, renderLink }: {
     if (onNavigate) {
         return (
             <a
-                href={`/${id}`}
+                href={`/book-index?id=${id}`}
                 onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(id); }}
                 style={{
                     color: 'var(--bim-link-fg, #0066cc)',

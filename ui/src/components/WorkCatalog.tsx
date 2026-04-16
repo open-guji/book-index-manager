@@ -225,7 +225,7 @@ const BookList: React.FC<{
                         <span style={{ fontWeight: 500, color: 'var(--bim-fg, #333)' }}>
                             {book.work_id && onNavigate ? (
                                 <a
-                                    href={`/${book.work_id}`}
+                                    href={`/book-index?id=${book.work_id}`}
                                     onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(book.work_id!); }}
                                     style={{ color: 'inherit', textDecoration: 'none', borderBottom: '1px dashed var(--bim-link-fg, #0066cc)' }}
                                 >
