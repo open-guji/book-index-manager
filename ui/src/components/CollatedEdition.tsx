@@ -327,11 +327,10 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
     const hasSummary = !!section.summary;
     const hasComment = !!section.comment;
     const hasAdditionalComment = !!section.additional_comment;
-    const annotation = section.author_info ? null : extractAnnotation(section.content);
     const hasLongContent = !!(section.content && section.content.length > 60);
     const hasContent = hasSummary || hasComment || hasAdditionalComment || hasLongContent;
-    // 缩略预览：优先用 annotation（汉志班固自注），否则用 content 前段
-    const preview = !expanded && hasLongContent && !annotation ? section.content!.replace(/\n/g, ' ').slice(0, 60) + '…' : null;
+    // 缩略预览：直接截取 content 前段
+    const preview = !expanded && hasLongContent ? section.content!.replace(/\n/g, ' ').slice(0, 80) + '…' : null;
 
     return (
         <div style={{
@@ -391,7 +390,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                         {convert(section.author_info || section.author)}
                     </span>
                 )}
-                {!expanded && (annotation || preview) && (
+                {!expanded && preview && (
                     <span style={{
                         fontSize: '12px',
                         fontWeight: 400,
@@ -402,7 +401,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                         minWidth: 0,
                         flexShrink: 1,
                     }}>
-                        {convert((annotation || preview)!)}
+                        {convert(preview)}
                     </span>
                 )}
                 {section.edition && (
