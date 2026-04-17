@@ -328,7 +328,8 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
     const hasComment = !!section.comment;
     const hasAdditionalComment = !!section.additional_comment;
     const annotation = section.author_info ? null : extractAnnotation(section.content);
-    const hasContent = hasSummary || hasComment || hasAdditionalComment;
+    const hasLongContent = !!(section.content && section.content.length > 60);
+    const hasContent = hasSummary || hasComment || hasAdditionalComment || hasLongContent;
 
     return (
         <div style={{
@@ -519,6 +520,16 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                                 fontStyle: 'italic',
                             }}>{convert(section.additional_comment)}</p>
                         </div>
+                    )}
+                    {hasLongContent && !hasSummary && !hasComment && !hasAdditionalComment && (
+                        <p style={{
+                            fontSize: '13px',
+                            color: 'var(--bim-fg, #333)',
+                            lineHeight: 1.9,
+                            margin: 0,
+                            textAlign: 'justify',
+                            whiteSpace: 'pre-line',
+                        }}>{convert(section.content)}</p>
                     )}
                 </div>
             )}
