@@ -843,7 +843,7 @@ function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; on
     let current: { category: string; categoryContent?: string; items: CollatedSection[] } | null = null;
 
     for (const s of sections) {
-        if (s.type === '类') {
+        if (s.type === '类' || s.type === '门') {
             if (current) groups.push(current);
             current = { category: s.title, categoryContent: s.content || undefined, items: [] };
         } else if (s.type === '书') {
@@ -987,7 +987,7 @@ function JuanContent({
                 if (section.type === '书') {
                     return <BookSection key={i} section={section} onNavigate={onNavigate} />;
                 }
-                if (section.type === '部' || section.type === '类') {
+                if (section.type === '部' || section.type === '类' || section.type === '门') {
                     return <CategoryHeader key={i} section={section} />;
                 }
                 return <OtherSection key={i} section={section} />;
