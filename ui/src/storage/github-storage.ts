@@ -1,8 +1,9 @@
 import type { IndexStorage } from './types';
-import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress, RecommendedData } from '../types';
+import type { IndexType, IndexEntry, IndexStatus, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress, RecommendedData } from '../types';
 import { rankByRelevance, rankByRelevanceWithSimplified, NUM_SHARDS } from '../core/storage';
 import type { SearchSIndex } from '../core/storage';
 import { normalizeCatalog } from '../core/normalize-catalog';
+import { smartDecode, parseId } from '../id';
 
 /**
  * 索引分片文件中的条目格式
@@ -404,42 +405,31 @@ export class GithubStorage implements IndexStorage {
         const entries = await this.ensureLoaded();
 
         const info = this.pathMap.get(id);
-        if (!info) return null;
 
-        const repo = info.isDraft ? this.config.repos.draft : this.config.repos.official;
-
-        let item: Record<string, unknown> | null = null;
-        const githubUrl = `${this.config.baseUrl}/${this.config.org}/${repo}/main/${encodeURI(info.path)}`;
-        try {
-            item = await this.fetchJson(githubUrl);
-        } catch {
-            // 降级到 CDN
-        }
-
-        if (!item) {
-            for (const cdn of this.config.cdnUrls) {
-                const cdnUrl = `${cdn}/${this.config.org}/${repo}@main/${encodeURI(info.path)}`;
-                try {
-                    item = await this.fetchJson(cdnUrl);
-                    break;
-                } catch {
-                    continue;
-                }
+        // pathMap 有记录：按已知路径获取
+        if (info) {
+            const repo = info.isDraft ? this.config.repos.draft : this.config.repos.official;
+            const item = await this.fetchItemByPath(repo, info.path);
+            if (item) {
+                const entry = entries.find(e => e.id === id);
+                if (entry?.has_collated) item.has_collated = true;
             }
+            return item;
         }
 
-        if (item) {
-            // 从 index 条目合并 has_collated 标记
-            const entry = entries.find(e => e.id === id);
-            if (entry?.has_collated) item.has_collated = true;
-        }
-
-        return item;
+        // pathMap 无记录（index 未收录）：通过 ID 推导路径查找文件
+        return this.findItemById(id);
     }
 
     async getEntry(id: string): Promise<IndexEntry | null> {
         const all = await this.ensureLoaded();
-        return all.find(e => e.id === id) || null;
+        const cached = all.find(e => e.id === id);
+        if (cached) return cached;
+
+        // index 中无此 ID：尝试直接获取元数据来构建 entry
+        const item = await this.findItemById(id);
+        if (!item) return null;
+        return this.buildEntryFromItem(id, item);
     }
 
     async getAllEntries(): Promise<IndexEntry[]> {
@@ -456,6 +446,112 @@ export class GithubStorage implements IndexStorage {
 
     async generateId(): Promise<string> {
         throw new Error('GithubStorage 为只读模式，不支持生成 ID');
+    }
+
+    /** 通过已知路径获取 item JSON */
+    private async fetchItemByPath(repo: string, path: string): Promise<Record<string, unknown> | null> {
+        let item: Record<string, unknown> | null = null;
+        const githubUrl = `${this.config.baseUrl}/${this.config.org}/${repo}/main/${encodeURI(path)}`;
+        try {
+            item = await this.fetchJson(githubUrl);
+        } catch {
+            // 降级到 CDN
+        }
+
+        if (!item) {
+            for (const cdn of this.config.cdnUrls) {
+                const cdnUrl = `${cdn}/${this.config.org}/${repo}@main/${encodeURI(path)}`;
+                try {
+                    item = await this.fetchJson(cdnUrl);
+                    break;
+                } catch {
+                    continue;
+                }
+            }
+        }
+
+        return item;
+    }
+
+    /**
+     * 通过 ID 推导路径查找文件（不依赖 index）。
+     * 文件路径格式: {Type}/{c1}/{c2}/{c3}/{id}-{title}.json
+     * 从 ID 可解析出 type 和 status（决定 repo），用 GitHub Contents API 列出目录找到匹配文件。
+     */
+    private async findItemById(id: string): Promise<Record<string, unknown> | null> {
+        const TYPE_TO_FOLDER: Record<IndexType, string> = { book: 'Book', collection: 'Collection', work: 'Work' };
+
+        let type: IndexType;
+        let status: IndexStatus;
+        try {
+            const parsed = parseId(smartDecode(id));
+            type = parsed.type;
+            status = parsed.status;
+        } catch {
+            return null;
+        }
+
+        const repo = status === 'draft' ? this.config.repos.draft : this.config.repos.official;
+        const folder = TYPE_TO_FOLDER[type];
+        const prefix = id.padEnd(3, '_').substring(0, 3);
+        const dirPath = `${folder}/${prefix[0]}/${prefix[1]}/${prefix[2]}`;
+
+        // 用 GitHub Contents API 列出目录，找到以 {id}- 开头的文件
+        const apiUrl = `https://api.github.com/repos/${this.config.org}/${repo}/contents/${dirPath}`;
+        try {
+            const res = await fetch(apiUrl, {
+                signal: AbortSignal.timeout(this.config.timeout),
+            });
+            if (!res.ok) return null;
+
+            const files = await res.json() as Array<{ name: string; path: string }>;
+            const match = files.find(f => f.name.startsWith(`${id}-`) && f.name.endsWith('.json'));
+            if (!match) return null;
+
+            // 找到文件，用 raw URL 获取内容
+            const item = await this.fetchItemByPath(repo, match.path);
+            if (item) {
+                // 缓存到 pathMap 以便后续使用
+                this.pathMap.set(id, { path: match.path, isDraft: status === 'draft' });
+            }
+            return item;
+        } catch {
+            return null;
+        }
+    }
+
+    /** 从 item 元数据构建 IndexEntry */
+    private buildEntryFromItem(id: string, item: Record<string, unknown>): IndexEntry {
+        const typeStr = (item.type as string || '').toLowerCase();
+        const type: IndexType = typeStr === 'work' ? 'work' : typeStr === 'collection' ? 'collection' : 'book';
+
+        let author: string | undefined;
+        const authors = item.authors;
+        if (Array.isArray(authors) && authors.length > 0) {
+            const first = authors[0];
+            author = typeof first === 'object' && first !== null ? (first as any).name || '' : String(first);
+        }
+
+        let isDraft = true;
+        try {
+            const parsed = parseId(smartDecode(id));
+            isDraft = parsed.status === 'draft';
+        } catch { /* default to draft */ }
+
+        const pathInfo = this.pathMap.get(id);
+
+        return {
+            id,
+            title: (item.title as string) || (item['书名'] as string) || id,
+            type,
+            isDraft,
+            author,
+            dynasty: item.dynasty as string | undefined,
+            role: item.role as string | undefined,
+            path: pathInfo?.path || '',
+            juan_count: item.n_juan as number | undefined,
+            has_collated: item.has_collated as boolean | undefined,
+        };
     }
 
     /** 通过相对路径获取文件（自动尝试 GitHub raw + CDN fallback） */
@@ -478,8 +574,15 @@ export class GithubStorage implements IndexStorage {
     /** 获取条目对应的 repo 和目录信息 */
     private async resolveItemPath(id: string): Promise<{ repo: string; dir: string } | null> {
         await this.ensureLoaded();
-        const info = this.pathMap.get(id);
-        if (!info) return null;
+        let info = this.pathMap.get(id);
+
+        // pathMap 中没有时，尝试通过 findItemById 查找并缓存
+        if (!info) {
+            await this.findItemById(id);
+            info = this.pathMap.get(id);
+            if (!info) return null;
+        }
+
         const repo = info.isDraft ? this.config.repos.draft : this.config.repos.official;
         const dir = info.path.substring(0, info.path.lastIndexOf('/'));
         return { repo, dir };
