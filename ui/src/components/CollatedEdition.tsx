@@ -399,7 +399,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
-                        maxWidth: '60%',
+                        minWidth: 0,
                         flexShrink: 1,
                     }}>
                         {convert((annotation || preview)!)}
