@@ -839,13 +839,13 @@ function KaozhenContent({
 function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; onNavigate?: (id: string) => void }) {
     const { convert } = useConvert();
     // Group sections by 类
-    const groups: { category: string; items: CollatedSection[] }[] = [];
-    let current: { category: string; items: CollatedSection[] } | null = null;
+    const groups: { category: string; categoryContent?: string; items: CollatedSection[] }[] = [];
+    let current: { category: string; categoryContent?: string; items: CollatedSection[] } | null = null;
 
     for (const s of sections) {
         if (s.type === '类') {
             if (current) groups.push(current);
-            current = { category: s.title, items: [] };
+            current = { category: s.title, categoryContent: s.content || undefined, items: [] };
         } else if (s.type === '书') {
             if (!current) current = { category: '', items: [] };
             current.items.push(s);
@@ -867,16 +867,22 @@ function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; on
                 <div key={gi} style={{ marginBottom: '20px' }}>
                     {g.category && (
                         <h4 style={{ fontSize: '15px', fontWeight: 600, margin: '16px 0 8px', color: 'var(--bim-fg, #1a1a1a)' }}>
-                            {convert(g.category.replace(/^[^·]*·?/, ''))}
+                            {convert(g.category)}
+                            {g.categoryContent && (
+                                <span style={{ fontWeight: 400, fontSize: '14px', marginLeft: '8px', color: 'var(--bim-desc-fg, #717171)' }}>
+                                    {convert(g.categoryContent)}
+                                </span>
+                            )}
                         </h4>
                     )}
                     {g.items.map((s, si) => {
                         if (s.type === '序') {
                             return <p key={si} style={{ margin: '12px 0', textIndent: '2em' }}>{convert(s.content || '')}</p>;
                         }
-                        const text = s.content || s.title;
+                        // 原文模式：标题+正文连续显示，还原原始文本面貌
+                        const fullText = s.content ? s.title + s.content : s.title;
                         return (
-                            <div key={si}>
+                            <p key={si} style={{ margin: '8px 0', textIndent: '2em', whiteSpace: 'pre-line' }}>
                                 {onNavigate && s.work_id ? (
                                     <a
                                         href={`/book-index?id=${s.work_id}`}
@@ -884,12 +890,13 @@ function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; on
                                         style={{ color: 'var(--bim-fg, #333)', textDecoration: 'underline', textDecorationColor: 'var(--bim-widget-border, #ddd)', textUnderlineOffset: '3px', cursor: 'pointer' }}
                                         title={convert(s.title)}
                                     >
-                                        {convert(text)}
+                                        <strong>{convert(s.title)}</strong>
                                     </a>
                                 ) : (
-                                    convert(text)
+                                    <strong>{convert(s.title)}</strong>
                                 )}
-                            </div>
+                                {s.content && convert(s.content)}
+                            </p>
                         );
                     })}
                 </div>
