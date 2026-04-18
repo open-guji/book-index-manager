@@ -114,7 +114,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         for (const entry of allEntries) {
             if (prefixMatches.length + containMatches.length >= MAX_SUGGESTIONS * 2) break;
 
-            const title = entry.title.toLowerCase();
+            const title = (entry.title ?? '').toLowerCase();
 
             // Check title
             if (title.startsWith(q)) {
