@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import type { CollatedEditionIndex, CollatedJuan, CollatedSection, JuanGroup } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { useConvert } from '../i18n';
@@ -361,49 +361,47 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                         flexShrink: 0,
                     }}>&#9654;</span>
                 )}
-                <span style={{
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    color: 'var(--bim-fg, #1a1a1a)',
-                    flex: 1,
-                }}>
-                    {section.book_title ? `《${convert(section.book_title)}》` : convert(section.title)}
-                    {section.n_juan != null && (
-                        <span style={{
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        color: 'var(--bim-fg, #1a1a1a)',
+                    }}>
+                        {section.book_title ? `《${convert(section.book_title)}》` : convert(section.title)}
+                        {section.n_juan != null && (
+                            <span style={{
+                                fontSize: '12px',
+                                fontWeight: 400,
+                                color: 'var(--bim-desc-fg, #999)',
+                                marginLeft: '6px',
+                            }}>
+                                {toChineseNumeral(section.n_juan)}卷
+                            </span>
+                        )}
+                        {(section.author_info || section.author) && (
+                            <span style={{
+                                fontSize: '12px',
+                                fontWeight: 400,
+                                color: 'var(--bim-desc-fg, #999)',
+                                marginLeft: '8px',
+                            }}>
+                                {convert(section.author_info || section.author)}
+                            </span>
+                        )}
+                    </span>
+                    {!expanded && preview && (
+                        <div style={{
                             fontSize: '12px',
-                            fontWeight: 400,
                             color: 'var(--bim-desc-fg, #999)',
-                            marginLeft: '6px',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            marginTop: '2px',
                         }}>
-                            {toChineseNumeral(section.n_juan)}卷
-                        </span>
+                            {convert(preview)}
+                        </div>
                     )}
-                </span>
-                {(section.author_info || section.author) && (
-                    <span style={{
-                        fontSize: '12px',
-                        fontWeight: 400,
-                        color: 'var(--bim-desc-fg, #999)',
-                        flexShrink: 0,
-                        whiteSpace: 'nowrap',
-                    }}>
-                        {convert(section.author_info || section.author)}
-                    </span>
-                )}
-                {!expanded && preview && (
-                    <span style={{
-                        fontSize: '12px',
-                        fontWeight: 400,
-                        color: 'var(--bim-desc-fg, #999)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        minWidth: 0,
-                        flexShrink: 1,
-                    }}>
-                        {convert(preview)}
-                    </span>
-                )}
+                </div>
                 {section.edition && (
                     <span style={{
                         fontSize: '11px',
@@ -612,14 +610,91 @@ function OtherSection({ section }: { section: CollatedSection }) {
     );
 }
 
+/** 作品标签缓存：{ title, author } */
+type WorkLabel = { title: string; author?: string };
+type WorkLabelCache = Map<string, WorkLabel | null>;
+
+/** Hook：批量获取作品标签（懒加载+缓存） */
+function useWorkLabels(
+    workIds: string[],
+    transport?: IndexStorage,
+    cache?: React.RefObject<WorkLabelCache>,
+): Record<string, WorkLabel | null> {
+    const [labels, setLabels] = useState<Record<string, WorkLabel | null>>({});
+
+    useEffect(() => {
+        if (!transport || workIds.length === 0) return;
+        let cancelled = false;
+
+        const toFetch = workIds.filter(id => !cache?.current?.has(id));
+        // 先从缓存填充已有的
+        const initial: Record<string, WorkLabel | null> = {};
+        for (const id of workIds) {
+            if (cache?.current?.has(id)) {
+                initial[id] = cache.current.get(id)!;
+            }
+        }
+        if (Object.keys(initial).length > 0) setLabels(initial);
+
+        if (toFetch.length === 0) return;
+
+        // 优先用 getEntry，fallback 到 getItem
+        const fetchOne = async (id: string): Promise<WorkLabel | null> => {
+            try {
+                if (transport.getEntry) {
+                    const entry = await transport.getEntry(id);
+                    if (entry) return { title: entry.title, author: entry.author };
+                }
+                const item = await transport.getItem(id);
+                if (!item) return null;
+                const title = (item.title as string) || id;
+                const authors = item.authors as Array<{ name: string }> | undefined;
+                const author = authors?.[0]?.name;
+                return { title, author };
+            } catch {
+                return null;
+            }
+        };
+
+        Promise.all(toFetch.map(async id => {
+            const label = await fetchOne(id);
+            cache?.current?.set(id, label);
+            return [id, label] as const;
+        })).then(results => {
+            if (cancelled) return;
+            setLabels(prev => {
+                const next = { ...prev };
+                for (const [id, label] of results) next[id] = label;
+                return next;
+            });
+        });
+
+        return () => { cancelled = true; };
+    }, [workIds.join(','), transport]);
+
+    return labels;
+}
+
 /** 考证条目：展示考证正文和关联作品链接 */
-function KaozhenSection({ section, onNavigate }: { section: CollatedSection; onNavigate?: (id: string) => void }) {
+function KaozhenSection({ section, onNavigate, transport, workLabelCache }: {
+    section: CollatedSection;
+    onNavigate?: (id: string) => void;
+    transport?: IndexStorage;
+    workLabelCache?: React.RefObject<WorkLabelCache>;
+}) {
     const { convert } = useConvert();
     const [expanded, setExpanded] = useState(false);
     const typeKey = section.type;
     const typeColor = KAOZHEN_TYPE_COLORS[typeKey] || '#717171';
     const hasContent = !!section.content;
     const workIds = section.work_ids || [];
+    const hasMultipleWorks = workIds.length > 1;
+
+    const workLabels = useWorkLabels(
+        hasMultipleWorks ? workIds : [],
+        transport,
+        workLabelCache,
+    );
 
     // 截取前80字作为预览
     const preview = hasContent && !expanded
@@ -675,11 +750,11 @@ function KaozhenSection({ section, onNavigate }: { section: CollatedSection; onN
                     )}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                    {workIds.length > 0 && onNavigate && workIds.map(wid => (
+                    {/* 单作品：标题行右侧显示链接 */}
+                    {workIds.length === 1 && onNavigate && (
                         <a
-                            key={wid}
-                            href={`/book-index?id=${wid}`}
-                            onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(wid); }}
+                            href={`/book-index?id=${workIds[0]}`}
+                            onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(workIds[0]); }}
                             style={{
                                 fontSize: '11px',
                                 color: 'var(--bim-link-fg, #0066cc)',
@@ -691,7 +766,17 @@ function KaozhenSection({ section, onNavigate }: { section: CollatedSection; onN
                         >
                             →作品
                         </a>
-                    ))}
+                    )}
+                    {/* 多作品：标题行只显示数量提示 */}
+                    {hasMultipleWorks && (
+                        <span style={{
+                            fontSize: '11px',
+                            color: 'var(--bim-link-fg, #0066cc)',
+                            flexShrink: 0,
+                        }}>
+                            {workIds.length}部作品
+                        </span>
+                    )}
                     <span style={{
                         display: 'inline-block',
                         padding: '1px 5px',
@@ -706,6 +791,40 @@ function KaozhenSection({ section, onNavigate }: { section: CollatedSection; onN
                     </span>
                 </div>
             </div>
+
+            {/* 多作品列表（标题下方） */}
+            {hasMultipleWorks && onNavigate && (
+                <div style={{
+                    margin: '6px 0 0 17px',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '4px 12px',
+                }}>
+                    {workIds.map(wid => {
+                        const label = workLabels[wid];
+                        const displayText = label
+                            ? `${convert(label.title)}${label.author ? `（${convert(label.author)}）` : ''}`
+                            : wid.slice(0, 8) + '…';
+                        return (
+                            <a
+                                key={wid}
+                                href={`/book-index?id=${wid}`}
+                                onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(wid); }}
+                                style={{
+                                    fontSize: '12px',
+                                    color: 'var(--bim-link-fg, #0066cc)',
+                                    cursor: 'pointer',
+                                    textDecoration: 'none',
+                                    lineHeight: 1.8,
+                                }}
+                                title={wid}
+                            >
+                                →{displayText}
+                            </a>
+                        );
+                    })}
+                </div>
+            )}
 
             {/* 展开的考证正文 */}
             {expanded && hasContent && (
@@ -750,10 +869,14 @@ function KaozhenContent({
     juan,
     searchQuery,
     onNavigate,
+    transport,
+    workLabelCache,
 }: {
     juan: CollatedJuan;
     searchQuery: string;
     onNavigate?: (id: string) => void;
+    transport?: IndexStorage;
+    workLabelCache?: React.RefObject<WorkLabelCache>;
 }) {
     const { convert } = useConvert();
 
@@ -818,7 +941,7 @@ function KaozhenContent({
             {/* 考证条目列表 */}
             <div>
                 {filteredSections.map((section, i) => (
-                    <KaozhenSection key={i} section={section} onNavigate={onNavigate} />
+                    <KaozhenSection key={i} section={section} onNavigate={onNavigate} transport={transport} workLabelCache={workLabelCache} />
                 ))}
             </div>
 
@@ -1042,6 +1165,7 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
     const [juanData, setJuanData] = useState<CollatedJuan | null>(null);
     const [juanLoading, setJuanLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const workLabelCacheRef = useRef<WorkLabelCache>(new Map());
 
     // 如果外部传了 activeJuan 就用外部的，否则用内部状态
     const activeFile = externalActiveJuan ?? internalActiveFile;
@@ -1208,6 +1332,8 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
                         juan={juanData}
                         searchQuery={searchQuery}
                         onNavigate={onNavigate}
+                        transport={transport}
+                        workLabelCache={workLabelCacheRef}
                     />
                 ) : (
                     <JuanContent
