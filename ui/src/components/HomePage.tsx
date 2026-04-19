@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { IndexEntry, IndexType, ResourceProgress, ResourceProgressItem, ResourceImportStatus, RecommendedData } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { useT } from '../i18n';
+import { extractType } from '../id';
 import { formatTemplate } from '../i18n';
 import { FeedbackList } from './FeedbackList';
 import type { FeedbackItem } from './FeedbackList';
@@ -36,18 +37,6 @@ interface Stats {
 
 export type TabKey = 'recommend' | 'catalog' | 'site' | 'feedback';
 
-const DEFAULT_RECOMMENDED: RecommendedItem[] = [
-    // 推薦叢編
-    { id: 'FCNcSJbF77V', title: '欽定四庫全書·文淵閣本', description: '清·紀昀等編，藏於臺灣國立故宮博物院', group: '推薦叢編' },
-    { id: 'FCmH8kWxMhR', title: '二十四史百衲本', description: '民國·張元濟輯，商務印書館影印', group: '推薦叢編' },
-    { id: 'FCmYiXcTfuZ', title: '二十四史武英殿本', description: '清乾隆四年武英殿刻本', group: '推薦叢編' },
-    { id: 'FCmbeajrbJw', title: '武英殿聚珍版叢書', description: '清乾隆間武英殿活字印本', group: '推薦叢編' },
-    // 經典作品
-    { id: 'GY4HvsY3w3u', title: '欽定四庫全書總目', description: '清·紀昀等編，200卷', group: '經典作品' },
-    { id: 'GY4JKKQaPYB', title: '欽定四庫全書簡明目錄', description: '清·紀昀等編，20卷', group: '經典作品' },
-    { id: 'GY4JM7j7yi7', title: '史記', description: '西漢·司馬遷，130卷', group: '經典作品' },
-    { id: 'GY3ty2LN9ro', title: '易經', description: '西周·周文王', group: '經典作品' },
-];
 
 export const HomePage: React.FC<HomePageProps> = ({
     transport,
@@ -86,7 +75,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         return () => { cancelled = true; };
     }, [transport]);
 
-    // 加载推荐条目：优先从 transport 加载 recommended.json，其次用 props，最后用默认值
+    // 加载推荐条目：优先从 transport 加载 recommended.json，其次用 props
     useEffect(() => {
         let cancelled = false;
 
@@ -102,7 +91,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     }
                 } catch { /* fallback */ }
             }
-            return DEFAULT_RECOMMENDED;
+            return [];
         };
 
         resolveIds().then(async ids => {
@@ -133,7 +122,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     return {
                         id: r.id,
                         title: r.title,
-                        type: r.id.startsWith('FC') ? 'collection' as IndexType : 'work' as IndexType,
+                        type: extractType(r.id),
                         group: r.group,
                         fallbackDescription: r.description,
                     };

@@ -467,6 +467,15 @@ export interface CollatedEditionIndex {
     target_source_id?: string;
     /** kaozhen: 文本来源说明 */
     text_source?: string;
+    /** 文本质量等级 */
+    text_quality?: {
+        /** A=精校 B=良好 C=粗校 D=初校 */
+        grade: 'A' | 'B' | 'C' | 'D';
+        /** 等级说明 */
+        grade_label: string;
+        /** 文字来源说明 */
+        source_note: string;
+    };
     /** 文件列表（替代 juan_files 的详细版） */
     files?: Array<{
         filename: string;

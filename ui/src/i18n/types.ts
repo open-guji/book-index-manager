@@ -129,6 +129,9 @@ export interface LocaleMessages {
         recentBrowse: string;
         history: string;
         clearAll: string;
+        clearRecent: string;
+        itemNotFound: string;
+        removeFromRecent: string;
         searchTitle: string;
         searchSubtitle: string;
         searchBookName: string;

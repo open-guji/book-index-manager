@@ -38,6 +38,19 @@ function saveRecentId(id: string) {
     } catch { /* ignore */ }
 }
 
+function removeRecentId(id: string) {
+    try {
+        const list = loadRecentIds().filter(i => i !== id);
+        localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+    } catch { /* ignore */ }
+}
+
+function clearAllRecentIds() {
+    try {
+        localStorage.removeItem(RECENT_KEY);
+    } catch { /* ignore */ }
+}
+
 export interface IndexBrowserProps {
     transport: IndexStorage;
     indexSource?: IndexSource;
@@ -94,7 +107,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     const [errorMessage, setErrorMessage] = useState('');
     const [showingRecent, setShowingRecent] = useState(!initialQuery);
     const [recentIds, setRecentIds] = useState<string[]>(loadRecentIds);
-    const [recentEntries, setRecentEntries] = useState<IndexEntry[]>([]);
+    const [recentEntries, setRecentEntries] = useState<(IndexEntry & { notFound?: boolean })[]>([]);
     const [recentLoading, setRecentLoading] = useState(false);
     const [recentExpanded, setRecentExpanded] = useState(false);
     const [stats, setStats] = useState<{ works: number; books: number; collections: number; hasText?: number; hasImage?: number } | null>(null);
@@ -220,11 +233,12 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                         } as IndexEntry;
                     }
                 } catch { /* ignore */ }
-                return null;
+                // 未找到的条目，返回占位卡片
+                return { id, title: id, type: 'work' as IndexType, notFound: true };
             })
         ).then(results => {
             if (cancelled) return;
-            setRecentEntries(results.filter((e): e is IndexEntry => e !== null));
+            setRecentEntries(results);
             setRecentLoading(false);
         });
         return () => { cancelled = true; };
@@ -235,6 +249,16 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         saveRecentId(entry.id);
         setRecentIds(loadRecentIds());
         onEntryClick?.(entry);
+    };
+
+    const handleRemoveRecent = (id: string) => {
+        removeRecentId(id);
+        setRecentIds(loadRecentIds());
+    };
+
+    const handleClearAllRecent = () => {
+        clearAllRecentIds();
+        setRecentIds([]);
     };
 
     const getConfig = (type: IndexType) => TYPE_CONFIG.find(c => c.type === type)!;
@@ -336,18 +360,41 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                             </div>
                         ) : recentEntries.length > 0 ? (
                             <>
-                                <div style={{ padding: '8px 0', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
-                                    {t.search.recentBrowse}
+                                <div style={{ padding: '8px 0', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span>{t.search.recentBrowse}</span>
+                                    <button
+                                        onClick={handleClearAllRecent}
+                                        style={{
+                                            border: 'none',
+                                            background: 'transparent',
+                                            color: 'var(--bim-desc-fg, #999)',
+                                            cursor: 'pointer',
+                                            fontSize: '11px',
+                                            padding: '2px 4px',
+                                        }}
+                                    >
+                                        {t.search.clearRecent}
+                                    </button>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                     {recentEntries.slice(0, recentExpanded ? 10 : 3).map(entry => (
-                                        <EntryCard
-                                            key={entry.id}
-                                            entry={entry}
-                                            selected={selectedId === entry.id}
-                                            onClick={handleEntryClick}
-                                            getConfig={getConfig}
-                                        />
+                                        entry.notFound ? (
+                                            <NotFoundCard
+                                                key={entry.id}
+                                                id={entry.id}
+                                                onRemove={handleRemoveRecent}
+                                                t={t}
+                                            />
+                                        ) : (
+                                            <EntryCard
+                                                key={entry.id}
+                                                entry={entry}
+                                                selected={selectedId === entry.id}
+                                                onClick={handleEntryClick}
+                                                getConfig={getConfig}
+                                                onRemove={handleRemoveRecent}
+                                            />
+                                        )
                                     ))}
                                 </div>
                                 {!recentExpanded && recentEntries.length > 3 && (
@@ -460,9 +507,10 @@ interface EntryCardProps {
     onClick: (entry: IndexEntry) => void;
     getConfig: (type: IndexType) => { icon: string; name: string };
     query?: string;
+    onRemove?: (id: string) => void;
 }
 
-const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConfig, query }) => {
+const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConfig, query, onRemove }) => {
     const t = useT();
     const { convert } = useConvert();
 
@@ -531,7 +579,71 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                     </div>
                 )}
             </div>
-            <span style={{ opacity: 0.4, marginTop: '2px' }}>→</span>
+            {onRemove ? (
+                <button
+                    onClick={e => { e.stopPropagation(); onRemove(entry.id); }}
+                    title={t.search.removeFromRecent}
+                    style={{
+                        border: 'none',
+                        background: 'transparent',
+                        color: 'var(--bim-desc-fg, #999)',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        padding: '2px 4px',
+                        lineHeight: 1,
+                        opacity: 0.5,
+                        marginTop: '2px',
+                    }}
+                >
+                    ×
+                </button>
+            ) : (
+                <span style={{ opacity: 0.4, marginTop: '2px' }}>→</span>
+            )}
         </div>
     );
 };
+
+// ── Not Found Card ──
+
+const NotFoundCard: React.FC<{
+    id: string;
+    onRemove: (id: string) => void;
+    t: ReturnType<typeof useT>;
+}> = ({ id, onRemove, t }) => (
+    <div
+        style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            padding: '10px 12px',
+            borderRadius: '6px',
+            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            background: 'var(--bim-input-bg, #fff)',
+            opacity: 0.6,
+        }}
+    >
+        <span style={{ fontSize: '16px' }}>❓</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: '13px', color: 'var(--bim-fg, #333)', fontFamily: 'monospace' }}>{id}</div>
+            <div style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #999)', marginTop: '2px' }}>
+                {t.search.itemNotFound}
+            </div>
+        </div>
+        <button
+            onClick={() => onRemove(id)}
+            title={t.search.removeFromRecent}
+            style={{
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--bim-desc-fg, #999)',
+                cursor: 'pointer',
+                fontSize: '14px',
+                padding: '2px 4px',
+                lineHeight: 1,
+            }}
+        >
+            ×
+        </button>
+    </div>
+);

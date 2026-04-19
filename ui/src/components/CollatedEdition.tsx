@@ -1294,6 +1294,39 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
                 )}
             </div>
 
+            {/* 文本质量等级 */}
+            {index.text_quality && (
+                <div style={{
+                    marginBottom: '12px',
+                    padding: '6px 10px',
+                    background: 'var(--bim-bg-secondary, #f8f8f8)',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    color: 'var(--bim-desc-fg, #717171)',
+                    lineHeight: 1.6,
+                }}>
+                    <span style={{
+                        display: 'inline-block',
+                        width: '18px', height: '18px',
+                        lineHeight: '18px',
+                        textAlign: 'center',
+                        borderRadius: '3px',
+                        marginRight: '6px',
+                        fontWeight: 700,
+                        fontSize: '11px',
+                        color: '#fff',
+                        background: index.text_quality.grade === 'A' ? '#2e7d32'
+                            : index.text_quality.grade === 'B' ? '#1565c0'
+                            : index.text_quality.grade === 'C' ? '#e65100'
+                            : '#c62828',
+                    }}>{index.text_quality.grade}</span>
+                    <span style={{ color: 'var(--bim-fg, #333)' }}>{index.text_quality.grade_label}</span>
+                    {index.text_quality.source_note && (
+                        <span>　{index.text_quality.source_note}</span>
+                    )}
+                </div>
+            )}
+
             {/* 卷/章导航 */}
             <JuanNav
                 files={allFiles}

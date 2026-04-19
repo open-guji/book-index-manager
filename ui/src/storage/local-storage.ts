@@ -4,12 +4,12 @@
  * 适用于 VS Code 插件和 Node.js 环境
  */
 
-import type { IndexType, IndexStatus, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping } from '../types';
+import type { IndexType, IndexStatus, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, RecommendedData } from '../types';
 import type { IndexStorage } from './types';
 import type { FileSystem } from '../core/filesystem';
 import { BookIndexStorage } from '../core/storage';
 import { IdGenerator } from '../core/id-generator';
-import { base58Decode, parseId } from '../id';
+import { smartDecode, parseId } from '../id';
 
 /** LocalStorage 配置 */
 export interface LocalStorageConfig {
@@ -24,11 +24,15 @@ export interface LocalStorageConfig {
 export class LocalStorage implements IndexStorage {
     private storage: BookIndexStorage;
     private idGen: IdGenerator;
+    private fs: FileSystem;
+    private workspaceRoot: string;
     private recentEntities: EntityOption[] = [];
 
     constructor(config: LocalStorageConfig) {
         this.storage = new BookIndexStorage(config.fs, config.workspaceRoot);
         this.idGen = new IdGenerator(config.machineId ?? 0);
+        this.fs = config.fs;
+        this.workspaceRoot = config.workspaceRoot;
     }
 
     async loadEntries(type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>> {
@@ -278,6 +282,18 @@ export class LocalStorage implements IndexStorage {
         }
     }
 
+    // ── 推荐数据 ──
+
+    async getRecommended(): Promise<RecommendedData | null> {
+        const path = this.workspaceRoot + '/book-index-draft/recommended.json';
+        try {
+            const content = await this.fs.readFile(path);
+            return JSON.parse(content) as RecommendedData;
+        } catch {
+            return null;
+        }
+    }
+
     // ── Asset Directory ──
 
     /** 获取资源目录路径（不创建） */
@@ -311,7 +327,7 @@ export class LocalStorage implements IndexStorage {
 
     private extractTypeFromId(idStr: string): IndexType {
         try {
-            const idVal = base58Decode(idStr);
+            const idVal = smartDecode(idStr);
             return parseId(idVal).type;
         } catch {
             return 'book';

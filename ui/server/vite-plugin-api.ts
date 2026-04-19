@@ -682,6 +682,22 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     return;
                 }
 
+                // GET /api/recommended — 推荐列表
+                if (pathname === '/api/recommended' && req.method === 'GET') {
+                    const recFile = path.join(workspaceRoot, 'book-index-draft', 'recommended.json');
+                    if (!fs.existsSync(recFile)) {
+                        sendJson({ error: 'Not found' }, 404);
+                        return;
+                    }
+                    try {
+                        const content = fs.readFileSync(recFile, 'utf-8');
+                        sendJson(JSON.parse(content));
+                    } catch {
+                        sendJson({ error: 'Failed to read recommended.json' }, 500);
+                    }
+                    return;
+                }
+
                 // GET /api/resource-counts — 资源类型统计
                 if (pathname === '/api/resource-counts' && req.method === 'GET') {
                     const entries = getAllEntries(workspaceRoot, 'work');

@@ -4,7 +4,7 @@
  */
 
 import type { IndexStorage } from './types';
-import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress, RecommendedData } from '../types';
 import { normalizeCatalog } from '../core/normalize-catalog';
 
 export class DevApiStorage implements IndexStorage {
@@ -116,6 +116,13 @@ export class DevApiStorage implements IndexStorage {
     async getResourceCounts(): Promise<{ hasText: number; hasImage: number }> {
         const res = await fetch(`${this.baseUrl}/api/resource-counts`);
         if (!res.ok) return { hasText: 0, hasImage: 0 };
+        return res.json();
+    }
+
+    async getRecommended(): Promise<RecommendedData | null> {
+        const res = await fetch(`${this.baseUrl}/api/recommended`);
+        if (res.status === 404) return null;
+        if (!res.ok) return null;
         return res.json();
     }
 }
