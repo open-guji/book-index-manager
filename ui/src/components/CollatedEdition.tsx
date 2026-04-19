@@ -1278,54 +1278,43 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
 
     return (
         <div className={className} style={style}>
-            {/* 头部统计 */}
-            <div style={{ marginBottom: '16px' }}>
-                {isKaozhen ? (
-                    <div style={{ fontSize: '13px', color: 'var(--bim-desc-fg, #717171)' }}>
-                        {index.target_source && (
-                            <span>考證對象：<strong style={{ color: 'var(--bim-fg, #333)' }}>{index.target_source}</strong>　</span>
+            {/* 头部：卷数 + 质量等级同一行 */}
+            <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '13px', color: 'var(--bim-desc-fg, #717171)' }}>
+                <div>
+                    {isKaozhen ? (
+                        <>
+                            {index.target_source && (
+                                <span>考證對象：<strong style={{ color: 'var(--bim-fg, #333)' }}>{index.target_source}</strong>　</span>
+                            )}
+                            共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{allFiles.length}</strong> 章
+                        </>
+                    ) : (
+                        <span>共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{index.total_juan}</strong> 卷</span>
+                    )}
+                </div>
+                {index.text_quality && (
+                    <div style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{
+                            display: 'inline-block',
+                            width: '18px', height: '18px',
+                            lineHeight: '18px',
+                            textAlign: 'center',
+                            borderRadius: '3px',
+                            fontWeight: 700,
+                            fontSize: '11px',
+                            color: '#fff',
+                            background: index.text_quality.grade === 'A' ? '#2e7d32'
+                                : index.text_quality.grade === 'B' ? '#1565c0'
+                                : index.text_quality.grade === 'C' ? '#e65100'
+                                : '#c62828',
+                        }}>{index.text_quality.grade}</span>
+                        <span>{index.text_quality.grade_label}</span>
+                        {index.text_quality.source_note && (
+                            <span style={{ marginLeft: '4px' }}>— {index.text_quality.source_note}</span>
                         )}
-                        共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{allFiles.length}</strong> 章
-                    </div>
-                ) : (
-                    <div style={{ fontSize: '13px', color: 'var(--bim-desc-fg, #717171)' }}>
-                        共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{index.total_juan}</strong> 卷
                     </div>
                 )}
             </div>
-
-            {/* 文本质量等级 */}
-            {index.text_quality && (
-                <div style={{
-                    marginBottom: '12px',
-                    padding: '6px 10px',
-                    background: 'var(--bim-bg-secondary, #f8f8f8)',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    color: 'var(--bim-desc-fg, #717171)',
-                    lineHeight: 1.6,
-                }}>
-                    <span style={{
-                        display: 'inline-block',
-                        width: '18px', height: '18px',
-                        lineHeight: '18px',
-                        textAlign: 'center',
-                        borderRadius: '3px',
-                        marginRight: '6px',
-                        fontWeight: 700,
-                        fontSize: '11px',
-                        color: '#fff',
-                        background: index.text_quality.grade === 'A' ? '#2e7d32'
-                            : index.text_quality.grade === 'B' ? '#1565c0'
-                            : index.text_quality.grade === 'C' ? '#e65100'
-                            : '#c62828',
-                    }}>{index.text_quality.grade}</span>
-                    <span style={{ color: 'var(--bim-fg, #333)' }}>{index.text_quality.grade_label}</span>
-                    {index.text_quality.source_note && (
-                        <span>　{index.text_quality.source_note}</span>
-                    )}
-                </div>
-            )}
 
             {/* 卷/章导航 */}
             <JuanNav
