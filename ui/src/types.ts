@@ -399,7 +399,7 @@ export interface ResourceCatalog {
 export interface CollatedSection {
     title: string;
     level?: number;
-    type: string;  // catalog: '部'|'类'|'书'|'其他'|'序'  kaozhen: '考證'|'序論'|'按語'|'統計'|'亡佚'|'重出'
+    type: string;  // '书' | '序' | '结语' | '类'（结构标签） | '考证'（考证整理本）
     content?: string;
     edition?: string | null;
     text_status?: string | null;

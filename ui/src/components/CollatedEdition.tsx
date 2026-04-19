@@ -74,21 +74,14 @@ function segmentToChinese(n: number, needLeadingZero: boolean): string {
 // ── 样式常量 ──
 
 const SECTION_TYPE_COLORS: Record<string, string> = {
-    '部': '#2471a3',
     '类': '#8e6f3e',
     '书': '#c0392b',
-    '其他': '#717171',
+    '序': '#1a5276',
+    '结语': '#7d6608',
 };
 
 const KAOZHEN_TYPE_COLORS: Record<string, string> = {
-    '考証': '#5d6d7e',
     '考证': '#5d6d7e',
-    '序論': '#1a5276',
-    '序论': '#1a5276',
-    '按語': '#7d6608',
-    '按语': '#7d6608',
-    '亡佚': '#922b21',
-    '重出': '#6c3483',
 };
 
 // ── 子组件 ──
@@ -597,14 +590,38 @@ function OtherSection({ section }: { section: CollatedSection }) {
     const { convert } = useConvert();
     if (!section.content && !section.title) return null;
     const text = convert((section.content || section.title || '').replace(/\n{2,}/g, '\n'));
+    const typeColor = SECTION_TYPE_COLORS[section.type] || '#717171';
+    // 序/结语：带左边框、类型标签，与"书"条目区分
+    const isLabeled = section.type === '序' || section.type === '结语';
     return (
         <div style={{
-            padding: '6px 0',
+            padding: isLabeled ? '10px 12px' : '6px 0',
+            margin: isLabeled ? '8px 0' : undefined,
             fontSize: '13px',
-            color: 'var(--bim-desc-fg, #717171)',
-            lineHeight: 1.7,
+            color: 'var(--bim-desc-fg, #555)',
+            lineHeight: 1.8,
             whiteSpace: 'pre-line',
+            borderLeft: isLabeled ? `3px solid ${typeColor}40` : undefined,
+            background: isLabeled ? 'var(--bim-bg, #fafafa)' : undefined,
+            borderRadius: isLabeled ? '0 4px 4px 0' : undefined,
+            position: 'relative',
         }}>
+            {isLabeled && (
+                <span style={{
+                    display: 'inline-block',
+                    fontSize: '10px',
+                    fontWeight: 500,
+                    color: typeColor,
+                    marginRight: '8px',
+                    padding: '1px 5px',
+                    border: `1px solid ${typeColor}40`,
+                    borderRadius: '2px',
+                    background: `${typeColor}08`,
+                    verticalAlign: 'middle',
+                }}>
+                    {section.type}
+                </span>
+            )}
             {text}
         </div>
     );
@@ -890,7 +907,7 @@ function KaozhenContent({
         );
     }, [juan.sections, searchQuery]);
 
-    const sectionCount = filteredSections.filter(s => s.type === '考証' || s.type === '考证').length;
+    const sectionCount = filteredSections.filter(s => s.type === '考证').length;
 
     return (
         <div>
@@ -967,19 +984,19 @@ function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; on
     let current: { category: string; categoryContent?: string; items: CollatedSection[] } | null = null;
 
     for (const s of sections) {
-        if (s.type === '类' || s.type === '门') {
+        if (s.type === '类') {
             if (current) groups.push(current);
             current = { category: s.title, categoryContent: s.content || undefined, items: [] };
         } else if (s.type === '书') {
             if (!current) current = { category: '', items: [] };
             current.items.push(s);
-        } else if (s.type === '序') {
-            if (current) {
-                current.items.push(s);
+        } else if (s.type === '序' || s.type === '结语') {
+            if (!current) current = { category: '', items: [] };
+            current.items.push(s);
+            // 结语意味着类结束
+            if (s.type === '结语') {
                 groups.push(current);
                 current = null;
-            } else {
-                groups.push({ category: '', items: [s] });
             }
         }
     }
@@ -1000,7 +1017,7 @@ function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; on
                         </h4>
                     )}
                     {g.items.map((s, si) => {
-                        if (s.type === '序') {
+                        if (s.type === '序' || s.type === '结语') {
                             return <p key={si} style={{ margin: '12px 0', textIndent: '2em' }}>{convert(s.content || '')}</p>;
                         }
                         // 原文模式：标题+正文连续显示，还原原始文本面貌
@@ -1111,9 +1128,10 @@ function JuanContent({
                 if (section.type === '书') {
                     return <BookSection key={i} section={section} onNavigate={onNavigate} />;
                 }
-                if (section.type === '部' || section.type === '类' || section.type === '门') {
+                if (section.type === '类') {
                     return <CategoryHeader key={i} section={section} />;
                 }
+                // 序 / 结语 / 其他：统一用 OtherSection 显示为说明性文字块
                 return <OtherSection key={i} section={section} />;
             })}
 
