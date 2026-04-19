@@ -1294,6 +1294,7 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
                 </div>
                 {index.text_quality && (
                     <div style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span>文本質量：</span>
                         <span style={{
                             display: 'inline-block',
                             width: '18px', height: '18px',
