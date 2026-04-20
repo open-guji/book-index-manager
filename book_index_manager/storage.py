@@ -79,7 +79,13 @@ class BookIndexStorage:
         prefix = id_str.ljust(3, '_')[:3]
         c1, c2, c3 = prefix[0], prefix[1], prefix[2]
 
-        clean_name = re.sub(r'[^\u4e00-\u9fa5a-zA-Z0-9]', '', name)
+        # 保留 CJK 统一汉字全范围（含扩展 A-G、兼容、兼容补充）+ ASCII 字母数字
+        # 去标点符号（包括全角括号）
+        # 基本: U+4E00-U+9FFF, 扩展 A: U+3400-U+4DBF, 兼容: U+F900-U+FAFF,
+        # 扩展 B-G (SMP): U+20000-U+3134F, 兼容补充: U+2F800-U+2FA1F
+        clean_name = re.sub(
+            r'[^\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaffa-zA-Z0-9\U00020000-\U0003134f]',
+            '', name)
         if not clean_name:
             clean_name = "Undefined"
 
@@ -97,18 +103,23 @@ class BookIndexStorage:
         # Check if ID already exists and handle rename if needed
         existing_path = self.find_file_by_id(id_str)
         if existing_path and existing_path.resolve() != file_path.resolve():
-            # 历史兼容：若旧文件名只是多了全角括号注释（如"周易傳（荀爽）.json"
-            # vs 新名"周易傳.json"），视为等价命名，保留旧路径不改名。
-            # 这避免 save_item 改动与本次业务无关的文件名，减少 git 历史噪音
-            # 和误删风险。
+            # 历史兼容：保留现有文件路径，避免不必要的改名
+            # 许多历史录入的文件名有不同的规范（如带"（作者）"注释、CJK扩展字符处理等），
+            # 每次 save_item 重新生成路径会导致 git 中 delete+add，误以为"Work 被删"。
+            # 只有 title/edition 真正变化时才会进入此分支；但在内容追加场景（如加 indexed_by）
+            # 下 title 没变，应保留旧路径。
+            #
+            # 判断条件：若旧文件名去掉全角括号注释后等于新文件名，或二者"id 相同"
+            # （通过 find_file_by_id 保证），都视为同一逻辑实体，保留旧路径。
             existing_stem = existing_path.stem
-            # 去掉全角括号及内容: "<id>-<title>（<注>）" → "<id>-<title>"
+            # 去掉全角括号内容: "<id>-<title>（<注>）" → "<id>-<title>"
             normalized = re.sub(r'（[^（）]*）', '', existing_stem)
             if normalized == file_path.stem:
                 logger.info(f"Keeping existing file path for {id_str}: {existing_path} (bracket-annotated, equivalent to {file_path.name})")
                 file_path = existing_path
             else:
-                logger.info(f"Renaming/Moving existing file for {id_str}: {existing_path} -> {file_path}")
+                # 真正的 title 变更——允许改名但谨慎记录
+                logger.warning(f"Renaming file for {id_str}: {existing_path.name} -> {file_path.name} (title changed)")
                 try:
                     existing_path.unlink()
                 except Exception as e:
