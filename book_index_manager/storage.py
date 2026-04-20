@@ -97,11 +97,22 @@ class BookIndexStorage:
         # Check if ID already exists and handle rename if needed
         existing_path = self.find_file_by_id(id_str)
         if existing_path and existing_path.resolve() != file_path.resolve():
-            logger.info(f"Renaming/Moving existing file for {id_str}: {existing_path} -> {file_path}")
-            try:
-                existing_path.unlink()
-            except Exception as e:
-                logger.warning(f"Failed to remove old file {existing_path}: {e}")
+            # 历史兼容：若旧文件名只是多了全角括号注释（如"周易傳（荀爽）.json"
+            # vs 新名"周易傳.json"），视为等价命名，保留旧路径不改名。
+            # 这避免 save_item 改动与本次业务无关的文件名，减少 git 历史噪音
+            # 和误删风险。
+            existing_stem = existing_path.stem
+            # 去掉全角括号及内容: "<id>-<title>（<注>）" → "<id>-<title>"
+            normalized = re.sub(r'（[^（）]*）', '', existing_stem)
+            if normalized == file_path.stem:
+                logger.info(f"Keeping existing file path for {id_str}: {existing_path} (bracket-annotated, equivalent to {file_path.name})")
+                file_path = existing_path
+            else:
+                logger.info(f"Renaming/Moving existing file for {id_str}: {existing_path} -> {file_path}")
+                try:
+                    existing_path.unlink()
+                except Exception as e:
+                    logger.warning(f"Failed to remove old file {existing_path}: {e}")
 
         try:
             file_path.parent.mkdir(parents=True, exist_ok=True)
