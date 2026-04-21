@@ -139,7 +139,11 @@ class BookIndexStorage:
                     )
 
             metadata["id"] = id_str
-            metadata["type"] = type_val.name.lower()
+            # 只在 metadata 没有显式 type 字段时用 type_val 填充。
+            # 历史遗留的 Work（如 31hyr4yqu8xk9）ID 位段里 type=Reserved1，
+            # 但元数据 type="work" 才是权威。不能用 type_val 覆盖 metadata 里既有的 type。
+            if not metadata.get("type"):
+                metadata["type"] = type_val.name.lower()
             if "title" not in metadata and ("书名" in metadata or "名称" in metadata):
                 metadata["title"] = metadata.get("书名") or metadata.get("名称")
 
