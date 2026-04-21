@@ -3,6 +3,7 @@ import type { CollatedEditionIndex, CollatedJuan, CollatedSection, JuanGroup } f
 import type { IndexStorage } from '../storage/types';
 import { useConvert } from '../i18n';
 import { LoadingDots } from './common/LoadingDots';
+import { useBidUrl } from '../core/bid-url';
 
 export interface CollatedEditionProps {
     /** 直接传入卷列表索引 */
@@ -316,6 +317,7 @@ function extractAnnotation(content?: string): string | null {
 
 function BookSection({ section, onNavigate }: { section: CollatedSection; onNavigate?: (id: string) => void }) {
     const { convert } = useConvert();
+    const buildUrl = useBidUrl();
     const [expanded, setExpanded] = useState(false);
     const hasSummary = !!section.summary;
     const hasComment = !!section.comment;
@@ -413,7 +415,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                 )}
                 {section.work_id && onNavigate && (
                     <a
-                        href={`/book-index?id=${section.work_id}`}
+                        href={buildUrl(section.work_id)}
                         onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(section.work_id!); }}
                         style={{
                             fontSize: '11px',
@@ -700,6 +702,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache }: {
     workLabelCache?: React.RefObject<WorkLabelCache>;
 }) {
     const { convert } = useConvert();
+    const buildUrl = useBidUrl();
     const [expanded, setExpanded] = useState(false);
     const typeKey = section.type;
     const typeColor = KAOZHEN_TYPE_COLORS[typeKey] || '#717171';
@@ -770,7 +773,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache }: {
                     {/* 单作品：标题行右侧显示链接 */}
                     {workIds.length === 1 && onNavigate && (
                         <a
-                            href={`/book-index?id=${workIds[0]}`}
+                            href={buildUrl(workIds[0])}
                             onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(workIds[0]); }}
                             style={{
                                 fontSize: '11px',
@@ -825,7 +828,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache }: {
                         return (
                             <a
                                 key={wid}
-                                href={`/book-index?id=${wid}`}
+                                href={buildUrl(wid)}
                                 onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(wid); }}
                                 style={{
                                     fontSize: '12px',
@@ -979,6 +982,7 @@ function KaozhenContent({
 /** 原文模式：将 sections 渲染为连续文本 */
 function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; onNavigate?: (id: string) => void }) {
     const { convert } = useConvert();
+    const buildUrl = useBidUrl();
     // Group sections by 类
     const groups: { category: string; categoryContent?: string; items: CollatedSection[] }[] = [];
     let current: { category: string; categoryContent?: string; items: CollatedSection[] } | null = null;
@@ -1026,7 +1030,7 @@ function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; on
                             <p key={si} style={{ margin: '8px 0', textIndent: '2em', whiteSpace: 'pre-line' }}>
                                 {onNavigate && s.work_id ? (
                                     <a
-                                        href={`/book-index?id=${s.work_id}`}
+                                        href={buildUrl(s.work_id)}
                                         onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(s.work_id!); }}
                                         style={{ color: 'var(--bim-fg, #333)', textDecoration: 'underline', textDecorationColor: 'var(--bim-widget-border, #ddd)', textUnderlineOffset: '3px', cursor: 'pointer' }}
                                         title={convert(s.title)}

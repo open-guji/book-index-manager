@@ -430,6 +430,8 @@ class BookIndexStorage:
         elif isinstance(vc, (int, float)):
             juan_count = int(vc)
 
+        measure_info = metadata.get("measure_info", "") or ""
+
         edition = metadata.get("edition", "")
         additional_titles = self._extract_titles_list(metadata.get("additional_titles", []))
         attached_texts = self._extract_titles_list(metadata.get("attached_texts", []))
@@ -459,6 +461,8 @@ class BookIndexStorage:
             entry["role"] = author_role
         if juan_count:
             entry["juan_count"] = juan_count
+        if measure_info:
+            entry["measure_info"] = measure_info
         if additional_titles:
             entry["additional_titles"] = additional_titles
         if attached_texts:

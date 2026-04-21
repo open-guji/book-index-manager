@@ -8,6 +8,7 @@ import { FeedbackList } from './FeedbackList';
 import type { FeedbackItem } from './FeedbackList';
 
 import { LoadingDots } from './common/LoadingDots';
+import { useBidUrl } from '../core/bid-url';
 
 export interface RecommendedItem {
     id: string;
@@ -276,6 +277,7 @@ const RecommendContent: React.FC<{
     getIcon: (type: IndexType) => string;
     t: ReturnType<typeof useT>;
 }> = ({ recommended, loading, onNavigate, getIcon, t }) => {
+    const buildUrl = useBidUrl();
     if (loading) {
         return <LoadingDots />;
     }
@@ -312,7 +314,7 @@ const RecommendContent: React.FC<{
                             return (
                                 <a
                                     key={entry.id}
-                                    href={`/book-index?id=${entry.id}`}
+                                    href={buildUrl(entry.id)}
                                     onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate?.(entry.id); }}
                                     style={{
                                         display: 'flex',
@@ -419,6 +421,7 @@ const ProgressItem: React.FC<{
     statusColor: string;
     onNavigate?: (id: string) => void;
 }> = ({ item, t, statusColor, onNavigate }) => {
+    const buildUrl = useBidUrl();
     const percent = item.total > 0 ? Math.round((item.imported / item.total) * 100) : 0;
     const typeLabel = item.type === 'catalog' ? t.home.typeCatalog : t.home.typeCollection;
 
@@ -439,7 +442,7 @@ const ProgressItem: React.FC<{
                             if (linkId && onNavigate) {
                                 return (
                                     <a
-                                        href={`/book-index?id=${linkId}`}
+                                        href={buildUrl(linkId)}
                                         onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(linkId); }}
                                         style={{ color: 'inherit', textDecoration: 'none', borderBottom: '1px dashed var(--bim-link-fg, #0066cc)' }}
                                         onMouseEnter={e => (e.currentTarget.style.borderBottomStyle = 'solid')}

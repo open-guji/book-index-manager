@@ -18,6 +18,7 @@ import { extractStatus } from '../id';
 import { ResourceList } from './ResourceList';
 import { useT, useConvert } from '../i18n';
 import { formatTemplate } from '../i18n';
+import { useBidUrl } from '../core/bid-url';
 
 /** 已解析的收录关联（ID → 标题 + 册号） */
 interface ResolvedContainedIn {
@@ -245,11 +246,12 @@ function IdLink({ id, label, onNavigate, renderLink }: {
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
 }) {
+    const buildUrl = useBidUrl();
     if (renderLink) return <>{renderLink(id, label)}</>;
     if (onNavigate) {
         return (
             <a
-                href={`/book-index?id=${id}`}
+                href={buildUrl(id)}
                 onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(id); }}
                 style={{
                     color: 'var(--bim-link-fg, #0066cc)',
@@ -938,14 +940,21 @@ function WorkInfoCard({ workData, onNavigate, renderLink }: {
                 }}>
                     <IdLink id={workData.id} label={convert(workData.title)} onNavigate={onNavigate} renderLink={renderLink} />
                 </span>
-                {workData.juan_count?.number != null && workData.juan_count.number > 0 && (
+                {workData.measure_info ? (
+                    <span style={{
+                        fontSize: '12px',
+                        color: 'var(--bim-desc-fg, #717171)',
+                    }}>
+                        {convert(workData.measure_info)}
+                    </span>
+                ) : workData.juan_count?.number != null && workData.juan_count.number > 0 ? (
                     <span style={{
                         fontSize: '12px',
                         color: 'var(--bim-desc-fg, #717171)',
                     }}>
                         {numberToChinese(workData.juan_count.number)}{t.unit.juan}
                     </span>
-                )}
+                ) : null}
             </div>
             <div style={{ padding: '12px 16px' }}>
                 {workData.authors && workData.authors.length > 0 && (
@@ -1155,8 +1164,11 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     try { isDraft = extractStatus(detail.id) === 'draft'; } catch {}
 
     // 卷数文字（显示在标题旁）
+    // 优先级：measure_info > juan_count.number > juan_count.description
     let volumeText = '';
-    if (detail.juan_count?.number) {
+    if (detail.measure_info) {
+        volumeText = convert(detail.measure_info);
+    } else if (detail.juan_count?.number) {
         volumeText = numberToChinese(detail.juan_count.number) + t.unit.juan;
     } else if (detail.juan_count?.description) {
         volumeText = convert(detail.juan_count.description);

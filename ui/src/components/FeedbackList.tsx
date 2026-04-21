@@ -1,5 +1,6 @@
 import React from 'react';
 import { LoadingDots } from './common/LoadingDots';
+import { useBidUrl } from '../core/bid-url';
 
 export interface FeedbackItem {
     id: string;
@@ -38,6 +39,7 @@ function formatTime(iso: string): string {
 }
 
 export const FeedbackList: React.FC<FeedbackListProps> = ({ items, loading }) => {
+    const buildUrl = useBidUrl();
     if (loading) {
         return <LoadingDots />;
     }
@@ -70,7 +72,7 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({ items, loading }) =>
                         {(item.resourceId || item.pageUrl) && (
                             <div style={sourceStyle}>
                                 {item.resourceId && (
-                                    <a href={`/book-index?id=${item.resourceId}`} style={sourceLinkStyle}>
+                                    <a href={buildUrl(item.resourceId)} style={sourceLinkStyle}>
                                         {item.resourceId}
                                     </a>
                                 )}

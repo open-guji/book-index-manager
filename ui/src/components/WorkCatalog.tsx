@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useT, useConvert } from '../i18n';
+import { useBidUrl } from '../core/bid-url';
 
 /** 四库总目等分类目录数据 */
 interface CatalogBook {
@@ -211,6 +212,7 @@ const BookList: React.FC<{
     onNavigate?: (id: string) => void;
 }> = ({ label, books, onNavigate }) => {
     const { convert } = useConvert();
+    const buildUrl = useBidUrl();
     const [showAll, setShowAll] = useState(books.length <= 20);
     const displayed = showAll ? books : books.slice(0, 10);
 
@@ -225,7 +227,7 @@ const BookList: React.FC<{
                         <span style={{ fontWeight: 500, color: 'var(--bim-fg, #333)' }}>
                             {book.work_id && onNavigate ? (
                                 <a
-                                    href={`/book-index?id=${book.work_id}`}
+                                    href={buildUrl(book.work_id)}
                                     onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(book.work_id!); }}
                                     style={{ color: 'inherit', textDecoration: 'none', borderBottom: '1px dashed var(--bim-link-fg, #0066cc)' }}
                                 >

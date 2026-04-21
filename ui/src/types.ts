@@ -176,6 +176,14 @@ export interface JuanCount {
     description?: string;
 }
 
+/** 單個計量單位（卷、回、集、篇、則 等） */
+export interface Measure {
+    unit: string;
+    number: number;
+    /** 計量相關備註，如 "每集五回" */
+    note?: string;
+}
+
 /** 页数 */
 export interface PageCount {
     number?: number;
@@ -199,6 +207,10 @@ export interface BaseDetailData {
     publication_info?: PublicationInfo;
     current_location?: LocationInfo;
     juan_count?: JuanCount;
+    /** 多維計量（卷、回、集等），適合通俗小說等 */
+    measures?: Measure[];
+    /** UI 直接展示的計量文本，應與 measures 一致 */
+    measure_info?: string;
     page_count?: PageCount;
     resources?: ResourceEntry[];
 }

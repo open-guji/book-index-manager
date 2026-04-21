@@ -45,6 +45,8 @@ export interface IndexFileEntry {
     attached_texts?: string[];
     edition?: string;
     juan_count?: number;
+    /** UI 展示用計量文本，優先於 juan_count 單獨顯示 */
+    measure_info?: string;
     has_text?: boolean;
     has_image?: boolean;
 }
@@ -188,6 +190,9 @@ export class BookIndexStorage {
             juanCount = (jc as any).number || undefined;
         }
 
+        // 提取 measure_info（UI 展示用計量文本）
+        const measureInfo = typeof metadata.measure_info === 'string' ? metadata.measure_info : '';
+
         // 提取资源类型标记
         let hasText = false;
         let hasImage = false;
@@ -212,6 +217,7 @@ export class BookIndexStorage {
         if (additionalTitles && additionalTitles.length > 0) entry.additional_titles = additionalTitles;
         if (attachedTexts && attachedTexts.length > 0) entry.attached_texts = attachedTexts;
         if (juanCount) entry.juan_count = juanCount;
+        if (measureInfo) entry.measure_info = measureInfo;
         const edition = typeof metadata.edition === 'string' ? metadata.edition : '';
         if (edition) entry.edition = edition;
         if (hasText) entry.has_text = true;
@@ -411,6 +417,8 @@ export class BookIndexStorage {
                         juanCount = (jc as any).number || undefined;
                     }
 
+                    const measureInfo = typeof metadata.measure_info === 'string' ? metadata.measure_info : '';
+
                     let hasText = false;
                     let hasImage = false;
                     const resources = metadata.resources;
@@ -434,6 +442,7 @@ export class BookIndexStorage {
                     if (additionalTitles && additionalTitles.length > 0) entry.additional_titles = additionalTitles;
                     if (attachedTexts && attachedTexts.length > 0) entry.attached_texts = attachedTexts;
                     if (juanCount) entry.juan_count = juanCount;
+                    if (measureInfo) entry.measure_info = measureInfo;
                     const edition = typeof metadata.edition === 'string' ? metadata.edition : '';
                     if (edition) entry.edition = edition;
                     if (hasText) entry.has_text = true;

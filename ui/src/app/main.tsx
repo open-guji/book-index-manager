@@ -26,10 +26,13 @@ function createStorage(): IndexStorage {
 
 // ── URL 工具 ──
 
-/** 从当前 URL pathname 提取 book ID（第一段路径） */
+const DETAIL_PATH = '/book-index';
+
+/** 从当前 URL 提取 book ID：在 /book-index 路径下从 ?id= 读取 */
 function getIdFromUrl(): string | null {
-    const path = window.location.pathname.replace(/^\/+/, '');
-    return path || null;
+    if (window.location.pathname !== DETAIL_PATH) return null;
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id') || null;
 }
 
 /** 从 URL search params 提取参数 */
@@ -41,17 +44,22 @@ function getParamsFromUrl(): { tab?: string; juan?: string } {
     };
 }
 
-/** 更新浏览器 URL（不触发页面刷新） */
-function pushUrl(id: string | null, params?: Record<string, string | undefined>) {
-    let url = id ? `/${id}` : '/';
+function buildUrl(id: string | null, params?: Record<string, string | undefined>): string {
+    const sp = new URLSearchParams();
+    if (id) sp.set('id', id);
     if (params) {
-        const sp = new URLSearchParams();
         for (const [k, v] of Object.entries(params)) {
             if (v) sp.set(k, v);
         }
-        const qs = sp.toString();
-        if (qs) url += `?${qs}`;
     }
+    const qs = sp.toString();
+    if (id) return qs ? `${DETAIL_PATH}?${qs}` : DETAIL_PATH;
+    return qs ? `/?${qs}` : '/';
+}
+
+/** 更新浏览器 URL（不触发页面刷新） */
+function pushUrl(id: string | null, params?: Record<string, string | undefined>) {
+    const url = buildUrl(id, params);
     const current = window.location.pathname + window.location.search;
     if (current !== url) {
         window.history.pushState(null, '', url);
@@ -60,16 +68,7 @@ function pushUrl(id: string | null, params?: Record<string, string | undefined>)
 
 /** replaceState 版本，用于不产生历史记录的更新 */
 function replaceUrl(id: string | null, params?: Record<string, string | undefined>) {
-    let url = id ? `/${id}` : '/';
-    if (params) {
-        const sp = new URLSearchParams();
-        for (const [k, v] of Object.entries(params)) {
-            if (v) sp.set(k, v);
-        }
-        const qs = sp.toString();
-        if (qs) url += `?${qs}`;
-    }
-    window.history.replaceState(null, '', url);
+    window.history.replaceState(null, '', buildUrl(id, params));
 }
 
 // ── 主应用 ──

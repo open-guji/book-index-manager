@@ -557,12 +557,16 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                             {convert(entry.edition)}
                         </span>
                     )}
-                    {/* 卷数 */}
-                    {entry.juan_count != null && entry.juan_count > 0 && (
+                    {/* 卷/回数等計量：優先 measure_info，退回 juan_count */}
+                    {entry.measure_info ? (
+                        <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)' }}>
+                            {convert(entry.measure_info)}
+                        </span>
+                    ) : entry.juan_count != null && entry.juan_count > 0 ? (
                         <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)' }}>
                             {entry.juan_count}{t.unit.juan}
                         </span>
-                    )}
+                    ) : null}
                 </div>
                 {/* 作者朝代 */}
                 {(entry.dynasty || entry.author) && (

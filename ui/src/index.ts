@@ -84,6 +84,8 @@ export type { IndexFile, IndexFileEntry } from './core/storage';
 export { IdGenerator } from './core/id-generator';
 export { extractIdFromUrl, validateResource } from './core/schema';
 export { BidLink } from './core/bid-link';
+export { BidUrlProvider, useBidUrl } from './core/bid-url';
+export type { BidUrlBuilder, BidUrlProviderProps } from './core/bid-url';
 export { BookIndexError, StorageError, IdGenerationError, ConfigError, MigrationError } from './core/exceptions';
 export { normalizeCatalog } from './core/normalize-catalog';
 

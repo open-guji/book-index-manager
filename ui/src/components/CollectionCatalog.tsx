@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import type { VolumeBookMapping, VolumeBookEntry, VolumeSection } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { useT, useConvert, formatTemplate } from '../i18n';
+import { useBidUrl } from '../core/bid-url';
 
 export interface CollectionCatalogProps {
     /** 直接传入数据 */
@@ -139,11 +140,12 @@ function BidLink({ id, label, onNavigate, renderLink }: {
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
 }) {
+    const buildUrl = useBidUrl();
     if (renderLink) return <>{renderLink(id, label)}</>;
     if (onNavigate) {
         return (
             <a
-                href={`/book-index?id=${id}`}
+                href={buildUrl(id)}
                 onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(id); }}
                 style={{
                     color: 'var(--bim-link-fg, #0066cc)',
