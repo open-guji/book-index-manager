@@ -100,4 +100,7 @@ export interface IndexStorage {
 
     /** 获取资源类型统计（有图片/文字资源的作品数） */
     getResourceCounts?(): Promise<{ hasText: number; hasImage: number }>;
+
+    /** 获取 Work subtype 细分统计 */
+    getSubtypeStats?(): Promise<Record<string, number>>;
 }

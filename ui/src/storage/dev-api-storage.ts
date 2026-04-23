@@ -125,4 +125,10 @@ export class DevApiStorage implements IndexStorage {
         if (!res.ok) return null;
         return res.json();
     }
+
+    async getSubtypeStats(): Promise<Record<string, number>> {
+        const res = await fetch(`${this.baseUrl}/api/subtype-stats`);
+        if (!res.ok) return {};
+        return res.json();
+    }
 }

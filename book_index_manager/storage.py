@@ -303,6 +303,9 @@ class BookIndexStorage:
         edition = metadata.get("edition", "")
         if edition:
             entry["edition"] = edition
+        subtype = metadata.get("subtype", "")
+        if subtype:
+            entry["subtype"] = subtype
         shard_data[id_str] = entry
         self._save_shard(root, type_key, id_str, shard_data)
 
@@ -437,6 +440,7 @@ class BookIndexStorage:
         measure_info = metadata.get("measure_info", "") or ""
 
         edition = metadata.get("edition", "")
+        subtype = metadata.get("subtype", "")
         additional_titles = self._extract_titles_list(metadata.get("additional_titles", []))
         attached_texts = self._extract_titles_list(metadata.get("attached_texts", []))
 
@@ -477,6 +481,8 @@ class BookIndexStorage:
             entry["has_image"] = True
         if edition:
             entry["edition"] = edition
+        if subtype:
+            entry["subtype"] = subtype
         return entry
 
     def _process_type_for_rebuild(self, root: Path, type_val: BookIndexType) -> Dict[int, Dict]:

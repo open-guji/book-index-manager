@@ -111,6 +111,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     const [recentLoading, setRecentLoading] = useState(false);
     const [recentExpanded, setRecentExpanded] = useState(false);
     const [stats, setStats] = useState<{ works: number; books: number; collections: number; hasText?: number; hasImage?: number } | null>(null);
+    const [subtypeStats, setSubtypeStats] = useState<Record<string, number> | null>(null);
     const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
     const initialSearchDone = useRef(false);
 
@@ -159,7 +160,8 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
             types.map(t => transport.loadEntries(t, { page: 1, pageSize: 1 }).catch(() => ({ total: 0 })))
         );
         const countsP = transport.getResourceCounts?.().catch(() => null) ?? Promise.resolve(null);
-        Promise.all([entriesP, countsP]).then(([results, counts]) => {
+        const subtypeP = transport.getSubtypeStats?.().catch(() => null) ?? Promise.resolve(null);
+        Promise.all([entriesP, countsP, subtypeP]).then(([results, counts, subtypes]) => {
             if (cancelled) return;
             setStats({
                 works: results[0].total,
@@ -168,6 +170,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                 hasText: counts?.hasText,
                 hasImage: counts?.hasImage,
             });
+            if (subtypes) setSubtypeStats(subtypes);
         });
         return () => { cancelled = true; };
     }, [transport]);
@@ -322,13 +325,42 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     color: 'var(--bim-desc-fg, #999)',
                     display: 'flex',
                     justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '4px',
                 }}>
                     <span>
-                        {t.indexType.work} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.works.toLocaleString()}</strong>
-                        <span style={{ margin: '0 6px' }}>·</span>
-                        {t.indexType.book} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.books.toLocaleString()}</strong>
-                        <span style={{ margin: '0 6px' }}>·</span>
-                        {t.indexType.collection} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.collections.toLocaleString()}</strong>
+                        {subtypeStats ? (
+                            <>
+                                {(subtypeStats['book'] ?? 0) > 0 && (
+                                    <>
+                                        書 <strong style={{ color: 'var(--bim-fg, #555)' }}>{subtypeStats['book'].toLocaleString()}</strong> 部
+                                        ，<strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.books.toLocaleString()}</strong> 本
+                                    </>
+                                )}
+                                {subtypeStats['article'] ? (
+                                    <>
+                                        <span style={{ margin: '0 6px' }}>·</span>
+                                        文章 <strong style={{ color: 'var(--bim-fg, #555)' }}>{subtypeStats['article'].toLocaleString()}</strong> 篇
+                                    </>
+                                ) : null}
+                                {subtypeStats['poem'] ? (
+                                    <>
+                                        <span style={{ margin: '0 6px' }}>·</span>
+                                        詩詞 <strong style={{ color: 'var(--bim-fg, #555)' }}>{subtypeStats['poem'].toLocaleString()}</strong> 首
+                                    </>
+                                ) : null}
+                                <span style={{ margin: '0 6px' }}>·</span>
+                                叢編 <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.collections.toLocaleString()}</strong>
+                            </>
+                        ) : (
+                            <>
+                                {t.indexType.work} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.works.toLocaleString()}</strong>
+                                <span style={{ margin: '0 6px' }}>·</span>
+                                {t.indexType.book} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.books.toLocaleString()}</strong>
+                                <span style={{ margin: '0 6px' }}>·</span>
+                                {t.indexType.collection} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.collections.toLocaleString()}</strong>
+                            </>
+                        )}
                     </span>
                     {stats.hasImage != null && stats.hasText != null && (
                         <span>

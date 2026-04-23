@@ -1,6 +1,33 @@
 /** 资源类型 */
 export type ResourceType = 'text' | 'image' | 'text+image' | 'physical';
 
+/** 整理本文本质量等级 */
+export type TextQualityGrade = 'published' | 'fine' | 'rough' | 'ocr';
+
+/** enum → 繁体中文 badge 文字 */
+export const TEXT_QUALITY_LABELS: Record<TextQualityGrade, string> = {
+    published: '出版',
+    fine: '精校',
+    rough: '粗校',
+    ocr: '機器識別',
+};
+
+/** enum → 错误率判定标准（tooltip 显示） */
+export const TEXT_QUALITY_CRITERIA: Record<TextQualityGrade, string> = {
+    published: '達到出版、學術研究標準，錯誤率在萬分之一以內',
+    fine: '通讀無障礙，錯誤率在百分之一以內',
+    rough: '保證文意基本正確，錯誤率在百分之三以內',
+    ocr: '保持大意和結構，錯誤率在百分之十以內',
+};
+
+/** enum → 主题色 */
+export const TEXT_QUALITY_COLORS: Record<TextQualityGrade, string> = {
+    published: '#1b5e20',
+    fine: '#2e7d32',
+    rough: '#1565c0',
+    ocr: '#e65100',
+};
+
 /** 覆盖信息 */
 export interface CoverageInfo {
     level: number;
@@ -90,6 +117,8 @@ export interface IndexEntry {
     has_image?: boolean;
     /** 是否有整理本 */
     has_collated?: boolean;
+    /** 作品子类型：poem / article / book（默认） */
+    subtype?: string;
 }
 
 /** 分页结果 */
@@ -481,12 +510,9 @@ export interface CollatedEditionIndex {
     text_source?: string;
     /** 文本质量等级 */
     text_quality?: {
-        /** A=精校 B=良好 C=粗校 D=初校 */
-        grade: 'A' | 'B' | 'C' | 'D';
-        /** 等级说明 */
-        grade_label: string;
+        grade: TextQualityGrade;
         /** 文字来源说明 */
-        source_note: string;
+        source_note?: string;
     };
     /** 文件列表（替代 juan_files 的详细版） */
     files?: Array<{

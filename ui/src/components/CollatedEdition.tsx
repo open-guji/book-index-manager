@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import type { CollatedEditionIndex, CollatedJuan, CollatedSection, JuanGroup } from '../types';
+import type { CollatedEditionIndex, CollatedJuan, CollatedSection, JuanGroup, TextQualityGrade } from '../types';
+import { TEXT_QUALITY_LABELS, TEXT_QUALITY_CRITERIA, TEXT_QUALITY_COLORS } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { useConvert } from '../i18n';
 import { LoadingDots } from './common/LoadingDots';
+import { Tooltip } from './common/Tooltip';
 import { useBidUrl } from '../core/bid-url';
 
 export interface CollatedEditionProps {
@@ -23,6 +25,17 @@ export interface CollatedEditionProps {
 }
 
 // ── 工具函数 ──
+
+// 兼容旧数据：部分 JSON 仍存 ABCD 字母。数据迁移后可删。
+const LEGACY_GRADE_MAP: Record<string, TextQualityGrade> = {
+    A: 'fine', B: 'rough', C: 'rough', D: 'ocr',
+};
+function normalizeTextQualityGrade(g: unknown): TextQualityGrade | null {
+    if (typeof g !== 'string') return null;
+    if (g in TEXT_QUALITY_LABELS) return g as TextQualityGrade;
+    if (g in LEGACY_GRADE_MAP) return LEGACY_GRADE_MAP[g];
+    return null;
+}
 
 const CN_DIGITS = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
 const CN_UNITS = ['', '十', '百', '千'];
@@ -1076,6 +1089,7 @@ function JuanContent({
     }, [juan.sections, searchQuery]);
 
     const bookCount = filteredSections.filter(s => s.type === '书').length;
+    const poemCount = filteredSections.filter(s => s.type === '詩').length;
 
     return (
         <div>
@@ -1118,7 +1132,7 @@ function JuanContent({
                     color: 'var(--bim-desc-fg, #999)',
                     marginLeft: 'auto',
                 }}>
-                    {bookCount} 部书
+                    {poemCount > 0 ? `${poemCount} 首` : `${bookCount} 部书`}
                 </span>
             </div>
 
@@ -1129,7 +1143,7 @@ function JuanContent({
 
             {/* 目录模式 */}
             {viewMode === 'catalog' && filteredSections.map((section, i) => {
-                if (section.type === '书') {
+                if (section.type === '书' || section.type === '詩') {
                     return <BookSection key={i} section={section} onNavigate={onNavigate} />;
                 }
                 if (section.type === '类') {
@@ -1314,29 +1328,34 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
                         <span>共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{index.total_juan}</strong> 卷</span>
                     )}
                 </div>
-                {index.text_quality && (
-                    <div style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span>文本質量：</span>
-                        <span style={{
-                            display: 'inline-block',
-                            width: '18px', height: '18px',
-                            lineHeight: '18px',
-                            textAlign: 'center',
-                            borderRadius: '3px',
-                            fontWeight: 700,
-                            fontSize: '11px',
-                            color: '#fff',
-                            background: index.text_quality.grade === 'A' ? '#2e7d32'
-                                : index.text_quality.grade === 'B' ? '#1565c0'
-                                : index.text_quality.grade === 'C' ? '#e65100'
-                                : '#c62828',
-                        }}>{index.text_quality.grade}</span>
-                        <span>{index.text_quality.grade_label}</span>
-                        {index.text_quality.source_note && (
-                            <span style={{ marginLeft: '4px' }}>— {index.text_quality.source_note}</span>
-                        )}
-                    </div>
-                )}
+                {index.text_quality && (() => {
+                    const grade = normalizeTextQualityGrade(index.text_quality.grade);
+                    if (!grade) return null;
+                    return (
+                        <div style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span>文本質量：</span>
+                            <Tooltip content={TEXT_QUALITY_CRITERIA[grade]}>
+                                <span
+                                    style={{
+                                        display: 'inline-block',
+                                        padding: '2px 8px',
+                                        lineHeight: '16px',
+                                        textAlign: 'center',
+                                        borderRadius: '3px',
+                                        fontWeight: 600,
+                                        fontSize: '12px',
+                                        color: '#fff',
+                                        background: TEXT_QUALITY_COLORS[grade],
+                                        cursor: 'help',
+                                    }}
+                                >{TEXT_QUALITY_LABELS[grade]}</span>
+                            </Tooltip>
+                            {index.text_quality.source_note && (
+                                <span style={{ marginLeft: '4px' }}>— {index.text_quality.source_note}</span>
+                            )}
+                        </div>
+                    );
+                })()}
             </div>
 
             {/* 卷/章导航 */}

@@ -7,6 +7,8 @@
 import type { Plugin, ViteDevServer } from 'vite';
 import * as fs from 'fs';
 import * as path from 'path';
+import MiniSearch from 'minisearch';
+import { tokenize, hasCjkBigram } from './normalize.js';
 
 /** 繁→简转换器（懒加载 opencc-js） */
 let t2sConverter: ((text: string) => string) | null | false = null; // null=未加载, false=不可用
@@ -213,6 +215,120 @@ interface CatalogVolumeInfo {
 /** book_id → CatalogVolumeInfo[] 缓存（懒加载） */
 let catalogVolumeCache: Map<string, CatalogVolumeInfo[]> | null = null;
 
+// ── MiniSearch 搜索索引 ──
+
+interface SearchDoc {
+    _uid: string;
+    title_search: string;
+    aliases_search: string;
+    author_search: string;
+}
+
+interface SearchIndex {
+    engines: Map<string, MiniSearch<SearchDoc>>;
+    entryMap: Map<string, Record<string, unknown>>;
+}
+
+let searchIndexCache: SearchIndex | null = null;
+
+/** 首次调用时构建，后续复用（重启 vite 清空缓存）。 */
+async function ensureSearchIndex(workspaceRoot: string): Promise<SearchIndex> {
+    if (searchIndexCache) return searchIndexCache;
+
+    const t2s = await ensureT2S();
+    const engines = new Map<string, MiniSearch<SearchDoc>>();
+    const entryMap = new Map<string, Record<string, unknown>>();
+    const opts = {
+        idField: '_uid',
+        fields: ['title_search', 'aliases_search', 'author_search'],
+        storeFields: [] as string[],
+        tokenize: (text: string) => tokenize(text),
+        processTerm: (term: string) => term,
+    };
+
+    for (const type of ['work', 'book', 'collection']) {
+        const entries = getAllEntries(workspaceRoot, type);
+        const docs: SearchDoc[] = [];
+
+        for (const raw of entries) {
+            const entry = raw as Record<string, unknown>;
+            const uid = `${entry.isDraft ? 'd' : 'b'}:${entry.id}`;
+            entryMap.set(uid, entry);
+
+            const title = (entry.title as string) || '';
+            const titleS = t2s ? t2s(title) : '';
+            const titleSearch = [title, titleS !== title ? titleS : ''].filter(Boolean).join(' ');
+
+            const rawAliases = [
+                ...((entry.additional_titles as string[]) || []),
+                ...((entry.attached_texts as string[]) || []),
+            ];
+            const aliasTexts = [...rawAliases];
+            if (t2s) {
+                for (const a of rawAliases) {
+                    const as = t2s(a);
+                    if (as !== a) aliasTexts.push(as);
+                }
+            }
+            const aliasesSearch = aliasTexts.join(' ');
+
+            const author = (entry.author as string) || '';
+            const authorS = t2s ? t2s(author) : '';
+            const authorSearch = [author, authorS !== author ? authorS : ''].filter(Boolean).join(' ');
+
+            docs.push({ _uid: uid, title_search: titleSearch, aliases_search: aliasesSearch, author_search: authorSearch });
+        }
+
+        const ms = new MiniSearch<SearchDoc>(opts);
+        ms.addAll(docs);
+        engines.set(type, ms);
+        console.log(`[search-index] ${type}: ${docs.length} docs indexed`);
+    }
+
+    searchIndexCache = { engines, entryMap };
+    return searchIndexCache;
+}
+
+/** AND 严格 → MSM bigram 回退，返回已排序的 uid 列表。 */
+function msSearch(engine: MiniSearch<SearchDoc>, query: string): string[] {
+    const len = Array.from(query).filter(c => /\S/.test(c)).length;
+    const enableFuzzy = len >= 3;
+    const qTokens = tokenize(query);
+    const prefixForStrict = !hasCjkBigram(qTokens);
+
+    const strict = engine.search(query, {
+        combineWith: 'AND',
+        prefix: prefixForStrict,
+        fuzzy: enableFuzzy ? 0.2 : false,
+        boost: { title_search: 4, aliases_search: 2.5, author_search: 1.2 },
+    });
+    if (strict.length > 0) return strict.map(r => r.id as string);
+
+    const bigrams = Array.from(new Set(qTokens.filter(t => Array.from(t).length >= 2)));
+    if (bigrams.length < 2) return [];
+
+    const statsMap = new Map<string, { hits: number; score: number }>();
+    for (const bg of bigrams) {
+        const hits = engine.search(bg, { combineWith: 'AND', prefix: false, fuzzy: false });
+        for (const h of hits) {
+            const uid = h.id as string;
+            const prev = statsMap.get(uid);
+            if (prev) { prev.hits++; prev.score += h.score; }
+            else statsMap.set(uid, { hits: 1, score: h.score });
+        }
+    }
+    const all = [...statsMap.entries()].map(([uid, s]) => ({ uid, ...s }));
+    const startMin = Math.max(1, Math.ceil(bigrams.length / 2));
+    for (let m = startMin; m >= 1; m--) {
+        const layer = all.filter(s => s.hits >= m);
+        if (layer.length > 0) {
+            layer.sort((a, b) => (b.hits - a.hits) || (b.score - a.score));
+            return layer.map(s => s.uid);
+        }
+    }
+    return [];
+}
+
 function buildCatalogVolumeCache(workspaceRoot: string): Map<string, CatalogVolumeInfo[]> {
     const cache = new Map<string, CatalogVolumeInfo[]>();
 
@@ -398,24 +514,21 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                         const page = parseInt(url.searchParams.get('page') || '1');
                         const pageSize = parseInt(url.searchParams.get('pageSize') || '50');
 
-                        const t2s = await ensureT2S();
-                        const queryS = t2s ? t2s(query).toLowerCase() : undefined;
-
-                        let entries = getAllEntries(workspaceRoot, type);
-
-                        if (query) {
-                            entries = entries.filter((e: any) =>
-                                matchesQuery(e.title, query, queryS, t2s) ||
-                                matchesQuery(e.id, query, queryS, t2s) ||
-                                matchesQuery(e.author, query, queryS, t2s)
-                            );
+                        if (!query) {
+                            const all = getAllEntries(workspaceRoot, type);
+                            sendJson({ entries: all.slice((page - 1) * pageSize, page * pageSize), total: all.length, page, pageSize });
+                            return;
                         }
 
+                        const { engines, entryMap } = await ensureSearchIndex(workspaceRoot);
+                        const engine = engines.get(type);
+                        if (!engine) { sendJson({ entries: [], total: 0, page, pageSize }); return; }
+
+                        const uids = msSearch(engine, query);
+                        const entries = uids.map(uid => entryMap.get(uid)).filter(Boolean);
                         const total = entries.length;
                         const start = (page - 1) * pageSize;
-                        const sliced = entries.slice(start, start + pageSize);
-
-                        sendJson({ entries: sliced, total, page, pageSize });
+                        sendJson({ entries: entries.slice(start, start + pageSize), total, page, pageSize });
                     })().catch(() => sendJson({ error: 'Search error' }, 500));
                     return;
                 }
@@ -426,30 +539,23 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                         const query = (url.searchParams.get('q') || '').toLowerCase();
                         const limit = parseInt(url.searchParams.get('limit') || '5');
 
-                        const t2s = await ensureT2S();
-                        const queryS = t2s ? t2s(query).toLowerCase() : undefined;
-
                         const result: Record<string, unknown> = {};
-                        for (const [type, key] of [['work', 'works'], ['book', 'books'], ['collection', 'collections']] as const) {
-                            let entries = getAllEntries(workspaceRoot, type);
-                            if (query) {
-                                entries = entries.filter((e: any) =>
-                                    matchesQuery(e.title, query, queryS, t2s) ||
-                                    matchesQuery(e.id, query, queryS, t2s) ||
-                                    matchesQuery(e.author, query, queryS, t2s) ||
-                                    (e.additional_titles || []).some((at: string) => matchesQuery(at, query, queryS, t2s)) ||
-                                    (e.attached_texts || []).some((at: string) => matchesQuery(at, query, queryS, t2s))
-                                );
+                        if (!query) {
+                            for (const key of ['works', 'books', 'collections']) {
+                                result[key] = [];
+                                result[`total${key.charAt(0).toUpperCase() + key.slice(1)}`] = 0;
                             }
-                            // 按相关度排序
-                            entries.sort((a: any, b: any) => {
-                                const sa = scoreResult(a, query, queryS, t2s);
-                                const sb = scoreResult(b, query, queryS, t2s);
-                                if (sb !== sa) return sb - sa;
-                                return (a.title || '').length - (b.title || '').length;
-                            });
+                            sendJson(result);
+                            return;
+                        }
+
+                        const { engines, entryMap } = await ensureSearchIndex(workspaceRoot);
+                        for (const [type, key] of [['work', 'works'], ['book', 'books'], ['collection', 'collections']] as const) {
+                            const engine = engines.get(type);
+                            const uids = engine ? msSearch(engine, query) : [];
+                            const entries = uids.map(uid => entryMap.get(uid)).filter(Boolean);
                             result[key] = entries.slice(0, limit);
-                            result[`total${key.charAt(0).toUpperCase() + key.slice(1)}` as string] = entries.length;
+                            result[`total${key.charAt(0).toUpperCase() + key.slice(1)}`] = entries.length;
                         }
 
                         sendJson(result);
@@ -507,14 +613,14 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
 
                     try {
                         // 优先读取 collated_edition_index.json（保留原始顺序）
-                        const indexFile = path.join(assetDir, '..', 'collated_edition_index.json');
+                        const indexFile = path.join(assetDir, 'collated_edition_index.json');
                         if (fs.existsSync(indexFile)) {
                             const indexData = JSON.parse(fs.readFileSync(indexFile, 'utf-8'));
                             sendJson(indexData);
                         } else {
                             // 回退：扫描目录文件
                             const files = fs.readdirSync(assetDir)
-                                .filter((f: string) => f.endsWith('.json') && f !== 'juan_groups.json')
+                                .filter((f: string) => f.endsWith('.json') && f !== 'juan_groups.json' && f !== 'collated_edition_index.json')
                                 .sort((a: string, b: string) => {
                                     // juanshouX < juanXXX < fulu
                                     const order = (name: string) => {
@@ -707,6 +813,18 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                         if (e.has_image) hasImage++;
                     }
                     sendJson({ hasText, hasImage });
+                    return;
+                }
+
+                // GET /api/subtype-stats — Work subtype 细分统计
+                if (pathname === '/api/subtype-stats' && req.method === 'GET') {
+                    const entries = getAllEntries(workspaceRoot, 'work');
+                    const counts: Record<string, number> = {};
+                    for (const e of entries) {
+                        const st = (e as any).subtype || 'book';
+                        counts[st] = (counts[st] ?? 0) + 1;
+                    }
+                    sendJson(counts);
                     return;
                 }
 
