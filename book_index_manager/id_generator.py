@@ -7,11 +7,13 @@ class BookIndexStatus(IntEnum):
     Draft = 1
 
 class BookIndexType(IntEnum):
+    # 0-3: 实体书目
     Book = 0
     Reserved1 = 1
     Collection = 2
     Work = 3
-    Reserved4 = 4
+    # 4-7: 抽象概念（人物/地名/朝代等）
+    Entity = 4
     Reserved5 = 5
     Reserved6 = 6
     Reserved7 = 7
@@ -29,7 +31,7 @@ class BookIndexIdGenerator:
     ID Layout (64 bits):
     [0] Sign (1 bit): Fixed to 0
     [1] Status (1 bit): 0=Official, 1=Draft
-    [2-4] Type (3 bits): 0=Book, 2=Collection, 3=Work, etc.
+    [2-4] Type (3 bits): 0=Book, 2=Collection, 3=Work, 4=Entity, etc.
     [5-44] Timestamp (40 bits): Draft(ms), Official(s)
     [45-55] Machine ID (11 bits): Up to 2048 nodes
     [56-63] Sequence (8 bits): 256 per time unit

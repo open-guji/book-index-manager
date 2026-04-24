@@ -47,6 +47,8 @@ class BidLink:
             return "📚 "
         elif self._type == BookIndexType.Work:
             return "📜 "
+        elif self._type == BookIndexType.Entity:
+            return "👤 "
         return ""
 
     def render(self, with_icon: bool = False) -> str:

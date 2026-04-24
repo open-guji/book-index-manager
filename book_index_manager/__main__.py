@@ -34,7 +34,7 @@ class CLIHandler:
 
     def handle_gen_id(self):
         status = BookIndexStatus.Official if self.args.status == "official" else BookIndexStatus.Draft
-        type_map = {"book": BookIndexType.Book, "collection": BookIndexType.Collection, "work": BookIndexType.Work}
+        type_map = {"book": BookIndexType.Book, "collection": BookIndexType.Collection, "work": BookIndexType.Work, "entity": BookIndexType.Entity}
         id_val = self.manager.generate_id(type_map[self.args.type], status)
         id_str = self.manager.encode_id(id_val)
         if self.args.raw:
@@ -75,7 +75,7 @@ class CLIHandler:
         print(f"Shadow reindex of {target} completed.")
 
     def handle_draft(self):
-        type_map = {"book": BookIndexType.Book, "collection": BookIndexType.Collection, "work": BookIndexType.Work}
+        type_map = {"book": BookIndexType.Book, "collection": BookIndexType.Collection, "work": BookIndexType.Work, "entity": BookIndexType.Entity}
         type_val = type_map[self.args.type]
 
         book_id = self.manager.generate_id(type_val, BookIndexStatus.Draft)
@@ -275,7 +275,7 @@ def main():
     # gen-id
     p = subparsers.add_parser("gen-id", parents=[parent_parser])
     p.add_argument("--status", choices=["official", "draft"], default="draft")
-    p.add_argument("--type", choices=["book", "work", "collection"], default="book")
+    p.add_argument("--type", choices=["book", "work", "collection", "entity"], default="book")
     p.add_argument("--raw", action="store_true", help="Print only the Base58 ID")
 
     # reindex (deep)
@@ -299,7 +299,7 @@ def main():
     # draft
     p = subparsers.add_parser("draft", parents=[parent_parser])
     p.add_argument("title", help="Title of the work/book/collection")
-    p.add_argument("--type", choices=["book", "work", "collection"], default="book")
+    p.add_argument("--type", choices=["book", "work", "collection", "entity"], default="book")
 
     # parse-id
     p = subparsers.add_parser("parse-id", parents=[parent_parser])

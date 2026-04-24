@@ -13,6 +13,19 @@ from .migration import migrate_metadata
 NUM_SHARDS = 16
 
 
+# index.json 里各 type 对应的 key（Entity 复数是 entities，不是 entitys）
+TYPE_KEY_MAP = {
+    BookIndexType.Book: "books",
+    BookIndexType.Collection: "collections",
+    BookIndexType.Work: "works",
+    BookIndexType.Entity: "entities",
+}
+
+
+def type_key_of(type_val: BookIndexType) -> str:
+    return TYPE_KEY_MAP[type_val]
+
+
 def shard_of(id_str: str, n: int = NUM_SHARDS) -> int:
     """Deterministic hash: same result in Python and JS (Math.imul+>>>0)."""
     h = 0
@@ -93,7 +106,10 @@ class BookIndexStorage:
 
     def save_item(self, type_val: BookIndexType, id_val: int, metadata: dict):
         """Save an item (book, collection, or work) and update the index."""
-        name = metadata.get("title") or metadata.get("书名") or metadata.get("名称") or "未命名"
+        if type_val == BookIndexType.Entity:
+            name = metadata.get("primary_name") or metadata.get("title") or "未命名"
+        else:
+            name = metadata.get("title") or metadata.get("书名") or metadata.get("名称") or "未命名"
         edition = metadata.get("edition") or ""
         if edition:
             name = f"{name}{edition}"
@@ -248,64 +264,9 @@ class BookIndexStorage:
         if not id_str:
             return
 
-        type_key = type_val.name.lower() + "s"
+        type_key = type_key_of(type_val)
         shard_data = self._load_shard(root, type_key, id_str)
-
-        title = metadata.get("title", "未命名")
-
-        author_name = ""
-        author_dynasty = ""
-        author_role = ""
-        authors = metadata.get("authors", [])
-        if isinstance(authors, list) and len(authors) > 0:
-            if isinstance(authors[0], dict):
-                author_name = authors[0].get("name", "")
-                author_dynasty = authors[0].get("dynasty", "")
-                author_role = authors[0].get("role", "")
-            else:
-                author_name = str(authors[0])
-        elif isinstance(authors, str):
-            author_name = authors
-
-        year = ""
-        pub = metadata.get("publication_info")
-        if isinstance(pub, dict):
-            year = pub.get("year", "")
-        elif isinstance(pub, str):
-            year = pub
-
-        holder = ""
-        loc = metadata.get("current_location")
-        if isinstance(loc, dict):
-            holder = loc.get("name", "")
-        elif isinstance(loc, str):
-            holder = loc
-
-        # n_juan: 从 juan_count 提取卷数
-        n_juan = 0
-        vc = metadata.get("juan_count")
-        if isinstance(vc, dict):
-            n_juan = vc.get("number", 0) or 0
-
-        entry: dict = {"id": id_str, "title": title, "type": type_val.name, "path": relative_path}
-        if author_name:
-            entry["author"] = author_name
-        if year:
-            entry["year"] = year
-        if holder:
-            entry["holder"] = holder
-        if author_dynasty:
-            entry["dynasty"] = author_dynasty
-        if author_role:
-            entry["role"] = author_role
-        if n_juan:
-            entry["n_juan"] = n_juan
-        edition = metadata.get("edition", "")
-        if edition:
-            entry["edition"] = edition
-        subtype = metadata.get("subtype", "")
-        if subtype:
-            entry["subtype"] = subtype
+        entry = self._build_index_entry(metadata, type_val, relative_path)
         shard_data[id_str] = entry
         self._save_shard(root, type_key, id_str, shard_data)
 
@@ -400,6 +361,10 @@ class BookIndexStorage:
     def _build_index_entry(self, metadata: dict, type_val: BookIndexType, rel_path: str) -> dict:
         """Extract all index fields from a metadata dict. Returns the index entry."""
         id_str = metadata.get("id") or metadata.get("ID", "")
+
+        if type_val == BookIndexType.Entity:
+            return self._build_entity_index_entry(metadata, id_str, rel_path)
+
         title = metadata.get("title", "未命名")
 
         author_name = ""
@@ -485,9 +450,37 @@ class BookIndexStorage:
             entry["subtype"] = subtype
         return entry
 
+    def _build_entity_index_entry(self, metadata: dict, id_str: str, rel_path: str) -> dict:
+        """Build index entry for Entity type (people/place/dynasty/...)."""
+        subtype = metadata.get("subtype", "people")
+        primary_name = metadata.get("primary_name", "")
+        dynasty = metadata.get("dynasty", "")
+        birth_year = metadata.get("birth_year")
+        death_year = metadata.get("death_year")
+
+        external = metadata.get("external_ids") or {}
+        cbdb_id = external.get("cbdb_id") if isinstance(external, dict) else None
+
+        entry: dict = {
+            "id": id_str,
+            "type": "entity",
+            "subtype": subtype,
+            "primary_name": primary_name,
+            "path": rel_path,
+        }
+        if dynasty:
+            entry["dynasty"] = dynasty
+        if birth_year is not None:
+            entry["birth_year"] = birth_year
+        if death_year is not None:
+            entry["death_year"] = death_year
+        if cbdb_id is not None:
+            entry["cbdb_id"] = cbdb_id
+        return entry
+
     def _process_type_for_rebuild(self, root: Path, type_val: BookIndexType) -> Dict[int, Dict]:
         """Scan one type directory and return shard_num → {id: entry} for deep reindex."""
-        type_key = type_val.name.lower() + "s"
+        type_key = type_key_of(type_val)
         type_dir = root / type_val.name
         num_shards = 1 if type_key == "collections" else NUM_SHARDS
         type_shards: Dict[int, Dict] = {i: {} for i in range(num_shards)}
@@ -531,14 +524,14 @@ class BookIndexStorage:
         root = self.get_root_by_status(status)
         logger.info(f"Deep reindex in {root} (workers={workers})...")
 
-        types = [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work]
+        types = [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work, BookIndexType.Entity]
         # Run each type in parallel
         results: Dict[str, Dict[int, Dict]] = {}
         with ThreadPoolExecutor(max_workers=min(workers, len(types))) as ex:
             futures = {ex.submit(self._process_type_for_rebuild, root, t): t for t in types}
             for fut in as_completed(futures):
                 type_val = futures[fut]
-                type_key = type_val.name.lower() + "s"
+                type_key = type_key_of(type_val)
                 try:
                     results[type_key] = fut.result()
                 except Exception as e:
@@ -574,8 +567,9 @@ class BookIndexStorage:
             "books": {},
             "collections": {0: {}},
             "works": {},
+            "entities": {},
         }
-        for type_key in ("books", "works"):
+        for type_key in ("books", "works", "entities"):
             type_dir = index_dir / type_key
             if type_dir.exists():
                 for shard_file in type_dir.glob("*.json"):
@@ -612,11 +606,11 @@ class BookIndexStorage:
         # so we can parallelise per bucket
         # bucket_key → list of (json_file, type_val)
         buckets: Dict[tuple, List] = {}
-        for type_val in [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work]:
+        for type_val in [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work, BookIndexType.Entity]:
             type_dir = root / type_val.name
             if not type_dir.exists():
                 continue
-            type_key = type_val.name.lower() + "s"
+            type_key = type_key_of(type_val)
             for json_file in type_dir.glob("**/*.json"):
                 try:
                     json_file.relative_to(index_dir)
@@ -697,7 +691,7 @@ class BookIndexStorage:
             with open(col_path, encoding="utf-8") as f:
                 indexed.update(json.load(f).keys())
 
-        for type_key in ["books", "works"]:
+        for type_key in ["books", "works", "entities"]:
             type_dir = index_dir / type_key
             if not type_dir.exists():
                 continue
@@ -707,7 +701,7 @@ class BookIndexStorage:
 
         # Scan item files
         missing = []
-        for type_val in [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work]:
+        for type_val in [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work, BookIndexType.Entity]:
             type_dir = root / type_val.name
             if not type_dir.exists():
                 continue
@@ -724,7 +718,8 @@ class BookIndexStorage:
 
     def load_entries(self, type_name: str, status: Optional[BookIndexStatus] = None) -> List[Dict]:
         """Load entries of a given type from sharded index files."""
-        type_key = type_name.lower() + "s"
+        type_val = getattr(BookIndexType, type_name.capitalize())
+        type_key = type_key_of(type_val)
         roots = (
             [self.get_root_by_status(status)]
             if status is not None
@@ -762,7 +757,7 @@ class BookIndexStorage:
             id_val = smart_decode(id_str)
             components = BookIndexIdGenerator.parse(id_val)
             root = self.get_root_by_status(components.status)
-            type_key = components.type.name.lower() + "s"
+            type_key = type_key_of(components.type)
 
             shard_data = self._load_shard(root, type_key, id_str)
             if id_str in shard_data:
@@ -788,7 +783,7 @@ class BookIndexStorage:
         c1, c2, c3 = prefix[0], prefix[1], prefix[2]
 
         for root in [self.official_root, self.draft_root]:
-            for type_dir in ["Book", "Collection", "Work"]:
+            for type_dir in ["Book", "Collection", "Work", "Entity"]:
                 search_dir = root / type_dir / c1 / c2 / c3
                 logger.debug(f"Checking directory: {search_dir}")
                 if search_dir.exists():

@@ -12,7 +12,7 @@ def test_base36_roundtrip():
 def test_base36_only_lowercase():
     """base36 IDs must contain only digits and lowercase letters."""
     gen = BookIndexIdGenerator(machine_id=1)
-    for type_val in [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work]:
+    for type_val in [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work, BookIndexType.Entity]:
         for status in [BookIndexStatus.Official, BookIndexStatus.Draft]:
             id_val = gen.next_id(status, type_val)
             id_str = base36_encode(id_val)
@@ -23,7 +23,7 @@ def test_base36_only_lowercase():
 def test_base36_id_length():
     """Official IDs should be <= 12 chars, Draft IDs <= 13 chars."""
     gen = BookIndexIdGenerator(machine_id=1)
-    for type_val in [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work]:
+    for type_val in [BookIndexType.Book, BookIndexType.Collection, BookIndexType.Work, BookIndexType.Entity]:
         off_id = gen.next_id(BookIndexStatus.Official, type_val)
         off_str = base36_encode(off_id)
         assert len(off_str) <= 12, f"Official ID too long: {off_str} ({len(off_str)})"
@@ -74,6 +74,37 @@ def test_smart_decode_base36():
     id_val = gen.next_id(BookIndexStatus.Draft, BookIndexType.Work)
     id_str = base36_encode(id_val)
     assert smart_decode(id_str) == id_val
+
+
+def test_entity_type_value():
+    """Entity 在 type 枚举里值为 4，与 Book/Collection/Work 区分开。"""
+    assert int(BookIndexType.Entity) == 4
+    assert int(BookIndexType.Book) == 0
+    assert int(BookIndexType.Collection) == 2
+    assert int(BookIndexType.Work) == 3
+
+
+def test_entity_id_roundtrip():
+    """Entity ID 可以正确生成、编码、解码、解析回 Entity 类型。"""
+    gen = BookIndexIdGenerator(machine_id=7)
+    id_val = gen.next_id(BookIndexStatus.Draft, BookIndexType.Entity)
+    id_str = base36_encode(id_val)
+    assert base36_decode(id_str) == id_val
+
+    comp = BookIndexIdGenerator.parse(id_val)
+    assert comp.type == BookIndexType.Entity
+    assert comp.status == BookIndexStatus.Draft
+    assert comp.machine_id == 7
+
+
+def test_entity_id_distinct_from_work():
+    """同时生成 Entity 和 Work，解析后 type 必须不同。"""
+    gen = BookIndexIdGenerator(machine_id=1)
+    ent = gen.next_id(BookIndexStatus.Draft, BookIndexType.Entity)
+    wrk = gen.next_id(BookIndexStatus.Draft, BookIndexType.Work)
+    assert BookIndexIdGenerator.parse(ent).type == BookIndexType.Entity
+    assert BookIndexIdGenerator.parse(wrk).type == BookIndexType.Work
+    assert ent != wrk
 
 
 def test_base58_to_base36_migration():
