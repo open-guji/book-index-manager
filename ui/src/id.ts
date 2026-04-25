@@ -9,13 +9,13 @@ import type { IndexStatus, IndexType } from './types';
 const STATUS_TO_INT: Record<IndexStatus, number> = { official: 0, draft: 1 };
 const INT_TO_STATUS: Record<number, IndexStatus> = { 0: 'official', 1: 'draft' };
 
-const TYPE_TO_INT: Record<IndexType, number> = { book: 0, collection: 2, work: 3 };
-const INT_TO_TYPE: Record<number, IndexType> = { 0: 'book', 2: 'collection', 3: 'work' };
+const TYPE_TO_INT: Record<IndexType, number> = { book: 0, collection: 2, work: 3, entity: 4 };
+const INT_TO_TYPE: Record<number, IndexType> = { 0: 'book', 2: 'collection', 3: 'work', 4: 'entity' };
 
 // --- Bit layout (64-bit) ---
 // [0]    Sign      (1 bit): fixed 0
 // [1]    Status    (1 bit): 0=Official, 1=Draft
-// [2-4]  Type      (3 bits): 0=Book, 2=Collection, 3=Work
+// [2-4]  Type      (3 bits): 0=Book, 2=Collection, 3=Work, 4=Entity
 // [5-44] Timestamp (40 bits)
 // [45-55] Machine  (11 bits)
 // [56-63] Sequence (8 bits)

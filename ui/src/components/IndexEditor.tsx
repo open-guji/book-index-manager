@@ -76,8 +76,8 @@ export interface IndexEditorData {
     parentCollectionId?: string;
 }
 
-const TYPE_COLORS: Record<IndexType, string> = { work: '#4caf50', collection: '#2196f3', book: '#ff9800' };
-const TYPE_ICONS: Record<IndexType, string> = { work: '📜', collection: '📚', book: '📖' };
+const TYPE_COLORS: Record<IndexType, string> = { work: '#4caf50', collection: '#2196f3', book: '#ff9800', entity: '#9c27b0' };
+const TYPE_ICONS: Record<IndexType, string> = { work: '📜', collection: '📚', book: '📖', entity: '👤' };
 
 export const IndexEditor: React.FC<IndexEditorProps> = ({
     data, onChange, onSave, transport, onNavigate,

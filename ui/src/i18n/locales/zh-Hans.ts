@@ -1,7 +1,7 @@
 import type { LocaleMessages } from '../types';
 
 export const zhHans: LocaleMessages = {
-    indexType: { work: '作品', book: '书籍', collection: '丛编' },
+    indexType: { work: '作品', book: '书籍', collection: '丛编', entity: '人物' },
     resourceType: { text: '文字资源', image: '图片资源', textImage: '文字+图片资源', physical: '实体资源' },
     resourceTypeShort: { text: '文字', image: '图片', textImage: '文字+图片', physical: '实体' },
     rootType: { catalog: '目录式', search: '搜索式' },

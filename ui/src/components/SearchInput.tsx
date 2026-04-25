@@ -76,6 +76,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         work: t.indexType.work,
         book: t.indexType.book,
         collection: t.indexType.collection,
+        entity: t.indexType.entity,
     };
 
     const [showDropdown, setShowDropdown] = useState(false);

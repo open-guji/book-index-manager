@@ -3,7 +3,7 @@ export type Locale = 'zh-Hant' | 'zh-Hans';
 
 /** UI 翻译消息结构 */
 export interface LocaleMessages {
-    indexType: { work: string; book: string; collection: string };
+    indexType: { work: string; book: string; collection: string; entity: string };
     resourceType: { text: string; image: string; textImage: string; physical: string };
     resourceTypeShort: { text: string; image: string; textImage: string; physical: string };
     rootType: { catalog: string; search: string };

@@ -83,6 +83,7 @@ function TypeBadge({ type }: { type: IndexType }) {
         book: '#c0392b',
         work: '#8e6f3e',
         collection: '#2471a3',
+        entity: '#5b3e8e',
     };
     return (
         <span style={{

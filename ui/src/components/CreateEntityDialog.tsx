@@ -18,8 +18,8 @@ export interface CreateEntityDialogProps {
     onCancel: () => void;
 }
 
-const TYPE_LABELS: Record<IndexType, string> = { work: '作品', book: '书籍', collection: '丛编' };
-const TYPE_ICONS: Record<IndexType, string> = { work: '📜', book: '📖', collection: '📚' };
+const TYPE_LABELS: Record<IndexType, string> = { work: '作品', book: '书籍', collection: '丛编', entity: '人物' };
+const TYPE_ICONS: Record<IndexType, string> = { work: '📜', book: '📖', collection: '📚', entity: '👤' };
 
 export const CreateEntityDialog: React.FC<CreateEntityDialogProps> = ({
     isOpen, entityType, relationField, inheritData, onConfirm, onCancel,

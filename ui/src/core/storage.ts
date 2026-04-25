@@ -8,8 +8,8 @@ import type { IndexType, IndexEntry, IndexStatus, GroupedSearchResult } from '..
 import type { FileSystem } from './filesystem';
 import { base36Encode, smartDecode, parseId } from '../id';
 
-const TYPE_TO_FOLDER: Record<IndexType, string> = { book: 'Book', collection: 'Collection', work: 'Work' };
-const FOLDER_TO_TYPE: Record<string, IndexType> = { Book: 'book', Collection: 'collection', Work: 'work' };
+const TYPE_TO_FOLDER: Record<IndexType, string> = { book: 'Book', collection: 'Collection', work: 'Work', entity: 'Entity' };
+const FOLDER_TO_TYPE: Record<string, IndexType> = { Book: 'book', Collection: 'collection', Work: 'work', Entity: 'entity' };
 
 export const NUM_SHARDS = 16;
 

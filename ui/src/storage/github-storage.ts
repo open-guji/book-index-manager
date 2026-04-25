@@ -479,7 +479,7 @@ export class GithubStorage implements IndexStorage {
      * 从 ID 可解析出 type 和 status（决定 repo），用 GitHub Contents API 列出目录找到匹配文件。
      */
     private async findItemById(id: string): Promise<Record<string, unknown> | null> {
-        const TYPE_TO_FOLDER: Record<IndexType, string> = { book: 'Book', collection: 'Collection', work: 'Work' };
+        const TYPE_TO_FOLDER: Record<IndexType, string> = { book: 'Book', collection: 'Collection', work: 'Work', entity: 'Entity' };
 
         let type: IndexType;
         let status: IndexStatus;

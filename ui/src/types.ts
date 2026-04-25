@@ -88,7 +88,34 @@ export interface ResourceEntry {
 }
 
 /** 索引类型 */
-export type IndexType = 'book' | 'work' | 'collection';
+export type IndexType = 'book' | 'work' | 'collection' | 'entity';
+
+/** Entity subtype（人物 / 地名 / 朝代 / 匿名 / 集体编撰） */
+export type EntitySubtype = 'people' | 'place' | 'dynasty' | 'anonymous' | 'collective';
+
+/** 别名分类（基于 CBDB ALTNAME_CODES，简化为我方枚举） */
+export type AltNameType = '字' | '號' | '諡號' | '賜號' | '別名' | '常用名' | '簡體'
+    | '本名' | '稱號' | '行第' | '小名' | '小字' | '俗姓' | '俗名'
+    | '廟號' | '尊號' | '法號' | '道號' | '年號' | string;
+
+/** 人物别名 */
+export interface AltName {
+    name: string;
+    type?: AltNameType;
+}
+
+/** Entity.works[i] —— 反向引用作品 */
+export interface EntityWorkRef {
+    work_id: string;
+    role?: string;
+}
+
+/** Entity.external_ids —— 外部数据库引用 */
+export interface ExternalIds {
+    cbdb_id?: number;
+    cbdb_match?: string;
+    cbdb_source?: string;
+}
 
 /** 索引状态 */
 export type IndexStatus = 'draft' | 'official';
@@ -117,8 +144,16 @@ export interface IndexEntry {
     has_image?: boolean;
     /** 是否有整理本 */
     has_collated?: boolean;
-    /** 作品子类型：poem / article / book（默认） */
+    /** 作品子类型：poem / article / book（默认）；对 entity 表示 EntitySubtype */
     subtype?: string;
+    /** Entity 主名（type='entity' 时使用） */
+    primary_name?: string;
+    /** Entity 生年 */
+    birth_year?: number;
+    /** Entity 卒年 */
+    death_year?: number;
+    /** Entity 关联的 CBDB ID */
+    cbdb_id?: number;
 }
 
 /** 分页结果 */
@@ -134,6 +169,7 @@ export interface GroupedSearchResult {
     works: IndexEntry[];
     books: IndexEntry[];
     collections: IndexEntry[];
+    entities?: IndexEntry[];
     /** 各类型的总匹配数（不限于返回条数） */
     totalWorks: number;
     totalBooks: number;
@@ -183,6 +219,8 @@ export interface AuthorInfo {
     name: string;
     role?: string;
     dynasty?: string;
+    /** 关联的人物 Entity ID（可点击跳转人物详情页） */
+    entity_id?: string;
 }
 
 /** 出版信息 */
@@ -280,8 +318,33 @@ export interface WorkDetailData extends BaseDetailData {
     related_works?: { id: string; title: string; relation?: 'part_of' | 'has_part' }[];
 }
 
+/** Entity（人物/地名等）详情
+ *  extends BaseDetailData 以兼容现有 data.title / data.description 等访问；
+ *  title 在加载时由 primary_name 复制而来。
+ */
+export interface EntityDetailData extends BaseDetailData {
+    type: 'entity';
+    subtype: EntitySubtype;
+    /** 主显示名（Entity 数据源主键） */
+    primary_name: string;
+    /** 别名（字、号、諡号等） */
+    alt_names?: AltName[];
+    /** 朝代标签 */
+    dynasty?: string;
+    /** 生年（公历） */
+    birth_year?: number;
+    /** 卒年（公历） */
+    death_year?: number;
+    /** 关联作品反查 */
+    works?: EntityWorkRef[];
+    /** 外部数据库引用（CBDB 等） */
+    external_ids?: ExternalIds;
+    /** 是否草稿 */
+    isDraft?: boolean;
+}
+
 /** 统一详情数据类型 */
-export type IndexDetailData = BookDetailData | CollectionDetailData | WorkDetailData;
+export type IndexDetailData = BookDetailData | CollectionDetailData | WorkDetailData | EntityDetailData;
 
 // ── 关联关系类型 ──
 

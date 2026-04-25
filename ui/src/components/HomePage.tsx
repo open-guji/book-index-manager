@@ -174,11 +174,13 @@ export const HomePage: React.FC<HomePageProps> = ({
         return () => { cancelled = true; };
     }, [feedbackApiUrl, activeTab]);
 
-    const getIcon = (type: IndexType) => {
+    const getIcon = (type: IndexType): string => {
         switch (type) {
             case 'work': return '✍️';
             case 'book': return '📖';
             case 'collection': return '📚';
+            case 'entity': return '👤';
+            default: return '';
         }
     };
 
