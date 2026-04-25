@@ -74,6 +74,7 @@ const TOTAL_KEYS: Record<string, keyof GroupedSearchResult> = {
     works: 'totalWorks',
     books: 'totalBooks',
     collections: 'totalCollections',
+    entities: 'totalEntities',
 };
 
 export const IndexBrowser: React.FC<IndexBrowserProps> = ({
@@ -97,6 +98,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         { type: 'work', icon: '✍️', name: t.indexType.work, key: 'works' },
         { type: 'book', icon: '📖', name: t.indexType.book, key: 'books' },
         { type: 'collection', icon: '📚', name: t.indexType.collection, key: 'collections' },
+        { type: 'entity', icon: '👤', name: t.indexType.entity, key: 'entities' },
     ];
 
     const [searchQuery, setSearchQuery] = useState(initialQuery ?? '');
@@ -110,7 +112,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     const [recentEntries, setRecentEntries] = useState<(IndexEntry & { notFound?: boolean })[]>([]);
     const [recentLoading, setRecentLoading] = useState(false);
     const [recentExpanded, setRecentExpanded] = useState(false);
-    const [stats, setStats] = useState<{ works: number; books: number; collections: number; hasText?: number; hasImage?: number } | null>(null);
+    const [stats, setStats] = useState<{ works: number; books: number; collections: number; entities: number; hasText?: number; hasImage?: number } | null>(null);
     const [subtypeStats, setSubtypeStats] = useState<Record<string, number> | null>(null);
     const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
     const initialSearchDone = useRef(false);
@@ -131,7 +133,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                 setSearchResults(result);
             } else {
                 // Fallback: search each type separately
-                const types: IndexType[] = ['work', 'book', 'collection'];
+                const types: IndexType[] = ['work', 'book', 'collection', 'entity'];
                 const results = await Promise.all(
                     types.map(t => transport.search(query, t, { page: 1, pageSize: limit ?? SEARCH_LIMIT }))
                 );
@@ -139,9 +141,11 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     works: results[0].entries,
                     books: results[1].entries,
                     collections: results[2].entries,
+                    entities: results[3].entries,
                     totalWorks: results[0].total,
                     totalBooks: results[1].total,
                     totalCollections: results[2].total,
+                    totalEntities: results[3].total,
                 });
             }
         } catch (err) {
@@ -155,7 +159,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     // 加载总数统计
     useEffect(() => {
         let cancelled = false;
-        const types: IndexType[] = ['work', 'book', 'collection'];
+        const types: IndexType[] = ['work', 'book', 'collection', 'entity'];
         const entriesP = Promise.all(
             types.map(t => transport.loadEntries(t, { page: 1, pageSize: 1 }).catch(() => ({ total: 0 })))
         );
@@ -167,6 +171,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                 works: results[0].total,
                 books: results[1].total,
                 collections: results[2].total,
+                entities: results[3].total,
                 hasText: counts?.hasText,
                 hasImage: counts?.hasImage,
             });
@@ -359,6 +364,12 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                 {t.indexType.book} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.books.toLocaleString()}</strong>
                                 <span style={{ margin: '0 6px' }}>·</span>
                                 {t.indexType.collection} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.collections.toLocaleString()}</strong>
+                                {stats.entities > 0 && (
+                                    <>
+                                        <span style={{ margin: '0 6px' }}>·</span>
+                                        {t.indexType.entity} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.entities.toLocaleString()}</strong>
+                                    </>
+                                )}
                             </>
                         )}
                     </span>
@@ -460,9 +471,9 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     /* Grouped search results */
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         {TYPE_CONFIG.map(({ type, icon, name, key }) => {
-                            const entries = searchResults[key] as IndexEntry[];
+                            const entries = (searchResults[key] as IndexEntry[] | undefined) ?? [];
                             const totalKey = TOTAL_KEYS[key];
-                            const total = searchResults[totalKey] as number;
+                            const total = (searchResults[totalKey] as number | undefined) ?? 0;
                             if (entries.length === 0) return null;
 
                             const isExpanded = expandedType === type;
@@ -606,6 +617,12 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                         {entry.dynasty && <span>〔{convert(entry.dynasty)}〕</span>}
                         {entry.author && <span>{convert(entry.author)}</span>}
                         {entry.role && entry.role !== 'author' && <span> {convert(entry.role)}</span>}
+                        {/* Entity 生卒年 */}
+                        {entry.type === 'entity' && (entry.birth_year != null || entry.death_year != null) && (
+                            <span style={{ marginLeft: entry.dynasty ? '4px' : 0 }}>
+                                {entry.birth_year ?? '?'}—{entry.death_year ?? '?'}
+                            </span>
+                        )}
                     </div>
                 )}
                 {/* 别名匹配提示 */}

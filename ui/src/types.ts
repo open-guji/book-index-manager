@@ -174,6 +174,7 @@ export interface GroupedSearchResult {
     totalWorks: number;
     totalBooks: number;
     totalCollections: number;
+    totalEntities?: number;
 }
 
 /** 加载选项 */
