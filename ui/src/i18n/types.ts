@@ -55,6 +55,7 @@ export interface LocaleMessages {
         year: string;
         currentLocation: string;
         parentWork: string;
+        relatedWorks: string;
         type: string;
         rootType: string;
         coverageLevel: string;

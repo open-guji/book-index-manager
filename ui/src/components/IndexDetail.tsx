@@ -6,6 +6,7 @@ import type {
     BookDetailData,
     CollectionDetailData,
     WorkDetailData,
+    EntityDetailData,
     AuthorInfo,
     LocationInfo,
     AdditionalWork,
@@ -13,6 +14,7 @@ import type {
     EmendatedByEntry,
     ContainedInEntry,
 } from '../types';
+import { EntityDetail } from './EntityDetail';
 import type { IndexStorage } from '../storage/types';
 import { extractStatus } from '../id';
 import { ResourceList } from './ResourceList';
@@ -1155,6 +1157,21 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     }
 
     if (!detail) return null;
+
+    // Entity（人物等）走独立组件
+    if (detail.type === 'entity') {
+        return (
+            <div className={className} style={style}>
+                <EntityDetail
+                    data={detail as EntityDetailData}
+                    transport={transport}
+                    onNavigate={onNavigate}
+                    renderLink={renderLink}
+                    headerExtra={headerExtra}
+                />
+            </div>
+        );
+    }
 
     const bookData = detail.type === 'book' ? detail as BookDetailData : null;
     const collectionData = detail.type === 'collection' ? detail as CollectionDetailData : null;

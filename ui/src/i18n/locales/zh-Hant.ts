@@ -57,6 +57,7 @@ export const zhHant: LocaleMessages = {
         year: '年代',
         currentLocation: '現藏',
         parentWork: '上級作品',
+        relatedWorks: '相關作品',
         type: '類型',
         rootType: '根類型',
         coverageLevel: '覆蓋層級',

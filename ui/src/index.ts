@@ -24,6 +24,12 @@ export type {
     BookDetailData,
     CollectionDetailData,
     WorkDetailData,
+    EntityDetailData,
+    EntitySubtype,
+    AltName,
+    AltNameType,
+    EntityWorkRef,
+    ExternalIds,
     IndexDetailData,
     RelatedEntity,
     RelationData,
@@ -95,6 +101,8 @@ export { ResourceList } from './components/ResourceList';
 export { IndexBrowser } from './components/IndexBrowser';
 export { IndexDetail, EmendatedBySection } from './components/IndexDetail';
 export type { IndexDetailProps } from './components/IndexDetail';
+export { EntityDetail } from './components/EntityDetail';
+export type { EntityDetailProps } from './components/EntityDetail';
 export { IndexApp } from './components/IndexApp';
 export type { IndexAppProps } from './components/IndexApp';
 export { HomePage } from './components/HomePage';
