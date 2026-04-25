@@ -116,19 +116,21 @@ interface IndexFile {
     books: Record<string, IndexFileEntry>;
     collections: Record<string, IndexFileEntry>;
     works: Record<string, IndexFileEntry>;
+    entities: Record<string, IndexFileEntry>;
 }
 
 const TYPE_MAP: Record<string, keyof IndexFile> = {
     book: 'books',
     collection: 'collections',
     work: 'works',
+    entity: 'entities',
 };
 
 const NUM_SHARDS = 16;
 
 /** 从分片文件加载合并索引 */
 function loadIndex(repoRoot: string): IndexFile {
-    const result: IndexFile = { books: {}, collections: {}, works: {} };
+    const result: IndexFile = { books: {}, collections: {}, works: {}, entities: {} };
 
     // collections (single file)
     const colPath = path.join(repoRoot, 'index', 'collections.json');
@@ -138,8 +140,8 @@ function loadIndex(repoRoot: string): IndexFile {
         }
     } catch { /* ignore */ }
 
-    // books and works (16 shards each)
-    for (const typeKey of ['books', 'works'] as const) {
+    // books, works, entities (16 shards each)
+    for (const typeKey of ['books', 'works', 'entities'] as const) {
         for (let i = 0; i < NUM_SHARDS; i++) {
             const shardPath = path.join(repoRoot, 'index', typeKey, `${i.toString(16)}.json`);
             try {
@@ -189,7 +191,7 @@ function findItemFile(workspaceRoot: string, id: string): string | null {
     const [c1, c2, c3] = [prefix[0], prefix[1], prefix[2]];
 
     for (const folder of ['book-index', 'book-index-draft']) {
-        for (const typeDir of ['Book', 'Collection', 'Work']) {
+        for (const typeDir of ['Book', 'Collection', 'Work', 'Entity']) {
             const searchDir = path.join(workspaceRoot, folder, typeDir, c1, c2, c3);
             try {
                 if (!fs.existsSync(searchDir)) continue;
@@ -246,7 +248,7 @@ async function ensureSearchIndex(workspaceRoot: string): Promise<SearchIndex> {
         processTerm: (term: string) => term,
     };
 
-    for (const type of ['work', 'book', 'collection']) {
+    for (const type of ['work', 'book', 'collection', 'entity']) {
         const entries = getAllEntries(workspaceRoot, type);
         const docs: SearchDoc[] = [];
 
@@ -255,7 +257,10 @@ async function ensureSearchIndex(workspaceRoot: string): Promise<SearchIndex> {
             const uid = `${entry.isDraft ? 'd' : 'b'}:${entry.id}`;
             entryMap.set(uid, entry);
 
-            const title = (entry.title as string) || '';
+            // entity: title 取 primary_name；alias 来自 alt_names
+            const title = (entry.title as string)
+                || (type === 'entity' ? (entry.primary_name as string) : '')
+                || '';
             const titleS = t2s ? t2s(title) : '';
             const titleSearch = [title, titleS !== title ? titleS : ''].filter(Boolean).join(' ');
 
@@ -263,6 +268,12 @@ async function ensureSearchIndex(workspaceRoot: string): Promise<SearchIndex> {
                 ...((entry.additional_titles as string[]) || []),
                 ...((entry.attached_texts as string[]) || []),
             ];
+            // entity: 把 alt_names[].name 也加入别名搜索
+            if (type === 'entity' && Array.isArray(entry.alt_names)) {
+                for (const an of entry.alt_names as Array<{ name?: string }>) {
+                    if (an?.name) rawAliases.push(an.name);
+                }
+            }
             const aliasTexts = [...rawAliases];
             if (t2s) {
                 for (const a of rawAliases) {
@@ -541,7 +552,7 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
 
                         const result: Record<string, unknown> = {};
                         if (!query) {
-                            for (const key of ['works', 'books', 'collections']) {
+                            for (const key of ['works', 'books', 'collections', 'entities']) {
                                 result[key] = [];
                                 result[`total${key.charAt(0).toUpperCase() + key.slice(1)}`] = 0;
                             }
@@ -550,7 +561,7 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                         }
 
                         const { engines, entryMap } = await ensureSearchIndex(workspaceRoot);
-                        for (const [type, key] of [['work', 'works'], ['book', 'books'], ['collection', 'collections']] as const) {
+                        for (const [type, key] of [['work', 'works'], ['book', 'books'], ['collection', 'collections'], ['entity', 'entities']] as const) {
                             const engine = engines.get(type);
                             const uids = engine ? msSearch(engine, query) : [];
                             const entries = uids.map(uid => entryMap.get(uid)).filter(Boolean);
@@ -586,6 +597,10 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                         // Book 类型：从 catalog 注入分册信息
                         if (data.type === 'Book') {
                             enrichResourcesFromCatalog(workspaceRoot, id, data);
+                        }
+                        // Entity：把 primary_name 同步到 title 字段（兼容上层 data.title 访问）
+                        if ((data.type === 'entity' || data.type === 'Entity') && !data.title && data.primary_name) {
+                            data.title = data.primary_name;
                         }
                         sendJson(data);
                     } catch {
