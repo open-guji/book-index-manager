@@ -162,24 +162,64 @@ function WorksSection({ works, transport, onNavigate, renderLink }: {
         if (!transport) return;
         let cancelled = false;
         const ids = works.map(w => w.work_id);
-        // 优先用 getEntry（轻量），失败再 getItem
-        Promise.all(ids.map(async wid => {
-            try {
-                if (transport.getEntry) {
-                    const e = await transport.getEntry(wid);
-                    if (e?.title) return [wid, e.title] as const;
-                }
-                const item = await transport.getItem(wid);
-                const title = item ? ((item.title as string) || (item.primary_name as string) || wid) : wid;
-                return [wid, title] as const;
-            } catch {
-                return [wid, wid] as const;
-            }
-        })).then(pairs => {
-            if (cancelled) return;
+        // 优先用 getAllEntries 批量（GithubStorage / BundleStorage 已加载缓存，O(1) 命中）
+        // 否则逐个 getEntry / getItem
+        const loadAll = async () => {
             const m = new Map<string, string>();
-            for (const [wid, title] of pairs) m.set(wid, title);
-            setTitles(m);
+            // 1. 批量 API 路径（最快）
+            if (transport.getEntriesByIds) {
+                try {
+                    const results = await transport.getEntriesByIds(ids);
+                    let allHit = true;
+                    for (let i = 0; i < ids.length; i++) {
+                        const e = results[i];
+                        if (e?.title) m.set(ids[i], e.title);
+                        else if (e?.primary_name) m.set(ids[i], e.primary_name);
+                        else allHit = false;
+                    }
+                    if (allHit) return m;
+                } catch { /* fallback */ }
+            }
+            // 2. 全量缓存路径（GithubStorage / BundleStorage）
+            if (transport.getAllEntries) {
+                try {
+                    const all = await transport.getAllEntries();
+                    const lookup = new Map(all.map(e => [e.id, e.title || (e as IndexEntry).primary_name || e.id]));
+                    let allHit = true;
+                    for (const wid of ids) {
+                        const t = lookup.get(wid);
+                        if (t) m.set(wid, t);
+                        else allHit = false;
+                    }
+                    if (allHit) return m;
+                } catch { /* fallback */ }
+            }
+            // 2. 限并发 8，逐个 getEntry/getItem
+            const queue = [...ids];
+            const concurrency = 8;
+            const workers = new Array(concurrency).fill(0).map(async () => {
+                while (queue.length) {
+                    const wid = queue.shift();
+                    if (!wid) break;
+                    if (m.has(wid)) continue;
+                    try {
+                        if (transport.getEntry) {
+                            const e = await transport.getEntry(wid);
+                            if (e?.title) { m.set(wid, e.title); continue; }
+                        }
+                        const item = await transport.getItem(wid);
+                        const title = item ? ((item.title as string) || (item.primary_name as string) || wid) : wid;
+                        m.set(wid, title);
+                    } catch {
+                        m.set(wid, wid);
+                    }
+                }
+            });
+            await Promise.all(workers);
+            return m;
+        };
+        loadAll().then(m => {
+            if (!cancelled) setTitles(m);
         });
         return () => { cancelled = true; };
     }, [works, transport]);

@@ -58,6 +58,35 @@ export class DevApiStorage implements IndexStorage {
         return item;
     }
 
+    /** 单条 entry（用于 EntityDetail 的 works 标题快速查询） */
+    async getEntry(id: string): Promise<IndexEntry | null> {
+        const list = await this.getEntriesByIds([id]);
+        return list[0];
+    }
+
+    /** 批量 entry（拆 chunk 避免 URL 过长） */
+    async getEntriesByIds(ids: string[]): Promise<(IndexEntry | null)[]> {
+        if (ids.length === 0) return [];
+        const CHUNK = 100;
+        const result: (IndexEntry | null)[] = [];
+        for (let i = 0; i < ids.length; i += CHUNK) {
+            const chunk = ids.slice(i, i + CHUNK);
+            const url = `${this.baseUrl}/api/entries-by-ids?ids=${chunk.map(encodeURIComponent).join(',')}`;
+            try {
+                const res = await fetch(url);
+                if (!res.ok) {
+                    result.push(...chunk.map(() => null));
+                    continue;
+                }
+                const data = await res.json() as { entries: (IndexEntry | null)[] };
+                result.push(...(data.entries ?? chunk.map(() => null)));
+            } catch {
+                result.push(...chunk.map(() => null));
+            }
+        }
+        return result;
+    }
+
     async getCollectionCatalogs(collectionId: string): Promise<ResourceCatalog[] | null> {
         const res = await fetch(`${this.baseUrl}/api/catalog/${encodeURIComponent(collectionId)}`);
         if (res.status === 404) return null;

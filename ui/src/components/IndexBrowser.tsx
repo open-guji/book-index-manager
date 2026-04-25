@@ -587,7 +587,7 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
             <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>
-                        {convert(entry.title)}
+                        {convert(entry.title || entry.primary_name || entry.id)}
                     </span>
                     {/* 资源图标 */}
                     <span style={{ display: 'flex', gap: '2px', fontSize: '12px', opacity: 0.7 }}>

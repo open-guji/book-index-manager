@@ -517,6 +517,22 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     return;
                 }
 
+                // GET /api/entries-by-ids?ids=a,b,c — 批量返回轻量 entry（用于 EntityDetail 的 works 列表显示标题）
+                if (pathname === '/api/entries-by-ids' && req.method === 'GET') {
+                    const ids = (url.searchParams.get('ids') || '').split(',').filter(Boolean);
+                    if (ids.length === 0) { sendJson({ entries: [] }); return; }
+                    // 在所有 type 中找
+                    const found: Record<string, any> = {};
+                    for (const type of ['work', 'book', 'collection', 'entity']) {
+                        const all = getAllEntries(workspaceRoot, type);
+                        for (const e of all) {
+                            if (ids.includes(e.id)) found[e.id] = e;
+                        }
+                    }
+                    sendJson({ entries: ids.map(id => found[id] || null) });
+                    return;
+                }
+
                 // GET /api/search?q=xxx&type=book&page=1&pageSize=50
                 if (pathname === '/api/search' && req.method === 'GET') {
                     (async () => {

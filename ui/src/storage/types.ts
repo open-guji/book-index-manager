@@ -29,6 +29,9 @@ export interface IndexStorage {
     /** 获取单个索引条目（从缓存中查找） */
     getEntry?(id: string): Promise<IndexEntry | null>;
 
+    /** 批量获取索引条目（用于 EntityDetail.works 标题查询，避免 N 次请求） */
+    getEntriesByIds?(ids: string[]): Promise<(IndexEntry | null)[]>;
+
     /** 获取所有索引条目（不分页） */
     getAllEntries?(): Promise<IndexEntry[]>;
 
