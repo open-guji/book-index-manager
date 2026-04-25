@@ -326,7 +326,7 @@ export class BundleStorage implements IndexStorage {
         const all = await this.ensureLoaded();
         const searchS = await this.ensureSearchSLoaded();
         const t2s = await this.ensureT2S();
-        const types: IndexType[] = ['work', 'book', 'collection'];
+        const types: IndexType[] = ['work', 'book', 'collection', 'entity'];
 
         const queryS = t2s ? t2s(query) : undefined;
         const hasSimplified = Object.keys(searchS).length > 0;
@@ -341,9 +341,11 @@ export class BundleStorage implements IndexStorage {
             works: results[0].slice(0, limit),
             books: results[1].slice(0, limit),
             collections: results[2].slice(0, limit),
+            entities: results[3].slice(0, limit),
             totalWorks: results[0].length,
             totalBooks: results[1].length,
             totalCollections: results[2].length,
+            totalEntities: results[3].length,
         };
     }
 
