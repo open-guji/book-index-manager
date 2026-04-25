@@ -29,6 +29,7 @@ interface GithubIndexResponse {
     books?: Record<string, GithubIndexItem>;
     collections?: Record<string, GithubIndexItem>;
     works?: Record<string, GithubIndexItem>;
+    entities?: Record<string, GithubIndexItem>;
 }
 
 export interface GithubStorageConfig {
@@ -226,6 +227,7 @@ export class GithubStorage implements IndexStorage {
             ['books', 'book'],
             ['collections', 'collection'],
             ['works', 'work'],
+            ['entities', 'entity'],
         ];
 
         for (const [key, type] of typeMap) {
@@ -240,10 +242,19 @@ export class GithubStorage implements IndexStorage {
                     has_text?: boolean;
                     has_image?: boolean;
                     has_collated?: boolean;
+                    subtype?: string;
+                    primary_name?: string;
+                    birth_year?: number;
+                    death_year?: number;
+                    cbdb_id?: number;
                 };
+                // Entity 用 primary_name 作为 title 显示
+                const displayTitle = type === 'entity'
+                    ? (raw.primary_name || item.title || item.name || item.id)
+                    : (item.title || item.name || item.id);
                 entries.push({
                     id: item.id,
-                    title: item.title || item.name || item.id,
+                    title: displayTitle,
                     type,
                     isDraft,
                     author: item.author,
@@ -257,6 +268,11 @@ export class GithubStorage implements IndexStorage {
                     has_text: raw.has_text,
                     has_image: raw.has_image,
                     has_collated: raw.has_collated,
+                    subtype: raw.subtype,
+                    primary_name: raw.primary_name,
+                    birth_year: raw.birth_year,
+                    death_year: raw.death_year,
+                    cbdb_id: raw.cbdb_id,
                 });
                 this.pathMap.set(item.id, { path: item.path, isDraft });
             }
@@ -406,19 +422,25 @@ export class GithubStorage implements IndexStorage {
 
         const info = this.pathMap.get(id);
 
+        let item: Record<string, unknown> | null = null;
         // pathMap 有记录：按已知路径获取
         if (info) {
             const repo = info.isDraft ? this.config.repos.draft : this.config.repos.official;
-            const item = await this.fetchItemByPath(repo, info.path);
+            item = await this.fetchItemByPath(repo, info.path);
             if (item) {
                 const entry = entries.find(e => e.id === id);
                 if (entry?.has_collated) item.has_collated = true;
             }
-            return item;
+        } else {
+            // pathMap 无记录（index 未收录）：通过 ID 推导路径查找文件
+            item = await this.findItemById(id);
         }
 
-        // pathMap 无记录（index 未收录）：通过 ID 推导路径查找文件
-        return this.findItemById(id);
+        // Entity：把 primary_name 同步到 title 字段（兼容上层 data.title 访问）
+        if (item && item.type === 'entity' && !item.title && item.primary_name) {
+            item.title = item.primary_name;
+        }
+        return item;
     }
 
     async getEntry(id: string): Promise<IndexEntry | null> {

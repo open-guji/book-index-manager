@@ -50,7 +50,12 @@ export class DevApiStorage implements IndexStorage {
         const res = await fetch(`${this.baseUrl}/api/items/${encodeURIComponent(id)}`);
         if (res.status === 404) return null;
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
+        const item = await res.json();
+        // Entity：把 primary_name 同步到 title 字段
+        if (item && item.type === 'entity' && !item.title && item.primary_name) {
+            item.title = item.primary_name;
+        }
+        return item;
     }
 
     async getCollectionCatalogs(collectionId: string): Promise<ResourceCatalog[] | null> {

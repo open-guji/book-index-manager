@@ -50,7 +50,12 @@ export class LocalStorage implements IndexStorage {
     }
 
     async getItem(id: string): Promise<Record<string, unknown> | null> {
-        return this.storage.getItem(id);
+        const item = await this.storage.getItem(id);
+        // Entity：把 primary_name 同步到 title 字段（兼容上层 data.title 访问）
+        if (item && item.type === 'entity' && !item.title && item.primary_name) {
+            item.title = item.primary_name;
+        }
+        return item;
     }
 
     async saveItem(metadata: Record<string, unknown>): Promise<{ id: string; path: string }> {

@@ -37,12 +37,18 @@ interface BundleIndexItem {
     has_text?: boolean;
     has_image?: boolean;
     has_collated?: boolean;
+    subtype?: string;
+    primary_name?: string;
+    birth_year?: number;
+    death_year?: number;
+    cbdb_id?: number;
 }
 
 interface BundleIndexResponse {
     books?: Record<string, BundleIndexItem>;
     collections?: Record<string, BundleIndexItem>;
     works?: Record<string, BundleIndexItem>;
+    entities?: Record<string, BundleIndexItem>;
 }
 
 export interface BundleStorageConfig {
@@ -113,15 +119,19 @@ export class BundleStorage implements IndexStorage {
             ['books', 'book'],
             ['collections', 'collection'],
             ['works', 'work'],
+            ['entities', 'entity'],
         ];
 
         for (const [key, type] of typeMap) {
             const items = data[key];
             if (!items) continue;
             for (const item of Object.values(items)) {
+                const displayTitle = type === 'entity'
+                    ? (item.primary_name || item.title || item.name || item.id)
+                    : (item.title || item.name || item.id);
                 entries.push({
                     id: item.id,
-                    title: item.title || item.name || item.id,
+                    title: displayTitle,
                     type,
                     isDraft: true, // bundle 目前只打包 draft 数据
                     author: item.author,
@@ -135,6 +145,11 @@ export class BundleStorage implements IndexStorage {
                     has_text: item.has_text,
                     has_image: item.has_image,
                     has_collated: item.has_collated,
+                    subtype: item.subtype,
+                    primary_name: item.primary_name,
+                    birth_year: item.birth_year,
+                    death_year: item.death_year,
+                    cbdb_id: item.cbdb_id,
                 });
                 this.pathMap.set(item.id, { path: item.path, isDraft: true });
             }
@@ -340,6 +355,10 @@ export class BundleStorage implements IndexStorage {
                 // 从 index 条目合并 has_collated 标记
                 const entry = (await this.ensureLoaded()).find(e => e.id === id);
                 if (entry?.has_collated) item.has_collated = true;
+                // Entity：把 primary_name 同步到 title 字段
+                if (item.type === 'entity' && !item.title && item.primary_name) {
+                    item.title = item.primary_name;
+                }
             }
             return item;
         } catch {
