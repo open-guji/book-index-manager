@@ -212,7 +212,12 @@ function MetaItem({ label, children }: { label: string; children: React.ReactNod
     );
 }
 
-function AuthorLine({ authors, type }: { authors: AuthorInfo[]; type: IndexType }) {
+function AuthorLine({ authors, type, onNavigate, renderLink }: {
+    authors: AuthorInfo[];
+    type: IndexType;
+    onNavigate?: (id: string) => void;
+    renderLink?: (id: string, label?: string) => React.ReactNode;
+}) {
     const { convert } = useConvert();
     return (
         <span style={{
@@ -220,25 +225,33 @@ function AuthorLine({ authors, type }: { authors: AuthorInfo[]; type: IndexType 
             color: 'var(--bim-fg, #333)',
             lineHeight: 1.6,
         }}>
-            {authors.map((a, i) => (
-                <span key={i}>
-                    {i > 0 && <span style={{ color: 'var(--bim-desc-fg, #aaa)', margin: '0 4px' }}>·</span>}
-                    {a.dynasty && (
-                        <span style={{
-                            color: 'var(--bim-desc-fg, #717171)',
-                            fontSize: '12px',
-                        }}>〔{convert(a.dynasty)}〕</span>
-                    )}
-                    <span style={{ fontWeight: 500 }}>{convert(a.name)}</span>
-                    {a.role && (
-                        <span style={{
-                            color: 'var(--bim-desc-fg, #999)',
-                            fontSize: '12px',
-                            marginLeft: '2px',
-                        }}> {convert(a.role)}</span>
-                    )}
-                </span>
-            ))}
+            {authors.map((a, i) => {
+                const nameLabel = convert(a.name);
+                const nameNode = a.entity_id ? (
+                    <IdLink id={a.entity_id} label={nameLabel} onNavigate={onNavigate} renderLink={renderLink} />
+                ) : (
+                    <span style={{ fontWeight: 500 }}>{nameLabel}</span>
+                );
+                return (
+                    <span key={i}>
+                        {i > 0 && <span style={{ color: 'var(--bim-desc-fg, #aaa)', margin: '0 4px' }}>·</span>}
+                        {a.dynasty && (
+                            <span style={{
+                                color: 'var(--bim-desc-fg, #717171)',
+                                fontSize: '12px',
+                            }}>〔{convert(a.dynasty)}〕</span>
+                        )}
+                        {nameNode}
+                        {a.role && (
+                            <span style={{
+                                color: 'var(--bim-desc-fg, #999)',
+                                fontSize: '12px',
+                                marginLeft: '2px',
+                            }}> {convert(a.role)}</span>
+                        )}
+                    </span>
+                );
+            })}
         </span>
     );
 }
@@ -275,7 +288,7 @@ function IdLink({ id, label, onNavigate, renderLink }: {
 
 // ── Header ──
 
-function DetailHeader({ id, title, edition, type, isDraft, authors, volumeText, meta, headerExtra }: {
+function DetailHeader({ id, title, edition, type, isDraft, authors, volumeText, meta, headerExtra, onNavigate, renderLink }: {
     id: string;
     title: string;
     edition?: string;
@@ -285,6 +298,8 @@ function DetailHeader({ id, title, edition, type, isDraft, authors, volumeText, 
     volumeText?: string;
     meta: React.ReactNode[];
     headerExtra?: React.ReactNode;
+    onNavigate?: (id: string) => void;
+    renderLink?: (id: string, label?: string) => React.ReactNode;
 }) {
     return (
         <div style={{ marginBottom: '4px' }}>
@@ -350,7 +365,7 @@ function DetailHeader({ id, title, edition, type, isDraft, authors, volumeText, 
                     marginTop: '6px',
                 }}>
                     {authors && authors.length > 0 && (
-                        <AuthorLine authors={authors} type={type} />
+                        <AuthorLine authors={authors} type={type} onNavigate={onNavigate} renderLink={renderLink} />
                     )}
                     {meta}
                 </div>
@@ -961,7 +976,7 @@ function WorkInfoCard({ workData, onNavigate, renderLink }: {
             </div>
             <div style={{ padding: '12px 16px' }}>
                 {workData.authors && workData.authors.length > 0 && (
-                    <AuthorLine authors={workData.authors} type="work" />
+                    <AuthorLine authors={workData.authors} type="work" onNavigate={onNavigate} renderLink={renderLink} />
                 )}
                 {workData.description?.text && (
                     <p style={{
@@ -1238,6 +1253,8 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                 volumeText={volumeText}
                 meta={meta}
                 headerExtra={headerExtra}
+                onNavigate={onNavigate}
+                renderLink={renderLink}
             />
 
             {detail.description?.text && (
