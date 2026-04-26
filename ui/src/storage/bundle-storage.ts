@@ -451,6 +451,18 @@ export class BundleStorage implements IndexStorage {
         }
     }
 
+    async getCollatedJuanText(workId: string, juanFile: string): Promise<string | null> {
+        if (juanFile.includes('..') || !juanFile.endsWith('.json')) return null;
+        const mdFile = juanFile.replace(/\.json$/, '.md');
+        try {
+            const res = await fetch(`${this.basePath}/items/${workId}/collated_edition/text/${mdFile}`);
+            if (!res.ok) return null;
+            return await res.text();
+        } catch {
+            return null;
+        }
+    }
+
     // ─── 资源导入进度 ───
 
     async getResourceProgress(): Promise<ResourceProgress | null> {

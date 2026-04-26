@@ -114,6 +114,13 @@ export class DevApiStorage implements IndexStorage {
         return res.json();
     }
 
+    async getCollatedJuanText(workId: string, juanFile: string): Promise<string | null> {
+        const res = await fetch(`${this.baseUrl}/api/collated/${encodeURIComponent(workId)}/${encodeURIComponent(juanFile)}/text`);
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.text();
+    }
+
     async saveItem(): Promise<{ id: string; path: string }> {
         throw new Error('DevApiStorage: 开发模式暂不支持保存');
     }

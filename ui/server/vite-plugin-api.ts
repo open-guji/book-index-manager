@@ -682,6 +682,40 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     return;
                 }
 
+                // GET /api/collated/:id/:juanFile/text — 整理本单卷原文 md
+                if (pathname.match(/^\/api\/collated\/[^/]+\/[^/]+\/text$/) && req.method === 'GET') {
+                    const parts = pathname.slice('/api/collated/'.length).split('/');
+                    const id = decodeURIComponent(parts[0]);
+                    const juanFile = decodeURIComponent(parts[1]);
+
+                    if (juanFile.includes('..') || !juanFile.endsWith('.json')) {
+                        sendJson({ error: 'Invalid file name' }, 400);
+                        return;
+                    }
+
+                    const itemFile = findItemFile(workspaceRoot, id);
+                    if (!itemFile) {
+                        sendJson({ error: 'Not found' }, 404);
+                        return;
+                    }
+
+                    const mdFile = juanFile.replace(/\.json$/, '.md');
+                    const filePath = path.join(path.dirname(itemFile), id, 'collated_edition', 'text', mdFile);
+                    if (!fs.existsSync(filePath)) {
+                        sendJson({ error: 'Text not found' }, 404);
+                        return;
+                    }
+
+                    try {
+                        const content = fs.readFileSync(filePath, 'utf-8');
+                        res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+                        res.end(content);
+                    } catch {
+                        sendJson({ error: 'Read error' }, 500);
+                    }
+                    return;
+                }
+
                 // GET /api/collated/:id/:juanFile — 整理本单卷内容
                 if (pathname.match(/^\/api\/collated\/[^/]+\/[^/]+$/) && req.method === 'GET') {
                     const parts = pathname.slice('/api/collated/'.length).split('/');

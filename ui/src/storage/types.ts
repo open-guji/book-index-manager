@@ -87,6 +87,9 @@ export interface IndexStorage {
     /** 获取整理本单卷内容 */
     getCollatedJuan?(workId: string, juanFile: string): Promise<CollatedJuan | null>;
 
+    /** 获取整理本单卷原文 md（返回 markdown 字符串，无则 null） */
+    getCollatedJuanText?(workId: string, juanFile: string): Promise<string | null>;
+
     // ── 资源导入进度（可选） ──
 
     /** 获取 Work 下的分类目录 */

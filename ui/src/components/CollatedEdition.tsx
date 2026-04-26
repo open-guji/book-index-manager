@@ -992,6 +992,42 @@ function KaozhenContent({
     );
 }
 
+/** 原文模式：直接渲染 md 文本（逐行处理标题和粗体） */
+function MdTextView({ text }: { text: string }) {
+    const { convert } = useConvert();
+    const lines = text.split('\n');
+    return (
+        <div style={{ fontSize: '15px', lineHeight: 2.2, color: 'var(--bim-fg, #333)', textAlign: 'justify' }}>
+            {lines.map((line, i) => {
+                if (line.startsWith('# ')) {
+                    return <h2 key={i} style={{ fontSize: '17px', fontWeight: 700, margin: '16px 0 8px' }}>{convert(line.slice(2))}</h2>;
+                }
+                if (line.startsWith('## ')) {
+                    return <h3 key={i} style={{ fontSize: '16px', fontWeight: 600, margin: '14px 0 6px' }}>{convert(line.slice(3))}</h3>;
+                }
+                if (line.startsWith('### ')) {
+                    return <h4 key={i} style={{ fontSize: '15px', fontWeight: 600, margin: '12px 0 4px' }}>{convert(line.slice(4))}</h4>;
+                }
+                if (!line.trim()) {
+                    const prevEmpty = i > 0 && !lines[i - 1].trim();
+                    return prevEmpty ? null : <div key={i} style={{ height: '0.5em' }} />;
+                }
+                // 处理行内 **粗体**
+                const parts = line.split(/(\*\*[^*]+\*\*)/g);
+                return (
+                    <p key={i} style={{ margin: '6px 0', textIndent: '2em', whiteSpace: 'pre-wrap' }}>
+                        {parts.map((part, j) =>
+                            part.startsWith('**') && part.endsWith('**')
+                                ? <strong key={j}>{convert(part.slice(2, -2))}</strong>
+                                : convert(part)
+                        )}
+                    </p>
+                );
+            })}
+        </div>
+    );
+}
+
 /** 原文模式：将 sections 渲染为连续文本 */
 function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; onNavigate?: (id: string) => void }) {
     const { convert } = useConvert();
@@ -1065,10 +1101,12 @@ function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; on
 
 function JuanContent({
     juan,
+    rawText,
     searchQuery,
     onNavigate,
 }: {
     juan: CollatedJuan;
+    rawText?: string | null;
     searchQuery: string;
     onNavigate?: (id: string) => void;
 }) {
@@ -1138,7 +1176,9 @@ function JuanContent({
 
             {/* 原文模式 */}
             {viewMode === 'raw' && (
-                <RawTextView sections={filteredSections} onNavigate={onNavigate} />
+                rawText
+                    ? <MdTextView text={rawText} />
+                    : <RawTextView sections={filteredSections} onNavigate={onNavigate} />
             )}
 
             {/* 目录模式 */}
@@ -1200,6 +1240,7 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
     const [internalActiveFile, setInternalActiveFile] = useState<string | null>(null);
     const [juanData, setJuanData] = useState<CollatedJuan | null>(null);
     const [juanLoading, setJuanLoading] = useState(false);
+    const [juanRawText, setJuanRawText] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const workLabelCacheRef = useRef<WorkLabelCache>(new Map());
 
@@ -1262,11 +1303,17 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
         if (!effectiveWorkId || !transport?.getCollatedJuan) return;
         setJuanLoading(true);
         setJuanData(null);
+        setJuanRawText(null);
         try {
-            const data = await transport.getCollatedJuan(effectiveWorkId, file);
+            const [data, rawText] = await Promise.all([
+                transport.getCollatedJuan(effectiveWorkId, file),
+                transport.getCollatedJuanText?.(effectiveWorkId, file) ?? Promise.resolve(null),
+            ]);
             setJuanData(data);
+            setJuanRawText(rawText);
         } catch {
             setJuanData(null);
+            setJuanRawText(null);
         } finally {
             setJuanLoading(false);
         }
@@ -1402,6 +1449,7 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
                 ) : (
                     <JuanContent
                         juan={juanData}
+                        rawText={juanRawText}
                         searchQuery={searchQuery}
                         onNavigate={onNavigate}
                     />
