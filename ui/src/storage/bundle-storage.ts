@@ -431,7 +431,7 @@ export class BundleStorage implements IndexStorage {
     async getCollatedEditionIndex(workId: string): Promise<CollatedEditionIndex | null> {
         try {
             return await this.fetchJson<CollatedEditionIndex>(
-                `${this.basePath}/items/${workId}/collated_edition_index.json`
+                `${this.basePath}/items/${workId}/collated_edition/collated_edition_index.json`
             );
         } catch {
             return null;

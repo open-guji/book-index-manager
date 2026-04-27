@@ -646,7 +646,7 @@ export class GithubStorage implements IndexStorage {
         const resolved = await this.resolveItemPath(workId);
         if (!resolved) return null;
 
-        const indexPath = `${resolved.dir}/${workId}/collated_edition_index.json`;
+        const indexPath = `${resolved.dir}/${workId}/collated_edition/collated_edition_index.json`;
         return this.fetchFile<CollatedEditionIndex>(resolved.repo, indexPath);
     }
 
