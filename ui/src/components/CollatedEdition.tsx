@@ -116,8 +116,9 @@ function juanDisplayName(f: string): string {
     return name;
 }
 
-function JuanButton({ file, isActive, onSelect }: {
+function JuanButton({ file, isActive, onSelect, meta }: {
     file: string; isActive: boolean; onSelect: (f: string) => void;
+    meta?: { vol_label?: string };
 }) {
     return (
         <button
@@ -141,6 +142,16 @@ function JuanButton({ file, isActive, onSelect }: {
             }}
         >
             {juanDisplayName(file)}
+            {meta?.vol_label && (
+                <span style={{
+                    marginLeft: '5px',
+                    fontSize: '11px',
+                    fontWeight: 400,
+                    color: 'var(--bim-desc-fg, #999)',
+                }}>
+                    ({meta.vol_label}冊)
+                </span>
+            )}
         </button>
     );
 }
@@ -156,8 +167,9 @@ function groupFileCount(group: JuanGroup): number {
     return own + childCount;
 }
 
-function JuanGroupNav({ group, activeFile, onSelect, depth = 0 }: {
+function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta }: {
     group: JuanGroup; activeFile: string | null; onSelect: (f: string) => void; depth?: number;
+    juanMeta?: Record<string, { vol_label?: string }>;
 }) {
     const hasActive = groupContainsFile(group, activeFile || '');
     const [expanded, setExpanded] = useState(hasActive);
@@ -240,13 +252,13 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0 }: {
                             padding: `4px 0 4px ${24 + depth * 16}px`,
                         }}>
                             {group.files.map(f => (
-                                <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} />
+                                <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} meta={juanMeta?.[f]} />
                             ))}
                         </div>
                     )}
                     {/* 子分组 */}
                     {hasChildren && group.children!.map((child, i) => (
-                        <JuanGroupNav key={i} group={child} activeFile={activeFile} onSelect={onSelect} depth={depth + 1} />
+                        <JuanGroupNav key={i} group={child} activeFile={activeFile} onSelect={onSelect} depth={depth + 1} juanMeta={juanMeta} />
                     ))}
                 </>
             )}
@@ -259,11 +271,13 @@ function JuanNav({
     groups,
     activeFile,
     onSelect,
+    juanMeta,
 }: {
     files: string[] | undefined;
     groups?: JuanGroup[];
     activeFile: string | null;
     onSelect: (file: string) => void;
+    juanMeta?: Record<string, { vol_label?: string }>;
 }) {
     const fileList = files || [];
 
@@ -272,7 +286,7 @@ function JuanNav({
         return (
             <div style={{ marginBottom: '16px' }}>
                 {groups.map((g, i) => (
-                    <JuanGroupNav key={i} group={g} activeFile={activeFile} onSelect={onSelect} />
+                    <JuanGroupNav key={i} group={g} activeFile={activeFile} onSelect={onSelect} juanMeta={juanMeta} />
                 ))}
             </div>
         );
@@ -292,7 +306,7 @@ function JuanNav({
             padding: '4px 0',
         }}>
             {fileList.map(f => (
-                <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} />
+                <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} meta={juanMeta?.[f]} />
             ))}
         </div>
     );
@@ -1411,6 +1425,7 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
                 groups={index.juan_groups}
                 activeFile={activeFile}
                 onSelect={handleSelectFile}
+                juanMeta={index.juan_metadata}
             />
 
             {/* 搜索 */}

@@ -873,7 +873,7 @@ function BookVersionCard({ book, onNavigate, renderLink }: {
             </div>
             {hasDetails && !collapsed && (
                 <div style={{ padding: '10px 14px' }}>
-                    <ResourceList items={book.resources!} groupByType />
+                    <ResourceList items={book.resources!} groupByType onNavigate={onNavigate} renderLink={renderLink} />
                 </div>
             )}
         </div>
@@ -1306,7 +1306,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
             {detail.resources && detail.resources.length > 0 && (
                 <>
                     <SectionLabel>{t.section.resources}</SectionLabel>
-                    <ResourceList items={detail.resources} groupByType />
+                    <ResourceList items={detail.resources} groupByType onNavigate={onNavigate} renderLink={renderLink} />
                 </>
             )}
 

@@ -60,6 +60,10 @@ export interface ResourceVolume {
     url?: string;
     status?: 'found' | 'missing' | string;
     label?: string;
+    /** 分组标签（如所属 Work 标题），用于展开视图中按组分小节展示 */
+    group?: string;
+    /** 分组对应的 entity id（如 Work id），渲染为内部链接 */
+    group_id?: string;
     /** 允许数据源携带额外 URL 字段（tw_url, wiki_url 等） */
     [key: string]: unknown;
 }
@@ -564,6 +568,8 @@ export interface CollatedEditionIndex {
     work_id: string;
     total_juan?: number;
     juan_files?: string[];
+    /** filename → 元数据（如所属源册号），渲染于 tab/button 旁 */
+    juan_metadata?: Record<string, { vols?: number[]; vol_label?: string }>;
     juan_groups?: JuanGroup[];
     /** 参考文献 */
     references?: CollatedReference[];

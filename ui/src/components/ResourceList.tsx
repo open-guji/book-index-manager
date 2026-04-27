@@ -1,12 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import type { ResourceEntry, ResourceType, ResourceVolume } from '../types';
 import { useT, useConvert } from '../i18n';
+import { useBidUrl } from '../core/bid-url';
 import type { LocaleMessages } from '../i18n/types';
 
 export interface ResourceListProps {
     items: ResourceEntry[];
     /** 按类型分组显示，默认 true */
     groupByType?: boolean;
+    /** 内部实体跳转回调（如点击 group 标题跳到 Work 页） */
+    onNavigate?: (id: string) => void;
+    /** 渲染内部链接（优先于 onNavigate） */
+    renderLink?: (id: string, label?: string) => React.ReactNode;
 }
 
 /** 域名 → 显示名称映射 */
@@ -118,6 +123,8 @@ function mergeVolumeResources(items: ResourceEntry[]): ResourceEntry[] {
 export const ResourceList: React.FC<ResourceListProps> = ({
     items,
     groupByType = true,
+    onNavigate,
+    renderLink,
 }) => {
     const t = useT();
 
@@ -175,7 +182,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                         <span style={{ fontWeight: 400, opacity: 0.6 }}>({groupItems.length})</span>
                     </h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        {groupItems.map((item, i) => <ResourceCard key={item.id || i} item={item} />)}
+                        {groupItems.map((item, i) => <ResourceCard key={item.id || i} item={item} onNavigate={onNavigate} renderLink={renderLink} />)}
                     </div>
                 </div>
             ))}
@@ -262,9 +269,14 @@ const COLOR_MODE_STYLES: Record<string, { label: string; bg: string; fg: string 
     color: { label: '', bg: '#fff8e1', fg: '#f57f17' },
 };
 
-const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => {
+const ResourceCard: React.FC<{
+    item: ResourceEntry;
+    onNavigate?: (id: string) => void;
+    renderLink?: (id: string, label?: string) => React.ReactNode;
+}> = ({ item, onNavigate, renderLink }) => {
     const t = useT();
     const { convert } = useConvert();
+    const buildUrl = useBidUrl();
     const [expanded, setExpanded] = useState(false);
 
     // 域名映射显示名称
@@ -283,9 +295,14 @@ const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => {
     }, [item.volumes]);
 
     const hasVolumes = volumes && volumes.length > 0;
-    const foundCount = hasVolumes ? volumes.filter(v => v.status !== 'missing').length : 0;
-    const missingCount = hasVolumes ? volumes.length - foundCount : 0;
-    const expectedTotal = item.expected_volumes ?? (hasVolumes ? volumes.length : 0);
+    // 按 volume 编号去重统计（同一册可在多个 group 中出现，如跨 Work 共冊）
+    const uniqueFound = hasVolumes
+        ? new Set(volumes.filter(v => v.status !== 'missing').map(v => v.volume)).size
+        : 0;
+    const uniqueMissing = hasVolumes
+        ? new Set(volumes.filter(v => v.status === 'missing').map(v => v.volume)).size
+        : 0;
+    const expectedTotal = item.expected_volumes ?? (hasVolumes ? uniqueFound + uniqueMissing : 0);
 
     // color_mode badge 样式
     const colorModeInfo = item.color_mode ? {
@@ -327,24 +344,19 @@ const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => {
                 )}
                 {item.metadata?.check_type && <CheckTypeBadge value={item.metadata.check_type as string} />}
 
-                {/* 分册摘要 */}
+                {/* 分册数量（被动 badge，不可点击） */}
                 {hasVolumes && (
-                    <button
-                        onClick={() => setExpanded(!expanded)}
-                        style={{
-                            padding: '1px 8px',
-                            fontSize: '11px',
-                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
-                            borderRadius: '3px',
-                            background: 'transparent',
-                            color: 'var(--bim-desc-fg, #717171)',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        {foundCount}/{expectedTotal}{t.unit.volume}
-                        {missingCount > 0 && <span style={{ color: '#e67e22', marginLeft: '4px' }}>缺{missingCount}</span>}
-                        <span style={{ marginLeft: '4px' }}>{expanded ? '▲' : '▼'}</span>
-                    </button>
+                    <span style={{
+                        padding: '1px 8px',
+                        fontSize: '11px',
+                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        borderRadius: '3px',
+                        background: 'transparent',
+                        color: 'var(--bim-desc-fg, #717171)',
+                    }}>
+                        {uniqueFound}/{expectedTotal}{t.unit.volume}
+                        {uniqueMissing > 0 && <span style={{ color: '#e67e22', marginLeft: '4px' }}>缺{uniqueMissing}</span>}
+                    </span>
                 )}
 
                 {/* 总链接（仅在有 url 且不是分册展开时显示），如有页码范围则直接导航到起始页 */}
@@ -360,6 +372,27 @@ const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => {
                     >
                         {t.action.visit}
                     </a>
+                )}
+
+                {/* 展开/收起按钮（独立、最右） */}
+                {hasVolumes && (
+                    <button
+                        onClick={() => setExpanded(!expanded)}
+                        title={expanded ? '收起分册' : '展开分册'}
+                        style={{
+                            marginLeft: 'auto',
+                            padding: '1px 10px',
+                            fontSize: '12px',
+                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            borderRadius: '3px',
+                            background: expanded ? 'var(--bim-widget-border, #e0e0e0)' : 'transparent',
+                            color: 'var(--bim-fg, #333)',
+                            cursor: 'pointer',
+                            lineHeight: 1.4,
+                        }}
+                    >
+                        {expanded ? '收起 ▲' : '展开 ▼'}
+                    </button>
                 )}
             </div>
 
@@ -378,58 +411,123 @@ const ResourceCard: React.FC<{ item: ResourceEntry }> = ({ item }) => {
             )}
 
             {/* 分册展开列表 */}
-            {hasVolumes && expanded && (
-                <div style={{
-                    marginTop: '8px',
-                    padding: '8px 0',
-                    borderTop: '1px solid var(--bim-widget-border, #f0f0f0)',
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '4px',
-                }}>
-                    {volumes.map(v => {
-                        const isMissing = v.status === 'missing';
+            {hasVolumes && expanded && (() => {
+                const hasGroups = volumes.some(v => v.group);
+                const groups: { title?: string; group_id?: string; vols: typeof volumes }[] = [];
+                if (hasGroups) {
+                    let current: { title?: string; group_id?: string; vols: typeof volumes } | null = null;
+                    for (const v of volumes) {
+                        const g = v.group || '';
+                        if (!current || current.title !== g) {
+                            current = { title: g, group_id: v.group_id as string | undefined, vols: [] };
+                            groups.push(current);
+                        }
+                        current.vols.push(v);
+                    }
+                } else {
+                    groups.push({ vols: volumes });
+                }
+
+                const renderVol = (v: typeof volumes[number]) => {
+                    const isMissing = v.status === 'missing';
+                    if (v.url && !isMissing) {
                         return (
-                            <span key={v.volume} style={{ display: 'inline-flex' }}>
-                                {v.url && !isMissing ? (
-                                    <a
-                                        href={v.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style={{
-                                            display: 'inline-block',
-                                            padding: '2px 6px',
-                                            fontSize: '11px',
-                                            borderRadius: '3px',
-                                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
-                                            color: 'var(--bim-link-fg, #0066cc)',
-                                            textDecoration: 'none',
-                                            lineHeight: 1.4,
-                                        }}
-                                        title={v.label || `${v.volume}`}
-                                    >
-                                        {v.volume}
-                                    </a>
-                                ) : (
-                                    <span style={{
-                                        display: 'inline-block',
-                                        padding: '2px 6px',
-                                        fontSize: '11px',
-                                        borderRadius: '3px',
-                                        border: '1px solid transparent',
-                                        color: isMissing ? '#e67e22' : 'var(--bim-desc-fg, #999)',
-                                        textDecoration: isMissing ? 'line-through' : 'none',
-                                        opacity: isMissing ? 0.6 : 1,
-                                        lineHeight: 1.4,
-                                    }}>
-                                        {v.volume}
-                                    </span>
-                                )}
-                            </span>
+                            <a
+                                key={v.volume}
+                                href={v.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    display: 'inline-block',
+                                    padding: '2px 6px',
+                                    fontSize: '11px',
+                                    borderRadius: '3px',
+                                    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                    color: 'var(--bim-link-fg, #0066cc)',
+                                    textDecoration: 'none',
+                                    lineHeight: 1.4,
+                                }}
+                                title={v.label || `${v.volume}`}
+                            >
+                                {v.volume}
+                            </a>
                         );
-                    })}
-                </div>
-            )}
+                    }
+                    return (
+                        <span key={v.volume} style={{
+                            display: 'inline-block',
+                            padding: '2px 6px',
+                            fontSize: '11px',
+                            borderRadius: '3px',
+                            border: '1px solid transparent',
+                            color: isMissing ? '#e67e22' : 'var(--bim-desc-fg, #999)',
+                            textDecoration: isMissing ? 'line-through' : 'none',
+                            opacity: isMissing ? 0.6 : 1,
+                            lineHeight: 1.4,
+                        }}>
+                            {v.volume}
+                        </span>
+                    );
+                };
+
+                return (
+                    <div style={{
+                        marginTop: '8px',
+                        padding: '8px 0',
+                        borderTop: '1px solid var(--bim-widget-border, #f0f0f0)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px',
+                    }}>
+                        {groups.map((g, gi) => {
+                            const titleLabel = g.title ? convert(g.title) : '';
+                            let titleNode: React.ReactNode = titleLabel;
+                            if (g.title && g.group_id) {
+                                if (renderLink) {
+                                    titleNode = renderLink(g.group_id, titleLabel);
+                                } else if (onNavigate) {
+                                    titleNode = (
+                                        <a
+                                            href={buildUrl(g.group_id)}
+                                            onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(g.group_id!); }}
+                                            style={{
+                                                color: 'var(--bim-link-fg, #0066cc)',
+                                                cursor: 'pointer',
+                                                textDecoration: 'none',
+                                                borderBottom: '1px dashed var(--bim-link-fg, #0066cc)',
+                                            }}
+                                            onMouseEnter={e => (e.currentTarget.style.borderBottomStyle = 'solid')}
+                                            onMouseLeave={e => (e.currentTarget.style.borderBottomStyle = 'dashed')}
+                                        >
+                                            {titleLabel}
+                                        </a>
+                                    );
+                                }
+                            }
+                            return (
+                                <div key={gi}>
+                                    {g.title && (
+                                        <div style={{
+                                            fontSize: '12px',
+                                            fontWeight: 500,
+                                            color: 'var(--bim-fg, #333)',
+                                            marginBottom: '4px',
+                                        }}>
+                                            {titleNode}
+                                            <span style={{ color: 'var(--bim-desc-fg, #999)', fontWeight: 400, marginLeft: '6px' }}>
+                                                ({g.vols.length})
+                                            </span>
+                                        </div>
+                                    )}
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                        {g.vols.map(renderVol)}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                );
+            })()}
         </div>
     );
 };

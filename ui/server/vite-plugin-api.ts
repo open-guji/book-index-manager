@@ -128,8 +128,33 @@ const TYPE_MAP: Record<string, keyof IndexFile> = {
 
 const NUM_SHARDS = 16;
 
+// ── loadIndex 缓存（按 mtime 失效）──
+interface IndexCacheEntry {
+    data: IndexFile;
+    mtimeKey: string;
+}
+const indexCache = new Map<string, IndexCacheEntry>();
+
+/** 把所有索引文件的 mtime 拼成一个签名字符串 */
+function computeIndexMtimeKey(repoRoot: string): string {
+    const parts: string[] = [];
+    const colPath = path.join(repoRoot, 'index', 'collections.json');
+    parts.push(safeStat(colPath)?.mtimeMs?.toString() || '0');
+    for (const typeKey of ['books', 'works', 'entities'] as const) {
+        for (let i = 0; i < NUM_SHARDS; i++) {
+            const shardPath = path.join(repoRoot, 'index', typeKey, `${i.toString(16)}.json`);
+            parts.push(safeStat(shardPath)?.mtimeMs?.toString() || '0');
+        }
+    }
+    return parts.join('|');
+}
+
 /** 从分片文件加载合并索引 */
 function loadIndex(repoRoot: string): IndexFile {
+    const mtimeKey = computeIndexMtimeKey(repoRoot);
+    const cached = indexCache.get(repoRoot);
+    if (cached && cached.mtimeKey === mtimeKey) return cached.data;
+
     const result: IndexFile = { books: {}, collections: {}, works: {}, entities: {} };
 
     // collections (single file)
@@ -152,12 +177,27 @@ function loadIndex(repoRoot: string): IndexFile {
         }
     }
 
+    indexCache.set(repoRoot, { data: result, mtimeKey });
     return result;
 }
+
+// ── getAllEntries 缓存（依赖两个 repo 的 mtimeKey）──
+interface EntriesCacheEntry {
+    data: any[];
+    mtimeKey: string;
+}
+const entriesCache = new Map<string, EntriesCacheEntry>();
 
 function getAllEntries(workspaceRoot: string, type: string) {
     const typeKey = TYPE_MAP[type];
     if (!typeKey) return [];
+
+    const cacheKey = `${workspaceRoot}|${type}`;
+    const mtimeKey = ['book-index', 'book-index-draft']
+        .map(f => computeIndexMtimeKey(path.join(workspaceRoot, f)))
+        .join('||');
+    const cached = entriesCache.get(cacheKey);
+    if (cached && cached.mtimeKey === mtimeKey) return cached.data;
 
     const entries: any[] = [];
     for (const folder of ['book-index', 'book-index-draft']) {
@@ -183,6 +223,8 @@ function getAllEntries(workspaceRoot: string, type: string) {
             });
         }
     }
+
+    entriesCache.set(cacheKey, { data: entries, mtimeKey });
     return entries;
 }
 
