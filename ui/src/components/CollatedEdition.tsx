@@ -85,6 +85,95 @@ function segmentToChinese(n: number, needLeadingZero: boolean): string {
     return result.replace(/〇$/, '');
 }
 
+// ── 搜索归一化（繁→简，独立于 locale） ──
+
+type Normalizer = (s: string) => string;
+let _searchNormalizer: Normalizer | null = null;
+let _searchNormLoading: Promise<void> | null = null;
+const _searchNormSubs = new Set<() => void>();
+
+function ensureSearchNormalizer(): Promise<void> {
+    if (_searchNormalizer) return Promise.resolve();
+    if (_searchNormLoading) return _searchNormLoading;
+    _searchNormLoading = import('opencc-js/t2cn').then(mod => {
+        _searchNormalizer = mod.Converter({ from: 'tw', to: 'cn' });
+        _searchNormSubs.forEach(cb => cb());
+    }).catch(() => {
+        _searchNormalizer = (s: string) => s;
+        _searchNormSubs.forEach(cb => cb());
+    });
+    return _searchNormLoading;
+}
+
+/** 触发繁→简归一化加载，并在加载完成时刷新组件 */
+function useSearchNormalizer(): Normalizer {
+    const [, force] = useState(0);
+    useEffect(() => {
+        if (_searchNormalizer) return;
+        const cb = () => force(n => n + 1);
+        _searchNormSubs.add(cb);
+        ensureSearchNormalizer();
+        return () => { _searchNormSubs.delete(cb); };
+    }, []);
+    return _searchNormalizer ?? ((s: string) => s);
+}
+
+function normalizeForSearch(s: string, normalizer: Normalizer): string {
+    return normalizer(s).toLowerCase();
+}
+
+// ── 高亮 ──
+
+const HIGHLIGHT_BG = '#fff59d';
+
+/**
+ * 在 displayed 中查找 query 出现位置并用 <mark> 包裹。
+ * 通过 normalizer（繁→简）做归一化匹配，使简体输入能命中繁体内容。
+ * 假定归一化是 1:1 长度映射（tw→cn 绝大多数字符如此），位置直接对位。
+ */
+function renderHighlighted(displayed: string, query: string, normalizer: Normalizer): React.ReactNode {
+    if (!query) return displayed;
+    const nq = normalizeForSearch(query, normalizer);
+    if (!nq) return displayed;
+    const ndisp = normalizeForSearch(displayed, normalizer);
+    // 长度不一致时退化为不高亮（仍显示原文），避免错位
+    if (ndisp.length !== displayed.length) return displayed;
+    const out: React.ReactNode[] = [];
+    let cursor = 0;
+    let key = 0;
+    while (cursor < displayed.length) {
+        const idx = ndisp.indexOf(nq, cursor);
+        if (idx === -1) {
+            out.push(displayed.slice(cursor));
+            break;
+        }
+        if (idx > cursor) out.push(displayed.slice(cursor, idx));
+        out.push(
+            <mark key={key++} style={{ background: HIGHLIGHT_BG, padding: 0, color: 'inherit' }}>
+                {displayed.slice(idx, idx + nq.length)}
+            </mark>
+        );
+        cursor = idx + nq.length;
+    }
+    return <>{out}</>;
+}
+
+/** 判断一个 section 是否匹配 query（catalog 字段集 / kaozhen 字段集） */
+function sectionMatches(s: CollatedSection, q: string, isKaozhen: boolean, normalizer: Normalizer): boolean {
+    if (!q) return true;
+    const nq = normalizeForSearch(q, normalizer);
+    const fields: (string | undefined | null)[] = isKaozhen
+        ? [s.title, s.header_line, s.content, s.comment]
+        : [s.title, s.book_title, s.author, s.author_info, s.summary, s.content, s.comment, s.additional_comment];
+    return fields.some(f => typeof f === 'string' && normalizeForSearch(f, normalizer).includes(nq));
+}
+
+/** 从 raw md 文本中粗略判断是否匹配 */
+function rawTextMatches(text: string, q: string, normalizer: Normalizer): boolean {
+    if (!q) return true;
+    return normalizeForSearch(text, normalizer).includes(normalizeForSearch(q, normalizer));
+}
+
 // ── 样式常量 ──
 
 const SECTION_TYPE_COLORS: Record<string, string> = {
@@ -116,40 +205,77 @@ function juanDisplayName(f: string): string {
     return name;
 }
 
-function JuanButton({ file, isActive, onSelect, meta }: {
+/** 每卷搜索状态：number = match 数；'loading' = 正在加载；undefined = 未触发搜索 */
+type JuanMatchState = number | 'loading' | undefined;
+
+function JuanButton({ file, isActive, onSelect, meta, matchState }: {
     file: string; isActive: boolean; onSelect: (f: string) => void;
     meta?: { vol_label?: string };
+    matchState?: JuanMatchState;
 }) {
+    const disabled = matchState === 0;
+    const loading = matchState === 'loading';
+    const hasMatch = typeof matchState === 'number' && matchState > 0;
+    const displayName = juanDisplayName(file);
+    const showVolLabel = !!meta?.vol_label && !displayName.includes(meta.vol_label);
+
     return (
         <button
-            onClick={() => onSelect(file)}
+            onClick={() => { if (!disabled) onSelect(file); }}
+            disabled={disabled}
             style={{
                 padding: '3px 8px',
                 border: isActive
                     ? '1px solid var(--bim-primary, #8e6f3e)'
-                    : '1px solid var(--bim-widget-border, #e0e0e0)',
+                    : disabled
+                        ? '1px dashed var(--bim-widget-border, #e0e0e0)'
+                        : '1px solid var(--bim-widget-border, #e0e0e0)',
                 borderRadius: '3px',
                 background: isActive
                     ? 'color-mix(in srgb, var(--bim-primary, #8e6f3e) 10%, transparent)'
-                    : 'transparent',
+                    : hasMatch
+                        ? `${HIGHLIGHT_BG}40`
+                        : 'transparent',
                 color: isActive
                     ? 'var(--bim-primary, #8e6f3e)'
-                    : 'var(--bim-fg, #333)',
-                cursor: 'pointer',
+                    : disabled
+                        ? 'var(--bim-desc-fg, #bbb)'
+                        : 'var(--bim-fg, #333)',
+                cursor: disabled ? 'not-allowed' : 'pointer',
                 fontSize: '12px',
                 fontWeight: isActive ? 600 : 400,
                 lineHeight: 1.4,
+                opacity: disabled ? 0.5 : 1,
             }}
         >
-            {juanDisplayName(file)}
-            {meta?.vol_label && (
+            {displayName}
+            {showVolLabel && (
                 <span style={{
                     marginLeft: '5px',
                     fontSize: '11px',
                     fontWeight: 400,
                     color: 'var(--bim-desc-fg, #999)',
                 }}>
-                    ({meta.vol_label}冊)
+                    ({meta!.vol_label}冊)
+                </span>
+            )}
+            {hasMatch && (
+                <span style={{
+                    marginLeft: '5px',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    color: '#b78900',
+                }}>
+                    {matchState}
+                </span>
+            )}
+            {loading && (
+                <span style={{
+                    marginLeft: '5px',
+                    fontSize: '11px',
+                    color: 'var(--bim-desc-fg, #aaa)',
+                }}>
+                    …
                 </span>
             )}
         </button>
@@ -167,12 +293,33 @@ function groupFileCount(group: JuanGroup): number {
     return own + childCount;
 }
 
-function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta }: {
+/** 计算分组内匹配总数，所有子文件都已加载完毕才返回 number；任一在 loading 返回 'loading'；query 为空返回 undefined */
+function groupMatchState(group: JuanGroup, matchStates: Record<string, JuanMatchState>): JuanMatchState {
+    const all: string[] = [];
+    const collect = (g: JuanGroup) => {
+        all.push(...g.files);
+        g.children?.forEach(collect);
+    };
+    collect(group);
+    if (all.length === 0) return undefined;
+    const states = all.map(f => matchStates[f]);
+    if (states.every(s => s === undefined)) return undefined;
+    if (states.some(s => s === 'loading')) return 'loading';
+    let sum = 0;
+    for (const s of states) if (typeof s === 'number') sum += s;
+    return sum;
+}
+
+function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta, matchStates }: {
     group: JuanGroup; activeFile: string | null; onSelect: (f: string) => void; depth?: number;
     juanMeta?: Record<string, { vol_label?: string }>;
+    matchStates: Record<string, JuanMatchState>;
 }) {
     const hasActive = groupContainsFile(group, activeFile || '');
-    const [expanded, setExpanded] = useState(hasActive);
+    const groupState = groupMatchState(group, matchStates);
+    const groupHasMatch = typeof groupState === 'number' && groupState > 0;
+    const groupNoMatch = groupState === 0;
+    const [expanded, setExpanded] = useState(hasActive || groupHasMatch);
     const count = groupFileCount(group);
     const hasChildren = !!group.children?.length;
 
@@ -180,13 +327,22 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta }: {
         if (hasActive) setExpanded(true);
     }, [hasActive]);
 
+    useEffect(() => {
+        if (groupHasMatch) setExpanded(true);
+    }, [groupHasMatch]);
+
     // 叶子分组且只有1个文件：直接渲染为按钮，不需要展开层级
     if (group.files.length === 1 && !hasChildren) {
         const f = group.files[0];
         const isActive = activeFile === f;
+        const ms = matchStates[f];
+        const disabled = ms === 0;
+        const loading = ms === 'loading';
+        const hasMatch = typeof ms === 'number' && ms > 0;
         return (
             <button
-                onClick={() => onSelect(f)}
+                onClick={() => { if (!disabled) onSelect(f); }}
+                disabled={disabled}
                 style={{
                     display: 'inline-block',
                     padding: '3px 8px',
@@ -194,21 +350,34 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta }: {
                     marginLeft: `${8 + depth * 16}px`,
                     border: isActive
                         ? '1px solid var(--bim-primary, #8e6f3e)'
-                        : '1px solid var(--bim-widget-border, #e0e0e0)',
+                        : disabled
+                            ? '1px dashed var(--bim-widget-border, #e0e0e0)'
+                            : '1px solid var(--bim-widget-border, #e0e0e0)',
                     borderRadius: '3px',
                     background: isActive
                         ? 'color-mix(in srgb, var(--bim-primary, #8e6f3e) 10%, transparent)'
-                        : 'transparent',
+                        : hasMatch
+                            ? `${HIGHLIGHT_BG}40`
+                            : 'transparent',
                     color: isActive
                         ? 'var(--bim-primary, #8e6f3e)'
-                        : 'var(--bim-fg, #333)',
-                    cursor: 'pointer',
+                        : disabled
+                            ? 'var(--bim-desc-fg, #bbb)'
+                            : 'var(--bim-fg, #333)',
+                    cursor: disabled ? 'not-allowed' : 'pointer',
                     fontSize: '12px',
                     fontWeight: isActive ? 600 : 400,
                     lineHeight: 1.4,
+                    opacity: disabled ? 0.5 : 1,
                 }}
             >
                 {group.label}
+                {hasMatch && (
+                    <span style={{ marginLeft: '5px', fontSize: '11px', fontWeight: 600, color: '#b78900' }}>{ms}</span>
+                )}
+                {loading && (
+                    <span style={{ marginLeft: '5px', fontSize: '11px', color: 'var(--bim-desc-fg, #aaa)' }}>…</span>
+                )}
             </button>
         );
     }
@@ -227,7 +396,12 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta }: {
                     userSelect: 'none',
                     fontSize: depth === 0 ? '13px' : '12px',
                     fontWeight: depth === 0 ? 600 : 500,
-                    color: hasActive ? 'var(--bim-primary, #8e6f3e)' : 'var(--bim-fg, #333)',
+                    color: hasActive
+                        ? 'var(--bim-primary, #8e6f3e)'
+                        : groupNoMatch
+                            ? 'var(--bim-desc-fg, #bbb)'
+                            : 'var(--bim-fg, #333)',
+                    opacity: groupNoMatch ? 0.6 : 1,
                 }}
             >
                 <span style={{
@@ -240,6 +414,14 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta }: {
                 <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--bim-desc-fg, #999)' }}>
                     ({count})
                 </span>
+                {groupHasMatch && (
+                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#b78900' }}>
+                        匹配 {groupState}
+                    </span>
+                )}
+                {groupState === 'loading' && (
+                    <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #aaa)' }}>…</span>
+                )}
             </div>
             {expanded && (
                 <>
@@ -252,13 +434,13 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta }: {
                             padding: `4px 0 4px ${24 + depth * 16}px`,
                         }}>
                             {group.files.map(f => (
-                                <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} meta={juanMeta?.[f]} />
+                                <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} meta={juanMeta?.[f]} matchState={matchStates[f]} />
                             ))}
                         </div>
                     )}
                     {/* 子分组 */}
                     {hasChildren && group.children!.map((child, i) => (
-                        <JuanGroupNav key={i} group={child} activeFile={activeFile} onSelect={onSelect} depth={depth + 1} juanMeta={juanMeta} />
+                        <JuanGroupNav key={i} group={child} activeFile={activeFile} onSelect={onSelect} depth={depth + 1} juanMeta={juanMeta} matchStates={matchStates} />
                     ))}
                 </>
             )}
@@ -272,12 +454,14 @@ function JuanNav({
     activeFile,
     onSelect,
     juanMeta,
+    matchStates,
 }: {
     files: string[] | undefined;
     groups?: JuanGroup[];
     activeFile: string | null;
     onSelect: (file: string) => void;
     juanMeta?: Record<string, { vol_label?: string }>;
+    matchStates: Record<string, JuanMatchState>;
 }) {
     const fileList = files || [];
 
@@ -286,7 +470,7 @@ function JuanNav({
         return (
             <div style={{ marginBottom: '16px' }}>
                 {groups.map((g, i) => (
-                    <JuanGroupNav key={i} group={g} activeFile={activeFile} onSelect={onSelect} juanMeta={juanMeta} />
+                    <JuanGroupNav key={i} group={g} activeFile={activeFile} onSelect={onSelect} juanMeta={juanMeta} matchStates={matchStates} />
                 ))}
             </div>
         );
@@ -306,7 +490,7 @@ function JuanNav({
             padding: '4px 0',
         }}>
             {fileList.map(f => (
-                <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} meta={juanMeta?.[f]} />
+                <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} meta={juanMeta?.[f]} matchState={matchStates[f]} />
             ))}
         </div>
     );
@@ -342,15 +526,25 @@ function extractAnnotation(content?: string): string | null {
     return null;
 }
 
-function BookSection({ section, onNavigate }: { section: CollatedSection; onNavigate?: (id: string) => void }) {
+function BookSection({ section, onNavigate, highlightQuery = '' }: { section: CollatedSection; onNavigate?: (id: string) => void; highlightQuery?: string }) {
     const { convert } = useConvert();
     const buildUrl = useBidUrl();
+    const normalizer = useSearchNormalizer();
+    const hl = (s: string | undefined | null): React.ReactNode => {
+        if (!s) return '';
+        const c = convert(s);
+        return highlightQuery ? renderHighlighted(c, highlightQuery, normalizer) : c;
+    };
     const [expanded, setExpanded] = useState(false);
     const hasSummary = !!section.summary;
     const hasComment = !!section.comment;
     const hasAdditionalComment = !!section.additional_comment;
     const hasLongContent = !!(section.content && section.content.length > 60);
     const hasContent = hasSummary || hasComment || hasAdditionalComment || hasLongContent;
+    // 搜索时默认展开匹配条目，便于查看上下文
+    useEffect(() => {
+        if (highlightQuery) setExpanded(true);
+    }, [highlightQuery]);
     // 缩略预览：直接截取 content 前段
     const preview = !expanded && hasLongContent ? section.content!.replace(/\n/g, ' ').slice(0, 80) + '…' : null;
 
@@ -389,7 +583,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                         fontWeight: 500,
                         color: 'var(--bim-fg, #1a1a1a)',
                     }}>
-                        {section.book_title ? `《${convert(section.book_title)}》` : convert(section.title)}
+                        {section.book_title ? <>《{hl(section.book_title)}》</> : hl(section.title)}
                         {section.n_juan != null && (
                             <span style={{
                                 fontSize: '12px',
@@ -407,7 +601,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                                 color: 'var(--bim-desc-fg, #999)',
                                 marginLeft: '8px',
                             }}>
-                                {convert(section.author_info || section.author)}
+                                {hl(section.author_info || section.author)}
                             </span>
                         )}
                     </span>
@@ -420,7 +614,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                             whiteSpace: 'nowrap',
                             marginTop: '2px',
                         }}>
-                            {convert(preview)}
+                            {hl(preview)}
                         </div>
                     )}
                 </div>
@@ -429,7 +623,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                         fontSize: '11px',
                         color: 'var(--bim-desc-fg, #aaa)',
                     }}>
-                        {convert(section.edition)}
+                        {hl(section.edition)}
                     </span>
                 )}
                 {section.tag && (
@@ -470,7 +664,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                             color: 'var(--bim-desc-fg, #717171)',
                             marginBottom: '8px',
                         }}>
-                            {convert(section.author_info)}
+                            {hl(section.author_info)}
                         </div>
                     )}
                     {section.summary && (
@@ -494,7 +688,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                                 lineHeight: 1.9,
                                 margin: 0,
                                 textAlign: 'justify',
-                            }}>{convert(section.summary)}</p>
+                            }}>{hl(section.summary)}</p>
                         </div>
                     )}
                     {section.comment && (
@@ -517,7 +711,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                                 lineHeight: 1.8,
                                 margin: 0,
                                 fontStyle: 'italic',
-                            }}>{convert(section.comment)}</p>
+                            }}>{hl(section.comment)}</p>
                         </div>
                     )}
                     {section.additional_comment && (
@@ -539,7 +733,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                                 lineHeight: 1.8,
                                 margin: 0,
                                 fontStyle: 'italic',
-                            }}>{convert(section.additional_comment)}</p>
+                            }}>{hl(section.additional_comment)}</p>
                         </div>
                     )}
                     {hasLongContent && !hasSummary && !hasComment && !hasAdditionalComment && (
@@ -550,7 +744,7 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
                             margin: 0,
                             textAlign: 'justify',
                             whiteSpace: 'pre-line',
-                        }}>{convert(section.content)}</p>
+                        }}>{hl(section.content)}</p>
                     )}
                 </div>
             )}
@@ -558,8 +752,14 @@ function BookSection({ section, onNavigate }: { section: CollatedSection; onNavi
     );
 }
 
-function CategoryHeader({ section }: { section: CollatedSection }) {
+function CategoryHeader({ section, highlightQuery = '' }: { section: CollatedSection; highlightQuery?: string }) {
     const { convert } = useConvert();
+    const normalizer = useSearchNormalizer();
+    const hl = (s: string | undefined | null): React.ReactNode => {
+        if (!s) return '';
+        const c = convert(s);
+        return highlightQuery ? renderHighlighted(c, highlightQuery, normalizer) : c;
+    };
     const [expanded, setExpanded] = useState(false);
     const hasContent = !!section.content;
 
@@ -581,7 +781,7 @@ function CategoryHeader({ section }: { section: CollatedSection }) {
                     fontWeight: 600,
                     color: 'var(--bim-fg, #1a1a1a)',
                 }}>
-                    {convert(section.title)}
+                    {hl(section.title)}
                 </span>
                 {hasContent && (
                     <span style={{
@@ -608,17 +808,19 @@ function CategoryHeader({ section }: { section: CollatedSection }) {
                         margin: 0,
                         textAlign: 'justify',
                         whiteSpace: 'pre-line',
-                    }}>{convert(section.content!)}</p>
+                    }}>{hl(section.content!)}</p>
                 </div>
             )}
         </div>
     );
 }
 
-function OtherSection({ section }: { section: CollatedSection }) {
+function OtherSection({ section, highlightQuery = '' }: { section: CollatedSection; highlightQuery?: string }) {
     const { convert } = useConvert();
+    const normalizer = useSearchNormalizer();
     if (!section.content && !section.title) return null;
-    const text = convert((section.content || section.title || '').replace(/\n{2,}/g, '\n'));
+    const rawText = convert((section.content || section.title || '').replace(/\n{2,}/g, '\n'));
+    const text: React.ReactNode = highlightQuery ? renderHighlighted(rawText, highlightQuery, normalizer) : rawText;
     const typeColor = SECTION_TYPE_COLORS[section.type] || '#717171';
     // 序/结语：带左边框、类型标签，与"书"条目区分
     const isLabeled = section.type === '序' || section.type === '结语';
@@ -722,15 +924,25 @@ function useWorkLabels(
 }
 
 /** 考证条目：展示考证正文和关联作品链接 */
-function KaozhenSection({ section, onNavigate, transport, workLabelCache }: {
+function KaozhenSection({ section, onNavigate, transport, workLabelCache, highlightQuery = '' }: {
     section: CollatedSection;
     onNavigate?: (id: string) => void;
     transport?: IndexStorage;
     workLabelCache?: React.RefObject<WorkLabelCache>;
+    highlightQuery?: string;
 }) {
     const { convert } = useConvert();
     const buildUrl = useBidUrl();
+    const normalizer = useSearchNormalizer();
+    const hl = (s: string | undefined | null): React.ReactNode => {
+        if (!s) return '';
+        const c = convert(s);
+        return highlightQuery ? renderHighlighted(c, highlightQuery, normalizer) : c;
+    };
     const [expanded, setExpanded] = useState(false);
+    useEffect(() => {
+        if (highlightQuery) setExpanded(true);
+    }, [highlightQuery]);
     const typeKey = section.type;
     const typeColor = KAOZHEN_TYPE_COLORS[typeKey] || '#717171';
     const hasContent = !!section.content;
@@ -782,7 +994,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache }: {
                         color: 'var(--bim-fg, #1a1a1a)',
                         lineHeight: 1.6,
                     }}>
-                        {section.header_line ? convert(section.header_line) : convert(section.title)}
+                        {section.header_line ? hl(section.header_line) : hl(section.title)}
                     </span>
                     {/* 折叠时的内容预览 */}
                     {!expanded && preview && (
@@ -792,7 +1004,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache }: {
                             color: 'var(--bim-desc-fg, #aaa)',
                             lineHeight: 1.7,
                         }}>
-                            {convert(preview)}
+                            {hl(preview)}
                         </p>
                     )}
                 </div>
@@ -890,7 +1102,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache }: {
                         textAlign: 'justify',
                         whiteSpace: 'pre-line',
                     }}>
-                        {convert(section.content!)}
+                        {hl(section.content!)}
                     </p>
                     {section.comment && (
                         <div style={{
@@ -902,7 +1114,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache }: {
                             lineHeight: 1.8,
                             fontStyle: 'italic',
                         }}>
-                            {convert(section.comment)}
+                            {hl(section.comment)}
                         </div>
                     )}
                 </div>
@@ -926,17 +1138,15 @@ function KaozhenContent({
     workLabelCache?: React.RefObject<WorkLabelCache>;
 }) {
     const { convert } = useConvert();
+    const normalizer = useSearchNormalizer();
+    const q = searchQuery.trim();
 
     const filteredSections = useMemo(() => {
-        if (!searchQuery.trim()) return juan.sections;
-        const q = searchQuery.trim().toLowerCase();
-        return juan.sections.filter(s =>
-            s.title?.toLowerCase().includes(q) ||
-            s.content?.toLowerCase().includes(q) ||
-            s.comment?.toLowerCase().includes(q)
-        );
-    }, [juan.sections, searchQuery]);
+        if (!q) return juan.sections;
+        return juan.sections.filter(s => sectionMatches(s, q, true, normalizer));
+    }, [juan.sections, q, normalizer]);
 
+    const totalCount = juan.sections.filter(s => s.type === '考证').length;
     const sectionCount = filteredSections.filter(s => s.type === '考证').length;
 
     return (
@@ -956,15 +1166,13 @@ function KaozhenContent({
                 }}>
                     {convert(juan.title)}
                 </h3>
-                {sectionCount > 0 && (
-                    <span style={{
-                        fontSize: '12px',
-                        color: 'var(--bim-desc-fg, #999)',
-                        marginLeft: 'auto',
-                    }}>
-                        {sectionCount} 條
-                    </span>
-                )}
+                <span style={{
+                    fontSize: '12px',
+                    color: 'var(--bim-desc-fg, #999)',
+                    marginLeft: 'auto',
+                }}>
+                    {q ? `${sectionCount} / ${totalCount} 條` : `${totalCount} 條`}
+                </span>
             </div>
             {juan.source_url && (
                 <div style={{ marginBottom: '12px' }}>
@@ -988,7 +1196,7 @@ function KaozhenContent({
             {/* 考证条目列表 */}
             <div>
                 {filteredSections.map((section, i) => (
-                    <KaozhenSection key={i} section={section} onNavigate={onNavigate} transport={transport} workLabelCache={workLabelCache} />
+                    <KaozhenSection key={i} section={section} onNavigate={onNavigate} transport={transport} workLabelCache={workLabelCache} highlightQuery={q} />
                 ))}
             </div>
 
@@ -1007,20 +1215,25 @@ function KaozhenContent({
 }
 
 /** 原文模式：直接渲染 md 文本（逐行处理标题和粗体） */
-function MdTextView({ text }: { text: string }) {
+function MdTextView({ text, highlightQuery = '' }: { text: string; highlightQuery?: string }) {
     const { convert } = useConvert();
+    const normalizer = useSearchNormalizer();
+    const hl = (s: string): React.ReactNode => {
+        const c = convert(s);
+        return highlightQuery ? renderHighlighted(c, highlightQuery, normalizer) : c;
+    };
     const lines = text.split('\n');
     return (
         <div style={{ fontSize: '15px', lineHeight: 2.2, color: 'var(--bim-fg, #333)', textAlign: 'justify' }}>
             {lines.map((line, i) => {
                 if (line.startsWith('# ')) {
-                    return <h2 key={i} style={{ fontSize: '17px', fontWeight: 700, margin: '16px 0 8px' }}>{convert(line.slice(2))}</h2>;
+                    return <h2 key={i} style={{ fontSize: '17px', fontWeight: 700, margin: '16px 0 8px' }}>{hl(line.slice(2))}</h2>;
                 }
                 if (line.startsWith('## ')) {
-                    return <h3 key={i} style={{ fontSize: '16px', fontWeight: 600, margin: '14px 0 6px' }}>{convert(line.slice(3))}</h3>;
+                    return <h3 key={i} style={{ fontSize: '16px', fontWeight: 600, margin: '14px 0 6px' }}>{hl(line.slice(3))}</h3>;
                 }
                 if (line.startsWith('### ')) {
-                    return <h4 key={i} style={{ fontSize: '15px', fontWeight: 600, margin: '12px 0 4px' }}>{convert(line.slice(4))}</h4>;
+                    return <h4 key={i} style={{ fontSize: '15px', fontWeight: 600, margin: '12px 0 4px' }}>{hl(line.slice(4))}</h4>;
                 }
                 if (!line.trim()) {
                     const prevEmpty = i > 0 && !lines[i - 1].trim();
@@ -1032,8 +1245,8 @@ function MdTextView({ text }: { text: string }) {
                     <p key={i} style={{ margin: '6px 0', textIndent: '2em', whiteSpace: 'pre-wrap' }}>
                         {parts.map((part, j) =>
                             part.startsWith('**') && part.endsWith('**')
-                                ? <strong key={j}>{convert(part.slice(2, -2))}</strong>
-                                : convert(part)
+                                ? <strong key={j}>{hl(part.slice(2, -2))}</strong>
+                                : <React.Fragment key={j}>{hl(part)}</React.Fragment>
                         )}
                     </p>
                 );
@@ -1043,9 +1256,15 @@ function MdTextView({ text }: { text: string }) {
 }
 
 /** 原文模式：将 sections 渲染为连续文本 */
-function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; onNavigate?: (id: string) => void }) {
+function RawTextView({ sections, onNavigate, highlightQuery = '' }: { sections: CollatedSection[]; onNavigate?: (id: string) => void; highlightQuery?: string }) {
     const { convert } = useConvert();
     const buildUrl = useBidUrl();
+    const normalizer = useSearchNormalizer();
+    const hl = (s: string | undefined | null): React.ReactNode => {
+        if (!s) return '';
+        const c = convert(s);
+        return highlightQuery ? renderHighlighted(c, highlightQuery, normalizer) : c;
+    };
     // Group sections by 类
     const groups: { category: string; categoryContent?: string; items: CollatedSection[] }[] = [];
     let current: { category: string; categoryContent?: string; items: CollatedSection[] } | null = null;
@@ -1075,20 +1294,18 @@ function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; on
                 <div key={gi} style={{ marginBottom: '20px' }}>
                     {g.category && (
                         <h4 style={{ fontSize: '15px', fontWeight: 600, margin: '16px 0 8px', color: 'var(--bim-fg, #1a1a1a)' }}>
-                            {convert(g.category)}
+                            {hl(g.category)}
                             {g.categoryContent && (
                                 <span style={{ fontWeight: 400, fontSize: '14px', marginLeft: '8px', color: 'var(--bim-desc-fg, #717171)' }}>
-                                    {convert(g.categoryContent)}
+                                    {hl(g.categoryContent)}
                                 </span>
                             )}
                         </h4>
                     )}
                     {g.items.map((s, si) => {
                         if (s.type === '序' || s.type === '结语') {
-                            return <p key={si} style={{ margin: '12px 0', textIndent: '2em' }}>{convert(s.content || '')}</p>;
+                            return <p key={si} style={{ margin: '12px 0', textIndent: '2em' }}>{hl(s.content || '')}</p>;
                         }
-                        // 原文模式：标题+正文连续显示，还原原始文本面貌
-                        const fullText = s.content ? s.title + s.content : s.title;
                         return (
                             <p key={si} style={{ margin: '8px 0', textIndent: '2em', whiteSpace: 'pre-line' }}>
                                 {onNavigate && s.work_id ? (
@@ -1098,12 +1315,12 @@ function RawTextView({ sections, onNavigate }: { sections: CollatedSection[]; on
                                         style={{ color: 'var(--bim-fg, #333)', textDecoration: 'underline', textDecorationColor: 'var(--bim-widget-border, #ddd)', textUnderlineOffset: '3px', cursor: 'pointer' }}
                                         title={convert(s.title)}
                                     >
-                                        <strong>{convert(s.title)}</strong>
+                                        <strong>{hl(s.title)}</strong>
                                     </a>
                                 ) : (
-                                    <strong>{convert(s.title)}</strong>
+                                    <strong>{hl(s.title)}</strong>
                                 )}
-                                {s.content && convert(s.content)}
+                                {s.content && hl(s.content)}
                             </p>
                         );
                     })}
@@ -1125,23 +1342,19 @@ function JuanContent({
     onNavigate?: (id: string) => void;
 }) {
     const { convert } = useConvert();
+    const normalizer = useSearchNormalizer();
     const [viewMode, setViewMode] = useState<'catalog' | 'raw'>('catalog');
+    const q = searchQuery.trim();
 
-    const filteredSections = useMemo(() => {
-        if (!searchQuery.trim()) return juan.sections;
-        const q = searchQuery.trim().toLowerCase();
-        return juan.sections.filter(s =>
-            s.title?.toLowerCase().includes(q) ||
-            s.book_title?.toLowerCase().includes(q) ||
-            s.author?.toLowerCase().includes(q) ||
-            s.author_info?.toLowerCase().includes(q) ||
-            s.summary?.toLowerCase().includes(q) ||
-            s.content?.toLowerCase().includes(q)
-        );
-    }, [juan.sections, searchQuery]);
+    // 目录模式：过滤；原文模式：保持完整内容，仅做高亮
+    const catalogSections = useMemo(() => {
+        if (!q) return juan.sections;
+        return juan.sections.filter(s => sectionMatches(s, q, false, normalizer));
+    }, [juan.sections, q, normalizer]);
 
-    const bookCount = filteredSections.filter(s => s.type === '书').length;
-    const poemCount = filteredSections.filter(s => s.type === '詩').length;
+    const bookCount = juan.sections.filter(s => s.type === '书').length;
+    const poemCount = juan.sections.filter(s => s.type === '詩').length;
+    const matchedCount = q ? catalogSections.filter(s => s.type === '书' || s.type === '詩').length : null;
 
     return (
         <div>
@@ -1184,30 +1397,31 @@ function JuanContent({
                     color: 'var(--bim-desc-fg, #999)',
                     marginLeft: 'auto',
                 }}>
-                    {poemCount > 0 ? `${poemCount} 首` : `${bookCount} 部书`}
+                    {matchedCount != null
+                        ? `${matchedCount} / ${poemCount > 0 ? `${poemCount} 首` : `${bookCount} 部書`}`
+                        : (poemCount > 0 ? `${poemCount} 首` : `${bookCount} 部书`)}
                 </span>
             </div>
 
-            {/* 原文模式 */}
+            {/* 原文模式：完整内容 + 高亮 */}
             {viewMode === 'raw' && (
                 rawText
-                    ? <MdTextView text={rawText} />
-                    : <RawTextView sections={filteredSections} onNavigate={onNavigate} />
+                    ? <MdTextView text={rawText} highlightQuery={q} />
+                    : <RawTextView sections={juan.sections} onNavigate={onNavigate} highlightQuery={q} />
             )}
 
-            {/* 目录模式 */}
-            {viewMode === 'catalog' && filteredSections.map((section, i) => {
+            {/* 目录模式：仅显示匹配条目 + 高亮 */}
+            {viewMode === 'catalog' && catalogSections.map((section, i) => {
                 if (section.type === '书' || section.type === '詩') {
-                    return <BookSection key={i} section={section} onNavigate={onNavigate} />;
+                    return <BookSection key={i} section={section} onNavigate={onNavigate} highlightQuery={q} />;
                 }
                 if (section.type === '类') {
-                    return <CategoryHeader key={i} section={section} />;
+                    return <CategoryHeader key={i} section={section} highlightQuery={q} />;
                 }
-                // 序 / 结语 / 其他：统一用 OtherSection 显示为说明性文字块
-                return <OtherSection key={i} section={section} />;
+                return <OtherSection key={i} section={section} highlightQuery={q} />;
             })}
 
-            {filteredSections.length === 0 && (
+            {viewMode === 'catalog' && catalogSections.length === 0 && (
                 <div style={{
                     padding: '32px',
                     textAlign: 'center',
@@ -1234,6 +1448,109 @@ function getIndexFiles(idx: import('../types').CollatedEditionIndex): string[] {
 function getFirstFile(idx: import('../types').CollatedEditionIndex): string | null {
     const files = getIndexFiles(idx);
     return files.length > 0 ? files[0] : null;
+}
+
+// ── 跨册搜索 hook ──
+
+interface JuanCacheEntry {
+    juan: CollatedJuan | null;
+    rawText: string | null;
+}
+
+/** 输入 query 时懒加载所有册并计算每册的 matchCount */
+function useCrossJuanSearch(opts: {
+    workId: string | undefined;
+    transport: IndexStorage | undefined;
+    files: string[];
+    activeFile: string | null;
+    activeJuan: CollatedJuan | null;
+    activeRawText: string | null;
+    query: string;
+    isKaozhen: boolean;
+}) {
+    const { workId, transport, files, activeFile, activeJuan, activeRawText, query, isKaozhen } = opts;
+    const normalizer = useSearchNormalizer();
+    const cacheRef = useRef<Map<string, JuanCacheEntry>>(new Map());
+    const [matchStates, setMatchStates] = useState<Record<string, JuanMatchState>>({});
+
+    // 把当前 active 卷塞入缓存
+    useEffect(() => {
+        if (activeFile && activeJuan) {
+            cacheRef.current.set(activeFile, { juan: activeJuan, rawText: activeRawText });
+        }
+    }, [activeFile, activeJuan, activeRawText]);
+
+    // workId 切换 → 清空缓存与状态
+    useEffect(() => {
+        cacheRef.current.clear();
+        setMatchStates({});
+    }, [workId]);
+
+    // 计算单册 matchCount
+    const computeMatch = useCallback((entry: JuanCacheEntry, q: string): number => {
+        let n = 0;
+        if (entry.juan) {
+            for (const s of entry.juan.sections) {
+                if (sectionMatches(s, q, isKaozhen, normalizer)) n++;
+            }
+        }
+        // raw md 文本作为补充：只用作 catalog 类型且 sections 没匹配上时确认存在
+        if (n === 0 && entry.rawText && rawTextMatches(entry.rawText, q, normalizer)) n = 1;
+        return n;
+    }, [isKaozhen, normalizer]);
+
+    useEffect(() => {
+        const q = query.trim();
+        if (!q) {
+            setMatchStates({});
+            return;
+        }
+        if (!workId || !transport?.getCollatedJuan || files.length === 0) return;
+
+        let cancelled = false;
+        const initial: Record<string, JuanMatchState> = {};
+        const toFetch: string[] = [];
+        for (const f of files) {
+            const cached = cacheRef.current.get(f);
+            if (cached) {
+                initial[f] = computeMatch(cached, q);
+            } else {
+                initial[f] = 'loading';
+                toFetch.push(f);
+            }
+        }
+        setMatchStates(initial);
+
+        // 并发数限制：8
+        const CONCURRENCY = 8;
+        let cursor = 0;
+        const worker = async () => {
+            while (cursor < toFetch.length) {
+                if (cancelled) return;
+                const i = cursor++;
+                const f = toFetch[i];
+                try {
+                    const [juan, rawText] = await Promise.all([
+                        transport.getCollatedJuan!(workId, f),
+                        transport.getCollatedJuanText?.(workId, f) ?? Promise.resolve(null),
+                    ]);
+                    const entry: JuanCacheEntry = { juan, rawText };
+                    cacheRef.current.set(f, entry);
+                    if (cancelled) return;
+                    setMatchStates(prev => ({ ...prev, [f]: computeMatch(entry, q) }));
+                } catch {
+                    if (cancelled) return;
+                    setMatchStates(prev => ({ ...prev, [f]: 0 }));
+                }
+            }
+        };
+        const workers = Array.from({ length: Math.min(CONCURRENCY, toFetch.length) }, () => worker());
+        Promise.all(workers);
+
+        return () => { cancelled = true; };
+    }, [query, workId, transport, files.join(','), computeMatch, normalizer]);
+
+    return { matchStates };
 }
 
 // ── 主组件 ──
@@ -1341,7 +1658,7 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
 
     const handleSelectFile = (file: string) => {
         setActiveFile(file);
-        setSearchQuery('');
+        // 切册时不再清空搜索词 —— 跨册搜索语义下保留 query 是正确的
     };
 
     if (loading) {
@@ -1373,8 +1690,83 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
     const isKaozhen = index.type === 'kaozhen';
     const allFiles = getIndexFiles(index);
 
+    return <CollatedEditionInner
+        className={className}
+        style={style}
+        index={index}
+        allFiles={allFiles}
+        isKaozhen={isKaozhen}
+        effectiveWorkId={effectiveWorkId}
+        transport={transport}
+        activeFile={activeFile}
+        handleSelectFile={handleSelectFile}
+        juanData={juanData}
+        juanRawText={juanRawText}
+        juanLoading={juanLoading}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onNavigate={onNavigate}
+        workLabelCacheRef={workLabelCacheRef}
+    />;
+};
+
+// 拆出 inner 组件以便在 hook 调用前确保 index 存在（避免在条件后调用 hook）
+const CollatedEditionInner: React.FC<{
+    className?: string;
+    style?: React.CSSProperties;
+    index: CollatedEditionIndex;
+    allFiles: string[];
+    isKaozhen: boolean;
+    effectiveWorkId: string | undefined;
+    transport: IndexStorage | undefined;
+    activeFile: string | null;
+    handleSelectFile: (file: string) => void;
+    juanData: CollatedJuan | null;
+    juanRawText: string | null;
+    juanLoading: boolean;
+    searchQuery: string;
+    setSearchQuery: (s: string) => void;
+    onNavigate?: (id: string) => void;
+    workLabelCacheRef: React.RefObject<WorkLabelCache>;
+}> = ({
+    className, style, index, allFiles, isKaozhen, effectiveWorkId, transport,
+    activeFile, handleSelectFile, juanData, juanRawText, juanLoading,
+    searchQuery, setSearchQuery, onNavigate, workLabelCacheRef,
+}) => {
+    const { matchStates } = useCrossJuanSearch({
+        workId: effectiveWorkId,
+        transport,
+        files: allFiles,
+        activeFile,
+        activeJuan: juanData,
+        activeRawText: juanRawText,
+        query: searchQuery,
+        isKaozhen,
+    });
+
     return (
         <div className={className} style={style}>
+            {/* 搜索框（最上方） */}
+            <div style={{ marginBottom: '12px' }}>
+                <input
+                    type="text"
+                    placeholder={isKaozhen ? '搜索全部章节（条目、考证内容）...' : '搜索全部册（书名、作者、正文）...'}
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    style={{
+                        width: '100%',
+                        maxWidth: '420px',
+                        padding: '6px 10px',
+                        border: '1px solid var(--bim-input-border, #ccc)',
+                        borderRadius: '4px',
+                        background: 'var(--bim-input-bg, #fff)',
+                        color: 'var(--bim-input-fg, #333)',
+                        fontSize: '13px',
+                        boxSizing: 'border-box',
+                    }}
+                />
+            </div>
+
             {/* 头部：卷数 + 质量等级同一行 */}
             <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '13px', color: 'var(--bim-desc-fg, #717171)' }}>
                 <div>
@@ -1426,28 +1818,8 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
                 activeFile={activeFile}
                 onSelect={handleSelectFile}
                 juanMeta={index.juan_metadata}
+                matchStates={matchStates}
             />
-
-            {/* 搜索 */}
-            <div style={{ marginBottom: '12px' }}>
-                <input
-                    type="text"
-                    placeholder={isKaozhen ? '搜索条目、考证内容...' : '搜索书名、作者...'}
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    style={{
-                        width: '100%',
-                        maxWidth: '320px',
-                        padding: '6px 10px',
-                        border: '1px solid var(--bim-input-border, #ccc)',
-                        borderRadius: '4px',
-                        background: 'var(--bim-input-bg, #fff)',
-                        color: 'var(--bim-input-fg, #333)',
-                        fontSize: '13px',
-                        boxSizing: 'border-box',
-                    }}
-                />
-            </div>
 
             {/* 卷内容 */}
             {juanLoading ? (
