@@ -88,6 +88,10 @@ export class BundleStorage implements IndexStorage {
     private searchSLoaded = false;
     private t2sConverter: ((text: string) => string) | null | false = null; // null=未加载, false=不可用
 
+    /** 数据版本（commitId 前 12 位）。null=已尝试加载但失败；undefined=未加载 */
+    private version: string | null | undefined = undefined;
+    private versionPromise: Promise<string | null> | null = null;
+
     constructor(config: BundleStorageConfig = {}) {
         this.basePath = config.basePath ?? DEFAULT_BASE_PATH;
         this.timeout = config.timeout ?? DEFAULT_TIMEOUT;
@@ -95,8 +99,38 @@ export class BundleStorage implements IndexStorage {
 
     // ─── 内部工具 ───
 
+    /**
+     * 强制 revalidate 拉取 /data/version.json，作为所有其他 fetch 的 cache key。
+     * 失败/缺失时回退为不拼 version（退化为旧行为）。
+     */
+    private async ensureVersion(): Promise<string | null> {
+        if (this.version !== undefined) return this.version;
+        if (this.versionPromise) return this.versionPromise;
+        this.versionPromise = (async () => {
+            try {
+                const res = await fetch(`${this.basePath}/version.json`, {
+                    cache: 'no-cache',
+                    signal: AbortSignal.timeout(this.timeout),
+                });
+                if (!res.ok) return null;
+                const data = await res.json() as { commitId?: string };
+                const commitId = data?.commitId;
+                if (!commitId || commitId === 'unknown') return null;
+                return commitId.slice(0, 12);
+            } catch {
+                return null;
+            }
+        })();
+        this.version = await this.versionPromise;
+        return this.version;
+    }
+
     private async fetchJson<T>(url: string): Promise<T> {
-        const response = await fetch(url, {
+        const version = await this.ensureVersion();
+        const fullUrl = version
+            ? `${url}${url.includes('?') ? '&' : '?'}v=${version}`
+            : url;
+        const response = await fetch(fullUrl, {
             signal: AbortSignal.timeout(this.timeout),
         });
         if (!response.ok) {
@@ -454,8 +488,11 @@ export class BundleStorage implements IndexStorage {
     async getCollatedJuanText(workId: string, juanFile: string): Promise<string | null> {
         if (juanFile.includes('..') || !juanFile.endsWith('.json')) return null;
         const mdFile = juanFile.replace(/\.json$/, '.md');
+        const version = await this.ensureVersion();
+        const url = `${this.basePath}/items/${workId}/collated_edition/text/${mdFile}`;
+        const fullUrl = version ? `${url}?v=${version}` : url;
         try {
-            const res = await fetch(`${this.basePath}/items/${workId}/collated_edition/text/${mdFile}`);
+            const res = await fetch(fullUrl);
             if (!res.ok) return null;
             return await res.text();
         } catch {
@@ -500,5 +537,7 @@ export class BundleStorage implements IndexStorage {
         this.searchSCache = null;
         this.searchSLoaded = false;
         this.t2sConverter = null;
+        this.version = undefined;
+        this.versionPromise = null;
     }
 }
