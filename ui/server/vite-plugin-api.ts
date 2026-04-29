@@ -207,19 +207,13 @@ function getAllEntries(workspaceRoot: string, type: string) {
         const isDraft = folder === 'book-index-draft';
 
         for (const [id, entry] of Object.entries(section)) {
-            // has_collated：优先读索引，否则运行时检测目录
-            let hasCollated = (entry as any).has_collated;
-            if (hasCollated === undefined && entry.path && type === 'work') {
-                const entryDir = path.join(workspaceRoot, folder, path.dirname(entry.path), id, 'collated_edition');
-                hasCollated = fs.existsSync(entryDir) || undefined;
-            }
-
+            // has_collated：仅读索引；详情接口 /api/items/:id 单独按目录现算，列表无需逐条 stat
             entries.push({
                 ...entry,
                 id,
                 type,
                 isDraft,
-                has_collated: hasCollated || undefined,
+                has_collated: (entry as any).has_collated || undefined,
             });
         }
     }
