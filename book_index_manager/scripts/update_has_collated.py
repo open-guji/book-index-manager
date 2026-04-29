@@ -74,7 +74,8 @@ def update_shards(data_root: Path, collated_ids: set[str]) -> tuple[int, int]:
                 removed += 1
 
         if dirty:
-            with shard_path.open('w', encoding='utf-8') as f:
+            # newline='\n' 强制 LF：Windows 上 'w' 默认 text mode 会把 \n 写成 \r\n，与仓库其余文件不一致
+            with shard_path.open('w', encoding='utf-8', newline='\n') as f:
                 json.dump(shard, f, ensure_ascii=False, indent=2)
                 f.write('\n')
 
