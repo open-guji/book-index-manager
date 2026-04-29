@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import type { ResourceEntry, ResourceType, DownloadProgress } from '../types';
+import type { ResourceEntry, ResourceType, ResourceTypeAtom, DownloadProgress } from '../types';
+import { getResourceTypes, hasResourceType } from '../types';
 import { useT } from '../i18n';
 import type { LocaleMessages } from '../i18n';
 
@@ -60,16 +61,18 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
         { value: 'search', label: t.rootType.search },
     ];
 
-    const matchesFilter = (type: string) => {
+    const matchesFilter = (item: ResourceEntry) => {
         if (!filterType) return true;
-        if (filterType === 'text') return type === 'text' || type === 'text+image';
-        if (filterType === 'image') return type === 'image' || type === 'text+image' || type === 'physical';
-        return type === filterType;
+        const types = getResourceTypes(item);
+        if (filterType === 'text') return types.includes('text');
+        if (filterType === 'image') return types.includes('image') || types.includes('physical');
+        if (filterType === 'physical') return types.includes('physical');
+        return types.includes(filterType as ResourceTypeAtom);
     };
 
     const displayItems = items
         .map((item, i) => ({ item, originalIndex: i }))
-        .filter(({ item }) => matchesFilter(item.type));
+        .filter(({ item }) => matchesFilter(item));
 
     const handleAdd = () => {
         const entry = createEmptyEntry();
@@ -151,10 +154,16 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                             fontSize: '11px',
                             padding: '1px 6px',
                             borderRadius: '3px',
-                            background: typeColor(item.type),
+                            background: typeColor(item.type ?? 'text'),
                             color: '#fff',
                         }}>
-                            {RESOURCE_TYPES.find(rt => rt.value === item.type)?.label || item.type}
+                            {(() => {
+                                const types = getResourceTypes(item);
+                                if (types.length === 0) return item.type ?? 'text';
+                                if (types.length === 1) return RESOURCE_TYPES.find(rt => rt.value === types[0])?.label ?? types[0];
+                                if (types.includes('text') && types.includes('image')) return RESOURCE_TYPES.find(rt => rt.value === 'text+image')?.label ?? 'text+image';
+                                return types.join('+');
+                            })()}
                         </span>
                         <span style={{ flex: 1, fontSize: '13px', fontWeight: 500 }}>
                             {item.name || `${t.editor.resourcePlaceholder} ${originalIndex + 1}`}
@@ -194,7 +203,7 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                     {expandedIndex === originalIndex && (
                         <div style={{ padding: '12px', borderTop: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
                             {/* 图片预览 */}
-                            {(item.type === 'image' || item.type === 'text+image') && item.url && renderImagePreview(item, t)}
+                            {hasResourceType(item, 'image') && item.url && renderImagePreview(item, t)}
 
                             <div style={{ display: 'grid', gap: '8px' }}>
                                 {/* 第一行：type + root_type */}

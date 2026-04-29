@@ -414,7 +414,16 @@ class BookIndexStorage:
         resources = metadata.get("resources", [])
         if isinstance(resources, list):
             for r in resources:
-                if isinstance(r, dict):
+                if not isinstance(r, dict):
+                    continue
+                # 优先读 types（新格式数组），回退到 type（旧格式字符串）
+                types_arr = r.get("types")
+                if isinstance(types_arr, list) and types_arr:
+                    if "text" in types_arr:
+                        has_text = True
+                    if "image" in types_arr:
+                        has_image = True
+                else:
                     rt = r.get("type", "")
                     if rt in ("text", "text+image"):
                         has_text = True

@@ -1,5 +1,25 @@
-/** 资源类型 */
-export type ResourceType = 'text' | 'image' | 'text+image' | 'physical';
+/** 资源原子类型 */
+export type ResourceTypeAtom = 'text' | 'image' | 'physical';
+
+/** 资源类型（旧版兼容：可单值或组合）。新数据应用 `types: ResourceTypeAtom[]` */
+export type ResourceType = ResourceTypeAtom | 'text+image';
+
+/**
+ * 归一化资源条目的类型为原子类型数组。
+ * 优先读 `types`（新格式），回退到 `type`（旧格式）。
+ * 'text+image' 会被拆分为 ['text', 'image']。
+ */
+export function getResourceTypes(entry: { type?: ResourceType; types?: ResourceTypeAtom[] }): ResourceTypeAtom[] {
+    if (entry.types && entry.types.length > 0) return entry.types;
+    if (!entry.type) return [];
+    if (entry.type === 'text+image') return ['text', 'image'];
+    return [entry.type as ResourceTypeAtom];
+}
+
+/** 检测是否包含某种类型（兼容新旧格式） */
+export function hasResourceType(entry: { type?: ResourceType; types?: ResourceTypeAtom[] }, atom: ResourceTypeAtom): boolean {
+    return getResourceTypes(entry).includes(atom);
+}
 
 /** 整理本文本质量等级 */
 export type TextQualityGrade = 'published' | 'fine' | 'rough' | 'ocr';
@@ -74,7 +94,10 @@ export interface ResourceEntry {
     name: string;
     short_name?: string;
     url: string;
-    type: ResourceType;
+    /** @deprecated 使用 types。保留作向后兼容读取。 */
+    type?: ResourceType;
+    /** 资源类型数组（自由组合）。优先于 type。 */
+    types?: ResourceTypeAtom[];
     root_type?: 'catalog' | 'search';
     structure?: string[];
     coverage?: CoverageInfo;

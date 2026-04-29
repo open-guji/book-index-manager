@@ -20,6 +20,26 @@ DOMAIN_ID_MAP = {
 }
 
 VALID_TYPES = {"text", "image", "text+image", "physical"}
+VALID_TYPE_ATOMS = {"text", "image", "physical"}
+
+
+def normalize_resource_types(entry: dict) -> list:
+    """从 resource entry dict 提取规范化的 types 列表（原子类型组合）。
+
+    优先读 'types'（list），回退到 'type'（str，旧格式）。
+    'text+image' → ['text', 'image']
+    """
+    types = entry.get("types")
+    if isinstance(types, list) and types:
+        return [t for t in types if t in VALID_TYPE_ATOMS]
+    t = entry.get("type")
+    if not t:
+        return []
+    if t == "text+image":
+        return ["text", "image"]
+    if t in VALID_TYPE_ATOMS:
+        return [t]
+    return []
 VALID_ROOT_TYPES = {"catalog", "search"}
 
 
@@ -84,7 +104,10 @@ class ResourceEntry:
     id: str = ""
     name: str = ""
     url: str = ""
-    type: str = "text"  # text | image | text+image | physical
+    # 旧格式（保留兼容读写）。新数据请使用 types。
+    type: str = ""  # text | image | text+image | physical
+    # 新格式：自由组合 ['text', 'image', 'physical']
+    types: Optional[List[str]] = None
     root_type: str = "catalog"  # catalog | search
     structure: Optional[List[str]] = None
     coverage: Optional[CoverageInfo] = None
@@ -93,7 +116,14 @@ class ResourceEntry:
 
     def to_dict(self) -> dict:
         """Serialize to a JSON-compatible dict, omitting default/empty optional fields."""
-        d = {"id": self.id, "name": self.name, "url": self.url, "type": self.type}
+        d = {"id": self.id, "name": self.name, "url": self.url}
+        # types 优先；若没有则回退到 type
+        if self.types:
+            d["types"] = list(self.types)
+        elif self.type:
+            d["type"] = self.type
+        else:
+            d["type"] = "text"
         if self.root_type != "catalog":
             d["root_type"] = self.root_type
         if self.structure:
@@ -104,7 +134,7 @@ class ResourceEntry:
             d["details"] = self.details
         if self.metadata:
             d["metadata"] = self.metadata
-        # physical resources may have no url
+        # physical-only resources may have no url
         if not self.url:
             d.pop("url", None)
         return d
@@ -118,7 +148,8 @@ class ResourceEntry:
             id=data.get("id", ""),
             name=data.get("name", ""),
             url=data.get("url", ""),
-            type=data.get("type", "text"),
+            type=data.get("type", ""),
+            types=data.get("types"),
             root_type=data.get("root_type", "catalog"),
             structure=data.get("structure"),
             coverage=coverage,
@@ -126,15 +157,34 @@ class ResourceEntry:
             metadata=data.get("metadata"),
         )
 
+    @property
+    def normalized_types(self) -> List[str]:
+        """规范化 types 列表（兼容新旧）。"""
+        return normalize_resource_types({"type": self.type, "types": self.types})
+
     def validate(self) -> List[str]:
         """Return a list of validation errors (empty if valid)."""
         errors = []
         if not self.name:
             errors.append("name is required")
-        if self.type not in VALID_TYPES:
-            errors.append(f"invalid type '{self.type}', must be one of {VALID_TYPES}")
+        # 优先校验 types
+        is_physical_only = False
+        if self.types is not None:
+            if not isinstance(self.types, list) or not self.types:
+                errors.append("types must be a non-empty list when present")
+            else:
+                for t in self.types:
+                    if t not in VALID_TYPE_ATOMS:
+                        errors.append(f"invalid types atom '{t}', must be one of {VALID_TYPE_ATOMS}")
+                is_physical_only = self.types == ["physical"]
+        elif self.type:
+            if self.type not in VALID_TYPES:
+                errors.append(f"invalid type '{self.type}', must be one of {VALID_TYPES}")
+            is_physical_only = self.type == "physical"
+        else:
+            errors.append("either type or types is required")
         if self.root_type not in VALID_ROOT_TYPES:
             errors.append(f"invalid root_type '{self.root_type}', must be one of {VALID_ROOT_TYPES}")
-        if self.type != "physical" and not self.url:
+        if not is_physical_only and not self.url:
             errors.append("url is required for non-physical resources")
         return errors

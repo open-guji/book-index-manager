@@ -19,6 +19,7 @@ const DOMAIN_ID_MAP: Record<string, string> = {
 };
 
 const VALID_TYPES = new Set(['text', 'image', 'text+image', 'physical']);
+const VALID_TYPE_ATOMS = new Set(['text', 'image', 'physical']);
 const VALID_ROOT_TYPES = new Set(['catalog', 'search']);
 const PUBLIC_SUFFIXES = new Set(['com', 'org', 'net', 'cn', 'edu', 'gov', 'io', 'jp', 'tw', 'hk']);
 
@@ -55,8 +56,24 @@ export function extractIdFromUrl(url: string): string {
 export function validateResource(entry: ResourceEntry): string[] {
     const errors: string[] = [];
     if (!entry.name) errors.push('name is required');
-    if (!VALID_TYPES.has(entry.type)) errors.push(`invalid type '${entry.type}', must be one of ${[...VALID_TYPES].join(', ')}`);
+    // 优先校验 types（新格式），否则校验 type（旧格式）
+    let isPhysicalOnly = false;
+    if (entry.types !== undefined) {
+        if (!Array.isArray(entry.types) || entry.types.length === 0) {
+            errors.push('types must be a non-empty array when present');
+        } else {
+            for (const t of entry.types) {
+                if (!VALID_TYPE_ATOMS.has(t)) errors.push(`invalid types atom '${t}', must be one of ${[...VALID_TYPE_ATOMS].join(', ')}`);
+            }
+            isPhysicalOnly = entry.types.length === 1 && entry.types[0] === 'physical';
+        }
+    } else if (entry.type !== undefined) {
+        if (!VALID_TYPES.has(entry.type)) errors.push(`invalid type '${entry.type}', must be one of ${[...VALID_TYPES].join(', ')}`);
+        isPhysicalOnly = entry.type === 'physical';
+    } else {
+        errors.push('either type or types is required');
+    }
     if (entry.root_type && !VALID_ROOT_TYPES.has(entry.root_type)) errors.push(`invalid root_type '${entry.root_type}'`);
-    if (entry.type !== 'physical' && !entry.url) errors.push('url is required for non-physical resources');
+    if (!isPhysicalOnly && !entry.url) errors.push('url is required for non-physical resources');
     return errors;
 }

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import type { ResourceEntry, ResourceType, ResourceVolume } from '../types';
+import type { ResourceEntry, ResourceType, ResourceTypeAtom, ResourceVolume } from '../types';
+import { getResourceTypes } from '../types';
 import { useT, useConvert } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
 import type { LocaleMessages } from '../i18n/types';
@@ -39,6 +40,22 @@ const TYPE_COLORS: Record<ResourceType, string> = {
     physical: '#795548',
 };
 
+/**
+ * 多类型组合的展示标签和颜色。
+ * 同时含 text 和 image 用紫色（视为「文字+图片」），其余用首类型色。
+ */
+function getCombinedTypeColor(types: ResourceTypeAtom[]): string {
+    if (types.includes('text') && types.includes('image')) return TYPE_COLORS['text+image'];
+    return TYPE_COLORS[types[0] || 'physical'];
+}
+
+/** 用于按类型分组的 key（多类型按 text > image > physical 顺序连接） */
+const ATOM_ORDER: Record<ResourceTypeAtom, number> = { text: 0, image: 1, physical: 2 };
+function getTypeGroupKey(types: ResourceTypeAtom[]): string {
+    if (types.length === 0) return 'physical';
+    return [...types].sort((a, b) => (ATOM_ORDER[a] ?? 99) - (ATOM_ORDER[b] ?? 99)).join('+');
+}
+
 const TYPE_ORDER: ResourceType[] = ['text', 'image', 'text+image', 'physical'];
 
 /**
@@ -70,7 +87,7 @@ function mergeVolumeResources(items: ResourceEntry[]): ResourceEntry[] {
         if (!parsed) continue;
 
         const [baseName, vol] = parsed;
-        const groupKey = `${baseName}|${item.type}`;
+        const groupKey = `${baseName}|${getTypeGroupKey(getResourceTypes(item))}`;
 
         if (!groups.has(groupKey)) {
             groups.set(groupKey, {
@@ -98,7 +115,9 @@ function mergeVolumeResources(items: ResourceEntry[]): ResourceEntry[] {
             for (let i = 0; i < items.length; i++) {
                 if (usedIndices.has(i)) {
                     const parsed = extractVolume(items[i].name);
-                    if (parsed && `${parsed[0]}|${items[i].type}` === `${group.base.name}|${group.base.type}`) {
+                    const itemKey = parsed && `${parsed[0]}|${getTypeGroupKey(getResourceTypes(items[i]))}`;
+                    const baseKey = `${group.base.name}|${getTypeGroupKey(getResourceTypes(group.base))}`;
+                    if (itemKey === baseKey) {
                         usedIndices.delete(i);
                     }
                 }
@@ -131,11 +150,18 @@ export const ResourceList: React.FC<ResourceListProps> = ({
     // 自动合并分册资源
     const mergedItems = useMemo(() => mergeVolumeResources(items || []), [items]);
 
-    const TYPE_LABELS: Record<ResourceType, string> = {
+    const TYPE_LABELS: Record<string, string> = {
         text: t.resourceType.text,
         image: t.resourceType.image,
         'text+image': t.resourceType.textImage,
         physical: t.resourceType.physical,
+    };
+
+    // 多类型组合的标签（拼接，如「文字+圖片」「圖片+館藏」）
+    const labelForGroupKey = (key: string): string => {
+        if (TYPE_LABELS[key]) return TYPE_LABELS[key];
+        // 兜底：按 key 内 atom 拼接
+        return key.split('+').map(a => TYPE_LABELS[a] || a).join('+');
     };
 
     if (!mergedItems || mergedItems.length === 0) {
@@ -154,38 +180,53 @@ export const ResourceList: React.FC<ResourceListProps> = ({
         );
     }
 
-    const groups = TYPE_ORDER
-        .map(type => ({ type, items: mergedItems.filter(r => r.type === type) }))
-        .filter(g => g.items.length > 0);
+    // 按 types 组合分组（key 形如 'text'、'image+physical'、'text+image'）
+    const groupBuckets = new Map<string, ResourceEntry[]>();
+    for (const item of mergedItems) {
+        const key = getTypeGroupKey(getResourceTypes(item));
+        if (!groupBuckets.has(key)) groupBuckets.set(key, []);
+        groupBuckets.get(key)!.push(item);
+    }
+
+    // 按预设顺序（text、image、text+image、physical 优先），其余字典序
+    const PRESET_ORDER = ['text', 'image', 'text+image', 'physical'];
+    const sortedKeys = [
+        ...PRESET_ORDER.filter(k => groupBuckets.has(k)),
+        ...[...groupBuckets.keys()].filter(k => !PRESET_ORDER.includes(k)).sort(),
+    ];
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {groups.map(({ type, items: groupItems }) => (
-                <div key={type}>
-                    <h4 style={{
-                        margin: '0 0 8px',
-                        fontSize: '13px',
-                        fontWeight: 600,
-                        color: TYPE_COLORS[type],
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                    }}>
-                        <span style={{
-                            display: 'inline-block',
-                            width: '4px',
-                            height: '14px',
-                            borderRadius: '2px',
-                            background: TYPE_COLORS[type],
-                        }} />
-                        {TYPE_LABELS[type]}
-                        <span style={{ fontWeight: 400, opacity: 0.6 }}>({groupItems.length})</span>
-                    </h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        {groupItems.map((item, i) => <ResourceCard key={item.id || i} item={item} onNavigate={onNavigate} renderLink={renderLink} />)}
+            {sortedKeys.map(key => {
+                const groupItems = groupBuckets.get(key)!;
+                const color = getCombinedTypeColor(key.split('+') as ResourceTypeAtom[]);
+                return (
+                    <div key={key}>
+                        <h4 style={{
+                            margin: '0 0 8px',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            color,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                        }}>
+                            <span style={{
+                                display: 'inline-block',
+                                width: '4px',
+                                height: '14px',
+                                borderRadius: '2px',
+                                background: color,
+                            }} />
+                            {labelForGroupKey(key)}
+                            <span style={{ fontWeight: 400, opacity: 0.6 }}>({groupItems.length})</span>
+                        </h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {groupItems.map((item, i) => <ResourceCard key={item.id || i} item={item} onNavigate={onNavigate} renderLink={renderLink} />)}
+                        </div>
                     </div>
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 };

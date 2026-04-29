@@ -2,8 +2,8 @@ import type { LocaleMessages } from '../types';
 
 export const zhHant: LocaleMessages = {
     indexType: { work: '作品', book: '書籍', collection: '叢編', entity: '人物' },
-    resourceType: { text: '文字資源', image: '圖片資源', textImage: '文字+圖片資源', physical: '實體資源' },
-    resourceTypeShort: { text: '文字', image: '圖片', textImage: '文字+圖片', physical: '實體' },
+    resourceType: { text: '文字資源', image: '圖片資源', textImage: '文字+圖片資源', physical: '館藏' },
+    resourceTypeShort: { text: '文字', image: '圖片', textImage: '文字+圖片', physical: '館藏' },
     rootType: { catalog: '目錄式', search: '搜索式' },
     status: { draft: '草稿', official: '正式' },
     checkType: {
