@@ -36,7 +36,7 @@ interface Stats {
     collections: number;
 }
 
-export type TabKey = 'recommend' | 'catalog' | 'site' | 'feedback';
+export type TabKey = 'recommend' | 'catalog' | 'collection' | 'site' | 'feedback';
 
 
 export const HomePage: React.FC<HomePageProps> = ({
@@ -60,6 +60,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     };
     const [recommendLoading, setRecommendLoading] = useState(true);
     const [catalogProgress, setCatalogProgress] = useState<ResourceProgress | null>(null);
+    const [collectionProgress, setCollectionProgress] = useState<ResourceProgress | null>(null);
     const [siteProgress, setSiteProgress] = useState<ResourceProgress | null>(null);
 
     // 加载统计数据
@@ -137,13 +138,25 @@ export const HomePage: React.FC<HomePageProps> = ({
         return () => { cancelled = true; };
     }, [transport, recommendedIds]);
 
-    // 加载叢書目錄進度
+    // 加载目錄書整理進度（藝文志、補志等）
     useEffect(() => {
-        if (!transport.getResourceProgress) return;
         let cancelled = false;
-        transport.getResourceProgress().then(data => {
+        const loader = transport.getCatalogProgress ?? transport.getResourceProgress;
+        if (!loader) return;
+        loader.call(transport).then(data => {
             if (cancelled) return;
             setCatalogProgress(data);
+        }).catch(() => {});
+        return () => { cancelled = true; };
+    }, [transport]);
+
+    // 加载叢編整理進度（影印叢書/館藏目錄）
+    useEffect(() => {
+        if (!transport.getCollectionProgress) return;
+        let cancelled = false;
+        transport.getCollectionProgress().then(data => {
+            if (cancelled) return;
+            setCollectionProgress(data);
         }).catch(() => {});
         return () => { cancelled = true; };
     }, [transport]);
@@ -211,6 +224,11 @@ export const HomePage: React.FC<HomePageProps> = ({
                         onClick={() => setActiveTab('catalog')}
                     />
                     <TabButton
+                        label={t.home.collectionTab}
+                        active={activeTab === 'collection'}
+                        onClick={() => setActiveTab('collection')}
+                    />
+                    <TabButton
                         label={t.home.siteTab}
                         active={activeTab === 'site'}
                         onClick={() => setActiveTab('site')}
@@ -236,6 +254,10 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                 {activeTab === 'catalog' && (
                     <ProgressContent progress={catalogProgress} t={t} onNavigate={onNavigate} />
+                )}
+
+                {activeTab === 'collection' && (
+                    <ProgressContent progress={collectionProgress} t={t} onNavigate={onNavigate} />
                 )}
 
                 {activeTab === 'site' && (

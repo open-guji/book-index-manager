@@ -133,6 +133,20 @@ export class DevApiStorage implements IndexStorage {
         throw new Error('DevApiStorage: 开发模式暂不支持生成 ID');
     }
 
+    async getCatalogProgress(): Promise<ResourceProgress | null> {
+        const res = await fetch(`${this.baseUrl}/api/resource-catalog-progress`);
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    }
+
+    async getCollectionProgress(): Promise<ResourceProgress | null> {
+        const res = await fetch(`${this.baseUrl}/api/resource-collection-progress`);
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    }
+
     async getResourceProgress(): Promise<ResourceProgress | null> {
         const res = await fetch(`${this.baseUrl}/api/resource-progress`);
         if (res.status === 404) return null;

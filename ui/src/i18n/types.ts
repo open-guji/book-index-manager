@@ -143,6 +143,7 @@ export interface LocaleMessages {
         subtitle: string;
         recommendedBrowse: string;
         catalogTab: string;
+        collectionTab: string;
         siteTab: string;
         recommendTab: string;
         feedbackTab: string;

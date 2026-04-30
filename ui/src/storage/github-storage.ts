@@ -661,6 +661,14 @@ export class GithubStorage implements IndexStorage {
         return this.fetchFile<CollatedJuan>(resolved.repo, juanPath);
     }
 
+    async getCatalogProgress(): Promise<ResourceProgress | null> {
+        return this.fetchFile<ResourceProgress>(this.config.repos.draft, 'resource-catalog.json');
+    }
+
+    async getCollectionProgress(): Promise<ResourceProgress | null> {
+        return this.fetchFile<ResourceProgress>(this.config.repos.draft, 'resource-collection.json');
+    }
+
     async getResourceProgress(): Promise<ResourceProgress | null> {
         return this.fetchFile<ResourceProgress>(this.config.repos.draft, 'resource.json');
     }

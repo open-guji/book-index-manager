@@ -502,6 +502,22 @@ export class BundleStorage implements IndexStorage {
 
     // ─── 资源导入进度 ───
 
+    async getCatalogProgress(): Promise<ResourceProgress | null> {
+        try {
+            return await this.fetchJson<ResourceProgress>(`${this.basePath}/resource-catalog.json`);
+        } catch {
+            return null;
+        }
+    }
+
+    async getCollectionProgress(): Promise<ResourceProgress | null> {
+        try {
+            return await this.fetchJson<ResourceProgress>(`${this.basePath}/resource-collection.json`);
+        } catch {
+            return null;
+        }
+    }
+
     async getResourceProgress(): Promise<ResourceProgress | null> {
         try {
             return await this.fetchJson<ResourceProgress>(`${this.basePath}/resource.json`);

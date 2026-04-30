@@ -95,7 +95,13 @@ export interface IndexStorage {
     /** 获取 Work 下的分类目录 */
     getWorkCatalog?(workId: string): Promise<Array<{ source: string; data: unknown }> | null>;
 
-    /** 获取叢書目錄整理進度 */
+    /** 获取目录书（藝文志、補志等）整理進度 */
+    getCatalogProgress?(): Promise<ResourceProgress | null>;
+
+    /** 获取叢編（Collection，影印叢書/館藏目錄）整理進度 */
+    getCollectionProgress?(): Promise<ResourceProgress | null>;
+
+    /** @deprecated 用 getCatalogProgress + getCollectionProgress 替代 */
     getResourceProgress?(): Promise<ResourceProgress | null>;
 
     /** 获取在線資源網站整理進度 */

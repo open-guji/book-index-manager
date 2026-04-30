@@ -873,7 +873,25 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     return;
                 }
 
-                // GET /api/resource-progress — 叢書目錄整理進度
+                // GET /api/resource-catalog-progress — 目錄書（藝文志/補志）整理進度
+                if (pathname === '/api/resource-catalog-progress' && req.method === 'GET') {
+                    const f = path.join(workspaceRoot, 'book-index-draft', 'resource-catalog.json');
+                    if (!fs.existsSync(f)) { sendJson({ error: 'Not found' }, 404); return; }
+                    try { sendJson(JSON.parse(fs.readFileSync(f, 'utf-8'))); }
+                    catch { sendJson({ error: 'Failed to read resource-catalog.json' }, 500); }
+                    return;
+                }
+
+                // GET /api/resource-collection-progress — 叢編（影印叢書/館藏目錄）整理進度
+                if (pathname === '/api/resource-collection-progress' && req.method === 'GET') {
+                    const f = path.join(workspaceRoot, 'book-index-draft', 'resource-collection.json');
+                    if (!fs.existsSync(f)) { sendJson({ error: 'Not found' }, 404); return; }
+                    try { sendJson(JSON.parse(fs.readFileSync(f, 'utf-8'))); }
+                    catch { sendJson({ error: 'Failed to read resource-collection.json' }, 500); }
+                    return;
+                }
+
+                // GET /api/resource-progress — 舊端點：返回 resource.json（向後兼容）
                 if (pathname === '/api/resource-progress' && req.method === 'GET') {
                     const resourceFile = path.join(workspaceRoot, 'book-index-draft', 'resource.json');
                     if (!fs.existsSync(resourceFile)) {
