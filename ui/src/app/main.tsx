@@ -431,7 +431,7 @@ function App() {
                                         onClick={() => setActiveTab('lineage')}
                                         style={tabBtnStyle(activeTab === 'lineage')}
                                     >
-                                        版本
+                                        版本源流
                                         {lineageLoading && (
                                             <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
                                         )}
@@ -449,11 +449,19 @@ function App() {
                             </div>
                             <div style={{ padding: isMobile ? '16px 12px' : '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>
                                 {activeTab === 'detail' ? (
-                                    <IndexDetail
-                                        data={detailData}
-                                        transport={transport}
-                                        onNavigate={handleNavigate}
-                                    />
+                                    <>
+                                        {lineageGraph && lineageGraph.nodes.length > 0 && (
+                                            <LineageBanner
+                                                graph={lineageGraph}
+                                                onOpen={() => setActiveTab('lineage')}
+                                            />
+                                        )}
+                                        <IndexDetail
+                                            data={detailData}
+                                            transport={transport}
+                                            onNavigate={handleNavigate}
+                                        />
+                                    </>
                                 ) : activeTab.startsWith('catalog:') ? (
                                     <CollectionCatalog
                                         data={catalogList.find(c => `catalog:${c.resource_id}` === activeTab)?.data}
@@ -512,6 +520,46 @@ function App() {
                     />
                 </div>
             )}
+        </div>
+    );
+}
+
+function LineageBanner({ graph, onOpen }: { graph: LineageGraph; onOpen: () => void }) {
+    const bookCount = graph.nodes.filter((n) => n.kind === 'book').length;
+    return (
+        <div
+            onClick={onOpen}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onOpen(); }}
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '10px 14px',
+                marginBottom: 16,
+                background: 'var(--bim-info-bg, #e7f3ff)',
+                color: 'var(--bim-info-fg, #0c5380)',
+                border: '1px solid var(--bim-info-border, #b3dbff)',
+                borderRadius: 6,
+                cursor: 'pointer',
+                fontSize: 13,
+                lineHeight: 1.5,
+            }}
+        >
+            <div style={{ fontSize: 18, lineHeight: 1 }}>📜</div>
+            <div style={{ flex: 1 }}>
+                本作品共有 <strong>{bookCount}</strong> 个版本，已整理出版本之间的传承关系。
+                {graph.description && <span style={{ opacity: 0.85 }}>　{graph.description.slice(0, 40)}…</span>}
+            </div>
+            <span style={{
+                padding: '2px 10px',
+                background: 'var(--bim-info-fg, #0c5380)',
+                color: 'var(--bim-info-bg, #fff)',
+                borderRadius: 4,
+                fontSize: 12,
+                whiteSpace: 'nowrap',
+            }}>查看版本源流 →</span>
         </div>
     );
 }

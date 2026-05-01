@@ -61,7 +61,6 @@ interface LoadedModules {
     ReactFlow: typeof import('@xyflow/react').ReactFlow;
     Background: typeof import('@xyflow/react').Background;
     Controls: typeof import('@xyflow/react').Controls;
-    MiniMap: typeof import('@xyflow/react').MiniMap;
     Handle: typeof import('@xyflow/react').Handle;
     Position: typeof import('@xyflow/react').Position;
     dagre: typeof import('@dagrejs/dagre');
@@ -86,7 +85,6 @@ async function loadModules(): Promise<LoadedModules | null> {
             ReactFlow: rf.ReactFlow,
             Background: rf.Background,
             Controls: rf.Controls,
-            MiniMap: rf.MiniMap,
             Handle: rf.Handle,
             Position: rf.Position,
             dagre: dg as unknown as typeof import('@dagrejs/dagre'),
@@ -104,7 +102,7 @@ interface InnerProps extends VersionLineageGraphProps {
 }
 
 const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, className, style, modules }) => {
-    const { ReactFlow, Background, Controls, MiniMap, Handle, Position, dagre } = modules;
+    const { ReactFlow, Background, Controls, Handle, Position, dagre } = modules;
 
     // 节点类型 —— 用闭包传 Handle/Position
     const nodeTypes = useMemo(() => {
@@ -159,16 +157,16 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                 edges={rfEdges}
                 nodeTypes={nodeTypes}
                 fitView
+                fitViewOptions={{ padding: 0.15 }}
                 proOptions={{ hideAttribution: true }}
                 nodesDraggable={false}
                 nodesConnectable={false}
                 edgesFocusable={false}
-                minZoom={0.3}
-                maxZoom={1.5}
+                minZoom={0.2}
+                maxZoom={1.8}
             >
                 <Background gap={16} />
                 <Controls showInteractive={false} />
-                <MiniMap pannable zoomable />
             </ReactFlow>
         </div>
     );
@@ -193,16 +191,18 @@ function layoutGraph(
     dagre: typeof import('@dagrejs/dagre'),
     renderLink?: (id: string, label: string) => React.ReactNode,
 ) {
-    const NODE_W = 180;
-    const NODE_H = 70;
+    const NODE_W = 200;
+    const NODE_H = 76;
     const isLR = graph.layout === 'LR' || !graph.layout;
 
     const g = new dagre.graphlib.Graph();
     g.setGraph({
         rankdir: isLR ? 'LR' : 'TB',
-        ranksep: 80,
-        nodesep: 30,
-        edgesep: 10,
+        ranksep: 140,   // 大间距：避免边标签被相邻节点覆盖
+        nodesep: 36,
+        edgesep: 16,
+        marginx: 20,
+        marginy: 20,
     });
     g.setDefaultEdgeLabel(() => ({}));
 
@@ -256,20 +256,28 @@ function buildRfEdge(e: LineageGraphEdge) {
         type: 'smoothstep' as const,
         label: e.relation,
         labelStyle: {
-            fontSize: 10,
-            fill: 'var(--bim-muted, #666)',
+            fontSize: 11,
+            fontWeight: 500,
+            fill: confidenceColor(e.confidence),
         } as React.CSSProperties,
-        labelBgPadding: [2, 4] as [number, number],
-        labelBgBorderRadius: 2,
-        labelBgStyle: { fill: 'var(--bim-bg, #fff)', fillOpacity: 0.9 } as React.CSSProperties,
+        labelBgPadding: [4, 6] as [number, number],
+        labelBgBorderRadius: 4,
+        labelBgStyle: {
+            fill: 'var(--bim-bg, #fff)',
+            fillOpacity: 1,
+            stroke: 'var(--bim-widget-border, #ddd)',
+            strokeWidth: 0.5,
+        } as React.CSSProperties,
+        labelShowBg: true,
         style: {
             stroke: confidenceColor(e.confidence),
             strokeWidth: isSibling ? 1 : 1.5,
             strokeDasharray: isSibling ? '4 3' : probable ? '6 4' : undefined,
-            opacity: probable ? 0.7 : 1,
+            opacity: probable ? 0.75 : 1,
         } as React.CSSProperties,
         animated: false,
         markerEnd: isSibling ? undefined : 'arrow',
+        zIndex: 1000,   // 让边及其标签显示在节点之上
     };
 }
 
