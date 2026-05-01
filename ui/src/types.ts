@@ -325,6 +325,8 @@ export interface BookDetailData extends BaseDetailData {
     contained_in?: ContainedInEntry[];
     location_history?: LocationInfo[];
     related_books?: string[];
+    /** 版本传承信息（用于版本图） */
+    lineage?: BookLineage;
 }
 
 /** Collection 详情 */
@@ -344,6 +346,8 @@ export interface WorkDetailData extends BaseDetailData {
     parent_work?: { id: string; title: string };
     books?: string[];
     related_works?: { id: string; title: string; relation?: 'part_of' | 'has_part' }[];
+    /** 版本传承图（多版本作品如红楼梦、十三经等） */
+    version_graph?: VersionGraph;
 }
 
 /** Entity（人物/地名等）详情
@@ -691,4 +695,108 @@ export interface RecommendedGroup {
 /** 推荐数据 */
 export interface RecommendedData {
     groups: RecommendedGroup[];
+}
+
+// ── 版本传承图 (lineage / version_graph) ──
+
+/** 版本类别 */
+export type LineageCategory = '抄本' | '刻本' | '影印' | '校注' | '排印' | '电子' | string;
+
+/** 版本现存状态 */
+export type LineageStatus = 'extant' | 'fragment' | 'lost';
+
+/** 派生关系类型 */
+export type LineageRelation =
+    | '过录' | '底本' | '参校' | '校改' | '修订' | '翻刻'
+    | '配补' | '续补' | '影印' | '校注' | '评点' | '续评' | string;
+
+/** 横向关联类型（兄弟本/同源/互校等） */
+export type LineageSiblingRelation = '兄弟本' | '同源' | '互校' | string;
+
+/** 关系信心等级 */
+export type LineageConfidence = 'certain' | 'consensus' | 'probable' | 'disputed';
+
+/** ref_type：派生来源是其他 Book 还是假想节点 */
+export type LineageRefType = 'book' | 'hypothetical';
+
+/** Book.lineage.derived_from[i] —— 单条派生关系 */
+export interface LineageDerivation {
+    /** 引用 ID：book_id 或 hypothetical_node.id */
+    ref: string;
+    ref_type: LineageRefType;
+    relation: LineageRelation;
+    confidence: LineageConfidence;
+    /** 一句话证据：题字、避讳、序言、抄手等 */
+    evidence?: string;
+    note?: string;
+}
+
+/** Book.lineage.related_to[i] —— 横向兄弟本 */
+export interface LineageSibling {
+    book_id: string;
+    relation: LineageSiblingRelation;
+    confidence: LineageConfidence;
+    evidence?: string;
+    note?: string;
+}
+
+/** Book.lineage —— 单本书的版本节点信息 */
+export interface BookLineage {
+    /** 数字年份（用于时间轴/排序） */
+    year?: number;
+    /** 原始年代表述 */
+    year_text?: string;
+    /** 年份是否仅为推断 */
+    year_uncertain?: boolean;
+    category: LineageCategory;
+    status: LineageStatus;
+    /** 现存范围说明 */
+    extant_juan?: string;
+    /** 别名 */
+    alias?: string[];
+    /** 派生关系（可多源） */
+    derived_from?: LineageDerivation[];
+    /** 横向兄弟本（不是父子） */
+    related_to?: LineageSibling[];
+    note?: string;
+}
+
+/** Work.version_graph.groups[i] —— 分组/泳道 */
+export interface VersionGraphGroup {
+    id: string;
+    label: string;
+    /** 颜色（hex） */
+    color?: string;
+}
+
+/** Work.version_graph.hypothetical_nodes[i] —— 假想祖本节点 */
+export interface VersionGraphHypotheticalNode {
+    id: string;
+    label: string;
+    year?: number;
+    /** 当 year 不明而只有区间时使用 */
+    year_range?: [number, number];
+    year_uncertain?: boolean;
+    group?: string;
+    /** 假想节点之间也可有派生关系 */
+    derived_from?: LineageDerivation[];
+    note?: string;
+}
+
+/** Work.version_graph —— 整个作品的版本图元信息 */
+export interface VersionGraph {
+    /** 详情页是否显示「关系图」tab */
+    enabled: boolean;
+    title?: string;
+    description?: string;
+    /** 布局方向：LR=左右，TB=上下 */
+    layout?: 'LR' | 'TB';
+    groups?: VersionGraphGroup[];
+    /** book_id → group_id */
+    node_groups?: Record<string, string>;
+    /** 假想祖本节点 */
+    hypothetical_nodes?: VersionGraphHypotheticalNode[];
+    /** Work.books 里但不进图的条目（如待 dedupe 的占位） */
+    excluded_books?: string[];
+    excluded_reason?: string;
 }
