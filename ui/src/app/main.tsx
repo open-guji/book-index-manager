@@ -537,7 +537,7 @@ function LineageBanner({ graph, onOpen }: { graph: LineageGraph; onOpen: () => v
                 alignItems: 'center',
                 gap: 12,
                 padding: '10px 14px',
-                marginBottom: 16,
+                marginBottom: 0,
                 background: 'var(--bim-info-bg, #e7f3ff)',
                 color: 'var(--bim-info-fg, #0c5380)',
                 border: '1px solid var(--bim-info-border, #b3dbff)',

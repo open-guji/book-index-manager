@@ -882,11 +882,12 @@ function BookVersionCard({ book, onNavigate, renderLink }: {
     );
 }
 
-function BookVersionList({ ids, transport, onNavigate, renderLink }: {
+function BookVersionList({ ids, transport, onNavigate, renderLink, footer }: {
     ids: string[];
     transport?: IndexStorage;
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
+    footer?: React.ReactNode;
 }) {
     const t = useT();
     const [books, setBooks] = useState<ResolvedBook[]>([]);
@@ -918,7 +919,8 @@ function BookVersionList({ ids, transport, onNavigate, renderLink }: {
                     ({ids.length})
                 </span>
             </SectionLabel>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {footer}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
                 {(books.length ? books : ids.map(id => ({ id } as ResolvedBook))).map(book => (
                     <BookVersionCard key={book.id} book={book} onNavigate={onNavigate} renderLink={renderLink} />
                 ))}
@@ -1357,10 +1359,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
             )}
 
             {workData?.books && workData.books.length > 0 && (
-                <>
-                    <BookVersionList ids={workData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
-                    {relatedBooksFooter}
-                </>
+                <BookVersionList ids={workData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} footer={relatedBooksFooter} />
             )}
 
             {workData?.related_works && workData.related_works.length > 0 && (() => {
