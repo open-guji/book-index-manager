@@ -12,6 +12,8 @@ export interface VersionLineageViewProps {
     renderLink?: (id: string, label: string) => React.ReactNode;
     /** 图视图高度（像素） */
     graphHeight?: number;
+    /** 选中的节点 ID（用于高亮显示） */
+    selectedNodeId?: string;
     className?: string;
     style?: React.CSSProperties;
 }
@@ -26,6 +28,7 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
     defaultMode = 'list',
     renderLink,
     graphHeight = 600,
+    selectedNodeId,
     className,
     style,
 }) => {
@@ -63,6 +66,7 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
                     graph={graph}
                     renderLink={renderLink}
                     height={graphHeight}
+                    selectedNodeId={selectedNodeId}
                 />
             )}
         </div>

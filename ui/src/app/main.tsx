@@ -40,11 +40,12 @@ function getIdFromUrl(): string | null {
 }
 
 /** 从 URL search params 提取参数 */
-function getParamsFromUrl(): { tab?: string; juan?: string } {
+function getParamsFromUrl(): { tab?: string; juan?: string; node?: string } {
     const params = new URLSearchParams(window.location.search);
     return {
         tab: params.get('tab') || undefined,
         juan: params.get('juan') || undefined,
+        node: params.get('node') || undefined,
     };
 }
 
@@ -53,7 +54,7 @@ function buildUrl(id: string | null, params?: Record<string, string | undefined>
     if (id) sp.set('id', id);
     if (params) {
         for (const [k, v] of Object.entries(params)) {
-            if (v) sp.set(k, v);
+            if (v !== undefined && v !== null) sp.set(k, v);
         }
     }
     const qs = sp.toString();
@@ -88,6 +89,7 @@ function App() {
     const [detailNotFound, setDetailNotFound] = useState(false);
     const [activeTab, setActiveTabState] = useState<string>('detail');
     const [activeJuan, setActiveJuanState] = useState<string | null>(null);
+    const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>(() => getParamsFromUrl().node);
     const [catalogList, setCatalogList] = useState<ResourceCatalog[]>([]);
     const [catalogLoading, setCatalogLoading] = useState(false);
     const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
@@ -188,7 +190,7 @@ function App() {
     }, [transport]);
 
     /** 通过 ID 加载详情（内部复用，不操作 URL） */
-    const loadById = useCallback(async (id: string, restoreParams?: { tab?: string; juan?: string }) => {
+    const loadById = useCallback(async (id: string, restoreParams?: { tab?: string; juan?: string; node?: string }) => {
         setDetailData(null);
         setDetailNotFound(false);
         setCatalogList([]);
@@ -196,6 +198,7 @@ function App() {
         setLineageGraph(null);
         setActiveTabState(restoreParams?.tab || 'detail');
         setActiveJuanState(restoreParams?.juan || null);
+        setSelectedNodeId(restoreParams?.node || undefined);
         setDetailLoading(true);
         try {
             const data = await transport.getItem(id);
@@ -490,6 +493,7 @@ function App() {
                                                 </a>
                                             )}
                                             graphHeight={Math.max(500, window.innerHeight - 250)}
+                                            selectedNodeId={selectedNodeId}
                                         />
                                     ) : (
                                         <div style={{ padding: 24, color: 'var(--bim-muted, #999)' }}>

@@ -11,6 +11,8 @@ export interface VersionLineageGraphProps {
     renderLink?: (id: string, label: string) => React.ReactNode;
     /** 容器高度（像素） */
     height?: number;
+    /** 选中的节点 ID（用于高亮显示） */
+    selectedNodeId?: string;
     className?: string;
     style?: React.CSSProperties;
 }
@@ -21,7 +23,7 @@ export interface VersionLineageGraphProps {
  * 依赖 @xyflow/react 与 @dagrejs/dagre（声明为 optionalDependencies）。
  * 若依赖缺失，组件会渲染提示并指向列表 fallback。
  */
-export const VersionLineageGraph: React.FC<VersionLineageGraphProps> = (props) => {
+export const VersionLineageGraph: React.FC<VersionLineageGraphProps> = ({ selectedNodeId, ...props }) => {
     const [loadState, setLoadState] = useState<'loading' | 'ready' | 'missing'>('loading');
     const [modules, setModules] = useState<LoadedModules | null>(null);
 
@@ -52,7 +54,7 @@ export const VersionLineageGraph: React.FC<VersionLineageGraphProps> = (props) =
             </div>
         );
     }
-    return <Inner modules={modules} {...props} />;
+    return <Inner modules={modules} selectedNodeId={selectedNodeId} {...props} />;
 };
 
 // ── 动态加载 ──
@@ -101,7 +103,7 @@ interface InnerProps extends VersionLineageGraphProps {
     modules: LoadedModules;
 }
 
-const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, className, style, modules }) => {
+const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, className, style, selectedNodeId, modules }) => {
     const { ReactFlow, Background, Controls, Handle, Position, dagre } = modules;
 
     // 节点类型 —— 用闭包传 Handle/Position
@@ -110,16 +112,20 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
             const d = p.data;
             const isHypo = d.kind === 'hypothetical';
             const isLost = d.status === 'lost';
+            const isSelected = d.isSelected;
+            const borderColor = d.borderColor ?? '#888';
             return (
                 <div
                     style={{
                         background: 'var(--bim-bg, #fff)',
-                        border: `2px ${isHypo ? 'dashed' : 'solid'} ${d.borderColor ?? '#888'}`,
+                        border: `2px ${isHypo ? 'dashed' : 'solid'} ${isSelected ? '#0078d4' : borderColor}`,
                         borderRadius: 8,
                         padding: '8px 12px',
                         minWidth: 140,
                         opacity: isLost ? 0.6 : 1,
-                        boxShadow: isHypo ? 'none' : '0 1px 3px rgba(0,0,0,0.1)',
+                        boxShadow: isSelected
+                            ? '0 0 0 3px rgba(0, 120, 212, 0.2), 0 2px 8px rgba(0, 120, 212, 0.3)'
+                            : isHypo ? 'none' : '0 1px 3px rgba(0,0,0,0.1)',
                     }}
                 >
                     <Handle type="target" position={Position.Left} style={{ visibility: 'hidden' }} />
@@ -146,8 +152,8 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
 
     // 计算 layout（dagre）
     const { rfNodes, rfEdges } = useMemo(
-        () => layoutGraph(graph, dagre, renderLink),
-        [graph, dagre, renderLink],
+        () => layoutGraph(graph, dagre, renderLink, selectedNodeId),
+        [graph, dagre, renderLink, selectedNodeId],
     );
 
     return (
@@ -184,12 +190,14 @@ interface NodeData {
     status?: string;
     borderColor?: string;
     renderLink?: (id: string, label: string) => React.ReactNode;
+    isSelected?: boolean;
 }
 
 function layoutGraph(
     graph: LineageGraph,
     dagre: typeof import('@dagrejs/dagre'),
     renderLink?: (id: string, label: string) => React.ReactNode,
+    selectedNodeId?: string,
 ) {
     const NODE_W = 200;
     const NODE_H = 76;
@@ -222,6 +230,7 @@ function layoutGraph(
 
     const rfNodes = graph.nodes.map((n) => {
         const pos = g.node(n.id);
+        const isSelected = selectedNodeId && n.id === selectedNodeId;
         const data: NodeData = {
             kind: n.kind,
             label: n.label,
@@ -232,6 +241,7 @@ function layoutGraph(
             status: n.status,
             borderColor: n.group ? groupColor.get(n.group) : undefined,
             renderLink,
+            isSelected,
         };
         return {
             id: n.id,
@@ -239,6 +249,7 @@ function layoutGraph(
             position: { x: pos.x - NODE_W / 2, y: pos.y - NODE_H / 2 },
             data: data as unknown as Record<string, unknown>,
             draggable: false,
+            selected: isSelected,
         };
     });
 
