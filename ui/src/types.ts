@@ -665,11 +665,21 @@ export interface ResourceProgress {
 
 // ── 推荐数据 ──
 
-/** 推荐条目 */
+/** 推荐条目（bundle-data 时已用 index 元数据 hydrate，便于免 chunk 渲染） */
 export interface RecommendedEntry {
     id: string;
     title: string;
     description?: string;
+    type?: IndexType;
+    author?: string;
+    dynasty?: string;
+    role?: string;
+    edition?: string;
+    has_text?: boolean;
+    has_image?: boolean;
+    has_collated?: boolean;
+    subtype?: string;
+    primary_name?: string;
 }
 
 /** 推荐分组 */

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { IndexEntry, IndexType, ResourceProgress, ResourceProgressItem, ResourceImportStatus, RecommendedData } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { useT } from '../i18n';
@@ -15,6 +15,17 @@ export interface RecommendedItem {
     title: string;
     description?: string;
     group?: string;
+    /** 以下为 bundle-data 注入的 hydrated 字段，存在时可免 transport.getEntry / chunk fetch */
+    type?: IndexType;
+    author?: string;
+    dynasty?: string;
+    role?: string;
+    edition?: string;
+    has_text?: boolean;
+    has_image?: boolean;
+    has_collated?: boolean;
+    subtype?: string;
+    primary_name?: string;
 }
 
 export interface HomePageProps {
@@ -114,6 +125,26 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             const results = await Promise.all(
                 validIds.map(async r => {
+                    // bundle-data hydrate 后 RecommendedItem 自带 type 等元数据，
+                    // 直接构造 IndexEntry，免触发 transport.getEntry / chunk fetch。
+                    if (r.type) {
+                        return {
+                            id: r.id,
+                            title: r.title,
+                            type: r.type,
+                            author: r.author,
+                            dynasty: r.dynasty,
+                            role: r.role,
+                            edition: r.edition,
+                            has_text: r.has_text,
+                            has_image: r.has_image,
+                            has_collated: r.has_collated,
+                            subtype: r.subtype,
+                            primary_name: r.primary_name,
+                            group: r.group,
+                            fallbackDescription: r.description,
+                        } as IndexEntry & { group?: string; fallbackDescription?: string };
+                    }
                     try {
                         let entry: IndexEntry | null = null;
                         if (transport.getEntry) {
@@ -149,39 +180,45 @@ export const HomePage: React.FC<HomePageProps> = ({
         return () => { cancelled = true; };
     }, [transport, recommendedIds]);
 
-    // 加载目錄書整理進度（藝文志、補志等）
+    // 三个进度数据按 activeTab 懒加载：默认 tab=recommend 时不再 mount 就并发 fetch
+    // catalog/collection/site，省 ~10 KB + 3 个网络往返，且让 networkidle 提前到达。
+    const catalogLoadedRef = useRef(false);
+    const collectionLoadedRef = useRef(false);
+    const siteLoadedRef = useRef(false);
+
     useEffect(() => {
-        let cancelled = false;
+        if (activeTab !== 'catalog' || catalogLoadedRef.current) return;
         const loader = transport.getCatalogProgress ?? transport.getResourceProgress;
         if (!loader) return;
+        catalogLoadedRef.current = true;
+        let cancelled = false;
         loader.call(transport).then(data => {
-            if (cancelled) return;
-            setCatalogProgress(data);
-        }).catch(() => {});
+            if (!cancelled) setCatalogProgress(data);
+        }).catch(() => { catalogLoadedRef.current = false; });
         return () => { cancelled = true; };
-    }, [transport]);
+    }, [transport, activeTab]);
 
-    // 加载叢編整理進度（影印叢書/館藏目錄）
     useEffect(() => {
+        if (activeTab !== 'collection' || collectionLoadedRef.current) return;
         if (!transport.getCollectionProgress) return;
+        collectionLoadedRef.current = true;
         let cancelled = false;
         transport.getCollectionProgress().then(data => {
-            if (cancelled) return;
-            setCollectionProgress(data);
-        }).catch(() => {});
+            if (!cancelled) setCollectionProgress(data);
+        }).catch(() => { collectionLoadedRef.current = false; });
         return () => { cancelled = true; };
-    }, [transport]);
+    }, [transport, activeTab]);
 
-    // 加载在線資源進度
     useEffect(() => {
+        if (activeTab !== 'site' || siteLoadedRef.current) return;
         if (!transport.getSiteProgress) return;
+        siteLoadedRef.current = true;
         let cancelled = false;
         transport.getSiteProgress().then(data => {
-            if (cancelled) return;
-            setSiteProgress(data);
-        }).catch(() => {});
+            if (!cancelled) setSiteProgress(data);
+        }).catch(() => { siteLoadedRef.current = false; });
         return () => { cancelled = true; };
-    }, [transport]);
+    }, [transport, activeTab]);
 
     // 加载反馈列表
     useEffect(() => {
