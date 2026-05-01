@@ -142,7 +142,11 @@ export class BundleStorage implements IndexStorage {
         const fullUrl = version
             ? `${url}${url.includes('?') ? '&' : '?'}v=${version}`
             : url;
+        // EdgeOne 历史曾给 404 设过 max-age=31536000，浏览器会按一年缓存这条 404；
+        // 即便服务端事后被 purge 也不会主动 invalidate。用 'no-cache' 强制每次
+        // conditional revalidate（304 仍复用本地 body），让服务端状态变化立刻生效。
         const response = await fetch(fullUrl, {
+            cache: 'no-cache',
             signal: AbortSignal.timeout(this.timeout),
         });
         if (!response.ok) {
@@ -652,7 +656,7 @@ export class BundleStorage implements IndexStorage {
         const url = `${this.basePath}/items/${workId}/collated_edition/text/${mdFile}`;
         const fullUrl = version ? `${url}?v=${version}` : url;
         try {
-            const res = await fetch(fullUrl);
+            const res = await fetch(fullUrl, { cache: 'no-cache' });
             if (!res.ok) return null;
             return await res.text();
         } catch {
