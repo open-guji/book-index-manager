@@ -55,6 +55,18 @@ export type {
     RecommendedEntry,
     RecommendedGroup,
     RecommendedData,
+    BookLineage,
+    LineageDerivation,
+    LineageSibling,
+    LineageRelation,
+    LineageSiblingRelation,
+    LineageConfidence,
+    LineageStatus,
+    LineageCategory,
+    LineageRefType,
+    VersionGraph,
+    VersionGraphGroup,
+    VersionGraphHypotheticalNode,
 } from './types';
 
 // ID encoding/decoding
@@ -144,6 +156,19 @@ export { LocaleProvider } from './i18n/provider';
 export type { LocaleProviderProps } from './i18n/provider';
 export { useT, useConvert, formatTemplate, LocaleContext } from './i18n';
 export type { Locale, LocaleMessages, LocaleContextValue } from './i18n';
+
+// Lineage graph
+export {
+    buildLineageGraph,
+    validateLineageGraph,
+} from './core/lineage-graph';
+export type {
+    LineageGraph,
+    LineageGraphNode,
+    LineageGraphEdge,
+} from './core/lineage-graph';
+export { VersionLineageList } from './components/VersionLineageList';
+export type { VersionLineageListProps } from './components/VersionLineageList';
 
 // Common UI components
 export { Section } from './components/common/Section';
