@@ -174,8 +174,8 @@ export const ResourceList: React.FC<ResourceListProps> = ({
 
     if (!groupByType) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {mergedItems.map((item, i) => <ResourceCard key={item.id || i} item={item} />)}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {mergedItems.map((item, i) => <ResourceChip key={item.id || i} item={item} />)}
             </div>
         );
     }
@@ -196,33 +196,23 @@ export const ResourceList: React.FC<ResourceListProps> = ({
     ];
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {sortedKeys.map(key => {
                 const groupItems = groupBuckets.get(key)!;
                 const color = getCombinedTypeColor(key.split('+') as ResourceTypeAtom[]);
                 return (
-                    <div key={key}>
-                        <h4 style={{
-                            margin: '0 0 8px',
-                            fontSize: '13px',
+                    <div key={key} style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+                        <span style={{
+                            fontSize: '11px',
                             fontWeight: 600,
                             color,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0,
                         }}>
-                            <span style={{
-                                display: 'inline-block',
-                                width: '4px',
-                                height: '14px',
-                                borderRadius: '2px',
-                                background: color,
-                            }} />
                             {labelForGroupKey(key)}
-                            <span style={{ fontWeight: 400, opacity: 0.6 }}>({groupItems.length})</span>
-                        </h4>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            {groupItems.map((item, i) => <ResourceCard key={item.id || i} item={item} onNavigate={onNavigate} renderLink={renderLink} />)}
+                        </span>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                            {groupItems.map((item, i) => <ResourceChip key={item.id || i} item={item} onNavigate={onNavigate} renderLink={renderLink} />)}
                         </div>
                     </div>
                 );
@@ -308,6 +298,140 @@ function extractVolumeUrl(v: ResourceVolume): string | undefined {
 const COLOR_MODE_STYLES: Record<string, { label: string; bg: string; fg: string }> = {
     bw: { label: '', bg: '#f5f5f5', fg: '#757575' },
     color: { label: '', bg: '#fff8e1', fg: '#f57f17' },
+};
+
+/** 紧凑 chip 风格的资源条目，适合水平排列 */
+const ResourceChip: React.FC<{
+    item: ResourceEntry;
+    onNavigate?: (id: string) => void;
+    renderLink?: (id: string, label?: string) => React.ReactNode;
+}> = ({ item }) => {
+    const t = useT();
+    const { convert } = useConvert();
+    const [expanded, setExpanded] = useState(false);
+
+    const displayName = useMemo(() => {
+        const domainName = item.url ? getDisplayNameFromUrl(item.url) : undefined;
+        return domainName || convert(item.name);
+    }, [item.url, item.name, convert]);
+
+    const volumes = useMemo(() => {
+        if (!item.volumes || item.volumes.length === 0) return null;
+        return item.volumes.map(v => ({ ...v, url: v.url || extractVolumeUrl(v) }));
+    }, [item.volumes]);
+
+    const hasVolumes = volumes && volumes.length > 0;
+    const uniqueFound = hasVolumes ? new Set(volumes.filter(v => v.status !== 'missing').map(v => v.volume)).size : 0;
+    const uniqueMissing = hasVolumes ? new Set(volumes.filter(v => v.status === 'missing').map(v => v.volume)).size : 0;
+    const expectedTotal = item.expected_volumes ?? (hasVolumes ? uniqueFound + uniqueMissing : 0);
+
+    const colorModeInfo = item.color_mode ? { ...COLOR_MODE_STYLES[item.color_mode], label: t.colorMode[item.color_mode] } : null;
+
+    const details = item.details && !hasVolumes ? convert(item.details) : null;
+
+    const chipStyle: React.CSSProperties = {
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '5px',
+        padding: '4px 10px',
+        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+        borderRadius: '5px',
+        background: 'var(--bim-input-bg, #fff)',
+        fontSize: '12px',
+        color: 'var(--bim-fg, #333)',
+        lineHeight: 1.4,
+        verticalAlign: 'middle',
+    };
+
+    return (
+        <div style={{ display: 'inline-flex', flexDirection: 'column', gap: '4px' }}>
+            <div style={chipStyle}>
+                <span style={{ fontWeight: 500 }}>{displayName}</span>
+                {colorModeInfo && (
+                    <span style={{
+                        padding: '0 5px',
+                        borderRadius: '3px',
+                        fontSize: '10px',
+                        fontWeight: 500,
+                        background: colorModeInfo.bg,
+                        color: colorModeInfo.fg,
+                    }}>
+                        {colorModeInfo.label}
+                    </span>
+                )}
+                {details && (
+                    <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #999)' }}>{details}</span>
+                )}
+                {hasVolumes && (
+                    <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #999)' }}>
+                        {uniqueFound}/{expectedTotal}{t.unit.volume}
+                        {uniqueMissing > 0 && <span style={{ color: '#e67e22', marginLeft: '3px' }}>缺{uniqueMissing}</span>}
+                    </span>
+                )}
+                {item.url && (
+                    <a
+                        href={(() => {
+                            const startPage = getStartPage(item.metadata);
+                            return startPage ? buildPageUrl(item.url!, startPage) : item.url!;
+                        })()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: '11px', color: 'var(--bim-link-fg, #0066cc)', textDecoration: 'none', whiteSpace: 'nowrap' }}
+                    >
+                        {t.action.visit}
+                    </a>
+                )}
+                {hasVolumes && (
+                    <button
+                        onClick={() => setExpanded(!expanded)}
+                        style={{
+                            padding: '0 6px',
+                            fontSize: '11px',
+                            border: 'none',
+                            background: 'transparent',
+                            color: 'var(--bim-desc-fg, #999)',
+                            cursor: 'pointer',
+                            lineHeight: 1.4,
+                        }}
+                    >
+                        {expanded ? '▲' : '▼'}
+                    </button>
+                )}
+            </div>
+            {hasVolumes && expanded && (
+                <div style={{
+                    padding: '6px 10px',
+                    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                    borderRadius: '5px',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '4px',
+                    maxWidth: '360px',
+                }}>
+                    {volumes.map(v => {
+                        const isMissing = v.status === 'missing';
+                        return v.url && !isMissing ? (
+                            <a key={v.volume} href={v.url} target="_blank" rel="noopener noreferrer" style={{
+                                display: 'inline-block', padding: '1px 5px', fontSize: '11px',
+                                borderRadius: '3px', border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                color: 'var(--bim-link-fg, #0066cc)', textDecoration: 'none',
+                            }}>
+                                {v.volume}
+                            </a>
+                        ) : (
+                            <span key={v.volume} style={{
+                                display: 'inline-block', padding: '1px 5px', fontSize: '11px',
+                                color: isMissing ? '#e67e22' : 'var(--bim-desc-fg, #999)',
+                                textDecoration: isMissing ? 'line-through' : 'none', opacity: isMissing ? 0.6 : 1,
+                            }}>
+                                {v.volume}
+                            </span>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
 };
 
 const ResourceCard: React.FC<{
