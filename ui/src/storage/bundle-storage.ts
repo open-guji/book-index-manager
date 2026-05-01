@@ -12,6 +12,7 @@ import type {
     CollatedEditionIndex,
     CollatedJuan,
 } from '../types';
+import type { IndexCounts } from './types';
 import { rankByRelevance, rankByRelevanceWithSimplified } from '../core/storage';
 import type { SearchSIndex } from '../core/storage';
 import { normalizeCatalog } from '../core/normalize-catalog';
@@ -91,6 +92,10 @@ export class BundleStorage implements IndexStorage {
     private searchSCache: SearchSIndex | null = null;
     private searchSLoading: Promise<SearchSIndex> | null = null;
     private searchSLoaded = false;
+    private metaCache: IndexCounts | null = null;
+    private metaLoading: Promise<IndexCounts | null> | null = null;
+    /** null = 已尝试加载 meta.json 但失败/缺失（fallback 到 ensureLoaded） */
+    private metaTried = false;
     private t2sConverter: ((text: string) => string) | null | false = null; // null=未加载, false=不可用
     private t2sLoading: Promise<((text: string) => string) | null> | null = null;
 
@@ -357,15 +362,70 @@ export class BundleStorage implements IndexStorage {
 
     // ─── IndexStorage 实现 ───
 
-    async getResourceCounts(): Promise<{ hasText: number; hasImage: number }> {
-        const all = await this.ensureLoaded();
-        let hasText = 0, hasImage = 0;
-        for (const e of all) {
-            if (e.type !== 'work') continue;
-            if (e.has_text) hasText++;
-            if (e.has_image) hasImage++;
+    /**
+     * 获取轻量元数据（< 1 KB）。优先读 /data/meta.json；
+     * 若该文件不存在（旧 bundle），回退到 ensureLoaded 计算。
+     */
+    async getCounts(): Promise<IndexCounts> {
+        if (this.metaCache) return this.metaCache;
+        if (this.metaLoading) {
+            const r = await this.metaLoading;
+            if (r) return r;
+        } else {
+            this.metaLoading = (async () => {
+                try {
+                    const data = await this.fetchJson<IndexCounts>(`${this.basePath}/meta.json`);
+                    if (data && typeof data.works === 'number') {
+                        this.metaCache = data;
+                        return data;
+                    }
+                } catch {
+                    // missing or malformed — fall back below
+                }
+                this.metaTried = true;
+                return null;
+            })();
+            try {
+                const r = await this.metaLoading;
+                if (r) return r;
+            } finally {
+                this.metaLoading = null;
+            }
         }
-        return { hasText, hasImage };
+
+        // Fallback: count from in-memory index (will trigger ensureLoaded once,
+        // dedup'd with any concurrent caller).
+        const all = await this.ensureLoaded();
+        let works = 0, books = 0, collections = 0, entities = 0;
+        let hasText = 0, hasImage = 0;
+        const subtypeStats: Record<string, number> = {};
+        for (const e of all) {
+            if (e.type === 'work') {
+                works++;
+                if (e.has_text) hasText++;
+                if (e.has_image) hasImage++;
+                if (e.subtype) subtypeStats[e.subtype] = (subtypeStats[e.subtype] ?? 0) + 1;
+            } else if (e.type === 'book') books++;
+            else if (e.type === 'collection') collections++;
+            else if (e.type === 'entity') entities++;
+        }
+        const result: IndexCounts = {
+            works, books, collections, entities,
+            resourceCounts: { hasText, hasImage },
+            subtypeStats,
+        };
+        this.metaCache = result;
+        return result;
+    }
+
+    async getResourceCounts(): Promise<{ hasText: number; hasImage: number }> {
+        const counts = await this.getCounts();
+        return counts.resourceCounts ?? { hasText: 0, hasImage: 0 };
+    }
+
+    async getSubtypeStats(): Promise<Record<string, number>> {
+        const counts = await this.getCounts();
+        return counts.subtypeStats ?? {};
     }
 
     async loadEntries(type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>> {
@@ -618,6 +678,9 @@ export class BundleStorage implements IndexStorage {
         this.searchSCache = null;
         this.searchSLoading = null;
         this.searchSLoaded = false;
+        this.metaCache = null;
+        this.metaLoading = null;
+        this.metaTried = false;
         this.t2sConverter = null;
         this.t2sLoading = null;
         this.version = undefined;

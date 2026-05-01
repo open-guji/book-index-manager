@@ -115,4 +115,22 @@ export interface IndexStorage {
 
     /** 获取 Work subtype 细分统计 */
     getSubtypeStats?(): Promise<Record<string, number>>;
+
+    /**
+     * 一次性获取索引规模 + 资源 + subtype 统计的轻量元数据。
+     *
+     * 用于代替 getAllEntries() / loadEntries(t,{page:1,pageSize:1}) ×4 等
+     * "为了几个数字下载整个 index" 的场景。BundleStorage 实现读取
+     * /data/meta.json（< 1 KB），其它实现可选。
+     */
+    getCounts?(): Promise<IndexCounts>;
+}
+
+export interface IndexCounts {
+    works: number;
+    books: number;
+    collections: number;
+    entities: number;
+    resourceCounts?: { hasText: number; hasImage: number };
+    subtypeStats?: Record<string, number>;
 }

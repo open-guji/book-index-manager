@@ -156,27 +156,48 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         }
     }, [transport]);
 
-    // 加载总数统计
+    // 加载总数统计：优先读 transport.getCounts()（一个 < 1 KB 的 meta.json）。
+    // 在 BundleStorage 下避免触发 7 次并发的 /data/index.json 下载。
     useEffect(() => {
         let cancelled = false;
-        const types: IndexType[] = ['work', 'book', 'collection', 'entity'];
-        const entriesP = Promise.all(
-            types.map(t => transport.loadEntries(t, { page: 1, pageSize: 1 }).catch(() => ({ total: 0 })))
-        );
-        const countsP = transport.getResourceCounts?.().catch(() => null) ?? Promise.resolve(null);
-        const subtypeP = transport.getSubtypeStats?.().catch(() => null) ?? Promise.resolve(null);
-        Promise.all([entriesP, countsP, subtypeP]).then(([results, counts, subtypes]) => {
-            if (cancelled) return;
-            setStats({
-                works: results[0].total,
-                books: results[1].total,
-                collections: results[2].total,
-                entities: results[3].total,
-                hasText: counts?.hasText,
-                hasImage: counts?.hasImage,
+
+        const fallback = () => {
+            const types: IndexType[] = ['work', 'book', 'collection', 'entity'];
+            const entriesP = Promise.all(
+                types.map(t => transport.loadEntries(t, { page: 1, pageSize: 1 }).catch(() => ({ total: 0 })))
+            );
+            const countsP = transport.getResourceCounts?.().catch(() => null) ?? Promise.resolve(null);
+            const subtypeP = transport.getSubtypeStats?.().catch(() => null) ?? Promise.resolve(null);
+            Promise.all([entriesP, countsP, subtypeP]).then(([results, counts, subtypes]) => {
+                if (cancelled) return;
+                setStats({
+                    works: results[0].total,
+                    books: results[1].total,
+                    collections: results[2].total,
+                    entities: results[3].total,
+                    hasText: counts?.hasText,
+                    hasImage: counts?.hasImage,
+                });
+                if (subtypes) setSubtypeStats(subtypes);
             });
-            if (subtypes) setSubtypeStats(subtypes);
-        });
+        };
+
+        if (transport.getCounts) {
+            transport.getCounts().then(c => {
+                if (cancelled) return;
+                setStats({
+                    works: c.works,
+                    books: c.books,
+                    collections: c.collections,
+                    entities: c.entities,
+                    hasText: c.resourceCounts?.hasText,
+                    hasImage: c.resourceCounts?.hasImage,
+                });
+                if (c.subtypeStats) setSubtypeStats(c.subtypeStats);
+            }).catch(() => { if (!cancelled) fallback(); });
+        } else {
+            fallback();
+        }
         return () => { cancelled = true; };
     }, [transport]);
 
