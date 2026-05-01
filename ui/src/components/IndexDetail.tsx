@@ -42,6 +42,8 @@ export interface IndexDetailProps {
     renderLink?: (id: string, label?: string) => React.ReactNode;
     /** 额外的 header 内容插槽 */
     headerExtra?: React.ReactNode;
+    /** 「相关版本」section 下方的额外内容（如版本源流引导横幅） */
+    relatedBooksFooter?: React.ReactNode;
     className?: string;
     style?: React.CSSProperties;
 }
@@ -1055,6 +1057,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     onNavigate,
     renderLink,
     headerExtra,
+    relatedBooksFooter,
     className,
     style,
 }) => {
@@ -1354,7 +1357,10 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
             )}
 
             {workData?.books && workData.books.length > 0 && (
-                <BookVersionList ids={workData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
+                <>
+                    <BookVersionList ids={workData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
+                    {relatedBooksFooter}
+                </>
             )}
 
             {workData?.related_works && workData.related_works.length > 0 && (() => {

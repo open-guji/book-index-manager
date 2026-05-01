@@ -449,19 +449,19 @@ function App() {
                             </div>
                             <div style={{ padding: isMobile ? '16px 12px' : '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>
                                 {activeTab === 'detail' ? (
-                                    <>
-                                        {lineageGraph && lineageGraph.nodes.length > 0 && (
-                                            <LineageBanner
-                                                graph={lineageGraph}
-                                                onOpen={() => setActiveTab('lineage')}
-                                            />
-                                        )}
-                                        <IndexDetail
-                                            data={detailData}
-                                            transport={transport}
-                                            onNavigate={handleNavigate}
-                                        />
-                                    </>
+                                    <IndexDetail
+                                        data={detailData}
+                                        transport={transport}
+                                        onNavigate={handleNavigate}
+                                        relatedBooksFooter={
+                                            lineageGraph && lineageGraph.nodes.length > 0 ? (
+                                                <LineageBanner
+                                                    graph={lineageGraph}
+                                                    onOpen={() => setActiveTab('lineage')}
+                                                />
+                                            ) : null
+                                        }
+                                    />
                                 ) : activeTab.startsWith('catalog:') ? (
                                     <CollectionCatalog
                                         data={catalogList.find(c => `catalog:${c.resource_id}` === activeTab)?.data}
