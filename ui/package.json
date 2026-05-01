@@ -47,20 +47,30 @@
     "test:e2e:mobile": "playwright test --project=mobile"
   },
   "peerDependencies": {
+    "@dagrejs/dagre": ">=1.0.0",
+    "@xyflow/react": ">=12.0.0",
     "opencc-js": ">=1.0.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
   },
   "peerDependenciesMeta": {
+    "@dagrejs/dagre": {
+      "optional": true
+    },
+    "@xyflow/react": {
+      "optional": true
+    },
     "opencc-js": {
       "optional": true
     }
   },
   "devDependencies": {
+    "@dagrejs/dagre": "^3.0.0",
     "@playwright/test": "^1.59.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.0",
+    "@xyflow/react": "^12.10.2",
     "minisearch": "^7.2.0",
     "opencc-js": "^1.0.5",
     "react": "^19.0.0",
@@ -69,9 +79,5 @@
     "vite": "^6.0.0",
     "vite-plugin-dts": "^4.0.0"
   },
-  "license": "Apache-2.0",
-  "optionalDependencies": {
-    "@dagrejs/dagre": "^3.0.0",
-    "@xyflow/react": "^12.10.2"
-  }
+  "license": "Apache-2.0"
 }

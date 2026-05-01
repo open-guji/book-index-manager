@@ -25,7 +25,11 @@ export default defineConfig(({ mode }) => {
           fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'js' : 'cjs'}`,
         },
         rollupOptions: {
-          external: ['react', 'react-dom', 'react/jsx-runtime', /^opencc-js/],
+          external: [
+            'react', 'react-dom', 'react/jsx-runtime',
+            /^opencc-js/,
+            /^@xyflow\//, /^@dagrejs\//,
+          ],
           output: {
             globals: {
               react: 'React',
