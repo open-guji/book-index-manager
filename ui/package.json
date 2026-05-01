@@ -69,5 +69,9 @@
     "vite": "^6.0.0",
     "vite-plugin-dts": "^4.0.0"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "optionalDependencies": {
+    "@dagrejs/dagre": "^3.0.0",
+    "@xyflow/react": "^12.10.2"
+  }
 }

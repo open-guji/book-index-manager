@@ -4,6 +4,10 @@ import { IndexBrowser } from '../components/IndexBrowser';
 import { IndexDetail } from '../components/IndexDetail';
 import { CollectionCatalog } from '../components/CollectionCatalog';
 import { CollatedEdition } from '../components/CollatedEdition';
+import { VersionLineageView } from '../components/VersionLineageView';
+import { buildLineageGraph } from '../core/lineage-graph';
+import type { LineageGraph } from '../core/lineage-graph';
+import type { BookDetailData, WorkDetailData } from '../types';
 import { FeedbackList } from '../components/FeedbackList';
 import { FeedbackForm } from '../components/FeedbackForm';
 import type { FeedbackItem } from '../components/FeedbackList';
@@ -87,6 +91,8 @@ function App() {
     const [catalogList, setCatalogList] = useState<ResourceCatalog[]>([]);
     const [catalogLoading, setCatalogLoading] = useState(false);
     const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
+    const [lineageGraph, setLineageGraph] = useState<LineageGraph | null>(null);
+    const [lineageLoading, setLineageLoading] = useState(false);
     const [collatedLoading, setCollatedLoading] = useState(false);
     const [homeTab, setHomeTab] = useState<TabKey>(() => {
         const id = getIdFromUrl();
@@ -127,6 +133,35 @@ function App() {
         }
     }, [transport]);
 
+    const loadLineage = useCallback(async (work: WorkDetailData) => {
+        const vg = work.version_graph;
+        if (!vg || !vg.enabled) {
+            setLineageGraph(null);
+            return;
+        }
+        setLineageLoading(true);
+        try {
+            const bookIds = work.books ?? [];
+            const books = await Promise.all(
+                bookIds.map(async (bid) => {
+                    try {
+                        const b = await transport.getItem(bid);
+                        return b ? (b as unknown as BookDetailData) : null;
+                    } catch {
+                        return null;
+                    }
+                }),
+            );
+            const validBooks = books.filter((b): b is BookDetailData => !!b);
+            setLineageGraph(buildLineageGraph(work, validBooks));
+        } catch (err) {
+            console.error('加载 lineage 失败:', err);
+            setLineageGraph(null);
+        } finally {
+            setLineageLoading(false);
+        }
+    }, [transport]);
+
     const loadCatalog = useCallback(async (id: string) => {
         if (!transport.getCollectionCatalogs && !transport.getCollectionCatalog) {
             setCatalogList([]);
@@ -158,6 +193,7 @@ function App() {
         setDetailNotFound(false);
         setCatalogList([]);
         setCollatedIndex(null);
+        setLineageGraph(null);
         setActiveTabState(restoreParams?.tab || 'detail');
         setActiveJuanState(restoreParams?.juan || null);
         setDetailLoading(true);
@@ -176,6 +212,9 @@ function App() {
                 if (data.type === 'work' && data.has_collated) {
                     loadCollated(id);
                 }
+                if (data.type === 'work' && (data as Record<string, unknown>).version_graph) {
+                    loadLineage(data as unknown as WorkDetailData);
+                }
             } else {
                 setDetailNotFound(true);
             }
@@ -185,7 +224,7 @@ function App() {
         } finally {
             setDetailLoading(false);
         }
-    }, [transport, loadCatalog, loadCollated]);
+    }, [transport, loadCatalog, loadCollated, loadLineage]);
 
     const handleEntryClick = useCallback(async (entry: IndexEntry) => {
         setSelectedEntry(entry);
@@ -207,6 +246,9 @@ function App() {
                 if (data.type === 'work' && data.has_collated) {
                     loadCollated(entry.id);
                 }
+                if (data.type === 'work' && (data as Record<string, unknown>).version_graph) {
+                    loadLineage(data as unknown as WorkDetailData);
+                }
             } else {
                 setDetailNotFound(true);
             }
@@ -215,7 +257,7 @@ function App() {
         } finally {
             setDetailLoading(false);
         }
-    }, [transport, loadCatalog, loadCollated]);
+    }, [transport, loadCatalog, loadCollated, loadLineage]);
 
     const handleNavigate = useCallback(async (id: string) => {
         pushUrl(id);
@@ -384,6 +426,17 @@ function App() {
                                         )}
                                     </button>
                                 )}
+                                {detailData.type === 'work' && (lineageGraph || lineageLoading) && (
+                                    <button
+                                        onClick={() => setActiveTab('lineage')}
+                                        style={tabBtnStyle(activeTab === 'lineage')}
+                                    >
+                                        版本
+                                        {lineageLoading && (
+                                            <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>
+                                        )}
+                                    </button>
+                                )}
                                 <button
                                     onClick={() => setActiveTab('feedback')}
                                     style={tabBtnStyle(activeTab === 'feedback')}
@@ -415,6 +468,26 @@ function App() {
                                         activeJuan={activeJuan}
                                         onJuanChange={setActiveJuan}
                                     />
+                                ) : activeTab === 'lineage' ? (
+                                    lineageGraph ? (
+                                        <VersionLineageView
+                                            graph={lineageGraph}
+                                            renderLink={(linkId, label) => (
+                                                <a
+                                                    href="#"
+                                                    onClick={(e) => { e.preventDefault(); handleNavigate(linkId); }}
+                                                    style={{ color: 'var(--bim-primary, #0078d4)', textDecoration: 'none' }}
+                                                >
+                                                    {label}
+                                                </a>
+                                            )}
+                                            graphHeight={Math.max(500, window.innerHeight - 250)}
+                                        />
+                                    ) : (
+                                        <div style={{ padding: 24, color: 'var(--bim-muted, #999)' }}>
+                                            {lineageLoading ? '加载中…' : '暂无版本图数据'}
+                                        </div>
+                                    )
                                 ) : activeTab === 'feedback' ? (
                                     <FeedbackTabContent resourceId={detailData.id} />
                                 ) : null}

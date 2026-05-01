@@ -169,6 +169,10 @@ export type {
 } from './core/lineage-graph';
 export { VersionLineageList } from './components/VersionLineageList';
 export type { VersionLineageListProps } from './components/VersionLineageList';
+export { VersionLineageGraph } from './components/VersionLineageGraph';
+export type { VersionLineageGraphProps } from './components/VersionLineageGraph';
+export { VersionLineageView } from './components/VersionLineageView';
+export type { VersionLineageViewProps } from './components/VersionLineageView';
 
 // Common UI components
 export { Section } from './components/common/Section';
