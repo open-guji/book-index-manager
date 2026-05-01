@@ -80,13 +80,19 @@ export class BundleStorage implements IndexStorage {
 
     // 缓存
     private indexCache: IndexEntry[] | null = null;
+    private indexLoading: Promise<IndexEntry[]> | null = null;
     private pathMap: Map<string, { path: string; isDraft: boolean }> = new Map();
     private chunkCache = new Map<string, Record<string, unknown>>();
+    private chunkLoading = new Map<string, Promise<Record<string, unknown>>>();
     private manifest: string[] | null = null;
+    private manifestLoading: Promise<string[]> | null = null;
     private tiyaoCache = new Map<string, Record<string, unknown>>();
+    private tiyaoLoading = new Map<string, Promise<Record<string, unknown>>>();
     private searchSCache: SearchSIndex | null = null;
+    private searchSLoading: Promise<SearchSIndex> | null = null;
     private searchSLoaded = false;
     private t2sConverter: ((text: string) => string) | null | false = null; // null=未加载, false=不可用
+    private t2sLoading: Promise<((text: string) => string) | null> | null = null;
 
     /** 数据版本（commitId 前 12 位）。null=已尝试加载但失败；undefined=未加载 */
     private version: string | null | undefined = undefined;
@@ -143,81 +149,109 @@ export class BundleStorage implements IndexStorage {
 
     private async ensureLoaded(): Promise<IndexEntry[]> {
         if (this.indexCache) return this.indexCache;
+        if (this.indexLoading) return this.indexLoading;
 
-        const data = await this.fetchJson<BundleIndexResponse>(
-            `${this.basePath}/index.json`
-        );
+        this.indexLoading = (async () => {
+            const data = await this.fetchJson<BundleIndexResponse>(
+                `${this.basePath}/index.json`
+            );
 
-        const entries: IndexEntry[] = [];
-        const typeMap: [keyof BundleIndexResponse, IndexType][] = [
-            ['books', 'book'],
-            ['collections', 'collection'],
-            ['works', 'work'],
-            ['entities', 'entity'],
-        ];
+            const entries: IndexEntry[] = [];
+            const typeMap: [keyof BundleIndexResponse, IndexType][] = [
+                ['books', 'book'],
+                ['collections', 'collection'],
+                ['works', 'work'],
+                ['entities', 'entity'],
+            ];
 
-        for (const [key, type] of typeMap) {
-            const items = data[key];
-            if (!items) continue;
-            for (const item of Object.values(items)) {
-                const displayTitle = type === 'entity'
-                    ? (item.primary_name || item.title || item.name || item.id)
-                    : (item.title || item.name || item.id);
-                entries.push({
-                    id: item.id,
-                    title: displayTitle,
-                    type,
-                    isDraft: true, // bundle 目前只打包 draft 数据
-                    author: item.author,
-                    dynasty: item.dynasty,
-                    role: item.role,
-                    path: item.path,
-                    additional_titles: item.additional_titles?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
-                    attached_texts: item.attached_texts?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
-                    edition: item.edition,
-                    juan_count: item.juan_count,
-                    has_text: item.has_text,
-                    has_image: item.has_image,
-                    has_collated: item.has_collated,
-                    subtype: item.subtype,
-                    primary_name: item.primary_name,
-                    birth_year: item.birth_year,
-                    death_year: item.death_year,
-                    cbdb_id: item.cbdb_id,
-                });
-                this.pathMap.set(item.id, { path: item.path, isDraft: true });
+            for (const [key, type] of typeMap) {
+                const items = data[key];
+                if (!items) continue;
+                for (const item of Object.values(items)) {
+                    const displayTitle = type === 'entity'
+                        ? (item.primary_name || item.title || item.name || item.id)
+                        : (item.title || item.name || item.id);
+                    entries.push({
+                        id: item.id,
+                        title: displayTitle,
+                        type,
+                        isDraft: true, // bundle 目前只打包 draft 数据
+                        author: item.author,
+                        dynasty: item.dynasty,
+                        role: item.role,
+                        path: item.path,
+                        additional_titles: item.additional_titles?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
+                        attached_texts: item.attached_texts?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
+                        edition: item.edition,
+                        juan_count: item.juan_count,
+                        has_text: item.has_text,
+                        has_image: item.has_image,
+                        has_collated: item.has_collated,
+                        subtype: item.subtype,
+                        primary_name: item.primary_name,
+                        birth_year: item.birth_year,
+                        death_year: item.death_year,
+                        cbdb_id: item.cbdb_id,
+                    });
+                    this.pathMap.set(item.id, { path: item.path, isDraft: true });
+                }
             }
-        }
 
-        this.indexCache = entries;
-        return entries;
+            this.indexCache = entries;
+            return entries;
+        })();
+
+        try {
+            return await this.indexLoading;
+        } finally {
+            // 失败时清掉 inflight，下次调用可重试；成功时已 cache，inflight 不再被读到
+            if (!this.indexCache) this.indexLoading = null;
+        }
     }
 
     /** 加载简体搜索索引（search_s.json），加载失败时降级为空对象 */
     private async ensureSearchSLoaded(): Promise<SearchSIndex> {
         if (this.searchSLoaded) return this.searchSCache ?? {};
-        this.searchSLoaded = true;
+        if (this.searchSLoading) return this.searchSLoading;
+        this.searchSLoading = (async () => {
+            try {
+                const data = await this.fetchJson<SearchSIndex>(
+                    `${this.basePath}/search_s.json`
+                );
+                this.searchSCache = data;
+            } catch {
+                this.searchSCache = {};
+            }
+            this.searchSLoaded = true;
+            return this.searchSCache!;
+        })();
         try {
-            this.searchSCache = await this.fetchJson<SearchSIndex>(
-                `${this.basePath}/search_s.json`
-            );
-        } catch {
-            this.searchSCache = {};
+            return await this.searchSLoading;
+        } finally {
+            if (!this.searchSLoaded) this.searchSLoading = null;
         }
-        return this.searchSCache!;
     }
 
     /** 懒加载 opencc-js 繁→简转换器，不可用时降级 */
     private async ensureT2S(): Promise<((text: string) => string) | null> {
         if (this.t2sConverter === false) return null;
         if (this.t2sConverter) return this.t2sConverter;
+        if (this.t2sLoading) return this.t2sLoading;
+        this.t2sLoading = (async () => {
+            try {
+                const OpenCC = await import('opencc-js');
+                this.t2sConverter = OpenCC.Converter({ from: 'tw', to: 'cn' });
+                return this.t2sConverter;
+            } catch {
+                this.t2sConverter = false;
+                return null;
+            }
+        })();
         try {
-            const OpenCC = await import('opencc-js');
-            this.t2sConverter = OpenCC.Converter({ from: 'tw', to: 'cn' });
-            return this.t2sConverter;
-        } catch {
-            this.t2sConverter = false;
-            return null;
+            return await this.t2sLoading;
+        } finally {
+            // 加载完毕（成功或失败）后清掉 inflight，t2sConverter 字段成为 source of truth
+            this.t2sLoading = null;
         }
     }
 
@@ -226,14 +260,22 @@ export class BundleStorage implements IndexStorage {
     /** Load manifest listing all chunk prefixes */
     private async loadManifest(): Promise<string[]> {
         if (this.manifest) return this.manifest;
+        if (this.manifestLoading) return this.manifestLoading;
+        this.manifestLoading = (async () => {
+            try {
+                this.manifest = await this.fetchJson<string[]>(
+                    `${this.basePath}/chunks/_manifest.json`
+                );
+            } catch {
+                this.manifest = [];
+            }
+            return this.manifest;
+        })();
         try {
-            this.manifest = await this.fetchJson<string[]>(
-                `${this.basePath}/chunks/_manifest.json`
-            );
-        } catch {
-            this.manifest = [];
+            return await this.manifestLoading;
+        } finally {
+            if (!this.manifest) this.manifestLoading = null;
         }
-        return this.manifest;
     }
 
     /** Find the chunk prefix for a given ID using the manifest */
@@ -261,15 +303,25 @@ export class BundleStorage implements IndexStorage {
 
     private async loadChunk(prefix: string): Promise<Record<string, unknown>> {
         if (this.chunkCache.has(prefix)) return this.chunkCache.get(prefix)!;
+        const inflight = this.chunkLoading.get(prefix);
+        if (inflight) return inflight;
+        const p = (async () => {
+            try {
+                const data = await this.fetchJson<Record<string, unknown>>(
+                    `${this.basePath}/chunks/${prefix}.json`
+                );
+                this.chunkCache.set(prefix, data);
+                return data;
+            } catch {
+                this.chunkCache.set(prefix, {});
+                return {} as Record<string, unknown>;
+            }
+        })();
+        this.chunkLoading.set(prefix, p);
         try {
-            const data = await this.fetchJson<Record<string, unknown>>(
-                `${this.basePath}/chunks/${prefix}.json`
-            );
-            this.chunkCache.set(prefix, data);
-            return data;
-        } catch {
-            this.chunkCache.set(prefix, {});
-            return {};
+            return await p;
+        } finally {
+            this.chunkLoading.delete(prefix);
         }
     }
 
@@ -285,13 +337,22 @@ export class BundleStorage implements IndexStorage {
     private async loadTiyaoGroup(start: number, end: number): Promise<Record<string, unknown>> {
         const key = `${start}-${end}`;
         if (this.tiyaoCache.has(key)) return this.tiyaoCache.get(key)!;
-
+        const inflight = this.tiyaoLoading.get(key);
+        if (inflight) return inflight;
         const pad = (n: number) => String(n).padStart(3, '0');
-        const data = await this.fetchJson<Record<string, unknown>>(
-            `${this.basePath}/tiyao/juan-${pad(start)}-${pad(end)}.json`
-        );
-        this.tiyaoCache.set(key, data);
-        return data;
+        const p = (async () => {
+            const data = await this.fetchJson<Record<string, unknown>>(
+                `${this.basePath}/tiyao/juan-${pad(start)}-${pad(end)}.json`
+            );
+            this.tiyaoCache.set(key, data);
+            return data;
+        })();
+        this.tiyaoLoading.set(key, p);
+        try {
+            return await p;
+        } finally {
+            this.tiyaoLoading.delete(key);
+        }
     }
 
     // ─── IndexStorage 实现 ───
@@ -546,13 +607,19 @@ export class BundleStorage implements IndexStorage {
 
     clearCache(): void {
         this.indexCache = null;
+        this.indexLoading = null;
         this.pathMap.clear();
         this.chunkCache.clear();
+        this.chunkLoading.clear();
         this.manifest = null;
+        this.manifestLoading = null;
         this.tiyaoCache.clear();
+        this.tiyaoLoading.clear();
         this.searchSCache = null;
+        this.searchSLoading = null;
         this.searchSLoaded = false;
         this.t2sConverter = null;
+        this.t2sLoading = null;
         this.version = undefined;
         this.versionPromise = null;
     }

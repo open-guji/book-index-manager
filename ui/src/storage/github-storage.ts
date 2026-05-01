@@ -65,6 +65,7 @@ const DEFAULT_TIMEOUT = 5000;
 export class GithubStorage implements IndexStorage {
     private config: Required<GithubStorageConfig>;
     private cache: IndexEntry[] | null = null;
+    private cacheLoading: Promise<IndexEntry[]> | null = null;
     private pathMap: Map<string, { path: string; isDraft: boolean }> = new Map();
     private searchSCache: SearchSIndex | null = null;
     private t2sConverter: ((text: string) => string) | null | false = null; // null=未加载, false=不可用
@@ -82,26 +83,36 @@ export class GithubStorage implements IndexStorage {
     /** 确保 index 数据已加载到缓存 */
     private async ensureLoaded(): Promise<IndexEntry[]> {
         if (this.cache) return this.cache;
+        if (this.cacheLoading) return this.cacheLoading;
 
-        const allEntries: IndexEntry[] = [];
+        this.cacheLoading = (async () => {
+            const allEntries: IndexEntry[] = [];
 
-        for (const isDraft of [true, false]) {
-            try {
-                const repo = isDraft ? this.config.repos.draft : this.config.repos.official;
-                const data = await this.fetchIndex(repo);
-                const entries = this.parseIndexResponse(data, isDraft);
-                allEntries.push(...entries);
-            } catch (err) {
-                console.warn(`Failed to fetch ${isDraft ? 'draft' : 'official'} index:`, err);
+            for (const isDraft of [true, false]) {
+                try {
+                    const repo = isDraft ? this.config.repos.draft : this.config.repos.official;
+                    const data = await this.fetchIndex(repo);
+                    const entries = this.parseIndexResponse(data, isDraft);
+                    allEntries.push(...entries);
+                } catch (err) {
+                    console.warn(`Failed to fetch ${isDraft ? 'draft' : 'official'} index:`, err);
+                }
             }
-        }
 
-        const map = new Map<string, IndexEntry>();
-        for (const entry of allEntries) {
-            map.set(entry.id, entry);
+            const map = new Map<string, IndexEntry>();
+            for (const entry of allEntries) {
+                map.set(entry.id, entry);
+            }
+            this.cache = Array.from(map.values());
+            return this.cache;
+        })();
+
+        try {
+            return await this.cacheLoading;
+        } finally {
+            // 失败时清掉 inflight，下次调用可重试
+            if (!this.cache) this.cacheLoading = null;
         }
-        this.cache = Array.from(map.values());
-        return this.cache;
     }
 
     /** 从 GitHub 或 CDN 获取单个文件 */
