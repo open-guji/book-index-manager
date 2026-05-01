@@ -16,6 +16,7 @@ import type { IndexCounts } from './types';
 import { rankByRelevance, rankByRelevanceWithSimplified } from '../core/storage';
 import type { SearchSIndex } from '../core/storage';
 import { normalizeCatalog } from '../core/normalize-catalog';
+import { extractType } from '../id';
 
 /**
  * index.json 中的条目格式（与 GithubStorage 相同）
@@ -509,9 +510,9 @@ export class BundleStorage implements IndexStorage {
             const chunk = await this.loadChunkForId(id);
             const item = (chunk[id] as Record<string, unknown>) || null;
             if (item) {
-                // 从 index 条目合并 has_collated 标记
-                const entry = (await this.ensureLoaded()).find(e => e.id === id);
-                if (entry?.has_collated) item.has_collated = true;
+                // bundle-data.mjs 在打包时已经把 index 上的 has_collated /
+                // has_text / has_image / subtype / primary_name 注入到
+                // chunk[id]，所以这里不再需要 await ensureLoaded()。
                 // Entity：把 primary_name 同步到 title 字段
                 if (item.type === 'entity' && !item.title && item.primary_name) {
                     item.title = item.primary_name;
@@ -523,7 +524,45 @@ export class BundleStorage implements IndexStorage {
         }
     }
 
+    /**
+     * 优先用 chunk 构造 IndexEntry，避免触发 ensureLoaded() 拉全量 index.json。
+     * 旧 bundle 没有把 has_collated 等字段注入 chunk 时回退到 ensureLoaded。
+     */
     async getEntry(id: string): Promise<IndexEntry | null> {
+        try {
+            const chunk = await this.loadChunkForId(id);
+            const detail = chunk[id] as Record<string, any> | undefined;
+            if (detail) {
+                const type = extractType(id);
+                const displayTitle = type === 'entity'
+                    ? (detail.primary_name || detail.title || detail.name || id)
+                    : (detail.title || detail.name || id);
+                return {
+                    id,
+                    title: displayTitle,
+                    type,
+                    isDraft: true,
+                    author: detail.author,
+                    dynasty: detail.dynasty,
+                    role: detail.role,
+                    additional_titles: detail.additional_titles?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
+                    attached_texts: detail.attached_texts?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
+                    edition: detail.edition,
+                    juan_count: detail.juan_count,
+                    has_text: detail.has_text,
+                    has_image: detail.has_image,
+                    has_collated: detail.has_collated,
+                    subtype: detail.subtype,
+                    primary_name: detail.primary_name,
+                    birth_year: detail.birth_year,
+                    death_year: detail.death_year,
+                    cbdb_id: detail.cbdb_id,
+                };
+            }
+        } catch {
+            // fall through
+        }
+        // Fallback：旧 bundle 没注入 index-only 字段时走全量 index
         const all = await this.ensureLoaded();
         return all.find(e => e.id === id) || null;
     }

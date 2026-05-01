@@ -89,14 +89,18 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     const dropdownRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Load all entries for suggestions (once)
-    useEffect(() => {
-        if (!transport.getAllEntries) return;
-        let cancelled = false;
+    // Lazy: 仅在用户与搜索框交互时才拉 allEntries（4 MB），避免 /book-index
+    // 首屏就强行下载整个 index.json。
+    const allEntriesLoadingRef = useRef(false);
+    const ensureAllEntriesLoaded = useCallback(() => {
+        if (allEntriesLoadingRef.current || !transport.getAllEntries) return;
+        allEntriesLoadingRef.current = true;
         transport.getAllEntries().then(entries => {
-            if (!cancelled) setAllEntries(entries);
-        }).catch(() => {});
-        return () => { cancelled = true; };
+            setAllEntries(entries);
+        }).catch(() => {
+            // allow retry on next focus
+            allEntriesLoadingRef.current = false;
+        });
     }, [transport]);
 
     // Build suggestions based on input
@@ -261,8 +265,12 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                 onChange={e => {
                     onChange(e.target.value);
                     setShowDropdown(true);
+                    ensureAllEntriesLoaded();
                 }}
-                onFocus={() => setShowDropdown(true)}
+                onFocus={() => {
+                    setShowDropdown(true);
+                    ensureAllEntriesLoaded();
+                }}
                 onKeyDown={handleKeyDown}
                 style={{
                     width: '100%',
