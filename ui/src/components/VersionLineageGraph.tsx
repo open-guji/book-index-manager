@@ -143,8 +143,8 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
             // 自己计算 label 位置：在最后一段水平线上（接近 target）
             // sourcePosition=Right, targetPosition=Left → 走的是 horizontalSplit
             // 路径最后一段是从 (centerX, targetY) 到 (targetX, targetY) 的水平线
-            // labelX 取 target 前 ~30px，labelY 取 targetY
-            const labelX = p.targetX - 30;
+            // labelX 取 target 前 ~35px（标签中心），labelY 取 targetY（叠在水平线上）
+            const labelX = p.targetX - 35;
             const labelY = p.targetY;
 
             const labelStyle = p.data?.labelStyle;
@@ -164,7 +164,8 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                             <div
                                 style={{
                                     position: 'absolute',
-                                    transform: `translate(-100%, -50%) translate(${labelX}px,${labelY}px)`,
+                                    // -50%/-50% 让标签中心对齐 (labelX, labelY)，叠在水平线上
+                                    transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
                                     pointerEvents: 'none',
                                     padding: '2px 6px',
                                     borderRadius: 4,
