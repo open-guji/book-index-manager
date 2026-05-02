@@ -274,6 +274,9 @@ function buildRfEdge(e: LineageGraphEdge) {
         source: e.source,
         target: e.target,
         type: 'smoothstep' as const,
+        // stepPosition=0.85 让拐弯靠近 target 端，标签自然落在靠近目标节点的水平段上，
+        // 避免多条竖线重合时标签难以分辨归属（默认 0.5 标签在垂直段中部）
+        pathOptions: { stepPosition: 0.85, borderRadius: 5 },
         label: e.relation,
         labelStyle: {
             fontSize: 11,
