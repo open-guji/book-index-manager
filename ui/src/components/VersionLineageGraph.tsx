@@ -127,10 +127,14 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
             style?: React.CSSProperties;
             markerStart?: string;
             markerEnd?: string;
-            data?: { labelStyle?: React.CSSProperties; labelBgStyle?: React.CSSProperties };
+            data?: {
+                labelStyle?: React.CSSProperties;
+                labelBgStyle?: React.CSSProperties;
+                isSibling?: boolean;
+            };
         };
         const LineageEdge = (p: EdgePropsLike) => {
-            const [path] = getSmoothStepPath({
+            const [path, autoLabelX, autoLabelY] = getSmoothStepPath({
                 sourceX: p.sourceX,
                 sourceY: p.sourceY,
                 sourcePosition: p.sourcePosition,
@@ -140,12 +144,13 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                 stepPosition: 0.85,
                 borderRadius: 5,
             });
-            // 自己计算 label 位置：放在最后一段水平线上方（紧靠 target，与线不重合）
-            // sourcePosition=Right, targetPosition=Left → 走的是 horizontalSplit
-            // 路径最后一段是从 (centerX, targetY) 到 (targetX, targetY) 的水平线
-            // labelX 取 target 前 ~18px（标签中心紧贴 target），labelY 上移 12px 浮在线上方
-            const labelX = p.targetX - 18;
-            const labelY = p.targetY - 12;
+            // 标签位置：
+            // - 派生关系（有方向）：紧贴 target，浮在水平线上方（labelX = targetX - 18, labelY = targetY - 12）
+            // - 兄弟本（双向、无主次）：用 React Flow 自动算的中点位置（路径中间段）
+            // 通过 data.isSibling 区分（buildRfEdge 写入）
+            const isSibling = !!p.data?.isSibling;
+            const labelX = isSibling ? autoLabelX : p.targetX - 18;
+            const labelY = isSibling ? autoLabelY : p.targetY - 12;
 
             const labelStyle = p.data?.labelStyle;
             const labelBgStyle = p.data?.labelBgStyle;
@@ -377,6 +382,7 @@ function buildRfEdge(e: LineageGraphEdge) {
             labelStyle: {
                 color: '#444',
             } as React.CSSProperties,
+            isSibling,
         },
         style: {
             stroke: color,
