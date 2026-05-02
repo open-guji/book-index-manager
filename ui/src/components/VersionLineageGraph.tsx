@@ -65,6 +65,9 @@ interface LoadedModules {
     Controls: typeof import('@xyflow/react').Controls;
     Handle: typeof import('@xyflow/react').Handle;
     Position: typeof import('@xyflow/react').Position;
+    BaseEdge: typeof import('@xyflow/react').BaseEdge;
+    EdgeLabelRenderer: typeof import('@xyflow/react').EdgeLabelRenderer;
+    getSmoothStepPath: typeof import('@xyflow/react').getSmoothStepPath;
     dagre: typeof import('@dagrejs/dagre');
     cssLoaded: boolean;
 }
@@ -89,6 +92,9 @@ async function loadModules(): Promise<LoadedModules | null> {
             Controls: rf.Controls,
             Handle: rf.Handle,
             Position: rf.Position,
+            BaseEdge: rf.BaseEdge,
+            EdgeLabelRenderer: rf.EdgeLabelRenderer,
+            getSmoothStepPath: rf.getSmoothStepPath,
             dagre: dg as unknown as typeof import('@dagrejs/dagre'),
             cssLoaded,
         };
@@ -104,7 +110,82 @@ interface InnerProps extends VersionLineageGraphProps {
 }
 
 const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, className, style, selectedNodeId, modules }) => {
-    const { ReactFlow, Background, Controls, Handle, Position, dagre } = modules;
+    const { ReactFlow, Background, Controls, Handle, Position, BaseEdge, EdgeLabelRenderer, getSmoothStepPath, dagre } = modules;
+
+    // 自定义边类型 —— 把标签放在靠近 target 的水平段（最后 ~15% 处），
+    // 避免多条平行竖线时标签悬浮中部歧义
+    const edgeTypes = useMemo(() => {
+        type EdgePropsLike = {
+            id: string;
+            sourceX: number;
+            sourceY: number;
+            targetX: number;
+            targetY: number;
+            sourcePosition: import('@xyflow/react').Position;
+            targetPosition: import('@xyflow/react').Position;
+            label?: React.ReactNode;
+            style?: React.CSSProperties;
+            markerStart?: string;
+            markerEnd?: string;
+            data?: { labelStyle?: React.CSSProperties; labelBgStyle?: React.CSSProperties };
+        };
+        const LineageEdge = (p: EdgePropsLike) => {
+            const [path] = getSmoothStepPath({
+                sourceX: p.sourceX,
+                sourceY: p.sourceY,
+                sourcePosition: p.sourcePosition,
+                targetX: p.targetX,
+                targetY: p.targetY,
+                targetPosition: p.targetPosition,
+                stepPosition: 0.85,
+                borderRadius: 5,
+            });
+            // 自己计算 label 位置：在最后一段水平线上（接近 target）
+            // sourcePosition=Right, targetPosition=Left → 走的是 horizontalSplit
+            // 路径最后一段是从 (centerX, targetY) 到 (targetX, targetY) 的水平线
+            // labelX 取 target 前 ~30px，labelY 取 targetY
+            const labelX = p.targetX - 30;
+            const labelY = p.targetY;
+
+            const labelStyle = p.data?.labelStyle;
+            const labelBgStyle = p.data?.labelBgStyle;
+
+            return (
+                <>
+                    <BaseEdge
+                        id={p.id}
+                        path={path}
+                        style={p.style}
+                        markerStart={p.markerStart}
+                        markerEnd={p.markerEnd}
+                    />
+                    {p.label && (
+                        <EdgeLabelRenderer>
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    transform: `translate(-100%, -50%) translate(${labelX}px,${labelY}px)`,
+                                    pointerEvents: 'none',
+                                    padding: '2px 6px',
+                                    borderRadius: 4,
+                                    fontSize: 11,
+                                    fontWeight: 500,
+                                    whiteSpace: 'nowrap',
+                                    background: 'var(--bim-bg, #fff)',
+                                    border: '0.5px solid var(--bim-widget-border, #ddd)',
+                                    ...labelBgStyle,
+                                    ...labelStyle,
+                                }}
+                            >
+                                {p.label}
+                            </div>
+                        </EdgeLabelRenderer>
+                    )}
+                </>
+            );
+        };
+        return { lineage: LineageEdge };
+    }, [BaseEdge, EdgeLabelRenderer, getSmoothStepPath]);
 
     // 节点类型 —— 用闭包传 Handle/Position
     const nodeTypes = useMemo(() => {
@@ -165,6 +246,7 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                 nodes={rfNodes}
                 edges={rfEdges}
                 nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
                 fitView
                 fitViewOptions={{ padding: 0.15 }}
                 proOptions={{ hideAttribution: true }}
@@ -285,25 +367,15 @@ function buildRfEdge(e: LineageGraphEdge) {
         id: e.id,
         source: e.source,
         target: e.target,
-        type: 'smoothstep' as const,
-        // stepPosition=0.85 让拐弯靠近 target 端，标签自然落在靠近目标节点的水平段上，
-        // 避免多条竖线重合时标签难以分辨归属（默认 0.5 标签在垂直段中部）
-        pathOptions: { stepPosition: 0.85, borderRadius: 5 },
+        // 自定义边类型：把 label 放在靠近 target 的水平段（见 LineageEdge）
+        type: 'lineage' as const,
         label: e.relation,
-        labelStyle: {
-            fontSize: 11,
-            fontWeight: 500,
-            fill: color,
-        } as React.CSSProperties,
-        labelBgPadding: [4, 6] as [number, number],
-        labelBgBorderRadius: 4,
-        labelBgStyle: {
-            fill: 'var(--bim-bg, #fff)',
-            fillOpacity: 1,
-            stroke: 'var(--bim-widget-border, #ddd)',
-            strokeWidth: 0.5,
-        } as React.CSSProperties,
-        labelShowBg: true,
+        // labelStyle/labelBgStyle 通过 data 传给自定义边组件
+        data: {
+            labelStyle: {
+                color,
+            } as React.CSSProperties,
+        },
         style: {
             stroke: color,
             strokeWidth: isSibling ? 1 : 1.5,
