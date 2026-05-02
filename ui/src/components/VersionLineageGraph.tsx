@@ -140,12 +140,12 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                 stepPosition: 0.85,
                 borderRadius: 5,
             });
-            // 自己计算 label 位置：在最后一段水平线上（紧靠 target）
+            // 自己计算 label 位置：放在最后一段水平线上方（紧靠 target，与线不重合）
             // sourcePosition=Right, targetPosition=Left → 走的是 horizontalSplit
             // 路径最后一段是从 (centerX, targetY) 到 (targetX, targetY) 的水平线
-            // labelX 取 target 前 ~18px（标签中心紧贴 target），labelY 取 targetY
+            // labelX 取 target 前 ~18px（标签中心紧贴 target），labelY 上移 12px 浮在线上方
             const labelX = p.targetX - 18;
-            const labelY = p.targetY;
+            const labelY = p.targetY - 12;
 
             const labelStyle = p.data?.labelStyle;
             const labelBgStyle = p.data?.labelBgStyle;
