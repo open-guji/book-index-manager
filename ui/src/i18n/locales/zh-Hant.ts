@@ -94,7 +94,7 @@ export const zhHant: LocaleMessages = {
         appendix: '附錄',
         containedIn: '收入',
         belongsToWork: '所屬作品',
-        locationHistory: '流轉���史',
+        locationHistory: '流轉歷史',
         historyOverview: '歷史沿革',
         containedBooks: '收錄書籍',
         relations: '關聯關係',

@@ -265,13 +265,17 @@ interface SearchDoc {
 interface SearchIndex {
     engines: Map<string, MiniSearch<SearchDoc>>;
     entryMap: Map<string, Record<string, unknown>>;
+    mtimeKey: string;
 }
 
 let searchIndexCache: SearchIndex | null = null;
 
-/** 首次调用时构建，后续复用（重启 vite 清空缓存）。 */
+/** 首次调用时构建；当任一 repo 的索引文件 mtime 变化时自动重建。 */
 async function ensureSearchIndex(workspaceRoot: string): Promise<SearchIndex> {
-    if (searchIndexCache) return searchIndexCache;
+    const mtimeKey = ['book-index', 'book-index-draft']
+        .map(f => computeIndexMtimeKey(path.join(workspaceRoot, f)))
+        .join('||');
+    if (searchIndexCache && searchIndexCache.mtimeKey === mtimeKey) return searchIndexCache;
 
     const t2s = await ensureT2S();
     const engines = new Map<string, MiniSearch<SearchDoc>>();
@@ -332,7 +336,7 @@ async function ensureSearchIndex(workspaceRoot: string): Promise<SearchIndex> {
         console.log(`[search-index] ${type}: ${docs.length} docs indexed`);
     }
 
-    searchIndexCache = { engines, entryMap };
+    searchIndexCache = { engines, entryMap, mtimeKey };
     return searchIndexCache;
 }
 
