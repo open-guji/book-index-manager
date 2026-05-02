@@ -40,12 +40,13 @@ function getIdFromUrl(): string | null {
 }
 
 /** 从 URL search params 提取参数 */
-function getParamsFromUrl(): { tab?: string; juan?: string; node?: string } {
+function getParamsFromUrl(): { tab?: string; juan?: string; node?: string; mode?: string } {
     const params = new URLSearchParams(window.location.search);
     return {
         tab: params.get('tab') || undefined,
         juan: params.get('juan') || undefined,
         node: params.get('node') || undefined,
+        mode: params.get('mode') || undefined,
     };
 }
 
@@ -90,6 +91,10 @@ function App() {
     const [activeTab, setActiveTabState] = useState<string>('detail');
     const [activeJuan, setActiveJuanState] = useState<string | null>(null);
     const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>(() => getParamsFromUrl().node);
+    const [lineageMode, setLinageMode] = useState<'list' | 'graph'>(() => {
+        const mode = getParamsFromUrl().mode;
+        return mode === 'graph' || mode === 'list' ? mode : 'list';
+    });
     const [catalogList, setCatalogList] = useState<ResourceCatalog[]>([]);
     const [catalogLoading, setCatalogLoading] = useState(false);
     const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
@@ -117,6 +122,12 @@ function App() {
     const setActiveJuan = useCallback((juan: string | null) => {
         setActiveJuanState(juan);
         replaceUrl(currentId, { tab: 'collated', juan: juan || undefined });
+    }, [currentId]);
+
+    /** 切换版本源流视图模式并同步 URL */
+    const handleLineageModeChange = useCallback((mode: 'list' | 'graph') => {
+        setLinageMode(mode);
+        replaceUrl(currentId, { tab: 'lineage', mode: mode !== 'list' ? mode : undefined });
     }, [currentId]);
 
     const loadCollated = useCallback(async (id: string) => {
@@ -190,7 +201,7 @@ function App() {
     }, [transport]);
 
     /** 通过 ID 加载详情（内部复用，不操作 URL） */
-    const loadById = useCallback(async (id: string, restoreParams?: { tab?: string; juan?: string; node?: string }) => {
+    const loadById = useCallback(async (id: string, restoreParams?: { tab?: string; juan?: string; node?: string; mode?: string }) => {
         setDetailData(null);
         setDetailNotFound(false);
         setCatalogList([]);
@@ -199,6 +210,7 @@ function App() {
         setActiveTabState(restoreParams?.tab || 'detail');
         setActiveJuanState(restoreParams?.juan || null);
         setSelectedNodeId(restoreParams?.node || undefined);
+        setLinageMode((restoreParams?.mode === 'graph' || restoreParams?.mode === 'list') ? restoreParams.mode : 'list');
         setDetailLoading(true);
         try {
             const data = await transport.getItem(id);
@@ -483,6 +495,8 @@ function App() {
                                     lineageGraph ? (
                                         <VersionLineageView
                                             graph={lineageGraph}
+                                            defaultMode={lineageMode}
+                                            onModeChange={handleLineageModeChange}
                                             renderLink={(linkId, label) => (
                                                 <a
                                                     href="#"

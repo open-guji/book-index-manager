@@ -120,8 +120,11 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                         background: 'var(--bim-bg, #fff)',
                         border: `2px ${isHypo ? 'dashed' : 'solid'} ${isSelected ? '#0078d4' : borderColor}`,
                         borderRadius: 8,
-                        padding: '8px 12px',
-                        minWidth: 140,
+                        padding: '6px 10px',
+                        minWidth: 120,
+                        maxWidth: 160,
+                        wordWrap: 'break-word',
+                        wordBreak: 'break-word',
                         opacity: isLost ? 0.6 : 1,
                         boxShadow: isSelected
                             ? '0 0 0 3px rgba(0, 120, 212, 0.2), 0 2px 8px rgba(0, 120, 212, 0.3)'
@@ -129,19 +132,19 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                     }}
                 >
                     <Handle type="target" position={Position.Left} style={{ visibility: 'hidden' }} />
-                    <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 2 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 1, lineHeight: 1.3 }}>
                         {isHypo || !d.renderLink
                             ? d.label
                             : d.renderLink(d.bookId!, d.label)}
                     </div>
                     {d.yearText && (
-                        <div style={{ fontSize: 11, color: 'var(--bim-muted, #777)' }}>
+                        <div style={{ fontSize: 10, color: 'var(--bim-muted, #777)', lineHeight: 1.2 }}>
                             {d.yearText}{d.uncertain ? '?' : ''}
                             {d.category ? ` · ${d.category}` : ''}
                         </div>
                     )}
                     {isLost && (
-                        <div style={{ fontSize: 10, color: '#c62828', marginTop: 2 }}>已佚</div>
+                        <div style={{ fontSize: 9, color: '#c62828', marginTop: 1 }}>已佚</div>
                     )}
                     <Handle type="source" position={Position.Right} style={{ visibility: 'hidden' }} />
                 </div>
@@ -199,15 +202,15 @@ function layoutGraph(
     renderLink?: (id: string, label: string) => React.ReactNode,
     selectedNodeId?: string,
 ) {
-    const NODE_W = 200;
-    const NODE_H = 76;
+    const NODE_W = 160;
+    const NODE_H = 90;
     const isLR = graph.layout === 'LR' || !graph.layout;
 
     const g = new dagre.graphlib.Graph();
     g.setGraph({
         rankdir: isLR ? 'LR' : 'TB',
-        ranksep: 140,   // 大间距：避免边标签被相邻节点覆盖
-        nodesep: 36,
+        ranksep: 160,   // 增加行间距以避免连线标签被覆盖
+        nodesep: 40,    // 增加列间距
         edgesep: 16,
         marginx: 20,
         marginy: 20,

@@ -14,6 +14,8 @@ export interface VersionLineageViewProps {
     graphHeight?: number;
     /** 选中的节点 ID（用于高亮显示） */
     selectedNodeId?: string;
+    /** 模式切换回调（用于更新URL） */
+    onModeChange?: (mode: 'list' | 'graph') => void;
     className?: string;
     style?: React.CSSProperties;
 }
@@ -29,10 +31,16 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
     renderLink,
     graphHeight = 600,
     selectedNodeId,
+    onModeChange,
     className,
     style,
 }) => {
     const [mode, setMode] = useState<'list' | 'graph'>(defaultMode);
+
+    const handleModeChange = (newMode: 'list' | 'graph') => {
+        setMode(newMode);
+        onModeChange?.(newMode);
+    };
 
     if (!graph.nodes.length) {
         return (
@@ -46,13 +54,13 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
         <div className={className} style={style}>
             <div style={toolbarStyle}>
                 <button
-                    onClick={() => setMode('list')}
+                    onClick={() => handleModeChange('list')}
                     style={btnStyle(mode === 'list')}
                 >
                     列表
                 </button>
                 <button
-                    onClick={() => setMode('graph')}
+                    onClick={() => handleModeChange('graph')}
                     style={btnStyle(mode === 'graph')}
                 >
                     关系图
