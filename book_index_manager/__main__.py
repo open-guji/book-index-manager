@@ -2,6 +2,13 @@ import sys
 import argparse
 import json
 import logging
+import io
+
+# 确保输出使用 UTF-8 编码
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 from .id_generator import BookIndexStatus, BookIndexType, BookIndexIdGenerator, base36_encode, smart_decode
 from .manager import BookIndexManager
@@ -240,6 +247,141 @@ class CLIHandler:
         else:
             print("\n[OK] All items are indexed.")
 
+    def handle_validate_lineage(self):
+        """验证版本传承数据完整性：检查所有 Work 的 version_graph 中引用的 Book/hypothetical 节点。"""
+        from pathlib import Path
+        work_id = getattr(self.args, 'work_id', None)
+        verbose = getattr(self.args, 'verbose', False)
+        target = getattr(self.args, 'target', 'draft')
+
+        # 确定根目录
+        roots = []
+        if target in ["draft", "all"]:
+            roots.append(self.manager.storage.draft_root)
+        if target in ["official", "all"]:
+            roots.append(self.manager.storage.official_root)
+
+        if not roots:
+            print("No storage roots found")
+            return
+
+        # 缓存：book_id -> book_data
+        book_cache = {}
+
+        # 预加载所有 Books
+        for root in roots:
+            books_root = root / "Book"
+            if books_root.exists():
+                for json_file in books_root.rglob("*.json"):
+                    try:
+                        with open(json_file, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
+                            # 跳过非 Book 类型的文件（如 juan_groups.json）
+                            if isinstance(data, dict) and data.get("type") == "book":
+                                book_id = data.get("id")
+                                if book_id:
+                                    book_cache[book_id] = data
+                    except Exception as e:
+                        pass  # 静默跳过错误的文件
+
+        # 扫描 Works
+        works_to_check = []
+        for root in roots:
+            work_dir = root / "Work"
+            if work_dir.exists():
+                for json_file in work_dir.rglob("*.json"):
+                    try:
+                        with open(json_file, 'r', encoding='utf-8') as f:
+                            work_data = json.load(f)
+                            if work_data.get("type") == "work":
+                                # 如果指定了 work_id，只验证那一个
+                                if work_id:
+                                    if work_data.get("id") == work_id:
+                                        works_to_check.append(work_data)
+                                else:
+                                    works_to_check.append(work_data)
+                    except Exception as e:
+                        logger.warning(f"Failed to read {json_file}: {e}")
+
+        if not works_to_check:
+            if work_id:
+                print(f"Work {work_id} not found")
+                sys.exit(1)
+            else:
+                print("No works found to validate")
+                return
+
+        total_errors = 0
+        validated = 0
+
+        for work in works_to_check:
+            work_id = work.get("id")
+            version_graph = work.get("version_graph")
+            if not version_graph or not version_graph.get("enabled"):
+                continue
+
+            validated += 1
+            errors = []
+
+            # 该 work 关联的所有 books（从 version_graph.node_groups 的 key）
+            excluded_books = set(version_graph.get("excluded_books", []))
+            node_groups = version_graph.get("node_groups", {})
+            book_ids_set = set(node_groups.keys())
+
+            # 也检查 hypothetical_nodes 定义的书
+            hypothetical_ids = set(h.get("id") for h in version_graph.get("hypothetical_nodes", []))
+            all_valid_ids = (book_ids_set - excluded_books) | hypothetical_ids
+
+            # 检查 derived_from 和 related_to 引用
+            for book_id in book_ids_set:
+                if book_id in excluded_books:
+                    continue
+                book = book_cache.get(book_id)
+                if not book:
+                    errors.append(f"Book {book_id} referenced but not found in storage")
+                    continue
+
+                lineage = book.get("lineage", {})
+                if not lineage:
+                    continue
+
+                # 检查 derived_from
+                for d in lineage.get("derived_from", []):
+                    ref = d.get("ref")
+                    if ref and ref not in all_valid_ids:
+                        errors.append(f"Book {book_id}: derived_from.ref '{ref}' not found in books or hypothetical nodes")
+
+                # 检查 related_to
+                for r in lineage.get("related_to", []):
+                    ref_book_id = r.get("book_id")
+                    if ref_book_id and ref_book_id not in book_ids_set:
+                        errors.append(f"Book {book_id}: related_to.book_id '{ref_book_id}' not in this work")
+
+            # 检查 hypothetical_nodes 的 derived_from
+            for hypo in version_graph.get("hypothetical_nodes", []):
+                hypo_id = hypo.get("id")
+                for d in hypo.get("derived_from", []):
+                    ref = d.get("ref")
+                    if ref and ref not in all_valid_ids:
+                        errors.append(f"Hypothetical {hypo_id}: derived_from.ref '{ref}' not found")
+
+            if errors:
+                total_errors += len(errors)
+                title = work.get('title', 'Unknown')
+                print(f"\n[FAIL] Work {work_id} ({title}):")
+                for error in errors:
+                    print(f"  - {error}")
+            elif verbose:
+                title = work.get('title', 'Unknown')
+                print(f"[OK] Work {work_id} ({title}): {len(book_ids_set)} books, {len(hypothetical_ids)} hypothetical nodes")
+
+        summary = f"\nValidated {validated} work(s)"
+        if total_errors:
+            print(f"{summary}, {total_errors} error(s) found")
+            sys.exit(1)
+        else:
+            print(f"{summary}, no errors")
+
     def handle_migrate(self):
         from pathlib import Path
         target = self.args.target
@@ -339,6 +481,13 @@ def main():
                               help="Check that every item file has a corresponding index entry")
     p.add_argument("--target", choices=["official", "draft", "all"], default="draft")
 
+    # validate-lineage
+    p = subparsers.add_parser("validate-lineage", parents=[parent_parser],
+                              help="Validate version lineage data integrity")
+    p.add_argument("--work-id", default=None, help="Validate a specific work (if omitted, validate all)")
+    p.add_argument("--target", choices=["official", "draft", "all"], default="draft")
+    p.add_argument("--verbose", action="store_true", help="Print detailed validation info")
+
     # migrate
     p = subparsers.add_parser("migrate", parents=[parent_parser],
                               help="Migrate old text_resources/image_resources to unified resources")
@@ -366,6 +515,7 @@ def main():
             "init-asset": handler.handle_init_asset,
             "add-resource": handler.handle_add_resource,
             "check-index": handler.handle_check_index,
+            "validate-lineage": handler.handle_validate_lineage,
             "migrate": handler.handle_migrate,
         }
 

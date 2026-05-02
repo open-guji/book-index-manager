@@ -188,3 +188,119 @@ class ResourceEntry:
         if not is_physical_only and not self.url:
             errors.append("url is required for non-physical resources")
         return errors
+
+
+@dataclass
+class LineageDerivation:
+    """版本派生关系（inherited_from）."""
+    ref: str = ""  # 祖本 ID（Book 或 hypothetical）
+    ref_type: str = "book"  # book | hypothetical
+    relation: str = ""  # reprint | revision | translation 等
+    confidence: str = "certain"  # certain | consensus | probable | disputed
+    evidence: Optional[str] = None
+    note: Optional[str] = None
+
+    def to_dict(self) -> dict:
+        d = {"ref": self.ref, "relation": self.relation, "confidence": self.confidence}
+        if self.ref_type != "book":
+            d["ref_type"] = self.ref_type
+        if self.evidence:
+            d["evidence"] = self.evidence
+        if self.note:
+            d["note"] = self.note
+        return d
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "LineageDerivation":
+        return cls(
+            ref=data.get("ref", ""),
+            ref_type=data.get("ref_type", "book"),
+            relation=data.get("relation", ""),
+            confidence=data.get("confidence", "certain"),
+            evidence=data.get("evidence"),
+            note=data.get("note"),
+        )
+
+
+@dataclass
+class LineageSibling:
+    """版本兄弟本关系（related_to）."""
+    book_id: str = ""
+    relation: str = ""  # variant | collation | abridged 等
+    confidence: str = "certain"
+    evidence: Optional[str] = None
+    note: Optional[str] = None
+
+    def to_dict(self) -> dict:
+        d = {"book_id": self.book_id, "relation": self.relation, "confidence": self.confidence}
+        if self.evidence:
+            d["evidence"] = self.evidence
+        if self.note:
+            d["note"] = self.note
+        return d
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "LineageSibling":
+        return cls(
+            book_id=data.get("book_id", ""),
+            relation=data.get("relation", ""),
+            confidence=data.get("confidence", "certain"),
+            evidence=data.get("evidence"),
+            note=data.get("note"),
+        )
+
+
+@dataclass
+class BookLineage:
+    """Book 的版本传承信息。"""
+    year: Optional[int] = None
+    year_text: Optional[str] = None
+    year_uncertain: bool = False
+    category: Optional[str] = None  # 抄本 | 刻本 | 石印本 等
+    status: Optional[str] = None  # extant | lost
+    extant_juan: Optional[str] = None  # 存世卷数，如 "16/120"
+    note: Optional[str] = None
+    derived_from: Optional[List[LineageDerivation]] = None
+    related_to: Optional[List[LineageSibling]] = None
+
+    def to_dict(self) -> dict:
+        d = {}
+        if self.year is not None:
+            d["year"] = self.year
+        if self.year_text:
+            d["year_text"] = self.year_text
+        if self.year_uncertain:
+            d["year_uncertain"] = True
+        if self.category:
+            d["category"] = self.category
+        if self.status:
+            d["status"] = self.status
+        if self.extant_juan:
+            d["extant_juan"] = self.extant_juan
+        if self.note:
+            d["note"] = self.note
+        if self.derived_from:
+            d["derived_from"] = [d.to_dict() for d in self.derived_from]
+        if self.related_to:
+            d["related_to"] = [r.to_dict() for r in self.related_to]
+        return d
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "BookLineage":
+        derived_from = None
+        if "derived_from" in data and data["derived_from"]:
+            derived_from = [LineageDerivation.from_dict(d) for d in data["derived_from"]]
+        related_to = None
+        if "related_to" in data and data["related_to"]:
+            related_to = [LineageSibling.from_dict(r) for r in data["related_to"]]
+        return cls(
+            year=data.get("year"),
+            year_text=data.get("year_text"),
+            year_uncertain=data.get("year_uncertain", False),
+            category=data.get("category"),
+            status=data.get("status"),
+            extant_juan=data.get("extant_juan"),
+            note=data.get("note"),
+            derived_from=derived_from,
+            related_to=related_to,
+        )
