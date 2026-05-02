@@ -214,19 +214,57 @@ function layoutGraph(
         edgesep: 16,
         marginx: 20,
         marginy: 20,
+        // 使用 tight-tree ranker 让节点更紧凑地靠近其父节点，减少远距离跨级连线
+        ranker: 'tight-tree',
+        // 多次迭代以减少交叉
+        // @ts-expect-error - dagre runtime supports these options
+        acyclicer: 'greedy',
     });
     g.setDefaultEdgeLabel(() => ({}));
 
     // 颜色查表
     const groupColor = new Map(graph.groups.map((gr) => [gr.id, gr.color ?? '#888']));
 
-    for (const n of graph.nodes) {
+    // 按 group + 时间排序节点，让同组节点尽量相邻，减少跨组交叉
+    const groupOrder = new Map(graph.groups.map((gr, idx) => [gr.id, idx]));
+    const sortedNodes = [...graph.nodes].sort((a, b) => {
+        const ga = a.group ? groupOrder.get(a.group) ?? 999 : 999;
+        const gb = b.group ? groupOrder.get(b.group) ?? 999 : 999;
+        if (ga !== gb) return ga - gb;
+        // 同组内按年份升序
+        const ya = a.year ?? a.year_range?.[0] ?? 9999;
+        const yb = b.year ?? b.year_range?.[0] ?? 9999;
+        return ya - yb;
+    });
+
+    for (const n of sortedNodes) {
         g.setNode(n.id, { width: NODE_W, height: NODE_H });
     }
+
+    // 次要派生关系（如"配补"、"参校"）：对布局的引力较弱，避免把跨组节点拉到错误位置
+    const SECONDARY_RELATIONS = new Set(['配补', '参校', '参考', '佚文輯入']);
+
     // 兄弟边不影响 layout（它们是横向，dagre 会拉直，反而扭曲），仅 derive 边参与
+    const nodeMap = new Map(graph.nodes.map((n) => [n.id, n]));
     for (const e of graph.edges) {
         if (e.kind === 'derive') {
-            g.setEdge(e.source, e.target);
+            const sourceNode = nodeMap.get(e.source);
+            const targetNode = nodeMap.get(e.target);
+            const sameGroup = sourceNode?.group && sourceNode.group === targetNode?.group;
+            const isSecondary = SECONDARY_RELATIONS.has(e.relation as string);
+
+            // weight 越大，dagre 越倾向于让这条边变短/直
+            // - 次要关系（配补/参校）：weight=0，几乎不影响布局，避免跨组拉扯
+            // - 同组主关系：weight=3，让同组节点紧密靠近
+            // - 跨组主关系：weight=1，正常派生
+            let weight = 1;
+            if (isSecondary) weight = 0;
+            else if (sameGroup) weight = 3;
+
+            g.setEdge(e.source, e.target, {
+                weight,
+                minlen: isSecondary ? 0 : 1,
+            });
         }
     }
     dagre.layout(g);
