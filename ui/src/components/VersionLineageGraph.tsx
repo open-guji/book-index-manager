@@ -244,28 +244,28 @@ function layoutGraph(
     // 次要派生关系（如"配补"、"参校"）：对布局的引力较弱，避免把跨组节点拉到错误位置
     const SECONDARY_RELATIONS = new Set(['配补', '参校', '参考', '佚文輯入']);
 
-    // 兄弟边不影响 layout（它们是横向，dagre 会拉直，反而扭曲），仅 derive 边参与
+    // 仅 derive 边参与 layout（兄弟边横向，dagre 会拉直反而扭曲）
+    // 进一步：跨组的次要关系完全跳过，避免布局错乱（蒙府本配补程甲本就是这种情况）
     const nodeMap = new Map(graph.nodes.map((n) => [n.id, n]));
     for (const e of graph.edges) {
-        if (e.kind === 'derive') {
-            const sourceNode = nodeMap.get(e.source);
-            const targetNode = nodeMap.get(e.target);
-            const sameGroup = sourceNode?.group && sourceNode.group === targetNode?.group;
-            const isSecondary = SECONDARY_RELATIONS.has(e.relation as string);
+        if (e.kind !== 'derive') continue;
 
-            // weight 越大，dagre 越倾向于让这条边变短/直
-            // - 次要关系（配补/参校）：weight=0，几乎不影响布局，避免跨组拉扯
-            // - 同组主关系：weight=3，让同组节点紧密靠近
-            // - 跨组主关系：weight=1，正常派生
-            let weight = 1;
-            if (isSecondary) weight = 0;
-            else if (sameGroup) weight = 3;
+        const sourceNode = nodeMap.get(e.source);
+        const targetNode = nodeMap.get(e.target);
+        const sameGroup = sourceNode?.group && sourceNode.group === targetNode?.group;
+        const isSecondary = SECONDARY_RELATIONS.has(e.relation as string);
 
-            g.setEdge(e.source, e.target, {
-                weight,
-                minlen: isSecondary ? 0 : 1,
-            });
-        }
+        // 跨组的次要关系：完全不参与 layout（边仍然在 rfEdges 中显示）
+        if (isSecondary && !sameGroup) continue;
+
+        // weight 越大，dagre 越倾向于让这条边变短/直
+        // - 同组主关系：weight=3，让同组节点紧密靠近
+        // - 跨组主关系：weight=1，正常派生
+        // - 同组次要关系：weight=1，不强求紧贴
+        let weight = 1;
+        if (sameGroup && !isSecondary) weight = 3;
+
+        g.setEdge(e.source, e.target, { weight, minlen: 1 });
     }
     dagre.layout(g);
 
