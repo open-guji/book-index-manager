@@ -269,6 +269,18 @@ function layoutGraph(
 function buildRfEdge(e: LineageGraphEdge) {
     const probable = e.confidence === 'probable' || e.confidence === 'disputed';
     const isSibling = e.kind === 'sibling';
+    const color = confidenceColor(e.confidence);
+
+    // 箭头方向：
+    // - 派生关系（derive）：单向，source（父本）→ target（子本）
+    // - 兄弟本（sibling）：双向，互为对等关系
+    const arrowMarker = {
+        type: 'arrowclosed' as const,
+        color,
+        width: 14,
+        height: 14,
+    };
+
     return {
         id: e.id,
         source: e.source,
@@ -281,7 +293,7 @@ function buildRfEdge(e: LineageGraphEdge) {
         labelStyle: {
             fontSize: 11,
             fontWeight: 500,
-            fill: confidenceColor(e.confidence),
+            fill: color,
         } as React.CSSProperties,
         labelBgPadding: [4, 6] as [number, number],
         labelBgBorderRadius: 4,
@@ -293,13 +305,15 @@ function buildRfEdge(e: LineageGraphEdge) {
         } as React.CSSProperties,
         labelShowBg: true,
         style: {
-            stroke: confidenceColor(e.confidence),
+            stroke: color,
             strokeWidth: isSibling ? 1 : 1.5,
             strokeDasharray: isSibling ? '4 3' : probable ? '6 4' : undefined,
             opacity: probable ? 0.75 : 1,
         } as React.CSSProperties,
         animated: false,
-        markerEnd: isSibling ? undefined : 'arrow',
+        // 兄弟本：双向箭头；派生关系：单向（source→target）
+        markerEnd: arrowMarker,
+        markerStart: isSibling ? arrowMarker : undefined,
         zIndex: 1000,   // 让边及其标签显示在节点之上
     };
 }
