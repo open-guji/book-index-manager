@@ -214,59 +214,27 @@ function layoutGraph(
         edgesep: 16,
         marginx: 20,
         marginy: 20,
-        // 使用 tight-tree ranker 让节点更紧凑地靠近其父节点，减少远距离跨级连线
-        ranker: 'tight-tree',
-        // 多次迭代以减少交叉
-        // @ts-expect-error - dagre runtime supports these options
-        acyclicer: 'greedy',
     });
     g.setDefaultEdgeLabel(() => ({}));
 
     // 颜色查表
     const groupColor = new Map(graph.groups.map((gr) => [gr.id, gr.color ?? '#888']));
 
-    // 按 group + 时间排序节点，让同组节点尽量相邻，减少跨组交叉
-    const groupOrder = new Map(graph.groups.map((gr, idx) => [gr.id, idx]));
-    const sortedNodes = [...graph.nodes].sort((a, b) => {
-        const ga = a.group ? groupOrder.get(a.group) ?? 999 : 999;
-        const gb = b.group ? groupOrder.get(b.group) ?? 999 : 999;
-        if (ga !== gb) return ga - gb;
-        // 同组内按年份升序
-        const ya = a.year ?? a.year_range?.[0] ?? 9999;
-        const yb = b.year ?? b.year_range?.[0] ?? 9999;
-        return ya - yb;
-    });
-
-    for (const n of sortedNodes) {
+    for (const n of graph.nodes) {
         g.setNode(n.id, { width: NODE_W, height: NODE_H });
     }
 
-    // 次要派生关系（如"配补"、"参校"）：对布局的引力较弱，避免把跨组节点拉到错误位置
-    const SECONDARY_RELATIONS = new Set(['配补', '参校', '参考', '佚文輯入']);
+    // "配补"关系是反向连接（脂本子节点反过来引用程高刻本来补全后40回），
+    // 它会把脂本节点错误地拉到 fanke 组中间，破坏布局。完全跳过 layout，仅在图中显示这条边。
+    // 其他次要关系（如"参校"）仍然参与 layout，因为它们是正向时间线（如程甲本参校 transit 抄本）
+    const SKIP_LAYOUT_RELATIONS = new Set(['配补']);
 
-    // 仅 derive 边参与 layout（兄弟边横向，dagre 会拉直反而扭曲）
-    // 进一步：跨组的次要关系完全跳过，避免布局错乱（蒙府本配补程甲本就是这种情况）
-    const nodeMap = new Map(graph.nodes.map((n) => [n.id, n]));
     for (const e of graph.edges) {
         if (e.kind !== 'derive') continue;
-
-        const sourceNode = nodeMap.get(e.source);
-        const targetNode = nodeMap.get(e.target);
-        const sameGroup = sourceNode?.group && sourceNode.group === targetNode?.group;
-        const isSecondary = SECONDARY_RELATIONS.has(e.relation as string);
-
-        // 跨组的次要关系：完全不参与 layout（边仍然在 rfEdges 中显示）
-        if (isSecondary && !sameGroup) continue;
-
-        // weight 越大，dagre 越倾向于让这条边变短/直
-        // - 同组主关系：weight=3，让同组节点紧密靠近
-        // - 跨组主关系：weight=1，正常派生
-        // - 同组次要关系：weight=1，不强求紧贴
-        let weight = 1;
-        if (sameGroup && !isSecondary) weight = 3;
-
-        g.setEdge(e.source, e.target, { weight, minlen: 1 });
+        if (SKIP_LAYOUT_RELATIONS.has(e.relation as string)) continue;
+        g.setEdge(e.source, e.target);
     }
+
     dagre.layout(g);
 
     const rfNodes = graph.nodes.map((n) => {
