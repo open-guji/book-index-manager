@@ -1,4 +1,5 @@
 import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress, RecommendedData } from '../types';
+import type { LineageGraph } from '../core/lineage-graph';
 
 /**
  * 索引数据存储接口
@@ -89,6 +90,11 @@ export interface IndexStorage {
 
     /** 获取整理本单卷原文 md（返回 markdown 字符串，无则 null） */
     getCollatedJuanText?(workId: string, juanFile: string): Promise<string | null>;
+
+    // ── 版本传承（可选） ──
+
+    /** 获取版本传承图数据 */
+    getLineageGraph?(workId: string): Promise<LineageGraph | null>;
 
     // ── 资源导入进度（可选） ──
 

@@ -664,6 +664,19 @@ export class BundleStorage implements IndexStorage {
         }
     }
 
+    // ─── 版本传承 ───
+
+    async getLineageGraph(workId: string): Promise<any | null> {
+        const version = await this.ensureVersion();
+        const url = `${this.basePath}/items/${workId}/lineage_graph.json`;
+        const fullUrl = version ? `${url}?v=${version}` : url;
+        try {
+            return await this.fetchJson<any>(fullUrl);
+        } catch {
+            return null;
+        }
+    }
+
     // ─── 资源导入进度 ───
 
     async getCatalogProgress(): Promise<ResourceProgress | null> {
