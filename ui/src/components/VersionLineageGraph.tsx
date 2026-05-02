@@ -371,10 +371,11 @@ function buildRfEdge(e: LineageGraphEdge) {
         // 自定义边类型：把 label 放在靠近 target 的水平段（见 LineageEdge）
         type: 'lineage' as const,
         label: e.relation,
+        // 标签字色统一为深灰（保持视觉简洁），confidence 通过线条颜色和样式表达
         // labelStyle/labelBgStyle 通过 data 传给自定义边组件
         data: {
             labelStyle: {
-                color,
+                color: '#444',
             } as React.CSSProperties,
         },
         style: {
