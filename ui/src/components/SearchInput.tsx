@@ -87,6 +87,9 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    // IME composition 期间不向上抛 onChange — 否则中文拼音输入还在选字时
+    // 上层就 router.push(?q=...) 触发重渲染，把 input 切走，IME 中断。
+    const isComposingRef = useRef(false);
 
     // Update suggestions when value changes — 走 transport.searchAll（worker 索引），
     // 不再拉 23 MB 的 index.json。
@@ -238,7 +241,17 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                 placeholder={placeholder}
                 value={value}
                 onChange={e => {
+                    // IME composition 期间不上抛 — 上层会 router.push 把 input 切走，
+                    // 中断中文拼音选字。compositionend 后会再发一次 onChange，那时再上抛。
+                    if (isComposingRef.current) return;
                     onChange(e.target.value);
+                    setShowDropdown(true);
+                }}
+                onCompositionStart={() => { isComposingRef.current = true; }}
+                onCompositionEnd={e => {
+                    isComposingRef.current = false;
+                    // composition 结束时手动上抛一次，因为这次 onChange 已经被守卫吃掉了
+                    onChange((e.target as HTMLInputElement).value);
                     setShowDropdown(true);
                 }}
                 onFocus={() => {

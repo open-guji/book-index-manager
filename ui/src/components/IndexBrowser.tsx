@@ -210,17 +210,20 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
 
     const handleInputChange = useCallback((value: string) => {
         setSearchQuery(value);
-        onQueryChange?.(value);
         if (!value.trim()) {
+            // 清空时立即同步给上层（router.push 回 /book-index 不带 q，无副作用）
+            onQueryChange?.(value);
             setShowingRecent(true);
             setSearchResults(null);
             setExpandedType(null);
             return;
         }
-        // debounce search
+        // debounce — 上抛 onQueryChange 也走同一个 timer，避免每个字符都 router.push
+        // 触发 page re-render 中断用户输入（尤其是 IME 拼音）。
         if (debounceRef.current) clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => {
             setExpandedType(null);
+            onQueryChange?.(value);
             doSearch(value);
         }, DEBOUNCE_MS);
     }, [doSearch, onQueryChange]);
