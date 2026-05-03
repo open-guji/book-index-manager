@@ -8,6 +8,7 @@ from .id_generator import BookIndexType, BookIndexStatus, BookIndexIdGenerator, 
 from .logger import logger
 from .exceptions import StorageError
 from .migration import migrate_metadata
+from .entry_extractor import build_index_entry, build_entity_index_entry
 
 
 NUM_SHARDS = 16
@@ -347,146 +348,14 @@ class BookIndexStorage:
 
     # ── Entry extraction ──
 
-    @staticmethod
-    def _extract_titles_list(raw) -> List[str]:
-        if not isinstance(raw, list):
-            return []
-        result = []
-        for t in raw:
-            if isinstance(t, str) and t:
-                result.append(t)
-            elif isinstance(t, dict) and t.get("book_title"):
-                result.append(t["book_title"])
-        return result
-
+    # 字段提取逻辑已搬到 entry_extractor.py（纯函数，无 self 依赖，
+    # 可独立测试和复用）。这里保留 method 入口，方便老代码继续调用，
+    # 也避免改外部 API。
     def _build_index_entry(self, metadata: dict, type_val: BookIndexType, rel_path: str) -> dict:
-        """Extract all index fields from a metadata dict. Returns the index entry."""
-        id_str = metadata.get("id") or metadata.get("ID", "")
-
-        if type_val == BookIndexType.Entity:
-            return self._build_entity_index_entry(metadata, id_str, rel_path)
-
-        title = metadata.get("title", "未命名")
-
-        author_name = ""
-        author_dynasty = ""
-        author_role = ""
-        authors = metadata.get("authors", [])
-        if isinstance(authors, list) and len(authors) > 0:
-            if isinstance(authors[0], dict):
-                author_name = authors[0].get("name", "")
-                author_dynasty = authors[0].get("dynasty", "")
-                author_role = authors[0].get("role", "")
-            else:
-                author_name = str(authors[0])
-        elif isinstance(authors, str):
-            author_name = authors
-
-        year = ""
-        pub = metadata.get("publication_info")
-        if isinstance(pub, dict):
-            year = pub.get("year", "")
-        elif isinstance(pub, str):
-            year = pub
-
-        holder = ""
-        loc = metadata.get("current_location")
-        if isinstance(loc, dict):
-            holder = loc.get("name", "")
-        elif isinstance(loc, str):
-            holder = loc
-
-        juan_count = 0
-        vc = metadata.get("juan_count")
-        if isinstance(vc, dict):
-            juan_count = vc.get("number", 0) or 0
-        elif isinstance(vc, (int, float)):
-            juan_count = int(vc)
-
-        measure_info = metadata.get("measure_info", "") or ""
-
-        edition = metadata.get("edition", "")
-        subtype = metadata.get("subtype", "")
-        additional_titles = self._extract_titles_list(metadata.get("additional_titles", []))
-        attached_texts = self._extract_titles_list(metadata.get("attached_texts", []))
-
-        has_text = False
-        has_image = False
-        resources = metadata.get("resources", [])
-        if isinstance(resources, list):
-            for r in resources:
-                if not isinstance(r, dict):
-                    continue
-                # 优先读 types（新格式数组），回退到 type（旧格式字符串）
-                types_arr = r.get("types")
-                if isinstance(types_arr, list) and types_arr:
-                    if "text" in types_arr:
-                        has_text = True
-                    if "image" in types_arr:
-                        has_image = True
-                else:
-                    rt = r.get("type", "")
-                    if rt in ("text", "text+image"):
-                        has_text = True
-                    if rt in ("image", "text+image"):
-                        has_image = True
-
-        entry: dict = {"id": id_str, "title": title, "type": type_val.name, "path": rel_path}
-        if author_name:
-            entry["author"] = author_name
-        if year:
-            entry["year"] = year
-        if holder:
-            entry["holder"] = holder
-        if author_dynasty:
-            entry["dynasty"] = author_dynasty
-        if author_role:
-            entry["role"] = author_role
-        if juan_count:
-            entry["juan_count"] = juan_count
-        if measure_info:
-            entry["measure_info"] = measure_info
-        if additional_titles:
-            entry["additional_titles"] = additional_titles
-        if attached_texts:
-            entry["attached_texts"] = attached_texts
-        if has_text:
-            entry["has_text"] = True
-        if has_image:
-            entry["has_image"] = True
-        if edition:
-            entry["edition"] = edition
-        if subtype:
-            entry["subtype"] = subtype
-        return entry
+        return build_index_entry(metadata, type_val, rel_path)
 
     def _build_entity_index_entry(self, metadata: dict, id_str: str, rel_path: str) -> dict:
-        """Build index entry for Entity type (people/place/dynasty/...)."""
-        subtype = metadata.get("subtype", "people")
-        primary_name = metadata.get("primary_name", "")
-        dynasty = metadata.get("dynasty", "")
-        birth_year = metadata.get("birth_year")
-        death_year = metadata.get("death_year")
-
-        external = metadata.get("external_ids") or {}
-        cbdb_id = external.get("cbdb_id") if isinstance(external, dict) else None
-
-        entry: dict = {
-            "id": id_str,
-            "type": "entity",
-            "subtype": subtype,
-            "primary_name": primary_name,
-            "path": rel_path,
-        }
-        if dynasty:
-            entry["dynasty"] = dynasty
-        if birth_year is not None:
-            entry["birth_year"] = birth_year
-        if death_year is not None:
-            entry["death_year"] = death_year
-        if cbdb_id is not None:
-            entry["cbdb_id"] = cbdb_id
-        return entry
+        return build_entity_index_entry(metadata, id_str, rel_path)
 
     def _process_type_for_rebuild(self, root: Path, type_val: BookIndexType) -> Dict[int, Dict]:
         """Scan one type directory and return shard_num → {id: entry} for deep reindex."""
