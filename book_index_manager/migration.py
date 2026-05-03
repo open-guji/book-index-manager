@@ -6,17 +6,9 @@ from pathlib import Path
 from typing import Dict, List, Any, Tuple
 
 from .schema import ResourceEntry, extract_id_from_url
+from ._utils import strip_nulls as _strip_nulls
 
 logger = logging.getLogger(__name__)
-
-
-def _strip_nulls(obj):
-    """递归移除 dict 中值为 None 的字段。"""
-    if isinstance(obj, dict):
-        return {k: _strip_nulls(v) for k, v in obj.items() if v is not None}
-    if isinstance(obj, list):
-        return [_strip_nulls(item) for item in obj]
-    return obj
 
 
 def migrate_old_resource(item: dict, resource_type: str) -> dict:

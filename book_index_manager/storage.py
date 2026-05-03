@@ -34,13 +34,26 @@ def shard_of(id_str: str, n: int = NUM_SHARDS) -> int:
     return h % n
 
 
-def strip_nulls(obj):
-    """递归移除 dict 中值为 None 的字段。"""
-    if isinstance(obj, dict):
-        return {k: strip_nulls(v) for k, v in obj.items() if v is not None}
-    if isinstance(obj, list):
-        return [strip_nulls(item) for item in obj]
-    return obj
+# strip_nulls 移到 _utils 避免与 migration 形成循环 import；
+# 仍 re-export 以保持向后兼容。
+from ._utils import strip_nulls  # noqa: F401
+
+
+# 历史数据中文 key → 当前 schema 英文 key 的迁移表。
+# 在 _migrate_keys 中使用，仅当 metadata 同时缺英文 key 时才迁移
+# （避免覆盖已规范化的字段）。
+LEGACY_KEY_MAP: dict[str, str] = {
+    "书名": "title",
+    "作品名": "title",
+    "作者": "authors",
+    "收录于": "contained_in",
+    "出版年份": "publication_info",
+    "现藏于": "current_location",
+    "页数": "page_count",
+    "册数": "juan_count",
+    "首页图片": "first_image",
+    "介绍": "description",
+}
 
 
 class BookIndexStorage:
@@ -207,21 +220,9 @@ class BookIndexStorage:
 
     def _migrate_keys(self, metadata: dict):
         """Migrate old Chinese keys and old resource format to new schema."""
-        # Chinese key → English key
-        key_mapping = {
-            "书名": "title",
-            "作品名": "title",
-            "作者": "authors",
-            "收录于": "contained_in",
-            "出版年份": "publication_info",
-            "现藏于": "current_location",
-            "页数": "page_count",
-            "册数": "juan_count",
-            "首页图片": "first_image",
-            "介绍": "description",
-        }
-
-        for zh_key, en_key in key_mapping.items():
+        # 中文 → 英文 key 映射定义在 module-level（LEGACY_KEY_MAP），
+        # 方便外部测试 / 文档引用。
+        for zh_key, en_key in LEGACY_KEY_MAP.items():
             if zh_key in metadata and en_key not in metadata:
                 val = metadata.pop(zh_key)
                 if en_key == "authors":
