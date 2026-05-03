@@ -180,21 +180,7 @@ function WorksSection({ works, transport, onNavigate, renderLink }: {
                     if (allHit) return m;
                 } catch { /* fallback */ }
             }
-            // 2. 全量缓存路径（GithubStorage / BundleStorage）
-            if (transport.getAllEntries) {
-                try {
-                    const all = await transport.getAllEntries();
-                    const lookup = new Map(all.map(e => [e.id, e.title || (e as IndexEntry).primary_name || e.id]));
-                    let allHit = true;
-                    for (const wid of ids) {
-                        const t = lookup.get(wid);
-                        if (t) m.set(wid, t);
-                        else allHit = false;
-                    }
-                    if (allHit) return m;
-                } catch { /* fallback */ }
-            }
-            // 2. 限并发 8，逐个 getEntry/getItem
+            // 2. 限并发 8，逐个 getEntry/getItem（chunk 缓存内部去重）
             const queue = [...ids];
             const concurrency = 8;
             const workers = new Array(concurrency).fill(0).map(async () => {

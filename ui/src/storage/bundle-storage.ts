@@ -13,45 +13,8 @@ import type {
     CollatedJuan,
 } from '../types';
 import type { IndexCounts } from './types';
-import { rankByRelevance, rankByRelevanceWithSimplified } from '../core/storage';
-import type { SearchSIndex } from '../core/storage';
 import { normalizeCatalog } from '../core/normalize-catalog';
 import { extractType } from '../id';
-
-/**
- * index.json 中的条目格式（与 GithubStorage 相同）
- */
-interface BundleIndexItem {
-    id: string;
-    title?: string;
-    name?: string;
-    path: string;
-    type?: string;
-    author?: string;
-    dynasty?: string;
-    role?: string;
-    year?: string;
-    holder?: string;
-    additional_titles?: string[];
-    attached_texts?: string[];
-    edition?: string;
-    juan_count?: number;
-    has_text?: boolean;
-    has_image?: boolean;
-    has_collated?: boolean;
-    subtype?: string;
-    primary_name?: string;
-    birth_year?: number;
-    death_year?: number;
-    cbdb_id?: number;
-}
-
-interface BundleIndexResponse {
-    books?: Record<string, BundleIndexItem>;
-    collections?: Record<string, BundleIndexItem>;
-    works?: Record<string, BundleIndexItem>;
-    entities?: Record<string, BundleIndexItem>;
-}
 
 export interface BundleStorageConfig {
     /** chunk 文件的基础路径，默认 '/data' */
@@ -69,10 +32,12 @@ const DEFAULT_TIMEOUT = 10000;
  * 从同域预打包的 chunk 文件中读取索引数据。
  * 构建时由 bundle-data 脚本将散落的 JSON 文件打包为少量 chunk。
  *
- * 数据分层：
- * - L0: /data/index.json — 全局索引（启动时加载一次）
- * - L1: /data/chunks/{prefix}.json — 按 ID 前两字符分桶的详情数据
+ * 数据分层（已剥离 L0 — 23 MB 的 index.json 不再生成）：
+ * - L1: /data/chunks/{prefix}.json — 按 ID 前缀分桶的详情数据
  * - L2: /data/tiyao/juan-{start}-{end}.json — 整理本提要（按卷组）
+ *
+ * 搜索由 worker 索引承担（kaiyuanguji-web 内置），BundleStorage.search* /
+ * loadEntries / getAllEntries 已废弃，调用即抛错。
  *
  * 写操作（saveItem/deleteItem/generateId）抛出异常。
  */
@@ -81,24 +46,14 @@ export class BundleStorage implements IndexStorage {
     private timeout: number;
 
     // 缓存
-    private indexCache: IndexEntry[] | null = null;
-    private indexLoading: Promise<IndexEntry[]> | null = null;
-    private pathMap: Map<string, { path: string; isDraft: boolean }> = new Map();
     private chunkCache = new Map<string, Record<string, unknown>>();
     private chunkLoading = new Map<string, Promise<Record<string, unknown>>>();
     private manifest: string[] | null = null;
     private manifestLoading: Promise<string[]> | null = null;
     private tiyaoCache = new Map<string, Record<string, unknown>>();
     private tiyaoLoading = new Map<string, Promise<Record<string, unknown>>>();
-    private searchSCache: SearchSIndex | null = null;
-    private searchSLoading: Promise<SearchSIndex> | null = null;
-    private searchSLoaded = false;
     private metaCache: IndexCounts | null = null;
     private metaLoading: Promise<IndexCounts | null> | null = null;
-    /** null = 已尝试加载 meta.json 但失败/缺失（fallback 到 ensureLoaded） */
-    private metaTried = false;
-    private t2sConverter: ((text: string) => string) | null | false = null; // null=未加载, false=不可用
-    private t2sLoading: Promise<((text: string) => string) | null> | null = null;
 
     /** 数据版本（commitId 前 12 位）。null=已尝试加载但失败；undefined=未加载 */
     private version: string | null | undefined = undefined;
@@ -153,116 +108,6 @@ export class BundleStorage implements IndexStorage {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         return response.json();
-    }
-
-    // ─── L0: 索引层 ───
-
-    private async ensureLoaded(): Promise<IndexEntry[]> {
-        if (this.indexCache) return this.indexCache;
-        if (this.indexLoading) return this.indexLoading;
-
-        this.indexLoading = (async () => {
-            const data = await this.fetchJson<BundleIndexResponse>(
-                `${this.basePath}/index.json`
-            );
-
-            const entries: IndexEntry[] = [];
-            const typeMap: [keyof BundleIndexResponse, IndexType][] = [
-                ['books', 'book'],
-                ['collections', 'collection'],
-                ['works', 'work'],
-                ['entities', 'entity'],
-            ];
-
-            for (const [key, type] of typeMap) {
-                const items = data[key];
-                if (!items) continue;
-                for (const item of Object.values(items)) {
-                    const displayTitle = type === 'entity'
-                        ? (item.primary_name || item.title || item.name || item.id)
-                        : (item.title || item.name || item.id);
-                    entries.push({
-                        id: item.id,
-                        title: displayTitle,
-                        type,
-                        isDraft: true, // bundle 目前只打包 draft 数据
-                        author: item.author,
-                        dynasty: item.dynasty,
-                        role: item.role,
-                        path: item.path,
-                        additional_titles: item.additional_titles?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
-                        attached_texts: item.attached_texts?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
-                        edition: item.edition,
-                        juan_count: item.juan_count,
-                        has_text: item.has_text,
-                        has_image: item.has_image,
-                        has_collated: item.has_collated,
-                        subtype: item.subtype,
-                        primary_name: item.primary_name,
-                        birth_year: item.birth_year,
-                        death_year: item.death_year,
-                        cbdb_id: item.cbdb_id,
-                    });
-                    this.pathMap.set(item.id, { path: item.path, isDraft: true });
-                }
-            }
-
-            this.indexCache = entries;
-            return entries;
-        })();
-
-        try {
-            return await this.indexLoading;
-        } finally {
-            // 失败时清掉 inflight，下次调用可重试；成功时已 cache，inflight 不再被读到
-            if (!this.indexCache) this.indexLoading = null;
-        }
-    }
-
-    /** 加载简体搜索索引（search_s.json），加载失败时降级为空对象 */
-    private async ensureSearchSLoaded(): Promise<SearchSIndex> {
-        if (this.searchSLoaded) return this.searchSCache ?? {};
-        if (this.searchSLoading) return this.searchSLoading;
-        this.searchSLoading = (async () => {
-            try {
-                const data = await this.fetchJson<SearchSIndex>(
-                    `${this.basePath}/search_s.json`
-                );
-                this.searchSCache = data;
-            } catch {
-                this.searchSCache = {};
-            }
-            this.searchSLoaded = true;
-            return this.searchSCache!;
-        })();
-        try {
-            return await this.searchSLoading;
-        } finally {
-            if (!this.searchSLoaded) this.searchSLoading = null;
-        }
-    }
-
-    /** 懒加载 opencc-js 繁→简转换器，不可用时降级 */
-    private async ensureT2S(): Promise<((text: string) => string) | null> {
-        if (this.t2sConverter === false) return null;
-        if (this.t2sConverter) return this.t2sConverter;
-        if (this.t2sLoading) return this.t2sLoading;
-        this.t2sLoading = (async () => {
-            try {
-                const OpenCC = await import('opencc-js');
-                this.t2sConverter = OpenCC.Converter({ from: 'tw', to: 'cn' });
-                return this.t2sConverter;
-            } catch {
-                this.t2sConverter = false;
-                return null;
-            }
-        })();
-        try {
-            return await this.t2sLoading;
-        } finally {
-            // 加载完毕（成功或失败）后清掉 inflight，t2sConverter 字段成为 source of truth
-            this.t2sLoading = null;
-        }
     }
 
     // ─── L1: 详情 chunk ───
@@ -367,60 +212,29 @@ export class BundleStorage implements IndexStorage {
 
     // ─── IndexStorage 实现 ───
 
-    /**
-     * 获取轻量元数据（< 1 KB）。优先读 /data/meta.json；
-     * 若该文件不存在（旧 bundle），回退到 ensureLoaded 计算。
-     */
+    /** 获取轻量元数据（< 1 KB）。仅读 /data/meta.json，无 fallback。 */
     async getCounts(): Promise<IndexCounts> {
         if (this.metaCache) return this.metaCache;
         if (this.metaLoading) {
             const r = await this.metaLoading;
             if (r) return r;
-        } else {
-            this.metaLoading = (async () => {
-                try {
-                    const data = await this.fetchJson<IndexCounts>(`${this.basePath}/meta.json`);
-                    if (data && typeof data.works === 'number') {
-                        this.metaCache = data;
-                        return data;
-                    }
-                } catch {
-                    // missing or malformed — fall back below
-                }
-                this.metaTried = true;
-                return null;
-            })();
-            try {
-                const r = await this.metaLoading;
-                if (r) return r;
-            } finally {
-                this.metaLoading = null;
+            throw new Error('BundleStorage: meta.json 加载失败');
+        }
+        this.metaLoading = (async () => {
+            const data = await this.fetchJson<IndexCounts>(`${this.basePath}/meta.json`);
+            if (!data || typeof data.works !== 'number') {
+                throw new Error('BundleStorage: meta.json 格式无效');
             }
+            this.metaCache = data;
+            return data;
+        })();
+        try {
+            const r = await this.metaLoading;
+            if (!r) throw new Error('BundleStorage: meta.json 加载失败');
+            return r;
+        } finally {
+            this.metaLoading = null;
         }
-
-        // Fallback: count from in-memory index (will trigger ensureLoaded once,
-        // dedup'd with any concurrent caller).
-        const all = await this.ensureLoaded();
-        let works = 0, books = 0, collections = 0, entities = 0;
-        let hasText = 0, hasImage = 0;
-        const subtypeStats: Record<string, number> = {};
-        for (const e of all) {
-            if (e.type === 'work') {
-                works++;
-                if (e.has_text) hasText++;
-                if (e.has_image) hasImage++;
-                if (e.subtype) subtypeStats[e.subtype] = (subtypeStats[e.subtype] ?? 0) + 1;
-            } else if (e.type === 'book') books++;
-            else if (e.type === 'collection') collections++;
-            else if (e.type === 'entity') entities++;
-        }
-        const result: IndexCounts = {
-            works, books, collections, entities,
-            resourceCounts: { hasText, hasImage },
-            subtypeStats,
-        };
-        this.metaCache = result;
-        return result;
     }
 
     async getResourceCounts(): Promise<{ hasText: number; hasImage: number }> {
@@ -433,80 +247,17 @@ export class BundleStorage implements IndexStorage {
         return counts.subtypeStats ?? {};
     }
 
-    async loadEntries(type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>> {
-        const all = await this.ensureLoaded();
-        let filtered = all.filter(e => e.type === type);
-
-        const sortBy = options.sortBy || 'title';
-        const sortOrder = options.sortOrder || 'asc';
-        filtered.sort((a, b) => {
-            const aVal = String((a as unknown as Record<string, unknown>)[sortBy] ?? '');
-            const bVal = String((b as unknown as Record<string, unknown>)[sortBy] ?? '');
-            const cmp = aVal.localeCompare(bVal, 'zh');
-            return sortOrder === 'asc' ? cmp : -cmp;
-        });
-
-        const page = options.page || 1;
-        const pageSize = options.pageSize || 50;
-        const start = (page - 1) * pageSize;
-
-        return {
-            entries: filtered.slice(start, start + pageSize),
-            total: filtered.length,
-            page,
-            pageSize,
-        };
+    /** 已废弃 — index.json 已剥离，搜索/列表必须走 worker 索引。 */
+    async loadEntries(_type: IndexType, _options: LoadOptions): Promise<PageResult<IndexEntry>> {
+        throw new Error('BundleStorage.loadEntries 已废弃：请使用 worker 搜索');
     }
 
-    async search(query: string, type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>> {
-        const all = await this.ensureLoaded();
-        const searchS = await this.ensureSearchSLoaded();
-        const t2s = await this.ensureT2S();
-        const typeFiltered = all.filter(e => e.type === type);
-
-        const queryS = t2s ? t2s(query) : undefined;
-        const hasSimplified = Object.keys(searchS).length > 0;
-        const ranked = hasSimplified
-            ? rankByRelevanceWithSimplified(typeFiltered, query, queryS, searchS)
-            : rankByRelevance(typeFiltered, query);
-
-        const page = options.page || 1;
-        const pageSize = options.pageSize || 50;
-        const start = (page - 1) * pageSize;
-
-        return {
-            entries: ranked.slice(start, start + pageSize),
-            total: ranked.length,
-            page,
-            pageSize,
-        };
+    async search(_query: string, _type: IndexType, _options: LoadOptions): Promise<PageResult<IndexEntry>> {
+        throw new Error('BundleStorage.search 已废弃：请使用 worker 搜索');
     }
 
-    async searchAll(query: string, limit: number = 5): Promise<GroupedSearchResult> {
-        const all = await this.ensureLoaded();
-        const searchS = await this.ensureSearchSLoaded();
-        const t2s = await this.ensureT2S();
-        const types: IndexType[] = ['work', 'book', 'collection', 'entity'];
-
-        const queryS = t2s ? t2s(query) : undefined;
-        const hasSimplified = Object.keys(searchS).length > 0;
-        const results = types.map(t => {
-            const filtered = all.filter(e => e.type === t);
-            return hasSimplified
-                ? rankByRelevanceWithSimplified(filtered, query, queryS, searchS)
-                : rankByRelevance(filtered, query);
-        });
-
-        return {
-            works: results[0].slice(0, limit),
-            books: results[1].slice(0, limit),
-            collections: results[2].slice(0, limit),
-            entities: results[3].slice(0, limit),
-            totalWorks: results[0].length,
-            totalBooks: results[1].length,
-            totalCollections: results[2].length,
-            totalEntities: results[3].length,
-        };
+    async searchAll(_query: string, _limit: number = 5): Promise<GroupedSearchResult> {
+        throw new Error('BundleStorage.searchAll 已废弃：请使用 worker 搜索');
     }
 
     async getItem(id: string): Promise<Record<string, unknown> | null> {
@@ -528,51 +279,45 @@ export class BundleStorage implements IndexStorage {
         }
     }
 
-    /**
-     * 优先用 chunk 构造 IndexEntry，避免触发 ensureLoaded() 拉全量 index.json。
-     * 旧 bundle 没有把 has_collated 等字段注入 chunk 时回退到 ensureLoaded。
-     */
+    /** 从 chunk 读取详情构造 IndexEntry。chunk miss 即返回 null（无 fallback）。 */
     async getEntry(id: string): Promise<IndexEntry | null> {
         try {
             const chunk = await this.loadChunkForId(id);
             const detail = chunk[id] as Record<string, any> | undefined;
-            if (detail) {
-                const type = extractType(id);
-                const displayTitle = type === 'entity'
-                    ? (detail.primary_name || detail.title || detail.name || id)
-                    : (detail.title || detail.name || id);
-                return {
-                    id,
-                    title: displayTitle,
-                    type,
-                    isDraft: true,
-                    author: detail.author,
-                    dynasty: detail.dynasty,
-                    role: detail.role,
-                    additional_titles: detail.additional_titles?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
-                    attached_texts: detail.attached_texts?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
-                    edition: detail.edition,
-                    juan_count: detail.juan_count,
-                    has_text: detail.has_text,
-                    has_image: detail.has_image,
-                    has_collated: detail.has_collated,
-                    subtype: detail.subtype,
-                    primary_name: detail.primary_name,
-                    birth_year: detail.birth_year,
-                    death_year: detail.death_year,
-                    cbdb_id: detail.cbdb_id,
-                };
-            }
+            if (!detail) return null;
+            const type = extractType(id);
+            const displayTitle = type === 'entity'
+                ? (detail.primary_name || detail.title || detail.name || id)
+                : (detail.title || detail.name || id);
+            return {
+                id,
+                title: displayTitle,
+                type,
+                isDraft: true,
+                author: detail.author,
+                dynasty: detail.dynasty,
+                role: detail.role,
+                additional_titles: detail.additional_titles?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
+                attached_texts: detail.attached_texts?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
+                edition: detail.edition,
+                juan_count: detail.juan_count,
+                has_text: detail.has_text,
+                has_image: detail.has_image,
+                has_collated: detail.has_collated,
+                subtype: detail.subtype,
+                primary_name: detail.primary_name,
+                birth_year: detail.birth_year,
+                death_year: detail.death_year,
+                cbdb_id: detail.cbdb_id,
+            };
         } catch {
-            // fall through
+            return null;
         }
-        // Fallback：旧 bundle 没注入 index-only 字段时走全量 index
-        const all = await this.ensureLoaded();
-        return all.find(e => e.id === id) || null;
     }
 
+    /** 已废弃 — index.json 已剥离。 */
     async getAllEntries(): Promise<IndexEntry[]> {
-        return this.ensureLoaded();
+        throw new Error('BundleStorage.getAllEntries 已废弃：请使用 getEntry / worker 搜索');
     }
 
     // ─── 写操作：不支持 ───
@@ -667,11 +412,9 @@ export class BundleStorage implements IndexStorage {
     // ─── 版本传承 ───
 
     async getLineageGraph(workId: string): Promise<any | null> {
-        const version = await this.ensureVersion();
-        const url = `${this.basePath}/items/${workId}/lineage_graph.json`;
-        const fullUrl = version ? `${url}?v=${version}` : url;
+        // fetchJson 会自动拼 ?v=version，无需手动加。
         try {
-            return await this.fetchJson<any>(fullUrl);
+            return await this.fetchJson<any>(`${this.basePath}/items/${workId}/lineage_graph.json`);
         } catch {
             return null;
         }
@@ -722,23 +465,14 @@ export class BundleStorage implements IndexStorage {
     // ─── 工具 ───
 
     clearCache(): void {
-        this.indexCache = null;
-        this.indexLoading = null;
-        this.pathMap.clear();
         this.chunkCache.clear();
         this.chunkLoading.clear();
         this.manifest = null;
         this.manifestLoading = null;
         this.tiyaoCache.clear();
         this.tiyaoLoading.clear();
-        this.searchSCache = null;
-        this.searchSLoading = null;
-        this.searchSLoaded = false;
         this.metaCache = null;
         this.metaLoading = null;
-        this.metaTried = false;
-        this.t2sConverter = null;
-        this.t2sLoading = null;
         this.version = undefined;
         this.versionPromise = null;
     }

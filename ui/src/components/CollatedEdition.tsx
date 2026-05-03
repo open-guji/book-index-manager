@@ -37,6 +37,18 @@ function normalizeTextQualityGrade(g: unknown): TextQualityGrade | null {
     return null;
 }
 
+/** 兼容繁简两种 type 写法（直齋等繁体整理本用 書/類，多数志书用 书/类）。
+ *  规一化到简体后再比对。
+ */
+const TYPE_T2S: Record<string, string> = {
+    '書': '书', '類': '类', '結語': '结语', '結语': '结语',
+    '考證': '考证', '詩': '诗',
+};
+function normSectionType(t: unknown): string {
+    if (typeof t !== 'string') return '';
+    return TYPE_T2S[t] ?? t;
+}
+
 const CN_DIGITS = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
 const CN_UNITS = ['', '十', '百', '千'];
 const CN_BIG_UNITS = ['', '萬', '億'];
@@ -823,7 +835,7 @@ function OtherSection({ section, highlightQuery = '' }: { section: CollatedSecti
     const text: React.ReactNode = highlightQuery ? renderHighlighted(rawText, highlightQuery, normalizer) : rawText;
     const typeColor = SECTION_TYPE_COLORS[section.type] || '#717171';
     // 序/结语：带左边框、类型标签，与"书"条目区分
-    const isLabeled = section.type === '序' || section.type === '结语';
+    const isLabeled = normSectionType(section.type) === '序' || normSectionType(section.type) === '结语';
     return (
         <div style={{
             padding: isLabeled ? '10px 12px' : '6px 0',
@@ -1146,8 +1158,8 @@ function KaozhenContent({
         return juan.sections.filter(s => sectionMatches(s, q, true, normalizer));
     }, [juan.sections, q, normalizer]);
 
-    const totalCount = juan.sections.filter(s => s.type === '考证').length;
-    const sectionCount = filteredSections.filter(s => s.type === '考证').length;
+    const totalCount = juan.sections.filter(s => normSectionType(s.type) === '考证').length;
+    const sectionCount = filteredSections.filter(s => normSectionType(s.type) === '考证').length;
 
     return (
         <div>
@@ -1270,17 +1282,17 @@ function RawTextView({ sections, onNavigate, highlightQuery = '' }: { sections: 
     let current: { category: string; categoryContent?: string; items: CollatedSection[] } | null = null;
 
     for (const s of sections) {
-        if (s.type === '类') {
+        if (normSectionType(s.type) === '类') {
             if (current) groups.push(current);
             current = { category: s.title, categoryContent: s.content || undefined, items: [] };
-        } else if (s.type === '书') {
+        } else if (normSectionType(s.type) === '书') {
             if (!current) current = { category: '', items: [] };
             current.items.push(s);
-        } else if (s.type === '序' || s.type === '结语') {
+        } else if (normSectionType(s.type) === '序' || normSectionType(s.type) === '结语') {
             if (!current) current = { category: '', items: [] };
             current.items.push(s);
             // 结语意味着类结束
-            if (s.type === '结语') {
+            if (normSectionType(s.type) === '结语') {
                 groups.push(current);
                 current = null;
             }
@@ -1303,7 +1315,7 @@ function RawTextView({ sections, onNavigate, highlightQuery = '' }: { sections: 
                         </h4>
                     )}
                     {g.items.map((s, si) => {
-                        if (s.type === '序' || s.type === '结语') {
+                        if (normSectionType(s.type) === '序' || normSectionType(s.type) === '结语') {
                             return <p key={si} style={{ margin: '12px 0', textIndent: '2em' }}>{hl(s.content || '')}</p>;
                         }
                         return (
@@ -1352,9 +1364,9 @@ function JuanContent({
         return juan.sections.filter(s => sectionMatches(s, q, false, normalizer));
     }, [juan.sections, q, normalizer]);
 
-    const bookCount = juan.sections.filter(s => s.type === '书').length;
-    const poemCount = juan.sections.filter(s => s.type === '詩').length;
-    const matchedCount = q ? catalogSections.filter(s => s.type === '书' || s.type === '詩').length : null;
+    const bookCount = juan.sections.filter(s => normSectionType(s.type) === '书').length;
+    const poemCount = juan.sections.filter(s => normSectionType(s.type) === '诗').length;
+    const matchedCount = q ? catalogSections.filter(s => normSectionType(s.type) === '书' || normSectionType(s.type) === '诗').length : null;
 
     return (
         <div>
@@ -1412,10 +1424,10 @@ function JuanContent({
 
             {/* 目录模式：仅显示匹配条目 + 高亮 */}
             {viewMode === 'catalog' && catalogSections.map((section, i) => {
-                if (section.type === '书' || section.type === '詩') {
+                if (normSectionType(section.type) === '书' || normSectionType(section.type) === '诗') {
                     return <BookSection key={i} section={section} onNavigate={onNavigate} highlightQuery={q} />;
                 }
-                if (section.type === '类') {
+                if (normSectionType(section.type) === '类') {
                     return <CategoryHeader key={i} section={section} highlightQuery={q} />;
                 }
                 return <OtherSection key={i} section={section} highlightQuery={q} />;

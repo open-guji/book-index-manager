@@ -82,71 +82,46 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     const [showDropdown, setShowDropdown] = useState(false);
     const [suggestions, setSuggestions] = useState<SuggestionItem[]>([]);
     const [activeIndex, setActiveIndex] = useState(-1);
-    const [allEntries, setAllEntries] = useState<IndexEntry[] | null>(null);
     const [history, setHistory] = useState<string[]>(loadSearchHistory);
 
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Lazy: 仅在用户与搜索框交互时才拉 allEntries（4 MB），避免 /book-index
-    // 首屏就强行下载整个 index.json。
-    const allEntriesLoadingRef = useRef(false);
-    const ensureAllEntriesLoaded = useCallback(() => {
-        if (allEntriesLoadingRef.current || !transport.getAllEntries) return;
-        allEntriesLoadingRef.current = true;
-        transport.getAllEntries().then(entries => {
-            setAllEntries(entries);
-        }).catch(() => {
-            // allow retry on next focus
-            allEntriesLoadingRef.current = false;
-        });
-    }, [transport]);
-
-    // Build suggestions based on input
-    const buildSuggestions = useCallback((query: string): SuggestionItem[] => {
-        if (!query.trim()) {
-            // Show search history when empty
-            return history.map(t => ({ type: 'history' as const, text: t }));
-        }
-
-        if (!allEntries) return [];
-
-        const q = query.toLowerCase();
-        const prefixMatches: SuggestionItem[] = [];
-        const containMatches: SuggestionItem[] = [];
-
-        for (const entry of allEntries) {
-            if (prefixMatches.length + containMatches.length >= MAX_SUGGESTIONS * 2) break;
-
-            const title = (entry.title ?? '').toLowerCase();
-
-            // Check title
-            if (title.startsWith(q)) {
-                prefixMatches.push({ type: 'entry', text: entry.title, entry });
-            } else if (title.includes(q)) {
-                containMatches.push({ type: 'entry', text: entry.title, entry });
-            } else {
-                // Check aliases + attached_texts
-                const allAliases = [...(entry.additional_titles || []), ...(entry.attached_texts || [])];
-                for (const item of allAliases) {
-                    const alias = typeof item === 'string' ? item : (item as any)?.book_title;
-                    if (alias?.toLowerCase().includes(q)) {
-                        prefixMatches.push({ type: 'entry', text: `${entry.title}`, entry });
-                        break;
-                    }
-                }
-            }
-        }
-
-        return [...prefixMatches, ...containMatches].slice(0, MAX_SUGGESTIONS);
-    }, [allEntries, history]);
-
-    // Update suggestions when value changes
+    // Update suggestions when value changes — 走 transport.searchAll（worker 索引），
+    // 不再拉 23 MB 的 index.json。
     useEffect(() => {
-        setSuggestions(buildSuggestions(value));
         setActiveIndex(-1);
-    }, [value, buildSuggestions]);
+        const q = value.trim();
+        if (!q) {
+            setSuggestions(history.map(t => ({ type: 'history' as const, text: t })));
+            return;
+        }
+        if (!transport.searchAll) {
+            setSuggestions([]);
+            return;
+        }
+        let cancelled = false;
+        const handle = setTimeout(() => {
+            transport.searchAll!(q, MAX_SUGGESTIONS).then(grouped => {
+                if (cancelled) return;
+                const merged: IndexEntry[] = [
+                    ...grouped.works,
+                    ...grouped.books,
+                    ...grouped.collections,
+                    ...(grouped.entities ?? []),
+                ];
+                setSuggestions(merged.slice(0, MAX_SUGGESTIONS).map(entry => ({
+                    type: 'entry' as const,
+                    text: entry.title || entry.id,
+                    entry,
+                })));
+            }).catch(() => {
+                if (!cancelled) setSuggestions([]);
+            });
+        }, 80);
+        return () => { cancelled = true; clearTimeout(handle); };
+    }, [value, history, transport]);
 
     // Click outside to close
     useEffect(() => {
@@ -265,11 +240,9 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                 onChange={e => {
                     onChange(e.target.value);
                     setShowDropdown(true);
-                    ensureAllEntriesLoaded();
                 }}
                 onFocus={() => {
                     setShowDropdown(true);
-                    ensureAllEntriesLoaded();
                 }}
                 onKeyDown={handleKeyDown}
                 style={{

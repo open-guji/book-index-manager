@@ -325,6 +325,34 @@ function layoutGraph(
 
     dagre.layout(g);
 
+    // 同一 rank（dagre 给的 X 列，LR 布局）下，按 year 重新排序 Y 坐标，
+    // 保证年代早的在上、晚的在下（如己卯 1759 在庚辰 1760 之上）。
+    // dagre 的 barycenter 排序对叶节点不稳定，所以这里事后修正。
+    if (isLR) {
+        const yearOf = (id: string) => {
+            const n = graph.nodes.find(nn => nn.id === id);
+            return n?.year ?? Number.POSITIVE_INFINITY;
+        };
+        // 按 X 坐标分桶（容差 1px）
+        const buckets = new Map<number, string[]>();
+        for (const n of graph.nodes) {
+            const pos = g.node(n.id);
+            if (!pos) continue;
+            const xKey = Math.round(pos.x);
+            if (!buckets.has(xKey)) buckets.set(xKey, []);
+            buckets.get(xKey)!.push(n.id);
+        }
+        for (const [, ids] of buckets) {
+            if (ids.length < 2) continue;
+            const sorted = [...ids].sort((a, b) => yearOf(a) - yearOf(b));
+            // 取出原 Y 坐标列表（升序），按年份顺序重新分配
+            const ys = ids.map(id => g.node(id).y).sort((a, b) => a - b);
+            sorted.forEach((id, i) => {
+                g.node(id).y = ys[i];
+            });
+        }
+    }
+
     const rfNodes = graph.nodes.map((n) => {
         const pos = g.node(n.id);
         const isSelected = selectedNodeId && n.id === selectedNodeId;

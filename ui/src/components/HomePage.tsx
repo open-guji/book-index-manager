@@ -74,28 +74,13 @@ export const HomePage: React.FC<HomePageProps> = ({
     const [collectionProgress, setCollectionProgress] = useState<ResourceProgress | null>(null);
     const [siteProgress, setSiteProgress] = useState<ResourceProgress | null>(null);
 
-    // 加载统计数据：优先读轻量 meta.json（< 1 KB），不再为了 3 个数字下载整个 index。
+    // 加载统计数据：仅读轻量 meta.json（< 1 KB），不再回退到 getAllEntries。
     useEffect(() => {
         let cancelled = false;
-        const apply = (s: Stats) => { if (!cancelled) setStats(s); };
-        const fallbackFromAllEntries = () => {
-            if (!transport.getAllEntries) return;
-            transport.getAllEntries().then(entries => {
-                apply({
-                    works: entries.filter(e => e.type === 'work').length,
-                    books: entries.filter(e => e.type === 'book').length,
-                    collections: entries.filter(e => e.type === 'collection').length,
-                });
-            }).catch(() => { /* ignore */ });
-        };
-
-        if (transport.getCounts) {
-            transport.getCounts()
-                .then(c => apply({ works: c.works, books: c.books, collections: c.collections }))
-                .catch(fallbackFromAllEntries);
-        } else {
-            fallbackFromAllEntries();
-        }
+        if (!transport.getCounts) return;
+        transport.getCounts()
+            .then(c => { if (!cancelled) setStats({ works: c.works, books: c.books, collections: c.collections }); })
+            .catch(() => { /* ignore */ });
         return () => { cancelled = true; };
     }, [transport]);
 
