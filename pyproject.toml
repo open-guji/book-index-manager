@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=68", "setuptools-scm>=8", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "book-index-manager"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Storage, indexing, and management for ancient Chinese book metadata"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -13,12 +13,6 @@ keywords = ["ancient-books", "book-index", "metadata", "classical-chinese"]
 authors = [
     { name = "Li Shaodong" },
 ]
-
-[project.urls]
-Homepage = "https://github.com/open-guji/book-index-manager"
-Repository = "https://github.com/open-guji/book-index-manager"
-Issues = "https://github.com/open-guji/book-index-manager/issues"
-
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
@@ -28,8 +22,12 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Text Processing",
 ]
-
 dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/open-guji/book-index-manager"
+Repository = "https://github.com/open-guji/book-index-manager"
+Issues = "https://github.com/open-guji/book-index-manager/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -45,3 +43,11 @@ book-index = "book_index_manager.__main__:main"
 where = ["."]
 include = ["book_index_manager*"]
 exclude = ["tests*"]
+
+[tool.setuptools_scm]
+# 版本号自动从 git tag 派生。
+# 使用 'py-v*' 命名空间避免与 ui/ 的 'book-index-ui-v*' 冲突。
+# 还没有任何 py-v* tag 时退回 fallback。
+write_to = "book_index_manager/_version.py"
+fallback_version = "0.1.0.dev0"
+git_describe_command = ["git", "describe", "--dirty", "--tags", "--long", "--match", "py-v*"]

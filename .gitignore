@@ -5,3 +5,6 @@ build/
 .pytest_cache/
 node_modules/
 dist-app/
+
+# setuptools-scm 自动生成
+book_index_manager/_version.py
