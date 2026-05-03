@@ -16,6 +16,14 @@ export interface VersionLineageViewProps {
     selectedNodeId?: string;
     /** 模式切换回调（用于更新URL） */
     onModeChange?: (mode: 'list' | 'graph') => void;
+    /** 集合切换：'core'（核心）/ 'all'（完整）。仅当 collectionsAvailable 为真时才显示 toggle */
+    collection?: 'core' | 'all';
+    /** 切换集合回调 */
+    onCollectionChange?: (collection: 'core' | 'all') => void;
+    /** 集合元数据（来自 work.version_graph.collections） */
+    collectionsAvailable?: { core?: { label: string; description?: string }, all?: { label: string; description?: string } };
+    /** 各集合 Book 总数（用于显示徽标，如 "核心 12" "完整 29"） */
+    collectionCounts?: { core?: number; all?: number };
     className?: string;
     style?: React.CSSProperties;
 }
@@ -32,6 +40,10 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
     graphHeight = 600,
     selectedNodeId,
     onModeChange,
+    collection,
+    onCollectionChange,
+    collectionsAvailable,
+    collectionCounts,
     className,
     style,
 }) => {
@@ -42,6 +54,10 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
         onModeChange?.(newMode);
     };
 
+    const showCollectionToggle = !!(
+        collectionsAvailable && (collectionsAvailable.core || collectionsAvailable.all) && onCollectionChange
+    );
+
     if (!graph.nodes.length) {
         return (
             <div style={{ padding: 24, color: 'var(--bim-muted, #999)', textAlign: 'center' }}>
@@ -49,6 +65,14 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
             </div>
         );
     }
+
+    const coreLabel = collectionsAvailable?.core?.label ?? '核心';
+    const allLabel = collectionsAvailable?.all?.label ?? '完整';
+    const coreCount = collectionCounts?.core;
+    const allCount = collectionCounts?.all;
+    const activeDesc = collection === 'core'
+        ? collectionsAvailable?.core?.description
+        : collectionsAvailable?.all?.description;
 
     return (
         <div className={className} style={style}>
@@ -65,7 +89,33 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
                 >
                     关系图
                 </button>
+                {showCollectionToggle && (
+                    <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, alignItems: 'center' }}>
+                        <span style={{ fontSize: 12, color: 'var(--bim-muted, #888)', marginRight: 4 }}>
+                            集合：
+                        </span>
+                        <button
+                            onClick={() => onCollectionChange?.('core')}
+                            style={btnStyle(collection === 'core')}
+                            title={collectionsAvailable?.core?.description}
+                        >
+                            {coreLabel}{coreCount != null ? ` ${coreCount}` : ''}
+                        </button>
+                        <button
+                            onClick={() => onCollectionChange?.('all')}
+                            style={btnStyle(collection === 'all')}
+                            title={collectionsAvailable?.all?.description}
+                        >
+                            {allLabel}{allCount != null ? ` ${allCount}` : ''}
+                        </button>
+                    </div>
+                )}
             </div>
+            {showCollectionToggle && activeDesc && (
+                <div style={{ fontSize: 12, color: 'var(--bim-muted, #888)', marginBottom: 8, padding: '4px 8px', background: 'var(--bim-bg-subtle, #fafafa)', borderRadius: 4 }}>
+                    {activeDesc}
+                </div>
+            )}
 
             {mode === 'list' ? (
                 <VersionLineageList graph={graph} renderLink={renderLink} />

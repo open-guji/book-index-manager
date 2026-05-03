@@ -200,23 +200,28 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
             const isHypo = d.kind === 'hypothetical';
             const isLost = d.status === 'lost';
             const isSelected = d.isSelected;
+            const isBridge = d.bridge;
             const borderColor = d.borderColor ?? '#888';
+            // 桥接节点：虚边框 + 半透明 + 灰色背景，提示"非核心，仅为链路完整而显示"
+            const borderStyle = isBridge ? 'dashed' : (isHypo ? 'dashed' : 'solid');
+            const baseOpacity = isBridge ? 0.5 : (isLost ? 0.6 : 1);
             return (
                 <div
                     style={{
-                        background: 'var(--bim-bg, #fff)',
-                        border: `2px ${isHypo ? 'dashed' : 'solid'} ${isSelected ? '#0078d4' : borderColor}`,
+                        background: isBridge ? 'var(--bim-bg-subtle, #fafafa)' : 'var(--bim-bg, #fff)',
+                        border: `2px ${borderStyle} ${isSelected ? '#0078d4' : borderColor}`,
                         borderRadius: 8,
                         padding: '6px 10px',
                         minWidth: 120,
                         maxWidth: 160,
                         wordWrap: 'break-word',
                         wordBreak: 'break-word',
-                        opacity: isLost ? 0.6 : 1,
+                        opacity: baseOpacity,
                         boxShadow: isSelected
                             ? '0 0 0 3px rgba(0, 120, 212, 0.2), 0 2px 8px rgba(0, 120, 212, 0.3)'
-                            : isHypo ? 'none' : '0 1px 3px rgba(0,0,0,0.1)',
+                            : (isHypo || isBridge) ? 'none' : '0 1px 3px rgba(0,0,0,0.1)',
                     }}
+                    title={isBridge ? '桥接节点：本身不在核心集，为保持派生链完整而显示' : undefined}
                 >
                     <Handle type="target" position={Position.Left} style={{ visibility: 'hidden' }} />
                     <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 1, lineHeight: 1.3 }}>
@@ -282,6 +287,8 @@ interface NodeData {
     borderColor?: string;
     renderLink?: (id: string, label: string) => React.ReactNode;
     isSelected?: boolean;
+    /** 桥接节点：核心集模式下为保持派生链不断而引入的非核心中间节点。视觉淡化。 */
+    bridge?: boolean;
 }
 
 function layoutGraph(
@@ -312,10 +319,18 @@ function layoutGraph(
         g.setNode(n.id, { width: NODE_W, height: NODE_H });
     }
 
-    // "配补"关系是反向连接（脂本子节点反过来引用程高刻本来补全后40回），
-    // 它会把脂本节点错误地拉到 fanke 组中间，破坏布局。完全跳过 layout，仅在图中显示这条边。
-    // 其他次要关系（如"参校"）仍然参与 layout，因为它们是正向时间线（如程甲本参校 transit 抄本）
-    const SKIP_LAYOUT_RELATIONS = new Set(['配补']);
+    // 跳过 layout 的关系：这些关系不是"时间向上游派生"（要么是逆向、要么是横向），
+    // 让 dagre 参与会扭曲节点列序，引发左→右流向被打破。仅显示边，不排版。
+    //   配补    脂本节点反指程高，逆向
+    //   形式仿照 横向"看起来像但血缘不同"
+    //   综合    繁简综合本同时连多个上游，无主次
+    //   兄弟本/同源/互校 — sibling kind 已经过滤但加这里更稳
+    // 注：「节选」属正向派生（上游 → 节选出的下游），仍参与 layout，
+    // 否则下游节点会被 dagre 当游离节点放到最左 rank 0（如征四寇本是李渔序本节选，必须接其右）
+    const SKIP_LAYOUT_RELATIONS = new Set([
+        '配补', '形式仿照', '综合',
+        '兄弟本', '同源', '互校',
+    ]);
 
     for (const e of graph.edges) {
         if (e.kind !== 'derive') continue;
@@ -367,6 +382,7 @@ function layoutGraph(
             borderColor: n.group ? groupColor.get(n.group) : undefined,
             renderLink,
             isSelected,
+            bridge: n.bridge,
         };
         return {
             id: n.id,

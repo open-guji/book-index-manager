@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IndexBrowser } from '../components/IndexBrowser';
 import { IndexDetail } from '../components/IndexDetail';
@@ -100,6 +100,10 @@ function App() {
     const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
     const [lineageGraph, setLineageGraph] = useState<LineageGraph | null>(null);
     const [lineageLoading, setLineageLoading] = useState(false);
+    /** lineage 集合：'core'（核心）/ 'all'（完整）。仅当 work.version_graph.core_books 非空时有意义 */
+    const [lineageCollection, setLineageCollection] = useState<'core' | 'all'>('core');
+    /** 缓存原始 work + books 用于切换 collection 时 rebuild graph，无需重新 fetch */
+    const lineageSourceRef = useRef<{ work: WorkDetailData; books: BookDetailData[] } | null>(null);
     const [collatedLoading, setCollatedLoading] = useState(false);
     const [homeTab, setHomeTab] = useState<TabKey>(() => {
         const id = getIdFromUrl();
@@ -150,6 +154,7 @@ function App() {
         const vg = work.version_graph;
         if (!vg || !vg.enabled) {
             setLineageGraph(null);
+            lineageSourceRef.current = null;
             return;
         }
         setLineageLoading(true);
@@ -166,14 +171,32 @@ function App() {
                 }),
             );
             const validBooks = books.filter((b): b is BookDetailData => !!b);
-            setLineageGraph(buildLineageGraph(work, validBooks));
+            lineageSourceRef.current = { work, books: validBooks };
+            // 初始集合：work 指定 default_collection（多为 'core'），否则 'all'
+            const initialCollection = (vg.default_collection ?? 'all') as 'core' | 'all';
+            // 仅当 core_books 实际配置时才默认 core，否则强制 all（避免空集合）
+            const usableCollection = (initialCollection === 'core'
+                && Array.isArray(vg.core_books) && vg.core_books.length > 0)
+                ? 'core' : 'all';
+            setLineageCollection(usableCollection);
+            setLineageGraph(buildLineageGraph(work, validBooks, usableCollection));
         } catch (err) {
             console.error('加载 lineage 失败:', err);
             setLineageGraph(null);
+            lineageSourceRef.current = null;
         } finally {
             setLineageLoading(false);
         }
     }, [transport]);
+
+    /** 切换核心/完整集合（不重新 fetch books，仅 rebuild graph）。 */
+    const handleLineageCollectionChange = useCallback((collection: 'core' | 'all') => {
+        setLineageCollection(collection);
+        const src = lineageSourceRef.current;
+        if (src) {
+            setLineageGraph(buildLineageGraph(src.work, src.books, collection));
+        }
+    }, []);
 
     const loadCatalog = useCallback(async (id: string) => {
         if (!transport.getCollectionCatalogs && !transport.getCollectionCatalog) {
@@ -508,6 +531,22 @@ function App() {
                                             )}
                                             graphHeight={Math.max(500, window.innerHeight - 250)}
                                             selectedNodeId={selectedNodeId}
+                                            collection={lineageCollection}
+                                            onCollectionChange={handleLineageCollectionChange}
+                                            collectionsAvailable={
+                                                detailData.type === 'work' && (detailData as WorkDetailData).version_graph?.collections
+                                                    ? (detailData as WorkDetailData).version_graph!.collections as { core?: { label: string; description?: string }, all?: { label: string; description?: string } }
+                                                    : undefined
+                                            }
+                                            collectionCounts={
+                                                detailData.type === 'work'
+                                                    ? {
+                                                        core: (detailData as WorkDetailData).version_graph?.core_books?.length,
+                                                        all: ((detailData as WorkDetailData).books?.length ?? 0)
+                                                            - ((detailData as WorkDetailData).version_graph?.excluded_books?.length ?? 0),
+                                                    }
+                                                    : undefined
+                                            }
                                         />
                                     ) : (
                                         <div style={{ padding: 24, color: 'var(--bim-muted, #999)' }}>

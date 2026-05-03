@@ -154,12 +154,15 @@ interface NodeCardProps {
 
 const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, renderLink }) => {
     const isHypo = node.kind === 'hypothetical';
+    const isBridge = node.bridge;
     return (
         <div style={{
             ...cardStyle,
-            borderStyle: isHypo ? 'dashed' : 'solid',
-            opacity: node.status === 'lost' ? 0.7 : 1,
-        }}>
+            borderStyle: (isHypo || isBridge) ? 'dashed' : 'solid',
+            opacity: isBridge ? 0.55 : (node.status === 'lost' ? 0.7 : 1),
+            background: isBridge ? 'var(--bim-bg-subtle, #fafafa)' : undefined,
+        }}
+        title={isBridge ? '桥接节点：本身不在核心集，为保持派生链完整而显示' : undefined}>
             <div style={cardHeaderStyle}>
                 <span style={cardTitleStyle}>
                     {isHypo || !renderLink ? node.label : renderLink(node.id, node.label)}
@@ -177,6 +180,7 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, 
                 {node.status === 'lost' && <Tag tone="warn">已佚</Tag>}
                 {node.status === 'fragment' && <Tag tone="warn">残本</Tag>}
                 {isHypo && <Tag tone="info">假想祖本</Tag>}
+                {isBridge && <Tag tone="info">桥接</Tag>}
             </div>
 
             {node.extant_juan && (

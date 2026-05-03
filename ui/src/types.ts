@@ -799,4 +799,12 @@ export interface VersionGraph {
     /** Work.books 里但不进图的条目（如待 dedupe 的占位） */
     excluded_books?: string[];
     excluded_reason?: string;
+    /** 集合化展示（核心 vs 完整）：版本繁多的复杂作品（如水浒）适用 */
+    default_collection?: 'core' | 'all';
+    /** 各集合的标签和说明 */
+    collections?: Record<string, { label: string; description?: string }>;
+    /** 核心集合包含的 book id 列表（缺省时即等同 all） */
+    core_books?: string[];
+    /** 核心集合包含的假想节点 id 列表（缺省时全部假想节点都在核心集） */
+    core_hypotheticals?: string[];
 }

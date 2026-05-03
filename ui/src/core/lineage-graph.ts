@@ -39,6 +39,9 @@ export interface LineageGraphNode {
     /** 分组 id（来自 work.version_graph.node_groups 或 hypothetical.group） */
     group?: string;
     note?: string;
+    /** 桥接节点：本身不在核心集，但为了保持核心节点间派生链不断而引入。
+     *  视觉上应淡化（半透明、虚边框）。仅在 collection==='core' 模式下出现。 */
+    bridge?: boolean;
 }
 
 /** 图边：派生关系（derived_from）或横向兄弟本（related_to） */
@@ -138,11 +141,13 @@ function siblingToEdge(myId: string, s: LineageSibling, idx: number): LineageGra
  *
  * @param work - WorkDetailData（须有 version_graph.enabled === true 才有效）
  * @param books - 与该 Work 关联的 Book 详情数组（应已加载 lineage 字段）
+ * @param collection - 'core' | 'all'，缺省按 vg.default_collection 或 'all'
  * @returns LineageGraph，未启用或无数据时返回空图
  */
 export function buildLineageGraph(
     work: WorkDetailData,
     books: BookDetailData[],
+    collection?: 'core' | 'all',
 ): LineageGraph {
     const vg = work.version_graph;
     const empty: LineageGraph = {
@@ -157,13 +162,83 @@ export function buildLineageGraph(
     const excluded = new Set(vg.excluded_books ?? []);
     const groupMap = vg.node_groups ?? {};
 
-    // 节点
+    // 集合过滤：当 collection==='core' 且 core_books 已定义时，只保留核心集合内的节点
+    const useCore = (collection ?? vg.default_collection ?? 'all') === 'core'
+        && Array.isArray(vg.core_books) && vg.core_books.length > 0;
+    const coreBookSet = useCore ? new Set(vg.core_books) : null;
+    const coreHypoSet = useCore && vg.core_hypotheticals
+        ? new Set(vg.core_hypotheticals)
+        : null;
+
+    // 桥接节点计算：核心模式下，沿 derived_from 链向上回溯，把不在核心集的中间节点补出来，
+    // 保持派生链不断。补出来的节点 bridge=true，前端淡化显示。
+    const bridgeBookSet = new Set<string>();
+    const bridgeHypoSet = new Set<string>();
+    if (useCore) {
+        const bookById = new Map(books.map(b => [b.id, b]));
+        const hypoById = new Map(
+            (vg.hypothetical_nodes ?? []).map(h => [h.id, h])
+        );
+
+        const getParents = (id: string): string[] => {
+            const b = bookById.get(id);
+            if (b && b.lineage) {
+                return (b.lineage.derived_from ?? []).map(d => d.ref);
+            }
+            const h = hypoById.get(id);
+            if (h) {
+                return (h.derived_from ?? []).map(d => d.ref);
+            }
+            return [];
+        };
+        const isCore = (id: string): boolean => {
+            if (hypoById.has(id)) return !coreHypoSet || coreHypoSet.has(id);
+            return !coreBookSet || coreBookSet.has(id);
+        };
+
+        const visited = new Set<string>();
+        const trace = (id: string) => {
+            if (visited.has(id)) return;
+            visited.add(id);
+            for (const parent of getParents(id)) {
+                if (excluded.has(parent)) continue;
+                if (!isCore(parent)) {
+                    if (hypoById.has(parent)) {
+                        bridgeHypoSet.add(parent);
+                    } else if (bookById.has(parent)) {
+                        bridgeBookSet.add(parent);
+                    }
+                }
+                trace(parent);
+            }
+        };
+        // 从所有核心节点起回溯
+        for (const b of books) {
+            if (coreBookSet && coreBookSet.has(b.id) && !excluded.has(b.id)) trace(b.id);
+        }
+        for (const h of vg.hypothetical_nodes ?? []) {
+            if (coreHypoSet && coreHypoSet.has(h.id)) trace(h.id);
+        }
+    }
+
+    // 节点：核心集 + 桥接补全（标 bridge=true）
     const bookNodes = books
         .filter((b) => !excluded.has(b.id))
-        .map((b) => bookToNode(b, groupMap))
+        .filter((b) => !coreBookSet || coreBookSet.has(b.id) || bridgeBookSet.has(b.id))
+        .map((b) => {
+            const n = bookToNode(b, groupMap);
+            if (n && bridgeBookSet.has(b.id)) n.bridge = true;
+            return n;
+        })
         .filter((n): n is LineageGraphNode => n !== null);
 
-    const hypoNodes = (vg.hypothetical_nodes ?? []).map(hypoToNode);
+    const hypoNodes = (vg.hypothetical_nodes ?? [])
+        .filter((h) => !coreHypoSet || coreHypoSet.has(h.id) || bridgeHypoSet.has(h.id))
+        .map((h) => {
+            const n = hypoToNode(h);
+            if (bridgeHypoSet.has(h.id)) n.bridge = true;
+            return n;
+        });
 
     const nodes = [...bookNodes, ...hypoNodes];
     const nodeIds = new Set(nodes.map((n) => n.id));
@@ -182,6 +257,8 @@ export function buildLineageGraph(
 
     for (const b of books) {
         if (excluded.has(b.id) || !b.lineage) continue;
+        // 核心模式下：核心节点 + 桥接节点 都参与边遍历
+        if (coreBookSet && !coreBookSet.has(b.id) && !bridgeBookSet.has(b.id)) continue;
         (b.lineage.derived_from ?? []).forEach((d, i) => {
             pushEdge(derivationToEdge(b.id, d, i));
         });
@@ -192,6 +269,7 @@ export function buildLineageGraph(
 
     // 假想节点之间的派生关系
     for (const h of vg.hypothetical_nodes ?? []) {
+        if (coreHypoSet && !coreHypoSet.has(h.id) && !bridgeHypoSet.has(h.id)) continue;
         (h.derived_from ?? []).forEach((d, i) => {
             pushEdge(derivationToEdge(h.id, d, i));
         });
