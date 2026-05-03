@@ -415,49 +415,87 @@ def main():
     subparsers = parser.add_subparsers(dest="command", help="Commands")
 
     # gen-id
-    p = subparsers.add_parser("gen-id", parents=[parent_parser])
+    p = subparsers.add_parser(
+        "gen-id", parents=[parent_parser],
+        help="生成新 Snowflake ID（不写文件）",
+        description="生成一个新的 Snowflake-base36 ID，用于 work/book/collection/entity。",
+        epilog="示例：book-index gen-id --type work --raw")
     p.add_argument("--status", choices=["official", "draft"], default="draft")
     p.add_argument("--type", choices=["book", "work", "collection", "entity"], default="book")
     p.add_argument("--raw", action="store_true", help="Print only the Base58 ID")
 
     # reindex (deep)
-    p = subparsers.add_parser("reindex", parents=[parent_parser])
+    p = subparsers.add_parser(
+        "reindex", parents=[parent_parser],
+        help="完整重建索引（扫所有 item 文件，覆盖 index/ 下所有 shard）",
+        description="完整重建索引：扫描 Work/Book/Collection/Entity 目录下所有条目，"
+                    "重新写出 index/{type}/{0-f}.json shard。比 shadow-reindex 慢但能清掉孤儿索引。",
+        epilog="示例：book-index reindex --root /d/workspace --target draft")
     p.add_argument("--target", choices=["official", "draft", "all"], default="all")
     p.add_argument("--workers", type=int, default=4, help="Parallel worker threads (default: 4)")
 
     # shadow-reindex (fast, additive only)
-    p = subparsers.add_parser("shadow-reindex", parents=[parent_parser],
-                              help="Fast incremental reindex: only add files missing from index")
+    p = subparsers.add_parser(
+        "shadow-reindex", parents=[parent_parser],
+        help="增量索引（只补缺失，不删孤儿）",
+        description="快速增量重建：只把 item 文件存在但 index 缺失的条目补上。"
+                    "不会清理已删除文件的孤儿索引。日常推荐使用，发布前再跑一次 reindex。")
     p.add_argument("--target", choices=["official", "draft", "all"], default="all")
     p.add_argument("--workers", type=int, default=8, help="Parallel worker threads (default: 8)")
 
     # get
-    p = subparsers.add_parser("get", parents=[parent_parser])
+    p = subparsers.add_parser(
+        "get", parents=[parent_parser],
+        help="按 ID 读取条目元数据",
+        description="按 ID 读取 work/book/collection/entity 的元数据，输出 JSON。",
+        epilog="示例：book-index get --bid 1evgowbkc2qyo")
     p.add_argument("--bid", required=True, help="Item ID (Base58)")
 
     # get-config
-    subparsers.add_parser("get-config", parents=[parent_parser])
+    subparsers.add_parser(
+        "get-config", parents=[parent_parser],
+        help="输出当前 storage 配置（root 路径等）")
 
     # draft
-    p = subparsers.add_parser("draft", parents=[parent_parser])
+    p = subparsers.add_parser(
+        "draft", parents=[parent_parser],
+        help="基于标题快速创建草稿条目（gen-id + 写最小 metadata）",
+        description="一步创建：生成 ID 并写一个仅含 title/type 的最小 JSON 文件。",
+        epilog="示例：book-index draft '紅樓夢' --type work")
     p.add_argument("title", help="Title of the work/book/collection")
     p.add_argument("--type", choices=["book", "work", "collection", "entity"], default="book")
 
     # parse-id
-    p = subparsers.add_parser("parse-id", parents=[parent_parser])
+    p = subparsers.add_parser(
+        "parse-id", parents=[parent_parser],
+        help="解码 ID 并输出 Snowflake 字段（type/timestamp/sequence/...）",
+        description="解码 Base58 ID，显示其内部各字段：类型、状态、时间戳、机器号、序列号。",
+        epilog="示例：book-index parse-id 1evgowbkc2qyo")
     p.add_argument("id", help="Book ID (Base58) to parse")
 
     # update
-    p = subparsers.add_parser("update", parents=[parent_parser])
+    p = subparsers.add_parser(
+        "update", parents=[parent_parser],
+        help="更新已存在条目的部分字段（目前仅 title）",
+        description="更新已存在条目的简单字段。完整覆盖请用 save 命令。")
     p.add_argument("--bid", required=True, help="Item ID to update")
     p.add_argument("--title", help="New title")
 
     # save
-    p = subparsers.add_parser("save", parents=[parent_parser])
+    p = subparsers.add_parser(
+        "save", parents=[parent_parser],
+        help="写入完整 metadata JSON（覆盖式）",
+        description="保存完整 metadata。metadata 必须含 id 字段。会同时更新 index shard。",
+        epilog="""示例：
+  book-index save '{\"id\":\"1ev...\",\"type\":\"work\",\"title\":\"...\"}'
+  cat metadata.json | book-index save -""")
     p.add_argument("metadata", help="Metadata JSON string or '-' for stdin")
 
     # delete
-    p = subparsers.add_parser("delete", parents=[parent_parser])
+    p = subparsers.add_parser(
+        "delete", parents=[parent_parser],
+        help="按 ID 删除条目（同时清理 index shard）",
+        epilog="示例：book-index delete --bid 1evgowbkc2qyo")
     p.add_argument("--bid", required=True, help="Item ID to delete")
 
     # init-asset

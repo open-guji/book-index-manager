@@ -97,7 +97,7 @@ export type { BundleStorageConfig } from './storage/bundle-storage';
 // Core
 export type { FileSystem } from './core/filesystem';
 export { BookIndexManager } from './core/manager';
-export { BookIndexStorage } from './core/storage';
+export { BookIndexStorage, cleanName, shardOf } from './core/storage';
 export type { IndexFile, IndexFileEntry } from './core/storage';
 export { IdGenerator } from './core/id-generator';
 export { extractIdFromUrl, validateResource } from './core/schema';

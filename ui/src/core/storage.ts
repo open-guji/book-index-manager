@@ -63,9 +63,27 @@ function joinPath(...parts: string[]): string {
     return joined.replace(/\/+/g, '/');
 }
 
-function cleanName(name: string): string {
-    // 只保留中文、英文、数字
-    const cleaned = name.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '');
+/**
+ * 文件名清洗：保留 ASCII 字母数字 + CJK 全范围。
+ *
+ * **必须与 Python 端 storage.py 的 _clean_name 保持一致**，否则同一个
+ * Work/Book 在两侧算路径会差字符 → find_file_by_id 静默 miss。
+ *
+ * 范围（与 Python 一致）：
+ *   - U+3400-U+4DBF   CJK 扩展 A
+ *   - U+4E00-U+9FFF   CJK 基本（注意：旧版只到 U+9FA5）
+ *   - U+F900-U+FAFF   CJK 兼容汉字（U+F98C 歷 等历史字形）
+ *   - U+20000-U+3134F SMP CJK 扩展 B-G
+ *
+ * 历史扫描 book-index-draft 发现 557 个文件名含 CJK 兼容字（U+F900+），
+ * 旧版正则只覆盖到 U+9FA5，会漏掉这些字 — 造成 TS 端算路径与 Python
+ * 写出的路径不一致。
+ */
+export function cleanName(name: string): string {
+    const cleaned = name.replace(
+        /[^㐀-䶿一-鿿豈-﫿a-zA-Z0-9\u{20000}-\u{3134f}]/gu,
+        ''
+    );
     return cleaned || 'Undefined';
 }
 

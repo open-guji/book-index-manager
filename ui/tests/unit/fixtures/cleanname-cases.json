@@ -1,0 +1,57 @@
+[
+  {
+    "name": "ASCII only",
+    "input": "Hello World 123",
+    "expected": "HelloWorld123"
+  },
+  {
+    "name": "CJK basic",
+    "input": "史記·夏本紀",
+    "expected": "史記夏本紀"
+  },
+  {
+    "name": "CJK with punctuation",
+    "input": "論語（注疏本）",
+    "expected": "論語注疏本"
+  },
+  {
+    "name": "CJK 兼容汉字 U+F98C 歷",
+    "input": "歷代畫史彙傳",
+    "expected": "歷代畫史彙傳"
+  },
+  {
+    "name": "CJK 兼容汉字 U+F98E 年",
+    "input": "清道光五年彭氏刻本",
+    "expected": "清道光五年彭氏刻本"
+  },
+  {
+    "name": "CJK 扩展 A U+3EEC 㻬",
+    "input": "㻬琈山房紅樓夢詞",
+    "expected": "㻬琈山房紅樓夢詞"
+  },
+  {
+    "name": "CJK 扩展 A U+3406 㐆",
+    "input": "㐆齋文集",
+    "expected": "㐆齋文集"
+  },
+  {
+    "name": "CJK 扩展 B U+25BE8 𥯨 (SMP)",
+    "input": "𥯨簩山人詩集",
+    "expected": "𥯨簩山人詩集"
+  },
+  {
+    "name": "Empty after cleaning",
+    "input": "()【】",
+    "expected": "Undefined"
+  },
+  {
+    "name": "Empty input",
+    "input": "",
+    "expected": "Undefined"
+  },
+  {
+    "name": "Mixed ASCII + CJK + punctuation",
+    "input": "Vol.1 紅樓夢 (校注本)",
+    "expected": "Vol1紅樓夢校注本"
+  }
+]
