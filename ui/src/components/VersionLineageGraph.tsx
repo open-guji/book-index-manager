@@ -340,13 +340,21 @@ function layoutGraph(
 
     dagre.layout(g);
 
-    // 同一 rank（dagre 给的 X 列，LR 布局）下，按 year 重新排序 Y 坐标，
-    // 保证年代早的在上、晚的在下（如己卯 1759 在庚辰 1760 之上）。
-    // dagre 的 barycenter 排序对叶节点不稳定，所以这里事后修正。
+    // 同一 rank（dagre 给的 X 列，LR 布局）下，重新排序 Y 坐标。
+    // 主键: group 在 graph.groups 中的声明顺序（同支系节点上下相邻，减少跨支系交叉）；
+    // 次键: year 升序（同支系内年代早的在上、晚的在下）。
+    // dagre 默认按拓扑+barycenter 排，对 group 不感知，所以这里事后修正。
     if (isLR) {
-        const yearOf = (id: string) => {
-            const n = graph.nodes.find(nn => nn.id === id);
-            return n?.year ?? Number.POSITIVE_INFINITY;
+        const nodeMap = new Map(graph.nodes.map(n => [n.id, n]));
+        const groupOrder = new Map(graph.groups.map((gr, i) => [gr.id, i]));
+        const sortKey = (id: string): [number, number] => {
+            const n = nodeMap.get(id);
+            const gid = n?.group;
+            const go = (gid && groupOrder.has(gid))
+                ? groupOrder.get(gid)!
+                : Number.POSITIVE_INFINITY;
+            const yo = n?.year ?? Number.POSITIVE_INFINITY;
+            return [go, yo];
         };
         // 按 X 坐标分桶（容差 1px）
         const buckets = new Map<number, string[]>();
@@ -359,8 +367,13 @@ function layoutGraph(
         }
         for (const [, ids] of buckets) {
             if (ids.length < 2) continue;
-            const sorted = [...ids].sort((a, b) => yearOf(a) - yearOf(b));
-            // 取出原 Y 坐标列表（升序），按年份顺序重新分配
+            const sorted = [...ids].sort((a, b) => {
+                const [ga, ya] = sortKey(a);
+                const [gb, yb] = sortKey(b);
+                if (ga !== gb) return ga - gb;
+                return ya - yb;
+            });
+            // 取出原 Y 坐标列表（升序），按 (group, year) 顺序重新分配
             const ys = ids.map(id => g.node(id).y).sort((a, b) => a - b);
             sorted.forEach((id, i) => {
                 g.node(id).y = ys[i];
