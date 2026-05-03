@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "prepare": "husky",
+    "test": "cd ui && npm test"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}
