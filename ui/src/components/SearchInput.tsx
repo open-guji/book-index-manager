@@ -241,19 +241,13 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                 placeholder={placeholder}
                 value={value}
                 onChange={e => {
-                    // IME composition 期间不上抛 — 上层会 router.push 把 input 切走，
-                    // 中断中文拼音选字。compositionend 后会再发一次 onChange，那时再上抛。
-                    if (isComposingRef.current) return;
+                    // 受控 input：composition 中间状态也要上抛，否则 React 会把 input 重置回旧 value，
+                    // 用户看到"输入不进去"。debounce 由 IndexBrowser 那层处理（200ms 后才 router.push）。
                     onChange(e.target.value);
                     setShowDropdown(true);
                 }}
                 onCompositionStart={() => { isComposingRef.current = true; }}
-                onCompositionEnd={e => {
-                    isComposingRef.current = false;
-                    // composition 结束时手动上抛一次，因为这次 onChange 已经被守卫吃掉了
-                    onChange((e.target as HTMLInputElement).value);
-                    setShowDropdown(true);
-                }}
+                onCompositionEnd={() => { isComposingRef.current = false; }}
                 onFocus={() => {
                     setShowDropdown(true);
                 }}
