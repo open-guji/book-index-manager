@@ -131,9 +131,13 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                 labelStyle?: React.CSSProperties;
                 labelBgStyle?: React.CSSProperties;
                 isSibling?: boolean;
+                /** 同一 source 多条出边时的 stepPosition 偏移（让多条竖线错开，不重合）。
+                 *  由 buildRfEdge 在 layout 后批量分配。基础值 0.85，每条边偏移 ±N*step。 */
+                stepPosition?: number;
             };
         };
         const LineageEdge = (p: EdgePropsLike) => {
+            const stepPos = p.data?.stepPosition ?? 0.85;
             const [path, autoLabelX, autoLabelY] = getSmoothStepPath({
                 sourceX: p.sourceX,
                 sourceY: p.sourceY,
@@ -141,7 +145,7 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                 targetX: p.targetX,
                 targetY: p.targetY,
                 targetPosition: p.targetPosition,
-                stepPosition: 0.85,
+                stepPosition: stepPos,
                 borderRadius: 5,
             });
             // 标签位置：
@@ -229,6 +233,11 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                             ? d.label
                             : d.renderLink(d.bookId!, d.label)}
                     </div>
+                    {d.description && (
+                        <div style={{ fontSize: 10, color: 'var(--bim-muted, #777)', lineHeight: 1.25, marginTop: 1 }}>
+                            {d.description}
+                        </div>
+                    )}
                     {d.yearText && (
                         <div style={{ fontSize: 10, color: 'var(--bim-muted, #777)', lineHeight: 1.2 }}>
                             {d.yearText}{d.uncertain ? '?' : ''}
@@ -287,6 +296,8 @@ interface NodeData {
     borderColor?: string;
     renderLink?: (id: string, label: string) => React.ReactNode;
     isSelected?: boolean;
+    /** 节点上展示的副标题/描述（hypothetical.description 透传） */
+    description?: string;
     /** 桥接节点：核心集模式下为保持派生链不断而引入的非核心中间节点。视觉淡化。 */
     bridge?: boolean;
 }
@@ -304,8 +315,8 @@ function layoutGraph(
     const g = new dagre.graphlib.Graph();
     g.setGraph({
         rankdir: isLR ? 'LR' : 'TB',
-        ranksep: 160,   // 增加行间距以避免连线标签被覆盖
-        nodesep: 40,    // 增加列间距
+        ranksep: 160,
+        nodesep: 40,
         edgesep: 16,
         marginx: 20,
         marginy: 20,
@@ -340,46 +351,11 @@ function layoutGraph(
 
     dagre.layout(g);
 
-    // 同一 rank（dagre 给的 X 列，LR 布局）下，重新排序 Y 坐标。
-    // 主键: group 在 graph.groups 中的声明顺序（同支系节点上下相邻，减少跨支系交叉）；
-    // 次键: year 升序（同支系内年代早的在上、晚的在下）。
-    // dagre 默认按拓扑+barycenter 排，对 group 不感知，所以这里事后修正。
-    if (isLR) {
-        const nodeMap = new Map(graph.nodes.map(n => [n.id, n]));
-        const groupOrder = new Map(graph.groups.map((gr, i) => [gr.id, i]));
-        const sortKey = (id: string): [number, number] => {
-            const n = nodeMap.get(id);
-            const gid = n?.group;
-            const go = (gid && groupOrder.has(gid))
-                ? groupOrder.get(gid)!
-                : Number.POSITIVE_INFINITY;
-            const yo = n?.year ?? Number.POSITIVE_INFINITY;
-            return [go, yo];
-        };
-        // 按 X 坐标分桶（容差 1px）
-        const buckets = new Map<number, string[]>();
-        for (const n of graph.nodes) {
-            const pos = g.node(n.id);
-            if (!pos) continue;
-            const xKey = Math.round(pos.x);
-            if (!buckets.has(xKey)) buckets.set(xKey, []);
-            buckets.get(xKey)!.push(n.id);
-        }
-        for (const [, ids] of buckets) {
-            if (ids.length < 2) continue;
-            const sorted = [...ids].sort((a, b) => {
-                const [ga, ya] = sortKey(a);
-                const [gb, yb] = sortKey(b);
-                if (ga !== gb) return ga - gb;
-                return ya - yb;
-            });
-            // 取出原 Y 坐标列表（升序），按 (group, year) 顺序重新分配
-            const ys = ids.map(id => g.node(id).y).sort((a, b) => a - b);
-            sorted.forEach((id, i) => {
-                g.node(id).y = ys[i];
-            });
-        }
-    }
+    // dagre 的 barycenter 排序自动让上游节点对齐下游、下游对齐上游，
+    // 减少跨派生链交叉。早期版本曾在 dagre 之后强制按 (group, year) 重排
+    // —— 对纯派生链友好，但破坏 barycenter，导致跨支系交叉（如水滸傳第二
+    // 列簡本祖本 1500 在上、繁本祖本 1540 在下，但下游卻反向，造成交叉）。
+    // 现策略：完全信任 dagre。group 仅用于节点配色（borderColor），不参与 layout。
 
     const rfNodes = graph.nodes.map((n) => {
         const pos = g.node(n.id);
@@ -395,6 +371,7 @@ function layoutGraph(
             borderColor: n.group ? groupColor.get(n.group) : undefined,
             renderLink,
             isSelected,
+            description: n.description,
             bridge: n.bridge,
         };
         return {
@@ -407,11 +384,42 @@ function layoutGraph(
         };
     });
 
-    const rfEdges = graph.edges.map((e) => buildRfEdge(e));
+    // 错开同一 source 多条出边的折弯位置（stepPosition），避免多条竖线
+    // 在同一 X 处堆叠重合。规则：基础 0.85，同 source 出边按 target.y 升序，
+    // 第 i 条 = 0.85 - (i - (n-1)/2) * step。step 取 0.06，最多扇形展开 ±0.18，
+    // 仍保持靠近 target（>0.5）使标签不偏离。仅 derive 边参与；sibling 用默认。
+    // STEP_BASE=0.78 + 单边最多 ±0.12 → range [0.66, 0.90]，
+    // 同 source 多达 5 条边可错开；折弯仍偏 target 侧，label（贴 target 渲染）不离段。
+    const STEP_BASE = 0.78;
+    const STEP_SPREAD = 0.06;
+    const outEdgesBySource = new Map<string, LineageGraphEdge[]>();
+    for (const e of graph.edges) {
+        if (e.kind !== 'derive') continue;
+        if (!outEdgesBySource.has(e.source)) outEdgesBySource.set(e.source, []);
+        outEdgesBySource.get(e.source)!.push(e);
+    }
+    const stepPosByEdgeId = new Map<string, number>();
+    for (const [src, edges] of outEdgesBySource) {
+        if (edges.length <= 1) continue;
+        // 按 target.y 升序（target 在上的边折弯靠源；target 在下的折弯靠目标）
+        const sorted = [...edges].sort((a, b) => {
+            const ya = g.node(a.target)?.y ?? 0;
+            const yb = g.node(b.target)?.y ?? 0;
+            return ya - yb;
+        });
+        const n = sorted.length;
+        sorted.forEach((e, i) => {
+            const offset = (i - (n - 1) / 2) * STEP_SPREAD;
+            stepPosByEdgeId.set(e.id, STEP_BASE + offset);
+        });
+        void src;
+    }
+
+    const rfEdges = graph.edges.map((e) => buildRfEdge(e, stepPosByEdgeId.get(e.id)));
     return { rfNodes, rfEdges };
 }
 
-function buildRfEdge(e: LineageGraphEdge) {
+function buildRfEdge(e: LineageGraphEdge, stepPosition?: number) {
     const probable = e.confidence === 'probable' || e.confidence === 'disputed';
     const isSibling = e.kind === 'sibling';
     const color = confidenceColor(e.confidence);
@@ -440,6 +448,7 @@ function buildRfEdge(e: LineageGraphEdge) {
                 color: '#444',
             } as React.CSSProperties,
             isSibling,
+            stepPosition,
         },
         style: {
             stroke: color,

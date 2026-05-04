@@ -39,6 +39,9 @@ export interface LineageGraphNode {
     /** 分组 id（来自 work.version_graph.node_groups 或 hypothetical.group） */
     group?: string;
     note?: string;
+    /** 节点上展示的描述（label 之外的副标题，如「繁本，早於嘉靖殘本，已佚」）。
+     *  当前仅 hypothetical 节点透传 hypothetical.description；book 节点暂未使用。 */
+    description?: string;
     /** 桥接节点：本身不在核心集，但为了保持核心节点间派生链不断而引入。
      *  视觉上应淡化（半透明、虚边框）。仅在 collection==='core' 模式下出现。 */
     bridge?: boolean;
@@ -85,6 +88,7 @@ function hypoToNode(h: VersionGraphHypotheticalNode): LineageGraphNode {
         year_uncertain: h.year_uncertain,
         group: h.group,
         note: h.note,
+        description: h.description,
     };
 }
 

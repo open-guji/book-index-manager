@@ -773,6 +773,9 @@ export interface VersionGraphGroup {
 export interface VersionGraphHypotheticalNode {
     id: string;
     label: string;
+    /** 节点上展示的副标题/描述（如「繁本，早於嘉靖殘本，已佚」）。
+     *  与 note（学术依据/长说明）区分：description 紧跟在 label 下方显示。 */
+    description?: string;
     year?: number;
     /** 当 year 不明而只有区间时使用 */
     year_range?: [number, number];
