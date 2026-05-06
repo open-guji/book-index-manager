@@ -5,6 +5,7 @@ import type {
     LineageGraphNode,
 } from '../core/lineage-graph';
 import { formatLineageYear } from '../core/lineage-graph';
+import { useConvert } from '../i18n';
 
 export interface VersionLineageGraphProps {
     graph: LineageGraph;
@@ -254,10 +255,12 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
         return { version: VersionNode };
     }, [Handle, Position]);
 
+    const { convert } = useConvert();
+
     // 计算 layout（dagre）
     const { rfNodes, rfEdges } = useMemo(
-        () => layoutGraph(graph, dagre, renderLink, selectedNodeId),
-        [graph, dagre, renderLink, selectedNodeId],
+        () => layoutGraph(graph, dagre, renderLink, selectedNodeId, convert),
+        [graph, dagre, renderLink, selectedNodeId, convert],
     );
 
     return (
@@ -307,6 +310,7 @@ function layoutGraph(
     dagre: typeof import('@dagrejs/dagre'),
     renderLink?: (id: string, label: string) => React.ReactNode,
     selectedNodeId?: string,
+    convert: (text: string | undefined | null) => string = (t) => t ?? '',
 ) {
     const NODE_W = 160;
     const NODE_H = 90;
@@ -362,16 +366,16 @@ function layoutGraph(
         const isSelected = selectedNodeId && n.id === selectedNodeId;
         const data: NodeData = {
             kind: n.kind,
-            label: n.label,
+            label: convert(n.label),
             bookId: n.kind === 'book' ? n.id : undefined,
-            yearText: n.year_text ?? formatYear(n),
+            yearText: convert(n.year_text ?? formatYear(n)),
             uncertain: n.year_uncertain,
             category: n.category,
             status: n.status,
             borderColor: n.group ? groupColor.get(n.group) : undefined,
             renderLink,
             isSelected,
-            description: n.description,
+            description: convert(n.description),
             bridge: n.bridge,
         };
         return {
@@ -415,11 +419,15 @@ function layoutGraph(
         void src;
     }
 
-    const rfEdges = graph.edges.map((e) => buildRfEdge(e, stepPosByEdgeId.get(e.id)));
+    const rfEdges = graph.edges.map((e) => buildRfEdge(e, stepPosByEdgeId.get(e.id), convert));
     return { rfNodes, rfEdges };
 }
 
-function buildRfEdge(e: LineageGraphEdge, stepPosition?: number) {
+function buildRfEdge(
+    e: LineageGraphEdge,
+    stepPosition?: number,
+    convert: (text: string | undefined | null) => string = (t) => t ?? '',
+) {
     const probable = e.confidence === 'probable' || e.confidence === 'disputed';
     const isSibling = e.kind === 'sibling';
     const color = confidenceColor(e.confidence);
@@ -440,7 +448,7 @@ function buildRfEdge(e: LineageGraphEdge, stepPosition?: number) {
         target: e.target,
         // 自定义边类型：把 label 放在靠近 target 的水平段（见 LineageEdge）
         type: 'lineage' as const,
-        label: e.relation,
+        label: convert(e.relation),
         // 标签字色统一为深灰（保持视觉简洁），confidence 通过线条颜色和样式表达
         // labelStyle/labelBgStyle 通过 data 传给自定义边组件
         data: {

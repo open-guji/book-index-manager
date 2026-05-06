@@ -543,15 +543,20 @@ function App() {
                                                     ? (() => {
                                                         const w = detailData as WorkDetailData;
                                                         const out: Record<string, number> = {};
+                                                        const srcBooks = lineageSourceRef.current?.books ?? [];
+                                                        // 数法：本集合实际包含的 Book 数（不含假想节点，不含桥接 book）
+                                                        // 桥接 book 是为了画链路才显示的非集合内节点，不计
+                                                        const countBooks = (key: string) =>
+                                                            buildLineageGraph(w, srcBooks, key).nodes
+                                                                .filter(n => n.kind === 'book' && !n.bridge).length;
                                                         // all：work 下所有有效 books（去除 excluded）
                                                         out.all = (w.books?.length ?? 0)
                                                             - (w.version_graph?.excluded_books?.length ?? 0);
-                                                        // 各 collection key：按 buildLineageGraph 实际节点数
+                                                        // 各 collection key：按集合定义算 book 数
                                                         const cs = w.version_graph?.collections;
-                                                        const srcBooks = lineageSourceRef.current?.books ?? [];
                                                         if (cs) {
                                                             for (const k of Object.keys(cs)) {
-                                                                out[k] = buildLineageGraph(w, srcBooks, k).nodes.length;
+                                                                out[k] = countBooks(k);
                                                             }
                                                         }
                                                         // 兼容旧 core_books（无 collection 配置时）

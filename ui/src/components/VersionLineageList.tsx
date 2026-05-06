@@ -5,6 +5,7 @@ import type {
     LineageGraphNode,
 } from '../core/lineage-graph';
 import { formatLineageYear } from '../core/lineage-graph';
+import { useConvert } from '../i18n';
 
 export interface VersionLineageListProps {
     /** 由 buildLineageGraph 生成的数据 */
@@ -28,6 +29,7 @@ export const VersionLineageList: React.FC<VersionLineageListProps> = ({
     className,
     style,
 }) => {
+    const { convert } = useConvert();
     if (!graph.nodes.length) {
         return (
             <div style={{ ...placeholderStyle, ...style }} className={className}>
@@ -79,8 +81,8 @@ export const VersionLineageList: React.FC<VersionLineageListProps> = ({
 
     return (
         <div className={className} style={{ ...containerStyle, ...style }}>
-            {graph.title && <div style={titleStyle}>{graph.title}</div>}
-            {graph.description && <div style={descStyle}>{graph.description}</div>}
+            {graph.title && <div style={titleStyle}>{convert(graph.title)}</div>}
+            {graph.description && <div style={descStyle}>{convert(graph.description)}</div>}
 
             {orderedGroups.map((g) => (
                 <GroupSection
@@ -127,10 +129,12 @@ const GroupSection: React.FC<GroupSectionProps> = ({
     siblingMap,
     nodeMap,
     renderLink,
-}) => (
+}) => {
+    const { convert } = useConvert();
+    return (
     <div style={groupStyle}>
         <div style={{ ...groupLabelStyle, borderLeftColor: color ?? 'var(--bim-widget-border, #ddd)' }}>
-            {label}
+            {convert(label)}
         </div>
         {nodes.map((n) => (
             <NodeCard
@@ -143,7 +147,8 @@ const GroupSection: React.FC<GroupSectionProps> = ({
             />
         ))}
     </div>
-);
+    );
+};
 
 interface NodeCardProps {
     node: LineageGraphNode;
@@ -156,6 +161,7 @@ interface NodeCardProps {
 const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, renderLink }) => {
     const isHypo = node.kind === 'hypothetical';
     const isBridge = node.bridge;
+    const { convert } = useConvert();
     return (
         <div style={{
             ...cardStyle,
@@ -166,17 +172,17 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, 
         title={isBridge ? '桥接节点：本身不在核心集，为保持派生链完整而显示' : undefined}>
             <div style={cardHeaderStyle}>
                 <span style={cardTitleStyle}>
-                    {isHypo || !renderLink ? node.label : renderLink(node.id, node.label)}
+                    {isHypo || !renderLink ? convert(node.label) : renderLink(node.id, convert(node.label))}
                 </span>
                 {(node.year_text || node.year != null) && (
                     <span style={cardYearStyle}>
-                        {formatLineageYear(node.year_text, node.year, node.year_uncertain)}
+                        {formatLineageYear(convert(node.year_text), node.year, node.year_uncertain)}
                     </span>
                 )}
             </div>
 
             <div style={cardMetaStyle}>
-                {node.category && <Tag>{node.category}</Tag>}
+                {node.category && <Tag>{convert(node.category)}</Tag>}
                 {node.status === 'lost' && <Tag tone="warn">已佚</Tag>}
                 {node.status === 'fragment' && <Tag tone="warn">残本</Tag>}
                 {isHypo && <Tag tone="info">假想祖本</Tag>}
@@ -184,10 +190,10 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, 
             </div>
 
             {node.extant_juan && (
-                <div style={cardLineStyle}>现存：{node.extant_juan}</div>
+                <div style={cardLineStyle}>现存：{convert(node.extant_juan)}</div>
             )}
             {node.note && (
-                <div style={cardNoteStyle}>{node.note}</div>
+                <div style={cardNoteStyle}>{convert(node.note)}</div>
             )}
 
             {incoming.length > 0 && (
@@ -197,16 +203,16 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, 
                         const src = nodeMap.get(e.source);
                         return (
                             <div key={e.id} style={cardEdgeStyle(e.confidence)}>
-                                <span style={relationTagStyle}>{e.relation}</span>
+                                <span style={relationTagStyle}>{convert(e.relation)}</span>
                                 <span>
                                     {src?.kind === 'book' && renderLink
-                                        ? renderLink(src.id, src.label)
-                                        : (src?.label ?? e.source)}
+                                        ? renderLink(src.id, convert(src.label))
+                                        : convert(src?.label ?? e.source)}
                                 </span>
                                 {e.confidence !== 'consensus' && e.confidence !== 'certain' && (
                                     <ConfidenceBadge level={e.confidence} />
                                 )}
-                                {e.evidence && <span style={evidenceStyle}>· {e.evidence}</span>}
+                                {e.evidence && <span style={evidenceStyle}>· {convert(e.evidence)}</span>}
                             </div>
                         );
                     })}
@@ -221,14 +227,14 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, 
                         const other = nodeMap.get(otherId);
                         return (
                             <div key={e.id} style={cardEdgeStyle(e.confidence)}>
-                                <span style={relationTagStyle}>{e.relation}</span>
+                                <span style={relationTagStyle}>{convert(e.relation)}</span>
                                 <span>
                                     {other?.kind === 'book' && renderLink
-                                        ? renderLink(other.id, other.label)
-                                        : (other?.label ?? otherId)}
+                                        ? renderLink(other.id, convert(other.label))
+                                        : convert(other?.label ?? otherId)}
                                 </span>
                                 <ConfidenceBadge level={e.confidence} />
-                                {e.evidence && <span style={evidenceStyle}>· {e.evidence}</span>}
+                                {e.evidence && <span style={evidenceStyle}>· {convert(e.evidence)}</span>}
                             </div>
                         );
                     })}

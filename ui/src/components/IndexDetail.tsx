@@ -19,6 +19,7 @@ import { EntityDetail } from './EntityDetail';
 import type { IndexStorage } from '../storage/types';
 import { extractStatus } from '../id';
 import { ResourceList } from './ResourceList';
+import { MarkdownText } from './common/MarkdownText';
 import { useT, useConvert } from '../i18n';
 import { formatTemplate } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
@@ -1128,15 +1129,15 @@ function WorkInfoCard({ workData, onNavigate, renderLink }: {
             {hasBody && (
                 <div style={{ padding: '8px 14px' }}>
                     {workData.description?.text && (
-                        <p style={{
-                            fontSize: '13px',
-                            color: 'var(--bim-fg, #444)',
-                            lineHeight: 1.8,
-                            margin: 0,
-                            textAlign: 'justify',
-                        }}>
-                            {convert(workData.description.text)}
-                        </p>
+                        <MarkdownText
+                            text={workData.description.text}
+                            style={{
+                                fontSize: '13px',
+                                color: 'var(--bim-fg, #444)',
+                                lineHeight: 1.8,
+                                textAlign: 'justify',
+                            }}
+                        />
                     )}
                     {workData.parent_work && (
                         <div style={{ marginTop: workData.description?.text ? '8px' : 0, fontSize: '13px' }}>
@@ -1409,15 +1410,16 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
             />
 
             {detail.description?.text && (
-                <p style={{
-                    fontSize: '14px',
-                    color: 'var(--bim-fg, #444)',
-                    lineHeight: 1.9,
-                    margin: '0 0 4px',
-                    textAlign: 'justify',
-                }}>
-                    {convert(detail.description.text)}
-                </p>
+                <MarkdownText
+                    text={detail.description.text}
+                    style={{
+                        fontSize: '14px',
+                        color: 'var(--bim-fg, #444)',
+                        lineHeight: 1.9,
+                        margin: '0 0 4px',
+                        textAlign: 'justify',
+                    }}
+                />
             )}
 
             {detail.appendix && detail.appendix.length > 0 && (
@@ -1438,15 +1440,17 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                             }}>
                                 {convert(entry.title)}
                             </summary>
-                            <div style={{
-                                marginTop: 8,
-                                fontSize: 13,
-                                lineHeight: 1.9,
-                                whiteSpace: 'pre-wrap',
-                                color: 'var(--bim-fg, #444)',
-                            }}>
-                                {convert(entry.text)}
-                            </div>
+                            <MarkdownText
+                                text={entry.text}
+                                plainStrong
+                                style={{
+                                    marginTop: 8,
+                                    fontSize: 13,
+                                    lineHeight: 1.9,
+                                    color: 'var(--bim-fg, #444)',
+                                }}
+                            />
+
                         </details>
                     ))}
                 </div>
