@@ -55,9 +55,17 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
         onModeChange?.(newMode);
     };
 
-    const collectionEntries = collectionsAvailable
-        ? Object.entries(collectionsAvailable)
-        : [];
+    // 自动追加「全部」按钮（除非数据里已显式声明 'all'），位置永远在最后
+    const collectionEntries = (() => {
+        if (!collectionsAvailable) return [];
+        const entries = Object.entries(collectionsAvailable);
+        if (entries.length === 0) return entries;
+        if (collectionsAvailable.all) return entries;
+        return [
+            ...entries,
+            ['all', { label: '全部', description: '显示该作品所有版本（含桥接节点）' }] as [string, { label: string; description?: string }],
+        ];
+    })();
     const showCollectionToggle = !!(
         onCollectionChange && collectionEntries.length > 0
     );

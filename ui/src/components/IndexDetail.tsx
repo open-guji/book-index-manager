@@ -1005,15 +1005,22 @@ function computeVersionPartition(
     coreIds: string[];
     groupedIds: { id: string; label: string; description?: string; ids: string[] }[];
 } {
-    if (!vg || !vg.collections || !vg.default_collection || !vg.node_groups) {
+    if (!vg || !vg.default_collection || !vg.node_groups) {
         return { useGrouping: false, coreIds: ids, groupedIds: [] };
     }
-    const coreColl = vg.collections[vg.default_collection];
-    if (!coreColl) {
+    const coreColl = vg.collections?.[vg.default_collection];
+    const collGroups = coreColl?.groups ?? [];
+    const collBookIds = coreColl?.book_ids ?? [];
+    const hasCollRange = collGroups.length > 0 || collBookIds.length > 0;
+    // 兼容旧数据：default_collection='core' 但集合无范围声明 → 用 legacy core_books
+    const legacyCoreBooks = (!hasCollRange && vg.default_collection === 'core' && Array.isArray(vg.core_books))
+        ? vg.core_books
+        : [];
+    if (!hasCollRange && legacyCoreBooks.length === 0) {
         return { useGrouping: false, coreIds: ids, groupedIds: [] };
     }
-    const coreGroupSet = new Set(coreColl.groups ?? []);
-    const coreBookSet = new Set(coreColl.book_ids ?? []);
+    const coreGroupSet = new Set(collGroups);
+    const coreBookSet = new Set([...collBookIds, ...legacyCoreBooks]);
 
     const isCore = (bid: string): boolean => {
         if (coreBookSet.has(bid)) return true;

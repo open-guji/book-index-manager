@@ -542,11 +542,22 @@ function App() {
                                                 detailData.type === 'work'
                                                     ? (() => {
                                                         const w = detailData as WorkDetailData;
-                                                        const core = w.version_graph?.core_books?.length;
-                                                        const all = (w.books?.length ?? 0)
+                                                        const out: Record<string, number> = {};
+                                                        // all：work 下所有有效 books（去除 excluded）
+                                                        out.all = (w.books?.length ?? 0)
                                                             - (w.version_graph?.excluded_books?.length ?? 0);
-                                                        const out: Record<string, number> = { all };
-                                                        if (core != null) out.core = core;
+                                                        // 各 collection key：按 buildLineageGraph 实际节点数
+                                                        const cs = w.version_graph?.collections;
+                                                        const srcBooks = lineageSourceRef.current?.books ?? [];
+                                                        if (cs) {
+                                                            for (const k of Object.keys(cs)) {
+                                                                out[k] = buildLineageGraph(w, srcBooks, k).nodes.length;
+                                                            }
+                                                        }
+                                                        // 兼容旧 core_books（无 collection 配置时）
+                                                        if (out.core == null && w.version_graph?.core_books?.length) {
+                                                            out.core = w.version_graph.core_books.length;
+                                                        }
                                                         return out;
                                                     })()
                                                     : undefined

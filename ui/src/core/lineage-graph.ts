@@ -157,19 +157,20 @@ function resolveCollection(
     if (key === 'all') return null;
 
     const def = vg.collections?.[key];
+    const hasGroups = Array.isArray(def?.groups) && def!.groups!.length > 0;
+    const hasBookIds = Array.isArray(def?.book_ids) && def!.book_ids!.length > 0;
+    const hasRange = hasGroups || hasBookIds || !!def?.hypothetical_ids;
 
-    // 兼容旧数据：key='core' + 老 core_books
-    if (!def && key === 'core' && Array.isArray(vg.core_books) && vg.core_books.length > 0) {
+    // 兼容旧数据：key='core' 但 def 不存在或未声明范围（仅有 label/description）→
+    // 回退使用 legacy core_books / core_hypotheticals
+    if (!hasRange && key === 'core' && Array.isArray(vg.core_books) && vg.core_books.length > 0) {
         return {
             books: new Set(vg.core_books),
             hypos: vg.core_hypotheticals ? new Set(vg.core_hypotheticals) : null,
         };
     }
 
-    if (!def) return null;
-    const hasGroups = Array.isArray(def.groups) && def.groups.length > 0;
-    const hasBookIds = Array.isArray(def.book_ids) && def.book_ids.length > 0;
-    if (!hasGroups && !hasBookIds && !def.hypothetical_ids) return null;
+    if (!def || !hasRange) return null;
 
     const groupSet = hasGroups ? new Set(def.groups) : null;
     const books = new Set<string>(def.book_ids ?? []);
