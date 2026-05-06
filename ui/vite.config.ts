@@ -29,6 +29,9 @@ export default defineConfig(({ mode }) => {
             'react', 'react-dom', 'react/jsx-runtime',
             /^opencc-js/,
             /^@xyflow\//, /^@dagrejs\//,
+            // markdown 链路必须由消费方解析依赖，避免 vite 选 browser condition
+            // 把含 document.createElement 的版本打进 dist，触发 SSR 报错
+            'react-markdown', 'remark-gfm',
           ],
           output: {
             globals: {
