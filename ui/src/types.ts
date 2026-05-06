@@ -242,6 +242,18 @@ export interface DescriptionInfo {
     sources?: string[];
 }
 
+/** 附记条目：长篇补充材料，独立于 description。
+ *  与 description 区分：description 简短、用于卡片/搜索摘要、可被多处引用；
+ *  appendix 仅在条目详情页展开显示，可放学术备记、翻刻本/续补/版本流变等长篇资料。 */
+export interface AppendixEntry {
+    /** 附记小节标题（如「孫楷第《通俗小說書目》著錄之未見/已佚別本」） */
+    title: string;
+    /** 正文 markdown 文本 */
+    text: string;
+    /** 来源标注（与 DescriptionInfo.sources 同形） */
+    sources?: string[];
+}
+
 /** 作者信息 */
 export interface AuthorInfo {
     name: string;
@@ -292,6 +304,8 @@ export interface BaseDetailData {
     edition?: string;
     type: IndexType;
     description?: DescriptionInfo;
+    /** 长篇附记（详情页展示，不进卡片/搜索摘要） */
+    appendix?: AppendixEntry[];
     authors?: AuthorInfo[];
     additional_titles?: (string | { book_title: string })[];
     /** Book 附载篇目 */
@@ -767,6 +781,8 @@ export interface VersionGraphGroup {
     label: string;
     /** 颜色（hex） */
     color?: string;
+    /** 简要说明（用于版本列表中折叠组的副标题） */
+    description?: string;
 }
 
 /** Work.version_graph.hypothetical_nodes[i] —— 假想祖本节点 */
@@ -802,12 +818,30 @@ export interface VersionGraph {
     /** Work.books 里但不进图的条目（如待 dedupe 的占位） */
     excluded_books?: string[];
     excluded_reason?: string;
-    /** 集合化展示（核心 vs 完整）：版本繁多的复杂作品（如水浒）适用 */
-    default_collection?: 'core' | 'all';
-    /** 各集合的标签和说明 */
-    collections?: Record<string, { label: string; description?: string }>;
-    /** 核心集合包含的 book id 列表（缺省时即等同 all） */
+    /** 默认显示的集合 key（对应 collections 字典中的某 key 或 'all'）。
+     *  缺省时等同 'all'（不过滤）。 */
+    default_collection?: string;
+    /** 各集合的元数据。任意 key（如 'core'/'printed'）；'all' 为保留特殊值表示完整。
+     *  每个集合可通过 groups 或 book_ids（或两者并集）声明范围；都未指定则与 'all' 同义。 */
+    collections?: Record<string, VersionGraphCollection>;
+    /** @deprecated 旧字段，等价 `collections.core.book_ids`；保留以兼容旧数据。 */
     core_books?: string[];
-    /** 核心集合包含的假想节点 id 列表（缺省时全部假想节点都在核心集） */
+    /** @deprecated 旧字段，等价 `collections.core.hypothetical_ids`；保留以兼容旧数据。 */
     core_hypotheticals?: string[];
+}
+
+/** 集合定义。可按 group/book_ids 任选其一或并集声明范围。 */
+export interface VersionGraphCollection {
+    /** UI 上显示的名称（如「核心版本」「刻本」） */
+    label: string;
+    /** UI 上 tooltip / 描述区显示的说明 */
+    description?: string;
+    /** 集合包含哪些分组（按 work.version_graph.groups[].id；
+     *  集合 = 这些 group 下所有 book + hypothetical 节点的并集） */
+    groups?: string[];
+    /** 集合精确包含的 book id 列表（与 groups 并集生效） */
+    book_ids?: string[];
+    /** 集合精确包含的假想节点 id 列表（与 groups 并集生效；
+     *  缺省且未指定 groups 时，所有假想节点均纳入） */
+    hypothetical_ids?: string[];
 }

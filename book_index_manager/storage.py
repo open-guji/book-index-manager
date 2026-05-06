@@ -377,6 +377,10 @@ class BookIndexStorage:
                 pass
             try:
                 metadata = self.load_metadata(json_file)
+                # 子目录辅助文件（如 collated_edition/juan_groups.json 是数组）不是 item
+                # metadata 文件，跳过避免误索引和 warning
+                if not isinstance(metadata, dict):
+                    continue
                 id_str = metadata.get("id") or metadata.get("ID")
                 if not id_str:
                     if "-" in json_file.name:

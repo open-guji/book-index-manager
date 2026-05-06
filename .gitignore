@@ -8,3 +8,8 @@ dist-app/
 
 # setuptools-scm 自动生成
 book_index_manager/_version.py
+
+# coverage 产物
+.coverage
+coverage/
+ui/coverage/

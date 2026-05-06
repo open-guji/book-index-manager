@@ -16,14 +16,15 @@ export interface VersionLineageViewProps {
     selectedNodeId?: string;
     /** 模式切换回调（用于更新URL） */
     onModeChange?: (mode: 'list' | 'graph') => void;
-    /** 集合切换：'core'（核心）/ 'all'（完整）。仅当 collectionsAvailable 为真时才显示 toggle */
-    collection?: 'core' | 'all';
+    /** 当前集合 key（任意 collections 字典 key 或 'all'）。仅当 collectionsAvailable 非空时才显示 toggle */
+    collection?: string;
     /** 切换集合回调 */
-    onCollectionChange?: (collection: 'core' | 'all') => void;
-    /** 集合元数据（来自 work.version_graph.collections） */
-    collectionsAvailable?: { core?: { label: string; description?: string }, all?: { label: string; description?: string } };
-    /** 各集合 Book 总数（用于显示徽标，如 "核心 12" "完整 29"） */
-    collectionCounts?: { core?: number; all?: number };
+    onCollectionChange?: (collection: string) => void;
+    /** 集合元数据字典（key → { label, description }）；
+     *  通常由调用方从 work.version_graph.collections 派生，并可选择性附加 'all' 项。 */
+    collectionsAvailable?: Record<string, { label: string; description?: string }>;
+    /** 各集合 Book 总数（key → count，用于按钮上显示数字徽标） */
+    collectionCounts?: Record<string, number>;
     className?: string;
     style?: React.CSSProperties;
 }
@@ -54,8 +55,19 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
         onModeChange?.(newMode);
     };
 
+    // 自动追加「全部」按钮（除非数据里已显式声明 'all'），位置永远在最后
+    const collectionEntries = (() => {
+        if (!collectionsAvailable) return [];
+        const entries = Object.entries(collectionsAvailable);
+        if (entries.length === 0) return entries;
+        if (collectionsAvailable.all) return entries;
+        return [
+            ...entries,
+            ['all', { label: '全部', description: '显示该作品所有版本（含桥接节点）' }] as [string, { label: string; description?: string }],
+        ];
+    })();
     const showCollectionToggle = !!(
-        collectionsAvailable && (collectionsAvailable.core || collectionsAvailable.all) && onCollectionChange
+        onCollectionChange && collectionEntries.length > 0
     );
 
     if (!graph.nodes.length) {
@@ -66,13 +78,7 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
         );
     }
 
-    const coreLabel = collectionsAvailable?.core?.label ?? '核心';
-    const allLabel = collectionsAvailable?.all?.label ?? '完整';
-    const coreCount = collectionCounts?.core;
-    const allCount = collectionCounts?.all;
-    const activeDesc = collection === 'core'
-        ? collectionsAvailable?.core?.description
-        : collectionsAvailable?.all?.description;
+    const activeDesc = collection ? collectionsAvailable?.[collection]?.description : undefined;
 
     return (
         <div className={className} style={style}>
@@ -90,24 +96,23 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
                     关系图
                 </button>
                 {showCollectionToggle && (
-                    <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, alignItems: 'center' }}>
+                    <div style={{ marginLeft: 'auto', marginRight: 80, display: 'flex', gap: 4, alignItems: 'center', flexWrap: 'wrap' }}>
                         <span style={{ fontSize: 12, color: 'var(--bim-muted, #888)', marginRight: 4 }}>
                             集合：
                         </span>
-                        <button
-                            onClick={() => onCollectionChange?.('core')}
-                            style={btnStyle(collection === 'core')}
-                            title={collectionsAvailable?.core?.description}
-                        >
-                            {coreLabel}{coreCount != null ? ` ${coreCount}` : ''}
-                        </button>
-                        <button
-                            onClick={() => onCollectionChange?.('all')}
-                            style={btnStyle(collection === 'all')}
-                            title={collectionsAvailable?.all?.description}
-                        >
-                            {allLabel}{allCount != null ? ` ${allCount}` : ''}
-                        </button>
+                        {collectionEntries.map(([key, meta]) => {
+                            const count = collectionCounts?.[key];
+                            return (
+                                <button
+                                    key={key}
+                                    onClick={() => onCollectionChange?.(key)}
+                                    style={btnStyle(collection === key)}
+                                    title={meta.description}
+                                >
+                                    {meta.label}{count != null ? ` ${count}` : ''}
+                                </button>
+                            );
+                        })}
                     </div>
                 )}
             </div>
@@ -135,6 +140,10 @@ const toolbarStyle: React.CSSProperties = {
     display: 'flex',
     gap: 4,
     marginBottom: 12,
+    // 防止外部 absolute 元素（如页面右上角的 LocaleToggle z-10）遮挡集合切换按钮
+    position: 'relative',
+    zIndex: 20,
+    flexWrap: 'wrap',
 };
 
 const btnStyle = (active: boolean): React.CSSProperties => ({

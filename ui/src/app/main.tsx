@@ -101,7 +101,7 @@ function App() {
     const [lineageGraph, setLineageGraph] = useState<LineageGraph | null>(null);
     const [lineageLoading, setLineageLoading] = useState(false);
     /** lineage 集合：'core'（核心）/ 'all'（完整）。仅当 work.version_graph.core_books 非空时有意义 */
-    const [lineageCollection, setLineageCollection] = useState<'core' | 'all'>('core');
+    const [lineageCollection, setLineageCollection] = useState<string>('core');
     /** 缓存原始 work + books 用于切换 collection 时 rebuild graph，无需重新 fetch */
     const lineageSourceRef = useRef<{ work: WorkDetailData; books: BookDetailData[] } | null>(null);
     const [collatedLoading, setCollatedLoading] = useState(false);
@@ -173,7 +173,7 @@ function App() {
             const validBooks = books.filter((b): b is BookDetailData => !!b);
             lineageSourceRef.current = { work, books: validBooks };
             // 初始集合：work 指定 default_collection（多为 'core'），否则 'all'
-            const initialCollection = (vg.default_collection ?? 'all') as 'core' | 'all';
+            const initialCollection = (vg.default_collection ?? 'all') as string;
             // 仅当 core_books 实际配置时才默认 core，否则强制 all（避免空集合）
             const usableCollection = (initialCollection === 'core'
                 && Array.isArray(vg.core_books) && vg.core_books.length > 0)
@@ -190,7 +190,7 @@ function App() {
     }, [transport]);
 
     /** 切换核心/完整集合（不重新 fetch books，仅 rebuild graph）。 */
-    const handleLineageCollectionChange = useCallback((collection: 'core' | 'all') => {
+    const handleLineageCollectionChange = useCallback((collection: string) => {
         setLineageCollection(collection);
         const src = lineageSourceRef.current;
         if (src) {
@@ -534,17 +534,37 @@ function App() {
                                             collection={lineageCollection}
                                             onCollectionChange={handleLineageCollectionChange}
                                             collectionsAvailable={
-                                                detailData.type === 'work' && (detailData as WorkDetailData).version_graph?.collections
-                                                    ? (detailData as WorkDetailData).version_graph!.collections as { core?: { label: string; description?: string }, all?: { label: string; description?: string } }
+                                                detailData.type === 'work'
+                                                    ? (detailData as WorkDetailData).version_graph?.collections
                                                     : undefined
                                             }
                                             collectionCounts={
                                                 detailData.type === 'work'
-                                                    ? {
-                                                        core: (detailData as WorkDetailData).version_graph?.core_books?.length,
-                                                        all: ((detailData as WorkDetailData).books?.length ?? 0)
-                                                            - ((detailData as WorkDetailData).version_graph?.excluded_books?.length ?? 0),
-                                                    }
+                                                    ? (() => {
+                                                        const w = detailData as WorkDetailData;
+                                                        const out: Record<string, number> = {};
+                                                        const srcBooks = lineageSourceRef.current?.books ?? [];
+                                                        // 数法：本集合实际包含的 Book 数（不含假想节点，不含桥接 book）
+                                                        // 桥接 book 是为了画链路才显示的非集合内节点，不计
+                                                        const countBooks = (key: string) =>
+                                                            buildLineageGraph(w, srcBooks, key).nodes
+                                                                .filter(n => n.kind === 'book' && !n.bridge).length;
+                                                        // all：work 下所有有效 books（去除 excluded）
+                                                        out.all = (w.books?.length ?? 0)
+                                                            - (w.version_graph?.excluded_books?.length ?? 0);
+                                                        // 各 collection key：按集合定义算 book 数
+                                                        const cs = w.version_graph?.collections;
+                                                        if (cs) {
+                                                            for (const k of Object.keys(cs)) {
+                                                                out[k] = countBooks(k);
+                                                            }
+                                                        }
+                                                        // 兼容旧 core_books（无 collection 配置时）
+                                                        if (out.core == null && w.version_graph?.core_books?.length) {
+                                                            out.core = w.version_graph.core_books.length;
+                                                        }
+                                                        return out;
+                                                    })()
                                                     : undefined
                                             }
                                         />
