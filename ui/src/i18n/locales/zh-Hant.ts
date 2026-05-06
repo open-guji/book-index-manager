@@ -101,7 +101,7 @@ export const zhHant: LocaleMessages = {
         summary: '提要',
         comment: '按語',
         additionalComment: '附按',
-        indexed: '收錄',
+        indexed: '收錄於',
         emendated: '考證',
         relatedWorks: '相關作品',
         containedWorks: '包含作品',

@@ -13,6 +13,7 @@ import type {
     IndexedByEntry,
     EmendatedByEntry,
     ContainedInEntry,
+    VersionGraph,
 } from '../types';
 import { EntityDetail } from './EntityDetail';
 import type { IndexStorage } from '../storage/types';
@@ -846,7 +847,7 @@ function BookVersionCard({ book, onNavigate, renderLink }: {
             background: 'var(--bim-input-bg, #fff)',
         }}>
             <div style={{
-                padding: '10px 14px',
+                padding: '6px 12px',
                 borderBottom: hasDetails && !collapsed
                     ? '1px solid var(--bim-widget-border, #e0e0e0)'
                     : 'none',
@@ -854,7 +855,7 @@ function BookVersionCard({ book, onNavigate, renderLink }: {
                 alignItems: 'center',
                 gap: '8px',
             }}>
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, fontSize: '14px', lineHeight: 1.4 }}>
                     <IdLink id={book.id} label={cardLabel} onNavigate={onNavigate} renderLink={renderLink} />
                 </div>
                 {hasDetails && (
@@ -882,14 +883,17 @@ function BookVersionCard({ book, onNavigate, renderLink }: {
     );
 }
 
-function BookVersionList({ ids, transport, onNavigate, renderLink, footer }: {
+function BookVersionList({ ids, workData, transport, onNavigate, renderLink, footer }: {
     ids: string[];
+    /** 可选 work 数据：用于读取 version_graph.collections / groups 做核心/分组划分 */
+    workData?: WorkDetailData;
     transport?: IndexStorage;
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
     footer?: React.ReactNode;
 }) {
     const t = useT();
+    const { convert } = useConvert();
     const [books, setBooks] = useState<ResolvedBook[]>([]);
 
     useEffect(() => {
@@ -911,6 +915,13 @@ function BookVersionList({ ids, transport, onNavigate, renderLink, footer }: {
 
     if (!ids.length) return null;
 
+    const renderedBooks = books.length ? books : ids.map(id => ({ id } as ResolvedBook));
+    const bookById = new Map(renderedBooks.map(b => [b.id, b]));
+
+    // 计算分组：核心集合内（或不在任何 group 配置中）→ 直接展开；其他按 group 分组折叠
+    const vg = workData?.version_graph;
+    const partition = computeVersionPartition(ids, vg);
+
     return (
         <>
             <SectionLabel>
@@ -920,13 +931,136 @@ function BookVersionList({ ids, transport, onNavigate, renderLink, footer }: {
                 </span>
             </SectionLabel>
             {footer}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
-                {(books.length ? books : ids.map(id => ({ id } as ResolvedBook))).map(book => (
-                    <BookVersionCard key={book.id} book={book} onNavigate={onNavigate} renderLink={renderLink} />
-                ))}
-            </div>
+            {partition.useGrouping ? (
+                <>
+                    {/* 核心版本：直接展开 */}
+                    {partition.coreIds.length > 0 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
+                            {partition.coreIds.map(id => {
+                                const book = bookById.get(id);
+                                if (!book) return null;
+                                return <BookVersionCard key={id} book={book} onNavigate={onNavigate} renderLink={renderLink} />;
+                            })}
+                        </div>
+                    )}
+                    {/* 非核心 group：每组一个折叠面板 */}
+                    {partition.groupedIds.map(grp => (
+                        <details key={grp.id} style={{
+                            marginTop: 12,
+                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            borderRadius: 6,
+                            background: 'var(--bim-bg-subtle, #fafafa)',
+                        }}>
+                            <summary style={{
+                                cursor: 'pointer',
+                                padding: '8px 14px',
+                                fontSize: 14,
+                                fontWeight: 600,
+                                color: 'var(--bim-fg, #333)',
+                                userSelect: 'none',
+                            }}>
+                                {convert(grp.label)}
+                                <span style={{ marginLeft: 6, fontSize: 12, color: 'var(--bim-desc-fg, #888)', fontWeight: 400 }}>
+                                    （{grp.ids.length}）
+                                </span>
+                                {grp.description && (
+                                    <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--bim-desc-fg, #888)', fontWeight: 400 }}>
+                                        {convert(grp.description)}
+                                    </span>
+                                )}
+                            </summary>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '0 12px 12px' }}>
+                                {grp.ids.map(id => {
+                                    const book = bookById.get(id);
+                                    if (!book) return null;
+                                    return <BookVersionCard key={id} book={book} onNavigate={onNavigate} renderLink={renderLink} />;
+                                })}
+                            </div>
+                        </details>
+                    ))}
+                </>
+            ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
+                    {renderedBooks.map(book => (
+                        <BookVersionCard key={book.id} book={book} onNavigate={onNavigate} renderLink={renderLink} />
+                    ))}
+                </div>
+            )}
         </>
     );
+}
+
+/**
+ * 根据 work.version_graph.collections + groups 把 books 分为：
+ * - coreIds：直接展开（在 default_collection 集合中，或没有分组配置时全部）
+ * - groupedIds：按 group 分组，默认折叠
+ *
+ * 启用分组的条件：work 配置了 default_collection（核心集），且非核心 books 数量 ≥ 3 才值得折叠。
+ */
+function computeVersionPartition(
+    ids: string[],
+    vg?: VersionGraph,
+): {
+    useGrouping: boolean;
+    coreIds: string[];
+    groupedIds: { id: string; label: string; description?: string; ids: string[] }[];
+} {
+    if (!vg || !vg.collections || !vg.default_collection || !vg.node_groups) {
+        return { useGrouping: false, coreIds: ids, groupedIds: [] };
+    }
+    const coreColl = vg.collections[vg.default_collection];
+    if (!coreColl) {
+        return { useGrouping: false, coreIds: ids, groupedIds: [] };
+    }
+    const coreGroupSet = new Set(coreColl.groups ?? []);
+    const coreBookSet = new Set(coreColl.book_ids ?? []);
+
+    const isCore = (bid: string): boolean => {
+        if (coreBookSet.has(bid)) return true;
+        const g = vg.node_groups![bid];
+        return g != null && coreGroupSet.has(g);
+    };
+
+    const coreIds: string[] = [];
+    const otherByGroup = new Map<string, string[]>();
+    const ungroupedOther: string[] = [];
+
+    for (const bid of ids) {
+        if (vg.excluded_books?.includes(bid)) continue;
+        if (isCore(bid)) {
+            coreIds.push(bid);
+        } else {
+            const g = vg.node_groups![bid];
+            if (g) {
+                if (!otherByGroup.has(g)) otherByGroup.set(g, []);
+                otherByGroup.get(g)!.push(bid);
+            } else {
+                ungroupedOther.push(bid);
+            }
+        }
+    }
+
+    // 非核心数量过少则不分组（避免只有 1-2 本时还折叠）
+    const otherCount = ungroupedOther.length + [...otherByGroup.values()].reduce((s, a) => s + a.length, 0);
+    if (otherCount < 3) {
+        return { useGrouping: false, coreIds: ids, groupedIds: [] };
+    }
+
+    const groupMeta = new Map((vg.groups ?? []).map(g => [g.id, g]));
+    const groupedIds = [...otherByGroup.entries()].map(([gid, bids]) => {
+        const meta = groupMeta.get(gid);
+        return {
+            id: gid,
+            label: meta?.label ?? gid,
+            description: meta?.description,
+            ids: bids,
+        };
+    });
+    if (ungroupedOther.length > 0) {
+        groupedIds.push({ id: '__other__', label: '其他版本', description: undefined, ids: ungroupedOther });
+    }
+
+    return { useGrouping: true, coreIds, groupedIds };
 }
 
 // ── 作品信息卡片 ──
@@ -938,6 +1072,7 @@ function WorkInfoCard({ workData, onNavigate, renderLink }: {
 }) {
     const t = useT();
     const { convert } = useConvert();
+    const hasBody = !!workData.description?.text || !!workData.parent_work;
     return (
         <div style={{
             border: '1px solid var(--bim-widget-border, #e0e0e0)',
@@ -947,14 +1082,14 @@ function WorkInfoCard({ workData, onNavigate, renderLink }: {
             marginTop: '4px',
         }}>
             <div style={{
-                padding: '12px 16px',
-                borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                padding: '6px 14px',
+                borderBottom: hasBody ? '1px solid var(--bim-widget-border, #e0e0e0)' : 'none',
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'baseline',
                 gap: '8px',
+                flexWrap: 'wrap',
                 background: 'color-mix(in srgb, var(--bim-primary, #8e6f3e) 4%, transparent)',
             }}>
-                <TypeBadge type="work" />
                 <span style={{
                     fontSize: '15px',
                     fontWeight: 600,
@@ -977,30 +1112,34 @@ function WorkInfoCard({ workData, onNavigate, renderLink }: {
                         {numberToChinese(workData.juan_count.number)}{t.unit.juan}
                     </span>
                 ) : null}
-            </div>
-            <div style={{ padding: '12px 16px' }}>
                 {workData.authors && workData.authors.length > 0 && (
-                    <AuthorLine authors={workData.authors} type="work" onNavigate={onNavigate} renderLink={renderLink} />
-                )}
-                {workData.description?.text && (
-                    <p style={{
-                        fontSize: '13px',
-                        color: 'var(--bim-fg, #444)',
-                        lineHeight: 1.8,
-                        margin: workData.authors?.length ? '8px 0 0' : '0',
-                        textAlign: 'justify',
-                    }}>
-                        {convert(workData.description.text)}
-                    </p>
-                )}
-                {workData.parent_work && (
-                    <div style={{ marginTop: '8px', fontSize: '13px' }}>
-                        <MetaItem label={t.label.parentWork}>
-                            <IdLink id={workData.parent_work.id} label={convert(workData.parent_work.title)} onNavigate={onNavigate} renderLink={renderLink} />
-                        </MetaItem>
-                    </div>
+                    <span style={{ fontSize: '13px' }}>
+                        <AuthorLine authors={workData.authors} type="work" onNavigate={onNavigate} renderLink={renderLink} />
+                    </span>
                 )}
             </div>
+            {hasBody && (
+                <div style={{ padding: '8px 14px' }}>
+                    {workData.description?.text && (
+                        <p style={{
+                            fontSize: '13px',
+                            color: 'var(--bim-fg, #444)',
+                            lineHeight: 1.8,
+                            margin: 0,
+                            textAlign: 'justify',
+                        }}>
+                            {convert(workData.description.text)}
+                        </p>
+                    )}
+                    {workData.parent_work && (
+                        <div style={{ marginTop: workData.description?.text ? '8px' : 0, fontSize: '13px' }}>
+                            <MetaItem label={t.label.parentWork}>
+                                <IdLink id={workData.parent_work.id} label={convert(workData.parent_work.title)} onNavigate={onNavigate} renderLink={renderLink} />
+                            </MetaItem>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
@@ -1274,6 +1413,38 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                 </p>
             )}
 
+            {detail.appendix && detail.appendix.length > 0 && (
+                <div style={{ marginTop: 8, marginBottom: 4 }}>
+                    {detail.appendix.map((entry, i) => (
+                        <details key={i} style={{
+                            marginTop: 6,
+                            padding: '6px 10px',
+                            background: 'var(--bim-bg-subtle, #fafafa)',
+                            borderRadius: 4,
+                            border: '1px solid var(--bim-widget-border, #ececec)',
+                        }}>
+                            <summary style={{
+                                cursor: 'pointer',
+                                fontWeight: 600,
+                                fontSize: 13,
+                                color: 'var(--bim-muted, #666)',
+                            }}>
+                                {convert(entry.title)}
+                            </summary>
+                            <div style={{
+                                marginTop: 8,
+                                fontSize: 13,
+                                lineHeight: 1.9,
+                                whiteSpace: 'pre-wrap',
+                                color: 'var(--bim-fg, #444)',
+                            }}>
+                                {convert(entry.text)}
+                            </div>
+                        </details>
+                    ))}
+                </div>
+            )}
+
             {containedInResolved.length > 0 && (
                 <>
                     <SectionLabel>{t.section.containedIn}</SectionLabel>
@@ -1359,7 +1530,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
             )}
 
             {workData?.books && workData.books.length > 0 && (
-                <BookVersionList ids={workData.books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} footer={relatedBooksFooter} />
+                <BookVersionList ids={workData.books} workData={workData} transport={transport} onNavigate={onNavigate} renderLink={renderLink} footer={relatedBooksFooter} />
             )}
 
             {workData?.related_works && workData.related_works.length > 0 && (() => {

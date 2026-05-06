@@ -4,6 +4,7 @@ import type {
     LineageGraphEdge,
     LineageGraphNode,
 } from '../core/lineage-graph';
+import { formatLineageYear } from '../core/lineage-graph';
 
 export interface VersionLineageGraphProps {
     graph: LineageGraph;
@@ -240,8 +241,7 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                     )}
                     {d.yearText && (
                         <div style={{ fontSize: 10, color: 'var(--bim-muted, #777)', lineHeight: 1.2 }}>
-                            {d.yearText}{d.uncertain ? '?' : ''}
-                            {d.category ? ` · ${d.category}` : ''}
+                            {formatLineageYear(d.yearText, undefined, d.uncertain)}
                         </div>
                     )}
                     {isLost && (

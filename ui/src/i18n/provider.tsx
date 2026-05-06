@@ -32,7 +32,7 @@ export interface LocaleProviderProps {
     children: React.ReactNode;
 }
 
-const DEFAULT_LOCALE: Locale = 'zh-Hant';
+const DEFAULT_LOCALE: Locale = 'zh-Hans';
 
 export const LocaleProvider: React.FC<LocaleProviderProps> = ({
     locale: controlledLocale,

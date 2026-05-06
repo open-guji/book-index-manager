@@ -4,6 +4,7 @@ import type {
     LineageGraphEdge,
     LineageGraphNode,
 } from '../core/lineage-graph';
+import { formatLineageYear } from '../core/lineage-graph';
 
 export interface VersionLineageListProps {
     /** 由 buildLineageGraph 生成的数据 */
@@ -167,10 +168,9 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, 
                 <span style={cardTitleStyle}>
                     {isHypo || !renderLink ? node.label : renderLink(node.id, node.label)}
                 </span>
-                {node.year && (
+                {(node.year_text || node.year != null) && (
                     <span style={cardYearStyle}>
-                        {node.year_text ?? node.year}
-                        {node.year_uncertain ? '?' : ''}
+                        {formatLineageYear(node.year_text, node.year, node.year_uncertain)}
                     </span>
                 )}
             </div>

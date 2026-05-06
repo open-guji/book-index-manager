@@ -141,17 +141,71 @@ function siblingToEdge(myId: string, s: LineageSibling, idx: number): LineageGra
 }
 
 /**
+ * 解析集合 key → 该集合应包含的 book_ids 与 hypothetical_ids 集合。
+ *
+ * 优先级：
+ * 1. 'all' / 不存在的 key / collections 未配置 / 集合无范围声明 → 返回 null（=不过滤）
+ * 2. collections[key] 中的 groups + book_ids 并集 → book set
+ * 3. collections[key] 中的 groups + hypothetical_ids 并集 → hypo set
+ *    （hypo 缺省且 groups 也未指定时，nullable 表示「全部假想节点都纳入」）
+ * 4. 兼容：key='core' 且仅旧 core_books 定义时，回退使用 core_books / core_hypotheticals
+ */
+function resolveCollection(
+    vg: VersionGraph,
+    key: string,
+): { books: Set<string>; hypos: Set<string> | null } | null {
+    if (key === 'all') return null;
+
+    const def = vg.collections?.[key];
+
+    // 兼容旧数据：key='core' + 老 core_books
+    if (!def && key === 'core' && Array.isArray(vg.core_books) && vg.core_books.length > 0) {
+        return {
+            books: new Set(vg.core_books),
+            hypos: vg.core_hypotheticals ? new Set(vg.core_hypotheticals) : null,
+        };
+    }
+
+    if (!def) return null;
+    const hasGroups = Array.isArray(def.groups) && def.groups.length > 0;
+    const hasBookIds = Array.isArray(def.book_ids) && def.book_ids.length > 0;
+    if (!hasGroups && !hasBookIds && !def.hypothetical_ids) return null;
+
+    const groupSet = hasGroups ? new Set(def.groups) : null;
+    const books = new Set<string>(def.book_ids ?? []);
+    if (groupSet && vg.node_groups) {
+        for (const [bid, g] of Object.entries(vg.node_groups)) {
+            if (groupSet.has(g)) books.add(bid);
+        }
+    }
+
+    let hypos: Set<string> | null = null;
+    if (def.hypothetical_ids) {
+        hypos = new Set(def.hypothetical_ids);
+    }
+    if (groupSet) {
+        if (!hypos) hypos = new Set();
+        for (const h of vg.hypothetical_nodes ?? []) {
+            if (h.group && groupSet.has(h.group)) hypos.add(h.id);
+        }
+    }
+    // 集合声明了 groups 或 hypothetical_ids 时，hypos 为闭集；否则 null（不过滤假想节点）
+    return { books, hypos };
+}
+
+/**
  * 主入口：把 Work + 它的 Books 合成可视化数据。
  *
  * @param work - WorkDetailData（须有 version_graph.enabled === true 才有效）
  * @param books - 与该 Work 关联的 Book 详情数组（应已加载 lineage 字段）
- * @param collection - 'core' | 'all'，缺省按 vg.default_collection 或 'all'
+ * @param collection - 集合 key（任意字符串；保留 'all' 表示不过滤）。
+ *                     缺省按 vg.default_collection 或 'all'。
  * @returns LineageGraph，未启用或无数据时返回空图
  */
 export function buildLineageGraph(
     work: WorkDetailData,
     books: BookDetailData[],
-    collection?: 'core' | 'all',
+    collection?: string,
 ): LineageGraph {
     const vg = work.version_graph;
     const empty: LineageGraph = {
@@ -166,13 +220,11 @@ export function buildLineageGraph(
     const excluded = new Set(vg.excluded_books ?? []);
     const groupMap = vg.node_groups ?? {};
 
-    // 集合过滤：当 collection==='core' 且 core_books 已定义时，只保留核心集合内的节点
-    const useCore = (collection ?? vg.default_collection ?? 'all') === 'core'
-        && Array.isArray(vg.core_books) && vg.core_books.length > 0;
-    const coreBookSet = useCore ? new Set(vg.core_books) : null;
-    const coreHypoSet = useCore && vg.core_hypotheticals
-        ? new Set(vg.core_hypotheticals)
-        : null;
+    // 集合过滤：根据 collection key 解析白名单；为 null 时表示不过滤（'all' 模式）
+    const resolved = resolveCollection(vg, collection ?? vg.default_collection ?? 'all');
+    const useCore = resolved !== null;
+    const coreBookSet = resolved?.books ?? null;
+    const coreHypoSet = resolved?.hypos ?? null;
 
     // 桥接节点计算：核心模式下，沿 derived_from 链向上回溯，把不在核心集的中间节点补出来，
     // 保持派生链不断。补出来的节点 bridge=true，前端淡化显示。
@@ -288,6 +340,25 @@ export function buildLineageGraph(
         layout: vg.layout ?? 'LR',
         excluded: Array.from(excluded),
     };
+}
+
+/**
+ * 计算年代显示文字。
+ *
+ * - 若有 year_text，返回 year_text；否则返回 year 数字字符串。
+ * - 若 year_uncertain=true 且文本未含模糊词（约/推定/大约/学界估计/前后/不确等），
+ *   则前缀「约 」标记，避免显示问号引发歧义。
+ */
+export function formatLineageYear(
+    yearText: string | undefined | null,
+    yearNumber: number | undefined | null,
+    uncertain: boolean | undefined | null,
+): string {
+    const text = (yearText ?? (yearNumber != null ? String(yearNumber) : '')).trim();
+    if (!text) return '';
+    if (!uncertain) return text;
+    if (/约|約|推定|大约|大約|学界估计|學界估計|不確|不确|前后|前後|疑/.test(text)) return text;
+    return `约 ${text}`;
 }
 
 /**
