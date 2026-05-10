@@ -14,6 +14,9 @@ import type { FeedbackItem } from '../components/FeedbackList';
 import { HomePage } from '../components/HomePage';
 import type { TabKey } from '../components/HomePage';
 import { LocaleToggle } from '../components/LocaleToggle';
+import { RepoSourceLink } from '../components/common/RepoSourceLink';
+import { cleanName } from '../core/storage';
+import { extractStatus } from '../id';
 import { LocaleProvider } from '../i18n/provider';
 import { DevApiStorage } from '../storage/dev-api-storage';
 import type { IndexStorage } from '../storage/types';
@@ -75,6 +78,77 @@ function pushUrl(id: string | null, params?: Record<string, string | undefined>)
 /** replaceState 版本，用于不产生历史记录的更新 */
 function replaceUrl(id: string | null, params?: Record<string, string | undefined>) {
     window.history.replaceState(null, '', buildUrl(id, params));
+}
+
+// ── GitHub 源文件链接推导 ──
+
+const REPO_DRAFT = 'https://github.com/open-guji/book-index-draft';
+const REPO_OFFICIAL = 'https://github.com/open-guji/book-index';
+const TYPE_TO_FOLDER: Record<string, string> = {
+    book: 'Book', collection: 'Collection', work: 'Work', entity: 'Entity',
+};
+
+function deriveEntryPath(entry: IndexEntry, detail: IndexDetailData | null): string {
+    if (entry.path) return entry.path;
+    const id = entry.id;
+    const c1 = id[0] ?? '_';
+    const c2 = id[1] ?? '_';
+    const c3 = id[2] ?? '_';
+    const folder = TYPE_TO_FOLDER[entry.type] ?? 'Work';
+    const title = entry.title
+        || (detail as { title?: string; primary_name?: string } | null)?.title
+        || (detail as { title?: string; primary_name?: string } | null)?.primary_name
+        || '';
+    return `${folder}/${c1}/${c2}/${c3}/${id}-${cleanName(title)}.json`;
+}
+
+function buildSourceLink(
+    entry: IndexEntry | null,
+    detail: IndexDetailData | null,
+    activeTab: string,
+    activeJuan: string | null,
+): { href: string; label: string } | null {
+    if (!entry) return null;
+    if (activeTab === 'feedback') return null;
+    let isDraft = entry.isDraft;
+    if (isDraft === undefined) {
+        try { isDraft = extractStatus(entry.id) === 'draft'; } catch { isDraft = true; }
+    }
+    const base = isDraft ? REPO_DRAFT : REPO_OFFICIAL;
+    const repoLabel = isDraft ? 'book-index-draft' : 'book-index';
+    const path = deriveEntryPath(entry, detail);
+    const dir = path.slice(0, path.lastIndexOf('/'));
+    const id = entry.id;
+
+    if (activeTab === 'collated') {
+        if (activeJuan) {
+            return {
+                href: `${base}/blob/main/${dir}/${id}/collated_edition/${activeJuan}`,
+                label: `在 GitHub 查看本卷源文件（${repoLabel}）`,
+            };
+        }
+        return {
+            href: `${base}/tree/main/${dir}/${id}/collated_edition`,
+            label: `在 GitHub 查看整理本源文件目录（${repoLabel}）`,
+        };
+    }
+    if (activeTab.startsWith('catalog:')) {
+        const rid = activeTab.slice('catalog:'.length);
+        return {
+            href: `${base}/blob/main/${dir}/${id}/${rid}/volume_book_mapping.json`,
+            label: `在 GitHub 查看丛编目录源文件（${repoLabel}）`,
+        };
+    }
+    if (activeTab === 'lineage') {
+        return {
+            href: `${base}/blob/main/${dir}/${id}/lineage_graph.json`,
+            label: `在 GitHub 查看版本传承源文件（${repoLabel}）`,
+        };
+    }
+    return {
+        href: `${base}/blob/main/${path}`,
+        label: `在 GitHub 查看本条目源文件（${repoLabel}）`,
+    };
 }
 
 // ── 主应用 ──
@@ -481,8 +555,12 @@ function App() {
                                 >
                                     反馈
                                 </button>
-                                <div style={{ marginLeft: 'auto', flexShrink: 0, padding: '4px 0' }}>
+                                <div style={{ marginLeft: 'auto', flexShrink: 0, padding: '4px 0', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                                     <LocaleToggle />
+                                    {(() => {
+                                        const link = buildSourceLink(selectedEntry, detailData, activeTab, activeJuan);
+                                        return link ? <RepoSourceLink {...link} /> : null;
+                                    })()}
                                 </div>
                             </div>
                             <div style={{ padding: isMobile ? '16px 12px' : '32px 48px', maxWidth: '900px', flex: 1, overflow: 'auto' }}>
@@ -495,6 +573,12 @@ function App() {
                                             lineageGraph && lineageGraph.nodes.length > 0 ? (
                                                 <LineageBanner
                                                     graph={lineageGraph}
+                                                    totalBookCount={(() => {
+                                                        const src = lineageSourceRef.current;
+                                                        if (!src) return undefined;
+                                                        const excluded = new Set(src.work.version_graph?.excluded_books ?? []);
+                                                        return (src.work.books ?? []).filter(id => !excluded.has(id)).length;
+                                                    })()}
                                                     onOpen={() => setActiveTab('lineage')}
                                                 />
                                             ) : null
@@ -587,7 +671,15 @@ function App() {
                         transport={transport}
                         onEntryClick={handleEntryClick}
                         hideModeIndicator
-                        headerRight={<LocaleToggle />}
+                        headerRight={
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                <LocaleToggle />
+                                <RepoSourceLink
+                                    href={REPO_DRAFT}
+                                    label="book-index-draft：所有索引数据的开源仓库"
+                                />
+                            </span>
+                        }
                     />
                     <HomePage
                         transport={transport}
@@ -601,8 +693,8 @@ function App() {
     );
 }
 
-function LineageBanner({ graph, onOpen }: { graph: LineageGraph; onOpen: () => void }) {
-    const bookCount = graph.nodes.filter((n) => n.kind === 'book').length;
+function LineageBanner({ graph, totalBookCount, onOpen }: { graph: LineageGraph; totalBookCount?: number; onOpen: () => void }) {
+    const bookCount = totalBookCount ?? graph.nodes.filter((n) => n.kind === 'book').length;
     return (
         <div
             onClick={onOpen}

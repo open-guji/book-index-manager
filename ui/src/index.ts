@@ -181,3 +181,5 @@ export { FormTextArea } from './components/common/FormTextArea';
 export { Badge } from './components/common/Badge';
 export { LocaleToggle } from './components/LocaleToggle';
 export type { LocaleToggleProps } from './components/LocaleToggle';
+export { RepoSourceLink } from './components/common/RepoSourceLink';
+export type { RepoSourceLinkProps } from './components/common/RepoSourceLink';

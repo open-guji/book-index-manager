@@ -396,9 +396,11 @@ export class BundleStorage implements IndexStorage {
 
     async getCollatedJuanText(workId: string, juanFile: string): Promise<string | null> {
         if (juanFile.includes('..') || !juanFile.endsWith('.json')) return null;
-        const mdFile = juanFile.replace(/\.json$/, '.md');
+        // 源是 .md，bundle 时改名为 .txt（EdgeOne 默认不 gzip text/markdown，
+        // 但会 gzip text/plain — 1MB+ 整理本文本因此能压到 ~25%）。
+        const txtFile = juanFile.replace(/\.json$/, '.txt');
         const version = await this.ensureVersion();
-        const url = `${this.basePath}/items/${workId}/collated_edition/text/${mdFile}`;
+        const url = `${this.basePath}/items/${workId}/collated_edition/text/${txtFile}`;
         const fullUrl = version ? `${url}?v=${version}` : url;
         try {
             const res = await fetch(fullUrl, { cache: 'no-cache' });
