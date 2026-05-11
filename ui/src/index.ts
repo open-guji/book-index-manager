@@ -150,6 +150,16 @@ export { FeedbackForm } from './components/FeedbackForm';
 export type { FeedbackFormProps } from './components/FeedbackForm';
 export { FeedbackList } from './components/FeedbackList';
 export type { FeedbackListProps, FeedbackItem } from './components/FeedbackList';
+export { FeedbackTab } from './components/FeedbackTab';
+export type { FeedbackTabProps } from './components/FeedbackTab';
+export { BookDetailLayout } from './components/BookDetailLayout';
+export type {
+    BookDetailLayoutProps,
+    BookDetailTabKey,
+    ExtraTab,
+    ExtraTabContext,
+    SourceLinkContext,
+} from './components/BookDetailLayout';
 
 // i18n
 export { LocaleProvider } from './i18n/provider';
