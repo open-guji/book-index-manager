@@ -18,8 +18,21 @@ import type { LineageGraph } from '../core/lineage-graph';
 import { FeedbackTab } from './FeedbackTab';
 import { LocaleToggle } from './LocaleToggle';
 import { RepoSourceLink } from './common/RepoSourceLink';
-import { useIsMobile } from '../hooks/useIsMobile';
 import { useT, useConvert } from '../i18n';
+
+// 内联 CSS：mobile (≤768px) 隐藏 SideNav，desktop 隐藏 TopNav。
+// 用 CSS media query 代替 useIsMobile，避免 SSR/hydrate 时序不一致。
+const LAYOUT_CSS = `
+.bim-detail-root { flex-direction: row; }
+.bim-detail-top-nav { display: none; }
+.bim-detail-content { padding: 24px 32px 32px; }
+@media (max-width: 768px) {
+  .bim-detail-root { flex-direction: column; }
+  .bim-detail-side-nav { display: none !important; }
+  .bim-detail-top-nav { display: block; }
+  .bim-detail-content { padding: 16px 16px 32px; }
+}
+`;
 
 // ── 类型 ──
 
@@ -351,7 +364,6 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
 }) => {
     const t = useT();
     const { convert } = useConvert();
-    const isMobile = useIsMobile();
 
     const [entry, setEntry] = useState<IndexEntry | null>(null);
     const [detail, setDetail] = useState<IndexDetailData | null>(null);
@@ -618,16 +630,16 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         }
         if (!entry || !detail) return null;
 
-        const contentPadding = isMobile ? '16px 16px 32px' : '24px 32px 32px';
+        // padding 由 CSS class .bim-detail-content 负责（media query 切换）
         const containerStyle: React.CSSProperties = {
             maxWidth: contentMaxWidth,
-            padding: contentPadding,
             position: 'relative',
         };
+        const containerClassName = 'bim-detail-content';
 
         if (activeTab === 'basic') {
             return (
-                <div style={containerStyle}>
+                <div className={containerClassName} style={containerStyle}>
                     <IndexDetail
                         data={detail}
                         transport={transport}
@@ -661,7 +673,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         if (typeof activeTab === 'string' && activeTab.startsWith('catalog:')) {
             const catData = catalogList.find(c => `catalog:${c.resource_id}` === activeTab)?.data;
             return (
-                <div style={containerStyle}>
+                <div className={containerClassName} style={containerStyle}>
                     <FloatingActions sourceLink={sourceLink} />
                     <CollectionCatalog
                         data={catData}
@@ -674,7 +686,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
 
         if (activeTab === 'collated') {
             return (
-                <div style={containerStyle}>
+                <div className={containerClassName} style={containerStyle}>
                     <FloatingActions sourceLink={sourceLink} />
                     <CollatedEdition
                         index={collatedIndex || undefined}
@@ -698,7 +710,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             }
             const workData = detail.type === 'work' ? (detail as WorkDetailData) : null;
             return (
-                <div style={containerStyle}>
+                <div className={containerClassName} style={containerStyle}>
                     <FloatingActions sourceLink={sourceLink} />
                     <VersionLineageView
                         graph={lineageGraph}
@@ -737,7 +749,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             const items = (detail as { emendated_by?: unknown[] }).emendated_by;
             if (!Array.isArray(items) || items.length === 0) return null;
             return (
-                <div style={containerStyle}>
+                <div className={containerClassName} style={containerStyle}>
                     <FloatingActions sourceLink={sourceLink} />
                     <EmendatedBySection
                         items={items as EmendatedByEntry[]}
@@ -750,7 +762,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
 
         if (activeTab === 'feedback' && showFeedbackTab) {
             return (
-                <div style={containerStyle}>
+                <div className={containerClassName} style={containerStyle}>
                     <FeedbackTab resourceId={id} apiUrl={feedbackApiUrl} />
                 </div>
             );
@@ -766,36 +778,27 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     };
 
     // ── 整体布局 ──
+    // flex-direction、SideNav/TopNav 可见性都靠 CSS media query 切换，
+    // 不依赖 useIsMobile，SSR 与 hydration 一致。
 
-    const containerStyle: React.CSSProperties = {
+    const rootStyle: React.CSSProperties = {
         height,
         display: 'flex',
-        flexDirection: isMobile ? 'column' : 'row',
         background: 'var(--bim-bg, transparent)',
         color: 'var(--bim-fg, #2c2c2c)',
         ...style,
     };
 
     const resolvedBackLabel = backLabel ?? '返回索引';
+    const hasContent = entry || isLoading;
+    const rootClassName = ['bim-detail-root', className].filter(Boolean).join(' ');
 
     return (
-        <div className={className} style={containerStyle}>
-            {isMobile ? (
-                <>
-                    {(entry || isLoading) && (
-                        <TopNav
-                            items={navItems}
-                            activeKey={activeTab}
-                            onSelect={onTabChange}
-                            onBack={onBack}
-                            backLabel="返回"
-                        />
-                    )}
-                    <div style={{ flex: 1, overflow: 'auto' }}>{renderContent()}</div>
-                </>
-            ) : (
-                <>
-                    {(entry || isLoading) && (
+        <>
+            <style>{LAYOUT_CSS}</style>
+            <div className={rootClassName} style={rootStyle}>
+                {hasContent && (
+                    <div className="bim-detail-side-nav">
                         <SideNav
                             items={navItems}
                             activeKey={activeTab}
@@ -804,11 +807,22 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                             backLabel={resolvedBackLabel}
                             width={sideNavWidth}
                         />
-                    )}
-                    <div style={{ flex: 1, overflow: 'auto' }}>{renderContent()}</div>
-                </>
-            )}
-        </div>
+                    </div>
+                )}
+                {hasContent && (
+                    <div className="bim-detail-top-nav">
+                        <TopNav
+                            items={navItems}
+                            activeKey={activeTab}
+                            onSelect={onTabChange}
+                            onBack={onBack}
+                            backLabel="返回"
+                        />
+                    </div>
+                )}
+                <div style={{ flex: 1, overflow: 'auto' }}>{renderContent()}</div>
+            </div>
+        </>
     );
 };
 
