@@ -2,6 +2,11 @@
 
 古籍索引数据的存储、读写、校验与迁移工具。提供 Python 和 TypeScript 两套库，接口完全对齐。
 
+## 设计文档
+
+- **ID Schema 规范**：[设计文档/古籍索引/索引ID.md](D:/workspace/overview/设计文档/古籍索引/索引ID.md)（Snowflake 位布局、type 枚举、base36 编码、合法性约束、迁移历史）
+- **录入规范**：[项目进展/古籍索引网站/整体设计/录入规范.md](D:/workspace/overview/项目进展/古籍索引网站/整体设计/录入规范.md)（Work/Book/Collection 字段定义、命名规则、关系字典）
+
 ## 安装
 
 ```bash
