@@ -259,6 +259,19 @@ def promote_to_official(
                 f"Production asset dir already exists: {prod_asset_dir}"
             )
         shutil.copytree(str(draft_asset_dir), str(prod_asset_dir))
+        # 若拷贝来的 asset dir 含 collated_edition 且无 _meta.json，
+        # 初始化版本号（M6，设计 §2026-05-版本控制与不可变性）。
+        # 决策 Q8：整理本 _meta.json 在 production 仓维护，draft 不要求。
+        ce_dir = prod_asset_dir / 'collated_edition'
+        if ce_dir.is_dir() and not (ce_dir / '_meta.json').exists():
+            from datetime import date as _date
+            meta = {
+                'revision': '1.0.0',
+                'revised_at': _date.today().isoformat(),
+                'quality': 'rough',
+            }
+            with open(ce_dir / '_meta.json', 'w', encoding='utf-8') as f:
+                json.dump(meta, f, indent=2, ensure_ascii=False)
 
     # ── Phase 2: 写 tombstone ──
     promoted_at = _now_iso()
