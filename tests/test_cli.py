@@ -242,3 +242,128 @@ def test_migrate_dry_run(monkeypatch, capsys, root):
     _, _, code = run_cli(monkeypatch, capsys,
                           "migrate", "--target", "draft", "--dry-run", "--root", root)
     assert code == 0
+
+
+# ─── promote ───
+
+def test_promote_single_id(monkeypatch, capsys, root):
+    out, _, _ = run_cli(monkeypatch, capsys, "draft", "升级测试", "--type", "work", "--root", root)
+    draft_id = extract_id(out)
+
+    out, err, code = run_cli(monkeypatch, capsys, "promote", draft_id, "--root", root)
+    assert code == 0
+    line = next(l for l in out.strip().split("\n") if l.startswith("{"))
+    parsed = json.loads(line)
+    assert parsed["status"] == "success"
+    assert parsed["draft_id"] == draft_id
+    assert parsed["production_id"] != draft_id
+    assert "1 succeeded, 0 failed" in err
+
+
+def test_promote_multiple_ids(monkeypatch, capsys, root):
+    out, _, _ = run_cli(monkeypatch, capsys, "draft", "A", "--type", "work", "--root", root)
+    d1 = extract_id(out)
+    out, _, _ = run_cli(monkeypatch, capsys, "draft", "B", "--type", "work", "--root", root)
+    d2 = extract_id(out)
+
+    out, err, code = run_cli(monkeypatch, capsys, "promote", d1, d2, "--root", root)
+    assert code == 0
+    success_lines = [l for l in out.strip().split("\n") if l.startswith("{")]
+    assert len(success_lines) == 2
+    assert "2 succeeded, 0 failed" in err
+
+
+def test_promote_batch_file(monkeypatch, capsys, root, tmp_path):
+    out, _, _ = run_cli(monkeypatch, capsys, "draft", "X", "--type", "work", "--root", root)
+    d1 = extract_id(out)
+    out, _, _ = run_cli(monkeypatch, capsys, "draft", "Y", "--type", "work", "--root", root)
+    d2 = extract_id(out)
+
+    batch = tmp_path / "promote.txt"
+    batch.write_text(f"# 注释行\n{d1}\n\n{d2}\n", encoding="utf-8")
+
+    out, err, code = run_cli(monkeypatch, capsys,
+                              "promote", "--batch", str(batch), "--root", root)
+    assert code == 0
+    assert "2 succeeded, 0 failed" in err
+
+
+def test_promote_dry_run(monkeypatch, capsys, root):
+    out, _, _ = run_cli(monkeypatch, capsys, "draft", "干跑", "--type", "work", "--root", root)
+    draft_id = extract_id(out)
+
+    out, err, code = run_cli(monkeypatch, capsys,
+                              "promote", draft_id, "--dry-run", "--root", root)
+    assert code == 0
+    line = next(l for l in out.strip().split("\n") if l.startswith("{"))
+    parsed = json.loads(line)
+    assert parsed["status"] == "dry-run"
+    assert parsed["title"] == "干跑"
+    assert "[dry-run]" in err
+
+    # dry-run 不应该真改文件：再次 promote 应当 succeed（说明没动状态）
+    out, _, code = run_cli(monkeypatch, capsys, "promote", draft_id, "--root", root)
+    assert code == 0
+
+
+def test_promote_unknown_id_fails(monkeypatch, capsys, root):
+    # 形状合法但磁盘没文件
+    out, _, _ = run_cli(monkeypatch, capsys, "gen-id", "--type", "work", "--raw", "--root", root)
+    fake = out.strip()
+
+    out, err, code = run_cli(monkeypatch, capsys, "promote", fake, "--root", root)
+    assert code == 1
+    line = next(l for l in out.strip().split("\n") if l.startswith("{"))
+    parsed = json.loads(line)
+    assert parsed["status"] == "error"
+
+
+def test_promote_already_promoted_fails(monkeypatch, capsys, root):
+    out, _, _ = run_cli(monkeypatch, capsys, "draft", "Z", "--type", "work", "--root", root)
+    draft_id = extract_id(out)
+    run_cli(monkeypatch, capsys, "promote", draft_id, "--root", root)
+
+    out, err, code = run_cli(monkeypatch, capsys, "promote", draft_id, "--root", root)
+    assert code == 1
+    line = next(l for l in out.strip().split("\n") if l.startswith("{"))
+    parsed = json.loads(line)
+    assert parsed["status"] == "error"
+    assert "already promoted" in parsed["message"]
+
+
+def test_promote_no_ids_errors(monkeypatch, capsys, root):
+    out, _, code = run_cli(monkeypatch, capsys, "promote", "--root", root)
+    assert code == 1
+    parsed = json.loads(out.strip().split("\n")[0])
+    assert parsed["status"] == "error"
+
+
+# ─── validate-promotions ───
+
+def test_validate_promotions_clean(monkeypatch, capsys, root):
+    """空仓 + 一次成功 promote 后应该 OK。"""
+    out, _, _ = run_cli(monkeypatch, capsys, "draft", "正常", "--type", "work", "--root", root)
+    draft_id = extract_id(out)
+    run_cli(monkeypatch, capsys, "promote", draft_id, "--root", root)
+
+    out, _, code = run_cli(monkeypatch, capsys, "validate-promotions", "--root", root)
+    assert code == 0
+    assert "OK" in out
+
+
+def test_validate_promotions_reports_issues(monkeypatch, capsys, root, tmp_path):
+    """人为破坏后应当 exit 1 并报 E03。"""
+    out, _, _ = run_cli(monkeypatch, capsys, "draft", "坏", "--type", "work", "--root", root)
+    draft_id = extract_id(out)
+    # 手工写 promoted_to 但不进 promotions.json
+    from pathlib import Path as _P
+    work_files = list((_P(root) / "book-index-draft" / "Work").rglob(f"{draft_id}-*.json"))
+    assert work_files
+    p = work_files[0]
+    data = json.loads(p.read_text(encoding="utf-8"))
+    data["promoted_to"] = "fakefakefake1"
+    p.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+    out, _, code = run_cli(monkeypatch, capsys, "validate-promotions", "--root", root)
+    assert code == 1
+    assert "E03" in out
