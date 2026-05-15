@@ -15,6 +15,7 @@ import type {
 import type { IndexCounts } from './types';
 import { normalizeCatalog } from '../core/normalize-catalog';
 import { extractType } from '../id';
+import { buildPromotionMap } from './promotions';
 
 export interface BundleStorageConfig {
     /** chunk 文件的基础路径，默认 '/data' */
@@ -54,6 +55,9 @@ export class BundleStorage implements IndexStorage {
     private tiyaoLoading = new Map<string, Promise<Record<string, unknown>>>();
     private metaCache: IndexCounts | null = null;
     private metaLoading: Promise<IndexCounts | null> | null = null;
+    /** draft_id → production_id 重定向表（从 /data/promotions.json 加载） */
+    private promotions: Map<string, string> | null = null;
+    private promotionsLoading: Promise<Map<string, string>> | null = null;
 
     /** 数据版本（commitId 前 12 位）。null=已尝试加载但失败；undefined=未加载 */
     private version: string | null | undefined = undefined;
@@ -108,6 +112,28 @@ export class BundleStorage implements IndexStorage {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         return response.json();
+    }
+
+    // ─── Promotions：draft → production 重定向 ───
+
+    private async ensurePromotions(): Promise<Map<string, string>> {
+        if (this.promotions) return this.promotions;
+        if (this.promotionsLoading) return this.promotionsLoading;
+        this.promotionsLoading = (async () => {
+            try {
+                const raw = await this.fetchJson<unknown>(`${this.basePath}/promotions.json`);
+                this.promotions = buildPromotionMap(raw);
+            } catch {
+                // 文件不存在或拉取失败：当作"无任何升级"，保持原行为
+                this.promotions = new Map();
+            }
+            return this.promotions;
+        })();
+        try {
+            return await this.promotionsLoading;
+        } finally {
+            this.promotionsLoading = null;
+        }
     }
 
     // ─── L1: 详情 chunk ───
@@ -262,8 +288,12 @@ export class BundleStorage implements IndexStorage {
 
     async getItem(id: string): Promise<Record<string, unknown> | null> {
         try {
-            const chunk = await this.loadChunkForId(id);
-            const item = (chunk[id] as Record<string, unknown>) || null;
+            const promotions = await this.ensurePromotions();
+            const canonicalId = promotions.get(id) ?? id;
+            const redirectedFrom = canonicalId !== id ? id : undefined;
+
+            const chunk = await this.loadChunkForId(canonicalId);
+            const item = (chunk[canonicalId] as Record<string, unknown>) || null;
             if (item) {
                 // bundle-data.mjs 在打包时已经把 index 上的 has_collated /
                 // has_text / has_image / subtype / primary_name 注入到
@@ -271,6 +301,9 @@ export class BundleStorage implements IndexStorage {
                 // Entity：把 primary_name 同步到 title 字段
                 if (item.type === 'entity' && !item.title && item.primary_name) {
                     item.title = item.primary_name;
+                }
+                if (redirectedFrom) {
+                    item.redirected_from = redirectedFrom;
                 }
             }
             return item;
@@ -282,15 +315,19 @@ export class BundleStorage implements IndexStorage {
     /** 从 chunk 读取详情构造 IndexEntry。chunk miss 即返回 null（无 fallback）。 */
     async getEntry(id: string): Promise<IndexEntry | null> {
         try {
-            const chunk = await this.loadChunkForId(id);
-            const detail = chunk[id] as Record<string, any> | undefined;
+            const promotions = await this.ensurePromotions();
+            const canonicalId = promotions.get(id) ?? id;
+            const redirectedFrom = canonicalId !== id ? id : undefined;
+
+            const chunk = await this.loadChunkForId(canonicalId);
+            const detail = chunk[canonicalId] as Record<string, any> | undefined;
             if (!detail) return null;
-            const type = extractType(id);
+            const type = extractType(canonicalId);
             const displayTitle = type === 'entity'
-                ? (detail.primary_name || detail.title || detail.name || id)
-                : (detail.title || detail.name || id);
+                ? (detail.primary_name || detail.title || detail.name || canonicalId)
+                : (detail.title || detail.name || canonicalId);
             return {
-                id,
+                id: canonicalId,
                 title: displayTitle,
                 type,
                 isDraft: true,
@@ -309,6 +346,7 @@ export class BundleStorage implements IndexStorage {
                 birth_year: detail.birth_year,
                 death_year: detail.death_year,
                 cbdb_id: detail.cbdb_id,
+                ...(redirectedFrom ? { redirected_from: redirectedFrom } : {}),
             };
         } catch {
             return null;

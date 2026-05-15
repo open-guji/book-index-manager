@@ -382,6 +382,122 @@ class CLIHandler:
         else:
             print(f"{summary}, no errors")
 
+    def handle_promote(self):
+        """把一个或多个 draft-id 升级为 production。"""
+        ids = self._collect_promote_ids()
+        if not ids:
+            print(json.dumps({"status": "error", "message": "No IDs to promote"}, ensure_ascii=False))
+            sys.exit(1)
+
+        dry_run = bool(getattr(self.args, "dry_run", False))
+        rewrite_refs = not bool(getattr(self.args, "no_rewrite_refs", False))
+
+        successes = 0
+        failures = 0
+        for draft_id in ids:
+            if dry_run:
+                ok, info = self._dry_run_check(draft_id)
+                print(json.dumps(info, ensure_ascii=False))
+                if ok:
+                    successes += 1
+                else:
+                    failures += 1
+                continue
+
+            try:
+                prod_id = self.manager.promote_to_official(draft_id, rewrite_refs=rewrite_refs)
+                print(json.dumps({
+                    "status": "success",
+                    "draft_id": draft_id,
+                    "production_id": prod_id,
+                }, ensure_ascii=False))
+                successes += 1
+            except BookIndexError as e:
+                print(json.dumps({
+                    "status": "error",
+                    "draft_id": draft_id,
+                    "message": str(e),
+                }, ensure_ascii=False))
+                failures += 1
+
+        prefix = "[dry-run] " if dry_run else ""
+        print(f"\n{prefix}{successes} succeeded, {failures} failed", file=sys.stderr)
+        if failures:
+            sys.exit(1)
+
+    def _collect_promote_ids(self) -> list:
+        """合并 positional args 和 --batch 文件，返回去重 ID 列表（保持原始顺序）。"""
+        ids = list(getattr(self.args, "ids", []) or [])
+        batch_path = getattr(self.args, "batch", None)
+        if batch_path:
+            with open(batch_path, encoding="utf-8") as f:
+                for line in f:
+                    s = line.strip()
+                    if not s or s.startswith("#"):
+                        continue
+                    ids.append(s)
+        # 保序去重
+        seen = set()
+        deduped = []
+        for x in ids:
+            if x not in seen:
+                seen.add(x)
+                deduped.append(x)
+        return deduped
+
+    def _dry_run_check(self, draft_id: str):
+        """检查能否升级；不写任何文件。返回 (ok, info_dict)。"""
+        from .promotion import _validate_draft_id, PromotionsStore  # type: ignore[attr-defined]
+        try:
+            _, type_val = _validate_draft_id(draft_id)
+        except BookIndexError as e:
+            return False, {"status": "error", "draft_id": draft_id, "message": str(e)}
+
+        draft_path = self.manager.storage.find_file_by_id(draft_id)
+        if draft_path is None:
+            return False, {"status": "error", "draft_id": draft_id, "message": "Draft file not found"}
+
+        meta = self.manager.storage.load_metadata(draft_path)
+        if isinstance(meta, dict) and meta.get("promoted_to"):
+            return False, {
+                "status": "error",
+                "draft_id": draft_id,
+                "message": f"already promoted to {meta['promoted_to']}",
+            }
+
+        return True, {
+            "status": "dry-run",
+            "draft_id": draft_id,
+            "type": type_val.name.lower(),
+            "title": (meta or {}).get("title", ""),
+            "path": str(draft_path).replace("\\", "/"),
+        }
+
+    def handle_validate_promotions(self):
+        """校验全仓 promotion 状态一致性。"""
+        issues = self.manager.validate_promotions()
+        verbose = bool(getattr(self.args, "verbose", False))
+
+        if not issues:
+            print("[OK] promotions consistent")
+            return
+
+        # 按 code 分组打印
+        by_code: dict = {}
+        for issue in issues:
+            by_code.setdefault(issue.code, []).append(issue)
+
+        for code in sorted(by_code):
+            bucket = by_code[code]
+            print(f"\n[{code}] {len(bucket)} issue(s):")
+            for issue in bucket:
+                print(f"  - {issue.message}")
+                if verbose and issue.path:
+                    print(f"      path: {issue.path}")
+
+        print(f"\n[FAIL] {len(issues)} total issue(s)")
+        sys.exit(1)
+
     def handle_migrate(self):
         from pathlib import Path
         target = self.args.target
@@ -526,6 +642,31 @@ def main():
     p.add_argument("--target", choices=["official", "draft", "all"], default="draft")
     p.add_argument("--verbose", action="store_true", help="Print detailed validation info")
 
+    # promote
+    p = subparsers.add_parser(
+        "promote", parents=[parent_parser],
+        help="把一个或多个 draft-id 升级为 production",
+        description="把 draft 条目升级为 production：生成新 ID、复制到 book-index/、"
+                    "写 tombstone、维护 promotions.json、全仓改引用。",
+        epilog="""示例：
+  book-index promote 1evgowbkc2qyo
+  book-index promote 1evgowbkc2qyo 1evgoj8kp4irk
+  book-index promote --batch ready-for-promotion.txt
+  book-index promote 1evgowbkc2qyo --dry-run""")
+    p.add_argument("ids", nargs="*", help="一个或多个 draft ID")
+    p.add_argument("--batch", default=None, help="从文本文件读取 ID（一行一个，# 开头跳过）")
+    p.add_argument("--dry-run", action="store_true", help="仅检查、不写文件")
+    p.add_argument("--no-rewrite-refs", action="store_true",
+                   help="跳过 Phase 4 引用重写（高级，不推荐）")
+
+    # validate-promotions
+    p = subparsers.add_parser(
+        "validate-promotions", parents=[parent_parser],
+        help="校验 promotions.json 与 tombstone 一致，且全仓无裸 draft 引用",
+        description="检查项：production 文件都存在、tombstone↔promotions.json 一致、"
+                    "全仓无对已 promoted draft-id 的裸引用。")
+    p.add_argument("--verbose", action="store_true", help="同时输出每个问题对应文件路径")
+
     # migrate
     p = subparsers.add_parser("migrate", parents=[parent_parser],
                               help="Migrate old text_resources/image_resources to unified resources")
@@ -555,6 +696,8 @@ def main():
             "check-index": handler.handle_check_index,
             "validate-lineage": handler.handle_validate_lineage,
             "migrate": handler.handle_migrate,
+            "promote": handler.handle_promote,
+            "validate-promotions": handler.handle_validate_promotions,
         }
 
         if args.command in cmd_map:

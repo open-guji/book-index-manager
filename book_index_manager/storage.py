@@ -118,8 +118,14 @@ class BookIndexStorage:
 
         return root / type_val.name / c1 / c2 / c3 / f"{id_str}-{clean_name}.json"
 
-    def save_item(self, type_val: BookIndexType, id_val: int, metadata: dict):
-        """Save an item (book, collection, or work) and update the index."""
+    def save_item(self, type_val: BookIndexType, id_val: int, metadata: dict, allow_tombstone_edit: bool = False):
+        """Save an item (book, collection, or work) and update the index.
+
+        Args:
+            allow_tombstone_edit: 默认 False。若目标文件已有 promoted_to 字段
+                （即已升级为 production 的 tombstone），save_item 会拒绝写入，
+                避免破坏 frozen snapshot 语义。设为 True 显式 opt-in。
+        """
         if type_val == BookIndexType.Entity:
             name = metadata.get("primary_name") or metadata.get("title") or "未命名"
         else:
@@ -132,6 +138,23 @@ class BookIndexStorage:
 
         # Check if ID already exists and handle rename if needed
         existing_path = self.find_file_by_id(id_str)
+
+        # Tombstone 写保护：D 升级后，原 draft 文件成为 frozen snapshot，
+        # 后续编辑应该写到 production 文件，而不是覆盖 tombstone。
+        if existing_path and not allow_tombstone_edit:
+            try:
+                existing_meta = self.load_metadata(existing_path)
+                if isinstance(existing_meta, dict) and existing_meta.get("promoted_to"):
+                    prod_id = existing_meta["promoted_to"]
+                    raise StorageError(
+                        f"{id_str} has been promoted to {prod_id}; edit {prod_id} instead. "
+                        f"Pass allow_tombstone_edit=True to override."
+                    )
+            except StorageError:
+                raise
+            except Exception:
+                # 读取失败不影响主流程，正常流程会在后面再次报错
+                pass
         if existing_path and existing_path.resolve() != file_path.resolve():
             # 历史兼容：保留现有文件路径，避免不必要的改名
             # 许多历史录入的文件名有不同的规范（如带"（作者）"注释、CJK扩展字符处理等），
@@ -197,12 +220,18 @@ class BookIndexStorage:
             raise StorageError(f"Failed to save item {name}: {e}")
 
     def _sync_work_books_link(self, book_id: str, book_metadata: dict):
-        """When saving a Book with work_id, ensure the Work's books array includes this Book."""
+        """When saving a Book with work_id, ensure the Work's books array contains
+        this Book exactly once.
+
+        Defensive dedup: 不仅 append-if-missing，还把整个 books 数组去重保序。
+        触发场景是 promote_to_official —— Phase 1 用 save_item 写 production Book
+        会触发 sync 把 P append（此时 Work.books 还有原 D），Phase 4 的
+        rewrite_references 把 D 改成 P → 同 P 出现两次。dedup 一次性处理。
+        """
         work_id = book_metadata.get("work_id")
         if not work_id:
             return
         try:
-            work_id_val = smart_decode(work_id)
             work_path = self.find_file_by_id(work_id)
             if not work_path:
                 logger.warning(f"Work {work_id} not found for bidirectional link from Book {book_id}")
@@ -210,12 +239,25 @@ class BookIndexStorage:
             with open(work_path, "r", encoding="utf-8") as f:
                 work_data = json.load(f)
             books = work_data.get("books", [])
-            if book_id not in books:
-                books.append(book_id)
-                work_data["books"] = books
+            # 全量 dedup（保序）+ 确保 self 在内
+            seen: set = set()
+            deduped: list = []
+            for x in books:
+                if x in seen:
+                    continue
+                seen.add(x)
+                deduped.append(x)
+            if book_id not in seen:
+                deduped.append(book_id)
+            if deduped != books:
+                work_data["books"] = deduped
                 with open(work_path, "w", encoding="utf-8") as f:
                     json.dump(work_data, f, indent=2, ensure_ascii=False)
-                logger.info(f"Added Book {book_id} to Work {work_id}.books")
+                if len(deduped) < len(books):
+                    logger.info(f"Synced Book {book_id} into Work {work_id}.books "
+                                f"({len(books)}→{len(deduped)} after dedup)")
+                else:
+                    logger.info(f"Added Book {book_id} to Work {work_id}.books")
         except Exception as e:
             logger.warning(f"Failed to sync Work.books link for Book {book_id} -> Work {work_id}: {e}")
 

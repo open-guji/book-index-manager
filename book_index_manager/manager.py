@@ -5,6 +5,11 @@ from typing import Optional, Dict, List, Any
 from .id_generator import BookIndexIdGenerator, BookIndexStatus, BookIndexType, base36_encode, smart_decode
 from .storage import BookIndexStorage
 from .exceptions import BookIndexError
+from .promotion import (
+    promote_to_official as _promote_to_official,
+    resolve_id as _resolve_id,
+    validate_promotions as _validate_promotions,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -127,3 +132,20 @@ class BookIndexManager:
         """Rebuild index.json for both official and draft."""
         self.storage.rebuild_index(BookIndexStatus.Official)
         self.storage.rebuild_index(BookIndexStatus.Draft)
+
+    # ── Promotion (draft → production) ──
+
+    def promote_to_official(self, draft_id: str, rewrite_refs: bool = True) -> str:
+        """Promote a draft entry to production. Returns the new production-id string."""
+        return _promote_to_official(self.storage, self.id_gen, draft_id, rewrite_refs=rewrite_refs)
+
+    def resolve_id(self, id_str: str):
+        """Resolve a possibly-promoted draft ID to its canonical (production) form.
+
+        Returns (canonical_id, redirected_from). If not promoted, redirected_from is None.
+        """
+        return _resolve_id(self.storage, id_str)
+
+    def validate_promotions(self):
+        """Return a list of PromotionIssue across the entire workspace."""
+        return _validate_promotions(self.storage)
