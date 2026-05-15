@@ -181,6 +181,18 @@ export interface IndexEntry {
     death_year?: number;
     /** Entity 关联的 CBDB ID */
     cbdb_id?: number;
+    /**
+     * Tombstone 标记：该 draft 已升格为 production。
+     * draft 索引 shard 在 promote 时会带这个字段；存储层据此从默认列表/搜索结果中
+     * 过滤掉这类条目，避免与 production 条目重复出现。
+     */
+    promoted_to?: string;
+    /**
+     * 重定向溯源：当 storage 把对 draft-id 的查询自动重定向到 production-id 时，
+     * 返回的 entry 上挂这个字段，原 draft-id 写在这里。UI 可据此显示「已升级，
+     * 跳转中」并把 URL replace 到新 ID。
+     */
+    redirected_from?: string;
 }
 
 /** 分页结果 */

@@ -4,6 +4,7 @@ import { rankByRelevance, rankByRelevanceWithSimplified, NUM_SHARDS } from '../c
 import type { SearchSIndex } from '../core/storage';
 import { normalizeCatalog } from '../core/normalize-catalog';
 import { smartDecode, parseId } from '../id';
+import { buildPromotionMap } from './promotions';
 
 /**
  * 索引分片文件中的条目格式
@@ -20,6 +21,8 @@ interface GithubIndexItem {
     year?: string;
     holder?: string;
     collection?: string;
+    /** 升级 tombstone 标记，由 promote 流程写入 draft shard。 */
+    promoted_to?: string;
 }
 
 /**
@@ -67,6 +70,8 @@ export class GithubStorage implements IndexStorage {
     private cache: IndexEntry[] | null = null;
     private cacheLoading: Promise<IndexEntry[]> | null = null;
     private pathMap: Map<string, { path: string; isDraft: boolean }> = new Map();
+    /** draft_id → production_id 重定向表（从 draft 仓的 promotions.json 加载） */
+    private promotions: Map<string, string> = new Map();
     private searchSCache: SearchSIndex | null = null;
     private t2sConverter: ((text: string) => string) | null | false = null; // null=未加载, false=不可用
 
@@ -80,27 +85,45 @@ export class GithubStorage implements IndexStorage {
         };
     }
 
+    /** 拉取 promotions.json（仅 draft repo 有）；失败按空映射处理。 */
+    private async fetchPromotions(): Promise<Map<string, string>> {
+        try {
+            const raw = await this.fetchFileWithFallback<unknown>(this.config.repos.draft, 'promotions.json');
+            return buildPromotionMap(raw);
+        } catch {
+            return new Map();
+        }
+    }
+
     /** 确保 index 数据已加载到缓存 */
     private async ensureLoaded(): Promise<IndexEntry[]> {
         if (this.cache) return this.cache;
         if (this.cacheLoading) return this.cacheLoading;
 
         this.cacheLoading = (async () => {
-            const allEntries: IndexEntry[] = [];
+            // promotions 和两个仓的 index 并行拉取
+            const [promotions, draftData, officialData] = await Promise.all([
+                this.fetchPromotions(),
+                this.fetchIndex(this.config.repos.draft).catch((err) => {
+                    console.warn('Failed to fetch draft index:', err);
+                    return { books: {}, collections: {}, works: {} } as GithubIndexResponse;
+                }),
+                this.fetchIndex(this.config.repos.official).catch((err) => {
+                    console.warn('Failed to fetch official index:', err);
+                    return { books: {}, collections: {}, works: {} } as GithubIndexResponse;
+                }),
+            ]);
+            this.promotions = promotions;
 
-            for (const isDraft of [true, false]) {
-                try {
-                    const repo = isDraft ? this.config.repos.draft : this.config.repos.official;
-                    const data = await this.fetchIndex(repo);
-                    const entries = this.parseIndexResponse(data, isDraft);
-                    allEntries.push(...entries);
-                } catch (err) {
-                    console.warn(`Failed to fetch ${isDraft ? 'draft' : 'official'} index:`, err);
-                }
-            }
+            const allEntries: IndexEntry[] = [
+                ...this.parseIndexResponse(draftData, true),
+                ...this.parseIndexResponse(officialData, false),
+            ];
 
             const map = new Map<string, IndexEntry>();
             for (const entry of allEntries) {
+                // 过滤已升格的 draft tombstone —— 它们的 production 副本会出现在 official 索引里
+                if (entry.isDraft && entry.promoted_to) continue;
                 map.set(entry.id, entry);
             }
             this.cache = Array.from(map.values());
@@ -284,6 +307,7 @@ export class GithubStorage implements IndexStorage {
                     birth_year: raw.birth_year,
                     death_year: raw.death_year,
                     cbdb_id: raw.cbdb_id,
+                    promoted_to: raw.promoted_to,
                 });
                 this.pathMap.set(item.id, { path: item.path, isDraft });
             }
@@ -431,7 +455,11 @@ export class GithubStorage implements IndexStorage {
     async getItem(id: string): Promise<Record<string, unknown> | null> {
         const entries = await this.ensureLoaded();
 
-        const info = this.pathMap.get(id);
+        // 已升格的 draft → 重定向到 production
+        const canonicalId = this.promotions.get(id) ?? id;
+        const redirectedFrom = canonicalId !== id ? id : undefined;
+
+        const info = this.pathMap.get(canonicalId);
 
         let item: Record<string, unknown> | null = null;
         // pathMap 有记录：按已知路径获取
@@ -439,30 +467,41 @@ export class GithubStorage implements IndexStorage {
             const repo = info.isDraft ? this.config.repos.draft : this.config.repos.official;
             item = await this.fetchItemByPath(repo, info.path);
             if (item) {
-                const entry = entries.find(e => e.id === id);
+                const entry = entries.find(e => e.id === canonicalId);
                 if (entry?.has_collated) item.has_collated = true;
             }
         } else {
             // pathMap 无记录（index 未收录）：通过 ID 推导路径查找文件
-            item = await this.findItemById(id);
+            item = await this.findItemById(canonicalId);
         }
 
         // Entity：把 primary_name 同步到 title 字段（兼容上层 data.title 访问）
         if (item && item.type === 'entity' && !item.title && item.primary_name) {
             item.title = item.primary_name;
         }
+        if (item && redirectedFrom) {
+            item.redirected_from = redirectedFrom;
+        }
         return item;
     }
 
     async getEntry(id: string): Promise<IndexEntry | null> {
         const all = await this.ensureLoaded();
-        const cached = all.find(e => e.id === id);
-        if (cached) return cached;
+
+        // 已升格的 draft → 重定向到 production
+        const canonicalId = this.promotions.get(id) ?? id;
+        const redirectedFrom = canonicalId !== id ? id : undefined;
+
+        const cached = all.find(e => e.id === canonicalId);
+        if (cached) {
+            return redirectedFrom ? { ...cached, redirected_from: redirectedFrom } : cached;
+        }
 
         // index 中无此 ID：尝试直接获取元数据来构建 entry
-        const item = await this.findItemById(id);
+        const item = await this.findItemById(canonicalId);
         if (!item) return null;
-        return this.buildEntryFromItem(id, item);
+        const entry = this.buildEntryFromItem(canonicalId, item);
+        return redirectedFrom ? { ...entry, redirected_from: redirectedFrom } : entry;
     }
 
     async getAllEntries(): Promise<IndexEntry[]> {

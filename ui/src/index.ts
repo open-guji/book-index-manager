@@ -93,6 +93,8 @@ export { LocalStorage } from './storage/local-storage';
 export type { LocalStorageConfig } from './storage/local-storage';
 export { BundleStorage } from './storage/bundle-storage';
 export type { BundleStorageConfig } from './storage/bundle-storage';
+export { buildPromotionMap } from './storage/promotions';
+export type { PromotionRecord, PromotionsFile } from './storage/promotions';
 
 // Core
 export type { FileSystem } from './core/filesystem';
