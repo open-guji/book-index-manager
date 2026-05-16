@@ -34,8 +34,15 @@ class BookIndexManager:
     def decode_id(self, id_str: str) -> int:
         return smart_decode(id_str)
 
-    def save_item(self, metadata: Dict, type_val: Optional[BookIndexType] = None, status: BookIndexStatus = BookIndexStatus.Draft) -> Path:
-        """Save a book/collection/work record. Auto-generates ID if not present."""
+    def save_item(self, metadata: Dict, type_val: Optional[BookIndexType] = None, status: BookIndexStatus = BookIndexStatus.Draft, bump: Optional[str] = 'patch') -> Path:
+        """Save a book/collection/work record. Auto-generates ID if not present.
+
+        Args:
+            bump: production 条目版本号 bump 级别。'patch'（默认）/ 'minor' / 'major' / None（不 bump）。
+                draft 条目忽略此参数。production 内修改默认 patch；知识修改传 'minor'；
+                评级跃迁传 'major'。详见
+                项目进展/古籍索引网站/整体设计/2026-05-版本控制与不可变性.md
+        """
         id_str = metadata.get("id") or metadata.get("ID")
         if id_str:
             try:
@@ -53,7 +60,7 @@ class BookIndexManager:
             id_str = self.encode_id(id_val)
             metadata["id"] = id_str
 
-        return self.storage.save_item(type_val, id_val, metadata)
+        return self.storage.save_item(type_val, id_val, metadata, bump=bump)
 
     def get_item(self, id_str: str) -> Optional[Dict]:
         """Retrieve metadata by ID string."""
