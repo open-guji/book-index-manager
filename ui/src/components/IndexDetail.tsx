@@ -1543,8 +1543,15 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                 </div>
             )}
 
-            {workData?.books && workData.books.length > 0 && (
-                <BookVersionList ids={workData.books} workData={workData} transport={transport} onNavigate={onNavigate} renderLink={renderLink} footer={relatedBooksFooter} />
+            {((workData?.books?.length || 0) + (workData?.collections?.length || 0)) > 0 && (
+                <BookVersionList
+                    ids={[...(workData?.books || []), ...(workData?.collections || [])]}
+                    workData={workData}
+                    transport={transport}
+                    onNavigate={onNavigate}
+                    renderLink={renderLink}
+                    footer={relatedBooksFooter}
+                />
             )}
 
             {workData?.related_works && workData.related_works.length > 0 && (() => {

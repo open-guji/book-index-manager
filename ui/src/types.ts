@@ -382,7 +382,10 @@ export interface WorkDetailData extends BaseDetailData {
     type: 'work';
     parent_works?: string[];
     parent_work?: { id: string; title: string };
+    /** 小型作品的版本列表（Book ID 数组） */
     books?: string[];
+    /** 大型作品的版本列表（Collection ID 数组）—— 如四库全书七閣本 */
+    collections?: string[];
     related_works?: { id: string; title: string; relation?: 'part_of' | 'has_part' }[];
     /** 版本传承图（多版本作品如红楼梦、十三经等） */
     version_graph?: VersionGraph;
