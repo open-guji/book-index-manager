@@ -449,6 +449,34 @@ export class BundleStorage implements IndexStorage {
         }
     }
 
+    // ─── Book 全文 ───
+
+    async getBookFullTextIndex(bookId: string): Promise<import('../types').BookFullTextIndex | null> {
+        try {
+            return await this.fetchJson<import('../types').BookFullTextIndex>(
+                `${this.basePath}/items/${bookId}/full_text/index.json`
+            );
+        } catch {
+            return null;
+        }
+    }
+
+    async getBookFullTextChapter(bookId: string, file: string): Promise<string | null> {
+        // bundle-data 会把 .md 改名为 .txt（与 collated_edition/text/* 同理）
+        if (file.includes('..')) return null;
+        const txtFile = file.endsWith('.md') ? file.replace(/\.md$/, '.txt') : file;
+        const version = await this.ensureVersion();
+        const url = `${this.basePath}/items/${bookId}/full_text/${txtFile}`;
+        const fullUrl = version ? `${url}?v=${version}` : url;
+        try {
+            const res = await fetch(fullUrl, { cache: 'no-cache' });
+            if (!res.ok) return null;
+            return await res.text();
+        } catch {
+            return null;
+        }
+    }
+
     // ─── 版本传承 ───
 
     async getLineageGraph(workId: string): Promise<any | null> {

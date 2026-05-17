@@ -140,8 +140,9 @@ def test_promote_initializes_production_revision(manager):
 
 # ── 同日多改不刷新 revised_at ──
 
-def test_promote_initializes_collated_edition_meta(manager, tmp_path):
-    """promote 时若 draft asset dir 含 collated_edition，production 自动写 _meta.json。"""
+def test_promote_initializes_collated_edition_revision(manager, tmp_path):
+    """promote 时若 draft asset dir 含 collated_edition/collated_edition_index.json，
+    production 自动给 index.json 注入 revision + revised_at。"""
     import json as _json
     draft_id, _ = _make_work(manager, status=BookIndexStatus.Draft)
     # 模拟整理本 draft 内容
@@ -150,22 +151,35 @@ def test_promote_initializes_collated_edition_meta(manager, tmp_path):
     ce.mkdir()
     (ce / 'text').mkdir()
     (ce / 'text' / '卷一.md').write_text('# 卷一', encoding='utf-8')
+    # 整理本必须有 index.json（collate-* 流程会生成；此处人工模拟）
+    initial_index = {
+        'work_id': draft_id,
+        'total_entries': 0,
+        'text_quality': {'grade': 'rough'},
+    }
+    (ce / 'collated_edition_index.json').write_text(
+        _json.dumps(initial_index, ensure_ascii=False, indent=2), encoding='utf-8'
+    )
     # promote
     prod_id = manager.promote_to_official(draft_id)
-    prod_ce_meta = manager.find_item_path(prod_id).parent / prod_id / 'collated_edition' / '_meta.json'
-    assert prod_ce_meta.exists()
-    with open(prod_ce_meta, encoding='utf-8') as f:
-        meta = _json.load(f)
-    assert meta['revision'] == '1.0.0'
-    assert meta['quality'] == 'rough'
-    assert meta['revised_at'].startswith('2026-')  # 当前年份
+    prod_index = (
+        manager.find_item_path(prod_id).parent
+        / prod_id / 'collated_edition' / 'collated_edition_index.json'
+    )
+    assert prod_index.exists()
+    with open(prod_index, encoding='utf-8') as f:
+        data = _json.load(f)
+    assert data['revision'] == '1.0.0'
+    assert data['revised_at'].startswith('2026-')
+    # 原有字段保留
+    assert data['text_quality']['grade'] == 'rough'
 
 
-def test_promote_skips_meta_init_when_no_collated_edition(manager):
-    """asset dir 无 collated_edition 子目录时不写 _meta.json。"""
+def test_promote_skips_revision_init_when_no_collated_edition(manager):
+    """asset dir 无 collated_edition 子目录时不操作 index.json。"""
     draft_id, _ = _make_work(manager, status=BookIndexStatus.Draft)
     asset = manager.init_asset_dir(draft_id)
-    (asset / 'other.md').write_text('# other', encoding='utf-8')  # 有 asset 但无 collated_edition
+    (asset / 'other.md').write_text('# other', encoding='utf-8')
     prod_id = manager.promote_to_official(draft_id)
     prod_dir = manager.find_item_path(prod_id).parent / prod_id
     assert prod_dir.is_dir()

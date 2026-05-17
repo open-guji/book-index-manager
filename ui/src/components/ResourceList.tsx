@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import type { ResourceEntry, ResourceType, ResourceTypeAtom, ResourceVolume } from '../types';
+import type { ResourceEntry, ResourceGroupInfo, ResourceType, ResourceTypeAtom, ResourceVolume } from '../types';
 import { getResourceTypes } from '../types';
 import { useT, useConvert } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
@@ -9,6 +9,8 @@ export interface ResourceListProps {
     items: ResourceEntry[];
     /** 按类型分组显示，默认 true */
     groupByType?: boolean;
+    /** 镜像组元数据（来自 Book.resource_groups） */
+    resourceGroups?: Record<string, ResourceGroupInfo>;
     /** 内部实体跳转回调（如点击 group 标题跳到 Work 页） */
     onNavigate?: (id: string) => void;
     /** 渲染内部链接（优先于 onNavigate） */
@@ -142,13 +144,38 @@ function mergeVolumeResources(items: ResourceEntry[]): ResourceEntry[] {
 export const ResourceList: React.FC<ResourceListProps> = ({
     items,
     groupByType = true,
+    resourceGroups,
     onNavigate,
     renderLink,
 }) => {
     const t = useT();
+    const { convert } = useConvert();
 
     // 自动合并分册资源
     const mergedItems = useMemo(() => mergeVolumeResources(items || []), [items]);
+
+    // 拆分有镜像组 vs 独立资源
+    const { mirrorGroups, ungroupedItems } = useMemo(() => {
+        const groups = new Map<string, ResourceEntry[]>();
+        const standalone: ResourceEntry[] = [];
+        for (const it of mergedItems) {
+            const gk = it.group;
+            if (gk) {
+                if (!groups.has(gk)) groups.set(gk, []);
+                groups.get(gk)!.push(it);
+            } else {
+                standalone.push(it);
+            }
+        }
+        // origin first, then mirror
+        for (const arr of groups.values()) {
+            arr.sort((a, b) => {
+                const w = (r: ResourceEntry) => r.group_role === 'origin' ? 0 : r.group_role === 'mirror' ? 1 : 2;
+                return w(a) - w(b);
+            });
+        }
+        return { mirrorGroups: groups, ungroupedItems: standalone };
+    }, [mergedItems]);
 
     const TYPE_LABELS: Record<string, string> = {
         text: t.resourceType.text,
@@ -180,9 +207,41 @@ export const ResourceList: React.FC<ResourceListProps> = ({
         );
     }
 
+    // 镜像组渲染：每组一个 section（label + description + chips）
+    const renderMirrorGroup = (gk: string, gItems: ResourceEntry[]) => {
+        const info = resourceGroups?.[gk];
+        const label = info?.label || gk;
+        const desc = info?.description;
+        return (
+            <div key={`group-${gk}`} style={{
+                padding: '10px 12px',
+                border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                borderRadius: '6px',
+                background: 'var(--bim-input-bg, #fafafa)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+            }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--bim-fg, #333)' }}>
+                    {convert(label)}
+                </div>
+                {desc && (
+                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', lineHeight: 1.5 }}>
+                        {convert(desc)}
+                    </div>
+                )}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {gItems.map((item, i) => (
+                        <ResourceChip key={item.id || i} item={item} onNavigate={onNavigate} renderLink={renderLink} />
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
     // 按 types 组合分组（key 形如 'text'、'image+physical'、'text+image'）
     const groupBuckets = new Map<string, ResourceEntry[]>();
-    for (const item of mergedItems) {
+    for (const item of ungroupedItems) {
         const key = getTypeGroupKey(getResourceTypes(item));
         if (!groupBuckets.has(key)) groupBuckets.set(key, []);
         groupBuckets.get(key)!.push(item);
@@ -197,6 +256,10 @@ export const ResourceList: React.FC<ResourceListProps> = ({
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {/* 先渲染同源镜像组（每组一个卡片，带 label + description） */}
+            {[...mirrorGroups.entries()].map(([gk, gItems]) => renderMirrorGroup(gk, gItems))}
+
+            {/* 再渲染独立资源（按 type 分桶） */}
             {sortedKeys.map(key => {
                 const groupItems = groupBuckets.get(key)!;
                 const color = getCombinedTypeColor(key.split('+') as ResourceTypeAtom[]);

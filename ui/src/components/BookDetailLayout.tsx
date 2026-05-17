@@ -4,6 +4,7 @@ import type {
     IndexDetailData,
     ResourceCatalog,
     CollatedEditionIndex,
+    BookFullTextIndex,
     WorkDetailData,
     BookDetailData,
     EmendatedByEntry,
@@ -12,6 +13,7 @@ import type { IndexStorage } from '../storage/types';
 import { IndexDetail, EmendatedBySection } from './IndexDetail';
 import { CollectionCatalog } from './CollectionCatalog';
 import { CollatedEdition } from './CollatedEdition';
+import { BookFullText } from './BookFullText';
 import { VersionLineageView } from './VersionLineageView';
 import { buildLineageGraph } from '../core/lineage-graph';
 import type { LineageGraph } from '../core/lineage-graph';
@@ -36,7 +38,7 @@ const LAYOUT_CSS = `
 
 // ── 类型 ──
 
-export type BookDetailTabKey = 'basic' | 'collated' | 'lineage' | 'emendated' | 'feedback' | string;
+export type BookDetailTabKey = 'basic' | 'collated' | 'fulltext' | 'lineage' | 'emendated' | 'feedback' | string;
 
 export interface ExtraTabContext {
     detail: IndexDetailData;
@@ -375,6 +377,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     const [catalogLoading, setCatalogLoading] = useState(false);
     const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
     const [collatedLoading, setCollatedLoading] = useState(false);
+    const [bookFullTextIndex, setBookFullTextIndex] = useState<BookFullTextIndex | null>(null);
+    const [bookFullTextLoading, setBookFullTextLoading] = useState(false);
     const [lineageGraph, setLineageGraph] = useState<LineageGraph | null>(null);
     const [lineageLoading, setLineageLoading] = useState(false);
     const lineageSourceRef = useRef<{ work: WorkDetailData; books: BookDetailData[] } | null>(null);
@@ -423,6 +427,22 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             setCollatedIndex(null);
         } finally {
             setCollatedLoading(false);
+        }
+    }, [transport]);
+
+    const loadBookFullText = useCallback(async (bookId: string) => {
+        if (!transport.getBookFullTextIndex) {
+            setBookFullTextIndex(null);
+            return;
+        }
+        setBookFullTextLoading(true);
+        try {
+            const idx = await transport.getBookFullTextIndex(bookId);
+            setBookFullTextIndex(idx);
+        } catch {
+            setBookFullTextIndex(null);
+        } finally {
+            setBookFullTextLoading(false);
         }
     }, [transport]);
 
@@ -526,6 +546,10 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     if ((detailData as WorkDetailData).version_graph || transport.getLineageGraph) {
                         loadLineage(id, detailData);
                     }
+                } else if (detailData.type === 'book') {
+                    if ((detailData as { has_full_text?: boolean }).has_full_text && transport.getBookFullTextIndex) {
+                        loadBookFullText(id);
+                    }
                 }
             } catch {
                 if (!cancelled) setNotFound(true);
@@ -535,7 +559,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         };
         load();
         return () => { cancelled = true; };
-    }, [id, transport, enrichDetail, loadCatalogs, loadCollated, loadLineage]);
+    }, [id, transport, enrichDetail, loadCatalogs, loadCollated, loadLineage, loadBookFullText]);
 
     // 切换 collection 时仅 rebuild graph，不重新拉 books
     useEffect(() => {
@@ -569,6 +593,13 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             navItems.push({
                 key: 'collated',
                 label: collatedLoading ? `${t.detailTab?.collatedEdition ?? '整理本'}...` : (t.detailTab?.collatedEdition ?? '整理本'),
+            });
+        }
+
+        if (detail.type === 'book' && (bookFullTextIndex || bookFullTextLoading)) {
+            navItems.push({
+                key: 'fulltext',
+                label: bookFullTextLoading ? '全文...' : '全文',
             });
         }
 
@@ -695,6 +726,21 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                         onNavigate={onNavigate}
                         activeJuan={activeJuan}
                         onJuanChange={setActiveJuan}
+                    />
+                </div>
+            );
+        }
+
+        if (activeTab === 'fulltext') {
+            return (
+                <div className={containerClassName} style={containerStyle}>
+                    <FloatingActions sourceLink={sourceLink} />
+                    <BookFullText
+                        index={bookFullTextIndex || undefined}
+                        bookId={id}
+                        transport={transport}
+                        activeChapter={activeJuan}
+                        onChapterChange={setActiveJuan}
                     />
                 </div>
             );

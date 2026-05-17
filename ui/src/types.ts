@@ -112,6 +112,16 @@ export interface ResourceEntry {
     color_mode?: 'bw' | 'color';
     /** 来源标注（如"來源：臺灣華文電子書庫"） */
     source_label?: string;
+    /** 镜像组 key，同组 resources 是同一份内容的不同存储位置；label/description 在 Book.resource_groups */
+    group?: string;
+    /** origin = 原始来源；mirror = 我们做的备份镜像 */
+    group_role?: 'origin' | 'mirror';
+}
+
+/** Book/Work 上的资源组元数据：每个 group key 对应一组同源镜像的展示信息 */
+export interface ResourceGroupInfo {
+    label?: string;
+    description?: string;
 }
 
 /** 索引类型 */
@@ -334,6 +344,8 @@ export interface BaseDetailData {
     measure_info?: string;
     page_count?: PageCount;
     resources?: ResourceEntry[];
+    /** 资源组元数据：key=group_key，value={label, description} */
+    resource_groups?: Record<string, ResourceGroupInfo>;
 }
 
 /** 收录关联：书籍被丛编收录的信息 */
@@ -645,6 +657,44 @@ export interface CollatedEditionIndex {
         sections?: number;
         status?: string;
     }>;
+}
+
+// ── Book 全文（与 Work 整理本平行的概念，存于 Book/<id>/full_text/） ──
+
+/** Book 全文目录页 */
+export interface BookFullTextIndex {
+    book_id: string;
+    /** 版本说明，如「庚辰本（脂硯齋重評石頭記）」 */
+    version_label: string;
+    source: {
+        name: string;
+        url: string;
+        license?: string;
+        note?: string;
+        /** 'plain_wikitext' | 'ProofreadPage' 等 */
+        type?: string;
+    };
+    total_chapters: number;
+    /** 章节列表（已按回数排序） */
+    chapters: BookFullTextChapter[];
+    scraped_at?: string;
+    scraped_from?: string;
+    revision?: string;
+}
+
+/** Book 全文单章 */
+export interface BookFullTextChapter {
+    /** 章序号（1-based） */
+    n: number;
+    /** 完整章名，如「第一回 甄士隱夢幻識通靈 賈雨村風塵懷閨秀」 */
+    title: string;
+    /** markdown 文件名，如「第001.md」 */
+    file: string;
+    /** 维基文库源页 title（可选） */
+    page_title?: string;
+    md_len?: number;
+    /** ProofreadPage 类型时，记录所跨 PDF 页范围 */
+    pdf_pages?: string;
 }
 
 /** 资料来源项 */
