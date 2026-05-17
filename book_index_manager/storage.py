@@ -2,6 +2,7 @@ import os
 import json
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import date
 from pathlib import Path
 from typing import Optional, Dict, List, Any
 from .id_generator import BookIndexType, BookIndexStatus, BookIndexIdGenerator, base36_encode, base36_decode, smart_decode
@@ -9,6 +10,30 @@ from .logger import logger
 from .exceptions import StorageError
 from .migration import migrate_metadata
 from .entry_extractor import build_index_entry, build_entity_index_entry
+
+
+# Semver revision 字段。production 条目必有，draft 不维护。
+# 设计文档：项目进展/古籍索引网站/整体设计/2026-05-版本控制与不可变性.md
+_REVISION_RE = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
+
+
+def _bump_revision(current: Optional[str], bump: str) -> str:
+    """semver bump。current=None 视为 "1.0.0"（首次写入 production）。"""
+    if current is None or not _REVISION_RE.match(current or ''):
+        return '1.0.0'
+    major, minor, patch = (int(x) for x in current.split('.'))
+    if bump == 'patch':
+        return f'{major}.{minor}.{patch + 1}'
+    if bump == 'minor':
+        return f'{major}.{minor + 1}.0'
+    if bump == 'major':
+        return f'{major + 1}.0.0'
+    raise ValueError(f"bump must be 'patch'|'minor'|'major'|None, got {bump!r}")
+
+
+def _today_iso() -> str:
+    """日期 YYYY-MM-DD（决策 Q7）。"""
+    return date.today().isoformat()
 
 
 NUM_SHARDS = 16
@@ -118,13 +143,21 @@ class BookIndexStorage:
 
         return root / type_val.name / c1 / c2 / c3 / f"{id_str}-{clean_name}.json"
 
-    def save_item(self, type_val: BookIndexType, id_val: int, metadata: dict, allow_tombstone_edit: bool = False):
+    def save_item(self, type_val: BookIndexType, id_val: int, metadata: dict,
+                  allow_tombstone_edit: bool = False,
+                  bump: Optional[str] = 'patch'):
         """Save an item (book, collection, or work) and update the index.
 
         Args:
             allow_tombstone_edit: 默认 False。若目标文件已有 promoted_to 字段
                 （即已升级为 production 的 tombstone），save_item 会拒绝写入，
                 避免破坏 frozen snapshot 语义。设为 True 显式 opt-in。
+            bump: production 条目版本号 bump 级别。
+                'patch'（默认）/ 'minor' / 'major' / None（不 bump）。
+                draft 条目忽略此参数。promote 流程内传 None；
+                production 内修改默认 patch；知识修改传 'minor'；
+                评级跃迁传 'major'。
+                设计：项目进展/古籍索引网站/整体设计/2026-05-版本控制与不可变性.md
         """
         if type_val == BookIndexType.Entity:
             name = metadata.get("primary_name") or metadata.get("title") or "未命名"
@@ -201,6 +234,23 @@ class BookIndexStorage:
                 metadata["title"] = metadata.get("书名") or metadata.get("名称")
 
             self._migrate_keys(metadata)
+
+            # Production semver bump（仅 production 仓 + bump != None；draft 不维护版本号）
+            # 取 id 解码后的 status 位判断（不依赖 metadata.promoted_to，因 promote 写 P 时
+            # P 的 status=Official，D 才有 promoted_to）。
+            try:
+                comp = BookIndexIdGenerator.parse(id_val)
+                is_official = (comp.status == BookIndexStatus.Official)
+            except Exception:
+                is_official = False
+            if is_official and bump is not None:
+                old_rev = metadata.get('revision')
+                new_rev = _bump_revision(old_rev, bump)
+                metadata['revision'] = new_rev
+                # 同日多改不刷新（决策 Q7）
+                today = _today_iso()
+                if metadata.get('revised_at') != today:
+                    metadata['revised_at'] = today
 
             with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(strip_nulls(metadata), f, indent=2, ensure_ascii=False)

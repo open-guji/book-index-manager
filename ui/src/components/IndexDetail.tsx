@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type {
     IndexType,
     ResourceEntry,
+    ResourceGroupInfo,
     IndexDetailData,
     BookDetailData,
     CollectionDetailData,
@@ -825,6 +826,7 @@ interface ResolvedBook {
     title?: string;
     edition?: string;
     resources?: ResourceEntry[];
+    resource_groups?: Record<string, ResourceGroupInfo>;
 }
 
 function BookVersionCard({ book, onNavigate, renderLink }: {
@@ -877,7 +879,7 @@ function BookVersionCard({ book, onNavigate, renderLink }: {
             </div>
             {hasDetails && !collapsed && (
                 <div style={{ padding: '10px 14px' }}>
-                    <ResourceList items={book.resources!} groupByType onNavigate={onNavigate} renderLink={renderLink} />
+                    <ResourceList items={book.resources!} resourceGroups={book.resource_groups} groupByType onNavigate={onNavigate} renderLink={renderLink} />
                 </div>
             )}
         </div>
@@ -908,6 +910,7 @@ function BookVersionList({ ids, workData, transport, onNavigate, renderLink, foo
                     title: raw ? (raw as any).title : undefined,
                     edition: raw ? (raw as any).edition : undefined,
                     resources: raw ? (raw as any).resources as ResourceEntry[] | undefined : undefined,
+                    resource_groups: raw ? (raw as any).resource_groups as Record<string, ResourceGroupInfo> | undefined : undefined,
                 })).catch(() => ({ id } as ResolvedBook))
             )
         ).then(items => { if (!cancelled) setBooks(items); });
@@ -1493,7 +1496,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
             {detail.resources && detail.resources.length > 0 && (
                 <>
                     <SectionLabel>{t.section.resources}</SectionLabel>
-                    <ResourceList items={detail.resources} groupByType onNavigate={onNavigate} renderLink={renderLink} />
+                    <ResourceList items={detail.resources} resourceGroups={detail.resource_groups} groupByType onNavigate={onNavigate} renderLink={renderLink} />
                 </>
             )}
 

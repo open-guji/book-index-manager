@@ -120,7 +120,10 @@ class CLIHandler:
             else:
                 data = json.loads(self.args.metadata)
 
-            file_path = self.manager.save_item(data)
+            bump = getattr(self.args, 'bump', 'patch')
+            if bump == 'none':
+                bump = None
+            file_path = self.manager.save_item(data, bump=bump)
             id_str = data.get("id") or data.get("ID")
             print(json.dumps({
                 "status": "success",
@@ -604,8 +607,13 @@ def main():
         description="保存完整 metadata。metadata 必须含 id 字段。会同时更新 index shard。",
         epilog="""示例：
   book-index save '{\"id\":\"1ev...\",\"type\":\"work\",\"title\":\"...\"}'
-  cat metadata.json | book-index save -""")
+  cat metadata.json | book-index save -
+  cat patch.json | book-index save - --bump minor   # production 条目知识修改""")
     p.add_argument("metadata", help="Metadata JSON string or '-' for stdin")
+    p.add_argument("--bump", choices=['patch', 'minor', 'major', 'none'],
+                   default='patch',
+                   help="production 条目版本号 bump 级别（draft 忽略）。"
+                        "默认 patch；新增/修正知识传 minor；评级跃迁传 major；none = 不 bump")
 
     # delete
     p = subparsers.add_parser(

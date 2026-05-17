@@ -121,6 +121,20 @@ export class DevApiStorage implements IndexStorage {
         return res.text();
     }
 
+    async getBookFullTextIndex(bookId: string): Promise<import('../types').BookFullTextIndex | null> {
+        const res = await fetch(`${this.baseUrl}/api/book-fulltext/${encodeURIComponent(bookId)}`);
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    }
+
+    async getBookFullTextChapter(bookId: string, file: string): Promise<string | null> {
+        const res = await fetch(`${this.baseUrl}/api/book-fulltext/${encodeURIComponent(bookId)}/${encodeURIComponent(file)}`);
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.text();
+    }
+
     async saveItem(): Promise<{ id: string; path: string }> {
         throw new Error('DevApiStorage: 开发模式暂不支持保存');
     }

@@ -47,6 +47,8 @@ export type {
     CollatedSection,
     CollatedJuan,
     CollatedEditionIndex,
+    BookFullTextIndex,
+    BookFullTextChapter,
     ResourceCatalog,
     ResourceImportStatus,
     ResourceImportType,
@@ -127,6 +129,7 @@ export { ModeIndicator } from './components/ModeIndicator';
 export { CollectionCatalog } from './components/CollectionCatalog';
 export type { CollectionCatalogProps } from './components/CollectionCatalog';
 export { CollatedEdition } from './components/CollatedEdition';
+export { BookFullText } from './components/BookFullText';
 export { WorkCatalog } from './components/WorkCatalog';
 export type { WorkCatalogProps } from './components/WorkCatalog';
 export type { CollatedEditionProps } from './components/CollatedEdition';
