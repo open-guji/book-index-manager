@@ -1551,9 +1551,14 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                 const groups: { label: string; items: typeof workData.related_works }[] = [];
                 const partOf = workData.related_works!.filter(rw => rw.relation === 'part_of');
                 const hasPart = workData.related_works!.filter(rw => rw.relation === 'has_part');
-                const other = workData.related_works!.filter(rw => !rw.relation);
+                const adaptations = workData.related_works!.filter(rw => rw.relation === 'has_adaptation');
+                const derivatives = workData.related_works!.filter(rw => rw.relation === 'text_carried_by');
+                const known = new Set(['part_of', 'has_part', 'has_adaptation', 'text_carried_by']);
+                const other = workData.related_works!.filter(rw => !rw.relation || !known.has(rw.relation));
                 if (partOf.length > 0) groups.push({ label: t.section.belongsToWork, items: partOf });
                 if (hasPart.length > 0) groups.push({ label: t.section.containedWorks, items: hasPart });
+                if (adaptations.length > 0) groups.push({ label: t.section.adaptations, items: adaptations });
+                if (derivatives.length > 0) groups.push({ label: t.section.derivativeWorks, items: derivatives });
                 if (other.length > 0) groups.push({ label: t.section.relatedWorks, items: other });
                 return groups.map(group => (
                     <div key={group.label}>
