@@ -105,6 +105,8 @@ export const zhHant: LocaleMessages = {
         emendated: '考證',
         relatedWorks: '相關作品',
         containedWorks: '包含作品',
+        adaptations: '改編作品',
+        derivativeWorks: '續書與評論',
     },
     relation: {
         belongsToWork: '所屬作品 (Work)',

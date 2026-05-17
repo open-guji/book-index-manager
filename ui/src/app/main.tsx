@@ -117,6 +117,18 @@ function buildSourceLink(ctx: SourceLinkContext): { href: string; label: string 
             label: `在 GitHub 查看整理本源文件目录（${repoLabel}）`,
         };
     }
+    if (activeTab === 'fulltext') {
+        if (activeJuan) {
+            return {
+                href: `${base}/blob/main/${dir}/${id}/full_text/${activeJuan}`,
+                label: `在 GitHub 查看本章源文件（${repoLabel}）`,
+            };
+        }
+        return {
+            href: `${base}/tree/main/${dir}/${id}/full_text`,
+            label: `在 GitHub 查看全文源文件目录（${repoLabel}）`,
+        };
+    }
     if (activeTab.startsWith('catalog:')) {
         const rid = activeTab.slice('catalog:'.length);
         return {
@@ -170,14 +182,16 @@ function App() {
 
     const handleTabChange = useCallback((tab: string) => {
         setActiveTabState(tab);
-        const juan = tab === 'collated' ? activeJuan : null;
+        const juan = (tab === 'collated' || tab === 'fulltext') ? activeJuan : null;
         syncUrl(currentId, { tab, juan: juan ?? undefined, mode: tab === 'lineage' ? lineageMode : undefined, collection: tab === 'lineage' ? lineageCollection : undefined });
     }, [currentId, activeJuan, lineageMode, lineageCollection, syncUrl]);
 
     const handleJuanChange = useCallback((juan: string | null) => {
         setActiveJuanState(juan);
-        syncUrl(currentId, { tab: 'collated', juan: juan ?? undefined, replace: true });
-    }, [currentId, syncUrl]);
+        // 保留当前 tab（collated 给 Work 整理本，fulltext 给 Book 全文）；其他 tab 默认到 collated
+        const tab = (activeTab === 'collated' || activeTab === 'fulltext') ? activeTab : 'collated';
+        syncUrl(currentId, { tab, juan: juan ?? undefined, replace: true });
+    }, [currentId, activeTab, syncUrl]);
 
     const handleLineageModeChange = useCallback((mode: 'list' | 'graph') => {
         setLineageModeState(mode);

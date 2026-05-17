@@ -379,7 +379,7 @@ const ResourceChip: React.FC<{
     }, [item.url, item.name, convert]);
 
     const volumes = useMemo(() => {
-        if (!item.volumes || item.volumes.length === 0) return null;
+        if (!Array.isArray(item.volumes) || item.volumes.length === 0) return null;
         return item.volumes.map(v => ({ ...v, url: v.url || extractVolumeUrl(v) }));
     }, [item.volumes]);
 
@@ -515,7 +515,7 @@ const ResourceCard: React.FC<{
 
     // 归一化 volumes：提取 URL，补充 missing 状态
     const volumes = useMemo(() => {
-        if (!item.volumes || item.volumes.length === 0) return null;
+        if (!Array.isArray(item.volumes) || item.volumes.length === 0) return null;
         return item.volumes.map(v => ({
             ...v,
             url: v.url || extractVolumeUrl(v),

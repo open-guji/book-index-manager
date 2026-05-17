@@ -16,6 +16,12 @@ from .entry_extractor import build_index_entry, build_entity_index_entry
 # 设计文档：项目进展/古籍索引网站/整体设计/2026-05-版本控制与不可变性.md
 _REVISION_RE = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
 
+# 顶层 item 文件名模式：`<id-11~13位 base36>-<任意 title>.json`。
+# 用于 reindex 时识别哪些 .json 是真正的 Work/Book/Collection/Entity 条目，
+# 排除 collated_edition/, full_text/ 等子目录里的辅助文件（如
+# `75-79册_续簿.json`，不应被索引为 Work）。
+ITEM_FILE_RE = re.compile(r'^[A-Za-z0-9]{11,13}-.+\.json$')
+
 
 def _bump_revision(current: Optional[str], bump: str) -> str:
     """semver bump。current=None 视为 "1.0.0"（首次写入 production）。"""
@@ -467,16 +473,19 @@ class BookIndexStorage:
                 continue
             except ValueError:
                 pass
+            # 只索引顶层 item 文件（<id>-<title>.json）。
+            # collated_edition/<n>-<n>册.json、full_text/index.json、_meta.json 等
+            # 子目录辅助文件名不符合此模式，跳过避免误索引。
+            if not ITEM_FILE_RE.match(json_file.name):
+                continue
             try:
                 metadata = self.load_metadata(json_file)
-                # 子目录辅助文件（如 collated_edition/juan_groups.json 是数组）不是 item
-                # metadata 文件，跳过避免误索引和 warning
                 if not isinstance(metadata, dict):
                     continue
                 id_str = metadata.get("id") or metadata.get("ID")
                 if not id_str:
-                    if "-" in json_file.name:
-                        id_str = json_file.name.split("-")[0]
+                    # ITEM_FILE_RE 已保证文件名 `<id>-<title>.json` 形态，可安全 fallback
+                    id_str = json_file.name.split("-", 1)[0]
                 if not id_str:
                     continue
 
@@ -575,8 +584,6 @@ class BookIndexStorage:
             for shard_data in type_shards.values():
                 indexed_ids.update(shard_data.keys())
 
-        ITEM_FILE_RE = re.compile(r'^[A-Za-z0-9]{11,13}-.+\.json$')
-
         # Collect all unindexed files grouped by (type_val, shard_num)
         # so we can parallelise per bucket
         # bucket_key → list of (json_file, type_val)
@@ -652,8 +659,6 @@ class BookIndexStorage:
         Returns a list of dicts with keys 'id' and 'path' for each missing item.
         An empty list means the index is consistent.
         """
-        import re
-        ITEM_FILE_RE = re.compile(r'^[A-Za-z0-9]{11,13}-.+\.json$')
 
         root = self.get_root_by_status(status)
 

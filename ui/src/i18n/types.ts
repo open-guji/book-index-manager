@@ -103,6 +103,8 @@ export interface LocaleMessages {
         emendated: string;
         relatedWorks: string;
         containedWorks: string;
+        adaptations: string;
+        derivativeWorks: string;
     };
     relation: {
         belongsToWork: string;

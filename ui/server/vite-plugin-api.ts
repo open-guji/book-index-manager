@@ -789,6 +789,63 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                     return;
                 }
 
+                // GET /api/book-fulltext/:id — Book 全文章节列表 (full_text/index.json)
+                if (pathname.match(/^\/api\/book-fulltext\/[^/]+$/) && req.method === 'GET') {
+                    const id = decodeURIComponent(pathname.slice('/api/book-fulltext/'.length));
+                    const itemFile = findItemFile(workspaceRoot, id);
+                    if (!itemFile) {
+                        sendJson({ error: 'Not found' }, 404);
+                        return;
+                    }
+                    const indexFile = path.join(path.dirname(itemFile), id, 'full_text', 'index.json');
+                    if (!fs.existsSync(indexFile)) {
+                        sendJson({ error: 'No full text' }, 404);
+                        return;
+                    }
+                    try {
+                        sendJson(JSON.parse(fs.readFileSync(indexFile, 'utf-8')));
+                    } catch {
+                        sendJson({ error: 'Read error' }, 500);
+                    }
+                    return;
+                }
+
+                // GET /api/book-fulltext/:id/:file — Book 全文单章
+                if (pathname.match(/^\/api\/book-fulltext\/[^/]+\/[^/]+$/) && req.method === 'GET') {
+                    const parts = pathname.slice('/api/book-fulltext/'.length).split('/');
+                    const id = decodeURIComponent(parts[0]);
+                    const file = decodeURIComponent(parts[1]);
+
+                    if (file.includes('..')) {
+                        sendJson({ error: 'Invalid file name' }, 400);
+                        return;
+                    }
+                    const itemFile = findItemFile(workspaceRoot, id);
+                    if (!itemFile) {
+                        sendJson({ error: 'Not found' }, 404);
+                        return;
+                    }
+                    // 接受 .md / .txt（与 kaiyuanguji-web local-data 一致）
+                    const candidates = [file];
+                    if (file.endsWith('.txt')) candidates.unshift(file.replace(/\.txt$/, '.md'));
+                    if (file.endsWith('.md')) candidates.push(file.replace(/\.md$/, '.txt'));
+                    for (const f of candidates) {
+                        const fp = path.join(path.dirname(itemFile), id, 'full_text', f);
+                        if (fs.existsSync(fp)) {
+                            try {
+                                const content = fs.readFileSync(fp, 'utf-8');
+                                res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+                                res.end(content);
+                            } catch {
+                                sendJson({ error: 'Read error' }, 500);
+                            }
+                            return;
+                        }
+                    }
+                    sendJson({ error: 'Chapter not found' }, 404);
+                    return;
+                }
+
                 // GET /api/work-catalog/:id — Work 下的分类目录 (*_catalog.json)
                 if (pathname.startsWith('/api/work-catalog/') && req.method === 'GET') {
                     const id = decodeURIComponent(pathname.slice('/api/work-catalog/'.length));
