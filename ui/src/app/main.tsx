@@ -119,8 +119,9 @@ function buildSourceLink(ctx: SourceLinkContext): { href: string; label: string 
     }
     if (activeTab === 'fulltext') {
         if (activeJuan) {
+            // URL 里 juan 用 stem (e.g. "001")，GitHub 链接需要拼回 .md
             return {
-                href: `${base}/blob/main/${dir}/${id}/full_text/${activeJuan}`,
+                href: `${base}/blob/main/${dir}/${id}/full_text/${activeJuan}.md`,
                 label: `在 GitHub 查看本章源文件（${repoLabel}）`,
             };
         }

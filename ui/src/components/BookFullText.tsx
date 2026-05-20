@@ -7,9 +7,19 @@ interface BookFullTextProps {
     index?: BookFullTextIndex;
     bookId: string;
     transport: IndexStorage;
-    /** 当前活动章节文件名（受控，e.g. "第001.md"） */
+    /** 当前活动章节 key（受控）。不带扩展名的文件 stem，例如 "001"。 */
     activeChapter?: string | null;
     onChapterChange?: (chapter: string | null) => void;
+}
+
+/**
+ * 归一化章节 key：去掉 `.md` 扩展名。
+ *   "001.md" → "001"
+ *   "001"    → "001"
+ * 用于章节匹配与 URL ↔ 文件名互转。
+ */
+function normalizeChapterKey(s: string): string {
+    return s.replace(/\.md$/, '');
 }
 
 /**
@@ -52,31 +62,38 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
         return () => { cancelled = true; };
     }, [bookId, transport, indexProp]);
 
-    // 默认选第一章
+    // 默认选第一章；若 activeChapter 是老书签 / 无效 URL（找不到对应 chapter），也回退到第一章
     useEffect(() => {
         if (!index || index.chapters.length === 0) return;
+        const firstKey = normalizeChapterKey(index.chapters[0].file);
         if (!activeChapter) {
-            setActiveChapter(index.chapters[0].file);
+            setActiveChapter(firstKey);
+            return;
         }
+        const key = normalizeChapterKey(activeChapter);
+        const hit = index.chapters.some(c => normalizeChapterKey(c.file) === key);
+        if (!hit) setActiveChapter(firstKey);
     }, [index, activeChapter, setActiveChapter]);
 
-    // 加载选中章节的 markdown
+    const currentChapterMeta = useMemo(() => {
+        if (!index || !activeChapter) return null;
+        const key = normalizeChapterKey(activeChapter);
+        return index.chapters.find(c => normalizeChapterKey(c.file) === key) ?? null;
+    }, [index, activeChapter]);
+
+    // 加载选中章节的 markdown。注意用 index 里登记的真实文件名 (chapter.file)，
+    // 不能直接用 activeChapter（可能是 stem，没有扩展名）。
     useEffect(() => {
-        if (!bookId || !activeChapter || !transport.getBookFullTextChapter) return;
+        if (!bookId || !currentChapterMeta || !transport.getBookFullTextChapter) return;
         let cancelled = false;
         setTextLoading(true);
         setChapterText(null);
-        transport.getBookFullTextChapter(bookId, activeChapter)
+        transport.getBookFullTextChapter(bookId, currentChapterMeta.file)
             .then(txt => { if (!cancelled) setChapterText(txt); })
             .catch(() => { if (!cancelled) setChapterText(null); })
             .finally(() => { if (!cancelled) setTextLoading(false); });
         return () => { cancelled = true; };
-    }, [bookId, activeChapter, transport]);
-
-    const currentChapterMeta = useMemo(() => {
-        if (!index || !activeChapter) return null;
-        return index.chapters.find(c => c.file === activeChapter) ?? null;
-    }, [index, activeChapter]);
+    }, [bookId, currentChapterMeta, transport]);
 
     if (!index) {
         return <div style={{ padding: 24, color: 'var(--bim-desc-fg, #999)' }}>加载全文目录…</div>;
@@ -107,11 +124,12 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
                 </div>
                 <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
                     {index.chapters.map(ch => {
-                        const isActive = ch.file === activeChapter;
+                        const chKey = normalizeChapterKey(ch.file);
+                        const isActive = chKey === normalizeChapterKey(activeChapter ?? '');
                         return (
                             <li key={ch.file}>
                                 <button
-                                    onClick={() => setActiveChapter(ch.file)}
+                                    onClick={() => setActiveChapter(chKey)}
                                     style={{
                                         display: 'block',
                                         width: '100%',
