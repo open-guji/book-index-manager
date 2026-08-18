@@ -112,6 +112,42 @@ book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、�
 - 消费者通过 CSS 变量（`--bim-*`）适配自己的主题
 - 导入 `book-index-ui/styles` 获取基础样式
 
+### 换肤约定
+
+组件内部一律以 `var(--bim-x, <默认值>)` 取色，**不写死颜色**。默认值与
+`src/styles/variables.css` 保持一致，因此：
+
+- 消费者只要在自己的 `:root` 覆盖同名变量即可整体换肤
+- 不覆盖时观感与历史版本完全一致
+- 若同时引入了 `book-index-ui/styles`，请确保覆盖声明在其**之后**加载
+
+带透明度的描边/底色请用 `color-mix()` 从主色推出，不要再写 `${color}40`
+这类十六进制拼接——那样无法与 `var()` 组合。
+
+完整变量清单见 [src/styles/variables.css](src/styles/variables.css)：
+
+| 分组 | 变量 |
+|------|------|
+| 底色与层次 | `--bim-bg` `--bim-bg-subtle` `--bim-widget-bg` `--bim-sidebar-bg` |
+| 文字 | `--bim-fg` `--bim-desc-fg` `--bim-muted` |
+| 描边 | `--bim-widget-border` `--bim-border` `--bim-input-border` `--bim-focus-border` |
+| 输入控件 | `--bim-input-bg` `--bim-input-fg` |
+| 主色 | `--bim-primary` `--bim-primary-fg` `--bim-primary-soft` `--bim-primary-bg` |
+| 链接 | `--bim-link` `--bim-link-fg` |
+| 列表交互态 | `--bim-list-hover-bg` `--bim-list-active-bg` |
+| 标签点缀 | `--bim-tag-bg` `--bim-accent-bg` |
+| 语义状态 | `--bim-danger` `--bim-warning` `--bim-success` `--bim-info-*` `--bim-warn-*` |
+| 条目类型徽章 | `--bim-type-book` `--bim-type-work` `--bim-type-collection` `--bim-type-entity` |
+| 条目状态徽章 | `--bim-status-draft` `--bim-status-official` |
+| 资源类型标记 | `--bim-restype-*` `--bim-missing-fg` |
+| 影印色彩模式 | `--bim-colormode-bw-*` `--bim-colormode-color-*` |
+| 导入进度 | `--bim-progress-active` `--bim-progress-done` `--bim-progress-todo` |
+
+> 文本质量等级色（`types.ts` 的 `published/fine/rough/ocr`、i18n locale 里的
+> `精校/粗校/AI整理`）目前仍写死：这些颜色本身承载「质量分级」语义，
+> 更接近数据而非皮肤，换肤时不应随主题漂移。同理，`--bim-danger` /
+> `--bim-warning` / `--bim-success` 也建议消费者保持默认。
+
 ## 待办
 
 - [ ] kaiyuanguji-web 的 BookDetailContent 应迁移为使用 IndexDetail 组件，去除重复的 Tailwind 实现

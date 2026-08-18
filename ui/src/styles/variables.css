@@ -1,9 +1,16 @@
 /**
- * CSS 变量默认值
- * VS Code 环境下会被 --vscode-* 覆盖
- * 非 VS Code 环境使用这些默认值
+ * CSS 变量默认值（换肤接口）
+ *
+ * - VS Code 环境下会被 --vscode-* 覆盖
+ * - 非 VS Code 环境使用这里的默认值
+ * - 消费者（如 kaiyuanguji-web）在自己的 :root 里覆盖同名变量即可换肤；
+ *   若同时引入了本文件，请确保覆盖声明在 `book-index-ui/styles` 之后加载
+ *
+ * 组件内部一律以 `var(--bim-x, <默认值>)` 取色。本文件中新增变量的取值
+ * 与组件里原本写死的字面值逐一相同，因此不改变任何既有消费者的观感。
  */
 :root {
+    /* ================= 原有变量（取值保持不变） ================= */
     --bim-bg: var(--vscode-editor-background, #ffffff);
     --bim-fg: var(--vscode-foreground, #333333);
     --bim-input-bg: var(--vscode-input-background, #ffffff);
@@ -22,4 +29,62 @@
     --bim-list-hover-bg: var(--vscode-list-hoverBackground, rgba(0, 0, 0, 0.04));
     --bim-list-active-bg: var(--vscode-list-activeSelectionBackground, rgba(0, 120, 212, 0.1));
     --bim-focus-border: var(--vscode-focusBorder, #0078d4);
+
+    /* ================= 新增：补齐组件已在用、此前只有内联回退值的变量 ================= */
+
+    /* ---- 底色层次 ---- */
+    --bim-bg-subtle: #fafafa;
+    --bim-widget-bg: #f8f8f8;
+
+    /* ---- 文字与描边 ---- */
+    --bim-muted: #888888;
+    --bim-border: #e5e5e5;
+
+    /* ---- 主色衍生 / 链接 ---- */
+    --bim-primary-bg: #fdf4f4;
+    --bim-link: #1976d2;
+
+    /* ---- 标签与点缀 ---- */
+    --bim-tag-bg: #f0f0f0;
+    --bim-accent-bg: #1976d2;
+
+    /* ---- 提示与警告 ---- */
+    --bim-info-fg: #0c5380;
+    --bim-info-bg: #e7f3ff;
+    --bim-info-border: #b3dbff;
+    --bim-warn-fg: #856404;
+    --bim-warn-bg: #fff3cd;
+    --bim-warn-border: #ffc107;
+
+    /* ================= 新增：原本写死在组件里、现已变量化 ================= */
+
+    /* ---- 条目类型徽章（Book / Work / Collection / Entity） ---- */
+    --bim-type-book: #c0392b;
+    --bim-type-work: #8e6f3e;
+    --bim-type-collection: #2471a3;
+    --bim-type-entity: #5b3e8e;
+
+    /* ---- 条目状态徽章 ---- */
+    --bim-status-draft: #e67e22;
+    --bim-status-official: #27ae60;
+
+    /* ---- 资源类型标记 ---- */
+    --bim-restype-text: #2196f3;
+    --bim-restype-image: #ff9800;
+    --bim-restype-text-image: #9c27b0;
+    --bim-restype-physical: #795548;
+
+    /* 资源缺册提示 */
+    --bim-missing-fg: #e67e22;
+
+    /* 影印件色彩模式标记（黑白 / 彩色） */
+    --bim-colormode-bw-bg: #f5f5f5;
+    --bim-colormode-bw-fg: #757575;
+    --bim-colormode-color-bg: #fff8e1;
+    --bim-colormode-color-fg: #f57f17;
+
+    /* ---- 资源导入进度 ---- */
+    --bim-progress-active: #f59e0b;
+    --bim-progress-done: #10b981;
+    --bim-progress-todo: #9ca3af;
 }

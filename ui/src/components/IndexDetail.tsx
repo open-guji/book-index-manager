@@ -84,26 +84,36 @@ function numberToChinese(n: number): string {
 
 // ── 内部子组件 ──
 
+/**
+ * 徽章配色统一走 CSS 变量（回退值即原本的硬编码色，消费者不覆盖时观感不变）。
+ * 描边/底色由主色 color-mix 推出：原先用 `${color}40` / `${color}08` 拼接
+ * 十六进制透明度，改成变量后无法再拼接，故等价换算为 25% / 3%。
+ */
+function badgeStyle(color: string): React.CSSProperties {
+    return {
+        display: 'inline-block',
+        padding: '1px 6px',
+        fontSize: '11px',
+        fontWeight: 500,
+        letterSpacing: '1px',
+        color,
+        border: `1px solid color-mix(in srgb, ${color} 25%, transparent)`,
+        borderRadius: '2px',
+        background: `color-mix(in srgb, ${color} 3%, transparent)`,
+    };
+}
+
+const TYPE_BADGE_COLORS: Record<IndexType, string> = {
+    book: 'var(--bim-type-book, #c0392b)',
+    work: 'var(--bim-type-work, #8e6f3e)',
+    collection: 'var(--bim-type-collection, #2471a3)',
+    entity: 'var(--bim-type-entity, #5b3e8e)',
+};
+
 function TypeBadge({ type }: { type: IndexType }) {
     const t = useT();
-    const colors: Record<IndexType, string> = {
-        book: '#c0392b',
-        work: '#8e6f3e',
-        collection: '#2471a3',
-        entity: '#5b3e8e',
-    };
     return (
-        <span style={{
-            display: 'inline-block',
-            padding: '1px 6px',
-            fontSize: '11px',
-            fontWeight: 500,
-            letterSpacing: '1px',
-            color: colors[type],
-            border: `1px solid ${colors[type]}40`,
-            borderRadius: '2px',
-            background: `${colors[type]}08`,
-        }}>
+        <span style={badgeStyle(TYPE_BADGE_COLORS[type])}>
             {t.indexType[type]}
         </span>
     );
@@ -111,18 +121,11 @@ function TypeBadge({ type }: { type: IndexType }) {
 
 function StatusBadge({ isDraft }: { isDraft: boolean }) {
     const t = useT();
+    const color = isDraft
+        ? 'var(--bim-status-draft, #e67e22)'
+        : 'var(--bim-status-official, #27ae60)';
     return (
-        <span style={{
-            display: 'inline-block',
-            padding: '1px 6px',
-            fontSize: '11px',
-            fontWeight: 500,
-            letterSpacing: '1px',
-            color: isDraft ? '#e67e22' : '#27ae60',
-            border: `1px solid ${isDraft ? '#e67e2240' : '#27ae6040'}`,
-            borderRadius: '2px',
-            background: isDraft ? '#e67e2208' : '#27ae6008',
-        }}>
+        <span style={badgeStyle(color)}>
             {isDraft ? t.status.draft : t.status.official}
         </span>
     );
@@ -145,7 +148,7 @@ function IdBadge({ id }: { id: string }) {
             padding: '1px 6px',
             fontSize: '11px',
             color: 'var(--bim-desc-fg, #717171)',
-            background: '#f6f6f6',
+            background: 'var(--bim-bg-subtle, #f6f6f6)',
             border: '1px solid var(--bim-widget-border, #e0e0e0)',
             borderRadius: '2px',
         }}>
@@ -1179,11 +1182,11 @@ function ContainedInLinks({ items, onNavigate, renderLink }: {
                     gap: '4px',
                     padding: '3px 10px',
                     fontSize: '13px',
-                    border: '1px solid #2471a340',
+                    border: '1px solid color-mix(in srgb, var(--bim-type-collection, #2471a3) 25%, transparent)',
                     borderRadius: '4px',
-                    background: '#2471a308',
+                    background: 'color-mix(in srgb, var(--bim-type-collection, #2471a3) 3%, transparent)',
                 }}>
-                    <span style={{ fontSize: '11px', color: '#2471a3' }}>{t.indexType.collection}</span>
+                    <span style={{ fontSize: '11px', color: 'var(--bim-type-collection, #2471a3)' }}>{t.indexType.collection}</span>
                     <IdLink id={item.id} label={convert(item.title) || item.id} onNavigate={onNavigate} renderLink={renderLink} />
                     {item.volume_index != null && (
                         <span style={{

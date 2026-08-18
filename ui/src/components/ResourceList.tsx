@@ -35,11 +35,12 @@ function getDisplayNameFromUrl(url: string): string | undefined {
     }
 }
 
+// 回退值即原本的硬编码色，消费者不覆盖时观感不变
 const TYPE_COLORS: Record<ResourceType, string> = {
-    text: '#2196f3',
-    image: '#ff9800',
-    'text+image': '#9c27b0',
-    physical: '#795548',
+    text: 'var(--bim-restype-text, #2196f3)',
+    image: 'var(--bim-restype-image, #ff9800)',
+    'text+image': 'var(--bim-restype-text-image, #9c27b0)',
+    physical: 'var(--bim-restype-physical, #795548)',
 };
 
 /**
@@ -359,8 +360,16 @@ function extractVolumeUrl(v: ResourceVolume): string | undefined {
 }
 
 const COLOR_MODE_STYLES: Record<string, { label: string; bg: string; fg: string }> = {
-    bw: { label: '', bg: '#f5f5f5', fg: '#757575' },
-    color: { label: '', bg: '#fff8e1', fg: '#f57f17' },
+    bw: {
+        label: '',
+        bg: 'var(--bim-colormode-bw-bg, #f5f5f5)',
+        fg: 'var(--bim-colormode-bw-fg, #757575)',
+    },
+    color: {
+        label: '',
+        bg: 'var(--bim-colormode-color-bg, #fff8e1)',
+        fg: 'var(--bim-colormode-color-fg, #f57f17)',
+    },
 };
 
 /** 紧凑 chip 风格的资源条目，适合水平排列 */
@@ -428,7 +437,7 @@ const ResourceChip: React.FC<{
                 {hasVolumes && (
                     <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #999)' }}>
                         {uniqueFound}/{expectedTotal}{t.unit.volume}
-                        {uniqueMissing > 0 && <span style={{ color: '#e67e22', marginLeft: '3px' }}>缺{uniqueMissing}</span>}
+                        {uniqueMissing > 0 && <span style={{ color: 'var(--bim-missing-fg, #e67e22)', marginLeft: '3px' }}>缺{uniqueMissing}</span>}
                     </span>
                 )}
                 {item.url && (
@@ -484,7 +493,7 @@ const ResourceChip: React.FC<{
                         ) : (
                             <span key={v.volume} style={{
                                 display: 'inline-block', padding: '1px 5px', fontSize: '11px',
-                                color: isMissing ? '#e67e22' : 'var(--bim-desc-fg, #999)',
+                                color: isMissing ? 'var(--bim-missing-fg, #e67e22)' : 'var(--bim-desc-fg, #999)',
                                 textDecoration: isMissing ? 'line-through' : 'none', opacity: isMissing ? 0.6 : 1,
                             }}>
                                 {v.volume}
@@ -583,7 +592,7 @@ const ResourceCard: React.FC<{
                         color: 'var(--bim-desc-fg, #717171)',
                     }}>
                         {uniqueFound}/{expectedTotal}{t.unit.volume}
-                        {uniqueMissing > 0 && <span style={{ color: '#e67e22', marginLeft: '4px' }}>缺{uniqueMissing}</span>}
+                        {uniqueMissing > 0 && <span style={{ color: 'var(--bim-missing-fg, #e67e22)', marginLeft: '4px' }}>缺{uniqueMissing}</span>}
                     </span>
                 )}
 
@@ -688,7 +697,7 @@ const ResourceCard: React.FC<{
                             fontSize: '11px',
                             borderRadius: '3px',
                             border: '1px solid transparent',
-                            color: isMissing ? '#e67e22' : 'var(--bim-desc-fg, #999)',
+                            color: isMissing ? 'var(--bim-missing-fg, #e67e22)' : 'var(--bim-desc-fg, #999)',
                             textDecoration: isMissing ? 'line-through' : 'none',
                             opacity: isMissing ? 0.6 : 1,
                             lineHeight: 1.4,

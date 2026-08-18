@@ -430,9 +430,9 @@ const ProgressContent: React.FC<{
         todo: t.home.statusTodo,
     };
     const statusColors: Record<ResourceImportStatus, string> = {
-        in_progress: '#f59e0b',
-        done: '#10b981',
-        todo: '#9ca3af',
+        in_progress: 'var(--bim-progress-active, #f59e0b)',
+        done: 'var(--bim-progress-done, #10b981)',
+        todo: 'var(--bim-progress-todo, #9ca3af)',
     };
 
     return (
@@ -603,7 +603,7 @@ const SiteProgressContent: React.FC<{
                         display: 'flex', alignItems: 'center', gap: '8px',
                         fontSize: '13px', fontWeight: 500, color: 'var(--bim-desc-fg, #717171)', marginBottom: '8px',
                     }}>
-                        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }} />
+                        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--bim-progress-done, #10b981)' }} />
                         {t.home.statusInProgress} ({active.length})
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -621,7 +621,7 @@ const SiteProgressContent: React.FC<{
                         display: 'flex', alignItems: 'center', gap: '8px',
                         fontSize: '13px', fontWeight: 500, color: 'var(--bim-desc-fg, #717171)', marginBottom: '8px',
                     }}>
-                        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#9ca3af' }} />
+                        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--bim-progress-todo, #9ca3af)' }} />
                         {t.home.statusTodo} ({todo.length})
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -676,7 +676,7 @@ const SiteItem: React.FC<{
                 }}>
                     <div style={{
                         height: '100%', width: `${coverPct}%`,
-                        borderRadius: '2px', background: '#10b981',
+                        borderRadius: '2px', background: 'var(--bim-progress-done, #10b981)',
                         transition: 'width 0.3s ease',
                     }} />
                 </div>

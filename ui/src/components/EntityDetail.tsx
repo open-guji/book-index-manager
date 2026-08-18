@@ -358,10 +358,10 @@ export const EntityDetail: React.FC<EntityDetailProps> = ({
                     fontSize: '11px',
                     fontWeight: 500,
                     letterSpacing: '1px',
-                    color: '#5b3e8e',
-                    border: '1px solid #5b3e8e40',
+                    color: 'var(--bim-type-entity, #5b3e8e)',
+                    border: '1px solid color-mix(in srgb, var(--bim-type-entity, #5b3e8e) 25%, transparent)',
                     borderRadius: '2px',
-                    background: '#5b3e8e08',
+                    background: 'color-mix(in srgb, var(--bim-type-entity, #5b3e8e) 3%, transparent)',
                 }}>
                     {t.indexType.entity}
                 </span>
@@ -371,10 +371,10 @@ export const EntityDetail: React.FC<EntityDetailProps> = ({
                 {isDraft && (
                     <span style={{
                         padding: '1px 6px',
-                        background: '#fff3cd',
-                        border: '1px solid #ffc107',
+                        background: 'var(--bim-warn-bg, #fff3cd)',
+                        border: '1px solid var(--bim-warn-border, #ffc107)',
                         borderRadius: '2px',
-                        color: '#856404',
+                        color: 'var(--bim-warn-fg, #856404)',
                     }}>
                         {t.status.draft}
                     </span>
