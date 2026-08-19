@@ -388,6 +388,9 @@ def validate_promotions(storage) -> List[PromotionIssue]:
     检查项：
       [E01] promotions.json 里的每条 entry，production 文件存在
       [E02] promotions.json 里的每条 entry，draft 文件 promoted_to 与之一致
+            （含 tombstone 文件整个丢掉 promoted_to 的情形——E02/E03 原先只遍历
+            「文件带 promoted_to」者，恰好漏掉这一种，而这正是外部脚本直接 json.dump
+            重写 tombstone 时最常见的破坏方式）
       [E03] draft 文件带 promoted_to，但 promotions.json 没对应记录
       [E04] 全仓出现裸引用：某 JSON 内容里出现已 promoted 的 draft-id
             （tombstone 文件自身和 promotions.json 不算）
@@ -416,6 +419,33 @@ def validate_promotions(storage) -> List[PromotionIssue]:
                 draft_id=draft_id, production_id=rec.production_id,
                 path=str(prod_path),
                 message=f"Promotion target {rec.production_id} resides in draft repo",
+            ))
+
+        # E02 正向：从 promotions.json 出发查 tombstone，捕捉「文件整个丢掉
+        # promoted_to」——下面 E02/E03 的反向遍历只看得到「文件带 promoted_to」者。
+        draft_path = storage.find_file_by_id(draft_id)
+        if draft_path is None:
+            issues.append(PromotionIssue(
+                severity="error", code="E02",
+                draft_id=draft_id, production_id=rec.production_id,
+                path=None,
+                message=f"Tombstone file for {draft_id} not found",
+            ))
+            continue
+        try:
+            with open(draft_path, "r", encoding="utf-8") as f:
+                draft_data = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            draft_data = {}
+        if not isinstance(draft_data, dict) or not draft_data.get("promoted_to"):
+            issues.append(PromotionIssue(
+                severity="error", code="E02",
+                draft_id=draft_id, production_id=rec.production_id,
+                path=str(draft_path),
+                message=(
+                    f"Tombstone {draft_id} has no promoted_to, "
+                    f"but promotions.json says {rec.production_id}"
+                ),
             ))
 
     # E02 + E03: draft 端校验

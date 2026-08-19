@@ -123,7 +123,11 @@ def _extract_resource_flags(metadata: Dict[str, Any]) -> Dict[str, bool]:
 
 
 def build_entity_index_entry(metadata: Dict[str, Any], id_str: str, rel_path: str) -> Dict[str, Any]:
-    """Entity 类型的 index 条目（people/place/dynasty/...）。"""
+    """Entity 类型的 index 条目（people/place/dynasty/...）。
+
+    `period` 与 Work 同理，是选集合用的粗粒度时代轴，必须入 index
+    （SCHEMA.md §period：「period 亦入 index/works/*.json，選集合不必逐檔開啟」）。
+    """
     subtype = metadata.get("subtype", "people")
     primary_name = metadata.get("primary_name", "")
     dynasty = metadata.get("dynasty", "")
@@ -148,6 +152,9 @@ def build_entity_index_entry(metadata: Dict[str, Any], id_str: str, rel_path: st
         entry["death_year"] = death_year
     if cbdb_id is not None:
         entry["cbdb_id"] = cbdb_id
+    period = metadata.get("period")
+    if period:
+        entry["period"] = period
     return entry
 
 
@@ -158,7 +165,8 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
     其他类型（Book / Collection / Work）输出统一格式：
       {id, title, type, path, [author, year, holder, dynasty, role,
        juan_count, measure_info, additional_titles, attached_texts,
-       has_text, has_image, edition, subtype]}
+       has_text, has_image, edition, subtype, period, loss_status,
+       original_title, work_id, promoted_to]}
 
     可选字段仅当有值时出现（避免索引 shard 充斥空字段）。
     """
@@ -211,4 +219,21 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
         entry["edition"] = edition
     if subtype:
         entry["subtype"] = subtype
+    # 以下字段一度只由外部脚本写入 index 而 build_index_entry 不产出，
+    # 导致任何 save_item / reindex 都会把它们从索引里抹掉。见 tests/test_entry_extractor.py。
+    period = metadata.get("period")
+    if period:
+        entry["period"] = period
+    loss_status = metadata.get("loss_status")
+    if loss_status:
+        entry["loss_status"] = loss_status
+    original_title = metadata.get("original_title")
+    if original_title:
+        entry["original_title"] = original_title
+    work_id = metadata.get("work_id")
+    if work_id:
+        entry["work_id"] = work_id
+    promoted_to = metadata.get("promoted_to")
+    if promoted_to:
+        entry["promoted_to"] = promoted_to
     return entry

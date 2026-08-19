@@ -486,3 +486,35 @@ def test_sync_work_books_dedupes_existing_duplicates(manager: BookIndexManager):
     work_after = manager.get_item(work_id)
     # books 应去重 + 追加 self
     assert work_after["books"] == ["bookA", "bookB", "bookC", new_book_id]
+
+
+def test_validate_detects_tombstone_losing_promoted_to(manager: BookIndexManager):
+    """E02：tombstone 文件整个丢掉 promoted_to。
+
+    E02/E03 原先只反向遍历「文件带 promoted_to」者，恰好看不见这一种——
+    而这正是外部脚本绕过 save_item 直接 json.dump 重写 tombstone 时最常见的破坏方式。
+    book-index-draft 实测：74 条 promotions 记录，对应的 tombstone 文件
+    **全部**丢了 promoted_to，validate 却报 0 个 E02。
+    """
+    draft_id = _save_draft_work(manager, "测试")
+    manager.promote_to_official(draft_id)
+
+    draft_path = manager.storage.find_file_by_id(draft_id)
+    data = json.loads(draft_path.read_text(encoding="utf-8"))
+    del data["promoted_to"]
+    draft_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+    issues = manager.validate_promotions()
+    codes = [i.code for i in issues]
+    assert "E02" in codes
+
+
+def test_validate_detects_missing_tombstone_file(manager: BookIndexManager):
+    """E02：promotions.json 有记录，但 draft 文件被整个删了。"""
+    draft_id = _save_draft_work(manager, "测试")
+    manager.promote_to_official(draft_id)
+
+    manager.storage.find_file_by_id(draft_id).unlink()
+
+    issues = manager.validate_promotions()
+    assert "E02" in [i.code for i in issues]

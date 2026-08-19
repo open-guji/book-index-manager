@@ -203,3 +203,65 @@ def test_optional_fields_omitted_when_empty():
     assert "author" not in entry
     assert "edition" not in entry
     assert "subtype" not in entry
+
+
+# ── 回归保护：index 里实际存在的字段必须由 build_index_entry 产出 ──
+#
+# 这些字段一度只有外部脚本往 index shard 里写，build_index_entry 不产出，
+# 于是任何一次 save_item / reindex 都会把它们从索引里悄悄抹掉。
+# book-index-draft 实测：works 有 period 40738 条、loss_status 4249 条、
+# original_title 153 条、promoted_to 14 条；books 有 work_id 312 条、
+# promoted_to 50 条；entities 有 period 12911 条。
+# 一次 `book-index reindex` 会把它们全部清零。
+
+def test_work_entry_keeps_period_and_loss_status():
+    entry = build_index_entry(
+        {"id": "w1", "title": "孫子", "period": "pre-qin", "loss_status": "partially_extant"},
+        BookIndexType.Work,
+        "Work/w/1.json",
+    )
+    assert entry["period"] == "pre-qin"
+    assert entry["loss_status"] == "partially_extant"
+
+
+def test_work_entry_keeps_original_title():
+    entry = build_index_entry(
+        {"id": "w1", "title": "年譜", "original_title": "摭遺"},
+        BookIndexType.Work,
+        "Work/w/1.json",
+    )
+    assert entry["original_title"] == "摭遺"
+
+
+def test_book_entry_keeps_work_id():
+    entry = build_index_entry(
+        {"id": "b1", "title": "孫子", "work_id": "1ev3bbesj0oow"},
+        BookIndexType.Book,
+        "Book/b/1.json",
+    )
+    assert entry["work_id"] == "1ev3bbesj0oow"
+
+
+def test_tombstone_entry_keeps_promoted_to():
+    """promoted_to 是网站做 draft→production 重定向的依据，抹掉会让重定向失效。"""
+    entry = build_index_entry(
+        {"id": "w1", "title": "X", "promoted_to": "d59dh3z6zmyo"},
+        BookIndexType.Work,
+        "Work/w/1.json",
+    )
+    assert entry["promoted_to"] == "d59dh3z6zmyo"
+
+
+def test_entity_entry_keeps_period():
+    entry = build_entity_index_entry(
+        {"primary_name": "孫武", "dynasty": "先秦", "period": "pre-qin"},
+        "e1", "Entity/e/1.json",
+    )
+    assert entry["period"] == "pre-qin"
+
+
+def test_new_fields_omitted_when_absent():
+    entry = build_index_entry({"id": "w1", "title": "X"}, BookIndexType.Work, "Work/w/1.json")
+    for k in ("period", "loss_status", "original_title", "work_id", "promoted_to"):
+        assert k not in entry
+    assert "period" not in build_entity_index_entry({"primary_name": "某"}, "e1", "Entity/e/1.json")

@@ -390,14 +390,45 @@ class BookIndexStorage:
                 logger.error(f"Error loading shard {path}: {e}")
         return {}
 
+    @staticmethod
+    def _detect_shard_indent(path: Path, default: int = 2) -> int:
+        """探测既有 shard 文件的缩进宽度，新文件用 default。
+
+        仓库里各 shard 的缩进并不统一（book-index-draft 的 index/works、index/entities
+        是 1，index/books、index/collections 与 production 全仓是 2），历史上由不同脚本
+        写成。若一律按 default 重写，改一条就会把整个 shard 重排——七万余条的 works
+        shard 会产生数十万行 diff，把真正的改动淹掉。故沿用文件自身的缩进。
+        """
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                f.readline()                      # 跳过 "{"
+                second = f.readline()
+        except OSError:
+            return default
+        stripped = second.lstrip(" ")
+        if not stripped or stripped.startswith("}"):
+            return default
+        return len(second) - len(stripped) or default
+
+    def _write_shard(self, path: Path, data: dict):
+        """写 shard：按 id 排序 + 沿用既有缩进。
+
+        排序是为了让输出与遍历顺序无关——rebuild_index 走 glob，顺序随文件系统而变，
+        不排序则每次 reindex 都把整个 shard 打乱重排，diff 无法阅读。
+        （index/books、index/collections 本已按 id 排序，index/works 未排序，
+        同样是历史上不同脚本写成的。）
+        """
+        indent = self._detect_shard_indent(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump({k: data[k] for k in sorted(data)}, f, indent=indent, ensure_ascii=False)
+
     def _save_shard(self, root: Path, type_key: str, id_str: str, data: dict):
         """Save data to the shard file for the given ID."""
         shard = shard_of(id_str)
         path = self._shard_path(root, type_key, shard)
         try:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            with open(path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
+            self._write_shard(path, data)
         except Exception as e:
             logger.error(f"Error saving shard {path}: {e}")
 
@@ -528,9 +559,7 @@ class BookIndexStorage:
         for type_key, type_shards in results.items():
             for shard_num, data in type_shards.items():
                 path = self._shard_path(root, type_key, shard_num)
-                path.parent.mkdir(parents=True, exist_ok=True)
-                with open(path, "w", encoding="utf-8") as f:
-                    json.dump(data, f, indent=2, ensure_ascii=False)
+                self._write_shard(path, data)
                 total += len(data)
 
         logger.info(f"Deep reindex for {status.name} complete: {total} entries.")
@@ -646,9 +675,7 @@ class BookIndexStorage:
         for type_key, shard_num in modified_shards:
             data = current[type_key][shard_num]
             path = self._shard_path(root, type_key, shard_num)
-            path.parent.mkdir(parents=True, exist_ok=True)
-            with open(path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
+            self._write_shard(path, data)
             written += len(data)
 
         logger.info(f"Shadow reindex for {status.name} complete: added {total_missing} entries.")

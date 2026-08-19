@@ -49,6 +49,16 @@ export interface IndexFileEntry {
     measure_info?: string;
     has_text?: boolean;
     has_image?: boolean;
+    subtype?: string;
+    /** 粗粒度时代轴，选集合用（SCHEMA.md §period） */
+    period?: string;
+    /** 存佚 */
+    loss_status?: string;
+    original_title?: string;
+    /** Book → Work 反向链 */
+    work_id?: string;
+    /** tombstone：已升级到的 production id */
+    promoted_to?: string;
 }
 
 /**
@@ -247,6 +257,20 @@ export class BookIndexStorage {
         if (edition) entry.edition = edition;
         if (hasText) entry.has_text = true;
         if (hasImage) entry.has_image = true;
+        // 以下与 Python 端 entry_extractor.build_index_entry 对齐——少写一个，
+        // 这一侧每存一次就把该字段从索引里抹掉一次。
+        const subtype = typeof metadata.subtype === 'string' ? metadata.subtype : '';
+        if (subtype) entry.subtype = subtype;
+        const period = typeof metadata.period === 'string' ? metadata.period : '';
+        if (period) entry.period = period;
+        const lossStatus = typeof metadata.loss_status === 'string' ? metadata.loss_status : '';
+        if (lossStatus) entry.loss_status = lossStatus;
+        const originalTitle = typeof metadata.original_title === 'string' ? metadata.original_title : '';
+        if (originalTitle) entry.original_title = originalTitle;
+        const workId = typeof metadata.work_id === 'string' ? metadata.work_id : '';
+        if (workId) entry.work_id = workId;
+        const promotedTo = typeof metadata.promoted_to === 'string' ? metadata.promoted_to : '';
+        if (promotedTo) entry.promoted_to = promotedTo;
 
         shardData[idStr] = entry;
         await this.saveShard(root, typeKey, idStr, shardData);
@@ -492,7 +516,7 @@ export class BookIndexStorage {
                 const shardPath = this.shardPath(root, typeKey, Number(shardNum));
                 const dir = shardPath.substring(0, shardPath.lastIndexOf('/'));
                 await this.fs.mkdir(dir);
-                await this.fs.writeFile(shardPath, JSON.stringify(data, null, 2));
+                await this.fs.writeFile(shardPath, JSON.stringify(sortByKey(data), null, await this.detectShardIndent(shardPath)));
             }
         }
     }
@@ -553,12 +577,35 @@ export class BookIndexStorage {
         }
     }
 
+    /**
+     * 探测既有 shard 的缩进宽度，新文件用 2。
+     *
+     * 仓库里各 shard 缩进并不统一（book-index-draft 的 index/works、index/entities
+     * 是 1，其余与 production 全仓是 2），历史上由不同脚本写成。一律按 2 重写会
+     * 把整个 shard 重排——七万余条的 works shard 会产生数十万行 diff，淹掉真正的改动。
+     * 与 Python 端 BookIndexStorage._detect_shard_indent 保持一致。
+     */
+    private async detectShardIndent(path: string, fallback = 2): Promise<number> {
+        try {
+            if (!(await this.fs.exists(path))) return fallback;
+            const content = await this.fs.readFile(path);
+            const second = content.split('\n')[1];
+            if (second === undefined) return fallback;
+            const stripped = second.replace(/^ +/, '');
+            if (!stripped || stripped.startsWith('}')) return fallback;
+            return (second.length - stripped.length) || fallback;
+        } catch {
+            return fallback;
+        }
+    }
+
     private async saveShard(root: string, typeKey: string, idStr: string, data: Record<string, IndexFileEntry>): Promise<void> {
         const shard = shardOf(idStr);
         const path = this.shardPath(root, typeKey, shard);
         const dir = path.substring(0, path.lastIndexOf('/'));
         await this.fs.mkdir(dir);
-        await this.fs.writeFile(path, JSON.stringify(data, null, 2));
+        const indent = await this.detectShardIndent(path);
+        await this.fs.writeFile(path, JSON.stringify(sortByKey(data), null, indent));
     }
 
     private async loadAllShards(root: string, typeKey: string): Promise<Record<string, IndexFileEntry>> {
@@ -688,6 +735,16 @@ export function scoreEntry(entry: IndexEntry, query: string): number {
  * 对条目列表按匹配度排序，过滤掉无匹配的条目。
  * 供 BookIndexStorage.searchEntries / GithubStorage.search 等统一调用。
  */
+/**
+ * shard 按 id 排序后再写，使输出与目录遍历顺序无关。
+ * 与 Python 端 BookIndexStorage._write_shard 保持一致。
+ */
+function sortByKey<T>(data: Record<string, T>): Record<string, T> {
+    const out: Record<string, T> = {};
+    for (const k of Object.keys(data).sort()) out[k] = data[k];
+    return out;
+}
+
 /**
  * JSON.stringify replacer：过滤值为 null 的字段
  */
