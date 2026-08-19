@@ -150,4 +150,7 @@
 
     /* 模式指示器当前态底色（ModeIndicator） */
     --bim-mode-active-bg: #2196f3;
+
+    /* 书目卡片「封面」的点缀色（IndexBrowser resultVariant="card"） */
+    --bim-cover-accent: #8e6f3e;
 }
