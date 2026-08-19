@@ -266,10 +266,10 @@ const Tag: React.FC<{ children: React.ReactNode; tone?: 'default' | 'warn' | 'in
 
 const ConfidenceBadge: React.FC<{ level: string }> = ({ level }) => {
     const map: Record<string, { label: string; color: string }> = {
-        certain:   { label: '确定',   color: '#2e7d32' },
-        consensus: { label: '共识',   color: '#1976d2' },
-        probable:  { label: '推测',   color: '#ed6c02' },
-        disputed:  { label: '有争议', color: '#c62828' },
+        certain:   { label: '确定',   color: 'var(--bim-confidence-certain, #2e7d32)' },
+        consensus: { label: '共识',   color: 'var(--bim-confidence-consensus, #1976d2)' },
+        probable:  { label: '推测',   color: 'var(--bim-confidence-probable, #ed6c02)' },
+        disputed:  { label: '有争议', color: 'var(--bim-confidence-disputed, #c62828)' },
     };
     const e = map[level];
     if (!e) return null;

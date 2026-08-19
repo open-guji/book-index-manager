@@ -175,6 +175,12 @@ export interface IndexEntry {
     edition?: string;
     /** 卷数 */
     juan_count?: number;
+    /**
+     * UI 直接展示的計量文本（如「一百三十篇」「十二卷」），与 measures 一致。
+     * 索引分片里本就有该字段（抽样 works 分片约 3300+ 条带此字段），
+     * 只是此前漏在 IndexEntry 类型里声明，导致 IndexBrowser 里读取它时 tsc 报错。
+     */
+    measure_info?: string;
     /** 是否有文字资源 */
     has_text?: boolean;
     /** 是否有图片资源 */

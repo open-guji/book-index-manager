@@ -63,7 +63,7 @@ function CatalogHeader({ data }: { data: VolumeBookMapping }) {
                     <span>{t.catalog.matched} <strong style={{ color: 'var(--bim-fg, #333)' }}>{stats.matched_works}</strong> {t.unit.bu}</span>
                 )}
                 {stats.unmatched_works != null && stats.unmatched_works > 0 && (
-                    <span>{t.catalog.unmatched} <strong style={{ color: '#e67e22' }}>{stats.unmatched_works}</strong> {t.unit.bu}</span>
+                    <span>{t.catalog.unmatched} <strong style={{ color: 'var(--bim-missing-fg, #e67e22)' }}>{stats.unmatched_works}</strong> {t.unit.bu}</span>
                 )}
             </div>
             {data.source && (
@@ -254,7 +254,7 @@ function BookRow({ book, onNavigate, renderLink, showVolumes }: {
             {book.expected_volumes != null && (
                 <span style={{
                     fontSize: '11px',
-                    color: hasMissing ? '#e67e22' : 'var(--bim-desc-fg, #999)',
+                    color: hasMissing ? 'var(--bim-missing-fg, #e67e22)' : 'var(--bim-desc-fg, #999)',
                     flexShrink: 0,
                 }}>
                     {book.found_volumes ?? 0}/{book.expected_volumes}{t.unit.volume}

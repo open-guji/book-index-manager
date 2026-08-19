@@ -68,6 +68,15 @@ export interface IndexBrowserProps {
     onQueryChange?: (query: string) => void;
     /** 标题栏右侧自定义内容 */
     headerRight?: React.ReactNode;
+    /**
+     * 结果条目的展示形态。
+     * - 'compact'（默认）：紧凑单行列表，适合插件侧栏等窄容器
+     * - 'card'：书目卡片（竖排书名「封面」+ 信息区），适合宽屏站点
+     * 默认值保持 'compact'，既有消费者观感不变。
+     */
+    resultVariant?: 'compact' | 'card';
+    /** 完全自定义条目渲染，优先级高于 resultVariant */
+    renderEntry?: (entry: IndexEntry) => React.ReactNode;
 }
 
 const TOTAL_KEYS: Record<string, keyof GroupedSearchResult> = {
@@ -88,6 +97,8 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     onConfigurePath,
     onSelectFolder,
     hideModeIndicator,
+    resultVariant = 'compact',
+    renderEntry,
     initialQuery,
     onQueryChange,
     headerRight,
@@ -534,17 +545,31 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                             </button>
                                         )}
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                        {entries.map(entry => (
-                                            <EntryCard
-                                                key={entry.id}
-                                                entry={entry}
-                                                selected={selectedId === entry.id}
-                                                onClick={handleEntryClick}
-                                                getConfig={getConfig}
-                                                query={searchQuery}
-                                            />
-                                        ))}
+                                    <div style={resultVariant === 'card'
+                                        // 卡片形态用自适应网格：容器窄时退化为单列，宽时自动多列。
+                                        // 仅影响显式 opt-in 的 card 形态，compact 维持原有纵向列表。
+                                        ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(340px, 100%), 1fr))', gap: '14px' }
+                                        : { display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                        {entries.map(entry => {
+                                            if (renderEntry) {
+                                                return (
+                                                    <React.Fragment key={entry.id}>
+                                                        {renderEntry(entry)}
+                                                    </React.Fragment>
+                                                );
+                                            }
+                                            const Item = resultVariant === 'card' ? EntryBookCard : EntryCard;
+                                            return (
+                                                <Item
+                                                    key={entry.id}
+                                                    entry={entry}
+                                                    selected={selectedId === entry.id}
+                                                    onClick={handleEntryClick}
+                                                    getConfig={getConfig}
+                                                    query={searchQuery}
+                                                />
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             );
@@ -576,6 +601,159 @@ interface EntryCardProps {
     query?: string;
     onRemove?: (id: string) => void;
 }
+
+/**
+ * 书目卡片形态（resultVariant='card'）。
+ *
+ * 对齐设计稿的 .bi-book-card：左侧「封面」用竖排书名生成（不需要真实书影图，
+ * 站点也没有封面图资源），右侧为书名/著者/计量/标记。
+ * 仅在消费者显式传 resultVariant="card" 时使用，默认不影响任何既有调用方。
+ */
+const EntryBookCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConfig, query }) => {
+    const t = useT();
+    const { convert } = useConvert();
+
+    const title = convert(entry.title || entry.primary_name || entry.id);
+    const measure = entry.measure_info
+        ? convert(entry.measure_info)
+        : entry.juan_count != null && entry.juan_count > 0
+            ? `${entry.juan_count}${t.unit.juan}`
+            : '';
+
+    const allAliases = [...(entry.additional_titles || []), ...(entry.attached_texts || [])];
+    const matchedAlias = query && allAliases.length
+        ? allAliases.find(a => {
+            const str = typeof a === 'string' ? a : (a as { book_title?: string })?.book_title;
+            return str?.toLowerCase().includes(query.toLowerCase());
+        })
+        : undefined;
+
+    const accent = 'var(--bim-cover-accent, #8e6f3e)';
+
+    return (
+        <div
+            onClick={() => onClick(entry)}
+            style={{
+                display: 'flex',
+                gap: '1.2rem',
+                alignItems: 'stretch',
+                padding: '1.1rem 1.3rem',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                background: 'var(--bim-bg, #fff)',
+                border: selected
+                    ? '1px solid var(--bim-primary, #0078d4)'
+                    : '1px solid var(--bim-widget-border, #e0e0e0)',
+                transition: 'border-color .2s ease, transform .2s ease, box-shadow .2s ease',
+            }}
+        >
+            {/* 竖排书名「封面」 */}
+            <div
+                aria-hidden="true"
+                style={{
+                    position: 'relative',
+                    width: '92px',
+                    minHeight: '126px',
+                    flexShrink: 0,
+                    borderRadius: '4px',
+                    border: `1px solid color-mix(in srgb, ${accent} 50%, var(--bim-widget-border, #e0e0e0))`,
+                    background: `linear-gradient(color-mix(in srgb, ${accent} 14%, var(--bim-bg, #fff)), color-mix(in srgb, ${accent} 7%, var(--bim-bg, #fff)))`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0.6rem 0.3rem',
+                }}
+            >
+                <span
+                    style={{
+                        position: 'absolute',
+                        left: '6px',
+                        top: 0,
+                        bottom: 0,
+                        borderLeft: `1px dashed color-mix(in srgb, ${accent} 45%, transparent)`,
+                    }}
+                />
+                {/*
+                  * 逐字竖排而非 writing-mode: vertical-rl。
+                  * 后者依赖字体的竖排度量（vmtx），部分中文字体缺失时字符步进会变成 0、
+                  * 全部叠在一起（已在无 CJK 竖排度量的环境实测到）。逐字排布与字体无关，
+                  * 各平台表现一致。
+                  */}
+                <span
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                        height: '108px',
+                        flexShrink: 0,
+                        overflow: 'hidden',
+                        fontSize: '1.05rem',
+                        fontWeight: 700,
+                        lineHeight: 1.25,
+                        color: accent,
+                    }}
+                >
+                    {Array.from(title).map((ch, i) => (
+                        <span key={i}>{ch}</span>
+                    ))}
+                </span>
+            </div>
+
+            {/* 信息区 */}
+            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '17px', fontWeight: 600, color: 'var(--bim-fg, #333)' }}>{title}</span>
+                    {measure && (
+                        <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>{measure}</span>
+                    )}
+                </div>
+
+                {(entry.dynasty || entry.author) && (
+                    <div style={{ fontSize: '13px', color: 'var(--bim-desc-fg, #717171)' }}>
+                        {entry.dynasty && <span>〔{convert(entry.dynasty)}〕</span>}
+                        {entry.author && <span>{convert(entry.author)}</span>}
+                        {entry.role && entry.role !== 'author' && <span> {convert(entry.role)}</span>}
+                    </div>
+                )}
+
+                {entry.edition && (
+                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>{convert(entry.edition)}</div>
+                )}
+
+                {matchedAlias && (
+                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
+                        {t.search.alias}：{convert(typeof matchedAlias === 'string' ? matchedAlias : (matchedAlias as { book_title?: string }).book_title || '')}
+                    </div>
+                )}
+
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: 'auto', paddingTop: '4px' }}>
+                    <span style={{
+                        fontSize: '11px', padding: '2px 8px', borderRadius: '999px',
+                        color: 'var(--bim-desc-fg, #717171)',
+                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                    }}>
+                        {getConfig(entry.type).icon} {getConfig(entry.type).name}
+                    </span>
+                    {entry.has_text && (
+                        <span style={{
+                            fontSize: '11px', padding: '2px 8px', borderRadius: '999px',
+                            color: 'var(--bim-desc-fg, #717171)',
+                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        }}>📝 {t.misc.textResource}</span>
+                    )}
+                    {entry.has_image && (
+                        <span style={{
+                            fontSize: '11px', padding: '2px 8px', borderRadius: '999px',
+                            color: 'var(--bim-desc-fg, #717171)',
+                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        }}>🖼️ {t.misc.imageResource}</span>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConfig, query, onRemove }) => {
     const t = useT();

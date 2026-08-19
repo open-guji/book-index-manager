@@ -149,7 +149,9 @@ const RelationSection: React.FC<{
     viewLabel: string;
     unlinkLabel: string;
 }> = ({ direction, title, entity, onView, onUnlink, onLink, onCreate, linkLabel, createLabel, notLinkedLabel, viewLabel, unlinkLabel }) => {
-    const dirColor = direction === 'up' ? '#2196f3' : direction === 'down' ? '#4caf50' : '#ff9800';
+    const dirColor = direction === 'up' ? 'var(--bim-relation-up, #2196f3)'
+        : direction === 'down' ? 'var(--bim-relation-down, #4caf50)'
+        : 'var(--bim-relation-flat, #ff9800)';
     const dirIcon = direction === 'up' ? '\u2B06\uFE0F' : direction === 'down' ? '\u2B07\uFE0F' : '\u2194\uFE0F';
 
     return (
@@ -193,7 +195,9 @@ const RelationListSection: React.FC<{
     expandMoreLabel: string;
 }> = ({ direction, title, entities, onView, onAdd, addLabel, noneLabel, expandMoreLabel }) => {
     const [expanded, setExpanded] = useState(false);
-    const dirColor = direction === 'up' ? '#2196f3' : direction === 'down' ? '#4caf50' : '#ff9800';
+    const dirColor = direction === 'up' ? 'var(--bim-relation-up, #2196f3)'
+        : direction === 'down' ? 'var(--bim-relation-down, #4caf50)'
+        : 'var(--bim-relation-flat, #ff9800)';
     const dirIcon = direction === 'up' ? '\u2B06\uFE0F' : direction === 'down' ? '\u2B07\uFE0F' : '\u2194\uFE0F';
     const display = expanded ? entities : entities.slice(0, 5);
 
