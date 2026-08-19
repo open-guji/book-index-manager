@@ -253,7 +253,7 @@ export const IndexView: React.FC<IndexViewProps> = (props) => {
 
     // ── Edit 模式 ──
     if (!editorData) {
-        return <div style={{ padding: '24px', textAlign: 'center', color: '#999' }}>无数据</div>;
+        return <div style={{ padding: '24px', textAlign: 'center', color: 'var(--bim-muted, #999)' }}>无数据</div>;
     }
 
     return (

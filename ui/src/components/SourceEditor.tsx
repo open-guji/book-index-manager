@@ -11,8 +11,8 @@ export interface SourceEditorProps {
 
 function getTypeColor(type: string): string {
     switch (type) {
-        case 'url': return '#2196f3';
-        case 'bookID': return '#4caf50';
+        case 'url': return 'var(--bim-source-url, #2196f3)';
+        case 'bookID': return 'var(--bim-source-bookid, #4caf50)';
         default: return 'var(--bim-desc-fg, #717171)';
     }
 }
@@ -110,12 +110,12 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
                                     <div>
                                         <label style={labelStyle}>{t.editor.selectSourceType}</label>
                                         <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                                            <button onClick={() => handleTypeSelect(index, 'bookID')} style={{ ...typeButtonStyle, borderColor: '#4caf50', color: '#4caf50' }}>
+                                            <button onClick={() => handleTypeSelect(index, 'bookID')} style={{ ...typeButtonStyle, borderColor: 'var(--bim-source-bookid, #4caf50)', color: 'var(--bim-source-bookid, #4caf50)' }}>
                                                 <span style={{ fontSize: '18px' }}>📚</span>
                                                 <span>Book ID</span>
                                                 <span style={{ fontSize: '11px', opacity: 0.7 }}>{t.editor.fromExistingBook}</span>
                                             </button>
-                                            <button onClick={() => handleTypeSelect(index, 'url')} style={{ ...typeButtonStyle, borderColor: '#2196f3', color: '#2196f3' }}>
+                                            <button onClick={() => handleTypeSelect(index, 'url')} style={{ ...typeButtonStyle, borderColor: 'var(--bim-source-url, #2196f3)', color: 'var(--bim-source-url, #2196f3)' }}>
                                                 <span style={{ fontSize: '18px' }}>🔗</span>
                                                 <span>URL</span>
                                                 <span style={{ fontSize: '11px', opacity: 0.7 }}>{t.editor.enterUrl}</span>
@@ -133,8 +133,8 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
                                                 <button onClick={() => { const n = [...items]; n[index] = { ...n[index], type: '', id: '', name: '' }; onChange(n); }} style={changeTypeBtnStyle}>{t.action.changeType}</button>
                                             </div>
                                             {item.id && item.name ? (
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: 'var(--bim-bg, #fff)', border: '1px solid #4caf50', borderRadius: '6px' }}>
-                                                    <span style={{ color: '#4caf50', fontSize: '16px' }}>✓</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: 'var(--bim-bg, #fff)', border: '1px solid var(--bim-source-bookid, #4caf50)', borderRadius: '6px' }}>
+                                                    <span style={{ color: 'var(--bim-source-bookid, #4caf50)', fontSize: '16px' }}>✓</span>
                                                     <div style={{ flex: 1 }}>
                                                         <div style={{ fontWeight: 500 }}>{item.name}</div>
                                                         <code style={{ fontSize: '11px', background: 'var(--bim-primary-soft, rgba(0,120,212,0.15))', padding: '2px 6px', borderRadius: '3px' }}>{item.id}</code>

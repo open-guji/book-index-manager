@@ -353,10 +353,10 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
 
 function typeColor(type: ResourceType): string {
     switch (type) {
-        case 'text': return '#2196f3';
-        case 'image': return '#ff9800';
-        case 'text+image': return '#9c27b0';
-        case 'physical': return '#795548';
+        case 'text': return 'var(--bim-restype-text, #2196f3)';
+        case 'image': return 'var(--bim-restype-image, #ff9800)';
+        case 'text+image': return 'var(--bim-restype-text-image, #9c27b0)';
+        case 'physical': return 'var(--bim-restype-physical, #795548)';
     }
 }
 
@@ -395,7 +395,7 @@ function renderImagePreview(item: ResourceEntry, t: LocaleMessages) {
     return (
         <div style={{ marginBottom: '12px' }}>
             {isImageUrl ? (
-                <div style={{ width: '100%', maxHeight: '150px', overflow: 'hidden', borderRadius: '4px', background: '#00000010' }}>
+                <div style={{ width: '100%', maxHeight: '150px', overflow: 'hidden', borderRadius: '4px', background: 'var(--bim-overlay-bg, #00000010)' }}>
                     <img
                         src={item.url}
                         alt={item.name}
@@ -404,7 +404,7 @@ function renderImagePreview(item: ResourceEntry, t: LocaleMessages) {
                     />
                 </div>
             ) : (
-                <div style={{ padding: '12px', background: '#00000010', borderRadius: '4px', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
+                <div style={{ padding: '12px', background: 'var(--bim-overlay-bg, #00000010)', borderRadius: '4px', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
                     {t.editor.imageResourceLink}
                 </div>
             )}

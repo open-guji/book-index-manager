@@ -24,7 +24,7 @@ function getTypeName(type: string): string {
 }
 
 function getTypeColor(type: string): string {
-    switch (type) { case 'work': return '#4caf50'; case 'collection': return '#2196f3'; case 'book': return '#ff9800'; default: return 'var(--bim-desc-fg, #717171)'; }
+    switch (type) { case 'work': return 'var(--bim-editor-type-work, #4caf50)'; case 'collection': return 'var(--bim-editor-type-collection, #2196f3)'; case 'book': return 'var(--bim-editor-type-book, #ff9800)'; default: return 'var(--bim-desc-fg, #717171)'; }
 }
 
 export const EntityPickerDialog: React.FC<EntityPickerDialogProps> = ({

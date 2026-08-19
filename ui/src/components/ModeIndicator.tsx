@@ -143,7 +143,7 @@ export const ModeIndicator: React.FC<ModeIndicatorProps> = ({
             )}
             {!isLocal && shortName && (
                 <div
-                    style={{ ...buttonStyle, background: '#2196f3', color: 'white', cursor: 'default' }}
+                    style={{ ...buttonStyle, background: 'var(--bim-mode-active-bg, #2196f3)', color: 'white', cursor: 'default' }}
                     title={folderPath}
                 >
                     <span>📂</span>

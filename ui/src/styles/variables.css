@@ -124,4 +124,30 @@
     --bim-relation-up: #2196f3;
     --bim-relation-down: #4caf50;
     --bim-relation-flat: #ff9800;
+
+    /* ================= 编辑器视图（主要在 guji-platform 插件中可见） ================= */
+
+    /*
+     * ⚠️ 历史遗留的不一致：条目类型（Work/Collection/Book/Entity）在
+     *    展示视图（IndexDetail）与编辑视图（IndexEditor / EntityPickerDialog）
+     *    用的是两套完全不同的配色：
+     *      展示：--bim-type-*        work 泥金 / book 朱红 / collection 靛蓝 / entity 紫
+     *      编辑：--bim-editor-type-* work 绿   / book 橙   / collection 蓝   / entity 紫
+     * 变量化时为保证零变化各自保留。若要统一，把 --bim-editor-type-* 覆盖成
+     * 对应的 var(--bim-type-*) 即可。
+     */
+    --bim-editor-type-work: #4caf50;
+    --bim-editor-type-collection: #2196f3;
+    --bim-editor-type-book: #ff9800;
+    --bim-editor-type-entity: #9c27b0;
+
+    /* 来源类型（SourceEditor） */
+    --bim-source-url: #2196f3;
+    --bim-source-bookid: #4caf50;
+
+    /* 轻量遮罩底（图片占位等） */
+    --bim-overlay-bg: #00000010;
+
+    /* 模式指示器当前态底色（ModeIndicator） */
+    --bim-mode-active-bg: #2196f3;
 }
