@@ -171,15 +171,27 @@ export class BookIndexStorage {
         const typeKey = `${type}s`;
         const shardData = await this.loadShard(root, typeKey, idStr);
 
-        // 提取 author
+        // 提取 author / dynasty / role
+        // dynasty 取 authors[0] 优先、顶层字段兜底：出土文献按设计 authors 为空
+        // 而顶层有 dynasty，只读 authors[0] 会让这类条目在索引里丢掉朝代。
+        // 与 Python 端 entry_extractor.build_index_entry 保持一致。
         let author = '';
+        let dynasty = '';
+        let role = '';
         const authors = metadata.authors;
         if (Array.isArray(authors) && authors.length > 0) {
             const first = authors[0];
-            author = typeof first === 'object' && first !== null ? (first as any).name || '' : String(first);
+            if (typeof first === 'object' && first !== null) {
+                author = (first as any).name || '';
+                dynasty = (first as any).dynasty || '';
+                role = (first as any).role || '';
+            } else {
+                author = String(first);
+            }
         } else if (typeof authors === 'string') {
             author = authors;
         }
+        if (!dynasty && typeof metadata.dynasty === 'string') dynasty = metadata.dynasty;
 
         // 提取 year
         let year = '';
@@ -257,6 +269,8 @@ export class BookIndexStorage {
         if (edition) entry.edition = edition;
         if (hasText) entry.has_text = true;
         if (hasImage) entry.has_image = true;
+        if (dynasty) entry.dynasty = dynasty;
+        if (role) entry.role = role;
         // 以下与 Python 端 entry_extractor.build_index_entry 对齐——少写一个，
         // 这一侧每存一次就把该字段从索引里抹掉一次。
         const subtype = typeof metadata.subtype === 'string' ? metadata.subtype : '';
@@ -449,11 +463,20 @@ export class BookIndexStorage {
                     const relPath = file.substring(root.length + 1);
 
                     let author = '';
+                    let dynasty = '';
+                    let role = '';
                     const authors = metadata.authors;
                     if (Array.isArray(authors) && authors.length > 0) {
                         const first = authors[0];
-                        author = typeof first === 'object' && first !== null ? (first as any).name || '' : String(first);
+                        if (typeof first === 'object' && first !== null) {
+                            author = (first as any).name || '';
+                            dynasty = (first as any).dynasty || '';
+                            role = (first as any).role || '';
+                        } else {
+                            author = String(first);
+                        }
                     }
+                    if (!dynasty && typeof metadata.dynasty === 'string') dynasty = metadata.dynasty;
 
                     const additionalTitles = Array.isArray(metadata.additional_titles)
                         ? (metadata.additional_titles as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
@@ -508,6 +531,8 @@ export class BookIndexStorage {
                     if (edition) entry.edition = edition;
                     if (hasText) entry.has_text = true;
                     if (hasImage) entry.has_image = true;
+                    if (dynasty) entry.dynasty = dynasty;
+                    if (role) entry.role = role;
 
                     const shardNum = typeKey === 'collections' ? 0 : shardOf(idStr);
                     shards[typeKey][shardNum][idStr] = entry;

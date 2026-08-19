@@ -265,3 +265,32 @@ def test_new_fields_omitted_when_absent():
     for k in ("period", "loss_status", "original_title", "work_id", "promoted_to"):
         assert k not in entry
     assert "period" not in build_entity_index_entry({"primary_name": "某"}, "e1", "Entity/e/1.json")
+
+
+def test_dynasty_falls_back_to_top_level_when_authors_empty():
+    """出土文献按设计 authors 为空、顶层有 dynasty；只读 authors[0] 会让 reindex
+    把这类条目的 dynasty 从索引里抹掉（全库实测 2139 条）。"""
+    entry = build_index_entry(
+        {"id": "w1", "title": "算表", "authors": [], "dynasty": "戰國"},
+        BookIndexType.Work,
+        "Work/w/1.json",
+    )
+    assert entry["dynasty"] == "戰國"
+
+
+def test_author_dynasty_wins_over_top_level():
+    """两处都有时 authors[0] 优先——实测 30 处不一致中它都是更精确的那个
+    （三國吳 vs 晉、東晉 vs 晉）。"""
+    entry = build_index_entry(
+        {"id": "w1", "title": "物理論", "dynasty": "晉",
+         "authors": [{"name": "楊泉", "dynasty": "三國吳"}]},
+        BookIndexType.Work,
+        "Work/w/1.json",
+    )
+    assert entry["dynasty"] == "三國吳"
+
+
+def test_dynasty_omitted_when_neither_present():
+    entry = build_index_entry({"id": "w1", "title": "X", "authors": []},
+                              BookIndexType.Work, "Work/w/1.json")
+    assert "dynasty" not in entry

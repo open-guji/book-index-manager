@@ -200,8 +200,17 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
         entry["year"] = year
     if holder:
         entry["holder"] = holder
-    if author["dynasty"]:
-        entry["dynasty"] = author["dynasty"]
+    # dynasty：authors[0] 优先，顶层字段兜底。
+    #
+    # 全库实测（book-index-draft，2026-08-19）：2139 个 Work 有顶层 dynasty 而
+    # authors 为空——出土文献按设计就无撰人（「多為出土簡帛，本無撰人可言」，
+    # 见这些条目的 ai_note）。只读 authors[0] 会让 reindex 把它们的 dynasty
+    # 从索引里全部抹掉。
+    # 两处都有的 35802 条里仅 30 条不一致，且 authors[0] 皆为更精确者
+    # （三國吳 vs 晉、東晉 vs 晉），故 authors[0] 优先。
+    dynasty = author["dynasty"] or metadata.get("dynasty") or ""
+    if dynasty:
+        entry["dynasty"] = dynasty
     if author["role"]:
         entry["role"] = author["role"]
     if juan_count:
