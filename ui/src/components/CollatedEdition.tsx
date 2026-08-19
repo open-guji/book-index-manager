@@ -136,7 +136,7 @@ function normalizeForSearch(s: string, normalizer: Normalizer): string {
 
 // ── 高亮 ──
 
-const HIGHLIGHT_BG = '#fff59d';
+const HIGHLIGHT_BG = 'var(--bim-highlight-bg, #fff59d)';
 
 /**
  * 在 displayed 中查找 query 出现位置并用 <mark> 包裹。
@@ -188,15 +188,16 @@ function rawTextMatches(text: string, q: string, normalizer: Normalizer): boolea
 
 // ── 样式常量 ──
 
+// 回退值即原本的硬编码色，消费者不覆盖时观感不变
 const SECTION_TYPE_COLORS: Record<string, string> = {
-    '类': '#8e6f3e',
-    '书': '#c0392b',
-    '序': '#1a5276',
-    '结语': '#7d6608',
+    '类': 'var(--bim-section-lei, #8e6f3e)',
+    '书': 'var(--bim-section-shu, #c0392b)',
+    '序': 'var(--bim-section-xu, #1a5276)',
+    '结语': 'var(--bim-section-jieyu, #7d6608)',
 };
 
 const KAOZHEN_TYPE_COLORS: Record<string, string> = {
-    '考证': '#5d6d7e',
+    '考证': 'var(--bim-section-kaozhen, #5d6d7e)',
 };
 
 // ── 子组件 ──
@@ -276,7 +277,7 @@ function JuanButton({ file, isActive, onSelect, meta, matchState }: {
                     marginLeft: '5px',
                     fontSize: '11px',
                     fontWeight: 600,
-                    color: '#b78900',
+                    color: 'var(--bim-matchstate-fg, #b78900)',
                 }}>
                     {matchState}
                 </span>
@@ -385,7 +386,7 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta, matchS
             >
                 {group.label}
                 {hasMatch && (
-                    <span style={{ marginLeft: '5px', fontSize: '11px', fontWeight: 600, color: '#b78900' }}>{ms}</span>
+                    <span style={{ marginLeft: '5px', fontSize: '11px', fontWeight: 600, color: 'var(--bim-matchstate-fg, #b78900)' }}>{ms}</span>
                 )}
                 {loading && (
                     <span style={{ marginLeft: '5px', fontSize: '11px', color: 'var(--bim-desc-fg, #aaa)' }}>…</span>
@@ -427,7 +428,7 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta, matchS
                     ({count})
                 </span>
                 {groupHasMatch && (
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#b78900' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--bim-matchstate-fg, #b78900)' }}>
                         匹配 {groupState}
                     </span>
                 )}
@@ -509,7 +510,7 @@ function JuanNav({
 }
 
 function SectionTypeBadge({ type }: { type: string }) {
-    const color = SECTION_TYPE_COLORS[type] || '#717171';
+    const color = SECTION_TYPE_COLORS[type] || 'var(--bim-desc-fg, #717171)';
     return (
         <span style={{
             display: 'inline-block',
@@ -641,7 +642,7 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                 {section.tag && (
                     <span style={{
                         fontSize: '11px',
-                        color: '#e74c3c',
+                        color: 'var(--bim-section-tag-fg, #e74c3c)',
                     }}>
                         {section.tag === 'triangle' ? '△' : section.tag}
                     </span>
@@ -809,7 +810,7 @@ function CategoryHeader({ section, highlightQuery = '' }: { section: CollatedSec
                 <div style={{
                     marginTop: '8px',
                     padding: '10px 14px',
-                    borderLeft: `3px solid ${SECTION_TYPE_COLORS[section.type] || '#717171'}40`,
+                    borderLeft: `3px solid color-mix(in srgb, ${SECTION_TYPE_COLORS[section.type] || 'var(--bim-desc-fg, #717171)'} 25%, transparent)`,
                     borderRadius: '0 4px 4px 0',
                     background: 'var(--bim-bg, #fafafa)',
                 }}>
@@ -833,7 +834,7 @@ function OtherSection({ section, highlightQuery = '' }: { section: CollatedSecti
     if (!section.content && !section.title) return null;
     const rawText = convert((section.content || section.title || '').replace(/\n{2,}/g, '\n'));
     const text: React.ReactNode = highlightQuery ? renderHighlighted(rawText, highlightQuery, normalizer) : rawText;
-    const typeColor = SECTION_TYPE_COLORS[section.type] || '#717171';
+    const typeColor = SECTION_TYPE_COLORS[section.type] || 'var(--bim-desc-fg, #717171)';
     // 序/结语：带左边框、类型标签，与"书"条目区分
     const isLabeled = normSectionType(section.type) === '序' || normSectionType(section.type) === '结语';
     return (
@@ -956,7 +957,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
         if (highlightQuery) setExpanded(true);
     }, [highlightQuery]);
     const typeKey = section.type;
-    const typeColor = KAOZHEN_TYPE_COLORS[typeKey] || '#717171';
+    const typeColor = KAOZHEN_TYPE_COLORS[typeKey] || 'var(--bim-desc-fg, #717171)';
     const hasContent = !!section.content;
     const workIds = section.work_ids || [];
     const hasMultipleWorks = workIds.length > 1;

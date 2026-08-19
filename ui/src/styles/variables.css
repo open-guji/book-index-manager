@@ -87,4 +87,41 @@
     --bim-progress-active: #f59e0b;
     --bim-progress-done: #10b981;
     --bim-progress-todo: #9ca3af;
+
+    /* ---- 整理本（CollatedEdition） ---- */
+    /* 搜索命中高亮底 */
+    --bim-highlight-bg: #fff59d;
+    /* 章节类型标记：类 / 书 / 序 / 结语 / 考证 */
+    --bim-section-lei: #8e6f3e;
+    --bim-section-shu: #c0392b;
+    --bim-section-xu: #1a5276;
+    --bim-section-jieyu: #7d6608;
+    --bim-section-kaozhen: #5d6d7e;
+    /* 章节标记（△ 等） */
+    --bim-section-tag-fg: #e74c3c;
+    /* 与底本匹配状态提示 */
+    --bim-matchstate-fg: #b78900;
+
+    /* ---- 版本传承（VersionLineageGraph / List） ---- */
+    /* 佚失标记 */
+    --bim-lost-fg: #c62828;
+    /* 关系置信度 */
+    --bim-confidence-certain: #2e7d32;
+    --bim-confidence-consensus: #1976d2;
+    --bim-confidence-probable: #ed6c02;
+    --bim-confidence-disputed: #c62828;
+    /*
+     * ⚠️ 历史遗留的不一致：同为 consensus（共识），
+     *    VersionLineageList 的徽章用蓝色 #1976d2，
+     *    VersionLineageGraph 的连线用灰色 #555。
+     * 变量化时为保证零变化，各自保留原值，故 Graph 单独用下面这个变量。
+     * 若要统一，把 --bim-lineage-edge-consensus 覆盖成
+     * var(--bim-confidence-consensus) 即可。
+     */
+    --bim-lineage-edge-consensus: #555;
+
+    /* ---- 关系方向（RelationPanel） ---- */
+    --bim-relation-up: #2196f3;
+    --bim-relation-down: #4caf50;
+    --bim-relation-flat: #ff9800;
 }

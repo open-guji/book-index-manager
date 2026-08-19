@@ -207,7 +207,7 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
             const isLost = d.status === 'lost';
             const isSelected = d.isSelected;
             const isBridge = d.bridge;
-            const borderColor = d.borderColor ?? '#888';
+            const borderColor = d.borderColor ?? 'var(--bim-muted, #888)';
             // 桥接节点：虚边框 + 半透明 + 灰色背景，提示"非核心，仅为链路完整而显示"
             const borderStyle = isBridge ? 'dashed' : (isHypo ? 'dashed' : 'solid');
             const baseOpacity = isBridge ? 0.5 : (isLost ? 0.6 : 1);
@@ -215,7 +215,7 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                 <div
                     style={{
                         background: isBridge ? 'var(--bim-bg-subtle, #fafafa)' : 'var(--bim-bg, #fff)',
-                        border: `2px ${borderStyle} ${isSelected ? '#0078d4' : borderColor}`,
+                        border: `2px ${borderStyle} ${isSelected ? 'var(--bim-primary, #0078d4)' : borderColor}`,
                         borderRadius: 8,
                         padding: '6px 10px',
                         minWidth: 120,
@@ -246,7 +246,7 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                         </div>
                     )}
                     {isLost && (
-                        <div style={{ fontSize: 9, color: '#c62828', marginTop: 1 }}>已佚</div>
+                        <div style={{ fontSize: 9, color: 'var(--bim-lost-fg, #c62828)', marginTop: 1 }}>已佚</div>
                     )}
                     <Handle type="source" position={Position.Right} style={{ visibility: 'hidden' }} />
                 </div>
@@ -328,7 +328,7 @@ function layoutGraph(
     g.setDefaultEdgeLabel(() => ({}));
 
     // 颜色查表
-    const groupColor = new Map(graph.groups.map((gr) => [gr.id, gr.color ?? '#888']));
+    const groupColor = new Map(graph.groups.map((gr) => [gr.id, gr.color ?? 'var(--bim-muted, #888)']));
 
     for (const n of graph.nodes) {
         g.setNode(n.id, { width: NODE_W, height: NODE_H });
@@ -453,7 +453,7 @@ function buildRfEdge(
         // labelStyle/labelBgStyle 通过 data 传给自定义边组件
         data: {
             labelStyle: {
-                color: '#444',
+                color: 'var(--bim-fg, #444)',
             } as React.CSSProperties,
             isSibling,
             stepPosition,
@@ -480,11 +480,13 @@ function formatYear(n: LineageGraphNode): string | undefined {
 
 function confidenceColor(level: string) {
     switch (level) {
-        case 'certain':   return '#2e7d32';
-        case 'consensus': return '#555';
-        case 'probable':  return '#ed6c02';
-        case 'disputed':  return '#c62828';
-        default:          return '#888';
+        case 'certain':   return 'var(--bim-confidence-certain, #2e7d32)';
+        // 注意：List 里 consensus 是蓝色 #1976d2，此处是灰色 #555。
+        // 两者取值历史上就不同，为保证零变化各自保留，故用独立变量名。
+        case 'consensus': return 'var(--bim-lineage-edge-consensus, #555)';
+        case 'probable':  return 'var(--bim-confidence-probable, #ed6c02)';
+        case 'disputed':  return 'var(--bim-confidence-disputed, #c62828)';
+        default:          return 'var(--bim-muted, #888)';
     }
 }
 
