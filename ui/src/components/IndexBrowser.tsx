@@ -545,7 +545,11 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                             </button>
                                         )}
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: resultVariant === 'card' ? '14px' : '4px' }}>
+                                    <div style={resultVariant === 'card'
+                                        // 卡片形态用自适应网格：容器窄时退化为单列，宽时自动多列。
+                                        // 仅影响显式 opt-in 的 card 形态，compact 维持原有纵向列表。
+                                        ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(340px, 100%), 1fr))', gap: '14px' }
+                                        : { display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                         {entries.map(entry => {
                                             if (renderEntry) {
                                                 return (
