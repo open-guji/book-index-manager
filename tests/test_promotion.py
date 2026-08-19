@@ -67,12 +67,13 @@ def test_promote_creates_official_file_with_new_id(manager: BookIndexManager, tm
     assert "book-index" in str(prod_path)
     assert "book-index-draft" not in str(prod_path)
 
-    # production 内容里 id 是新 ID，没有 promoted_to
+    # production 内容里 id 是新 ID，没有 tombstone 标记
     with open(prod_path, encoding="utf-8") as f:
         prod_data = json.load(f)
     assert prod_data["id"] == prod_id
     assert prod_data["title"] == "测试作品"
-    assert "promoted_to" not in prod_data
+    assert "_promoted_to" not in prod_data
+    assert "promoted_to" not in prod_data  # 无前缀旧名也不该留
 
 
 def test_promote_writes_tombstone_on_draft(manager: BookIndexManager):
@@ -85,8 +86,9 @@ def test_promote_writes_tombstone_on_draft(manager: BookIndexManager):
         draft_data = json.load(f)
 
     assert draft_data["id"] == draft_id  # 自身 ID 不变
-    assert draft_data["promoted_to"] == prod_id
-    assert draft_data["promoted_at"]  # 有时间戳
+    # 条目档上是派生栏，带 `_` 前缀（SCHEMA.md §記錄之共通欄位）
+    assert draft_data["_promoted_to"] == prod_id
+    assert draft_data["_promoted_at"]  # 有时间戳
     assert draft_data["title"] == "测试作品"  # 其他字段保留
 
 
@@ -176,9 +178,9 @@ def test_promote_does_not_rewrite_skipped_files(manager: BookIndexManager):
     draft_path = manager.storage.find_file_by_id(draft_id)
     with open(draft_path, encoding="utf-8") as f:
         draft_data = json.load(f)
-    # 自己的 id 保持 draft_id；只有 promoted_to 指向 prod_id
+    # 自己的 id 保持 draft_id；只有 _promoted_to 指向 prod_id
     assert draft_data["id"] == draft_id
-    assert draft_data["promoted_to"] == prod_id
+    assert draft_data["_promoted_to"] == prod_id
 
 
 def test_promote_with_rewrite_refs_false_skips_rewrite(manager: BookIndexManager):
@@ -373,14 +375,14 @@ def test_validate_detects_missing_production_file(manager: BookIndexManager, tmp
 
 
 def test_validate_detects_tombstone_promotions_mismatch(manager: BookIndexManager):
-    """E02：tombstone 的 promoted_to 与 promotions.json 不一致。"""
+    """E02：tombstone 的 _promoted_to 与 promotions.json 不一致。"""
     draft_id = _save_draft_work(manager, "测试")
     prod_id = manager.promote_to_official(draft_id)
 
-    # 手工把 tombstone 的 promoted_to 改成别的
+    # 手工把 tombstone 的 _promoted_to 改成别的
     draft_path = manager.storage.find_file_by_id(draft_id)
     data = json.loads(draft_path.read_text(encoding="utf-8"))
-    data["promoted_to"] = "fakeotheridxx"
+    data["_promoted_to"] = "fakeotheridxx"
     draft_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
     issues = manager.validate_promotions()
@@ -389,14 +391,14 @@ def test_validate_detects_tombstone_promotions_mismatch(manager: BookIndexManage
 
 
 def test_validate_detects_orphan_tombstone(manager: BookIndexManager):
-    """E03：tombstone 上写了 promoted_to 但 promotions.json 没记录。"""
+    """E03：tombstone 上写了 _promoted_to 但 promotions.json 没记录。"""
     draft_id = _save_draft_work(manager, "测试")
 
-    # 不调 promote，直接手工给 D 加 promoted_to
+    # 不调 promote，直接手工给 D 加 _promoted_to
     draft_path = manager.storage.find_file_by_id(draft_id)
     data = json.loads(draft_path.read_text(encoding="utf-8"))
-    data["promoted_to"] = "fakefakefake1"
-    data["promoted_at"] = "2026-05-13T00:00:00Z"
+    data["_promoted_to"] = "fakefakefake1"
+    data["_promoted_at"] = "2026-05-13T00:00:00Z"
     draft_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
     issues = manager.validate_promotions()
@@ -489,19 +491,19 @@ def test_sync_work_books_dedupes_existing_duplicates(manager: BookIndexManager):
 
 
 def test_validate_detects_tombstone_losing_promoted_to(manager: BookIndexManager):
-    """E02：tombstone 文件整个丢掉 promoted_to。
+    """E02：tombstone 文件整个丢掉 _promoted_to。
 
-    E02/E03 原先只反向遍历「文件带 promoted_to」者，恰好看不见这一种——
+    E02/E03 原先只反向遍历「文件带 _promoted_to」者，恰好看不见这一种——
     而这正是外部脚本绕过 save_item 直接 json.dump 重写 tombstone 时最常见的破坏方式。
     book-index-draft 实测：74 条 promotions 记录，对应的 tombstone 文件
-    **全部**丢了 promoted_to，validate 却报 0 个 E02。
+    **全部**丢了 _promoted_to，validate 却报 0 个 E02。
     """
     draft_id = _save_draft_work(manager, "测试")
     manager.promote_to_official(draft_id)
 
     draft_path = manager.storage.find_file_by_id(draft_id)
     data = json.loads(draft_path.read_text(encoding="utf-8"))
-    del data["promoted_to"]
+    del data["_promoted_to"]
     draft_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
     issues = manager.validate_promotions()
@@ -518,3 +520,40 @@ def test_validate_detects_missing_tombstone_file(manager: BookIndexManager):
 
     issues = manager.validate_promotions()
     assert "E02" in [i.code for i in issues]
+
+
+def test_validate_warns_on_legacy_unprefixed_tombstone(manager: BookIndexManager):
+    """E06（warning）：tombstone 还在用无前缀的 promoted_to/promoted_at。
+
+    派生栏一律带 `_` 前缀（SCHEMA.md §記錄之共通欄位）。读取兼容旧名，
+    但要报出来，好让迁移可见——否则写保护、E02/E03 都是"看着在跑"。
+    """
+    draft_id = _save_draft_work(manager, "测试")
+    prod_id = manager.promote_to_official(draft_id)
+
+    # 改回无前缀旧名，模拟未迁移的文件
+    draft_path = manager.storage.find_file_by_id(draft_id)
+    data = json.loads(draft_path.read_text(encoding="utf-8"))
+    data["promoted_to"] = data.pop("_promoted_to")
+    data["promoted_at"] = data.pop("_promoted_at")
+    draft_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+    issues = manager.validate_promotions()
+    e06 = [i for i in issues if i.code == "E06"]
+    assert len(e06) == 1
+    assert e06[0].severity == "warning"
+    # 旧名仍能被读到，所以不该再报 E02
+    assert "E02" not in [i.code for i in issues]
+
+
+def test_tombstone_write_protection_reads_prefixed_field(manager: BookIndexManager):
+    """写保护认 `_promoted_to`——这是它唯一的判断依据，认错就等于保护失效。"""
+    draft_id = _save_draft_work(manager, "测试")
+    manager.promote_to_official(draft_id)
+
+    draft_path = manager.storage.find_file_by_id(draft_id)
+    data = json.loads(draft_path.read_text(encoding="utf-8"))
+    assert "_promoted_to" in data
+
+    with pytest.raises(StorageError):
+        manager.save_item({**data, "title": "改标题"}, BookIndexType.Work, BookIndexStatus.Draft)

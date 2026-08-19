@@ -135,7 +135,7 @@ def test_promote_initializes_production_revision(manager):
     # draft tombstone 不应有 revision（draft 不维护）
     d = manager.get_item(draft_id)
     assert 'revision' not in d
-    assert d['promoted_to'] == prod_id
+    assert d['_promoted_to'] == prod_id
 
 
 # ── 同日多改不刷新 revised_at ──

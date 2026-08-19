@@ -13,6 +13,7 @@ storage.py 中最容易独立测试的部分（无 IO，仅字典字段映射）
 """
 from typing import Any, Dict, List, Optional
 
+from ._utils import read_promoted_to
 from .id_generator import BookIndexType
 
 
@@ -233,7 +234,9 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
     work_id = metadata.get("work_id")
     if work_id:
         entry["work_id"] = work_id
-    promoted_to = metadata.get("promoted_to")
+    # 条目档上是 `_promoted_to`（派生栏带底线前缀），index 侧不加底线——
+    # 整个 index 文件都是派生产物，栏再加底线是重复。见 SCHEMA.md §索引檔。
+    promoted_to = read_promoted_to(metadata)
     if promoted_to:
         entry["promoted_to"] = promoted_to
     return entry

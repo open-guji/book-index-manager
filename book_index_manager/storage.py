@@ -68,7 +68,7 @@ def shard_of(id_str: str, n: int = NUM_SHARDS) -> int:
 
 # strip_nulls 移到 _utils 避免与 migration 形成循环 import；
 # 仍 re-export 以保持向后兼容。
-from ._utils import strip_nulls  # noqa: F401
+from ._utils import strip_nulls, read_promoted_to  # noqa: F401
 
 
 # 历史数据中文 key → 当前 schema 英文 key 的迁移表。
@@ -183,8 +183,8 @@ class BookIndexStorage:
         if existing_path and not allow_tombstone_edit:
             try:
                 existing_meta = self.load_metadata(existing_path)
-                if isinstance(existing_meta, dict) and existing_meta.get("promoted_to"):
-                    prod_id = existing_meta["promoted_to"]
+                if isinstance(existing_meta, dict) and read_promoted_to(existing_meta):
+                    prod_id = read_promoted_to(existing_meta)
                     raise StorageError(
                         f"{id_str} has been promoted to {prod_id}; edit {prod_id} instead. "
                         f"Pass allow_tombstone_edit=True to override."
@@ -242,7 +242,7 @@ class BookIndexStorage:
             self._migrate_keys(metadata)
 
             # Production semver bump（仅 production 仓 + bump != None；draft 不维护版本号）
-            # 取 id 解码后的 status 位判断（不依赖 metadata.promoted_to，因 promote 写 P 时
+            # 取 id 解码后的 status 位判断（不依赖 metadata._promoted_to，因 promote 写 P 时
             # P 的 status=Official，D 才有 promoted_to）。
             try:
                 comp = BookIndexIdGenerator.parse(id_val)
@@ -410,18 +410,22 @@ class BookIndexStorage:
             return default
         return len(second) - len(stripped) or default
 
-    def _write_shard(self, path: Path, data: dict):
-        """写 shard：按 id 排序 + 沿用既有缩进。
+    @staticmethod
+    def _detect_shard_trailing_newline(path: Path, default: bool = False) -> bool:
+        """探测既有 shard 是否以换行结尾——同样不统一，同样会造成整档 diff。"""
+        try:
+            with open(path, "rb") as f:
+                try:
+                    f.seek(-1, os.SEEK_END)
+                except OSError:               # 空文件
+                    return default
+                return f.read(1) == b"\n"
+        except OSError:
+            return default
 
-        排序是为了让输出与遍历顺序无关——rebuild_index 走 glob，顺序随文件系统而变，
-        不排序则每次 reindex 都把整个 shard 打乱重排，diff 无法阅读。
-        （index/books、index/collections 本已按 id 排序，index/works 未排序，
-        同样是历史上不同脚本写成的。）
-        """
-        indent = self._detect_shard_indent(path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump({k: data[k] for k in sorted(data)}, f, indent=indent, ensure_ascii=False)
+    def _write_shard(self, path: Path, data: dict):
+        """写 shard（见模块级 write_shard）。"""
+        write_shard(path, data)
 
     def _save_shard(self, root: Path, type_key: str, id_str: str, data: dict):
         """Save data to the shard file for the given ID."""
@@ -853,3 +857,22 @@ def rank_by_relevance(entries: List[Dict], query: str) -> List[Dict]:
     scored = [(e, s) for e, s in scored if s > 0]
     scored.sort(key=lambda x: x[1], reverse=True)
     return [e for e, _ in scored]
+
+
+def write_shard(path: Path, data: dict):
+    """写 shard：按 id 排序 + 沿用既有缩进与尾换行。
+
+    排序是为了让输出与遍历顺序无关——rebuild_index 走 glob，顺序随文件系统而变，
+    不排序则每次 reindex 都把整个 shard 打乱重排，diff 无法阅读。
+    （index/books、index/collections 本已按 id 排序，index/works 未排序，
+    同样是历史上不同脚本写成的。）
+
+    newline="\n" 强制 LF：Windows 上 text mode 会把 \n 写成 \r\n，与仓库其余文件不一致。
+    """
+    indent = BookIndexStorage._detect_shard_indent(path)
+    trailing = BookIndexStorage._detect_shard_trailing_newline(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        json.dump({k: data[k] for k in sorted(data)}, f, indent=indent, ensure_ascii=False)
+        if trailing:
+            f.write("\n")

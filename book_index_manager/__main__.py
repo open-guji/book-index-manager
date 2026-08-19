@@ -16,6 +16,7 @@ from .config import AppConfig
 from .logger import setup_logger, logger
 from .exceptions import BookIndexError
 from .migration import migrate_directory
+from ._utils import read_promoted_to
 
 
 class CLIHandler:
@@ -461,11 +462,11 @@ class CLIHandler:
             return False, {"status": "error", "draft_id": draft_id, "message": "Draft file not found"}
 
         meta = self.manager.storage.load_metadata(draft_path)
-        if isinstance(meta, dict) and meta.get("promoted_to"):
+        if isinstance(meta, dict) and read_promoted_to(meta):
             return False, {
                 "status": "error",
                 "draft_id": draft_id,
-                "message": f"already promoted to {meta['promoted_to']}",
+                "message": f"already promoted to {read_promoted_to(meta)}",
             }
 
         return True, {
@@ -492,13 +493,20 @@ class CLIHandler:
 
         for code in sorted(by_code):
             bucket = by_code[code]
-            print(f"\n[{code}] {len(bucket)} issue(s):")
+            kind = "warning" if all(i.severity == "warning" for i in bucket) else "issue"
+            print(f"\n[{code}] {len(bucket)} {kind}(s):")
             for issue in bucket:
                 print(f"  - {issue.message}")
                 if verbose and issue.path:
                     print(f"      path: {issue.path}")
 
-        print(f"\n[FAIL] {len(issues)} total issue(s)")
+        errors = [i for i in issues if i.severity != "warning"]
+        warnings = len(issues) - len(errors)
+        if not errors:
+            print(f"\n[OK] promotions consistent ({warnings} warning(s))")
+            return
+        suffix = f" (+{warnings} warning(s))" if warnings else ""
+        print(f"\n[FAIL] {len(errors)} total issue(s){suffix}")
         sys.exit(1)
 
     def handle_migrate(self):

@@ -22,6 +22,12 @@ from .id_generator import (
     smart_decode,
 )
 from .exceptions import BookIndexError
+from ._utils import (
+    has_legacy_promotion_keys,
+    mark_promoted,
+    read_promoted_to,
+    strip_promotion_marks,
+)
 
 
 PROMOTIONS_FILENAME = "promotions.json"
@@ -221,9 +227,9 @@ def promote_to_official(
     with open(draft_path, "r", encoding="utf-8") as f:
         draft_metadata = json.load(f)
 
-    if draft_metadata.get("promoted_to"):
+    if read_promoted_to(draft_metadata):
         raise BookIndexError(
-            f"{draft_id} already promoted to {draft_metadata['promoted_to']}"
+            f"{draft_id} already promoted to {read_promoted_to(draft_metadata)}"
         )
 
     promotions = PromotionsStore(storage.draft_root)
@@ -242,8 +248,7 @@ def promote_to_official(
     prod_metadata = json.loads(json.dumps(draft_metadata))
     prod_metadata["id"] = prod_id
     # 保险：清掉万一被深拷贝带过来的 tombstone 字段（D 还没写呢，但稳健起见）
-    prod_metadata.pop("promoted_to", None)
-    prod_metadata.pop("promoted_at", None)
+    strip_promotion_marks(prod_metadata)
 
     # storage.save_item 会自动按 prod_id_val 的 status 路由到 book-index/
     # 但 save_item 内部要查 find_file_by_id 看有没有同 ID 文件——刚生成的 P 必然没有，OK。
@@ -278,8 +283,7 @@ def promote_to_official(
 
     # ── Phase 2: 写 tombstone ──
     promoted_at = _now_iso()
-    draft_metadata["promoted_to"] = prod_id
-    draft_metadata["promoted_at"] = promoted_at
+    mark_promoted(draft_metadata, prod_id, promoted_at)
 
     with open(draft_path, "w", encoding="utf-8") as f:
         json.dump(draft_metadata, f, indent=2, ensure_ascii=False)
@@ -395,6 +399,8 @@ def validate_promotions(storage) -> List[PromotionIssue]:
       [E04] 全仓出现裸引用：某 JSON 内容里出现已 promoted 的 draft-id
             （tombstone 文件自身和 promotions.json 不算）
       [E05] promotions.json 里 production_id 不是 official status 位
+      [E06] (warning) tombstone 还在用无前缀的 promoted_to/promoted_at——
+            派生栏应带 `_` 前缀（SCHEMA.md §記錄之共通欄位）
     """
     issues: List[PromotionIssue] = []
     promotions = PromotionsStore(storage.draft_root)
@@ -437,7 +443,7 @@ def validate_promotions(storage) -> List[PromotionIssue]:
                 draft_data = json.load(f)
         except (OSError, json.JSONDecodeError):
             draft_data = {}
-        if not isinstance(draft_data, dict) or not draft_data.get("promoted_to"):
+        if not isinstance(draft_data, dict) or not read_promoted_to(draft_data):
             issues.append(PromotionIssue(
                 severity="error", code="E02",
                 draft_id=draft_id, production_id=rec.production_id,
@@ -462,9 +468,20 @@ def validate_promotions(storage) -> List[PromotionIssue]:
                 continue
             if not isinstance(data, dict):
                 continue
-            promoted_to = data.get("promoted_to")
+            promoted_to = read_promoted_to(data)
             if not promoted_to:
                 continue
+            if has_legacy_promotion_keys(data):
+                issues.append(PromotionIssue(
+                    severity="warning", code="E06",
+                    draft_id=data.get("id", ""), production_id=promoted_to,
+                    path=str(json_file),
+                    message=(
+                        f"Tombstone {data.get('id', '')} still uses un-prefixed "
+                        f"promoted_to/promoted_at; derived fields take the `_` prefix "
+                        f"(SCHEMA.md §記錄之共通欄位)"
+                    ),
+                ))
             file_id = data.get("id", "")
             rec = records.get(file_id)
             if rec is None:

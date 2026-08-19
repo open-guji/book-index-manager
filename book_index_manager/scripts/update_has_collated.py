@@ -15,7 +15,7 @@ import os
 import sys
 from pathlib import Path
 
-from ..storage import shard_of, NUM_SHARDS
+from ..storage import shard_of, write_shard, NUM_SHARDS
 
 if sys.platform == 'win32':
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')  # type: ignore
@@ -74,10 +74,10 @@ def update_shards(data_root: Path, collated_ids: set[str]) -> tuple[int, int]:
                 removed += 1
 
         if dirty:
-            # newline='\n' 强制 LF：Windows 上 'w' 默认 text mode 会把 \n 写成 \r\n，与仓库其余文件不一致
-            with shard_path.open('w', encoding='utf-8', newline='\n') as f:
-                json.dump(shard, f, ensure_ascii=False, indent=2)
-                f.write('\n')
+            # 走 storage.write_shard：按 id 排序 + 沿用既有缩进与尾换行 + 强制 LF。
+            # 各 shard 的格式不统一（works/entities 是 indent=1，books/collections 是 2），
+            # 自己写死 indent=2 会把整个 shard 重排，淹掉真正的改动。
+            write_shard(shard_path, shard)
 
     return added, removed
 
