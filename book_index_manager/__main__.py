@@ -436,8 +436,12 @@ class CLIHandler:
         if batch_path:
             with open(batch_path, encoding="utf-8") as f:
                 for line in f:
-                    s = line.strip()
-                    if not s or s.startswith("#"):
+                    # 行尾注释也要剥掉，不只是整行注释——批次清单靠行尾注释标注
+                    # 书名与统计（`1ewozjlc035z9  # 算表 bk=1`）才可读，
+                    # 原先只跳过 `#` 开头的行，这类行会整条当成 ID 报
+                    # "Invalid base36 ID shape"。
+                    s = line.split("#", 1)[0].strip()
+                    if not s:
                         continue
                     ids.append(s)
         # 保序去重
@@ -670,7 +674,7 @@ def main():
   book-index promote --batch ready-for-promotion.txt
   book-index promote 1evgowbkc2qyo --dry-run""")
     p.add_argument("ids", nargs="*", help="一个或多个 draft ID")
-    p.add_argument("--batch", default=None, help="从文本文件读取 ID（一行一个，# 开头跳过）")
+    p.add_argument("--batch", default=None, help="从文本文件读取 ID（一行一个；# 之后为注释，整行或行尾均可）")
     p.add_argument("--dry-run", action="store_true", help="仅检查、不写文件")
     p.add_argument("--no-rewrite-refs", action="store_true",
                    help="跳过 Phase 4 引用重写（高级，不推荐）")

@@ -367,3 +367,26 @@ def test_validate_promotions_reports_issues(monkeypatch, capsys, root, tmp_path)
     out, _, code = run_cli(monkeypatch, capsys, "validate-promotions", "--root", root)
     assert code == 1
     assert "E03" in out
+
+
+# ── promote --batch 的清单解析 ──
+
+def test_promote_batch_strips_trailing_comments(monkeypatch, capsys, root, tmp_path):
+    """行尾注释必须剥掉。批次清单靠行尾注释标注书名与统计才可读，
+    原先只跳过 `#` 开头的行，`<id>  # 书名` 这类行会整条当成 ID，
+    报 Invalid base36 ID shape——先秦出土文献 126 条批量 promote 时全军覆没。"""
+    out, _, _ = run_cli(monkeypatch, capsys, "draft", "甲", "--type", "work", "--root", root)
+    d1 = extract_id(out)
+    out, _, _ = run_cli(monkeypatch, capsys, "draft", "乙", "--type", "work", "--root", root)
+    d2 = extract_id(out)
+
+    batch = tmp_path / "promote.txt"
+    batch.write_text(
+        f"# 整行注释\n\n{d1}  # 甲  bk=1 res=0\n   {d2}\t# 乙\n{d1}  # 重复，应去重\n",
+        encoding="utf-8",
+    )
+
+    out, err, code = run_cli(monkeypatch, capsys,
+                             "promote", "--batch", str(batch), "--root", root)
+    assert code == 0
+    assert "2 succeeded, 0 failed" in err
