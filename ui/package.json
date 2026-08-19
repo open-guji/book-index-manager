@@ -1,6 +1,6 @@
 {
   "name": "book-index-ui",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "React components for browsing and editing ancient book index metadata",
   "author": "Li Shaodong",
   "repository": {
@@ -38,7 +38,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build:lib": "vite build --mode lib",
+    "build:lib": "vite build --mode lib && node -e \"require('fs').copyFileSync('src/styles/variables.css','dist/book-index-ui.css')\"",
     "watch:lib": "vite build --mode lib --watch",
     "build:app": "vite build",
     "preview": "vite preview",
