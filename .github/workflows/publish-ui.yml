@@ -1,0 +1,107 @@
+name: Publish book-index-ui
+
+# 发布 ui/ 下的 book-index-ui npm 包。
+#
+# 两种用法：
+#  1. 打 tag `ui-v<版本号>` 并 push  → 校验 tag 与 package.json 版本一致后真正发布
+#  2. 手动 workflow_dispatch          → 默认 dry-run，只验证 token / 测试 / 构建，不发布
+#
+# 需要仓库 secret：NPM_TOKEN（npmjs.com 的 Granular Access Token，
+# 对 book-index-ui 有 Read and write 权限）
+
+on:
+  push:
+    tags:
+      - 'ui-v*'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: '只验证 token、跑测试和构建，不真正发布'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: publish book-index-ui
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+          cache-dependency-path: ui/package-lock.json
+
+      # 先验证 token —— 放在最前面，token 有问题就别浪费后面几分钟
+      - name: Verify NPM_TOKEN
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "❌ 仓库 secret NPM_TOKEN 未设置" && exit 1
+          fi
+          echo "✓ NPM_TOKEN 已注入（长度 ${#NODE_AUTH_TOKEN}）"
+          # granular access token 也支持 whoami
+          npm whoami --registry=https://registry.npmjs.org/
+
+      - name: Install
+        working-directory: ui
+        run: npm ci
+
+      - name: Unit tests
+        working-directory: ui
+        run: npm test
+
+      - name: Build lib
+        working-directory: ui
+        run: npm run build:lib
+
+      # tag 触发时：tag 里的版本号必须和 ui/package.json 对得上，
+      # 否则会出现「tag 写 0.4.3，实际发了 0.4.2」这种对不上账的情况
+      - name: Check tag matches package.json version
+        if: github.event_name == 'push'
+        working-directory: ui
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${GITHUB_REF_NAME#ui-v}"
+          echo "tag=$TAG_VERSION  package.json=$PKG_VERSION"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "❌ tag ($TAG_VERSION) 与 ui/package.json ($PKG_VERSION) 版本不一致" && exit 1
+          fi
+
+      # 该版本已经在 npm 上就提前退出，让报错说人话
+      # （否则要等到 publish 才收到一句含糊的 403）
+      # dry-run 时跳过：dry-run 的意义就是拿当前版本号空跑一遍，
+      # 不该因为「当前版本已发布」而报红
+      - name: Check version not already published
+        if: "!(github.event_name == 'workflow_dispatch' && inputs.dry_run)"
+        working-directory: ui
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if npm view "book-index-ui@$PKG_VERSION" version > /dev/null 2>&1; then
+            echo "❌ book-index-ui@$PKG_VERSION 已发布过，请先提升版本号" && exit 1
+          fi
+          echo "✓ book-index-ui@$PKG_VERSION 尚未发布"
+
+      - name: Publish (dry run)
+        if: github.event_name == 'workflow_dispatch' && inputs.dry_run
+        working-directory: ui
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish --dry-run
+          echo "ℹ️ dry-run 结束，未真正发布。要真发请打 tag ui-v<版本号>，或手动触发时取消勾选 dry_run"
+
+      - name: Publish to npm
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && !inputs.dry_run)
+        working-directory: ui
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish
+          echo "✅ 已发布 book-index-ui@$(node -p "require('./package.json').version")"
