@@ -176,7 +176,8 @@ class BookIndexStorage:
         id_str = base36_encode(id_val)
 
         # Check if ID already exists and handle rename if needed
-        existing_path = self.find_file_by_id(id_str)
+        # 建新檔前之探測：新生成之 ID 必然查不到，不是異常，故 quiet。
+        existing_path = self.find_file_by_id(id_str, quiet=True)
 
         # Tombstone 写保护：D 升级后，原 draft 文件成为 frozen snapshot，
         # 后续编辑应该写到 production 文件，而不是覆盖 tombstone。
@@ -260,6 +261,11 @@ class BookIndexStorage:
 
             with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(strip_nulls(metadata), f, indent=2, ensure_ascii=False)
+                # 檔尾一個換行——SCHEMA〈JSON 書寫格式〉（2026-08-21 定，全庫一律）。
+                # 少了它，每跑一次 promote 就把改寫過的每個檔去掉檔尾換行，於是
+                # 「一個欄位一行、可自動合併」退化成整檔衝突——而那正是並行作業
+                # 賴以不撞車的前提。實測一次 promote 波及 15 檔，13 檔中招。
+                f.write("\n")
 
             root = self.get_root_by_id(id_val)
             rel_path = str(file_path.relative_to(root)).replace("\\", "/")
@@ -309,6 +315,7 @@ class BookIndexStorage:
                 work_data["books"] = deduped
                 with open(work_path, "w", encoding="utf-8") as f:
                     json.dump(work_data, f, indent=2, ensure_ascii=False)
+                    f.write("\n")
                 if len(deduped) < len(books):
                     logger.info(f"Synced Book {book_id} into Work {work_id}.books "
                                 f"({len(books)}→{len(deduped)} after dedup)")
@@ -781,7 +788,7 @@ class BookIndexStorage:
         except Exception as e:
             raise StorageError(f"Failed to delete item {id_str}: {e}")
 
-    def find_file_by_id(self, id_str: str) -> Optional[Path]:
+    def find_file_by_id(self, id_str: str, quiet: bool = False) -> Optional[Path]:
         """Search for a book file in both official and draft roots."""
         try:
             id_val = smart_decode(id_str)
@@ -803,7 +810,12 @@ class BookIndexStorage:
                     logger.debug(f"Matches in {search_dir} with pattern {pattern}: {matches}")
                     if matches:
                         return matches[0]
-        logger.warning(f"No file found for ID {id_str}")
+        # quiet：呼叫方明知此 id 可能尚不存在（save_item 建新檔前之探測即是）。
+        # 不分而一律 warning，會讓每次 promote 都吐一行「No file found for ID <新 P>」
+        # ——看著像失敗而其實正常，批次升二十五條就是二十五行假警報，
+        # 真正的「找不到」反被淹掉。
+        if not quiet:
+            logger.warning(f"No file found for ID {id_str}")
         return None
 
     def load_metadata(self, file_path: Path) -> dict:

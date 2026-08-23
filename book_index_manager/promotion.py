@@ -90,6 +90,11 @@ class PromotionsStore:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with open(self.path, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=2, ensure_ascii=False)
+            # 檔尾一個換行——SCHEMA〈JSON 書寫格式〉（2026-08-21 定，全庫一律）。
+            # 少了它，每跑一次 promote 就把改寫過的每個檔去掉檔尾換行，於是
+            # 「一個欄位一行、可自動合併」退化成整檔衝突——而那正是並行作業
+            # 賴以不撞車的前提。實測一次 promote 波及 15 檔，13 檔中招。
+            f.write("\n")
 
     def add(self, draft_id: str, record: PromotionRecord):
         self.load()
@@ -141,6 +146,7 @@ def _rewrite_file(path: Path, mapping: Dict[str, str]) -> bool:
 
     with open(path, "w", encoding="utf-8") as f:
         json.dump(new_data, f, indent=2, ensure_ascii=False)
+        f.write("\n")
     return True
 
 
@@ -280,6 +286,7 @@ def promote_to_official(
                 ce_data['revised_at'] = _date.today().isoformat()
                 with open(ce_index, 'w', encoding='utf-8') as f:
                     json.dump(ce_data, f, indent=2, ensure_ascii=False)
+                    f.write("\n")
 
     # ── Phase 2: 写 tombstone ──
     promoted_at = _now_iso()
@@ -287,6 +294,7 @@ def promote_to_official(
 
     with open(draft_path, "w", encoding="utf-8") as f:
         json.dump(draft_metadata, f, indent=2, ensure_ascii=False)
+        f.write("\n")
 
     # 更新 draft shard：在原 entry 上挂 promoted_to
     _mark_draft_shard_promoted(storage, draft_id, type_val, prod_id)
@@ -341,6 +349,7 @@ def _dedupe_work_books_after_promote(storage, work_id: Optional[str]):
             work_data["books"] = deduped
             with open(work_path, "w", encoding="utf-8") as f:
                 json.dump(work_data, f, indent=2, ensure_ascii=False)
+                f.write("\n")
     except Exception:
         # 失败不阻塞 promote 主流程；下次 reindex 也能拿到正确状态
         pass
