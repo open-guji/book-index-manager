@@ -545,12 +545,24 @@ def validate_promotions(storage) -> List[PromotionIssue]:
     return issues
 
 
+# 溯源栏：其值**本来就该是 draft id**，记的是「这条著录当初出自哪个 draft 记录」，
+# 不是活引用，从不被解引用。promote 把记录整份拷到 production 时它照抄过去，
+# 于是 E04 把它当裸引用报出来——2026-08-23《潛夫論》即此例（merged_from 指向自己
+# 升格前的 draft id）。把它改写成 P 会毁掉审计线索：那次合并确实发生在 draft。
+# 故扫描前先剔除这类键值对。
+_PROVENANCE_KEYS = ("merged_from",)
+
+
 def _scan_naked_refs(content: str, promoted_ids: Set[str]) -> Set[str]:
     """在 JSON 内容字符串里找出所有 promoted draft-id 出现。
 
     用字符串包含判断（够用）：promoted-id 是 12-13 字符 base36，碰撞概率可忽略。
     返回命中的 draft-id 集合。
+
+    溯源栏（`_PROVENANCE_KEYS`）先剔除——那些是历史记录不是活引用，见上。
     """
+    for k in _PROVENANCE_KEYS:
+        content = re.sub(r'"%s"\s*:\s*"[0-9a-z]{10,13}"' % k, '', content)
     hits: Set[str] = set()
     for pid in promoted_ids:
         # 用引号包裹以避免子串误命中（例如 D 是 P 的前缀的极端情况）
