@@ -51,23 +51,33 @@ class BookIndexIdGenerator:
         if not (0 <= machine_id <= 2047):
             raise ValueError("Machine ID must be between 0 and 2047")
         self.machine_id = machine_id
-        self.last_timestamp = -1
-        self.last_status = None
-        self.sequence = 0
+        # **每個 status 各記一份 (last_timestamp, sequence)**。
+        # 舊制以單一 last_status 判之，兩個 status 交替生成時，
+        # 每次切換都走 else 分支把 sequence 歸零而 timestamp 未推進——
+        # 於是同一時間單位內先後生成之兩個同 status id 完全相同。
+        # official 之時間戳是**秒**級（見 _get_current_timestamp），
+        # 一秒之內只要穿插過一次 draft id 之生成，下一個 official id 即與前一個相撞。
+        # 2026-08-24 隋唐升格 3,824 條踩到：撞號九組十八條，
+        # 後升者覆蓋先升者，production 憑空少了九條而無人知
+        # （promotions.json 之映射亦二對一）。漢代那輪已中一組（《風角注》）而未發覺。
+        self._state = {}          # status -> [last_timestamp, sequence]
 
     def next_id(self, status: BookIndexStatus, type: BookIndexType) -> int:
         timestamp = self._get_current_timestamp(status)
+        last_timestamp, sequence = self._state.get(status, (-1, 0))
 
-        if timestamp < self.last_timestamp and status == self.last_status:
+        if timestamp < last_timestamp:
             raise RuntimeError("Clock moved backwards. Refusing to generate ID.")
 
-        if timestamp == self.last_timestamp and status == self.last_status:
-            self.sequence = (self.sequence + 1) & self.MASK_SEQUENCE
-            if self.sequence == 0:
-                timestamp = self._til_next_unit(self.last_timestamp, status)
+        if timestamp == last_timestamp:
+            sequence = (sequence + 1) & self.MASK_SEQUENCE
+            if sequence == 0:
+                timestamp = self._til_next_unit(last_timestamp, status)
         else:
-            self.sequence = 0
+            sequence = 0
 
+        self._state[status] = (timestamp, sequence)
+        self.sequence = sequence          # 兼容舊有讀此欄者
         self.last_timestamp = timestamp
         self.last_status = status
 
