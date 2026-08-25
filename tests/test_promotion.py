@@ -681,3 +681,100 @@ def test_validate_warns_when_merged_but_title_unrelated(tmp_path):
     assert e07[0].severity == "warning"
     assert "1exksski0prwr" in e07[0].draft_id
     assert "1evfubnkruxog" not in e07[0].draft_id, "題相合者不當入告"
+
+
+def test_promotions_store_save_merges_concurrent_writes(tmp_path):
+    """save 不可照著自己 load 時那份整檔寫出——會把別的進程這段時間寫進去的目抹掉。
+
+    造局：store 甲 load 之後，別人往磁碟上加了一目；甲再 add 一目並 save。
+    二目當俱在。
+    """
+    import json as _json
+    from book_index_manager.promotion import PromotionsStore, PromotionRecord
+
+    draft = tmp_path / "book-index-draft"
+    draft.mkdir()
+    path = draft / "promotions.json"
+    path.write_text(_json.dumps({"version": 1, "promotions": {
+        "1ev000000000a": {"production_id": "d59f000000001", "type": "work",
+                          "promoted_at": "2026-08-25T00:00:00Z"},
+    }}, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    store = PromotionsStore(draft)
+    store.load()  # 甲此刻只見一目
+
+    # 別的進程插進來寫了一目
+    other = PromotionsStore(draft)
+    other.add("1ev000000000b", PromotionRecord(
+        production_id="d59f000000002", type="work",
+        promoted_at="2026-08-25T00:00:01Z"))
+    other.save()
+
+    store.add("1ev000000000c", PromotionRecord(
+        production_id="d59f000000003", type="work",
+        promoted_at="2026-08-25T00:00:02Z"))
+    store.save()
+
+    final = _json.loads(path.read_text(encoding="utf-8"))["promotions"]
+    assert set(final) == {"1ev000000000a", "1ev000000000b", "1ev000000000c"}, \
+        f"別人寫的目被抹掉了：{sorted(final)}"
+
+
+def test_promotions_store_save_keeps_others_edits_to_untouched_records(tmp_path):
+    """別人改了某目之 production_id，而本進程沒動過它——當以磁碟為準。
+
+    2026-08-25 實見之禍即此型：異體歸正把五目改指存者，另一會話持舊本寫出，
+    把它們全改回已刪之 production id。
+    """
+    import json as _json
+    from book_index_manager.promotion import PromotionsStore, PromotionRecord
+
+    draft = tmp_path / "book-index-draft"
+    draft.mkdir()
+    path = draft / "promotions.json"
+    path.write_text(_json.dumps({"version": 1, "promotions": {
+        "1ev000000000a": {"production_id": "d59f000000001", "type": "work",
+                          "promoted_at": "2026-08-25T00:00:00Z"},
+    }}, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    store = PromotionsStore(draft)
+    store.load()
+
+    # 別人把 a 改指別處（併條之後的改繫）
+    path.write_text(_json.dumps({"version": 1, "promotions": {
+        "1ev000000000a": {"production_id": "d59f00000000z", "type": "work",
+                          "promoted_at": "2026-08-25T00:00:00Z"},
+    }}, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    store.add("1ev000000000c", PromotionRecord(
+        production_id="d59f000000003", type="work",
+        promoted_at="2026-08-25T00:00:02Z"))
+    store.save()
+
+    final = _json.loads(path.read_text(encoding="utf-8"))["promotions"]
+    assert final["1ev000000000a"]["production_id"] == "d59f00000000z", \
+        "沒動過的目當以磁碟為準，不可用自己 load 時那份覆蓋回去"
+    assert "1ev000000000c" in final
+
+
+def test_promotions_store_remove_survives_merge(tmp_path):
+    """本進程明著 remove 的目，合流時當真removed，不因磁碟上還在而復活。"""
+    import json as _json
+    from book_index_manager.promotion import PromotionsStore
+
+    draft = tmp_path / "book-index-draft"
+    draft.mkdir()
+    path = draft / "promotions.json"
+    path.write_text(_json.dumps({"version": 1, "promotions": {
+        "1ev000000000a": {"production_id": "d59f000000001", "type": "work",
+                          "promoted_at": "2026-08-25T00:00:00Z"},
+        "1ev000000000b": {"production_id": "d59f000000002", "type": "work",
+                          "promoted_at": "2026-08-25T00:00:01Z"},
+    }}, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    store = PromotionsStore(draft)
+    store.remove("1ev000000000a")
+    store.save()
+
+    final = _json.loads(path.read_text(encoding="utf-8"))["promotions"]
+    assert set(final) == {"1ev000000000b"}

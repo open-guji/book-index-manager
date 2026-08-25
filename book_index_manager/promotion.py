@@ -61,31 +61,63 @@ class PromotionRecord:
 
 
 class PromotionsStore:
-    """读写 book-index-draft/promotions.json 的轻封装。"""
+    """读写 book-index-draft/promotions.json 的轻封装。
+
+    **写出前必与磁盘现状合流**，只把本进程动过的那几目落下去，其余一概以
+    磁盘为准。理由：`promotions.json` 是全库共用的**单一状态档**，而升格是
+    长批次——本进程 load 之后、save 之前，别的进程尽可以改它。若照着自己
+    load 时的那份整档写出，就把人家这段时间写进去的目**静默抹掉**。
+
+    2026-08-25 实见其祸：`4122fc78e9`「先秦桶清零」把 `92d4092dde`
+    异体归正所并五组的 `production_id` 全改回并条之前的旧值（那五个
+    production 档已经删了，于是 E01 该报「production 档不存在」），
+    靠后来一次 merge 才侥幸回正。
+    """
 
     def __init__(self, draft_root: Path):
         self.path = draft_root / PROMOTIONS_FILENAME
         self._cache: Optional[Dict[str, PromotionRecord]] = None
+        # 本进程动过的 key。save 时只有这些以内存为准，其余取磁盘。
+        self._touched: Set[str] = set()
+
+    def _read_disk(self) -> Dict[str, PromotionRecord]:
+        if not self.path.exists():
+            return {}
+        try:
+            with open(self.path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            # 读不动就当空——save 会以内存为准写出，总比写坏强
+            return {}
+        promotions = data.get("promotions", {}) if isinstance(data, dict) else {}
+        out: Dict[str, PromotionRecord] = {}
+        for draft_id, rec in promotions.items():
+            try:
+                out[draft_id] = PromotionRecord.from_dict(rec)
+            except (KeyError, TypeError):
+                continue
+        return out
 
     def load(self) -> Dict[str, PromotionRecord]:
         if self._cache is not None:
             return self._cache
-        if not self.path.exists():
-            self._cache = {}
-            return self._cache
-        with open(self.path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        promotions = data.get("promotions", {}) if isinstance(data, dict) else {}
-        self._cache = {
-            draft_id: PromotionRecord.from_dict(rec)
-            for draft_id, rec in promotions.items()
-        }
+        self._cache = self._read_disk()
         return self._cache
 
     def save(self):
         promotions = self.load()
+        # 与磁盘现状合流：以磁盘为底，只覆盖本进程动过的那几目。
+        merged = self._read_disk()
+        for k in self._touched:
+            if k in promotions:
+                merged[k] = promotions[k]
+            else:
+                merged.pop(k, None)
+        # 内存与合流之果对齐，免得同一个 store 后续再 save 时把别人的目又丢掉
+        self._cache = merged
+        self._touched = set()
         # key 字典序排序，git diff 友好
-        sorted_items = {k: promotions[k].to_dict() for k in sorted(promotions.keys())}
+        sorted_items = {k: merged[k].to_dict() for k in sorted(merged.keys())}
         payload = {"version": PROMOTIONS_VERSION, "promotions": sorted_items}
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with open(self.path, "w", encoding="utf-8") as f:
@@ -103,16 +135,19 @@ class PromotionsStore:
                 f"{draft_id} already promoted to {self._cache[draft_id].production_id}"
             )
         self._cache[draft_id] = record
+        self._touched.add(draft_id)
 
     def remove(self, draft_id: str):
         self.load()
         self._cache.pop(draft_id, None)
+        self._touched.add(draft_id)
 
     def get(self, draft_id: str) -> Optional[PromotionRecord]:
         return self.load().get(draft_id)
 
     def invalidate(self):
         self._cache = None
+        self._touched = set()
 
 
 # ── ID rewriting (在 JSON tree 内做引用替换) ──
