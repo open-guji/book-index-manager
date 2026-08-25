@@ -630,6 +630,7 @@ def validate_promotions(storage) -> List[PromotionIssue]:
     _SKIP = {'id', 'updated_at', 'revision', 'revised_at', '_promoted_to',
              '_promoted_at', 'promoted_to', 'promoted_at', 'merged_from',
              '_has_text', '_has_image', '_has_collated', '_path'}
+    e08_hits: List[Tuple[str, str, str]] = []
     for draft_id, rec in sorted(records.items()):
         prod_path = id_paths.get(rec.production_id)
         draft_path = id_paths.get(draft_id)
@@ -641,20 +642,49 @@ def validate_promotions(storage) -> List[PromotionIssue]:
             continue
         if pd.get('revision') not in (None, '1.0.0'):
             continue                      # 升格后改过 production，二者本该不同
-        keys = (set(pd) | set(dd)) - _SKIP
-        diff = sorted(k for k in keys
-                      if json.dumps(pd.get(k), sort_keys=True, ensure_ascii=False)
-                      != json.dumps(dd.get(k), sort_keys=True, ensure_ascii=False))
+        # 只比**兩側俱有**之欄。墓碑經 `stub-tombstones.py` 精簡者只剩
+        # {id,type,title,promoted_to,promoted_at} 五欄，那是有意為之
+        # （production 才是 canonical），若比聯集則每條 stub 都報，噪不可用。
+        keys = (set(pd) & set(dd)) - _SKIP
+        diff = []
+        for k in sorted(keys):
+            if pd.get(k) is None and dd.get(k) is None:
+                continue
+            a = json.dumps(_drop_nulls(pd.get(k)), sort_keys=True, ensure_ascii=False)
+            b = json.dumps(_drop_nulls(dd.get(k)), sort_keys=True, ensure_ascii=False)
+            if a == b:
+                continue
+            # 墓碑之引用仍是 draft id，而 production 之引用已由 sweep-promoted-refs
+            # 改寫為 production id——這一路之不同是**應然**，不是陳舊快照。
+            # 故比對前先把墓碑側之 draft id 一律換成其 production id。
+            b2 = _DRAFT_REF_RE.sub(
+                lambda m: '"%s"' % (records[m.group(1)].production_id
+                                    if m.group(1) in records else m.group(1)), b)
+            if a != b2:
+                diff.append(k)
         if not diff:
             continue
+        e08_hits.append((draft_id, rec.production_id, ', '.join(diff)))
+
+    # 聚為一則。逐條報則一千餘行，把別的驗全埋了——此驗之用在「有多少、哪幾欄」，
+    # 逐條之明細由 --json 或另跑腳本取。
+    if e08_hits:
+        by_field: Dict[str, int] = {}
+        for _, _, f in e08_hits:
+            by_field[f] = by_field.get(f, 0) + 1
+        top = sorted(by_field.items(), key=lambda x: -x[1])[:6]
+        eg = '; '.join(f'{d}→{p} ({f})' for d, p, f in e08_hits[:3])
         issues.append(PromotionIssue(
             severity="warning", code="E08",
-            draft_id=draft_id, production_id=rec.production_id,
-            path=str(prod_path),
+            draft_id=e08_hits[0][0], production_id=e08_hits[0][1],
+            path=None,
             message=(
-                f"production {rec.production_id} is still at revision 1.0.0 (never edited "
-                f"since promotion) yet differs from its draft tombstone {draft_id} in: "
-                f"{', '.join(diff)} — one side was written from a stale snapshot. "
+                f"{len(e08_hits)} production entries are still at revision 1.0.0 "
+                f"(never edited since promotion) yet differ from their draft tombstones. "
+                f"Top differing field-sets: "
+                + '; '.join(f'{f} ×{n}' for f, n in top)
+                + f". Examples: {eg}. One side was written from a stale snapshot "
+                f"(or the tombstone was edited after promotion and production never followed). "
                 f"See known-issues/升格用陳舊快照-20260825.md."
             ),
         ))
@@ -757,6 +787,15 @@ def _read_json(path: Optional[Path]) -> dict:
     return data if isinstance(data, dict) else {}
 
 
+def _drop_nulls(v):
+    """去 null 欄——`strip_nulls` 於落盤時已去之，兩側之有無不算差異。"""
+    if isinstance(v, dict):
+        return {k: _drop_nulls(x) for k, x in v.items() if x is not None}
+    if isinstance(v, list):
+        return [_drop_nulls(x) for x in v]
+    return v
+
+
 def _merge_marks(data: dict) -> bool:
     """此條是否帶並條之痕。頂層 `merged_from`，或 indexed_by 之節上的同名欄。"""
     if data.get("merged_from"):
@@ -789,6 +828,9 @@ _PROVENANCE_KEYS = ("merged_from",)
 
 # 「整個被引號包住的簡單 token」——JSON 之鍵、及不含空白標點之字串值。
 _QUOTED_TOKEN_RE = re.compile(r'"([0-9A-Za-z_-]+)"')
+# 引用之形：整個被引號包住的 base36 id。E08 比對前用它把墓碑側之 draft id
+# 換成 production id——production 之引用已由 sweep-promoted-refs 改寫過。
+_DRAFT_REF_RE = re.compile(r'"([0-9a-z]{10,13})"')
 
 
 def _scan_naked_refs(content: str, promoted_ids: Set[str]) -> Set[str]:
