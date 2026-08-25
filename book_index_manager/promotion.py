@@ -483,6 +483,16 @@ def validate_promotions(storage) -> List[PromotionIssue]:
       [E05] promotions.json 里 production_id 不是 official status 位
       [E06] (warning) tombstone 还在用无前缀的 promoted_to/promoted_at——
             派生栏应带 `_` 前缀（SCHEMA.md §記錄之共通欄位）
+      [E08] production 条之 revision 仍是 1.0.0（升格之后从未改过）而其内容与
+            draft 墓碑不同——**一方是从陈旧快照写出来的**。
+            立此验之由：2026-08-25 遼金元轮实见，并行会话之 4,421 条批次升格，
+            其 git 工作区落后于 main，于是 production 档与 draft 墓碑写的都是
+            改正之前的内容，把已推上 main 的改正抹掉；而 E01–E04 全都对得上
+            ——**它们只验「指向」，不验「内容是否新」**，故非专验不能见。
+            门槛取 revision == 1.0.0：升格之后正常改 production 必 bump，
+            一 bump 二者本就该不同，验之即噪；未 bump 而不同，方是此病。
+            见 known-issues/升格用陳舊快照-20260825.md。
+
       [E07] 同一 production_id 被两条以上 draft 记录占用（一对多映射）——
             这是 id 撞号之痕：后升者之文件覆盖了先升者，production 凭空少一条，
             而 E01/E02/E03 全都对得上（各自的墓碑都指得对，production 文件也在），
@@ -614,6 +624,40 @@ def validate_promotions(storage) -> List[PromotionIssue]:
                     f"Worth a look; do not auto-recover."
                 ),
             ))
+
+    # E08: production 未 bump 而其内容与 draft 墓碑不同——一方出自陈旧快照
+    # 比对之欄取「知识栏」：promote 是深拷贝，除 id 与升格印记外本该逐字相同。
+    _SKIP = {'id', 'updated_at', 'revision', 'revised_at', '_promoted_to',
+             '_promoted_at', 'promoted_to', 'promoted_at', 'merged_from',
+             '_has_text', '_has_image', '_has_collated', '_path'}
+    for draft_id, rec in sorted(records.items()):
+        prod_path = id_paths.get(rec.production_id)
+        draft_path = id_paths.get(draft_id)
+        if prod_path is None or draft_path is None:
+            continue                      # E01／E02 已另报
+        pd = _read_json(prod_path)
+        dd = _read_json(draft_path)
+        if not pd or not dd:
+            continue
+        if pd.get('revision') not in (None, '1.0.0'):
+            continue                      # 升格后改过 production，二者本该不同
+        keys = (set(pd) | set(dd)) - _SKIP
+        diff = sorted(k for k in keys
+                      if json.dumps(pd.get(k), sort_keys=True, ensure_ascii=False)
+                      != json.dumps(dd.get(k), sort_keys=True, ensure_ascii=False))
+        if not diff:
+            continue
+        issues.append(PromotionIssue(
+            severity="warning", code="E08",
+            draft_id=draft_id, production_id=rec.production_id,
+            path=str(prod_path),
+            message=(
+                f"production {rec.production_id} is still at revision 1.0.0 (never edited "
+                f"since promotion) yet differs from its draft tombstone {draft_id} in: "
+                f"{', '.join(diff)} — one side was written from a stale snapshot. "
+                f"See known-issues/升格用陳舊快照-20260825.md."
+            ),
+        ))
 
     # E02 + E03: draft 端校验
     draft_root = storage.draft_root

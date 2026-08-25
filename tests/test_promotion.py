@@ -778,3 +778,80 @@ def test_promotions_store_remove_survives_merge(tmp_path):
 
     final = _json.loads(path.read_text(encoding="utf-8"))["promotions"]
     assert set(final) == {"1ev000000000b"}
+
+
+def test_validate_detects_stale_snapshot(tmp_path):
+    """production 未 bump 而其內容與 draft 墓碑不同——一方出自陳舊快照。
+
+    2026-08-25 遼金元輪實見：並行會話之 4,421 條批次升格，其 git 工作區落後於
+    main，於是 production 檔與 draft 墓碑寫的都是改正之前的內容，把已推上 main
+    的改正抹掉；而 E01–E04 全都對得上——它們只驗「指向」，不驗「內容是否新」。
+    """
+    import json as _json
+    from book_index_manager.promotion import validate_promotions
+    from book_index_manager.storage import BookIndexStorage
+
+    root = tmp_path
+    draft = root / "book-index-draft"
+    official = root / "book-index"
+    (draft / "Work" / "1" / "e" / "v").mkdir(parents=True, exist_ok=True)
+    (official / "Work" / "d" / "5" / "9").mkdir(parents=True, exist_ok=True)
+
+    did, pid = "1evfubnkruxog", "d59f27tfpczl"
+    # production：撰人「王繪」代作「金」（升格所用之陳舊快照），revision 未 bump
+    (official / "Work" / "d" / "5" / "9" / f"{pid}-紹興甲寅通和錄.json").write_text(
+        _json.dumps({"id": pid, "type": "work", "title": "紹興甲寅通和錄",
+                     "authors": [{"name": "王繪", "dynasty": "金"}],
+                     "revision": "1.0.0"}, ensure_ascii=False), encoding="utf-8")
+    # draft 墓碑：已正為「宋」
+    (draft / "Work" / "1" / "e" / "v" / f"{did}-紹興甲寅通和錄.json").write_text(
+        _json.dumps({"id": did, "type": "work", "title": "紹興甲寅通和錄",
+                     "authors": [{"name": "王繪", "dynasty": "宋"}],
+                     "_promoted_to": pid,
+                     "_promoted_at": "2026-08-25T00:00:00Z"}, ensure_ascii=False),
+        encoding="utf-8")
+    (draft / "promotions.json").write_text(_json.dumps({
+        "version": 1,
+        "promotions": {did: {"production_id": pid, "type": "work",
+                             "promoted_at": "2026-08-25T00:00:00Z"}},
+    }, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    issues = validate_promotions(BookIndexStorage(str(root)))
+    e08 = [i for i in issues if i.code == "E08"]
+    assert len(e08) == 1, f"E08 當報一則，實得 {[(i.code, i.severity) for i in issues]}"
+    assert "authors" in e08[0].message
+    # 舊有各驗不當因此而報——正是「非專驗不能見」之所以
+    assert not [i for i in issues if i.code in ("E01", "E02", "E03", "E04")], \
+        f"E01–E04 不當報，實得 {[i.code for i in issues]}"
+
+
+def test_validate_ignores_diff_after_production_edit(tmp_path):
+    """升格之後正常改 production 必 bump revision，二者本就該不同，不當報。"""
+    import json as _json
+    from book_index_manager.promotion import validate_promotions
+    from book_index_manager.storage import BookIndexStorage
+
+    root = tmp_path
+    draft = root / "book-index-draft"
+    official = root / "book-index"
+    (draft / "Work" / "1" / "e" / "v").mkdir(parents=True, exist_ok=True)
+    (official / "Work" / "d" / "5" / "9").mkdir(parents=True, exist_ok=True)
+    did, pid = "1evfubnkruxog", "d59f27tfpczl"
+    (official / "Work" / "d" / "5" / "9" / f"{pid}-紹興甲寅通和錄.json").write_text(
+        _json.dumps({"id": pid, "type": "work", "title": "紹興甲寅通和錄",
+                     "authors": [{"name": "王繪", "dynasty": "宋"}],
+                     "revision": "1.1.0"}, ensure_ascii=False), encoding="utf-8")
+    (draft / "Work" / "1" / "e" / "v" / f"{did}-紹興甲寅通和錄.json").write_text(
+        _json.dumps({"id": did, "type": "work", "title": "紹興甲寅通和錄",
+                     "authors": [{"name": "王繪", "dynasty": "金"}],
+                     "_promoted_to": pid,
+                     "_promoted_at": "2026-08-25T00:00:00Z"}, ensure_ascii=False),
+        encoding="utf-8")
+    (draft / "promotions.json").write_text(_json.dumps({
+        "version": 1,
+        "promotions": {did: {"production_id": pid, "type": "work",
+                             "promoted_at": "2026-08-25T00:00:00Z"}},
+    }, ensure_ascii=False) + "\n", encoding="utf-8")
+    issues = validate_promotions(BookIndexStorage(str(root)))
+    assert not [i for i in issues if i.code == "E08"], \
+        '已 bump 者不當報 E08'
