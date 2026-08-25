@@ -39,8 +39,8 @@ def count_indexed_by(data_root: str, work_id: str) -> int:
 
 def count_catalog_books(data_root: str, collection_id: str) -> int | None:
     """从 volume_book_mapping.json 读取 book 总数。"""
-    prefix = collection_id[:3]
-    c1, c2, c3 = prefix[0], prefix[1], prefix[2]
+    from book_index_manager.storage import shard_dirs
+    c1, c2, c3 = shard_dirs(collection_id)
 
     for folder in [data_root]:
         col_dir = os.path.join(folder, 'Collection', c1, c2, c3, collection_id)

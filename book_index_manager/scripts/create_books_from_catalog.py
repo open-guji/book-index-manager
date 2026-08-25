@@ -22,8 +22,8 @@ if sys.platform == 'win32':
 
 def find_catalog_files(data_root: str, collection_id: str) -> list[str]:
     """找到指定 collection 下所有 volume_book_mapping.json。"""
-    prefix = collection_id[:3]
-    c1, c2, c3 = prefix[0], prefix[1], prefix[2]
+    from book_index_manager.storage import shard_dirs
+    c1, c2, c3 = shard_dirs(collection_id)
     col_dir = os.path.join(data_root, 'Collection', c1, c2, c3, collection_id)
     results = []
     if os.path.exists(col_dir):
@@ -36,8 +36,8 @@ def find_catalog_files(data_root: str, collection_id: str) -> list[str]:
 
 def book_file_exists(data_root: str, book_id: str) -> bool:
     """检查 Book JSON 文件是否存在。"""
-    prefix = book_id[:3]
-    c1, c2, c3 = prefix[0], prefix[1], prefix[2]
+    from book_index_manager.storage import shard_dirs
+    c1, c2, c3 = shard_dirs(book_id)
     search_dir = os.path.join(data_root, 'Book', c1, c2, c3)
     if not os.path.exists(search_dir):
         return False
@@ -85,8 +85,8 @@ def create_book_file(data_root: str, book_id: str, book_data: dict, catalog_data
         book['section'] = section
 
     # 构建路径
-    prefix = book_id[:3]
-    c1, c2, c3 = prefix[0], prefix[1], prefix[2]
+    from book_index_manager.storage import shard_dirs
+    c1, c2, c3 = shard_dirs(book_id)
     dir_path = os.path.join(data_root, 'Book', c1, c2, c3)
     os.makedirs(dir_path, exist_ok=True)
 

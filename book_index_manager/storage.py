@@ -23,6 +23,20 @@ _REVISION_RE = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
 ITEM_FILE_RE = re.compile(r'^[A-Za-z0-9]{11,13}-.+\.json$')
 
 
+def shard_dirs(id_str: str):
+    """分片目錄三級 (c1, c2, c3)：取 id **尾** 3 字元。
+
+    2026-08-25 由「首 3 字元」改此。snowflake 之高位是 status|type|時戳高位，
+    同倉同型之 id 前綴必然全同，20 萬檔曾只落在 20 個目錄（分片退化，
+    draft/Work/1/e/v 一格 7 萬檔，逐格 glob 每查 ~50ms）；低位是
+    machine|sequence 加時戳低位，熵最高，改取尾 3 字元後最大格 112。
+    保持三級不減級：全庫 55 個腳本以 `Work/*/*/*/*.json` 之固定深度掃檔，
+    減級會讓它們**靜默返回空**。凡由 id 推路徑者一律經此函式，勿自拼。
+    """
+    tail = id_str.rjust(3, '_')[-3:]
+    return tail[0], tail[1], tail[2]
+
+
 def _bump_revision(current: Optional[str], bump: str) -> str:
     """semver bump。current=None 视为 "1.0.0"（首次写入 production）。"""
     if current is None or not _REVISION_RE.match(current or ''):
@@ -134,8 +148,7 @@ class BookIndexStorage:
         id_str = base36_encode(id_val)
         root = self.get_root_by_id(id_val)
 
-        prefix = id_str.ljust(3, '_')[:3]
-        c1, c2, c3 = prefix[0], prefix[1], prefix[2]
+        c1, c2, c3 = shard_dirs(id_str)
 
         # 保留 CJK 统一汉字全范围（含扩展 A-G、兼容、兼容补充）+ ASCII 字母数字
         # 去标点符号（包括全角括号）
@@ -472,8 +485,7 @@ class BookIndexStorage:
         id_val = smart_decode(id_str)
         components = BookIndexIdGenerator.parse(id_val)
         root = self.get_root_by_status(components.status)
-        prefix = id_str.ljust(3, '_')[:3]
-        c1, c2, c3 = prefix[0], prefix[1], prefix[2]
+        c1, c2, c3 = shard_dirs(id_str)
         return root / components.type.name / c1 / c2 / c3 / id_str
 
     def init_asset_dir(self, id_str: str) -> Path:
@@ -797,8 +809,7 @@ class BookIndexStorage:
             logger.error(f"Failed to decode ID {id_str}: {e}")
             return None
 
-        prefix = id_str.ljust(3, '_')[:3]
-        c1, c2, c3 = prefix[0], prefix[1], prefix[2]
+        c1, c2, c3 = shard_dirs(id_str)
 
         for root in [self.official_root, self.draft_root]:
             for type_dir in ["Book", "Collection", "Work", "Entity"]:
