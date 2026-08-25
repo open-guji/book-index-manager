@@ -16,11 +16,21 @@ from .entry_extractor import build_index_entry, build_entity_index_entry
 # 设计文档：项目进展/古籍索引网站/整体设计/2026-05-版本控制与不可变性.md
 _REVISION_RE = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
 
-# 顶层 item 文件名模式：`<id-11~13位 base36>-<任意 title>.json`。
+# 顶层 item 文件名模式：`<id-10~13位 base36>-<任意 title>.json`。
 # 用于 reindex 时识别哪些 .json 是真正的 Work/Book/Collection/Entity 条目，
 # 排除 collated_edition/, full_text/ 等子目录里的辅助文件（如
 # `75-79册_续簿.json`，不应被索引为 Work）。
-ITEM_FILE_RE = re.compile(r'^[A-Za-z0-9]{11,13}-.+\.json$')
+#
+# **下限取 10 而非 11**：production Book 之 id 恰為 10 位——其 snowflake 整數
+# 小（type=0＋status=0），base36 編出來就短。實測 production Book 525 條全是
+# 10 位，Work 全是 12 位。故作 {11,13} 者不偏不倚把 Book 全濾掉、Work 全放行：
+# reindex 掃到 Book 即 continue，production 之 index/books 遂恆為空
+# （2026-08-25 實測：Book 檔 525 而索引 0 條，index/works 則 77,356 條無恙），
+# 網站按索引查 production Book 一條也找不著。
+# 同一坑 qa_common.ID_RE 早已修為 {10,13} 並註明「production Book 僅 10 位」，
+# 此處漏之。放寬後實測：新納入者恰為那 525 條 production Book，draft Book
+# 20,881 條與各型 Work 前後不變，未誤納任何非條目之檔。
+ITEM_FILE_RE = re.compile(r'^[A-Za-z0-9]{10,13}-.+\.json$')
 
 
 def shard_dirs(id_str: str):
