@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 from dataclasses import dataclass, asdict
@@ -120,13 +121,22 @@ class PromotionsStore:
         sorted_items = {k: merged[k].to_dict() for k in sorted(merged.keys())}
         payload = {"version": PROMOTIONS_VERSION, "promotions": sorted_items}
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        with open(self.path, "w", encoding="utf-8") as f:
+        # 原子寫：先寫暫存檔再 os.replace。promote 每升一條 save 一次，若逕
+        # open(path,"w") 就地截斷再 dump，「先截斷、後寫滿」的窗口每條書都開
+        # 一次——2026-08-25 實遇 timeout 之 SIGTERM 正撞在窗口裡，77,392 目
+        # 之檔只剩 81,103 行。升格記錄是唯一一份 draft↔production 對照表，
+        # 它壞了，validate-promotions／sweep／撞號檢測全部失效。
+        tmp = str(self.path) + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=2, ensure_ascii=False)
             # 檔尾一個換行——SCHEMA〈JSON 書寫格式〉（2026-08-21 定，全庫一律）。
             # 少了它，每跑一次 promote 就把改寫過的每個檔去掉檔尾換行，於是
             # 「一個欄位一行、可自動合併」退化成整檔衝突——而那正是並行作業
             # 賴以不撞車的前提。實測一次 promote 波及 15 檔，13 檔中招。
             f.write("\n")
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, self.path)
 
     def add(self, draft_id: str, record: PromotionRecord):
         self.load()
