@@ -685,6 +685,10 @@ def validate_promotions(storage) -> List[PromotionIssue]:
                 + '; '.join(f'{f} ×{n}' for f, n in top)
                 + f". Examples: {eg}. One side was written from a stale snapshot "
                 f"(or the tombstone was edited after promotion and production never followed). "
+                f"CAVEAT: while another lane's promotion is half-landed — its production files "
+                f"pushed but its promotions.json not yet — every reference it rewrote reads as a "
+                f"diff here, because this map cannot resolve those draft-ids. Re-run after that "
+                f"lane pushes before acting on the count. "
                 f"See known-issues/升格用陳舊快照-20260825.md."
             ),
         ))
