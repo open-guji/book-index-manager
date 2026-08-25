@@ -608,3 +608,76 @@ def test_validate_detects_one_to_many_production_id(tmp_path):
     # 舊有各驗不當因此而報——正是「非專驗不能見」之所以
     assert not [i for i in issues if i.code in ("E01", "E02", "E03")], \
         f"E01/E02/E03 不當報，實得 {[i.code for i in issues]}"
+
+
+def _one_to_many_fixture(tmp_path, prod_extra, draft_titles):
+    """造一個「一對多」之局：二條 draft 記錄同指一 production id。
+
+    prod_extra 併入 production 條（如 merged_from、additional_titles），
+    draft_titles 為二條 draft 之題。回傳 issues。
+    """
+    import json as _json
+    from book_index_manager.promotion import validate_promotions
+    from book_index_manager.storage import BookIndexStorage
+
+    root = tmp_path
+    draft = root / "book-index-draft"
+    official = root / "book-index"
+    (draft / "Work" / "1" / "e" / "v").mkdir(parents=True, exist_ok=True)
+    (official / "Work" / "d" / "5" / "9").mkdir(parents=True, exist_ok=True)
+
+    prod_id = "d59f27tfpczl"
+    prod = {"id": prod_id, "type": "work", "title": "春秋墨說"}
+    prod.update(prod_extra)
+    (official / "Work" / "d" / "5" / "9" / f"{prod_id}-春秋墨說.json").write_text(
+        _json.dumps(prod, ensure_ascii=False), encoding="utf-8")
+
+    ids = ("1evfubnkruxog", "1exksski0prwr")
+    for did, title in zip(ids, draft_titles):
+        (draft / "Work" / "1" / "e" / "v" / f"{did}-{title}.json").write_text(
+            _json.dumps({"id": did, "type": "work", "title": title,
+                         "_promoted_to": prod_id,
+                         "_promoted_at": "2026-08-24T18:35:12Z"}, ensure_ascii=False),
+            encoding="utf-8")
+    (draft / "promotions.json").write_text(_json.dumps({
+        "version": 1,
+        "promotions": {i: {"production_id": prod_id, "type": "work",
+                           "promoted_at": "2026-08-24T18:35:12Z"} for i in ids},
+    }, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    return validate_promotions(BookIndexStorage(str(root)))
+
+
+def test_validate_allows_one_to_many_from_production_merge(tmp_path):
+    """production 內併條所生之一對多是應然記賬，E07 不當報。
+
+    甲併入乙、甲之 production 檔刪去後，甲之 draft 墓碑必須改指乙——否則
+    E01 反要報「production 檔不存在」。2026-08-25 初版 E07 不辨此，把真庫上
+    `92d4092dde` 異體歸正所併之五組全報成撞號，而其「回收之法」若照做，
+    會把已併掉的條目重新變出來。
+    """
+    issues = _one_to_many_fixture(
+        tmp_path,
+        {"merged_from": ["d59f27tfabcd"],
+         "additional_titles": ["春秋墨說", "春秋墨説"]},
+        ("春秋墨說", "春秋墨説"))
+    assert not [i for i in issues if i.code == "E07"], \
+        f"併條之一對多不當報 E07，實得 {[(i.code, i.severity) for i in issues]}"
+
+
+def test_validate_warns_when_merged_but_title_unrelated(tmp_path):
+    """有併條之痕，而某條之題不在存者題集內——併是併了，這一條卻像另一回事。
+
+    併條之所以生一對多，正因二者同題（異體、繁簡）；題不相涉者，
+    疑是撞號混進了併條之局，故報 warning 待人看，而不逕自回收。
+    """
+    issues = _one_to_many_fixture(
+        tmp_path,
+        {"merged_from": ["d59f27tfabcd"],
+         "additional_titles": ["春秋墨説"]},
+        ("春秋墨說", "宋書"))
+    e07 = [i for i in issues if i.code == "E07"]
+    assert len(e07) == 1, f"當報一則 E07，實得 {[(i.code, i.severity) for i in issues]}"
+    assert e07[0].severity == "warning"
+    assert "1exksski0prwr" in e07[0].draft_id
+    assert "1evfubnkruxog" not in e07[0].draft_id, "題相合者不當入告"

@@ -452,15 +452,47 @@ def validate_promotions(storage) -> List[PromotionIssue]:
             这是 id 撞号之痕：后升者之文件覆盖了先升者，production 凭空少一条，
             而 E01/E02/E03 全都对得上（各自的墓碑都指得对，production 文件也在），
             故非专验不能见。2026-08-24 隋唐九组、汉代一组、南北朝一组皆此型。
+
+            **但一对多本身不足以断为撞号**：production 内并条（异体归正之类）
+            也生一对多——甲并入乙、甲之 production 档删去后，甲之 draft 墓碑
+            必须改指乙，否则 E01 反而要报「production 档不存在」。这是应然的
+            记账，不是缺陷。2026-08-25 初版 E07 不辨此二者，在真库上把
+            `92d4092dde` 异体归正所并之五组全报成撞号，而其「回收之法」
+            （清墓碑再升一次）若照做，会把已并掉的条目重新变出来。
+
+            故判据取二重，皆以并条之痕为凭：
+              1. 存者若**全无** `merged_from` —— 断为撞号（error）。并条工具
+                 必写此栏，撞号则无人写。
+              2. 存者有 `merged_from`，而某条 draft 记录之题**不在**存者的
+                 题集（title ＋ additional_titles；entity 则 primary_name ＋
+                 alt_names）之内 —— 并是并了，但这一条像是另一回事，
+                 报 warning 待人看。并条之所以生一对多，正因二者同题
+                 （异体、繁简），故题不相涉者可疑。
+              3. 二者皆合 —— 应然之并，不报。
     """
     issues: List[PromotionIssue] = []
     promotions = PromotionsStore(storage.draft_root)
     records = promotions.load()
     promoted_ids: Set[str] = set(records.keys())
 
+    # id → 檔路徑之表，兩倉一趟掃出。
+    # 不用 storage.find_file_by_id 逐個查者：分片已退化——draft 之 Work 幾乎
+    # 全落在 `1/e/v` 一格（id 由時間戳生，同一批匯入的前綴相同），該目錄現有
+    # 七萬一千餘檔，於是每查一次就得列它一遍，實測 53 ms；E01＋E02 各查一遍，
+    # 兩萬三千次即二十分鐘，整驗因此跑不完。改為一趟掃（十萬檔，數秒）。
+    id_paths: Dict[str, Path] = {}
+    for root in (storage.official_root, storage.draft_root):
+        for subdir in _CONTENT_SUBDIRS:
+            sub = root / subdir
+            if not sub.exists():
+                continue
+            for json_file in sub.rglob("*.json"):
+                fid = json_file.name.split("-", 1)[0]
+                id_paths.setdefault(fid, json_file)
+
     # E01 + E05: 反向校验 promotions.json 里每条 entry
     for draft_id, rec in records.items():
-        prod_path = storage.find_file_by_id(rec.production_id)
+        prod_path = id_paths.get(rec.production_id)
         if prod_path is None:
             issues.append(PromotionIssue(
                 severity="error", code="E01",
@@ -480,7 +512,7 @@ def validate_promotions(storage) -> List[PromotionIssue]:
 
         # E02 正向：从 promotions.json 出发查 tombstone，捕捉「文件整个丢掉
         # promoted_to」——下面 E02/E03 的反向遍历只看得到「文件带 promoted_to」者。
-        draft_path = storage.find_file_by_id(draft_id)
+        draft_path = id_paths.get(draft_id)
         if draft_path is None:
             issues.append(PromotionIssue(
                 severity="error", code="E02",
@@ -505,25 +537,48 @@ def validate_promotions(storage) -> List[PromotionIssue]:
                 ),
             ))
 
-    # E07: production_id 一对多——id 撞号之痕
+    # E07: production_id 一对多——须辨「撞号」与「并条之应然记账」，见 docstring
     by_prod: Dict[str, List[str]] = {}
     for draft_id, rec in records.items():
         by_prod.setdefault(rec.production_id, []).append(draft_id)
-    for prod_id, draft_ids in by_prod.items():
+    for prod_id, draft_ids in sorted(by_prod.items()):
         if len(draft_ids) < 2:
             continue
-        issues.append(PromotionIssue(
-            severity="error", code="E07",
-            draft_id=",".join(sorted(draft_ids)), production_id=prod_id,
-            path=str(promotions.path),
-            message=(
-                f"production id {prod_id} is claimed by {len(draft_ids)} draft records "
-                f"({', '.join(sorted(draft_ids))}) — an id collision: the later promote "
-                f"overwrote the earlier one's production file. Recover by clearing the "
-                f"loser's _promoted_to and its promotions.json entry, then promoting it again "
-                f"(draft content survives promotion, so nothing is lost)."
-            ),
-        ))
+        draft_ids = sorted(draft_ids)
+        prod_data = _read_json(id_paths.get(prod_id))
+        if not _merge_marks(prod_data):
+            issues.append(PromotionIssue(
+                severity="error", code="E07",
+                draft_id=",".join(draft_ids), production_id=prod_id,
+                path=str(promotions.path),
+                message=(
+                    f"production id {prod_id} is claimed by {len(draft_ids)} draft records "
+                    f"({', '.join(draft_ids)}) and the production entry bears no merged_from "
+                    f"— an id collision: the later promote overwrote the earlier one's "
+                    f"production file. Recover by clearing the loser's _promoted_to and its "
+                    f"promotions.json entry, then promoting it again (draft content survives "
+                    f"promotion, so nothing is lost). Do NOT do this if the entry turns out to "
+                    f"have been merged — check for merge evidence first."
+                ),
+            ))
+            continue
+        names = _name_set(prod_data)
+        odd = [d for d in draft_ids
+               if (_read_json(id_paths.get(d)).get("title")
+                   or _read_json(id_paths.get(d)).get("primary_name")) not in names]
+        if odd:
+            issues.append(PromotionIssue(
+                severity="warning", code="E07",
+                draft_id=",".join(odd), production_id=prod_id,
+                path=str(promotions.path),
+                message=(
+                    f"production id {prod_id} is claimed by {len(draft_ids)} draft records; "
+                    f"the entry does carry merged_from, so this is likely a production-side "
+                    f"merge — but {', '.join(odd)} has a title not among the survivor's "
+                    f"title/additional_titles, so it may be an unrelated record that collided. "
+                    f"Worth a look; do not auto-recover."
+                ),
+            ))
 
     # E02 + E03: draft 端校验
     draft_root = storage.draft_root
@@ -575,20 +630,18 @@ def validate_promotions(storage) -> List[PromotionIssue]:
 
     # E04: 裸引用扫描——任何实体 JSON 出现 promoted-draft-id 字符串都算
     if promoted_ids:
-        # 准备 skip 集合：每个 tombstone 自己
-        skip_paths: Set[Path] = set()
-        for draft_id in promoted_ids:
-            p = storage.find_file_by_id(draft_id)
-            if p is not None:
-                skip_paths.add(p.resolve())
-
+        # 跳過每個 tombstone 自己。檔名之式為 `<id>-<題>.json`（見 ITEM_FILE_RE），
+        # 故由檔名取 id 即可判，與舊法（逐 id 呼 find_file_by_id 再比 resolve()）
+        # 同效——find_file_by_id 本就是照這個檔名約定反查的。舊法為 11,106 次
+        # 目錄 glob ＋ 十萬次 Path.resolve()，二者皆是系統呼叫大戶。
         for root in (storage.draft_root, storage.official_root):
+            is_draft = (root == storage.draft_root)
             for subdir in _CONTENT_SUBDIRS:
                 sub = root / subdir
                 if not sub.exists():
                     continue
                 for json_file in sub.rglob("*.json"):
-                    if json_file.resolve() in skip_paths:
+                    if is_draft and json_file.name.split("-", 1)[0] in promoted_ids:
                         continue
                     try:
                         with open(json_file, "r", encoding="utf-8") as f:
@@ -612,7 +665,51 @@ def validate_promotions(storage) -> List[PromotionIssue]:
 # 于是 E04 把它当裸引用报出来——2026-08-23《潛夫論》即此例（merged_from 指向自己
 # 升格前的 draft id）。把它改写成 P 会毁掉审计线索：那次合并确实发生在 draft。
 # 故扫描前先剔除这类键值对。
+def _read_json(path: Optional[Path]) -> dict:
+    """讀一個 JSON，讀不著就給空 dict——E07 的判據取自 production 檔，
+    檔缺者 E01 已另有一報，此處不重複作聲。"""
+    if path is None:
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _merge_marks(data: dict) -> bool:
+    """此條是否帶並條之痕。頂層 `merged_from`，或 indexed_by 之節上的同名欄。"""
+    if data.get("merged_from"):
+        return True
+    for entry in data.get("indexed_by") or []:
+        if isinstance(entry, dict) and entry.get("merged_from"):
+            return True
+    return False
+
+
+def _name_set(data: dict) -> Set[str]:
+    """一條之題集：Work/Book/Collection 取 title ＋ additional_titles，
+    Entity 取 primary_name ＋ alt_names[].name。"""
+    names: Set[str] = set()
+    for k in ("title", "primary_name"):
+        if data.get(k):
+            names.add(data[k])
+    for t in data.get("additional_titles") or []:
+        if isinstance(t, str):
+            names.add(t)
+    for a in data.get("alt_names") or []:
+        if isinstance(a, dict) and a.get("name"):
+            names.add(a["name"])
+        elif isinstance(a, str):
+            names.add(a)
+    return names
+
+
 _PROVENANCE_KEYS = ("merged_from",)
+
+# 「整個被引號包住的簡單 token」——JSON 之鍵、及不含空白標點之字串值。
+_QUOTED_TOKEN_RE = re.compile(r'"([0-9A-Za-z_-]+)"')
 
 
 def _scan_naked_refs(content: str, promoted_ids: Set[str]) -> Set[str]:
@@ -625,12 +722,13 @@ def _scan_naked_refs(content: str, promoted_ids: Set[str]) -> Set[str]:
     """
     for k in _PROVENANCE_KEYS:
         content = re.sub(r'"%s"\s*:\s*"[0-9a-z]{10,13}"' % k, '', content)
-    hits: Set[str] = set()
-    for pid in promoted_ids:
-        # 用引号包裹以避免子串误命中（例如 D 是 P 的前缀的极端情况）
-        if f'"{pid}"' in content:
-            hits.add(pid)
-    return hits
+    # 一趟取出全文所有「整個被引號包住的簡單 token」，再與 promoted_ids 取交集。
+    # 語義與舊法（逐 id 判 f'"{pid}"' in content）等價：pid 皆 base36，凡以
+    # `"pid"` 之形出現者必是這樣一個 token；而交集保證只有真 pid 命中。
+    # 舊法是 O(檔數 × id 數) 之子串搜——11,106 個 id × 十萬檔 ≈ 十一億次，
+    # 實測全倉一驗跑逾半時而未竟。今改 O(檔數)。
+    tokens = set(_QUOTED_TOKEN_RE.findall(content))
+    return tokens & promoted_ids
 
 
 # ── Lookup helper ──
