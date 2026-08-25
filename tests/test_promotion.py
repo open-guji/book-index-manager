@@ -557,3 +557,54 @@ def test_tombstone_write_protection_reads_prefixed_field(manager: BookIndexManag
 
     with pytest.raises(StorageError):
         manager.save_item({**data, "title": "改标题"}, BookIndexType.Work, BookIndexStatus.Draft)
+
+
+# ── E07：production_id 一對多（id 撞號之痕） ──
+
+def test_validate_detects_one_to_many_production_id(tmp_path):
+    """撞號之後，E01/E02/E03 全都對得上而 production 憑空少一條——非專驗不能見。
+
+    造局：兩條 draft 之墓碑各指同一 production id，promotions.json 亦如是，
+    production 只一檔（後升者覆寫先升者之後正是此狀）。
+    2026-08-24 隋唐九組、漢代一組、南北朝一組皆此型。
+    """
+    import json as _json
+    from book_index_manager.promotion import validate_promotions
+    from book_index_manager.storage import BookIndexStorage
+
+    root = tmp_path
+    draft = root / "book-index-draft"
+    official = root / "book-index"
+    for base in (draft, official):
+        (base / "Work" / "1" / "e" / "v").mkdir(parents=True, exist_ok=True)
+    (official / "Work" / "d" / "5" / "9").mkdir(parents=True, exist_ok=True)
+
+    prod_id = "d59f2870u874"
+    (official / "Work" / "d" / "5" / "9" / f"{prod_id}-文選.json").write_text(
+        _json.dumps({"id": prod_id, "type": "work", "title": "文選"}, ensure_ascii=False),
+        encoding="utf-8")
+    for did, title in (("1ev3c1fplga2o", "宋書"), ("1evcmocs9vtog", "文選")):
+        (draft / "Work" / "1" / "e" / "v" / f"{did}-{title}.json").write_text(
+            _json.dumps({"id": did, "type": "work", "title": title,
+                         "_promoted_to": prod_id,
+                         "_promoted_at": "2026-08-24T18:56:21Z"}, ensure_ascii=False),
+            encoding="utf-8")
+    (draft / "promotions.json").write_text(_json.dumps({
+        "version": 1,
+        "promotions": {
+            "1ev3c1fplga2o": {"production_id": prod_id, "type": "work",
+                              "promoted_at": "2026-08-24T18:56:21Z"},
+            "1evcmocs9vtog": {"production_id": prod_id, "type": "work",
+                              "promoted_at": "2026-08-24T18:56:21Z"},
+        },
+    }, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    storage = BookIndexStorage(str(root))
+    issues = validate_promotions(storage)
+    e07 = [i for i in issues if i.code == "E07"]
+    assert len(e07) == 1, f"E07 應報一組，實得 {[i.code for i in issues]}"
+    assert e07[0].production_id == prod_id
+    assert "1ev3c1fplga2o" in e07[0].draft_id and "1evcmocs9vtog" in e07[0].draft_id
+    # 舊有各驗不當因此而報——正是「非專驗不能見」之所以
+    assert not [i for i in issues if i.code in ("E01", "E02", "E03")], \
+        f"E01/E02/E03 不當報，實得 {[i.code for i in issues]}"

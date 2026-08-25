@@ -247,8 +247,9 @@ def promote_to_official(
         )
 
     # ── Phase 1: 生成 P + 写 production ──
-    prod_id_val = id_gen.next_id(BookIndexStatus.Official, type_val)
-    prod_id = base36_encode(prod_id_val)
+    prod_id_val, prod_id = _mint_unique_official_id(
+        id_gen, storage, type_val, promotions
+    )
 
     # 深拷贝并改 id
     prod_metadata = json.loads(json.dumps(draft_metadata))
@@ -395,6 +396,43 @@ class PromotionIssue:
         }
 
 
+def _mint_unique_official_id(id_gen, storage, type_val, promotions, max_tries: int = 512):
+    """鑄一個**未被佔用**之 production id，占用即再鑄。
+
+    何以要查：`BookIndexIdGenerator` 之 `(last_timestamp, sequence)` 是**進程內**狀態，
+    而 official id 之時戳單位是**秒**（draft 是毫秒，見 `_get_current_timestamp`）。
+    故同一秒內的兩次 CLI 調用，各自從 `sequence=0` 起，必得同號——
+    而 `save_item` 見同 id 而題異，只印一行
+    `Renaming file for <id>: <舊>.json -> <新>.json (title changed)`
+    便把先升者之 production 檔**覆寫**。
+
+    2026-08-24 南北朝升格實見：`promote --batch b2.txt && promote --batch b3.txt`
+    二進程同秒，《文選》之 id 撞上前一進程之《宋書》，宋書之 production 條被覆蓋。
+    同日另一會話升隋唐亦撞九組——**彼是進程內 status 交替所致**（已由
+    `id_generator` 之 per-status 狀態修訖），**與此非一事**：那一支在進程內，
+    這一支跨進程，per-status 狀態管不著。
+
+    查兩處：`promotions.json` 已錄之 production_id，與兩倉之實檔。
+    同進程內再鑄必使 sequence 遞增（同秒則 +1，跨秒則歸零而時戳已進），
+    故必收斂；`max_tries` 只是防呆之底。
+    """
+    taken = {rec.production_id for rec in promotions.load().values()}
+    for _ in range(max_tries):
+        id_val = id_gen.next_id(BookIndexStatus.Official, type_val)
+        id_str = base36_encode(id_val)
+        if id_str in taken:
+            continue
+        if storage.find_file_by_id(id_str, quiet=True) is not None:
+            continue
+        return id_val, id_str
+    raise BookIndexError(
+        f"Failed to mint an unused production id after {max_tries} tries "
+        f"(type={type_val.name}). This should be impossible: the sequence space "
+        f"is 256 per second and the generator waits for the next second when it "
+        f"wraps. Check for a corrupted promotions.json or a clock problem."
+    )
+
+
 def validate_promotions(storage) -> List[PromotionIssue]:
     """全仓校验 promotion 状态一致性。返回 issue 列表（空表示一切 OK）。
 
@@ -410,6 +448,10 @@ def validate_promotions(storage) -> List[PromotionIssue]:
       [E05] promotions.json 里 production_id 不是 official status 位
       [E06] (warning) tombstone 还在用无前缀的 promoted_to/promoted_at——
             派生栏应带 `_` 前缀（SCHEMA.md §記錄之共通欄位）
+      [E07] 同一 production_id 被两条以上 draft 记录占用（一对多映射）——
+            这是 id 撞号之痕：后升者之文件覆盖了先升者，production 凭空少一条，
+            而 E01/E02/E03 全都对得上（各自的墓碑都指得对，production 文件也在），
+            故非专验不能见。2026-08-24 隋唐九组、汉代一组、南北朝一组皆此型。
     """
     issues: List[PromotionIssue] = []
     promotions = PromotionsStore(storage.draft_root)
@@ -462,6 +504,26 @@ def validate_promotions(storage) -> List[PromotionIssue]:
                     f"but promotions.json says {rec.production_id}"
                 ),
             ))
+
+    # E07: production_id 一对多——id 撞号之痕
+    by_prod: Dict[str, List[str]] = {}
+    for draft_id, rec in records.items():
+        by_prod.setdefault(rec.production_id, []).append(draft_id)
+    for prod_id, draft_ids in by_prod.items():
+        if len(draft_ids) < 2:
+            continue
+        issues.append(PromotionIssue(
+            severity="error", code="E07",
+            draft_id=",".join(sorted(draft_ids)), production_id=prod_id,
+            path=str(promotions.path),
+            message=(
+                f"production id {prod_id} is claimed by {len(draft_ids)} draft records "
+                f"({', '.join(sorted(draft_ids))}) — an id collision: the later promote "
+                f"overwrote the earlier one's production file. Recover by clearing the "
+                f"loser's _promoted_to and its promotions.json entry, then promoting it again "
+                f"(draft content survives promotion, so nothing is lost)."
+            ),
+        ))
 
     # E02 + E03: draft 端校验
     draft_root = storage.draft_root
