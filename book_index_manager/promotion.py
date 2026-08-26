@@ -256,6 +256,7 @@ def promote_to_official(
     id_gen: BookIndexIdGenerator,
     draft_id: str,
     rewrite_refs: bool = True,
+    promotions=None,
 ) -> str:
     """把单个 draft 条目升级为 production。返回新 production-id 字符串。
 
@@ -283,7 +284,14 @@ def promote_to_official(
             f"{draft_id} already promoted to {read_promoted_to(draft_metadata)}"
         )
 
-    promotions = PromotionsStore(storage.draft_root)
+    # promotions 由呼叫方傳入者，其 save 亦由呼叫方掌時機（批量升格用之：
+    # promotions.json 今已 10MB／7.8 萬目，每條各 save 一次則讀、排序、序列化、
+    # 原子寫俱各一遍，實測每條 0.53 秒，佔單條總耗時 1.15 秒之半。批量時攢
+    # 若干條再 flush，此費即攤薄。傳入者本函式不 save，缺一次 flush 則墓碑已
+    # 立而映射未錄（validate 之 E03），故呼叫方須確保收尾必 flush。
+    _own_promotions = promotions is None
+    if _own_promotions:
+        promotions = PromotionsStore(storage.draft_root)
     if promotions.get(draft_id) is not None:
         # promotions.json 有但文件没标记——视为状态不一致，拒绝
         raise BookIndexError(
@@ -352,7 +360,8 @@ def promote_to_official(
         promoted_at=promoted_at,
     )
     promotions.add(draft_id, record)
-    promotions.save()
+    if _own_promotions:
+        promotions.save()
 
     # ── Phase 4: 改引用 ──
     if rewrite_refs:

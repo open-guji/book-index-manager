@@ -396,6 +396,19 @@ class CLIHandler:
         dry_run = bool(getattr(self.args, "dry_run", False))
         rewrite_refs = not bool(getattr(self.args, "no_rewrite_refs", False))
 
+        # 批量升格時攢若干條再 flush promotions.json——該檔今已 10MB／7.8 萬目，
+        # 每條各 save 一次則讀、排序、序列化、原子寫俱各一遍，實測每條 0.53 秒，
+        # 佔單條總耗時 1.15 秒之半。攢 100 條一 flush，此費即降至百分之一。
+        # **不攢到最後才寫**：中途若斷（工具逾時、SIGTERM），已升之條墓碑已立
+        # 而映射未錄，validate 之 E03 即報且難以追認。攢 100 是折中——縱斷，
+        # 待追認者至多 100 條而非萬條。循環既畢，餘數必再 flush 一次。
+        from .promotion import PromotionsStore
+        FLUSH_EVERY = 100
+        shared_promotions = None
+        if not dry_run and len(ids) > 1:
+            shared_promotions = PromotionsStore(self.manager.storage.draft_root)
+        pending = 0
+
         successes = 0
         failures = 0
         for draft_id in ids:
@@ -409,7 +422,14 @@ class CLIHandler:
                 continue
 
             try:
-                prod_id = self.manager.promote_to_official(draft_id, rewrite_refs=rewrite_refs)
+                prod_id = self.manager.promote_to_official(
+                    draft_id, rewrite_refs=rewrite_refs,
+                    promotions=shared_promotions)
+                if shared_promotions is not None:
+                    pending += 1
+                    if pending >= FLUSH_EVERY:
+                        shared_promotions.save()
+                        pending = 0
                 print(json.dumps({
                     "status": "success",
                     "draft_id": draft_id,
@@ -423,6 +443,10 @@ class CLIHandler:
                     "message": str(e),
                 }, ensure_ascii=False))
                 failures += 1
+
+        if shared_promotions is not None and pending:
+            shared_promotions.save()
+            pending = 0
 
         prefix = "[dry-run] " if dry_run else ""
         print(f"\n{prefix}{successes} succeeded, {failures} failed", file=sys.stderr)

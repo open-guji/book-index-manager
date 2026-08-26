@@ -142,9 +142,14 @@ class BookIndexManager:
 
     # ── Promotion (draft → production) ──
 
-    def promote_to_official(self, draft_id: str, rewrite_refs: bool = True) -> str:
-        """Promote a draft entry to production. Returns the new production-id string."""
-        return _promote_to_official(self.storage, self.id_gen, draft_id, rewrite_refs=rewrite_refs)
+    def promote_to_official(self, draft_id: str, rewrite_refs: bool = True,
+                            promotions=None) -> str:
+        """Promote a draft entry to production. Returns the new production-id string.
+
+        promotions 傳入則本函式不 save，由呼叫方掌 flush 時機（批量升格之用）。
+        """
+        return _promote_to_official(self.storage, self.id_gen, draft_id,
+                                    rewrite_refs=rewrite_refs, promotions=promotions)
 
     def resolve_id(self, id_str: str):
         """Resolve a possibly-promoted draft ID to its canonical (production) form.
