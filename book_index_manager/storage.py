@@ -132,8 +132,12 @@ class BookIndexStorage:
         self.workspace_root = Path(workspace_root).resolve()
         self.official_root = self.workspace_root / "book-index"
         self.draft_root = self.workspace_root / "book-index-draft"
+        # 2026-08-26 文本拆分：整理本／輯佚／全文／抓取素材遷入 book-text，
+        # 兩個元資料倉之下再無資產目錄。**資產之根與條目之根自此不同**，
+        # 由 `get_asset_dir()` 分辨，勿再由 `get_root_by_status()` 推資產路徑。
+        self.text_root = self.workspace_root / "book-text"
 
-        logger.debug(f"Resolved paths: root={self.workspace_root}, official={self.official_root}, draft={self.draft_root}")
+        logger.debug(f"Resolved paths: root={self.workspace_root}, official={self.official_root}, draft={self.draft_root}, text={self.text_root}")
 
         try:
             if not self.workspace_root.exists():
@@ -491,15 +495,27 @@ class BookIndexStorage:
     # ── Asset Directory ──
 
     def get_asset_dir(self, id_str: str) -> Path:
-        """Get asset directory path: {root}/{Type}/{c1}/{c2}/{c3}/{ID}/"""
+        """資產目錄：`{book-text}/{Type}/{c1}/{c2}/{c3}/{ID}/`
+
+        **不再隨條目之 status 分 draft／official。** 2026-08-26 文本拆分後，
+        整理本（`collated_edition`）、輯佚（`fragments`）、全文（`full_text`）、
+        抓取素材（`sources/`）盡在 `book-text` 一倉，draft 與 production 兩個
+        元資料倉之下俱無資產目錄——舊法由 `get_root_by_status()` 取根，
+        今必指向空處。
+
+        分片仍用 `shard_dirs()`（取 id **尾**三字元三級），三倉同一函式。
+        """
         id_val = smart_decode(id_str)
         components = BookIndexIdGenerator.parse(id_val)
-        root = self.get_root_by_status(components.status)
         c1, c2, c3 = shard_dirs(id_str)
-        return root / components.type.name / c1 / c2 / c3 / id_str
+        return self.text_root / components.type.name / c1 / c2 / c3 / id_str
 
     def init_asset_dir(self, id_str: str) -> Path:
-        """Create asset directory for an ID. Returns the directory path."""
+        """Create asset directory for an ID. Returns the directory path.
+
+        建於 `book-text`；該倉不存在則一併建之（本機工作區未 clone book-text
+        時，靜默建一個空目錄比拋錯友善，且與 official／draft 兩根之處置一致）。
+        """
         asset_dir = self.get_asset_dir(id_str)
         asset_dir.mkdir(parents=True, exist_ok=True)
         return asset_dir

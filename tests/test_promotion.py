@@ -198,7 +198,13 @@ def test_promote_with_rewrite_refs_false_skips_rewrite(manager: BookIndexManager
 
 # ── 4. Asset dir ──
 
-def test_promote_copies_asset_dir(manager: BookIndexManager, tmp_path: Path):
+def test_promote_moves_asset_dir(manager: BookIndexManager, tmp_path: Path):
+    """升格时资产目录**搬移**到 production id 之下，draft 那份不留。
+
+    2026-08-26 文本拆分之后，draft 与 production 两侧的资产同在 book-text
+    一仓；旧法拷完把 draft 那份留着，如今两份就落在同一个仓里，是同一批
+    文本重出两处。故改为 move。
+    """
     draft_id = _save_draft_work(manager, "测试")
 
     # 手工建一个 asset dir 模拟 collated_edition
@@ -207,15 +213,17 @@ def test_promote_copies_asset_dir(manager: BookIndexManager, tmp_path: Path):
 
     prod_id = manager.promote_to_official(draft_id)
 
-    # production asset dir 存在且内容拷过去
-    prod_path = manager.find_item_path(prod_id)
-    prod_asset = prod_path.parent / prod_id
+    # 资产在 book-text 之下，**不在**条目档的 parent——两者今已分属两仓
+    prod_asset = manager.storage.get_asset_dir(prod_id)
     assert prod_asset.is_dir()
     assert (prod_asset / "note.md").read_text(encoding="utf-8") == "# 测试"
+    assert manager.storage.text_root in prod_asset.parents
 
-    # draft asset dir 仍存在（物理拷贝，不是 move）
-    assert asset.is_dir()
-    assert (asset / "note.md").exists()
+    # 条目档之 parent 下**不该**再有资产目录（旧法之所在）
+    assert not (manager.find_item_path(prod_id).parent / prod_id).exists()
+
+    # draft 那份已搬走，不留
+    assert not asset.exists()
 
 
 # ── 5. Tombstone 写保护 ──

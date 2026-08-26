@@ -162,9 +162,10 @@ def test_promote_initializes_collated_edition_revision(manager, tmp_path):
     )
     # promote
     prod_id = manager.promote_to_official(draft_id)
+    # 资产在 book-text，不在条目档之 parent（2026-08-26 文本拆分）
     prod_index = (
-        manager.find_item_path(prod_id).parent
-        / prod_id / 'collated_edition' / 'collated_edition_index.json'
+        manager.storage.get_asset_dir(prod_id)
+        / 'collated_edition' / 'collated_edition_index.json'
     )
     assert prod_index.exists()
     with open(prod_index, encoding='utf-8') as f:
@@ -175,13 +176,37 @@ def test_promote_initializes_collated_edition_revision(manager, tmp_path):
     assert data['text_quality']['grade'] == 'rough'
 
 
+def test_promote_initializes_revision_with_new_index_name(manager):
+    """清单档用**新名** `index.json` 时同样注入 revision。
+
+    2026-08-26 归一把 `collated_edition_index.json` 更名 `index.json`。
+    若注入之处只认旧名，则新仓里一份也注不上，而且**静默无声**——
+    没有报错，只是 revision 永远不出现。故此驗单立一条。
+    """
+    import json as _json
+    draft_id, _ = _make_work(manager, status=BookIndexStatus.Draft)
+    asset = manager.init_asset_dir(draft_id)
+    ce = asset / 'collated_edition'
+    ce.mkdir()
+    (ce / 'index.json').write_text(
+        _json.dumps({'work_id': draft_id, 'total_entries': 0},
+                    ensure_ascii=False, indent=2), encoding='utf-8')
+    prod_id = manager.promote_to_official(draft_id)
+    prod_index = manager.storage.get_asset_dir(prod_id) / 'collated_edition' / 'index.json'
+    assert prod_index.exists()
+    with open(prod_index, encoding='utf-8') as f:
+        data = _json.load(f)
+    assert data['revision'] == '1.0.0'
+    assert data['revised_at'].startswith('2026-')
+
+
 def test_promote_skips_revision_init_when_no_collated_edition(manager):
     """asset dir 无 collated_edition 子目录时不操作 index.json。"""
     draft_id, _ = _make_work(manager, status=BookIndexStatus.Draft)
     asset = manager.init_asset_dir(draft_id)
     (asset / 'other.md').write_text('# other', encoding='utf-8')
     prod_id = manager.promote_to_official(draft_id)
-    prod_dir = manager.find_item_path(prod_id).parent / prod_id
+    prod_dir = manager.storage.get_asset_dir(prod_id)
     assert prod_dir.is_dir()
     assert not (prod_dir / 'collated_edition').exists()
 

@@ -314,20 +314,36 @@ def promote_to_official(
     # 但 save_item 内部要查 find_file_by_id 看有没有同 ID 文件——刚生成的 P 必然没有，OK。
     prod_path = storage.save_item(type_val, prod_id_val, prod_metadata)
 
-    # Asset dir 物理拷贝
-    draft_asset_dir = draft_path.parent / draft_id
+    # ── Asset dir：搬移，不是拷贝 ──
+    #
+    # 2026-08-26 文本拆分之后，draft 与 production 两侧的资产**同在 book-text
+    # 一仓**（`storage.get_asset_dir()` 恒指该仓，不再随 status 分根）。于是：
+    #
+    # - 路径**不可**再由条目档之 parent 推（`draft_path.parent / draft_id`）——
+    #   条目在两个元数据仓，资产在第三个仓，parent 已经指不到了。一律走
+    #   `storage.get_asset_dir()`。
+    # - 拷贝改**搬移**。旧法拷完把 draft 那份留在 draft 仓，日后另行清理；
+    #   如今两份落在同一个仓里，留着就是同一批文本重出两处，且 chk-cross
+    #   会看见两个 owner 各有整理本。升格既竟，权威 id 即 production id。
+    draft_asset_dir = storage.get_asset_dir(draft_id)
     if draft_asset_dir.is_dir():
-        prod_asset_dir = prod_path.parent / prod_id
+        prod_asset_dir = storage.get_asset_dir(prod_id)
         if prod_asset_dir.exists():
             # 极不可能（新 ID 全新分配），但稳健起见
             raise BookIndexError(
                 f"Production asset dir already exists: {prod_asset_dir}"
             )
-        shutil.copytree(str(draft_asset_dir), str(prod_asset_dir))
-        # 若拷贝来的 asset dir 含 collated_edition，给其 index.json 注入
+        prod_asset_dir.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(draft_asset_dir), str(prod_asset_dir))
+        # 若搬来的 asset dir 含 collated_edition，给其 index.json 注入
         # 初始 revision/revised_at（M6，设计 §2026-05-版本控制与不可变性）。
         # 整理本版本号在 production 仓维护，draft 不要求。
-        ce_index = prod_asset_dir / 'collated_edition' / 'collated_edition_index.json'
+        # **清单档 2026-08-26 更名 `index.json`**（归一），旧名暂容以就未及改者；
+        # 只认旧名则新仓里一份也注不上，且静默无声。
+        ce_dir = prod_asset_dir / 'collated_edition'
+        ce_index = next((ce_dir / n for n in ('index.json',
+                                              'collated_edition_index.json')
+                         if (ce_dir / n).is_file()), ce_dir / 'index.json')
         if ce_index.is_file():
             try:
                 with open(ce_index, 'r', encoding='utf-8') as f:
