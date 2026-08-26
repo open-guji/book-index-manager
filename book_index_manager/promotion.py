@@ -640,6 +640,8 @@ def validate_promotions(storage) -> List[PromotionIssue]:
     _SKIP = {'id', 'updated_at', 'revision', 'revised_at', '_promoted_to',
              '_promoted_at', 'promoted_to', 'promoted_at', 'merged_from',
              '_has_text', '_has_image', '_has_collated', '_path'}
+    # 已 stub 化之墓碑，其欄位不出此集（見 stub-tombstones.py 之 STUB_KEEP_KEYS）
+    _STUB_KEYS = _SKIP | {'schema_version', 'type', 'title', 'ai_note'}
     e08_hits: List[Tuple[str, str, str]] = []
     for draft_id, rec in sorted(records.items()):
         prod_path = id_paths.get(rec.production_id)
@@ -652,9 +654,15 @@ def validate_promotions(storage) -> List[PromotionIssue]:
             continue
         if pd.get('revision') not in (None, '1.0.0'):
             continue                      # 升格后改过 production，二者本该不同
-        # 只比**兩側俱有**之欄。墓碑經 `stub-tombstones.py` 精簡者只剩
-        # {id,type,title,promoted_to,promoted_at} 五欄，那是有意為之
-        # （production 才是 canonical），若比聯集則每條 stub 都報，噪不可用。
+        # 墓碑經 `stub-tombstones.py` 精簡者，已無任何知識欄——只剩升格印記、
+        # 題名與一句指向 production 之 ai_note。它與正身之 ai_note 必然不同，
+        # 逐條比則每條 stub 都報：2026-08-26 全量 stub 之後實測報 70,360 條，
+        # 把此驗徹底淹掉。stub 是「封賬」——production 才是 canonical，
+        # 墓碑已不承載知識，無從比起，故整條跳過。
+        # 判據取欄位集合而非 ai_note 之措辭，免得日後改文案即失效。
+        if not (set(dd) - _STUB_KEYS):
+            continue
+        # 只比**兩側俱有**之欄，若比聯集則墓碑所無者盡報。
         keys = (set(pd) & set(dd)) - _SKIP
         diff = []
         for k in sorted(keys):
