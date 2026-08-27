@@ -1,8 +1,7 @@
 {
   "version": "1.0",
   "description": "古籍数字资源来源站点目录。Book.resources / Work.resources 中 resource.id 应是本表中的 source.id。",
-  "updated_at": "2026-05-15",
-
+  "updated_at": "2026-08-26",
   "tier_definitions": {
     "1": {
       "label": "原图书馆 / 官方来源",
@@ -35,143 +34,296 @@
       "import_strategy": "仅用于下载工作流，不收录到 Book.resources"
     }
   },
-
   "policy_definitions": {
     "preserve": "直接录到 Book.resources，保留原始 URL",
     "mirror": "我们做的镜像，通过 group 字段绑到原始 resource，带 group_role=mirror",
     "download_only": "仅作为内部下载来源，不写入 Book.resources",
     "drop": "已有更优替代或不再合适收录，老条目应清理"
   },
-
   "sources": [
     {
       "id": "nlc",
       "name": "中華古籍資源庫（國家圖書館）",
       "url": "https://read.nlc.cn/",
       "description": "中國國家圖書館古籍數字化平台，含高清影像",
-      "tier": 1, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "scraping", "speed_kbps_typical": 200, "notes": "需用 bookget 抓 IIIF tile" },
-      "bookget": { "supported": true, "adapter_name": "nlc_guji" }
+      "tier": 1,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "scraping",
+        "speed_kbps_typical": 200,
+        "notes": "需用 bookget 抓 IIIF tile"
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "nlc_guji"
+      }
     },
     {
       "id": "ncl",
       "name": "國家圖書館古籍與特藏文獻資源（台灣）",
       "url": "https://rbook.ncl.edu.tw/",
       "description": "中華民國國家圖書館（台北）善本古籍影像",
-      "tier": 1, "policy": "preserve",
-      "access": { "from_cn": false, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "scraping", "speed_kbps_typical": 100, "notes": "需翻墙" },
-      "bookget": { "supported": true, "adapter_name": "taiwan" }
+      "tier": 1,
+      "policy": "preserve",
+      "access": {
+        "from_cn": false,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "scraping",
+        "speed_kbps_typical": 100,
+        "notes": "需翻墙"
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "taiwan"
+      }
     },
     {
       "id": "harvard",
       "name": "Harvard-Yenching Library",
       "url": "https://curiosity.lib.harvard.edu/",
       "description": "哈佛燕京圖書館中文善本特藏，IIIF 影像",
-      "tier": 1, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "iiif", "speed_kbps_typical": 300 },
-      "bookget": { "supported": true, "adapter_name": "harvard" }
+      "tier": 1,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "iiif",
+        "speed_kbps_typical": 300
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "harvard"
+      }
     },
     {
       "id": "princeton",
       "name": "Princeton University Library",
       "url": "https://catalog.princeton.edu/",
-      "tier": 1, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "iiif" },
-      "bookget": { "supported": true, "adapter_name": "princeton" }
+      "tier": 1,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "iiif"
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "princeton"
+      }
     },
     {
       "id": "stanford",
       "name": "Stanford University Library",
       "url": "https://exhibits.stanford.edu/",
-      "tier": 1, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "iiif" },
-      "bookget": { "supported": true, "adapter_name": "stanford" }
+      "tier": 1,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "iiif"
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "stanford"
+      }
     },
     {
       "id": "kyoto",
       "name": "京都大學人文科學研究所 漢字文獻情報處理研究會",
       "url": "https://kanji.zinbun.kyoto-u.ac.jp/",
-      "tier": 1, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "iiif" },
-      "bookget": { "supported": true, "adapter_name": "kyoto" }
+      "tier": 1,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "iiif"
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "kyoto"
+      }
     },
     {
       "id": "ndl",
       "name": "国立国会図書館デジタルコレクション",
       "url": "https://dl.ndl.go.jp/",
       "description": "日本国立国会图书馆数字馆藏",
-      "tier": 1, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "iiif" },
-      "bookget": { "supported": true, "adapter_name": "ndl" }
+      "tier": 1,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "iiif"
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "ndl"
+      }
     },
     {
       "id": "shanghai-library",
       "name": "上海圖書館古籍書目查詢",
       "url": "https://gj.library.sh.cn/",
       "description": "上海图书馆古籍目录（用于志书录入参考）",
-      "tier": 1, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false },
-      "download": { "supported": false, "method": "manual", "notes": "目录站，不提供原始影像下载" },
-      "bookget": { "supported": false, "adapter_name": null }
+      "tier": 1,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": false,
+        "method": "manual",
+        "notes": "目录站，不提供原始影像下载"
+      },
+      "bookget": {
+        "supported": false,
+        "adapter_name": null
+      }
     },
-
     {
       "id": "archive",
       "name": "Internet Archive",
       "url": "https://archive.org/",
       "description": "互联网档案馆，公益数字图书馆。我们上传的镜像也在这里",
-      "tier": 2, "policy": "preserve",
-      "access": { "from_cn": false, "from_intl": true, "needs_login": false, "needs_login_to_upload": true },
-      "download": { "supported": true, "method": "direct", "speed_kbps_typical": 100, "notes": "国内访问受墙，需翻墙；我们用 ia CLI 上传" },
-      "bookget": { "supported": true, "adapter_name": "archive_org" }
+      "tier": 2,
+      "policy": "preserve",
+      "access": {
+        "from_cn": false,
+        "from_intl": true,
+        "needs_login": false,
+        "needs_login_to_upload": true
+      },
+      "download": {
+        "supported": true,
+        "method": "direct",
+        "speed_kbps_typical": 100,
+        "notes": "国内访问受墙，需翻墙；我们用 ia CLI 上传"
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "archive_org"
+      }
     },
     {
       "id": "wikimedia",
       "name": "Wikimedia Commons",
       "url": "https://commons.wikimedia.org/",
       "description": "维基共享资源。中華再造善本等大量古籍影印在此分发",
-      "tier": 2, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false, "notes": "国内可访问但偶尔抖" },
-      "download": { "supported": true, "method": "direct", "speed_kbps_typical": 500 },
-      "bookget": { "supported": true, "adapter_name": "wikimedia_commons" }
+      "tier": 2,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false,
+        "notes": "国内可访问但偶尔抖"
+      },
+      "download": {
+        "supported": true,
+        "method": "direct",
+        "speed_kbps_typical": 500
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "wikimedia_commons"
+      }
     },
     {
       "id": "hathitrust",
       "name": "HathiTrust Digital Library",
       "url": "https://www.hathitrust.org/",
       "description": "美国大学联盟数字图书馆",
-      "tier": 2, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false, "notes": "部分内容需登录或机构访问" },
-      "download": { "supported": false, "method": "manual", "notes": "完整下载需机构权限，只能逐页看图" },
-      "bookget": { "supported": false, "adapter_name": null }
+      "tier": 2,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false,
+        "notes": "部分内容需登录或机构访问"
+      },
+      "download": {
+        "supported": false,
+        "method": "manual",
+        "notes": "完整下载需机构权限，只能逐页看图"
+      },
+      "bookget": {
+        "supported": false,
+        "adapter_name": null
+      }
     },
     {
       "id": "europeana",
       "name": "Europeana",
       "url": "https://www.europeana.eu/",
       "description": "欧洲数字文化遗产平台",
-      "tier": 2, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "scraping" },
-      "bookget": { "supported": true, "adapter_name": "european" }
+      "tier": 2,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "scraping"
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "european"
+      }
     },
-
     {
       "id": "shidianguji",
       "name": "识典古籍",
       "url": "https://www.shidianguji.com/",
       "description": "北大与字节跳动合作的古籍数字化平台。含 OCR 全文 + 影印图",
-      "tier": 3, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "scraping", "speed_kbps_typical": 200 },
-      "bookget": { "supported": true, "adapter_name": "shidianguji" },
+      "tier": 3,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "scraping",
+        "speed_kbps_typical": 200
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "shidianguji"
+      },
       "notes": "lineType=2 是夹注，提取时不可漏"
     },
     {
@@ -179,50 +331,110 @@
       "name": "中國哲學書電子化計劃 (CText)",
       "url": "https://ctext.org/",
       "description": "线上开放古籍文献库，含全文检索",
-      "tier": 3, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "api", "speed_kbps_typical": 100 },
-      "bookget": { "supported": true, "adapter_name": "ctext" }
+      "tier": 3,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "api",
+        "speed_kbps_typical": 100
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "ctext"
+      }
     },
     {
       "id": "wikisource",
       "name": "維基文庫",
       "url": "https://zh.wikisource.org/",
       "description": "自由的线上图书馆，含古籍整理本全文",
-      "tier": 3, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "scraping" },
-      "bookget": { "supported": true, "adapter_name": "wikisource" }
+      "tier": 3,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "scraping"
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "wikisource"
+      }
     },
     {
       "id": "shuge",
       "name": "书格",
       "url": "https://www.shuge.org/",
       "description": "国内主要的公益古籍影印分享站",
-      "tier": 3, "policy": "preserve",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "direct", "speed_kbps_typical": 500 },
-      "bookget": { "supported": false, "adapter_name": null }
+      "tier": 3,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "direct",
+        "speed_kbps_typical": 500
+      },
+      "bookget": {
+        "supported": false,
+        "adapter_name": null
+      }
     },
     {
       "id": "hanchi",
       "name": "中央研究院漢籍電子文獻資料庫",
       "url": "https://hanchi.ihp.sinica.edu.tw/",
-      "tier": 3, "policy": "preserve",
-      "access": { "from_cn": false, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "scraping", "notes": "需翻墙" },
-      "bookget": { "supported": true, "adapter_name": "hanchi" }
+      "tier": 3,
+      "policy": "preserve",
+      "access": {
+        "from_cn": false,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "scraping",
+        "notes": "需翻墙"
+      },
+      "bookget": {
+        "supported": true,
+        "adapter_name": "hanchi"
+      }
     },
-
     {
       "id": "baidu-pan",
       "name": "百度网盘",
       "url": "https://pan.baidu.com/",
       "description": "我们自建的国内镜像存储。所有镜像统一放在百度网盘 /book-index/<book_id>/<group_key>/<中文文件名>.pdf 下，并由一个永久共享链接对外提供。",
-      "tier": 4, "policy": "mirror",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": true, "notes": "下载需要登录百度账号或客户端" },
-      "download": { "supported": true, "method": "manual", "speed_kbps_typical": 10000, "notes": "VIP 无限速；非 VIP 200 KB/s。提取码必须随 URL 提供" },
-      "bookget": { "supported": false, "adapter_name": null },
+      "tier": 4,
+      "policy": "mirror",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": true,
+        "notes": "下载需要登录百度账号或客户端"
+      },
+      "download": {
+        "supported": true,
+        "method": "manual",
+        "speed_kbps_typical": 10000,
+        "notes": "VIP 无限速；非 VIP 200 KB/s。提取码必须随 URL 提供"
+      },
+      "bookget": {
+        "supported": false,
+        "adapter_name": null
+      },
       "mirror_share": {
         "short_url": "1BY4Rmk2BUdb5ePBkeQYzkA",
         "share_base": "https://pan.baidu.com/s/1BY4Rmk2BUdb5ePBkeQYzkA",
@@ -235,16 +447,28 @@
       },
       "notes": "用于镜像 tier 3 不可达 / tier 5 已下载 的资源；与原始资源同组（group），group_role=mirror。提取码写到 metadata.access_code。所有 book 共享同一个 short_url + pwd（mirror_share 字段），靠 #list/path= 锚点指向各自子目录。"
     },
-
     {
       "id": "jiangyu",
       "name": "天一生水",
       "url": "https://dropbox.jiangyu.org/",
       "description": "私人 OpenList 网盘，含红楼梦 / 苏东坡 / 二十四史等专题影印",
-      "tier": 5, "policy": "download_only",
-      "access": { "from_cn": true, "from_intl": true, "needs_login": false },
-      "download": { "supported": true, "method": "openlist_api", "speed_kbps_typical": 30, "notes": "AliyunDrive 后端，raw_url 4h 过期；单连接 30 KB/s，多并发可叠加" },
-      "bookget": { "supported": false, "adapter_name": null },
+      "tier": 5,
+      "policy": "download_only",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "openlist_api",
+        "speed_kbps_typical": 30,
+        "notes": "AliyunDrive 后端，raw_url 4h 过期；单连接 30 KB/s，多并发可叠加"
+      },
+      "bookget": {
+        "supported": false,
+        "adapter_name": null
+      },
       "notes": "按 policy 不该录入 Book.resources；现存红楼梦等历史条目作为技术债，逐步替换为 IA + 百度网盘 镜像组"
     },
     {
@@ -252,20 +476,69 @@
       "name": "Anna's Archive",
       "url": "https://annas-archive.org/",
       "description": "海量电子书镜像聚合站",
-      "tier": 5, "policy": "download_only",
-      "access": { "from_cn": false, "from_intl": true, "needs_login": false, "notes": "国内多数域名被墙" },
-      "download": { "supported": true, "method": "direct", "speed_kbps_typical": 500, "notes": "PDF 末页含 Anna's Archive metadata 水印页，上传 IA 时建议裁掉" },
-      "bookget": { "supported": false, "adapter_name": null }
+      "tier": 5,
+      "policy": "download_only",
+      "access": {
+        "from_cn": false,
+        "from_intl": true,
+        "needs_login": false,
+        "notes": "国内多数域名被墙"
+      },
+      "download": {
+        "supported": true,
+        "method": "direct",
+        "speed_kbps_typical": 500,
+        "notes": "PDF 末页含 Anna's Archive metadata 水印页，上传 IA 时建议裁掉"
+      },
+      "bookget": {
+        "supported": false,
+        "adapter_name": null
+      }
     },
     {
       "id": "zlib",
       "name": "Z-Library",
       "url": "https://z-lib.sk/",
       "description": "另一个大型电子书镜像站",
-      "tier": 5, "policy": "download_only",
-      "access": { "from_cn": false, "from_intl": true, "needs_login": true, "notes": "需注册账号；国内常被墙" },
-      "download": { "supported": true, "method": "manual", "speed_kbps_typical": 300, "notes": "免费账户限每日下载数" },
-      "bookget": { "supported": false, "adapter_name": null }
+      "tier": 5,
+      "policy": "download_only",
+      "access": {
+        "from_cn": false,
+        "from_intl": true,
+        "needs_login": true,
+        "notes": "需注册账号；国内常被墙"
+      },
+      "download": {
+        "supported": true,
+        "method": "manual",
+        "speed_kbps_typical": 300,
+        "notes": "免费账户限每日下载数"
+      },
+      "bookget": {
+        "supported": false,
+        "adapter_name": null
+      }
+    },
+    {
+      "id": "kulib-rmda",
+      "name": "京都大学附属図書館 貴重資料デジタルアーカイブ",
+      "url": "https://rmda.kulib.kyoto-u.ac.jp/",
+      "description": "京都大学附属図書館所藏漢籍善本之数位典藏，IIIF／Mirador／Universal Viewer 检视，「一般貴重書」系列多标二次利用自由。與另一 tier1 條目 kyoto（人文科學研究所 漢字文獻情報處理研究會，kanji.zinbun.kyoto-u.ac.jp）非同一機構、非同一庫，勿混。",
+      "tier": 1,
+      "policy": "preserve",
+      "access": {
+        "from_cn": true,
+        "from_intl": true,
+        "needs_login": false
+      },
+      "download": {
+        "supported": true,
+        "method": "iiif"
+      },
+      "bookget": {
+        "supported": false,
+        "notes": "尚無 adapter，下載暫須手動經 IIIF manifest。"
+      }
     }
   ]
 }
