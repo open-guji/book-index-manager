@@ -181,8 +181,23 @@ def _rewrite_file(path: Path, mapping: Dict[str, str]) -> bool:
     """重写单个 JSON 文件。返回是否真有变更。"""
     try:
         with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except (OSError, json.JSONDecodeError):
+            text = f.read()
+    except OSError:
+        return False
+
+    # 快速預過濾：mapping 之 key（draft id）一個都不在原始文字裡出現，
+    # 該檔必無可改之處，可略過 json.load + 遞迴重建這兩步較貴的操作。
+    # 同一手法見 sweep-promoted-refs.py 之 DRAFT_ID_RE 預篩——`rewrite_references`
+    # 原對全部 rglob 出的檔案逐一 json.load＋遞迴重寫，不論該檔是否含目標 id，
+    # 20 餘萬檔案、每檔皆解析重建，是 2026-08-27 批量升格實測數分鐘一條的主因。
+    # draft id 為純 base36 英數字元，JSON 標準寫法不會把它拆成 \\uXXXX 轉義，
+    # 故原始文字未見其字串即可斷其不出現於任何 JSON 字串值或鍵中。
+    if not any(k in text for k in mapping):
+        return False
+
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
         return False
 
     new_data = _rewrite_in_value(data, mapping)

@@ -288,6 +288,38 @@ def test_promote_batch_file(monkeypatch, capsys, root, tmp_path):
     assert "2 succeeded, 0 failed" in err
 
 
+def test_promote_batch_rewrites_cross_references(monkeypatch, capsys, root):
+    """批量（--batch/多 positional id）升格时，同批内的相互引用也要改到位。
+
+    2026-08-27 修复：批量升格改为逐條 promote 時傳 rewrite_refs=False，
+    迴圈畢後才對累積映射做一次 rewrite_references——這裡驗證那次合併掃描
+    確實把批內的交叉引用（B.work_id 指向同批的 A）從 draft id 改成了
+    production id，而不只是「不報錯」。
+    """
+    # A：一个 Work
+    out, _, _ = run_cli(monkeypatch, capsys, "draft", "甲", "--type", "work", "--root", root)
+    a_draft = extract_id(out)
+
+    # B：一个 Book，work_id 指向 A（同批一起升格）
+    out, _, _ = run_cli(monkeypatch, capsys, "gen-id", "--type", "book", "--raw", "--root", root)
+    b_draft = out.strip()
+    metadata = {"id": b_draft, "type": "book", "title": "乙", "work_id": a_draft}
+    _, _, code = run_cli(monkeypatch, capsys,
+                          "save", json.dumps(metadata, ensure_ascii=False), "--root", root)
+    assert code == 0
+
+    out, err, code = run_cli(monkeypatch, capsys, "promote", a_draft, b_draft, "--root", root)
+    assert code == 0
+    assert "2 succeeded, 0 failed" in err
+
+    lines = [json.loads(l) for l in out.strip().split("\n") if l.startswith("{")]
+    a_prod = next(l["production_id"] for l in lines if l["draft_id"] == a_draft)
+    b_prod = next(l["production_id"] for l in lines if l["draft_id"] == b_draft)
+
+    out, _, _ = run_cli(monkeypatch, capsys, "get", "--bid", b_prod, "--root", root)
+    assert json.loads(out.strip())["work_id"] == a_prod
+
+
 def test_promote_dry_run(monkeypatch, capsys, root):
     out, _, _ = run_cli(monkeypatch, capsys, "draft", "干跑", "--type", "work", "--root", root)
     draft_id = extract_id(out)

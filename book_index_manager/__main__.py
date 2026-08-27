@@ -402,12 +402,25 @@ class CLIHandler:
         # **不攢到最後才寫**：中途若斷（工具逾時、SIGTERM），已升之條墓碑已立
         # 而映射未錄，validate 之 E03 即報且難以追認。攢 100 是折中——縱斷，
         # 待追認者至多 100 條而非萬條。循環既畢，餘數必再 flush 一次。
-        from .promotion import PromotionsStore
+        from .promotion import PromotionsStore, rewrite_references
         FLUSH_EVERY = 100
         shared_promotions = None
         if not dry_run and len(ids) > 1:
             shared_promotions = PromotionsStore(self.manager.storage.draft_root)
         pending = 0
+
+        # 批量（>1 條）且要改引用時：逐條 promote 皆傳 rewrite_refs=False，
+        # 累積 D→P 映射與 skip_files，迴圈畢後只掃一遍。
+        #
+        # 舊法每條各呼 rewrite_references 一次，該函式對兩倉 Book/Work/
+        # Collection/Entity 四目錄各 rglob 一遍——20 餘萬檔案、每條都重新
+        # 掃一次。2026-08-27 五種殘石十七條實測：前段每條約數十秒，隨後
+        # 段落漸長（沙箱檔案系統單次 syscall 開銷疊加海量檔案愈顯），全程
+        # 逾二十分鐘。批量攤成一次，總掃描次數由 N 降到 1。
+        # 單條（len(ids)==1）或 --no-rewrite-refs 者不受影響，行為不變。
+        batch_defer_rewrite = (not dry_run and len(ids) > 1 and rewrite_refs)
+        accumulated_mapping = {}
+        accumulated_skip = set()
 
         successes = 0
         failures = 0
@@ -423,8 +436,23 @@ class CLIHandler:
 
             try:
                 prod_id = self.manager.promote_to_official(
-                    draft_id, rewrite_refs=rewrite_refs,
+                    draft_id,
+                    rewrite_refs=(False if batch_defer_rewrite else rewrite_refs),
                     promotions=shared_promotions)
+                if batch_defer_rewrite:
+                    accumulated_mapping[draft_id] = prod_id
+                    # 只護 draft 墓碑自身之 `id` 欄——它字面就是 draft_id，
+                    # 是 mapping 之 key，若不擋會被合併掃描誤改成 prod_id。
+                    # **不擋 prod 檔**：單條升格擋它是無妨的優化（該條自己
+                    # 之 mapping 只有它自己一對，改不到別的欄位）；但批量
+                    # 时 mapping 汇集了同批全部 D→P，若擋 prod 檔，同批內
+                    # 「本條剛升好的 production 副本裡引用著同批另一條」
+                    # 這種交叉引用就永遠改不到——已用
+                    # test_promote_batch_rewrites_cross_references 驗證過
+                    # 擋 prod 檔會導致該測試失敗。
+                    draft_path = self.manager.storage.find_file_by_id(draft_id)
+                    if draft_path is not None:
+                        accumulated_skip.add(draft_path)
                 if shared_promotions is not None:
                     pending += 1
                     if pending >= FLUSH_EVERY:
@@ -447,6 +475,14 @@ class CLIHandler:
         if shared_promotions is not None and pending:
             shared_promotions.save()
             pending = 0
+
+        if batch_defer_rewrite and accumulated_mapping:
+            rewrite_references(
+                roots=[self.manager.storage.draft_root,
+                       self.manager.storage.official_root],
+                mapping=accumulated_mapping,
+                skip_files=accumulated_skip,
+            )
 
         prefix = "[dry-run] " if dry_run else ""
         print(f"\n{prefix}{successes} succeeded, {failures} failed", file=sys.stderr)
