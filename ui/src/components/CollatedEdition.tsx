@@ -44,9 +44,23 @@ const TYPE_T2S: Record<string, string> = {
     '書': '书', '類': '类', '結語': '结语', '結语': '结语',
     '考證': '考证', '詩': '诗',
 };
+
+/**
+ * book-text 拆分后整理本数据统一改用英文 type 枚举（book/poem/category/...），
+ * 前端一直只认中文（书/诗/类/...），导致所有判断落空——书目标题不渲染、
+ * 目录统计归零、原文视图完全空白。2026-09-03 补上英文→中文映射。
+ * prose（散文/赋）、reconstruction（辑佚复原条目）语义上都是书目条目，
+ * 归入「书」；verification 归入「考证」；page_header（页眉，非正文）不映射，
+ * 调用处按未知类型过滤掉；comment 是本次新增的独立类型「注释」。
+ */
+const TYPE_EN2CN: Record<string, string> = {
+    book: '书', poem: '诗', category: '类', preface: '序',
+    verification: '考证', prose: '书', reconstruction: '书',
+    comment: '注释',
+};
 function normSectionType(t: unknown): string {
     if (typeof t !== 'string') return '';
-    return TYPE_T2S[t] ?? t;
+    return TYPE_T2S[t] ?? TYPE_EN2CN[t] ?? t;
 }
 
 const CN_DIGITS = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
@@ -194,6 +208,7 @@ const SECTION_TYPE_COLORS: Record<string, string> = {
     '书': 'var(--bim-section-shu, #c0392b)',
     '序': 'var(--bim-section-xu, #1a5276)',
     '结语': 'var(--bim-section-jieyu, #7d6608)',
+    '注释': 'var(--bim-section-zhushi, #6c5b7b)',
 };
 
 const KAOZHEN_TYPE_COLORS: Record<string, string> = {
@@ -831,12 +846,15 @@ function CategoryHeader({ section, highlightQuery = '' }: { section: CollatedSec
 function OtherSection({ section, highlightQuery = '' }: { section: CollatedSection; highlightQuery?: string }) {
     const { convert } = useConvert();
     const normalizer = useSearchNormalizer();
+    // page_header 是页眉，非正文，不渲染
+    if (normSectionType(section.type) === 'page_header') return null;
     if (!section.content && !section.title) return null;
     const rawText = convert((section.content || section.title || '').replace(/\n{2,}/g, '\n'));
     const text: React.ReactNode = highlightQuery ? renderHighlighted(rawText, highlightQuery, normalizer) : rawText;
-    const typeColor = SECTION_TYPE_COLORS[section.type] || 'var(--bim-desc-fg, #717171)';
-    // 序/结语：带左边框、类型标签，与"书"条目区分
-    const isLabeled = normSectionType(section.type) === '序' || normSectionType(section.type) === '结语';
+    const normType = normSectionType(section.type);
+    const typeColor = SECTION_TYPE_COLORS[normType] || 'var(--bim-desc-fg, #717171)';
+    // 序/结语/注释：带左边框、类型标签，与"书"条目区分
+    const isLabeled = normType === '序' || normType === '结语' || normType === '注释';
     return (
         <div style={{
             padding: isLabeled ? '10px 12px' : '6px 0',
@@ -863,7 +881,7 @@ function OtherSection({ section, highlightQuery = '' }: { section: CollatedSecti
                     background: `${typeColor}08`,
                     verticalAlign: 'middle',
                 }}>
-                    {section.type}
+                    {normType}
                 </span>
             )}
             {text}
@@ -1283,17 +1301,19 @@ function RawTextView({ sections, onNavigate, highlightQuery = '' }: { sections: 
     let current: { category: string; categoryContent?: string; items: CollatedSection[] } | null = null;
 
     for (const s of sections) {
-        if (normSectionType(s.type) === '类') {
+        const t = normSectionType(s.type);
+        if (t === 'page_header') continue;
+        if (t === '类') {
             if (current) groups.push(current);
             current = { category: s.title, categoryContent: s.content || undefined, items: [] };
-        } else if (normSectionType(s.type) === '书') {
+        } else if (t === '书' || t === '诗' || t === '考证' || t === '注释') {
             if (!current) current = { category: '', items: [] };
             current.items.push(s);
-        } else if (normSectionType(s.type) === '序' || normSectionType(s.type) === '结语') {
+        } else if (t === '序' || t === '结语') {
             if (!current) current = { category: '', items: [] };
             current.items.push(s);
             // 结语意味着类结束
-            if (normSectionType(s.type) === '结语') {
+            if (t === '结语') {
                 groups.push(current);
                 current = null;
             }
@@ -1425,10 +1445,13 @@ function JuanContent({
 
             {/* 目录模式：仅显示匹配条目 + 高亮 */}
             {viewMode === 'catalog' && catalogSections.map((section, i) => {
-                if (normSectionType(section.type) === '书' || normSectionType(section.type) === '诗') {
+                const t = normSectionType(section.type);
+                // 考证条目（如「史記一百三十卷目錄一卷」）title 与 content 各自独立，
+                // 与「书」同样需要标题+正文一并展示，走 OtherSection 会丢标题。
+                if (t === '书' || t === '诗' || t === '考证') {
                     return <BookSection key={i} section={section} onNavigate={onNavigate} highlightQuery={q} />;
                 }
-                if (normSectionType(section.type) === '类') {
+                if (t === '类') {
                     return <CategoryHeader key={i} section={section} highlightQuery={q} />;
                 }
                 return <OtherSection key={i} section={section} highlightQuery={q} />;
