@@ -696,8 +696,12 @@ export class GithubStorage implements IndexStorage {
         const resolved = await this.resolveItemPath(workId);
         if (!resolved) return null;
 
-        const indexPath = `${resolved.dir}/${workId}/collated_edition/collated_edition_index.json`;
-        return this.fetchFile<CollatedEditionIndex>(resolved.repo, indexPath);
+        // 2026-08-26 归一把清单档 collated_edition_index.json 更名 index.json。
+        // 旧名仍保留兜底，兼容尚未触碰过、还留着老文件名的存量条目。
+        const dir = `${resolved.dir}/${workId}/collated_edition`;
+        const found = await this.fetchFile<CollatedEditionIndex>(resolved.repo, `${dir}/index.json`);
+        if (found) return found;
+        return this.fetchFile<CollatedEditionIndex>(resolved.repo, `${dir}/collated_edition_index.json`);
     }
 
     async getCollatedJuan(workId: string, juanFile: string): Promise<CollatedJuan | null> {

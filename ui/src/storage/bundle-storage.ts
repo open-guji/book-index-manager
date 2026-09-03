@@ -431,6 +431,16 @@ export class BundleStorage implements IndexStorage {
     // ─── 整理本 ───
 
     async getCollatedEditionIndex(workId: string): Promise<CollatedEditionIndex | null> {
+        // 2026-08-26 归一把清单档 collated_edition_index.json 更名 index.json
+        // （book-text 拆分后新写入的整理本全部用新名）。旧名仍保留兜底，兼容
+        // 尚未触碰过、还留着老文件名的存量条目。
+        try {
+            return await this.fetchJson<CollatedEditionIndex>(
+                `${this.basePath}/items/${workId}/collated_edition/index.json`
+            );
+        } catch {
+            // fall through to legacy name
+        }
         try {
             return await this.fetchJson<CollatedEditionIndex>(
                 `${this.basePath}/items/${workId}/collated_edition/collated_edition_index.json`
