@@ -22,6 +22,18 @@ export interface BundleStorageConfig {
     basePath?: string;
     /** 请求超时（毫秒），默认 10000 */
     timeout?: number;
+    /**
+     * 外部已解析好的数据版本（commitId 前 12 位），传入后 ensureVersion() 不再
+     * 自己去 fetch `${basePath}/version.json`。
+     *
+     * cos 模式下 basePath 指向 COS 的 current/ 子目录，而 current/* 的所有文件
+     * 都被 CDN 打了 immutable/max-age=31536000 长缓存——包括 version.json 本身。
+     * 自己 fetch 只会长期卡在第一次被缓存住的旧版本（实测滞后 9+ 天），且
+     * `cache: 'no-cache'` 对 immutable 资源无效，浏览器根本不会发出请求。
+     * 版本号的权威来源是 COS 根目录的 latest.json（不缓存），调用方应该在那里
+     * 解析好版本号后通过这个字段注入，而不是让 BundleStorage 自己猜。
+     */
+    version?: string | null;
 }
 
 const DEFAULT_BASE_PATH = '/data';
@@ -60,12 +72,20 @@ export class BundleStorage implements IndexStorage {
     private promotionsLoading: Promise<Map<string, string>> | null = null;
 
     /** 数据版本（commitId 前 12 位）。null=已尝试加载但失败；undefined=未加载 */
-    private version: string | null | undefined = undefined;
+    private version: string | null | undefined;
     private versionPromise: Promise<string | null> | null = null;
+    /** true=版本号由外部注入（config.version），clearCache() 不应清掉它 */
+    private versionInjected = false;
 
     constructor(config: BundleStorageConfig = {}) {
         this.basePath = config.basePath ?? DEFAULT_BASE_PATH;
         this.timeout = config.timeout ?? DEFAULT_TIMEOUT;
+        // 外部注入版本号时直接采用（见 BundleStorageConfig.version 注释），
+        // 跳过自己 fetch version.json 那条会被 CDN 缓存坑的路径。
+        if (config.version !== undefined) {
+            this.version = config.version ?? null;
+            this.versionInjected = true;
+        }
     }
 
     // ─── 内部工具 ───
@@ -73,6 +93,7 @@ export class BundleStorage implements IndexStorage {
     /**
      * 强制 revalidate 拉取 /data/version.json，作为所有其他 fetch 的 cache key。
      * 失败/缺失时回退为不拼 version（退化为旧行为）。
+     * 若构造时已通过 config.version 注入版本号，直接用它，不再自己 fetch。
      */
     private async ensureVersion(): Promise<string | null> {
         if (this.version !== undefined) return this.version;
@@ -541,7 +562,9 @@ export class BundleStorage implements IndexStorage {
         this.tiyaoLoading.clear();
         this.metaCache = null;
         this.metaLoading = null;
-        this.version = undefined;
-        this.versionPromise = null;
+        if (!this.versionInjected) {
+            this.version = undefined;
+            this.versionPromise = null;
+        }
     }
 }
