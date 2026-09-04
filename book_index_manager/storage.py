@@ -178,7 +178,8 @@ class BookIndexStorage:
 
     def save_item(self, type_val: BookIndexType, id_val: int, metadata: dict,
                   allow_tombstone_edit: bool = False,
-                  bump: Optional[str] = 'patch'):
+                  bump: Optional[str] = 'patch',
+                  is_new: bool = False):
         """Save an item (book, collection, or work) and update the index.
 
         Args:
@@ -191,6 +192,11 @@ class BookIndexStorage:
                 production 内修改默认 patch；知识修改传 'minor'；
                 评级跃迁传 'major'。
                 设计：项目进展/古籍索引网站/整体设计/2026-05-版本控制与不可变性.md
+            is_new: 此 id 是本次**新生成**的（调用方未提供 id）。
+                新生成之 id 在磁盘上理应无档；若竟已存在，即是**撞号**——
+                多半是两个进程共用 machine_id，而 official 时间戳仅到秒。
+                此时绝不可走"改名"分支去 unlink 别人的档，须直接报错。
+                2026-08-24 隋唐升格、2026-09-04「坑32」两度因此静默丢档。
         """
         if type_val == BookIndexType.Entity:
             name = metadata.get("primary_name") or metadata.get("title") or "未命名"
@@ -205,6 +211,18 @@ class BookIndexStorage:
         # Check if ID already exists and handle rename if needed
         # 建新檔前之探測：新生成之 ID 必然查不到，不是異常，故 quiet。
         existing_path = self.find_file_by_id(id_str, quiet=True)
+
+        # 撞號防護：新生成之 id 竟已有檔——必是兩個進程撞出同一個 id。
+        # 舊制會把它當「改名」而 unlink 掉別人剛寫的檔（僅留一行 warning），
+        # 隋唐升格與「坑32」兩度因此靜默丟檔。此處直接攔下，令調用方重生 id。
+        if is_new and existing_path is not None:
+            raise StorageError(
+                f"ID collision: {id_str} already exists at {existing_path}. "
+                f"A freshly generated ID must not exist on disk — this means two processes "
+                f"produced the same ID (likely sharing machine_id while official timestamps "
+                f"are second-granular). Regenerate the ID instead of overwriting. "
+                f"See machine_id.py for the lease-based allocator."
+            )
 
         # Tombstone 写保护：D 升级后，原 draft 文件成为 frozen snapshot，
         # 后续编辑应该写到 production 文件，而不是覆盖 tombstone。

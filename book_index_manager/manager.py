@@ -5,6 +5,7 @@ from typing import Optional, Dict, List, Any
 from .id_generator import BookIndexIdGenerator, BookIndexStatus, BookIndexType, base36_encode, smart_decode
 from .storage import BookIndexStorage
 from .exceptions import BookIndexError
+from .machine_id import acquire_machine_id
 from .promotion import (
     promote_to_official as _promote_to_official,
     resolve_id as _resolve_id,
@@ -20,9 +21,28 @@ class BookIndexManager:
     Acts as a facade for Storage and ID Generator.
     """
 
-    def __init__(self, storage_root: str, machine_id: int = 1):
+    def __init__(self, storage_root: str, machine_id: Optional[int] = None):
+        """
+        Args:
+            machine_id: 顯式指定之機器號（0..2047），唯一性由調用方自負。
+                留空（預設）則從 `<storage_root>/.machine_ids.json` 租一個**當前無人持有**
+                之號——這是多進程並發時的正確用法。
+
+                何以必須：official id 之時間戳僅到**秒**，sequence 又只存在進程內存，
+                若兩個進程共用同一 machine_id，同一秒內生成之 id 會完全相同；
+                而 storage.save_item 撞號後之處置是「title 不同→視為改名→unlink 舊檔」，
+                於是先寫入者被**靜默刪除**。2026-08-24 隋唐升格、2026-09-04「坑32」兩度中此禍。
+                詳見 machine_id.py 之模組說明。
+        """
         self.storage = BookIndexStorage(storage_root)
-        self.id_gen = BookIndexIdGenerator(machine_id)
+        self.machine_id, self._machine_id_lease = acquire_machine_id(storage_root, machine_id)
+        self.id_gen = BookIndexIdGenerator(self.machine_id)
+
+    def release_machine_id(self) -> None:
+        """提前歸還機器號。進程結束時會自動歸還，一般無須手動調用。"""
+        if getattr(self, "_machine_id_lease", None) is not None:
+            self._machine_id_lease.release()
+            self._machine_id_lease = None
 
     def generate_id(self, type_val: BookIndexType = BookIndexType.Book, status: BookIndexStatus = BookIndexStatus.Draft) -> int:
         """Generate a new unique ID."""
@@ -44,6 +64,7 @@ class BookIndexManager:
                 项目进展/古籍索引网站/整体设计/2026-05-版本控制与不可变性.md
         """
         id_str = metadata.get("id") or metadata.get("ID")
+        is_new = False
         if id_str:
             try:
                 id_val = self.decode_id(id_str)
@@ -53,6 +74,7 @@ class BookIndexManager:
             except ValueError:
                 raise BookIndexError(f"Invalid ID format: {id_str}")
         else:
+            is_new = True
             if type_val is None:
                 type_name = metadata.get("type", "book").capitalize()
                 type_val = getattr(BookIndexType, type_name, BookIndexType.Book)
@@ -60,7 +82,7 @@ class BookIndexManager:
             id_str = self.encode_id(id_val)
             metadata["id"] = id_str
 
-        return self.storage.save_item(type_val, id_val, metadata, bump=bump)
+        return self.storage.save_item(type_val, id_val, metadata, bump=bump, is_new=is_new)
 
     def get_item(self, id_str: str) -> Optional[Dict]:
         """Retrieve metadata by ID string."""
