@@ -703,9 +703,11 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                                     if (oa !== ob) return oa - ob;
                                     return a.localeCompare(b);
                                 });
+                            // 不再写 total_juan：卷数一律由 juan_files.length 得出。
+                            // 那个字段在静态 index.json 里长期没人维护、与实际对不上，
+                            // 已于 2026-09-03 从数据与类型中删除。
                             const result: Record<string, unknown> = {
                                 work_id: id,
-                                total_juan: files.length,
                                 juan_files: files,
                             };
                             const groupsFile = path.join(assetDir, 'juan_groups.json');

@@ -640,7 +640,14 @@ export interface CollatedEditionIndex {
     /** 整理本类型：catalog（目录志书）| kaozhen（考证） */
     type?: 'catalog' | 'kaozhen';
     work_id: string;
-    total_juan?: number;
+    /**
+     * 卷文件清单——**卷数的唯一可信来源**，取 juan_files.length。
+     *
+     * 曾有个 total_juan 字段与它并存，是整理时写入的独立声明、之后没人维护，
+     * 实测 4 部整理本对不上（d59f2mp38qv4 声明 1 卷、实际 43 个卷文件），
+     * 且口径混着「原书传统卷数」与「拆分文件数」两种。2026-09-03 已从数据
+     * 和类型里一并删除，不要再加回来。
+     */
     juan_files?: string[];
     /** filename → 元数据（如所属源册号），渲染于 tab/button 旁 */
     juan_metadata?: Record<string, { vols?: number[]; vol_label?: string }>;

@@ -1814,7 +1814,12 @@ const CollatedEditionInner: React.FC<{
                             共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{allFiles.length}</strong> 章
                         </>
                     ) : (
-                        <span>共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{index.total_juan}</strong> 卷</span>
+                        // 用实际卷文件数，与上面考证类分支的 allFiles.length 同口径。
+                        // 曾用 index.total_juan——那是个各写各的独立声明、没人维护，
+                        // 与实际文件数对不上：实测 4 部整理本错得离谱（d59f2mp38qv4
+                        // 声明 1 卷、实际 43 个卷文件，页面就显示「共 1 卷」却列出 43
+                        // 个卷按钮）。juan_files 才是可信来源，前端其余地方用的也是它。
+                        <span>共 <strong style={{ color: 'var(--bim-fg, #333)' }}>{allFiles.length}</strong> 卷</span>
                     )}
                 </div>
                 {index.text_quality && (() => {
