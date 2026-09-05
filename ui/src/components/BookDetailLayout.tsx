@@ -391,7 +391,16 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                 navItems.push({ key: tab.key, label: tab.label });
             }
         }
-        if (showFeedbackTab) {
+        /*
+         * 反馈平时不进次级导航：顶条右侧已有「勘誤反饋」、页脚还有
+         * 「提交新版本」，再放进 tab 行就是同一个动作一屏出现三次，
+         * 设计稿也只在顶条给了它。
+         *
+         * 但**正处在反馈页时必须列出来**——否则像史記这种只有「概览」
+         * 一项的条目，nav 只剩 1 项就被整行隐藏，读者进了反馈页就没有
+         * 任何返回入口（只能按浏览器后退）。
+         */
+        if (showFeedbackTab && activeTab === 'feedback') {
             navItems.push({ key: 'feedback', label: t.detailTab.feedback });
         }
         for (const tab of extraTabs) {
