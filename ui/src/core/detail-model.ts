@@ -18,6 +18,7 @@
  */
 import type {
     BookDetailData,
+    DatingInfo,
     CollectionDetailData,
     WorkDetailData,
     IndexDetailData,
@@ -35,7 +36,7 @@ import { getTypeGroupKey, mergeVolumeResources, volumeStats } from './resources'
 // ══════════════════════════════════════════════════════════════
 
 /** 推断出的朝代及其可信来源 */
-export type EraSource = 'lineage' | 'publication' | 'edition' | 'none';
+export type EraSource = 'lineage' | 'publication' | 'edition' | 'catalog' | 'none';
 
 /**
  * 推断函数只读这几个字段，故用结构类型而非完整 BookDetailData——
@@ -46,6 +47,13 @@ export interface EraInferable {
     edition?: string;
     lineage?: BookDetailData['lineage'];
     publication_info?: BookDetailData['publication_info'];
+    /**
+     * 结构化年代（方案 §3）。给了就直接用，不再从题名现推。
+     *
+     * 这是「优先读 dating、读不到才回退」的入口——旧数据、draft 仓
+     * 未迁移的条目都还没有这个字段，回退保证它们不会坏。
+     */
+    dating?: DatingInfo;
 }
 
 export interface DerivedEra {
@@ -123,13 +131,76 @@ const REIGN_YEARS: Record<string, number> = {
     洪武: 1368, 永樂: 1403, 宣德: 1426, 正統: 1436, 景泰: 1450, 天順: 1457,
     成化: 1465, 弘治: 1488, 正德: 1506, 嘉靖: 1522, 隆慶: 1567, 萬曆: 1573,
     泰昌: 1620, 天啟: 1621, 崇禎: 1628,
+    // 南明（歸入「明」）：全库 12 部
+    弘光: 1645, 隆武: 1645, 紹武: 1646, 永曆: 1647,
     // 清
     順治: 1644, 康熙: 1662, 雍正: 1723, 乾隆: 1736, 嘉慶: 1796, 道光: 1821,
     咸豐: 1851, 同治: 1862, 光緒: 1875, 宣統: 1909,
-    // 日本
-    慶長: 1596, 寬永: 1624, 元祿: 1688, 享保: 1716, 延享: 1744, 寬政: 1789,
-    文政: 1818, 天保: 1830, 明治: 1868, 大正: 1912, 昭和: 1926,
+    // 日本。江戶至近代较全——全库有 553 部日本刻本因年号表不全推不出年份
+    慶長: 1596, 寬永: 1624, 正保: 1644, 慶安: 1648, 承應: 1652,
+    明曆: 1655, 萬治: 1658, 寬文: 1661, 延寶: 1673, 天和: 1681, 貞享: 1684,
+    元祿: 1688, 寶永: 1704, 享保: 1716, 元文: 1736, 寬保: 1741,
+    延享: 1744, 寬延: 1748, 寶曆: 1751, 明和: 1764, 安永: 1772, 天明: 1781,
+    寬政: 1789, 享和: 1801, 文化: 1804, 文政: 1818, 天保: 1830, 弘化: 1844,
+    嘉永: 1848, 安政: 1854, 萬延: 1860, 文久: 1861, 元治: 1864, 慶應: 1865,
+    明治: 1868, 大正: 1912, 昭和: 1926,
+    // 日本中世（室町・戰國），少量古钞本会用
+    天正: 1573, 文祿: 1592, 永祿: 1558, 天文: 1532,
 };
+
+/**
+ * 同名年号的消歧表：`朝代|年号` → 元年。
+ *
+ * 唐「元和」(806) 与 日本「元和」(1615)、明「正德」(1506) 与 日本「正德」(1711)
+ * 撞名。扁平的 REIGN_YEARS 存不下两个，故同名的走这张表；
+ * 查询时先按朝代查这里，查不到再回退 REIGN_YEARS。
+ */
+const REIGN_YEARS_BY_ERA: Record<string, number> = {
+    '唐|元和': 806, '日本|元和': 1615,
+    '明|正德': 1506, '日本|正德': 1711,
+};
+
+/** 取年号元年：优先按朝代消歧，其次用通用表 */
+function reignStartYear(reign: string, era?: string): number | undefined {
+    if (era) {
+        const k = REIGN_YEARS_BY_ERA[`${era}|${reign}`];
+        if (k != null) return k;
+    }
+    return REIGN_YEARS[reign];
+}
+
+/**
+ * 民國紀年：民國 N 年 = 1911 + N。
+ *
+ * 全库 432 部民國刻本因为没有这条换算而拿不到年份（「民國三年刊本」
+ * 明明写着年份却推不出来）。民國不是年号制，单独处理。
+ */
+const REPUBLIC_EPOCH = 1911;
+
+/**
+ * 「某某間」→ 年代區間。
+ *
+ * 「明隆萬間」= 隆慶元年(1567) 至 萬曆末(1620)：取首尾两个年号的起讫。
+ * 全库约 60 部这种写法。区间只用于排序（取下界）与展示，不当确切年份。
+ */
+export interface YearRange {
+    from: number;
+    to: number;
+}
+
+/** 年号 → 该年号结束年（下一个年号元年 - 1）。惰性由 REIGN_YEARS 推出。 */
+function reignEndYear(reign: string): number | undefined {
+    const start = REIGN_YEARS[reign];
+    if (start == null) return undefined;
+    const era = REIGN_ERA[reign];
+    // 同朝代内找下一个起始年更大的年号
+    let next: number | undefined;
+    for (const [r, y] of Object.entries(REIGN_YEARS)) {
+        if (REIGN_ERA[r] !== era) continue;
+        if (y > start && (next == null || y < next)) next = y;
+    }
+    return next != null ? next - 1 : undefined;
+}
 
 /** 中文数字 → 阿拉伯数字（用于「乾隆四十三年」里的「四十三」） */
 const CN_DIGITS: Record<string, number> = {
@@ -203,9 +274,16 @@ const REIGN_ERA: Record<string, string> = {};
     assign('明', [
         '洪武', '永樂', '宣德', '正統', '景泰', '天順', '成化', '弘治', '正德',
         '嘉靖', '隆慶', '萬曆', '泰昌', '天啟', '崇禎',
+        '弘光', '隆武', '紹武', '永曆',
     ]);
     assign('清', ['順治', '康熙', '雍正', '乾隆', '嘉慶', '道光', '咸豐', '同治', '光緒', '宣統']);
-    assign('日本', ['慶長', '寬永', '元祿', '享保', '延享', '寬政', '文政', '天保', '明治', '大正', '昭和']);
+    assign('日本', [
+        '慶長', '寬永', '正保', '慶安', '承應', '明曆', '萬治', '寬文', '延寶',
+        '天和', '貞享', '元祿', '寶永', '享保', '元文', '寬保', '延享', '寬延',
+        '寶曆', '明和', '安永', '天明', '寬政', '享和', '文化', '文政', '天保',
+        '弘化', '嘉永', '安政', '萬延', '文久', '元治', '慶應', '明治', '大正', '昭和',
+        '天正', '文祿', '永祿', '天文',
+    ]);
 }
 
 /**
@@ -215,12 +293,16 @@ const REIGN_ERA: Record<string, string> = {};
  * 会被当成年号（建安、大观、正德…这类冲突在版本题名里相当常见）。
  */
 function matchReign(text: string, era?: string): string | undefined {
+    const normalized = era === '北宋' || era === '南宋' ? '宋' : era;
     for (const reign of Object.keys(REIGN_YEARS)) {
         if (!text.includes(reign)) continue;
-        if (era && REIGN_ERA[reign] && REIGN_ERA[reign] !== era) {
-            // 朝代对不上：南宋归入「宋」，其余视为误匹配
-            const normalized = era === '北宋' || era === '南宋' ? '宋' : era;
-            if (REIGN_ERA[reign] !== normalized) continue;
+        if (normalized && REIGN_ERA[reign] && REIGN_ERA[reign] !== normalized) {
+            /*
+             * 朝代对不上。但同名年号是例外——「元和」在 REIGN_ERA 里登记为唐，
+             * 日本也有元和(1615)；若直接 continue，「日本元和元年古活字本」
+             * 就永远匹配不到年号。消歧表里有 `朝代|年号` 的才放行。
+             */
+            if (REIGN_YEARS_BY_ERA[`${normalized}|${reign}`] == null) continue;
         }
         return reign;
     }
@@ -240,6 +322,16 @@ function matchReign(text: string, era?: string): string | undefined {
  */
 export function deriveEra(book: EraInferable): DerivedEra {
     const none: DerivedEra = { era: '', reign: '', source: 'none' };
+
+    // 0. 已落盘的 dating 最优先
+    const d = book.dating;
+    if (d?.era || d?.reign) {
+        return {
+            era: d.era ?? '',
+            reign: d.reign ?? '',
+            source: d.certainty === 'attested' ? 'catalog' : 'edition',
+        };
+    }
 
     // 1. lineage
     const yearText = book.lineage?.year_text;
@@ -286,6 +378,7 @@ export function deriveEra(book: EraInferable): DerivedEra {
  * 最后用年号表折算「乾隆四十三年」→ 1736 + 43 - 1 = 1778。
  */
 export function deriveYear(book: EraInferable): number | undefined {
+    if (book.dating?.year != null) return book.dating.year;
     if (typeof book.lineage?.year === 'number') return book.lineage.year;
 
     const texts = [
@@ -305,20 +398,102 @@ export function deriveYear(book: EraInferable): number | undefined {
             const n = parseInt(ce[1], 10);
             if (n >= 100 && n <= 2100) return n;
         }
+
+        // 民國紀年：民國 N 年 = 1911 + N。
+        // 民國不是年号制，不走年号表——全库 432 部民國刻本此前全推不出年份。
+        const rep = text.match(/民[國国]\s*([零〇一二三四五六七八九十廿卅百元\d]+)\s*年/);
+        if (rep) {
+            const n = parseChineseNumber(rep[1]);
+            if (n != null && n >= 1 && n <= 120) return REPUBLIC_EPOCH + n;
+        }
+
         // 年号 + 序数。朝代取自完整的 deriveEra（含「欽定四庫全書」这类
         // 特征词），不能只认题名前缀——否则「欽定四庫全書·文淵閣本」
         // 明明推得出「清·乾隆」，deriveYear 却因为它不以「清」开头而放弃。
-        const era = matchEraPrefix(text)
+        // 归一后再查年号：matchEraPrefix 返回的是原始写法（「南明」），
+        // 而 REIGN_ERA 里登记的是归一后的（「明」），不归一就查不到
+        const rawEra = matchEraPrefix(text)
             ?? ERA_HINTS.find(h => h.pattern.test(text))?.era;
+        const era = rawEra ? normalizeEra(rawEra) : undefined;
         const reign = matchReign(text, era)
             ?? (matchEraPrefix(text) ? undefined : ERA_HINTS.find(h => h.pattern.test(text))?.reign);
-        if (reign && REIGN_YEARS[reign] != null) {
-            const base = REIGN_YEARS[reign];
+        if (reign) {
+            // 同名年号（唐/日本「元和」、明/日本「正德」）按朝代消歧
+            const base = reignStartYear(reign, era);
+            if (base == null) continue;
             const at = text.indexOf(reign);
             const after = at >= 0 ? text.slice(at + reign.length) : '';
-            const ord = after.match(/^([零〇一二三四五六七八九十廿卅元]+)年/);
+            /*
+             * 序数有两种写法：
+             *   「萬曆二十四年」——年号后直接跟序数
+             *   「萬曆壬子(四十年)」——年号后是干支，序数在括注里
+             * 后者全库 2,022 条（9.7%）。不认括注的话，这批全部落到
+             * 年号元年（萬曆壬子 → 1573 而非 1612），差了近 40 年。
+             */
+            const ord = after.match(/^([零〇一二三四五六七八九十廿卅元]+)年/)
+                ?? after.match(/^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]\s*[（(]\s*([零〇一二三四五六七八九十廿卅元]+)\s*年?\s*[）)]/);
             const offset = ord ? parseChineseNumber(ord[1]) : undefined;
             return base + (offset ? offset - 1 : 0);
+        }
+    }
+    return undefined;
+}
+
+/**
+ * 「某某間」的年代區間。
+ *
+ * 「明隆萬間」= 隆慶元年(1567) 至 萬曆末(1620)：取题名里首尾两个年号的起讫。
+ * 「清康雍間」= 康熙元年(1662) 至 雍正末(1735)。
+ * 全库约 60 部这种写法，此前一律推不出年份。
+ *
+ * 区间只用于排序（取下界）与展示，不当确切年份 —— 故与 deriveYear 分开。
+ */
+export function deriveYearRange(book: EraInferable): YearRange | undefined {
+    const r = book.dating?.year_range;
+    if (r && r.length === 2) return { from: r[0], to: r[1] };
+    const texts = [book.edition, book.title].filter(Boolean) as string[];
+    for (const text of texts) {
+        if (!/[間间]/.test(text)) continue;
+        const era = matchEraPrefix(text) ?? ERA_HINTS.find(h => h.pattern.test(text))?.era;
+        const norm = era ? normalizeEra(era) : undefined;
+
+        // 收集题名里出现的、属于该朝代的年号
+        const hitReigns: string[] = [];
+        for (const r of Object.keys(REIGN_YEARS)) {
+            if (!text.includes(r)) continue;
+            if (norm && REIGN_ERA[r] && REIGN_ERA[r] !== norm) continue;
+            if (reignStartYear(r, norm) != null) hitReigns.push(r);
+        }
+        /*
+         * 单字简写：「隆萬間」= 隆慶–萬曆、「康雍間」= 康熙–雍正、
+         * 「曆啟間」= 萬曆–天啟。取「X Y 間」里 X、Y 各作为年号首字去匹配。
+         */
+        if (hitReigns.length === 0) {
+            const abbr = text.match(/([一-鿿])([一-鿿])[間间]/);
+            if (abbr && norm) {
+                for (const ch of [abbr[1], abbr[2]]) {
+                    for (const r of Object.keys(REIGN_YEARS)) {
+                        if (REIGN_ERA[r] !== norm) continue;
+                        // 首字或尾字命中都算（萬曆的「曆」、天啟的「啟」）
+                        if (r[0] !== ch && r[r.length - 1] !== ch) continue;
+                        if (reignStartYear(r, norm) != null) { hitReigns.push(r); break; }
+                    }
+                }
+            }
+        }
+        if (hitReigns.length > 0) {
+            const starts = hitReigns.map(r => reignStartYear(r, norm)!).filter(y => y != null);
+            const from = Math.min(...starts);
+            // 上界取「起始年最晚的那个年号」的结束年——不能只取 max(starts)，
+            // 那是它的**元年**：「明隆萬間」的上界该是萬曆末(1620)而非萬曆元年(1573)
+            const latest = hitReigns.reduce((a, b) =>
+                (reignStartYear(a, norm)! >= reignStartYear(b, norm)! ? a : b));
+            const to = reignEndYear(latest) ?? eraEndYear(norm ?? '') ?? Math.max(...starts);
+            return { from, to: Math.max(from, to) };
+        }
+        // 只有朝代没有年号（「明間刊本」）：退到朝代起讫
+        if (norm && ERA_START_YEAR[norm] != null) {
+            return { from: ERA_START_YEAR[norm], to: eraEndYear(norm) ?? ERA_START_YEAR[norm] };
         }
     }
     return undefined;
@@ -340,13 +515,212 @@ const ERA_START_YEAR: Record<string, number> = {
     日本: 1600, 朝鮮: 1392, 高麗: 918, 越南: 1400, 琉球: 1400,
 };
 
+// ══════════════════════════════════════════════════════════════
+// 底本識別（題名裡同時提到底本與印本）
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * 派生关系。全库 1,251 部（6.0%）的题名同时提到两个年代。
+ *
+ * 方向很要紧，两类要分开：
+ *   · 「清覆刊武英殿本」——主体是**清**本，武英殿是它翻刻的**底本**
+ *   · 「元大德刻明修本」——主体是**元**本，明代只是后来**修版**
+ * 用同一套逻辑解析会把主次搞反，故 REPAIR_PATTERNS 单列。
+ */
+export type DerivationRelation = '影印' | '翻刻' | '傳鈔' | '配補' | '據刊';
+
+const DERIVATION_PATTERNS: { re: RegExp; relation: DerivationRelation }[] = [
+    { re: /影印|景印|影鈔|影钞|景鈔|景钞/, relation: '影印' },
+    { re: /翻刻|覆刻|覆刊|翻雕|重刊|重雕/, relation: '翻刻' },
+    { re: /傳鈔|传钞|傳抄|传抄/, relation: '傳鈔' },
+    { re: /配補|配补|百衲/, relation: '配補' },
+    { re: /據.{0,12}本|据.{0,12}本/, relation: '據刊' },
+];
+
+/**
+ * 後修：主體年代在**前**，修版年代在後。
+ * 「元大德刻明修本」「明嘉靖間刊後代修補本」「宋紹興間刊明初修補九行本」
+ */
+const REPAIR_PATTERN = /修補|修补|遞修|递修|[明清元宋]修本|後代修|后代修/;
+
+export interface DerivedDating {
+    era: string;
+    reign: string;
+    year?: number;
+    yearRange?: YearRange;
+    certainty: 'attested' | 'inferred' | 'uncertain';
+    source: 'catalog' | 'edition';
+    basis: string;
+    /** 底本（本版所依据的更早的本子） */
+    basedOn?: { era: string; reign: string; year?: number; relation: DerivationRelation };
+    /** 后修：本版之后被谁修过版 */
+    laterRepair?: { era: string };
+}
+
+/** 题名里「存疑」的措辞 */
+const UNCERTAIN_PATTERN = /約|约|疑|傳為|传为|舊題|旧题|相傳|相传|待考|未詳|未详|\(疑\)|（疑）/;
+
+/**
+ * 生成一条版本的完整年代判定。
+ *
+ * 这是 `dating` 字段的生成逻辑（方案 §4）：主年代三级回退、
+ * 底本单独识别、可信度三档。落盘脚本与前端回退渲染共用这一个函数，
+ * 保证「存进去的」和「现场算的」永远一致。
+ */
+/**
+ * 在一段文本里找出与 `exclude` 不同的另一个朝代（用于识别底本）。
+ * 与 deriveEra 的区别：不要求朝代名在开头，扫全段。
+ */
+function findOtherEra(text: string, exclude: string):
+        { era: string; reign: string; year?: number } | undefined {
+    for (const raw of ERA_PREFIXES) {
+        const i = text.indexOf(raw);
+        if (i < 0) continue;
+        /*
+         * 单字朝代名要防地名误伤：「金陵」的金不是金朝、「明州」的明不是明朝。
+         * 要求其后紧跟纪年/版本用语（年號、刻、刊、寫、鈔、本、間…），
+         * 否则视为地名或人名的一部分。
+         */
+        if (raw.length === 1) {
+            const next = text[i + 1] ?? '';
+            if (!/[刻刊寫写鈔钞抄印本間间初末年時时代人臧藏]/.test(next)
+                && !matchReign(text.slice(i), normalizeEra(raw))) continue;
+        }
+        const era = normalizeEra(raw);
+        if (era === exclude) continue;
+        const after = text.slice(i);
+        const reign = matchReign(after, era) ?? '';
+        let year: number | undefined;
+        if (reign) {
+            const base = reignStartYear(reign, era);
+            if (base != null) {
+                const rest = after.slice(after.indexOf(reign) + reign.length);
+                const ord = rest.match(/^([零〇一二三四五六七八九十廿卅元]+)年/);
+                const off = ord ? parseChineseNumber(ord[1]) : undefined;
+                year = base + (off ? off - 1 : 0);
+            }
+        }
+        return { era, reign, year };
+    }
+    /*
+     * 特征词兜底：「武英殿本」→ 清。
+     *
+     * 这里**不**排除与主年代同朝代的——「清同治十一年覆刊武英殿本」
+     * 主体是清同治，底本武英殿也是清（乾隆），同朝代但确实是两个本子。
+     * 排除同朝代会把这类底本整个丢掉。
+     */
+    for (const h of ERA_HINTS) {
+        if (!h.pattern.test(text)) continue;
+        return { era: normalizeEra(h.era), reign: h.reign ?? '' };
+    }
+    return undefined;
+}
+
+export function deriveDating(book: EraInferable): DerivedDating | undefined {
+    const era = deriveEra(book);
+    if (!era.era && !era.reign) return undefined;
+
+    const text = book.edition || book.title || '';
+    /*
+     * 题名里有「間」= 一个时间范围（「明洪武間」「清乾隆道光間」），
+     * 不是确切纪年。deriveYear 会把它折算成年号元年（洪武間→1368），
+     * 那是错的——「洪武間」指的是 1368–1398 整段。
+     * 这类一律走 yearRange。
+     */
+    const isRange = /[間间]/.test(text);
+    const year = isRange ? undefined : deriveYear(book);
+    const range = year == null ? deriveYearRange(book) : undefined;
+
+    // ── 可信度 ──
+    let certainty: DerivedDating['certainty'];
+    if (era.source === 'lineage' || era.source === 'publication') {
+        certainty = 'attested';
+    } else if (UNCERTAIN_PATTERN.test(text)) {
+        // 题名明说存疑（「舊題」「相傳」「疑」…）
+        certainty = 'uncertain';
+    } else if (!era.reign && year == null) {
+        // 只推出朝代，连年号都没有（「明刊本」，全库 2,224 条）
+        certainty = 'uncertain';
+    } else {
+        certainty = 'inferred';
+    }
+
+    const basis = era.source === 'edition'
+        ? `題名「${text}」`
+        : era.source === 'lineage'
+            ? `版本傳承著錄「${book.lineage?.year_text ?? book.lineage?.year ?? ''}」`
+            : `出版著錄「${book.publication_info?.year ?? ''}」`;
+
+    const out: DerivedDating = {
+        era: era.era,
+        reign: era.reign,
+        year,
+        yearRange: range,
+        certainty,
+        source: era.source === 'edition' ? 'edition' : 'catalog',
+        basis,
+    };
+
+    // ── 后修（方向：主体在前）──
+    if (REPAIR_PATTERN.test(text)) {
+        const rep = text.match(/([宋元明清])\s*(?:初|末)?\s*(?:修補|修补|遞修|递修|修)/);
+        if (rep && rep[1] !== era.era) out.laterRepair = { era: rep[1] };
+    }
+
+    // ── 底本（方向：主体在前，底本在后）──
+    const pat = DERIVATION_PATTERNS.find(d => d.re.test(text));
+    if (pat) {
+        /*
+         * 底本在关键词**之后**（「…覆刊武英殿本」）或整条题名里另有一个
+         * 朝代（「百衲本·宋慶元黃善夫刊本」）。
+         *
+         * 不能直接对尾串调 deriveEra —— 那个函数只认**前缀**与特征词，
+         * 而「武英殿本」「宋慶元黃善夫刊本」多半不在开头。这里改为
+         * 在整条题名里扫所有朝代名，取与主年代不同的那个。
+         */
+        const at = text.search(pat.re);
+        const tail = text.slice(at);
+        const sub = findOtherEra(tail, era.era) ?? findOtherEra(text, era.era);
+        if (sub) {
+            out.basedOn = {
+                era: sub.era,
+                reign: sub.reign,
+                year: sub.year,
+                relation: pat.relation,
+            };
+        }
+    }
+    return out;
+}
+
+/** 朝代终止年，供「某某間」取区间上界 */
+const ERA_END_YEAR: Record<string, number> = {
+    漢: 220, 三國: 280, 晉: 420, 南北朝: 589, 隋: 618, 唐: 907, 五代: 960,
+    宋: 1279, 遼: 1125, 西夏: 1227, 金: 1234, 元: 1368, 明: 1644, 清: 1911,
+    民國: 1949,
+    日本: 1912, 朝鮮: 1897, 高麗: 1392, 越南: 1945, 琉球: 1879,
+};
+
+function eraEndYear(era: string): number | undefined {
+    return ERA_END_YEAR[era];
+}
+
 /**
  * 排序用年份：有确切纪年就用，否则退到朝代起始年。
  * 返回 undefined 表示连朝代都推不出来（「鈔本」「稿本」这类）。
  */
 export function sortYear(book: EraInferable): number | undefined {
+    /*
+     * 三级：确切纪年 → 区间下界 → 朝代起始年。
+     *
+     * 中间那级不能少：「明洪武間刊本」有 1368–1398 的区间，
+     * 若直接跳到朝代起始年，它会和「明萬曆間」（1573–1619）并列在 1368，
+     * 洪武本与万历本在排序上就分不开了。
+     */
     const y = deriveYear(book);
     if (y != null) return y;
+    const range = deriveYearRange(book);
+    if (range) return range.from;
     const era = deriveEra(book).era;
     return era ? ERA_START_YEAR[era] : undefined;
 }

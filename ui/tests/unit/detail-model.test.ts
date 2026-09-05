@@ -30,6 +30,8 @@ import {
     roleFacets,
     displayAuthorRole,
     sortYear,
+    deriveYearRange,
+    deriveDating,
 } from '../../src/core/detail-model';
 import type { ResourceEntry, CollectionDetailData, VersionGraph } from '../../src/types';
 import { mergeVolumeResources } from '../../src/core/resources';
@@ -886,5 +888,257 @@ describe('buildVersionTable 按年代排序', () => {
         ];
         expect(buildVersionTable(versions, undefined, { sort: 'year' }).rows.map(r => r.id))
             .toEqual(['song', 'chao']);
+    });
+});
+
+describe('民國紀年', () => {
+    it('民國 N 年 = 1911 + N', () => {
+        // 全库 432 部民國刻本此前全推不出年份——民國不是年号制，
+        // 走不通年号表那条路
+        expect(deriveYear({ edition: '民國三年刊本' })).toBe(1914);
+        expect(deriveYear({ edition: '民國七年王氏聚珍仿宋印書局鉛印本' })).toBe(1918);
+        expect(deriveYear({ edition: '民國二十五年鉛印本' })).toBe(1936);
+        expect(deriveYear({ edition: '民國廿二年刊本' })).toBe(1933);
+    });
+
+    it('简体「民国」同样识别', () => {
+        expect(deriveYear({ edition: '民国十九年中华书局铅印四部备要本' })).toBe(1930);
+    });
+
+    it('荒谬的年数不接受', () => {
+        // 民國只有 38 年（大陆），给个宽松上界 120；超出的多半是误匹配
+        expect(deriveYear({ edition: '民國三百年刊本' })).toBeUndefined();
+    });
+});
+
+describe('日本年號', () => {
+    it('江戶年號可折算', () => {
+        // 全库 553 部日本刻本因年号表不全推不出年份
+        expect(deriveYear({ edition: '日本安永八年青黎閣刊本' })).toBe(1779);   // 1772+8-1
+        expect(deriveYear({ edition: '日本寬文九年刊本' })).toBe(1669);          // 1661+9-1
+        expect(deriveYear({ edition: '日本安政四年聿修堂重刊本' })).toBe(1857);  // 1854+4-1
+        expect(deriveYear({ edition: '日本文化七年刊本' })).toBe(1810);          // 1804+7-1
+        expect(deriveYear({ edition: '日本嘉永三年存誠藥室刊本' })).toBe(1850);  // 1848+3-1
+    });
+
+    it('同名年號按朝代消歧', () => {
+        // 「元和」唐 806 / 日本 1615；「正德」明 1506 / 日本 1711
+        expect(deriveYear({ edition: '唐元和元年寫本' })).toBe(806);
+        expect(deriveYear({ edition: '日本元和元年古活字本' })).toBe(1615);
+        expect(deriveYear({ edition: '明正德九年建陽刘氏慎独斋刊本' })).toBe(1514);
+        expect(deriveYear({ edition: '日本正德三年刊本' })).toBe(1713);
+    });
+
+    it('日本无年号时仍能推出朝代', () => {
+        expect(deriveEra({ edition: '日本鈔本' }).era).toBe('日本');
+        expect(deriveYear({ edition: '日本鈔本' })).toBeUndefined();
+    });
+});
+
+describe('deriveYearRange：「某某間」', () => {
+    it('取首尾年号的起讫', () => {
+        // 「明隆萬間」= 隆慶元年(1567) 至 萬曆末(1619，泰昌元年 1620 前一年)
+        const r = deriveYearRange({ edition: '明隆萬間海寧查志隆刊本' });
+        expect(r).toBeDefined();
+        expect(r!.from).toBe(1567);
+        expect(r!.to).toBe(1619);
+    });
+
+    it('单个年号的「間」取该年号起讫', () => {
+        const r = deriveYearRange({ edition: '明嘉靖間刊本' });
+        expect(r!.from).toBe(1522);
+        expect(r!.to).toBeGreaterThan(1560);   // 嘉靖 1522–1566
+    });
+
+    it('只有朝代没有年号时退到朝代起讫', () => {
+        const r = deriveYearRange({ edition: '明間刊本' });
+        expect(r).toEqual({ from: 1368, to: 1644 });
+    });
+
+    it('没有「間」字不返回区间', () => {
+        expect(deriveYearRange({ edition: '明嘉靖四年金臺汪諒刊本' })).toBeUndefined();
+    });
+});
+
+describe('deriveDating：完整年代判定', () => {
+    it('著录来源标 attested', () => {
+        const d = deriveDating({
+            edition: '某本',
+            lineage: { year: 1195, year_text: '宋慶元', category: '刻本', status: 'extant' },
+        });
+        expect(d!.certainty).toBe('attested');
+        expect(d!.source).toBe('catalog');
+        expect(d!.year).toBe(1195);
+    });
+
+    it('题名推断标 inferred，并记下依据', () => {
+        const d = deriveDating({ edition: '清乾隆四十三年武英殿刊本' });
+        expect(d!.certainty).toBe('inferred');
+        expect(d!.source).toBe('edition');
+        expect(d!.era).toBe('清');
+        expect(d!.reign).toBe('乾隆');
+        expect(d!.year).toBe(1778);
+        expect(d!.basis).toContain('題名');
+    });
+
+    it('只有朝代没有年号年份标 uncertain', () => {
+        // 「明刊本」这类全库 2,224 条（10.7%）：写进 dating 但标存疑，
+        // 排序用朝代起始年——总比什么都没有强
+        const d = deriveDating({ edition: '明刊本' });
+        expect(d!.era).toBe('明');
+        expect(d!.certainty).toBe('uncertain');
+        expect(d!.year).toBeUndefined();
+    });
+
+    it('题名有存疑措辞标 uncertain', () => {
+        expect(deriveDating({ edition: '明萬曆間舊題某氏刊本' })!.certainty).toBe('uncertain');
+    });
+
+    it('推不出任何年代时不生成 dating', () => {
+        expect(deriveDating({ edition: '鈔本' })).toBeUndefined();
+        expect(deriveDating({ edition: '江西圖' })).toBeUndefined();
+    });
+
+    it('底本：影印/翻刻的主体是印本，底本记在 basedOn', () => {
+        // 百衲本的矛盾就出在这里：年份取自底本(宋慶元 1195)、朝代取自
+        // 印本(百衲本→民國)，两者互不知情
+        const d = deriveDating({ edition: '百衲本·宋慶元黃善夫刊本' });
+        expect(d!.era, '主体应是民國影印本').toBe('民國');
+        expect(d!.basedOn, '底本应单独记录').toBeDefined();
+        expect(d!.basedOn!.era).toBe('宋');
+    });
+
+    it('底本：清覆刊武英殿本', () => {
+        const d = deriveDating({ edition: '清同治十一年四川成都書局覆刊武英殿本' });
+        expect(d!.era).toBe('清');
+        expect(d!.year).toBe(1872);      // 同治 1862 + 11 - 1
+        expect(d!.basedOn?.relation).toBe('翻刻');
+    });
+
+    it('後修方向相反：主体在前，修版在后', () => {
+        // 「元大德刻明修本」的主体是**元**大德刻本，明代只是修版；
+        // 用底本的逻辑解析会把主次搞反
+        const d = deriveDating({ edition: '元大德刻明修本' });
+        expect(d!.era, '主体是元刻本').toBe('元');
+        expect(d!.laterRepair?.era, '明只是后来修版').toBe('明');
+        expect(d!.basedOn, '后修不是底本').toBeUndefined();
+    });
+
+    it('後修：宋紹興間刊明初修補九行本', () => {
+        const d = deriveDating({ edition: '宋紹興間刊明初修補九行本' });
+        expect(d!.era).toBe('宋');
+        expect(d!.laterRepair?.era).toBe('明');
+    });
+});
+
+describe('deriveDating 的四个坑（全量报告里抓出来的）', () => {
+    it('单字朝代名不被地名误伤', () => {
+        // 「金陵荊山書林」的金是金陵（南京），不是金朝
+        const d = deriveDating({ edition: '明萬曆間金陵荊山書林刊配補影鈔本' });
+        expect(d!.era).toBe('明');
+        expect(d!.basedOn?.era, '金陵被当成金朝底本').not.toBe('金');
+    });
+
+    it('「間」表示区间，不能折算成年号元年', () => {
+        // 「明洪武間」指 1368–1398 整段，不是洪武元年 1368
+        const d = deriveDating({ edition: '明洪武間內府刊本' });
+        expect(d!.year, '「洪武間」不该给确切年份').toBeUndefined();
+        expect(d!.yearRange).toBeDefined();
+        expect(d!.yearRange!.from).toBe(1368);
+
+        // 跨年号的「清乾隆道光間」同理
+        const d2 = deriveDating({ edition: '清乾隆道光間長塘鮑氏刊知不足齋叢書之一' });
+        expect(d2!.year).toBeUndefined();
+        expect(d2!.yearRange!.from).toBe(1736);
+        expect(d2!.yearRange!.to).toBeGreaterThan(1840);   // 道光末 1850
+    });
+
+    it('南明年號可识别（弘光/隆武/永曆）', () => {
+        // 此前「南明永曆間刊本」推成 1403–1619，差了两百多年
+        expect(deriveYear({ edition: '明弘光元年文來閣刻本' })).toBe(1645);
+        expect(deriveYear({ edition: '南明隆武二年刊本' })).toBe(1646);
+        const d = deriveDating({ edition: '南明永曆間刊本' });
+        expect(d!.yearRange!.from).toBe(1647);
+    });
+
+    it('同朝代的底本也记录', () => {
+        // 「清同治十一年覆刊武英殿本」主体是清同治，底本武英殿也是清（乾隆），
+        // 同朝代但确实是两个本子，不能因为朝代相同就丢掉
+        const d = deriveDating({ edition: '清同治十一年四川成都書局覆刊武英殿本' });
+        expect(d!.basedOn).toBeDefined();
+        expect(d!.basedOn!.relation).toBe('翻刻');
+    });
+});
+
+describe('sortYear 用区间下界', () => {
+    it('「明洪武間」与「明萬曆間」在排序上能分开', () => {
+        // 若两者都退到朝代起始年 1368，洪武本和万历本就并列了
+        const hw = sortYear({ edition: '明洪武間內府刊本' });
+        const wl = sortYear({ edition: '明萬曆間刊本' });
+        expect(hw).toBe(1368);
+        expect(wl).toBe(1573);
+        expect(hw!).toBeLessThan(wl!);
+    });
+
+    it('确切纪年优先于区间', () => {
+        expect(sortYear({ edition: '明萬曆二十四年刊本' })).toBe(1596);
+    });
+});
+
+describe('干支括注的序数年', () => {
+    it('「年號干支(N年)」取括注里的序数', () => {
+        // 全库 2,022 条（9.7%）是这种写法。不认括注的话全部落到年号元年，
+        // 「萬曆壬子」会变成 1573 而不是 1612，差近 40 年
+        expect(deriveYear({ edition: '明萬曆壬子(四十年)刊本' })).toBe(1612);      // 1573+40-1
+        expect(deriveYear({ edition: '明嘉靖丁巳(三十六年)顧名儒建陽刊本' })).toBe(1557); // 1522+36-1
+        expect(deriveYear({ edition: '清雍正壬子(十年)刊本' })).toBe(1732);        // 1723+10-1
+        expect(deriveYear({ edition: '清嘉慶丙辰(元年)刊本' })).toBe(1796);        // 嘉慶元年
+    });
+
+    it('不带干支的括注不误取', () => {
+        // 「摛藻堂四庫全書薈要·第321冊」的 321 不能被当成年份
+        expect(deriveYear({ title: '摛藻堂四庫全書薈要·第321冊' })).not.toBe(321);
+    });
+});
+
+describe('优先读 dating 字段（Phase C 回退链）', () => {
+    it('有 dating 时直接用，不再从题名现推', () => {
+        // 题名说清乾隆，dating 说宋慶元 —— 以 dating 为准
+        // （人工订正的场景：题名写错了，或题名是印本而 dating 记的是底本判定）
+        const d = deriveEra({
+            edition: '清乾隆四十三年武英殿刊本',
+            dating: { era: '宋', reign: '慶元', year: 1195, certainty: 'attested' },
+        });
+        expect(d.era).toBe('宋');
+        expect(d.reign).toBe('慶元');
+        expect(d.source).toBe('catalog');
+        expect(deriveYear({
+            edition: '清乾隆四十三年武英殿刊本',
+            dating: { era: '宋', year: 1195, certainty: 'attested' },
+        })).toBe(1195);
+    });
+
+    it('dating.certainty=inferred 时标记为推断', () => {
+        expect(deriveEra({ dating: { era: '清', reign: '乾隆', certainty: 'inferred' } }).source)
+            .toBe('edition');
+    });
+
+    it('没有 dating 时回退到题名推断——旧数据不会坏', () => {
+        // draft 仓、未迁移的条目都没有这个字段
+        const d = deriveEra({ edition: '清乾隆四十三年武英殿刊本' });
+        expect(d.era).toBe('清');
+        expect(d.source).toBe('edition');
+    });
+
+    it('dating 的 year_range 也被采用', () => {
+        expect(deriveYearRange({ dating: { era: '明', year_range: [1368, 1398] } }))
+            .toEqual({ from: 1368, to: 1398 });
+    });
+
+    it('dating 优先于 lineage.year', () => {
+        expect(deriveYear({
+            dating: { year: 1500 },
+            lineage: { year: 1200, category: '刻本', status: 'extant' },
+        })).toBe(1500);
     });
 });

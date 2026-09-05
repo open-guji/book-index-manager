@@ -39,6 +39,7 @@ export type {
     AdditionalWork,
     IndexedByEntry,
     EmendatedByEntry,
+    DatingInfo,
     VolumeBookMapping,
     VolumeBookEntry,
     VolumeDetail,
@@ -177,6 +178,7 @@ export {
     buildCollectionTable, normalizeVolumeIndex, formatVolumeRange,
     measureText, numberToChinese, parseChineseNumber,
     normalizeRole, roleFacets, ROLE_CLASS_ORDER,
+    sortYear, deriveYearRange, deriveDating, displayAuthorRole,
 } from './core/detail-model';
 export type {
     DerivedEra, EraSource, EraInferable, RelatedWorkRef, RelatedGroup,
@@ -184,6 +186,7 @@ export type {
     ResolvedVersion, VersionRow, VersionTable, VersionTableOptions,
     VersionPartition, CollectionRow, CollectionTable, Fact,
     RoleClass, RoleFacet,
+    YearRange, DerivedDating, DerivationRelation,
 } from './core/detail-model';
 export {
     mergeVolumeResources, volumeStats, normalizeVolumes, resourceHref,

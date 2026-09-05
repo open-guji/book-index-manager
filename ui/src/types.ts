@@ -362,9 +362,50 @@ export interface ContainedInEntry {
     volume_index?: number | string;
 }
 
+/**
+ * 刊刻年代（结构化）。
+ *
+ * 方案见 overview/项目进展/古籍索引网站/整体设计/2026-09-刊刻年代方案.md。
+ *
+ * 背景：97.5% 的版本没有任何年代欄位，页面上的「刊刻年代」此前是
+ * **每次渲染都从题名现推**——无法人工订正，也留不下「这是著录还是猜的」
+ * 的痕迹。这个字段把推断结果落盘，并区分可信度。
+ */
+export interface DatingInfo {
+    /** 朝代（归一后：漢/三國/晉/南北朝/隋/唐/五代/宋/遼/西夏/金/元/明/清/民國/日本/朝鮮/高麗/越南/琉球） */
+    era?: string;
+    /** 年号，如「乾隆」「慶元」 */
+    reign?: string;
+    /** 年号第几年 */
+    reign_year?: number;
+    /** 折算后的公元年，供排序 */
+    year?: number;
+    /** 只知「某某間」时给区间，与 year 二选一 */
+    year_range?: [number, number];
+    /** attested 著录 | inferred 推断 | uncertain 存疑 */
+    certainty?: 'attested' | 'inferred' | 'uncertain';
+    /** edition 题名推断 | catalog 书目著录 | colophon 牌记序跋 | manual 人工订正 */
+    source?: 'edition' | 'catalog' | 'colophon' | 'manual';
+    /** 判定依据，一句话 */
+    basis?: string;
+    /** 底本：本版所依据的更早的本子 */
+    based_on?: {
+        era?: string;
+        reign?: string;
+        year?: number;
+        /** 影印 | 翻刻 | 傳鈔 | 配補 | 據刊 */
+        relation?: string;
+        certainty?: 'attested' | 'inferred' | 'uncertain';
+    };
+    /** 后修：本版之后被谁修过版（「元大德刻明修本」的「明修」） */
+    later_repair?: { era?: string };
+}
+
 /** Book 详情 */
 export interface BookDetailData extends BaseDetailData {
     type: 'book';
+    /** 刊刻年代（结构化）。优先于从题名现推的结果 */
+    dating?: DatingInfo;
     work_id?: string;
     contained_in?: ContainedInEntry[];
     location_history?: LocationInfo[];
