@@ -156,20 +156,25 @@ export const WorkPage: React.FC<WorkPageProps> = ({
             });
         }
 
-        // 最早存世刻本：从版本年份推。只在解析了足够多版本时才显示，
-        // 否则「最早」会随着解析进度跳变。
-        if (needAll || versionIds.length <= CAP.versions) {
-            const years = table.allRows.map(r => r.year).filter((y): y is number => y != null);
-            if (years.length > 0) {
-                const min = Math.min(...years);
-                const earliest = table.allRows.find(r => r.year === min);
-                if (earliest?.era.era) {
-                    out.push({
-                        label: '最早存世刻本',
-                        value: `${earliest.era.era}${earliest.era.reign ? ' ' + earliest.era.reign : ''}`,
-                        title: earliest.era.source === 'edition' ? '據版本題名推斷' : undefined,
-                    });
-                }
+        /*
+         * 最早存世刻本。
+         *
+         * 原先条件里带了 needAll（是否已解析全部版本），于是读者一展开
+         * 或一筛选，这一行就忽隐忽现——同一个页面上时有时无，像 bug。
+         *
+         * 现在只要**已解析的行里**能推出年代就显示。数值可能随解析进度
+         * 从「清」变成更早的「宋」，但那是信息在补全，不是闪烁；
+         * 且首屏 cap 内通常已包含最早的版本。
+         */
+        const dated = table.allRows.filter(r => r.sortYear != null);
+        if (dated.length > 0) {
+            const earliest = dated.reduce((a, b) => (a.sortYear! <= b.sortYear! ? a : b));
+            if (earliest.era.era) {
+                out.push({
+                    label: '最早存世刻本',
+                    value: `${earliest.era.era}${earliest.era.reign ? ' ' + earliest.era.reign : ''}`,
+                    title: earliest.era.source === 'edition' ? '據版本題名推斷' : undefined,
+                });
             }
         }
 

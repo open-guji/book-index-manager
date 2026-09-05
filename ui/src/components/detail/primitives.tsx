@@ -282,6 +282,7 @@ export function FactList({ items, horizontal }: {
      */
     horizontal?: boolean;
 }) {
+    const { convert } = useConvert();
     if (!items.length) return null;
     return (
         <div style={{
@@ -301,7 +302,7 @@ export function FactList({ items, horizontal }: {
                     <span className="bim-d-ui" style={{
                         color: 'var(--bim-label-fg, #a3937b)', letterSpacing: '.08em', flex: 'none',
                     }}>
-                        {f.label}
+                        {convert(f.label)}
                     </span>
                     <span style={{
                         color: 'var(--bim-body-fg, #3b3228)',
@@ -325,6 +326,14 @@ export function SectionHead({ glyph, tone, title, count, actions, id }: {
     actions?: React.ReactNode;
     id?: string;
 }) {
+    /*
+     * 标题在这里统一做繁简转换。
+     *
+     * 页面里的区块标题多是写死的繁体字面量（「影印與全文」「在線數字資源」…），
+     * 之前直接渲染，于是切到简体时正文全变了、标题还是繁体。
+     * 放在原语里转，页面就不必每处都记得包 convert()，也不会再漏。
+     */
+    const { convert } = useConvert();
     return (
         <div
             id={id}
@@ -337,7 +346,7 @@ export function SectionHead({ glyph, tone, title, count, actions, id }: {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <GlyphBadge char={glyph} tone={tone} />
                 <h2 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: '.1em' }}>
-                    {title}
+                    {convert(title)}
                 </h2>
                 {count != null && (
                     <span className="bim-d-ui" style={{
@@ -374,6 +383,7 @@ export function FilterChip({ label, active, onClick, dashed }: {
     onClick?: () => void;
     dashed?: boolean;
 }) {
+    const { convert } = useConvert();
     return (
         <button
             type="button"
@@ -390,13 +400,14 @@ export function FilterChip({ label, active, onClick, dashed }: {
                 fontSize: 12, cursor: 'pointer', letterSpacing: '.04em', lineHeight: 1.4,
             }}
         >
-            {label}
+            {convert(label)}
         </button>
     );
 }
 
 /** 文字按钮（排序切换等），带下划线 */
 export function TextButton({ label, onClick }: { label: string; onClick?: () => void }) {
+    const { convert } = useConvert();
     return (
         <button
             type="button"
@@ -408,7 +419,7 @@ export function TextButton({ label, onClick }: { label: string; onClick?: () => 
                 borderBottom: '1px solid var(--bim-rule, #d6c9ae)',
             }}
         >
-            {label}
+            {convert(label)}
         </button>
     );
 }
@@ -420,6 +431,7 @@ export function MoreButton({ label, onClick, inline }: {
     /** inline = chip 牆里的「更多 N 種」，非整行 */
     inline?: boolean;
 }) {
+    const { convert } = useConvert();
     return (
         <button
             type="button"
@@ -436,7 +448,7 @@ export function MoreButton({ label, onClick, inline }: {
                 letterSpacing: inline ? undefined : '.08em',
             }}
         >
-            {label}
+            {convert(label)}
         </button>
     );
 }
@@ -542,6 +554,7 @@ export interface TableSpec {
 
 /** 表头。窄屏由 CSS 隐藏（meta 折到第二行后表头就没意义了）。 */
 export function TableHead({ spec }: { spec: TableSpec }) {
+    const { convert } = useConvert();
     return (
         <div
             className="bim-d-thead bim-d-ui"
@@ -554,13 +567,13 @@ export function TableHead({ spec }: { spec: TableSpec }) {
             }}
         >
             <span />
-            <span>{spec.mainLabel}</span>
+            <span>{convert(spec.mainLabel)}</span>
             <span style={{
                 display: 'grid',
                 gridTemplateColumns: spec.columns.map(c => c.width).join(' '),
                 gap: 12,
             }}>
-                {spec.columns.map(c => <span key={c.label}>{c.label}</span>)}
+                {spec.columns.map(c => <span key={c.label}>{convert(c.label)}</span>)}
             </span>
         </div>
     );
@@ -695,6 +708,7 @@ export function ResourceGroup({ title, tag, children }: {
     tag?: string;
     children: React.ReactNode;
 }) {
+    const { convert } = useConvert();
     return (
         <div>
             <div style={{
@@ -702,12 +716,12 @@ export function ResourceGroup({ title, tag, children }: {
                 gap: 8, paddingBottom: 7,
                 borderBottom: '1px solid var(--bim-rule-strong, #2a231c)', marginBottom: 2,
             }}>
-                <span style={{ fontSize: 14.5, letterSpacing: '.08em' }}>{title}</span>
+                <span style={{ fontSize: 14.5, letterSpacing: '.08em' }}>{convert(title)}</span>
                 {tag && (
                     <span className="bim-d-ui" style={{
                         fontSize: 10.5, color: 'var(--bim-accent, #9c3a2c)', letterSpacing: '.06em',
                     }}>
-                        {tag}
+                        {convert(tag)}
                     </span>
                 )}
             </div>

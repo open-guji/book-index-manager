@@ -29,8 +29,10 @@ import {
     normalizeRole,
     roleFacets,
     displayAuthorRole,
+    sortYear,
 } from '../../src/core/detail-model';
 import type { ResourceEntry, CollectionDetailData, VersionGraph } from '../../src/types';
+import { mergeVolumeResources } from '../../src/core/resources';
 
 describe('parseChineseNumber', () => {
     it('解析基本数字', () => {
@@ -245,7 +247,11 @@ describe('groupRelatedWorks', () => {
             { id: '12', title: '辛', relation: 'related_to' },
         ]);
         const byKey = Object.fromEntries(groups.map(g => [g.key, g.items.map(i => i.id)]));
-        expect(byKey.belongsTo).toEqual(['1', '6']);
+        // part_of 指向上级**作品**；collected_in 指向**丛编**（史記 collected_in
+        // 二十四史，而二十四史 type=collection）。混在一起标「所屬作品」，
+        // 页面上就成了「史記的所属作品是二十四史」——二十四史不是作品。
+        expect(byKey.belongsTo).toEqual(['6']);
+        expect(byKey.collected).toEqual(['1']);
         expect(byKey.contains).toEqual(['5', '7']);
         expect(byKey.derivative).toEqual(['2', '3', '10', '11']);
         expect(byKey.studies).toEqual(['8', '9']);
@@ -799,5 +805,86 @@ describe('displayAuthorRole', () => {
         expect(displayAuthorRole(undefined)).toBe('');
         expect(displayAuthorRole('')).toBe('');
         expect(displayAuthorRole('   ')).toBe('');
+    });
+});
+
+describe('mergeVolumeResources：合并行必须可点', () => {
+    it('合并出的分册组带首册链接', () => {
+        // 御定佩文韻府 23 册各有 wikimedia 链接；合并后若 url 为空，
+        // 「影印與全文」那行就只剩文字点不动，读者没有任何入口
+        const volumes: ResourceEntry[] = Array.from({ length: 23 }, (_, i) => ({
+            id: String(i),
+            name: `摛藻堂四庫全書薈要·第${321 + i}冊`,
+            types: ['image'] as const,
+            url: `https://commons.wikimedia.org/wiki/File:x${321 + i}.djvu`,
+        }));
+        const merged = mergeVolumeResources(volumes);
+        expect(merged).toHaveLength(1);
+        expect(merged[0].url, '合并行没有 url，整行不可点').toBeTruthy();
+        expect(merged[0].url).toContain('321');   // 取首册
+        expect(merged[0].volumes).toHaveLength(23);
+    });
+
+    it('分册都没链接时合并行 url 为空但不炸', () => {
+        const noUrl: ResourceEntry[] = [
+            { id: '1', name: '某書·第1冊', types: ['physical'], url: '' },
+            { id: '2', name: '某書·第2冊', types: ['physical'], url: '' },
+        ];
+        const merged = mergeVolumeResources(noUrl);
+        expect(merged).toHaveLength(1);
+        expect(merged[0].url).toBe('');
+    });
+});
+
+describe('sortYear：按年代排序的锚点', () => {
+    it('有确切纪年时用纪年', () => {
+        expect(sortYear({ edition: '宋乾道七年蔡夢弼東塾刻本' })).toBe(1171);
+        expect(sortYear({ edition: '清乾隆四十三年武英殿刊本' })).toBe(1778);
+    });
+
+    it('只知朝代时退到朝代起始年，不被扔到末尾', () => {
+        // 「宋建安黃善夫家塾刻本」推得出「宋」但无确切纪年。
+        // 若按 year ?? Infinity 排，它会排到清光緒（1905）后面——
+        // 一个宋本排在清末石印本之后，一眼就是错的。
+        const song = sortYear({ edition: '宋建安黄善夫家塾刻本' });
+        const qing = sortYear({ edition: '清光緒三十一年上海久敬齋石印本' });
+        expect(song).toBeDefined();
+        expect(song!, '宋本应排在清末刻本之前').toBeLessThan(qing!);
+    });
+
+    it('推不出朝代时返回 undefined', () => {
+        expect(sortYear({ edition: '鈔本' })).toBeUndefined();
+    });
+
+    it('欽定四庫全書系列能推出乾隆年份（特征词而非题名前缀）', () => {
+        // deriveYear 原先只认题名**前缀**，而「欽定四庫全書·文淵閣本」
+        // 不以朝代开头，于是明明推得出「清·乾隆」却拿不到年份，
+        // 排序时被扔到末尾
+        expect(deriveYear({ edition: '欽定四庫全書·文淵閣本' })).toBe(1736);
+        expect(sortYear({ edition: '欽定四庫全書·文淵閣本' })).toBe(1736);
+    });
+});
+
+describe('buildVersionTable 按年代排序', () => {
+    it('宋本排在清本之前，即使宋本没有确切纪年', () => {
+        const versions = [
+            { id: 'qing', edition: '清光緒三十一年上海久敬齋石印本' },
+            { id: 'song', edition: '宋建安黄善夫家塾刻本' },
+            { id: 'ming', edition: '明嘉靖四年金臺汪諒刊本' },
+            { id: 'siku', edition: '欽定四庫全書·文淵閣本' },
+        ];
+        const ids = buildVersionTable(versions, undefined, { sort: 'year' }).rows.map(r => r.id);
+        expect(ids.indexOf('song')).toBeLessThan(ids.indexOf('ming'));
+        expect(ids.indexOf('ming')).toBeLessThan(ids.indexOf('siku'));
+        expect(ids.indexOf('siku')).toBeLessThan(ids.indexOf('qing'));
+    });
+
+    it('推不出年代的排最后', () => {
+        const versions = [
+            { id: 'chao', edition: '鈔本' },
+            { id: 'song', edition: '宋刻本' },
+        ];
+        expect(buildVersionTable(versions, undefined, { sort: 'year' }).rows.map(r => r.id))
+            .toEqual(['song', 'chao']);
     });
 });

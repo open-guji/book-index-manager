@@ -97,6 +97,17 @@ export function mergeVolumeResources(items: ResourceEntry[]): ResourceEntry[] {
         group.volumes.sort((a, b) => a.volume - b.volume);
         group.base.volumes = group.volumes;
         group.base.expected_volumes = group.volumes.length;
+        /*
+         * 合并出来的这一条要有 url，否则整行不可点。
+         *
+         * 御定佩文韻府的 23 册各有各的 wikimedia 链接，合成一行后
+         * base.url 是空串，「影印與全文」那行就只剩文字、点不动——
+         * 读者看得到「23 / 23 冊」却没有任何入口。
+         * 取首册的链接作为整组的入口（展开后仍可逐册点）。
+         */
+        if (!group.base.url) {
+            group.base.url = group.volumes.find(v => v.url)?.url ?? '';
+        }
         merged.push(group.base);
         for (const i of group.indices) consumed.add(i);
     }

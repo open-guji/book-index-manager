@@ -305,18 +305,50 @@ export function deriveYear(book: EraInferable): number | undefined {
             const n = parseInt(ce[1], 10);
             if (n >= 100 && n <= 2100) return n;
         }
-        // 年号 + 序数
-        const era = matchEraPrefix(text);
-        const reign = matchReign(text, era);
-        if (reign) {
+        // 年号 + 序数。朝代取自完整的 deriveEra（含「欽定四庫全書」这类
+        // 特征词），不能只认题名前缀——否则「欽定四庫全書·文淵閣本」
+        // 明明推得出「清·乾隆」，deriveYear 却因为它不以「清」开头而放弃。
+        const era = matchEraPrefix(text)
+            ?? ERA_HINTS.find(h => h.pattern.test(text))?.era;
+        const reign = matchReign(text, era)
+            ?? (matchEraPrefix(text) ? undefined : ERA_HINTS.find(h => h.pattern.test(text))?.reign);
+        if (reign && REIGN_YEARS[reign] != null) {
             const base = REIGN_YEARS[reign];
-            const after = text.slice(text.indexOf(reign) + reign.length);
+            const at = text.indexOf(reign);
+            const after = at >= 0 ? text.slice(at + reign.length) : '';
             const ord = after.match(/^([零〇一二三四五六七八九十廿卅元]+)年/);
             const offset = ord ? parseChineseNumber(ord[1]) : undefined;
             return base + (offset ? offset - 1 : 0);
         }
     }
     return undefined;
+}
+
+/**
+ * 朝代的起始年，作为无确切纪年时的排序锚点。
+ *
+ * 「宋建安黃善夫家塾刻本」推得出「宋」却推不出具体年份；若按
+ * `year ?? Infinity` 排，它会被扔到清光緒（1905）后面——一个宋本排在
+ * 清末刻本之后，读者一眼就看出错了。用朝代起始年当锚点，
+ * 至少保证朝代之间的先后是对的。
+ */
+const ERA_START_YEAR: Record<string, number> = {
+    漢: -202, 三國: 220, 晉: 265, 南北朝: 420, 隋: 581, 唐: 618, 五代: 907,
+    宋: 960, 遼: 916, 西夏: 1038, 金: 1115, 元: 1271, 明: 1368, 清: 1644,
+    民國: 1912,
+    // 域外：取其与中土大致对应的年代，仅用于排序不作断代依据
+    日本: 1600, 朝鮮: 1392, 高麗: 918, 越南: 1400, 琉球: 1400,
+};
+
+/**
+ * 排序用年份：有确切纪年就用，否则退到朝代起始年。
+ * 返回 undefined 表示连朝代都推不出来（「鈔本」「稿本」这类）。
+ */
+export function sortYear(book: EraInferable): number | undefined {
+    const y = deriveYear(book);
+    if (y != null) return y;
+    const era = deriveEra(book).era;
+    return era ? ERA_START_YEAR[era] : undefined;
 }
 
 /**
@@ -347,7 +379,8 @@ export interface RelatedWorkRef {
 export interface RelatedGroup {
     key: string;
     /** i18n key，UI 侧翻译 */
-    labelKey: 'belongsToWork' | 'containedWorks' | 'derivativeWorks' | 'studies' | 'relatedWorks';
+    labelKey: 'belongsToWork' | 'collectedIn' | 'containedWorks'
+        | 'derivativeWorks' | 'studies' | 'relatedWorks';
     items: RelatedWorkRef[];
 }
 
@@ -360,12 +393,22 @@ export interface RelatedGroup {
  */
 export function groupRelatedWorks(items: RelatedWorkRef[]): RelatedGroup[] {
     const buckets: Record<string, RelatedWorkRef[]> = {
-        belongsTo: [], contains: [], derivative: [], studies: [], related: [],
+        belongsTo: [], collected: [], contains: [], derivative: [], studies: [], related: [],
     };
 
     for (const it of items) {
         const r = it.relation;
-        if (r === 'part_of' || r === 'collected_in') buckets.belongsTo.push(it);
+        /*
+         * part_of 与 collected_in 要分开。
+         *
+         * part_of 指向**上级作品**（如某篇属于某集）；
+         * collected_in 指向**丛编**（史記 collected_in 二十四史，
+         * 而二十四史是 type=collection）。
+         * 混在一起标「所屬作品」，页面上就成了「史記的所属作品是二十四史」——
+         * 二十四史根本不是作品。
+         */
+        if (r === 'part_of') buckets.belongsTo.push(it);
+        else if (r === 'collected_in') buckets.collected.push(it);
         else if (r === 'has_part' || r === 'contains_text_of') buckets.contains.push(it);
         else if (r === 'text_carried_by' || r === 'studied_by' || r === 'derived_from'
             || r === 'followed_by' || r === 'has_adaptation') buckets.derivative.push(it);
@@ -378,6 +421,7 @@ export function groupRelatedWorks(items: RelatedWorkRef[]): RelatedGroup[] {
         if (buckets[key].length) out.push({ key, labelKey, items: buckets[key] });
     };
     push('belongsTo', 'belongsToWork');
+    push('collected', 'collectedIn');
     push('contains', 'containedWorks');
     push('derivative', 'derivativeWorks');
     push('studies', 'studies');
@@ -542,6 +586,12 @@ export interface VersionRow {
     holders: ResourceEntry[];
     /** current_location.name —— 没有 physical 资源时的回退 */
     locationName?: string;
+    /**
+     * 排序用年份：确切纪年优先，否则退到朝代起始年。
+     * 与 `year` 的区别是它对「宋建安黃善夫家塾刻本」这种只知朝代的
+     * 也给得出值，不至于被扔到清末刻本后面。
+     */
+    sortYear?: number;
     /** 是否重点版本（在 version_graph 核心集内） */
     important: boolean;
     /** 所属分组 id（version_graph.node_groups） */
@@ -583,6 +633,7 @@ export function buildVersionRow(v: ResolvedVersion, vg?: VersionGraph): VersionR
         name: v.edition || v.title || v.id,
         era: deriveEra(v),
         year: deriveYear(v),
+        sortYear: sortYear(v),
         images,
         holders,
         locationName: v.current_location?.name,
@@ -620,12 +671,25 @@ export function buildVersionTable(
     if (opts.scanOnly) rows = rows.filter(r => r.hasImage);
 
     if (opts.sort === 'year') {
-        rows = [...rows].sort((a, b) => {
-            if (a.year != null && b.year != null) return a.year - b.year;
-            if (a.year != null) return -1;
-            if (b.year != null) return 1;
-            return eraRank(a.era.era) - eraRank(b.era.era);
-        });
+        /*
+         * 用 sortYear（确切纪年 → 朝代起始年）而非 year。
+         *
+         * 只按 year 排的话，「宋建安黃善夫家塾刻本」因为没有确切纪年，
+         * 会被扔到「清光緒三十一年」后面——一个宋本排在清末石印本之后，
+         * 读者一眼就看出错了。
+         *
+         * 稳定排序：同年份保持录入序。
+         */
+        rows = rows
+            .map((r, i) => ({ r, i }))
+            .sort((a, b) => {
+                const ay = a.r.sortYear, by = b.r.sortYear;
+                if (ay != null && by != null) return ay - by || a.i - b.i;
+                if (ay != null) return -1;      // 推不出年代的排最后
+                if (by != null) return 1;
+                return a.i - b.i;
+            })
+            .map(x => x.r);
     } else {
         /*
          * 默认顺序 ≈ 设计稿的「重要程度」。数据里没有显式权重字段，

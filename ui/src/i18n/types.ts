@@ -91,6 +91,8 @@ export interface LocaleMessages {
         attachedTexts: string;
         appendix: string;
         containedIn: string;
+        /** 作品被丛编收录（与 belongsToWork 区分：后者指向上级作品） */
+        collectedIn: string;
         belongsToWork: string;
         locationHistory: string;
         historyOverview: string;
