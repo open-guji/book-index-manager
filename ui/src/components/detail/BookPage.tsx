@@ -12,22 +12,19 @@ import type {
     BookDetailData,
     WorkDetailData,
     CollectionDetailData,
-    ResourceEntry,
 } from '../../types';
 import type { IndexStorage } from '../../storage/types';
 import { useT, useConvert } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
 import {
     Section, SectionHead, IntroGrid, FactList, Chip, ChipWall, MoreButton,
-    VolumeChips, ResourceGroup, ResourceRow, BidLink, EmptyNote,
-    type FactItem,
-    type RenderLink,
+    VolumeChips, ResourceLine, TagRow, flattenTitles, BidLink,
+    type FactItem, type RenderLink,
 } from './primitives';
 import {
-    bucketResources, resourceNote, deriveEra, deriveEditionType,
+    bucketResources, deriveEra, deriveEditionType,
     normalizeVolumeIndex, formatVolumeRange, measureText,
 } from '../../core/detail-model';
-import { getDisplayNameFromUrl, resourceHref, volumeStats } from '../../core/resources';
 
 const CAP_SIBLINGS = 8;
 
@@ -270,7 +267,15 @@ export const BookPage: React.FC<BookPageProps> = ({
                                     }}
                                 />
                             )}
-                            <AliasRow data={data} convert={convert} label={t.section.aliases} />
+                            <div style={{ marginTop: 14 }}>
+                                <TagRow
+                                    label={t.section.aliases}
+                                    items={[
+                                        ...flattenTitles(data.additional_titles),
+                                        ...flattenTitles(data.attached_texts),
+                                    ]}
+                                />
+                            </div>
                         </div>
                     </section>
                 )}
@@ -288,14 +293,14 @@ export const BookPage: React.FC<BookPageProps> = ({
                                         {convert(g.label)}
                                     </div>
                                     {g.items.map((r, i) => (
-                                        <BookResourceLine key={`${r.id || r.url || r.name}-${i}`}
-                                            item={r} convert={convert} showVolumes={!hasVolumeChips} />
+                                        <ResourceLine key={`${r.id || r.url || r.name}-${i}`}
+                                            item={r} showVolumes={!hasVolumeChips} />
                                     ))}
                                 </div>
                             ))}
                             {resources.buckets.flatMap(b => b.items).map((r, i) => (
-                                <BookResourceLine key={`${r.id || r.url || r.name}-${i}`}
-                                    item={r} convert={convert} showVolumes={!hasVolumeChips} />
+                                <ResourceLine key={`${r.id || r.url || r.name}-${i}`}
+                                    item={r} showVolumes={!hasVolumeChips} />
                             ))}
                         </div>
                     </section>
@@ -365,91 +370,3 @@ export const BookPage: React.FC<BookPageProps> = ({
         </>
     );
 };
-
-/** 版本页的资源行（比作品页紧凑，无分组标题） */
-function BookResourceLine({ item, convert, showVolumes = true }: {
-    item: ResourceEntry;
-    convert: (s: string) => string;
-    /** 关掉分册展开（册号已在别处列出时） */
-    showVolumes?: boolean;
-}) {
-    const [open, setOpen] = useState(false);
-    const stats = volumeStats(item);
-    const hasVolumes = showVolumes && !!stats && stats.expected > 0;
-    const name = (item.url ? getDisplayNameFromUrl(item.url) : undefined) || convert(item.name);
-
-    return (
-        <ResourceRow
-            name={name}
-            note={resourceNote(item)}
-            href={resourceHref(item)}
-            extra={hasVolumes ? (
-                <>
-                    <button
-                        type="button"
-                        onClick={() => setOpen(v => !v)}
-                        className="bim-d-ui"
-                        style={{
-                            alignSelf: 'flex-start', padding: '2px 0', marginTop: 4,
-                            background: 'none', border: 'none', cursor: 'pointer', fontSize: 11,
-                            color: 'var(--bim-meta-fg, #7b6a54)',
-                            borderBottom: '1px solid var(--bim-rule, #e0d6c0)',
-                        }}
-                    >
-                        {open ? '收起分冊' : `展開 ${stats!.expected} 冊`}
-                    </button>
-                    {open && (
-                        <div className="bim-d-ui" style={{
-                            display: 'flex', flexWrap: 'wrap', gap: 4,
-                            padding: '6px 0 10px', fontSize: 11,
-                        }}>
-                            {(item.volumes || []).map((v, i) => {
-                                const missing = v.status === 'missing';
-                                return v.url && !missing ? (
-                                    <a key={i} href={v.url} target="_blank" rel="noopener noreferrer"
-                                        style={{ padding: '1px 5px', border: '1px solid var(--bim-rule, #e0d6c0)' }}>
-                                        {v.volume}
-                                    </a>
-                                ) : (
-                                    <span key={i} style={{
-                                        padding: '1px 5px',
-                                        color: missing
-                                            ? 'var(--bim-missing-fg, #e67e22)'
-                                            : 'var(--bim-hint-fg, #b3a385)',
-                                        textDecoration: missing ? 'line-through' : undefined,
-                                    }}>
-                                        {v.volume}
-                                    </span>
-                                );
-                            })}
-                        </div>
-                    )}
-                </>
-            ) : undefined}
-        />
-    );
-}
-
-/** 别名 / 附载篇目 chip 行 */
-function AliasRow({ data, convert, label }: {
-    data: BookDetailData;
-    convert: (s: string) => string;
-    label: string;
-}) {
-    const items = [
-        ...(data.additional_titles || []),
-        ...(data.attached_texts || []),
-    ].map(x => (typeof x === 'string' ? x : x.book_title)).filter(Boolean);
-
-    if (!items.length) return null;
-    return (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 14, alignItems: 'center' }}>
-            <span className="bim-d-ui" style={{
-                fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)', letterSpacing: '.08em',
-            }}>
-                {label}
-            </span>
-            {items.map((s, i) => <Chip key={i}>{convert(s)}</Chip>)}
-        </div>
-    );
-}

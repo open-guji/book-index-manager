@@ -20,19 +20,30 @@ import { MarkdownText } from '../common/MarkdownText';
 import {
     Section, SectionHead, IntroGrid, FactList, DataTable, TableHead, TableRow,
     Chip, ChipWall, MoreButton, FilterChip, TextButton, ExpandRow, Quote,
-    ResourceGroup, ResourceRow, BidLink, ExtLink, Dash, EmptyNote,
-    type FactItem,
-    type RenderLink,
+    ResourceGroup, ResourceLine, TagRows, flattenTitles, BidLink, ExtLink,
+    Dash, EmptyNote, rowNo,
+    type FactItem, type RenderLink, type TableSpec,
 } from './primitives';
 import {
-    buildVersionTable, bucketResources, resourceNote, resourceDisambiguator, groupRelatedWorks,
-    measureText, deriveEra,
+    buildVersionTable, bucketResources, groupRelatedWorks, measureText,
     type ResolvedVersion, type VersionRow,
 } from '../../core/detail-model';
-import { getDisplayNameFromUrl, resourceHref, volumeStats } from '../../core/resources';
+import { getDisplayNameFromUrl, resourceHref } from '../../core/resources';
 
 /** 桌面 cap；窄屏由 CSS 控制不了行数，故统一用桌面值，窄屏靠展开按钮 */
 const CAP = { versions: 12, catalogs: 8, chips: 12 };
+
+/** 版本表列宽：表头与行共用，免得两处手抄错位 */
+const VERSION_TABLE: TableSpec = {
+    leadWidth: 22,
+    metaWidth: 424,
+    mainLabel: '版本名稱',
+    columns: [
+        { label: '刊刻年代', width: '118px' },
+        { label: '影印圖源', width: '156px' },
+        { label: '收藏機構', width: '138px' },
+    ],
+};
 
 export interface WorkPageProps {
     data: WorkDetailData;
@@ -213,7 +224,15 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                         />
                     </details>
                 ))}
-                <TagRows data={data} convert={convert} t={t} />
+                <TagRows rows={[
+                    { label: t.section.aliases, items: flattenTitles(data.additional_titles) },
+                    { label: t.section.attachedTexts, items: flattenTitles(data.attached_texts) },
+                    {
+                        label: t.section.appendix,
+                        items: (data.additional_works || []).map(w =>
+                            w.book_title + (w.n_juan != null ? ` ${w.n_juan}${t.unit.juan}` : '')),
+                    },
+                ]} />
             </IntroGrid>
 
             {/* ── 相關版本 ── */}
@@ -257,21 +276,12 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                     )}
 
                     <DataTable>
-                        <TableHead
-                            leadWidth={22}
-                            metaWidth={424}
-                            mainLabel="版本名稱"
-                            metaColumns={[
-                                { label: '刊刻年代', width: '118px' },
-                                { label: '影印圖源', width: '156px' },
-                                { label: '收藏機構', width: '138px' },
-                            ]}
-                        />
+                        <TableHead spec={VERSION_TABLE} />
                         {visibleRows.map((row, i) => (
                             <VersionTableRow
                                 key={row.id}
                                 row={row}
-                                no={i + 1}
+                                no={i}
                                 onNavigate={onNavigate}
                                 renderLink={renderLink}
                             />
@@ -314,7 +324,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                             <ResourceGroup key={g.key} title={convert(g.label)} tag={g.description ? convert(g.description) : undefined}>
                                 {g.items.map((r, i) => (
                                     <ResourceLine key={`${r.id || r.url || r.name}-${i}`}
-                                        item={r} siblings={g.items} convert={convert} />
+                                        item={r} siblings={g.items} />
                                 ))}
                             </ResourceGroup>
                         ))}
@@ -326,7 +336,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                             >
                                 {b.items.map((r, i) => (
                                     <ResourceLine key={`${r.id || r.url || r.name}-${i}`}
-                                        item={r} siblings={b.items} convert={convert} />
+                                        item={r} siblings={b.items} />
                                 ))}
                             </ResourceGroup>
                         ))}
@@ -402,85 +412,6 @@ const BUCKET_TAGS: Record<string, string> = {
     physical: '實體',
 };
 
-/** 资源行 + 分册展开 */
-function ResourceLine({ item, siblings, convert }: {
-    item: ResourceEntry;
-    /** 同组资源，用于给重名条目加区分后缀 */
-    siblings: ResourceEntry[];
-    convert: (s: string) => string;
-}) {
-    const [open, setOpen] = useState(false);
-    const stats = volumeStats(item);
-    const hasVolumes = !!stats && stats.expected > 0;
-    const baseName = (item.url ? getDisplayNameFromUrl(item.url) : undefined) || convert(item.name);
-    const suffix = resourceDisambiguator(item, siblings);
-    const name = suffix ? `${baseName}（${suffix}）` : baseName;
-
-    return (
-        <ResourceRow
-            name={name}
-            note={resourceNote(item)}
-            href={resourceHref(item)}
-            extra={hasVolumes ? (
-                <>
-                    <button
-                        type="button"
-                        onClick={() => setOpen(v => !v)}
-                        className="bim-d-ui"
-                        style={{
-                            alignSelf: 'flex-start', padding: '2px 0', background: 'none',
-                            border: 'none', cursor: 'pointer', fontSize: 11,
-                            color: 'var(--bim-meta-fg, #7b6a54)',
-                            borderBottom: '1px solid var(--bim-rule, #e0d6c0)',
-                            marginTop: 4,
-                        }}
-                    >
-                        {open ? '收起分冊' : `展開 ${stats!.expected} 冊`}
-                    </button>
-                    {open && <VolumeLinks item={item} />}
-                </>
-            ) : undefined}
-        />
-    );
-}
-
-/** 分册链接网格（缺册划线） */
-function VolumeLinks({ item }: { item: ResourceEntry }) {
-    const volumes = item.volumes || [];
-    return (
-        <div className="bim-d-ui" style={{
-            display: 'flex', flexWrap: 'wrap', gap: 4, padding: '6px 0 10px', fontSize: 11,
-        }}>
-            {volumes.map((v, i) => {
-                const missing = v.status === 'missing';
-                const url = v.url;
-                if (url && !missing) {
-                    return (
-                        <a key={i} href={url} target="_blank" rel="noopener noreferrer"
-                            style={{
-                                padding: '1px 5px',
-                                border: '1px solid var(--bim-rule, #e0d6c0)',
-                            }}>
-                            {v.volume}
-                        </a>
-                    );
-                }
-                return (
-                    <span key={i} style={{
-                        padding: '1px 5px',
-                        color: missing
-                            ? 'var(--bim-missing-fg, #e67e22)'
-                            : 'var(--bim-hint-fg, #b3a385)',
-                        textDecoration: missing ? 'line-through' : undefined,
-                    }}>
-                        {v.volume}
-                    </span>
-                );
-            })}
-        </div>
-    );
-}
-
 /** 版本表的一行 */
 function VersionTableRow({ row, no, onNavigate, renderLink }: {
     row: VersionRow;
@@ -494,10 +425,8 @@ function VersionTableRow({ row, no, onNavigate, renderLink }: {
 
     return (
         <TableRow
-            no={String(no).padStart(2, '0')}
-            leadWidth={22}
-            metaWidth={424}
-            metaColumns={['118px', '156px', '138px']}
+            no={rowNo(no)}
+            spec={VERSION_TABLE}
             main={
                 <BidLink
                     id={row.id}
@@ -709,47 +638,5 @@ function RelatedBlock({ glyph, title, items, convert, onNavigate, renderLink }: 
                 )}
             </ChipWall>
         </Section>
-    );
-}
-
-/** intro 下的别名 / 附录 / 附载篇目 chip 行 */
-function TagRows({ data, convert, t }: {
-    data: WorkDetailData;
-    convert: (s: string) => string;
-    t: ReturnType<typeof useT>;
-}) {
-    const rows: { label: string; items: string[] }[] = [];
-
-    const titles = (data.additional_titles || [])
-        .map(x => (typeof x === 'string' ? x : x.book_title))
-        .filter(Boolean);
-    if (titles.length) rows.push({ label: t.section.aliases, items: titles });
-
-    const attached = (data.attached_texts || [])
-        .map(x => (typeof x === 'string' ? x : x.book_title))
-        .filter(Boolean);
-    if (attached.length) rows.push({ label: t.section.attachedTexts, items: attached });
-
-    const additional = (data.additional_works || [])
-        .map(w => w.book_title + (w.n_juan != null ? ` ${w.n_juan}${t.unit.juan}` : ''));
-    if (additional.length) rows.push({ label: t.section.appendix, items: additional });
-
-    if (!rows.length) return null;
-
-    return (
-        <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {rows.map(row => (
-                <div key={row.label} style={{
-                    display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
-                }}>
-                    <span className="bim-d-ui" style={{
-                        fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)', letterSpacing: '.08em',
-                    }}>
-                        {row.label}
-                    </span>
-                    {row.items.map((s, i) => <Chip key={i}>{convert(s)}</Chip>)}
-                </div>
-            ))}
-        </div>
     );
 }

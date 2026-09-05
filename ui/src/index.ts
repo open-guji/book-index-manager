@@ -164,10 +164,12 @@ export {
     PageFrame, TopStrip, Breadcrumb, DetailHeader, IntroGrid, FactList,
     SectionHead, DataTable, TableHead, TableRow, ExpandRow, Quote,
     Chip, ChipWall, MoreButton, FilterChip, TextButton, VolumeChips,
-    ResourceGroup, ResourceRow, DetailFooter, EmptyNote, ExtLink, Dash,
+    ResourceGroup, ResourceRow, ResourceLine, VolumeLinks,
+    TagRow, TagRows, flattenTitles, rowNo,
+    DetailFooter, EmptyNote, ExtLink, Dash,
     GlyphBadge, DETAIL_CSS, PAGE_MAX_WIDTH,
 } from './components/detail';
-export type { FactItem, LinkContext, RenderLink } from './components/detail';
+export type { FactItem, LinkContext, RenderLink, TableSpec } from './components/detail';
 export {
     deriveEra, deriveYear, deriveEditionType, normalizeEra, eraRank,
     groupRelatedWorks, bucketResources, resourceNote,

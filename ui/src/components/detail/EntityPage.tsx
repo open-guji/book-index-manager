@@ -23,13 +23,24 @@ import { useT, useConvert } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
 import {
     Section, SectionHead, IntroGrid, FactList, DataTable, TableHead, TableRow,
-    MoreButton, FilterChip, TextButton, BidLink, Dash, EmptyNote,
-    type FactItem, type RenderLink,
+    MoreButton, FilterChip, TextButton, BidLink, Dash, EmptyNote, rowNo,
+    type FactItem, type RenderLink, type TableSpec,
 } from './primitives';
 import { normalizeRole, roleFacets, type RoleClass } from '../../core/detail-model';
 
 /** 桌面 cap，与作品页版本表同一量级 */
 const CAP_WORKS = 16;
+
+/** 作品表列宽：表头与行共用 */
+const WORKS_TABLE: TableSpec = {
+    leadWidth: 26,
+    metaWidth: 300,
+    mainLabel: '作品名稱',
+    columns: [
+        { label: '職任', width: '72px' },
+        { label: '存世版本', width: '1fr' },
+    ],
+};
 
 
 export interface EntityPageProps {
@@ -289,22 +300,12 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                     )}
 
                     <DataTable>
-                        <TableHead
-                            leadWidth={26}
-                            metaWidth={300}
-                            mainLabel="作品名稱"
-                            metaColumns={[
-                                { label: '職任', width: '72px' },
-                                { label: '存世版本', width: '1fr' },
-                            ]}
-                        />
+                        <TableHead spec={WORKS_TABLE} />
                         {visible.map((row, i) => (
                             <TableRow
                                 key={row.id}
-                                no={String(i + 1).padStart(2, '0')}
-                                leadWidth={26}
-                                metaWidth={300}
-                                metaColumns={['72px', '1fr']}
+                                no={rowNo(i)}
+                                spec={WORKS_TABLE}
                                 main={
                                     <BidLink
                                         id={row.id}

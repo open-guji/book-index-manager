@@ -8,21 +8,18 @@
  * 区块：header → intro → 收錄書籍 → 影印與全文 ‖ 包含作品。
  */
 import React, { useState, useMemo } from 'react';
-import type { CollectionDetailData, ResourceEntry, VolumeBookMapping } from '../../types';
+import type { CollectionDetailData, VolumeBookMapping } from '../../types';
 import type { IndexStorage } from '../../storage/types';
 import { useT, useConvert } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
 import {
     Section, SectionHead, IntroGrid, FactList, DataTable, TableHead, TableRow,
-    Chip, ChipWall, MoreButton, FilterChip, ResourceRow, BidLink, Dash, EmptyNote,
-    type FactItem,
-    type RenderLink,
+    Chip, ChipWall, MoreButton, FilterChip, ResourceLine, BidLink, Dash, EmptyNote, rowNo,
+    type FactItem, type RenderLink, type TableSpec,
 } from './primitives';
 import {
-    buildCollectionTable, bucketResources, resourceNote,
-    formatVolumeRange, measureText,
+    buildCollectionTable, bucketResources, formatVolumeRange, measureText,
 } from '../../core/detail-model';
-import { getDisplayNameFromUrl, resourceHref } from '../../core/resources';
 
 const CAP = { titles: 16, works: 16 };
 
@@ -80,6 +77,17 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     const visibleWorks = showAllWorks ? works : works.slice(0, CAP.works);
 
     const hasSectionColumn = table.sections.length > 0;
+
+    /** 子目表列宽。部类列只在目录档给了 sections 时才出现（生产仓 75 部丛编里仅 3 部有） */
+    const tableSpec: TableSpec = useMemo(() => ({
+        leadWidth: 26,
+        metaWidth: 300,
+        mainLabel: '書名',
+        columns: [
+            ...(hasSectionColumn ? [{ label: '部類', width: '64px' }] : []),
+            { label: '全帙冊次', width: '1fr' },
+        ],
+    }), [hasSectionColumn]);
 
     // ── facts ──
     const facts: FactItem[] = useMemo(() => {
@@ -170,22 +178,12 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                         }
                     />
                     <DataTable>
-                        <TableHead
-                            leadWidth={26}
-                            metaWidth={300}
-                            mainLabel="書名"
-                            metaColumns={[
-                                ...(hasSectionColumn ? [{ label: '部類', width: '64px' }] : []),
-                                { label: '全帙冊次', width: '1fr' },
-                            ]}
-                        />
+                        <TableHead spec={tableSpec} />
                         {visibleTitles.map((row, i) => (
                             <TableRow
                                 key={`${row.id ?? row.title}-${i}`}
-                                no={String(i + 1).padStart(2, '0')}
-                                leadWidth={26}
-                                metaWidth={300}
-                                metaColumns={hasSectionColumn ? ['64px', '1fr'] : ['1fr']}
+                                no={rowNo(i)}
+                                spec={tableSpec}
                                 main={
                                     <>
                                         {row.id ? (
@@ -262,7 +260,11 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                             <div style={{ borderTop: '1px solid var(--bim-rule-strong, #2a231c)' }}>
                                 {[...resources.mirrors.flatMap(g => g.items),
                                   ...resources.buckets.flatMap(b => b.items)].map((r, i) => (
-                                    <CollectionResourceLine key={r.id || i} item={r} convert={convert} />
+                                    <ResourceLine
+                                        key={`${r.id || r.url || r.name}-${i}`}
+                                        item={r}
+                                        fallbackNote={r.details ? convert(r.details) : undefined}
+                                    />
                                 ))}
                             </div>
                         </section>
@@ -293,17 +295,3 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
         </>
     );
 };
-
-function CollectionResourceLine({ item, convert }: {
-    item: ResourceEntry;
-    convert: (s: string) => string;
-}) {
-    const name = (item.url ? getDisplayNameFromUrl(item.url) : undefined) || convert(item.name);
-    return (
-        <ResourceRow
-            name={name}
-            note={resourceNote(item) || (item.details ? convert(item.details) : undefined)}
-            href={resourceHref(item)}
-        />
-    );
-}

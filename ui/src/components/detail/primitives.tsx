@@ -9,7 +9,11 @@
  * 不写字面色——否则换肤和深色模式就废了。
  */
 import React, { useState } from 'react';
+import type { ResourceEntry } from '../../types';
 import { useBidUrl } from '../../core/bid-url';
+import { useConvert } from '../../i18n';
+import { getDisplayNameFromUrl, resourceHref, volumeStats } from '../../core/resources';
+import { resourceNote, resourceDisambiguator } from '../../core/detail-model';
 
 // ══════════════════════════════════════════════════════════════
 // 布局常量
@@ -506,52 +510,64 @@ export function DataTable({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * 表头。columns 描述 meta 区的子列宽度（与行内保持一致）。
- * 窄屏由 CSS 隐藏。
+ * 表格列规格。
+ *
+ * 表头与每一行必须用同一份宽度，否则列会错位。原先三张页面各自把
+ * leadWidth / metaWidth / metaColumns 手抄进 TableHead 和 TableRow 两处
+ * （作品页 22/424、丛编页 26/300、人物页 26/300），改一处忘一处就错位。
+ * 现在一处声明、两处消费。
  */
-export function TableHead({ leadWidth, metaWidth, metaColumns, mainLabel }: {
+export interface TableSpec {
+    /** 行号列宽 */
     leadWidth: number;
+    /** meta 区总宽 */
     metaWidth: number;
-    metaColumns: { label: string; width: string }[];
+    /** meta 区各子列：表头文案 + 宽度 */
+    columns: { label: string; width: string }[];
+    /** 主列表头文案 */
     mainLabel: string;
-}) {
+}
+
+/** 表头。窄屏由 CSS 隐藏（meta 折到第二行后表头就没意义了）。 */
+export function TableHead({ spec }: { spec: TableSpec }) {
     return (
         <div
             className="bim-d-thead bim-d-ui"
             style={{
                 display: 'grid',
-                gridTemplateColumns: `${leadWidth}px 1fr ${metaWidth}px`,
+                gridTemplateColumns: `${spec.leadWidth}px 1fr ${spec.metaWidth}px`,
                 gap: 12, padding: '7px 4px',
                 borderBottom: '1px solid var(--bim-rule-strong, #2a231c)',
                 fontSize: 11, color: 'var(--bim-label-fg, #8b7a62)', letterSpacing: '.1em',
             }}
         >
             <span />
-            <span>{mainLabel}</span>
+            <span>{spec.mainLabel}</span>
             <span style={{
                 display: 'grid',
-                gridTemplateColumns: metaColumns.map(c => c.width).join(' '),
+                gridTemplateColumns: spec.columns.map(c => c.width).join(' '),
                 gap: 12,
             }}>
-                {metaColumns.map(c => <span key={c.label}>{c.label}</span>)}
+                {spec.columns.map(c => <span key={c.label}>{c.label}</span>)}
             </span>
         </div>
     );
 }
 
-/** 表格行：行号 + 主内容 + meta 组合列 */
-export function TableRow({ no, main, meta, leadWidth, metaWidth, metaColumns }: {
+/** 表格行：行号 + 主内容 + meta 组合列。宽度取自与表头同一份 spec。 */
+export function TableRow({ no, main, meta, spec }: {
     no: React.ReactNode;
     main: React.ReactNode;
     meta: React.ReactNode;
-    leadWidth: number;
-    metaWidth: number;
-    metaColumns: string[];
+    spec: TableSpec;
 }) {
     return (
         <div
             className="bim-d-row"
-            style={{ gridTemplateColumns: `${leadWidth}px 1fr ${metaWidth}px`, gap: 12 }}
+            style={{
+                gridTemplateColumns: `${spec.leadWidth}px 1fr ${spec.metaWidth}px`,
+                gap: 12,
+            }}
         >
             <span className="bim-d-ui" style={{
                 fontSize: 10.5, color: 'var(--bim-hint-fg, #c2b294)', textAlign: 'right',
@@ -563,7 +579,7 @@ export function TableRow({ no, main, meta, leadWidth, metaWidth, metaColumns }: 
                 className="bim-d-row-meta"
                 style={{
                     display: 'grid',
-                    gridTemplateColumns: metaColumns.join(' '),
+                    gridTemplateColumns: spec.columns.map(c => c.width).join(' '),
                     gap: 12, alignItems: 'center', fontSize: 12,
                 }}
             >
@@ -571,6 +587,11 @@ export function TableRow({ no, main, meta, leadWidth, metaWidth, metaColumns }: 
             </span>
         </div>
     );
+}
+
+/** 行号：统一补零到两位 */
+export function rowNo(i: number): string {
+    return String(i + 1).padStart(2, '0');
 }
 
 /** 空值占位「—」 */
@@ -723,6 +744,133 @@ export function ResourceRow({ name, note, href, extra }: {
             {extra}
         </>
     );
+}
+
+/**
+ * 资源行（含分册展开）。
+ *
+ * 三张页面原先各写了一份：作品页 ResourceLine、版本页 BookResourceLine、
+ * 丛编页 CollectionResourceLine —— 名称解析、note 拼接、分册展开按钮、
+ * 缺册划线的样式全都是复制过去的，其中版本页那份连 VolumeLinks 都内联了
+ * 一遍。合成一个，差异用 props 表达。
+ */
+export function ResourceLine({
+    item, siblings, showVolumes = true, fallbackNote,
+}: {
+    item: ResourceEntry;
+    /** 同组资源，用于给重名条目加区分后缀（史記在 CText 上三条同名） */
+    siblings?: ResourceEntry[];
+    /** 关掉分册展开：册号已在别处逐个列出时（版本页的「收入叢編」） */
+    showVolumes?: boolean;
+    /** note 为空时的兜底（丛编页用 details 补） */
+    fallbackNote?: string;
+}) {
+    const { convert } = useConvert();
+    const [open, setOpen] = useState(false);
+
+    const stats = volumeStats(item);
+    const hasVolumes = showVolumes && !!stats && stats.expected > 0;
+
+    const baseName = (item.url ? getDisplayNameFromUrl(item.url) : undefined) || convert(item.name);
+    const suffix = siblings ? resourceDisambiguator(item, siblings) : '';
+    const name = suffix ? `${baseName}（${suffix}）` : baseName;
+
+    return (
+        <ResourceRow
+            name={name}
+            note={resourceNote(item) || fallbackNote}
+            href={resourceHref(item)}
+            extra={hasVolumes ? (
+                <>
+                    <button
+                        type="button"
+                        onClick={() => setOpen(v => !v)}
+                        className="bim-d-ui"
+                        style={{
+                            alignSelf: 'flex-start', padding: '2px 0', marginTop: 4,
+                            background: 'none', border: 'none', cursor: 'pointer', fontSize: 11,
+                            color: 'var(--bim-meta-fg, #7b6a54)',
+                            borderBottom: '1px solid var(--bim-rule, #e0d6c0)',
+                        }}
+                    >
+                        {open ? '收起分冊' : `展開 ${stats!.expected} 冊`}
+                    </button>
+                    {open && <VolumeLinks item={item} />}
+                </>
+            ) : undefined}
+        />
+    );
+}
+
+/** 分册链接网格：缺册划线，无链接的册号显示为灰字 */
+export function VolumeLinks({ item }: { item: ResourceEntry }) {
+    return (
+        <div className="bim-d-ui" style={{
+            display: 'flex', flexWrap: 'wrap', gap: 4, padding: '6px 0 10px', fontSize: 11,
+        }}>
+            {(item.volumes || []).map((v, i) => {
+                const missing = v.status === 'missing';
+                return v.url && !missing ? (
+                    <a key={i} href={v.url} target="_blank" rel="noopener noreferrer"
+                        style={{ padding: '1px 5px', border: '1px solid var(--bim-rule, #e0d6c0)' }}>
+                        {v.volume}
+                    </a>
+                ) : (
+                    <span key={i} style={{
+                        padding: '1px 5px',
+                        color: missing
+                            ? 'var(--bim-missing-fg, #e67e22)'
+                            : 'var(--bim-hint-fg, #b3a385)',
+                        textDecoration: missing ? 'line-through' : undefined,
+                    }}>
+                        {v.volume}
+                    </span>
+                );
+            })}
+        </div>
+    );
+}
+
+/**
+ * 标签 + chip 的一行（别名 / 附载篇目 / 附录）。
+ * 作品页的 TagRows 与版本页的 AliasRow 原是同一段样式的两份拷贝。
+ */
+export function TagRow({ label, items }: { label: string; items: string[] }) {
+    const { convert } = useConvert();
+    if (!items.length) return null;
+    return (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+            <span className="bim-d-ui" style={{
+                fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)', letterSpacing: '.08em',
+            }}>
+                {label}
+            </span>
+            {items.map((s, i) => <Chip key={i}>{convert(s)}</Chip>)}
+        </div>
+    );
+}
+
+/** 若干 TagRow 竖排 */
+export function TagRows({ rows }: { rows: { label: string; items: string[] }[] }) {
+    const shown = rows.filter(r => r.items.length > 0);
+    if (!shown.length) return null;
+    return (
+        <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {shown.map(r => <TagRow key={r.label} label={r.label} items={r.items} />)}
+        </div>
+    );
+}
+
+/**
+ * 把 `additional_titles` / `attached_texts` 这类
+ * `(string | { book_title })[]` 摊平成字符串数组。
+ */
+export function flattenTitles(
+    items?: (string | { book_title: string })[],
+): string[] {
+    return (items || [])
+        .map(x => (typeof x === 'string' ? x : x?.book_title))
+        .filter((x): x is string => !!x);
 }
 
 // ══════════════════════════════════════════════════════════════
