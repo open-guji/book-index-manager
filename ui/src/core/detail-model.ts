@@ -420,12 +420,22 @@ export function deriveYear(book: EraInferable): number | undefined {
             if (n >= 100 && n <= 2100) return n;
         }
 
-        // 民國紀年：民國 N 年 = 1911 + N。
-        // 民國不是年号制，不走年号表——全库 432 部民國刻本此前全推不出年份。
+        /*
+         * 民國紀年：民國 N 年 = 1911 + N。民國不是年号制，走不通年号表——
+         * 全库 432 部民國刻本此前全推不出年份。
+         *
+         * 但只在**主年代确实是民國**时才用。「清光緒三十二年修民國九年
+         * 排印本」的主体是清光緒本，民國九年只是重印年；若直接取 1920，
+         * 就会得到「清光緒 1920」这种朝代与年份互相打架的组合（全库 9 条）。
+         */
         const rep = text.match(/民[國国]\s*([零〇一二三四五六七八九十廿卅百元\d]+)\s*年/);
         if (rep) {
-            const n = parseChineseNumber(rep[1]);
-            if (n != null && n >= 1 && n <= 120) return REPUBLIC_EPOCH + n;
+            const leadEra = matchEraPrefix(text);
+            const isRepublicMain = !leadEra || normalizeEra(leadEra) === '民國';
+            if (isRepublicMain) {
+                const n = parseChineseNumber(rep[1]);
+                if (n != null && n >= 1 && n <= 120) return REPUBLIC_EPOCH + n;
+            }
         }
 
         // 年号 + 序数。朝代取自完整的 deriveEra（含「欽定四庫全書」这类

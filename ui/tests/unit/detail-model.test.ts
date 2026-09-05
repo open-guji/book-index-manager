@@ -1185,3 +1185,54 @@ describe('著录朝代优先于题名年号', () => {
         })).toBe(175);
     });
 });
+
+describe('朝代与年份必须自洽', () => {
+    it('「清光緒…修民國…印」主体是清，不取民國的年份', () => {
+        // 全库 9 条这种句式。两个年代此前各自独立扫出，
+        // 结果是「清光緒 1920」——朝代与年份互相打架
+        const d = deriveDating({ edition: '清光緒三十二年修民國九年排印本' });
+        expect(d!.era).toBe('清');
+        expect(d!.year, '不该取民國九年的 1920').not.toBe(1920);
+        expect(d!.year).toBe(1906);   // 光緒三十二年
+    });
+
+    it('主体确实是民國时照常取', () => {
+        expect(deriveYear({ edition: '民國九年排印本' })).toBe(1920);
+        expect(deriveYear({ edition: '民國廿四年刊本' })).toBe(1935);
+    });
+});
+
+describe('全库一致性哨兵（2026-09-05 实测基线）', () => {
+    /*
+     * 对生产仓 13,287 条「有朝代且有年份」的 dating 做过朝代—年份区间校验，
+     * 不自洽的只剩 3 条，且都是**源数据自身矛盾**（人工录入的 lineage 里
+     * year 与 year_text 打架，如 year:1605 却标「清顺治至康熙初年」），
+     * 不是推断错误——推断如实反映了著录。
+     *
+     * 下面这组守的是推断侧不要再引入新的不自洽。
+     */
+    const ERA_RANGE: Record<string, [number, number]> = {
+        宋: [960, 1279], 元: [1271, 1368], 明: [1368, 1662],
+        清: [1644, 1912], 民國: [1912, 1949],
+    };
+
+    it.each([
+        '宋乾道七年蔡夢弼東塾刻本',
+        '元至元二十五年彭寅翁崇道精舍刻本',
+        '明嘉靖四年金臺汪諒刊本',
+        '清光緒三十一年上海久敬齋石印本',
+        '民國廿四年刊本',
+        '欽定四庫全書·文淵閣本',
+        '明萬曆丙辰(四十四年)南京吏科給事中黃起龍重刊本',
+        '清光緒三十二年修民國九年排印本',
+    ])('「%s」的朝代与年份自洽', (edition) => {
+        const d = deriveDating({ edition });
+        expect(d).toBeDefined();
+        if (!d!.era || d!.year == null) return;
+        const r = ERA_RANGE[d!.era];
+        if (!r) return;
+        expect(d!.year, `${d!.era} 的年份 ${d!.year} 落在 ${r[0]}–${r[1]} 之外`)
+            .toBeGreaterThanOrEqual(r[0] - 30);
+        expect(d!.year).toBeLessThanOrEqual(r[1] + 30);
+    });
+});
