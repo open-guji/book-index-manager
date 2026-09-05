@@ -115,8 +115,8 @@ const ERA_HINTS: { pattern: RegExp; era: string; reign?: string }[] = [
 /** 年号 → 元年公元年份。用于把「乾隆四十三年」折算成可排序的数字。 */
 const REIGN_YEARS: Record<string, number> = {
     // 汉唐
-    建安: 196, 黃初: 220, 太康: 280, 永和: 345, 開皇: 581, 貞觀: 627, 開元: 713,
-    天寶: 742, 貞元: 785, 元和: 806, 會昌: 841, 咸通: 860,
+    熹平: 172, 建安: 196, 黃初: 220, 太康: 280, 永和: 345, 開皇: 581, 貞觀: 627,
+    開元: 713, 天寶: 742, 貞元: 785, 元和: 806, 開成: 836, 會昌: 841, 咸通: 860,
     // 宋
     建隆: 960, 太平興國: 976, 咸平: 998, 天禧: 1017, 慶曆: 1041, 皇祐: 1049,
     嘉祐: 1056, 治平: 1064, 熙寧: 1068, 元豐: 1078, 元祐: 1086, 紹聖: 1094,
@@ -257,12 +257,12 @@ const REIGN_ERA: Record<string, string> = {};
     const assign = (era: string, reigns: string[]) => {
         for (const r of reigns) REIGN_ERA[r] = era;
     };
-    assign('東漢', ['建安']);
+    assign('東漢', ['熹平', '建安']);
     assign('三國', ['黃初']);
     assign('西晉', ['太康']);
     assign('東晉', ['永和']);
     assign('隋', ['開皇']);
-    assign('唐', ['貞觀', '開元', '天寶', '貞元', '元和', '會昌', '咸通']);
+    assign('唐', ['貞觀', '開元', '天寶', '貞元', '元和', '開成', '會昌', '咸通']);
     assign('宋', [
         '建隆', '太平興國', '咸平', '天禧', '慶曆', '皇祐', '嘉祐', '治平', '熙寧',
         '元豐', '元祐', '紹聖', '崇寧', '大觀', '政和', '宣和', '建炎', '紹興',
@@ -351,7 +351,8 @@ export function deriveEra(book: EraInferable): DerivedEra {
         if (ce) return { era: '', reign: ce[0], source: 'publication' };
     }
 
-    // 3. 题名推断
+    // 3. 题名推断。同样只用 edition，edition 为空才退到 title——
+    //    title 里的年号是作品主题，不是版本年代（见 deriveYear 的注释）
     const text = book.edition || book.title || '';
     if (text) {
         const prefix = matchEraPrefix(text);
@@ -381,14 +382,34 @@ export function deriveYear(book: EraInferable): number | undefined {
     if (book.dating?.year != null) return book.dating.year;
     if (typeof book.lineage?.year === 'number') return book.lineage.year;
 
+    /*
+     * 只看 edition，**不看 title**。
+     *
+     * title 是作品名，里面的年号是作品的**主题**不是版本的年代：
+     *   《會昌一品制集》→ 會昌(841)，实际是宋刻本
+     *   《大唐開元禮》  → 開元(713)，实际是清抄本
+     *   《咸平集》      → 咸平(998)，实际是清传抄本
+     * 全量跑出来 22 条早于 1000 年的里有 4 条是这么来的。
+     *
+     * edition 为空时才退到 title——那种情况下题名本身兼作版本描述
+     * （「宋乾道七年蔡夢弼東塾刻本」这类会被放进 title）。
+     */
     const texts = [
         book.lineage?.year_text,
         book.publication_info?.year,
         book.edition,
-        book.title,
+        book.edition ? undefined : book.title,
     ].filter(Boolean) as string[];
 
     for (const text of texts) {
+        /*
+         * 著录里已给出朝代、但没给确切年份时，不要再去题名里捞年号——
+         * 「開成石經清補刻孟子」的 publication_info.year 是「清」，
+         * 题名里的「開成」是**被补刻的对象**（唐开成石经），不是刊刻年。
+         * 捞了就会得到「清 · 836」这种自相矛盾的组合。
+         */
+        const cited = book.publication_info?.year || book.lineage?.year_text;
+        if (cited && text !== cited && matchEraPrefix(cited)) break;
         // 公元年。必须带「年」或被括号/边界包住，且前面不能是「第」——
         // 否则「摛藻堂四庫全書薈要·第321冊」会被读成公元 321 年，
         // 把一部清乾隆写本排到西晋去。

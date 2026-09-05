@@ -1142,3 +1142,46 @@ describe('优先读 dating 字段（Phase C 回退链）', () => {
         })).toBe(1500);
     });
 });
+
+describe('title 里的年号不当版本年代', () => {
+    it('作品名里的年号是主题不是刊刻年', () => {
+        // 全量跑出来 22 条早于 1000 年的里，有 4 条是这么来的
+        expect(deriveYear({ title: '會昌一品制集', edition: '宋刻本' }), '會昌是作品名不是刊年')
+            .not.toBe(841);
+        expect(deriveYear({ title: '大唐開元禮', edition: '清抄本' }), '開元是作品名不是刊年')
+            .not.toBe(713);
+        expect(deriveYear({ title: '咸平集', edition: '清平江陳氏酉畇草堂傳抄四庫全書本' }))
+            .not.toBe(998);
+    });
+
+    it('edition 为空时才退到 title', () => {
+        // 有些条目把版本描述放在 title 里
+        expect(deriveYear({ title: '宋乾道七年蔡夢弼東塾刻本' })).toBe(1171);
+    });
+
+    it('石刻类的真实早期年代不受影响', () => {
+        // 開成石經刻於開成年間(836–840)，題名未署具體年份，取元年 836；
+        // 咸通九年有確切紀年
+        expect(deriveYear({ edition: '唐開成石經刻石' })).toBe(836);
+        expect(deriveYear({ edition: '唐懿宗咸通九年王玠刻本' })).toBe(868);
+    });
+});
+
+describe('著录朝代优先于题名年号', () => {
+    it('「清補刻」不取题名里被补刻对象的年号', () => {
+        // 「開成石經清補刻孟子」著录说清，题名里的「開成」是被补刻的对象
+        // （唐开成石经），不是刊刻年——捞了会得到「清 · 836」这种矛盾组合
+        const y = deriveYear({
+            edition: '開成石經清補刻孟子',
+            publication_info: { year: '清', details: '清代補刻九石足十三經之數' },
+        });
+        expect(y, '不该取到唐开成的 836').not.toBe(836);
+    });
+
+    it('著录有确切年份时照常使用', () => {
+        expect(deriveYear({
+            edition: '熹平石經殘石',
+            lineage: { year: 175, category: '石刻', status: 'fragment' },
+        })).toBe(175);
+    });
+});
