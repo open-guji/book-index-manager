@@ -4,6 +4,8 @@ export { BookPage } from './BookPage';
 export type { BookPageProps } from './BookPage';
 export { CollectionPage } from './CollectionPage';
 export type { CollectionPageProps } from './CollectionPage';
+export { EntityPage } from './EntityPage';
+export type { EntityPageProps } from './EntityPage';
 export {
     PageFrame, TopStrip, Breadcrumb, DetailHeader, IntroGrid, FactList,
     SectionHead, Section, DataTable, TableHead, TableRow, ExpandRow, Quote,

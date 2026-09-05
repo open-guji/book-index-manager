@@ -28,7 +28,6 @@ import { CollectionCatalog } from './CollectionCatalog';
 import { CollatedEdition } from './CollatedEdition';
 import { BookFullText } from './BookFullText';
 import { VersionLineageView } from './VersionLineageView';
-import { EntityDetail } from './EntityDetail';
 import { buildLineageGraph } from '../core/lineage-graph';
 import type { LineageGraph } from '../core/lineage-graph';
 import { FeedbackTab } from './FeedbackTab';
@@ -44,6 +43,7 @@ import {
 import { WorkPage } from './detail/WorkPage';
 import { BookPage } from './detail/BookPage';
 import { CollectionPage } from './detail/CollectionPage';
+import { EntityPage } from './detail/EntityPage';
 import { measureText } from '../core/detail-model';
 
 // ── 类型 ──
@@ -549,14 +549,12 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                 />
             );
         }
-        // entity 仍走独立组件（后续单独重构）
         return (
-            <EntityDetail
+            <EntityPage
                 data={detail as EntityDetailData}
                 transport={transport}
                 onNavigate={onNavigate}
                 renderLink={renderLink}
-                hideHeader
             />
         );
     };

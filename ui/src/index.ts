@@ -158,8 +158,8 @@ export type { FeedbackListProps, FeedbackItem } from './components/FeedbackList'
 export { FeedbackTab } from './components/FeedbackTab';
 export type { FeedbackTabProps } from './components/FeedbackTab';
 // 详情页（2026-09 版式重构）：三张页面 + 版式原语 + 数据派生层
-export { WorkPage, BookPage, CollectionPage } from './components/detail';
-export type { WorkPageProps, BookPageProps, CollectionPageProps } from './components/detail';
+export { WorkPage, BookPage, CollectionPage, EntityPage } from './components/detail';
+export type { WorkPageProps, BookPageProps, CollectionPageProps, EntityPageProps } from './components/detail';
 export {
     PageFrame, TopStrip, Breadcrumb, DetailHeader, IntroGrid, FactList,
     SectionHead, DataTable, TableHead, TableRow, ExpandRow, Quote,
@@ -174,12 +174,14 @@ export {
     buildVersionTable, buildVersionRow, computeVersionPartition,
     buildCollectionTable, normalizeVolumeIndex, formatVolumeRange,
     measureText, numberToChinese, parseChineseNumber,
+    normalizeRole, roleFacets, ROLE_CLASS_ORDER,
 } from './core/detail-model';
 export type {
     DerivedEra, EraSource, EraInferable, RelatedWorkRef, RelatedGroup,
     ResourceBucket, MirrorGroup, BucketedResources,
     ResolvedVersion, VersionRow, VersionTable, VersionTableOptions,
     VersionPartition, CollectionRow, CollectionTable, Fact,
+    RoleClass, RoleFacet,
 } from './core/detail-model';
 export {
     mergeVolumeResources, volumeStats, normalizeVolumes, resourceHref,

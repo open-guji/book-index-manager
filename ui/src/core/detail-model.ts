@@ -726,6 +726,82 @@ export function computeVersionPartition(ids: string[], vg?: VersionGraph): Versi
 }
 
 // ══════════════════════════════════════════════════════════════
+// 人物：職任（works[].role）歸一
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * 職任歸一。
+ *
+ * 生產倉全量 62,068 條人物—作品關聯裡出現了 **307 種不同寫法**：
+ * 撰 51,247（82.6%）· 作 2,440 · 編 2,008 · 注 1,003 · 修 927 · 纂修 876 …
+ * 長尾則是「等奉敕撰」「舊題撰」「集解」「校正並音釋」這類，
+ * 還混著繁簡兩寫（輯/辑、註/注、刪/删、傳/传、贊/赞）與私用區壞字。
+ *
+ * 不歸一的話篩選 chips 會炸出上百個按鈕，且「撰」與「等奉敕撰」分屬兩組。
+ * 這裡只歸「篩選用的粗類」，原始寫法仍原樣顯示在「職任」列裡——
+ * 「等奉敕撰」與「撰」的區別對版本學是有意義的，不能真的抹掉。
+ */
+export type RoleClass = '撰' | '編' | '注' | '校' | '譯' | '繪' | '其他';
+
+export const ROLE_CLASS_ORDER: RoleClass[] = ['撰', '編', '注', '校', '譯', '繪', '其他'];
+
+/** 各粗類的判定關鍵字（按序匹配，先命中先歸） */
+const ROLE_RULES: { cls: RoleClass; re: RegExp }[] = [
+    // 譯 / 繪 放前面：它們的字不會出現在別類裡，先撈掉免得被後面的寬規則吃掉
+    { cls: '譯', re: /譯|译/ },
+    { cls: '繪', re: /繪|绘|畫|画|圖|图|篆|摹/ },
+    // 校勘類：校、訂、勘、審、正
+    // 校勘類。排除同時含「編/輯/纂」的（如「編校」「輯校」以編輯為主）
+    { cls: '校', re: /^(?!.*[編编輯辑纂])(?=.*(校|訂|订|勘|審|审|考異)).*/ },
+    // 注疏類：注、註、疏、箋、解、釋、音、義疏、章句、評
+    // 「傳」不在此列——數據裡的「傳」「小傳」是「作傳」（撰寫傳記），
+    // 不是「經之傳注」，歸「撰」更貼切
+    { cls: '注', re: /注|註|疏|箋|笺|解|釋|释|音|義疏|章句|評|评|批|論|论|答/ },
+    // 編輯類：編、輯、纂、集、選、錄、彙、續、補、刪
+    { cls: '編', re: /編|编|輯|辑|纂|集|選|选|錄|录|彙|汇|續|续|補|补|刪|删|修|次|定/ },
+    // 撰著類：撰、作、著、述、製、書、記、傳（作傳）
+    { cls: '撰', re: /撰|譔|作|著|述|製|制|書|书|記|记|傳|传|題|题|序|跋|讚|贊|赞|頌|颂/ },
+];
+
+/**
+ * 把原始 role 歸到粗類。
+ * 空值歸「撰」——802 條 null + 121 條空串，絕大多數是錄入時省略的作者本人著作。
+ */
+export function normalizeRole(role?: string | null): RoleClass {
+    if (!role || !role.trim()) return '撰';
+    // 去掉私用區壞字與空白（實測有 '等奉撰' 這種）
+    const t = role.replace(/[\s-]/g, '');
+    if (!t) return '撰';
+    if (t === 'author') return '撰';
+    for (const { cls, re } of ROLE_RULES) {
+        if (re.test(t)) return cls;
+    }
+    return '其他';
+}
+
+export interface RoleFacet {
+    cls: RoleClass | '全部';
+    label: string;
+    count: number;
+}
+
+/** 統計各粗類條數，供篩選 chips 用；空類不出現 */
+export function roleFacets(roles: (string | null | undefined)[]): RoleFacet[] {
+    const counts = new Map<RoleClass, number>();
+    for (const r of roles) {
+        const c = normalizeRole(r);
+        counts.set(c, (counts.get(c) ?? 0) + 1);
+    }
+    const out: RoleFacet[] = [{ cls: '全部', label: '全部', count: roles.length }];
+    for (const cls of ROLE_CLASS_ORDER) {
+        const n = counts.get(cls);
+        if (n) out.push({ cls, label: cls, count: n });
+    }
+    // 只有一個粗類時篩選沒有意義
+    return out.length > 2 ? out : [];
+}
+
+// ══════════════════════════════════════════════════════════════
 // 丛编子目表
 // ══════════════════════════════════════════════════════════════
 

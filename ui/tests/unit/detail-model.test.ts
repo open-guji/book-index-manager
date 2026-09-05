@@ -26,6 +26,8 @@ import {
     numberToChinese,
     eraRank,
     computeVersionPartition,
+    normalizeRole,
+    roleFacets,
 } from '../../src/core/detail-model';
 import type { ResourceEntry, CollectionDetailData, VersionGraph } from '../../src/types';
 
@@ -687,5 +689,92 @@ describe('computeVersionPartition（从 IndexDetail 迁入，行为不变）', (
         expect(p.useGrouping).toBe(true);
         expect(p.coreIds).toEqual(['a']);
         expect(p.groupedIds.map(g => g.label)).toEqual(['刻本', '抄本']);
+    });
+});
+
+describe('normalizeRole / roleFacets', () => {
+    /*
+     * 生產倉全量 62,068 條人物—作品關聯裡有 **307 種不同 role 寫法**。
+     * 不歸一的話篩選 chips 會炸出上百個按鈕，且「撰」與「等奉敕撰」分屬兩組。
+     *
+     * 歸一後實測分布（2026-09-05）：
+     *   撰 88.77% · 編 8.71% · 注 1.91% · 譯 0.30% · 其他 0.18% · 校 0.09% · 繪 0.04%
+     * 99.82% 落入有意義的粗類；其他裡剩的是「託名」「蓋印」「七十一」「宋徽宗」
+     * 這類本就不是職任的髒數據。
+     */
+    it('主流寫法归到對應粗類', () => {
+        expect(normalizeRole('撰')).toBe('撰');       // 51,247 条
+        expect(normalizeRole('作')).toBe('撰');       // 2,440
+        expect(normalizeRole('編')).toBe('編');       // 2,008
+        expect(normalizeRole('注')).toBe('注');       // 1,003
+        expect(normalizeRole('修')).toBe('編');       // 927
+        expect(normalizeRole('纂修')).toBe('編');     // 876
+        expect(normalizeRole('輯')).toBe('編');       // 759
+        expect(normalizeRole('譯')).toBe('譯');       // 152
+    });
+
+    it('长尾变体归到主类，不另起一组', () => {
+        // 「等奉敕撰」「舊題撰」若不归一，会各占一个筛选按钮
+        for (const r of ['等奉敕撰', '等撰', '奉敕撰', '敕撰', '舊題撰', '御撰', '同撰', '合撰', '譔']) {
+            expect(normalizeRole(r), r).toBe('撰');
+        }
+        for (const r of ['等纂修', '等編', '等修', '敕編', '纂輯', '編輯', '總纂', '編次']) {
+            expect(normalizeRole(r), r).toBe('編');
+        }
+        for (const r of ['集解', '集注', '集註', '箋注', '音義', '疏證']) {
+            expect(normalizeRole(r), r).toBe('注');
+        }
+    });
+
+    it('繁简两写归到同一类', () => {
+        // 数据里繁简混杂：辑/輯、註/注、删/刪、传/傳、赞/贊
+        expect(normalizeRole('辑')).toBe(normalizeRole('輯'));
+        expect(normalizeRole('註')).toBe(normalizeRole('注'));
+        expect(normalizeRole('传')).toBe(normalizeRole('傳'));
+        expect(normalizeRole('钞')).toBe(normalizeRole('鈔'));
+    });
+
+    it('空值与脏数据归「撰」——多是录入时省略的本人著作', () => {
+        expect(normalizeRole(null)).toBe('撰');
+        expect(normalizeRole(undefined)).toBe('撰');
+        expect(normalizeRole('')).toBe('撰');
+        expect(normalizeRole('   ')).toBe('撰');
+        expect(normalizeRole('author')).toBe('撰');   // 4 条英文脏数据
+        expect(normalizeRole('等奉撰')).toBe('撰');  // 私用区坏字
+    });
+
+    it('「傳」归撰而非注：数据里是「作传」不是「经之传注」', () => {
+        expect(normalizeRole('傳')).toBe('撰');
+        expect(normalizeRole('小傳')).toBe('撰');
+    });
+
+    it('「編校」归編：以编辑为主，不算校勘', () => {
+        expect(normalizeRole('編校')).toBe('編');
+        expect(normalizeRole('輯校')).toBe('編');
+        expect(normalizeRole('校')).toBe('校');
+        expect(normalizeRole('校勘')).toBe('校');
+    });
+
+    it('真正无从归类的落「其他」', () => {
+        for (const r of ['託名', '蓋印', '七十一', '宋徽宗', '夢禪居士']) {
+            expect(normalizeRole(r), r).toBe('其他');
+        }
+    });
+
+    it('roleFacets 按固定顺序给出计数，空类不出现', () => {
+        const facets = roleFacets(['撰', '撰', '編', '注', null, 'author']);
+        expect(facets[0]).toEqual({ cls: '全部', label: '全部', count: 6 });
+        // null 与 author 都归撰 → 撰 4 条
+        expect(facets.find(f => f.cls === '撰')!.count).toBe(4);
+        expect(facets.find(f => f.cls === '編')!.count).toBe(1);
+        expect(facets.find(f => f.cls === '注')!.count).toBe(1);
+        expect(facets.find(f => f.cls === '譯')).toBeUndefined();  // 空类不出现
+        // 顺序固定：全部 → 撰 → 編 → 注
+        expect(facets.map(f => f.cls)).toEqual(['全部', '撰', '編', '注']);
+    });
+
+    it('只有一个粗类时不给筛选（筛了也没用）', () => {
+        expect(roleFacets(['撰', '撰', '等奉敕撰'])).toEqual([]);
+        expect(roleFacets([])).toEqual([]);
     });
 });
