@@ -169,7 +169,7 @@ export {
     DetailFooter, EmptyNote, ExtLink, Dash,
     GlyphBadge, DETAIL_CSS, PAGE_MAX_WIDTH,
 } from './components/detail';
-export type { FactItem, LinkContext, RenderLink, TableSpec } from './components/detail';
+export type { FactItem, LinkContext, RenderLink, TableSpec, CrumbItem } from './components/detail';
 export {
     deriveEra, deriveYear, deriveEditionType, normalizeEra, eraRank,
     groupRelatedWorks, bucketResources, resourceNote,

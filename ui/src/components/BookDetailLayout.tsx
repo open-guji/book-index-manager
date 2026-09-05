@@ -38,7 +38,7 @@ import { extractStatus } from '../id';
 import {
     PageFrame, TopStrip, Breadcrumb, DetailHeader, DetailFooter,
     GlyphBadge, FilterChip, DETAIL_CSS,
-    type RenderLink,
+    type RenderLink, type CrumbItem,
 } from './detail/primitives';
 import { WorkPage } from './detail/WorkPage';
 import { BookPage } from './detail/BookPage';
@@ -680,12 +680,13 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     const isBasic = activeTab === 'basic' || activeTab === 'emendated';
 
     // 面包屑：品牌（＝返回索引）／作品（版本页专有）／当前类型
-    const crumbs: { label: string; onClick?: () => void }[] = [
+    const crumbs: CrumbItem[] = [
         { label: backLabel ?? t.detailTab.backToIndex, onClick: onBack },
     ];
     if (detail.type === 'book' && (detail as BookDetailData).work_id) {
         const wid = (detail as BookDetailData).work_id!;
-        crumbs.push({ label: t.indexType.work, onClick: () => onNavigate?.(wid) });
+        // 带 id：面包屑拿到真实 href，Ctrl+点击 / 右键复制链接才可用
+        crumbs.push({ label: t.indexType.work, id: wid, onClick: () => onNavigate?.(wid) });
     }
     crumbs.push({ label: t.indexType[detail.type] });
 

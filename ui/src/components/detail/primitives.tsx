@@ -149,9 +149,20 @@ export function GlyphBadge({ char, tone = 'accent' }: {
     );
 }
 
-export function Breadcrumb({ items }: {
-    items: { label: string; onClick?: () => void; href?: string }[];
-}) {
+export interface CrumbItem {
+    label: string;
+    onClick?: () => void;
+    href?: string;
+    /**
+     * 内部条目 ID。给了就用 useBidUrl 生成真实 href，
+     * 于是 Ctrl+点击开新标签、右键复制链接都能用——
+     * 只挂 onClick 而 href="#" 的话这些浏览器原生操作全废。
+     */
+    id?: string;
+}
+
+export function Breadcrumb({ items }: { items: CrumbItem[] }) {
+    const buildUrl = useBidUrl();
     return (
         <>
             {items.map((it, i) => {
@@ -159,12 +170,13 @@ export function Breadcrumb({ items }: {
                 const sep = i > 0 && (
                     <span key={`s${i}`} style={{ color: 'var(--bim-hint-fg, #cbbda0)' }}>／</span>
                 );
-                const label = last || (!it.onClick && !it.href)
+                const url = it.id ? buildUrl(it.id) : it.href;
+                const label = last || (!it.onClick && !url)
                     ? <span key={i} style={{ color: 'var(--bim-ink, #2a231c)' }}>{it.label}</span>
                     : (
                         <a
                             key={i}
-                            href={it.href ?? '#'}
+                            href={url ?? '#'}
                             onClick={it.onClick ? (e) => {
                                 if (e.metaKey || e.ctrlKey) return;
                                 e.preventDefault();
