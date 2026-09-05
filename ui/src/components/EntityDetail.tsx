@@ -16,6 +16,12 @@ export interface EntityDetailProps {
     onNavigate?: (id: string) => void;
     renderLink?: (id: string, label?: string) => React.ReactNode;
     headerExtra?: React.ReactNode;
+    /**
+     * 隐藏自带的标题块。
+     * 详情页外壳（BookDetailLayout）已经在 DetailHeader 里渲染了
+     * 姓名 / 朝代 / 生卒 / 类型，这里再渲一遍就是同一个名字出现两次。
+     */
+    hideHeader?: boolean;
 }
 
 // ── 工具：判断是否为占位 Entity（信息暂缺）
@@ -305,6 +311,7 @@ export const EntityDetail: React.FC<EntityDetailProps> = ({
     onNavigate,
     renderLink,
     headerExtra,
+    hideHeader,
 }) => {
     const t = useT();
     const { convert } = useConvert();
@@ -322,7 +329,8 @@ export const EntityDetail: React.FC<EntityDetailProps> = ({
 
     return (
         <div>
-            {/* 标题行 */}
+            {/* 标题行（外壳已渲染时跳过，避免同一个名字出现两次） */}
+            {!hideHeader && <>
             <div style={{
                 display: 'flex',
                 alignItems: 'flex-start',
@@ -381,6 +389,7 @@ export const EntityDetail: React.FC<EntityDetailProps> = ({
                 )}
                 <span style={{ fontFamily: 'monospace', opacity: 0.6 }}>{data.id}</span>
             </div>
+            </>}
 
             {/* 占位提示 */}
             {placeholder && (

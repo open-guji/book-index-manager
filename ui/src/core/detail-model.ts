@@ -1,0 +1,917 @@
+/**
+ * 详情页数据派生层。
+ *
+ * 设计稿要求的若干列在数据里**没有对应字段**，必须推断。以 2026-09-05
+ * 生产仓（91,604 Work / 20,853 Book / 75 Collection）实测填充率为准：
+ *
+ *   Book.lineage            1.0%   ← 设计稿「刊刻年代」的理想来源，几乎没有
+ *   Book.publication_info   2.1%
+ *   Book.current_location   0.5%   ← 设计稿「收藏機構」的理想来源，几乎没有
+ *   Book.edition           96.4%   ← 但题名里带朝代，可推断
+ *   Book.resources[physical] 15,297 条 ← 「收藏機構」的真实来源在这里
+ *
+ * 所以「刊刻年代」走 lineage → publication_info → 题名推断三级回退，
+ * 「收藏機構」直接渲染 physical 资源。推断出的值必须能被 UI 标注来源
+ * （eraSource），让读者知道哪些是著录、哪些是我们从题名猜的。
+ *
+ * 本文件全部是纯函数：无 React、无 IO，可直接单测。
+ */
+import type {
+    BookDetailData,
+    CollectionDetailData,
+    WorkDetailData,
+    IndexDetailData,
+    ResourceEntry,
+    ResourceGroupInfo,
+    VersionGraph,
+    VolumeBookMapping,
+    VolumeBookEntry,
+} from '../types';
+import { getResourceTypes } from '../types';
+import { getTypeGroupKey, mergeVolumeResources, volumeStats } from './resources';
+
+// ══════════════════════════════════════════════════════════════
+// 朝代 / 年代推断
+// ══════════════════════════════════════════════════════════════
+
+/** 推断出的朝代及其可信来源 */
+export type EraSource = 'lineage' | 'publication' | 'edition' | 'none';
+
+/**
+ * 推断函数只读这几个字段，故用结构类型而非完整 BookDetailData——
+ * 这样 ResolvedVersion（version 表的轻量投影）也能直接传进来。
+ */
+export interface EraInferable {
+    title?: string;
+    edition?: string;
+    lineage?: BookDetailData['lineage'];
+    publication_info?: BookDetailData['publication_info'];
+}
+
+export interface DerivedEra {
+    /** 朝代名（繁体），如「宋」「清」「日本」；推不出时为空串 */
+    era: string;
+    /** 年号或纪年文本，如「乾隆」「慶元」「1773」；推不出时为空串 */
+    reign: string;
+    source: EraSource;
+}
+
+/**
+ * 直接以朝代名开头的题名前缀。
+ *
+ * 顺序有意义：长的排前面，否则「南宋」会先被「宋」截断。
+ */
+const ERA_PREFIXES = [
+    '西漢', '東漢', '三國', '西晉', '東晉', '南北朝', '南朝', '北朝', '隋', '唐', '五代',
+    '北宋', '南宋', '宋', '遼', '西夏', '金', '元', '南明', '明', '清',
+    '民國', '日本', '朝鮮', '高麗', '越南', '琉球',
+    // 简体等价（数据里繁简混杂）
+    '西汉', '东汉', '西晋', '东晋', '南北朝', '南朝', '北朝', '辽', '民国', '朝鲜', '高丽',
+];
+
+/**
+ * 朝代名归一：把细分与简体形态并到一个筛选项上。
+ *
+ * 不归一的话，史記的朝代 chips 会同时出现「宋」「南宋」「北宋」三个按钮，
+ * 各自只筛出一小撮——读者点哪个都像是数据缺失。
+ */
+const ERA_ALIASES: Record<string, string> = {
+    北宋: '宋', 南宋: '宋',
+    西漢: '漢', 東漢: '漢', 西汉: '漢', 东汉: '漢',
+    西晉: '晉', 東晉: '晉', 西晋: '晉', 东晋: '晉',
+    南明: '明',
+    民国: '民國', 辽: '遼', 朝鲜: '朝鮮', 高丽: '高麗',
+    南北朝: '南北朝', 南朝: '南北朝', 北朝: '南北朝',
+};
+
+export function normalizeEra(era: string): string {
+    return ERA_ALIASES[era] ?? era;
+}
+
+/**
+ * 不带朝代名、但版本本身指向确定朝代的题名特征。
+ *
+ * 依据生产仓 edition 首字分布：「欽」4062 条（欽定四庫全書系列）、
+ * 「武」209 条（武英殿）——这些占比不小，光靠 ERA_PREFIXES 会全漏。
+ */
+const ERA_HINTS: { pattern: RegExp; era: string; reign?: string }[] = [
+    { pattern: /欽定四庫全書薈要|摛藻堂/, era: '清', reign: '乾隆' },
+    { pattern: /欽定四庫全書|四庫全書|文淵閣|文瀾閣|文溯閣|文津閣|文匯閣|文宗閣|文瀾閣/, era: '清', reign: '乾隆' },
+    { pattern: /钦定四库全书|四库全书|文渊阁|文澜阁|文溯阁|文津阁/, era: '清', reign: '乾隆' },
+    { pattern: /武英殿聚珍|聚珍版/, era: '清', reign: '乾隆' },
+    { pattern: /武英殿/, era: '清' },
+    { pattern: /百衲本|涵芬樓|涵芬楼|商務印書館|商务印书馆|中華書局|中华书局/, era: '民國' },
+    { pattern: /汲古閣|汲古阁/, era: '明', reign: '崇禎' },
+];
+
+/** 年号 → 元年公元年份。用于把「乾隆四十三年」折算成可排序的数字。 */
+const REIGN_YEARS: Record<string, number> = {
+    // 汉唐
+    建安: 196, 黃初: 220, 太康: 280, 永和: 345, 開皇: 581, 貞觀: 627, 開元: 713,
+    天寶: 742, 貞元: 785, 元和: 806, 會昌: 841, 咸通: 860,
+    // 宋
+    建隆: 960, 太平興國: 976, 咸平: 998, 天禧: 1017, 慶曆: 1041, 皇祐: 1049,
+    嘉祐: 1056, 治平: 1064, 熙寧: 1068, 元豐: 1078, 元祐: 1086, 紹聖: 1094,
+    崇寧: 1102, 大觀: 1107, 政和: 1111, 宣和: 1119, 建炎: 1127, 紹興: 1131,
+    隆興: 1163, 乾道: 1165, 淳熙: 1174, 紹熙: 1190, 慶元: 1195, 嘉泰: 1201,
+    開禧: 1205, 嘉定: 1208, 寶慶: 1225, 紹定: 1228, 端平: 1234, 嘉熙: 1237,
+    淳祐: 1241, 寶祐: 1253, 開慶: 1259, 景定: 1260, 咸淳: 1265,
+    // 金元
+    大定: 1161, 明昌: 1190, 至元: 1264, 大德: 1297, 皇慶: 1312, 延祐: 1314,
+    泰定: 1324, 天曆: 1328, 至順: 1330, 至正: 1341,
+    // 明
+    洪武: 1368, 永樂: 1403, 宣德: 1426, 正統: 1436, 景泰: 1450, 天順: 1457,
+    成化: 1465, 弘治: 1488, 正德: 1506, 嘉靖: 1522, 隆慶: 1567, 萬曆: 1573,
+    泰昌: 1620, 天啟: 1621, 崇禎: 1628,
+    // 清
+    順治: 1644, 康熙: 1662, 雍正: 1723, 乾隆: 1736, 嘉慶: 1796, 道光: 1821,
+    咸豐: 1851, 同治: 1862, 光緒: 1875, 宣統: 1909,
+    // 日本
+    慶長: 1596, 寬永: 1624, 元祿: 1688, 享保: 1716, 延享: 1744, 寬政: 1789,
+    文政: 1818, 天保: 1830, 明治: 1868, 大正: 1912, 昭和: 1926,
+};
+
+/** 中文数字 → 阿拉伯数字（用于「乾隆四十三年」里的「四十三」） */
+const CN_DIGITS: Record<string, number> = {
+    零: 0, 〇: 0, 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9,
+    十: 10, 廿: 20, 卅: 30, 元: 1,
+};
+
+/** 解析「四十三」「廿四」「元」这类中文序数 */
+export function parseChineseNumber(s: string): number | undefined {
+    if (!s) return undefined;
+    if (/^\d+$/.test(s)) return parseInt(s, 10);
+
+    let total = 0;
+    let current = 0;
+    let seen = false;
+    for (const ch of s) {
+        const v = CN_DIGITS[ch];
+        if (v === undefined) return undefined;
+        seen = true;
+        if (ch === '十') {
+            current = (current || 1) * 10;
+        } else if (ch === '廿' || ch === '卅') {
+            // 廿四 = 24：廿本身是 20，后续个位直接加
+            total += v;
+            current = 0;
+        } else {
+            if (current >= 10) {
+                total += current + v;
+                current = 0;
+            } else {
+                current = current * 10 + v;
+            }
+        }
+    }
+    const n = total + current;
+    return seen && n > 0 ? n : undefined;
+}
+
+/** 从一段文本里找朝代前缀 */
+function matchEraPrefix(text: string): string | undefined {
+    for (const p of ERA_PREFIXES) {
+        if (text.startsWith(p)) return p;
+    }
+    return undefined;
+}
+
+/**
+ * 年号 → 所属朝代。用于排除跨朝代误匹配：
+ * 「宋建安黃善夫家塾刻本」里的「建安」是福建建安（地名），
+ * 不是东汉建安年号——不校验的话会把宋本标成「宋 · 建安」。
+ */
+const REIGN_ERA: Record<string, string> = {};
+{
+    const assign = (era: string, reigns: string[]) => {
+        for (const r of reigns) REIGN_ERA[r] = era;
+    };
+    assign('東漢', ['建安']);
+    assign('三國', ['黃初']);
+    assign('西晉', ['太康']);
+    assign('東晉', ['永和']);
+    assign('隋', ['開皇']);
+    assign('唐', ['貞觀', '開元', '天寶', '貞元', '元和', '會昌', '咸通']);
+    assign('宋', [
+        '建隆', '太平興國', '咸平', '天禧', '慶曆', '皇祐', '嘉祐', '治平', '熙寧',
+        '元豐', '元祐', '紹聖', '崇寧', '大觀', '政和', '宣和', '建炎', '紹興',
+        '隆興', '乾道', '淳熙', '紹熙', '慶元', '嘉泰', '開禧', '嘉定', '寶慶',
+        '紹定', '端平', '嘉熙', '淳祐', '寶祐', '開慶', '景定', '咸淳',
+    ]);
+    assign('金', ['大定', '明昌']);
+    assign('元', ['至元', '大德', '皇慶', '延祐', '泰定', '天曆', '至順', '至正']);
+    assign('明', [
+        '洪武', '永樂', '宣德', '正統', '景泰', '天順', '成化', '弘治', '正德',
+        '嘉靖', '隆慶', '萬曆', '泰昌', '天啟', '崇禎',
+    ]);
+    assign('清', ['順治', '康熙', '雍正', '乾隆', '嘉慶', '道光', '咸豐', '同治', '光緒', '宣統']);
+    assign('日本', ['慶長', '寬永', '元祿', '享保', '延享', '寬政', '文政', '天保', '明治', '大正', '昭和']);
+}
+
+/**
+ * 从一段文本里找年号。
+ *
+ * `era` 给定时会校验年号所属朝代一致——否则地名、人名里的两字词
+ * 会被当成年号（建安、大观、正德…这类冲突在版本题名里相当常见）。
+ */
+function matchReign(text: string, era?: string): string | undefined {
+    for (const reign of Object.keys(REIGN_YEARS)) {
+        if (!text.includes(reign)) continue;
+        if (era && REIGN_ERA[reign] && REIGN_ERA[reign] !== era) {
+            // 朝代对不上：南宋归入「宋」，其余视为误匹配
+            const normalized = era === '北宋' || era === '南宋' ? '宋' : era;
+            if (REIGN_ERA[reign] !== normalized) continue;
+        }
+        return reign;
+    }
+    return undefined;
+}
+
+/**
+ * 推断一个版本的朝代 / 纪年。
+ *
+ * 三级回退，越靠前越可信：
+ *   1. lineage.year_text —— 人工整理的版本传承信息（仅 1% 有）
+ *   2. publication_info.year —— 著录的出版年（仅 2% 有）
+ *   3. edition ∥ title 的题名前缀与特征词 —— 覆盖约 96%，但是**推断**
+ *
+ * UI 必须依 source 区分显示（推断的加 hover 提示），不要让读者误以为
+ * 「宋 · 慶元」是著录事实。
+ */
+export function deriveEra(book: EraInferable): DerivedEra {
+    const none: DerivedEra = { era: '', reign: '', source: 'none' };
+
+    // 1. lineage
+    const yearText = book.lineage?.year_text;
+    if (yearText) {
+        const era = matchEraPrefix(yearText) ?? '';
+        return { era: normalizeEra(era), reign: matchReign(yearText, era) ?? '', source: 'lineage' };
+    }
+
+    // 2. publication_info.year
+    const pubYear = book.publication_info?.year;
+    if (pubYear) {
+        const era = matchEraPrefix(pubYear) ?? ERA_HINTS.find(h => h.pattern.test(pubYear))?.era ?? '';
+        const reign = matchReign(pubYear, era) ?? '';
+        if (era || reign) return { era: normalizeEra(era), reign, source: 'publication' };
+        // 纯公元年（如「1773-1803」）也算著录
+        const ce = pubYear.match(/\d{3,4}/);
+        if (ce) return { era: '', reign: ce[0], source: 'publication' };
+    }
+
+    // 3. 题名推断
+    const text = book.edition || book.title || '';
+    if (text) {
+        const prefix = matchEraPrefix(text);
+        if (prefix) {
+            return { era: normalizeEra(prefix), reign: matchReign(text, prefix) ?? '', source: 'edition' };
+        }
+        const hint = ERA_HINTS.find(h => h.pattern.test(text));
+        if (hint) {
+            return {
+                era: normalizeEra(hint.era),
+                reign: matchReign(text, hint.era) ?? hint.reign ?? '',
+                source: 'edition',
+            };
+        }
+    }
+
+    return none;
+}
+
+/**
+ * 推断可排序的公元年份。
+ *
+ * 优先 lineage.year（人工著录），其次文本里的 4 位公元年，
+ * 最后用年号表折算「乾隆四十三年」→ 1736 + 43 - 1 = 1778。
+ */
+export function deriveYear(book: EraInferable): number | undefined {
+    if (typeof book.lineage?.year === 'number') return book.lineage.year;
+
+    const texts = [
+        book.lineage?.year_text,
+        book.publication_info?.year,
+        book.edition,
+        book.title,
+    ].filter(Boolean) as string[];
+
+    for (const text of texts) {
+        // 公元年。必须带「年」或被括号/边界包住，且前面不能是「第」——
+        // 否则「摛藻堂四庫全書薈要·第321冊」会被读成公元 321 年，
+        // 把一部清乾隆写本排到西晋去。
+        const ce = text.match(/(?:^|[^\d第卷冊册頁页])(\d{3,4})\s*年/)
+            ?? text.match(/[（(](\d{3,4})\s*年?[）)]/);
+        if (ce) {
+            const n = parseInt(ce[1], 10);
+            if (n >= 100 && n <= 2100) return n;
+        }
+        // 年号 + 序数
+        const era = matchEraPrefix(text);
+        const reign = matchReign(text, era);
+        if (reign) {
+            const base = REIGN_YEARS[reign];
+            const after = text.slice(text.indexOf(reign) + reign.length);
+            const ord = after.match(/^([零〇一二三四五六七八九十廿卅元]+)年/);
+            const offset = ord ? parseChineseNumber(ord[1]) : undefined;
+            return base + (offset ? offset - 1 : 0);
+        }
+    }
+    return undefined;
+}
+
+/**
+ * 朝代排序权重（用于「按年代先后」排序时，同朝代无年份的排在一起）。
+ * 取值是 normalizeEra 之后的形态，域外朝代（日本、朝鮮…）排在本朝之后。
+ */
+const ERA_ORDER = [
+    '漢', '三國', '晉', '南北朝', '隋', '唐', '五代',
+    '宋', '遼', '西夏', '金', '元', '明', '清', '民國',
+    '日本', '朝鮮', '高麗', '越南', '琉球',
+];
+
+export function eraRank(era: string): number {
+    const i = ERA_ORDER.indexOf(era);
+    return i === -1 ? ERA_ORDER.length : i;
+}
+
+// ══════════════════════════════════════════════════════════════
+// 关联作品分组
+// ══════════════════════════════════════════════════════════════
+
+export interface RelatedWorkRef {
+    id: string;
+    title: string;
+    relation?: string;
+}
+
+export interface RelatedGroup {
+    key: string;
+    /** i18n key，UI 侧翻译 */
+    labelKey: 'belongsToWork' | 'containedWorks' | 'derivativeWorks' | 'studies' | 'relatedWorks';
+    items: RelatedWorkRef[];
+}
+
+/**
+ * 把 related_works 按 relation 分成 5 桶。
+ *
+ * 现有 IndexDetail 只识别 4 种 relation，剩下 8 种（contains_text_of 4231 条、
+ * collected_in 3376 条、studies 304 条…）全落进「相關作品」兜底桶，
+ * 语义全丢。这里覆盖生产仓里出现过的全部 12 种。
+ */
+export function groupRelatedWorks(items: RelatedWorkRef[]): RelatedGroup[] {
+    const buckets: Record<string, RelatedWorkRef[]> = {
+        belongsTo: [], contains: [], derivative: [], studies: [], related: [],
+    };
+
+    for (const it of items) {
+        const r = it.relation;
+        if (r === 'part_of' || r === 'collected_in') buckets.belongsTo.push(it);
+        else if (r === 'has_part' || r === 'contains_text_of') buckets.contains.push(it);
+        else if (r === 'text_carried_by' || r === 'studied_by' || r === 'derived_from'
+            || r === 'followed_by' || r === 'has_adaptation') buckets.derivative.push(it);
+        else if (r === 'studies' || r === 'preceded_by') buckets.studies.push(it);
+        else buckets.related.push(it);
+    }
+
+    const out: RelatedGroup[] = [];
+    const push = (key: string, labelKey: RelatedGroup['labelKey']) => {
+        if (buckets[key].length) out.push({ key, labelKey, items: buckets[key] });
+    };
+    push('belongsTo', 'belongsToWork');
+    push('contains', 'containedWorks');
+    push('derivative', 'derivativeWorks');
+    push('studies', 'studies');
+    push('related', 'relatedWorks');
+    return out;
+}
+
+// ══════════════════════════════════════════════════════════════
+// 资源分桶
+// ══════════════════════════════════════════════════════════════
+
+export interface ResourceBucket {
+    key: 'text' | 'image' | 'textImage' | 'physical';
+    items: ResourceEntry[];
+}
+
+export interface MirrorGroup {
+    key: string;
+    label: string;
+    description?: string;
+    items: ResourceEntry[];
+}
+
+export interface BucketedResources {
+    buckets: ResourceBucket[];
+    mirrors: MirrorGroup[];
+    /** 合并分册后的总数，用于「N 个资源」计数 */
+    total: number;
+}
+
+/**
+ * 把资源按类型分桶（文字全文库 / 影印资源 / 图文对照 / 馆藏），
+ * 并把同源镜像组（resource_groups）单独拎出来。
+ *
+ * 先合并分册系列——御定佩文韻府 23 条「第N冊」在分桶前必须先并成 1 条，
+ * 否则「影印資源」栏会出现 23 行一模一样的名字。
+ */
+export function bucketResources(
+    items: ResourceEntry[] | undefined,
+    groups?: Record<string, ResourceGroupInfo>,
+): BucketedResources {
+    const merged = mergeVolumeResources(items || []);
+
+    const mirrorMap = new Map<string, ResourceEntry[]>();
+    const standalone: ResourceEntry[] = [];
+    for (const it of merged) {
+        if (it.group) {
+            if (!mirrorMap.has(it.group)) mirrorMap.set(it.group, []);
+            mirrorMap.get(it.group)!.push(it);
+        } else {
+            standalone.push(it);
+        }
+    }
+    // origin 优先于 mirror
+    for (const arr of mirrorMap.values()) {
+        arr.sort((a, b) => {
+            const w = (r: ResourceEntry) => r.group_role === 'origin' ? 0 : r.group_role === 'mirror' ? 1 : 2;
+            return w(a) - w(b);
+        });
+    }
+
+    const byKey: Record<ResourceBucket['key'], ResourceEntry[]> = {
+        text: [], image: [], textImage: [], physical: [],
+    };
+    for (const it of standalone) {
+        const types = getResourceTypes(it);
+        const hasText = types.includes('text');
+        const hasImage = types.includes('image');
+        if (hasText && hasImage) byKey.textImage.push(it);
+        else if (hasText) byKey.text.push(it);
+        else if (hasImage) byKey.image.push(it);
+        else byKey.physical.push(it);
+    }
+
+    const order: ResourceBucket['key'][] = ['text', 'image', 'textImage', 'physical'];
+    const buckets = order
+        .filter(k => byKey[k].length > 0)
+        .map(k => ({ key: k, items: byKey[k] }));
+
+    const mirrors: MirrorGroup[] = [...mirrorMap.entries()].map(([key, items]) => ({
+        key,
+        label: groups?.[key]?.label || key,
+        description: groups?.[key]?.description,
+        items,
+    }));
+
+    return { buckets, mirrors, total: merged.length };
+}
+
+/**
+ * 资源的一行说明文字（设计稿里名称下方的小字）。
+ * 例：「原卷掃描 · 23 / 23 冊」「精校版 · 圖文對照」「文淵閣本 · v224」
+ */
+export function resourceNote(item: ResourceEntry): string {
+    const parts: string[] = [];
+    const meta = item.metadata || {};
+    if (meta.edition) parts.push(String(meta.edition));
+    if (item.source_label) parts.push(item.source_label);
+    if (item.details) parts.push(item.details);
+    const stats = volumeStats(item);
+    if (stats && stats.expected > 0) {
+        parts.push(stats.missing > 0
+            ? `${stats.found} / ${stats.expected} 冊 缺 ${stats.missing}`
+            : `${stats.found} / ${stats.expected} 冊`);
+    }
+    if (meta.version) parts.push(String(meta.version));
+    return parts.join(' · ');
+}
+
+/**
+ * 同名资源的区分后缀。
+ *
+ * 史記在 CText 上有三条资源，名字都叫「中國哲學書電子化計劃」，
+ * 且都没有 metadata —— 页面上就是三行一模一样的字，读者无从选择。
+ * 设计稿写的是「哲學書電子化 (卷本一/二/三)」，那是人工编的；
+ * 我们只能从 URL 里取可区分的标识（res=948371 之类）作为退路。
+ *
+ * 返回空串表示无需区分。
+ */
+export function resourceDisambiguator(item: ResourceEntry, siblings: ResourceEntry[]): string {
+    if (resourceNote(item)) return '';
+    const sameName = siblings.filter(s => s.name === item.name);
+    if (sameName.length < 2) return '';
+
+    // URL 里最有辨识度的那段：查询参数值 > 末段路径
+    try {
+        const u = new URL(item.url);
+        const res = u.searchParams.get('res') || u.searchParams.get('id');
+        if (res) return res;
+        const last = u.pathname.split('/').filter(Boolean).pop();
+        if (last) return decodeURIComponent(last);
+    } catch { /* URL 不合法就放弃区分 */ }
+    return '';
+}
+
+// ══════════════════════════════════════════════════════════════
+// 版本表（作品页「相關版本」）
+// ══════════════════════════════════════════════════════════════
+
+/** 已解析的版本条目（BookDetailData 的子集 + 派生字段） */
+export interface ResolvedVersion {
+    id: string;
+    title?: string;
+    edition?: string;
+    type?: string;
+    resources?: ResourceEntry[];
+    resource_groups?: Record<string, ResourceGroupInfo>;
+    publication_info?: BookDetailData['publication_info'];
+    current_location?: BookDetailData['current_location'];
+    lineage?: BookDetailData['lineage'];
+}
+
+export interface VersionRow {
+    id: string;
+    /** 显示名：edition 优先（96.4% 有），回退 title */
+    name: string;
+    era: DerivedEra;
+    year?: number;
+    /** 影印图源（types 含 image 的资源） */
+    images: ResourceEntry[];
+    /** 收藏机构（types 含 physical 的资源 + current_location） */
+    holders: ResourceEntry[];
+    /** current_location.name —— 没有 physical 资源时的回退 */
+    locationName?: string;
+    /** 是否重点版本（在 version_graph 核心集内） */
+    important: boolean;
+    /** 所属分组 id（version_graph.node_groups） */
+    group?: string;
+    hasImage: boolean;
+}
+
+export interface VersionTableOptions {
+    /** 朝代筛选，空串或 undefined = 全部 */
+    era?: string;
+    /** 仅看有影印 */
+    scanOnly?: boolean;
+    /** 排序：default = 录入序（人工排的重要程度）；year = 年代先后 */
+    sort?: 'default' | 'year';
+}
+
+export interface VersionTable {
+    rows: VersionRow[];
+    /** 全部行（未筛选），用于计数 */
+    allRows: VersionRow[];
+    /** 可用的朝代筛选项（按历史顺序） */
+    eras: string[];
+    /** 是否有任何一行的年代是推断出来的（UI 据此显示说明） */
+    hasInferredEra: boolean;
+}
+
+export function buildVersionRow(v: ResolvedVersion, vg?: VersionGraph): VersionRow {
+    const resources = v.resources || [];
+    const images: ResourceEntry[] = [];
+    const holders: ResourceEntry[] = [];
+    for (const r of resources) {
+        const types = getResourceTypes(r);
+        if (types.includes('image')) images.push(r);
+        if (types.includes('physical')) holders.push(r);
+    }
+
+    return {
+        id: v.id,
+        name: v.edition || v.title || v.id,
+        era: deriveEra(v),
+        year: deriveYear(v),
+        images,
+        holders,
+        locationName: v.current_location?.name,
+        important: isCoreVersion(v.id, vg),
+        group: vg?.node_groups?.[v.id],
+        hasImage: images.length > 0,
+    };
+}
+
+/** 该 book 是否在 version_graph 的核心集合内 */
+function isCoreVersion(bid: string, vg?: VersionGraph): boolean {
+    if (!vg) return false;
+    const key = vg.default_collection;
+    if (!key) return false;
+    const coll = vg.collections?.[key];
+    const bookIds = coll?.book_ids ?? (key === 'core' ? vg.core_books ?? [] : []);
+    if (bookIds.includes(bid)) return true;
+    const groups = coll?.groups ?? [];
+    const g = vg.node_groups?.[bid];
+    return !!g && groups.includes(g);
+}
+
+export function buildVersionTable(
+    versions: ResolvedVersion[],
+    vg: VersionGraph | undefined,
+    opts: VersionTableOptions = {},
+): VersionTable {
+    const excluded = new Set(vg?.excluded_books ?? []);
+    const allRows = versions
+        .filter(v => !excluded.has(v.id))
+        .map(v => buildVersionRow(v, vg));
+
+    let rows = allRows;
+    if (opts.era) rows = rows.filter(r => r.era.era === opts.era);
+    if (opts.scanOnly) rows = rows.filter(r => r.hasImage);
+
+    if (opts.sort === 'year') {
+        rows = [...rows].sort((a, b) => {
+            if (a.year != null && b.year != null) return a.year - b.year;
+            if (a.year != null) return -1;
+            if (b.year != null) return 1;
+            return eraRank(a.era.era) - eraRank(b.era.era);
+        });
+    } else {
+        /*
+         * 默认顺序 ≈ 设计稿的「重要程度」。数据里没有显式权重字段，
+         * 用两个可得的信号近似：
+         *   1. version_graph 核心集（人工标注的重点版本，但只有 6 部作品有）
+         *   2. 有影印图源的排前面——读者最想点开的就是能看到书影的那些
+         * 其余保持录入序（人工录入时大体已按重要性排过）。
+         * 稳定排序，同权重不打乱原有次序。
+         */
+        rows = rows
+            .map((r, i) => ({ r, i }))
+            .sort((a, b) => {
+                const w = (x: VersionRow) => (x.important ? 0 : 1) * 2 + (x.hasImage ? 0 : 1);
+                return w(a.r) - w(b.r) || a.i - b.i;
+            })
+            .map(x => x.r);
+    }
+
+    // 朝代筛选项按历史顺序，且只列真的出现过的
+    const eraSet = new Set(allRows.map(r => r.era.era).filter(Boolean));
+    const eras = [...eraSet].sort((a, b) => eraRank(a) - eraRank(b));
+
+    return {
+        rows,
+        allRows,
+        eras,
+        hasInferredEra: allRows.some(r => r.era.source === 'edition'),
+    };
+}
+
+/**
+ * 版本分组：核心集直接展开，其余按 group 折叠。
+ * （从 IndexDetail.computeVersionPartition 迁入，逻辑不变）
+ */
+export interface VersionPartition {
+    useGrouping: boolean;
+    coreIds: string[];
+    groupedIds: { id: string; label: string; description?: string; ids: string[] }[];
+}
+
+export function computeVersionPartition(ids: string[], vg?: VersionGraph): VersionPartition {
+    if (!vg || !vg.default_collection || !vg.node_groups) {
+        return { useGrouping: false, coreIds: ids, groupedIds: [] };
+    }
+    const coreColl = vg.collections?.[vg.default_collection];
+    const collGroups = coreColl?.groups ?? [];
+    const collBookIds = coreColl?.book_ids ?? [];
+    const hasCollRange = collGroups.length > 0 || collBookIds.length > 0;
+    const legacyCoreBooks = (!hasCollRange && vg.default_collection === 'core' && Array.isArray(vg.core_books))
+        ? vg.core_books
+        : [];
+    if (!hasCollRange && legacyCoreBooks.length === 0) {
+        return { useGrouping: false, coreIds: ids, groupedIds: [] };
+    }
+    const coreGroupSet = new Set(collGroups);
+    const coreBookSet = new Set([...collBookIds, ...legacyCoreBooks]);
+
+    const isCore = (bid: string): boolean => {
+        if (coreBookSet.has(bid)) return true;
+        const g = vg.node_groups![bid];
+        return g != null && coreGroupSet.has(g);
+    };
+
+    const coreIds: string[] = [];
+    const otherByGroup = new Map<string, string[]>();
+    const ungroupedOther: string[] = [];
+
+    for (const bid of ids) {
+        if (vg.excluded_books?.includes(bid)) continue;
+        if (isCore(bid)) {
+            coreIds.push(bid);
+        } else {
+            const g = vg.node_groups![bid];
+            if (g) {
+                if (!otherByGroup.has(g)) otherByGroup.set(g, []);
+                otherByGroup.get(g)!.push(bid);
+            } else {
+                ungroupedOther.push(bid);
+            }
+        }
+    }
+
+    const otherCount = ungroupedOther.length + [...otherByGroup.values()].reduce((s, a) => s + a.length, 0);
+    if (otherCount < 3) {
+        return { useGrouping: false, coreIds: ids, groupedIds: [] };
+    }
+
+    const groupMeta = new Map((vg.groups ?? []).map(g => [g.id, g]));
+    const groupedIds = [...otherByGroup.entries()].map(([gid, bids]) => {
+        const meta = groupMeta.get(gid);
+        return { id: gid, label: meta?.label ?? gid, description: meta?.description, ids: bids };
+    });
+    if (ungroupedOther.length > 0) {
+        groupedIds.push({ id: '__other__', label: '其他版本', description: undefined, ids: ungroupedOther });
+    }
+
+    return { useGrouping: true, coreIds, groupedIds };
+}
+
+// ══════════════════════════════════════════════════════════════
+// 丛编子目表
+// ══════════════════════════════════════════════════════════════
+
+export interface CollectionRow {
+    /** 链接目标（work_id 或 book_id）；无匹配时为空 */
+    id?: string;
+    title: string;
+    /** 部类（经史子集等），仅目录档有 */
+    section?: string;
+    /** 册号列表 */
+    volumes: number[];
+    /** 附属子目（如「附錄一卷」） */
+    subItems?: string[];
+    edition?: string;
+    /** 缺册统计（目录档有） */
+    found?: number;
+    expected?: number;
+}
+
+export interface CollectionTable {
+    rows: CollectionRow[];
+    /** 数据来源：catalog = 目录档（最全）；works = contained_works；books = 仅 ID */
+    source: 'catalog' | 'works' | 'books';
+    /** 可用的部类筛选项 */
+    sections: string[];
+    /** 全帙册数（目录档有） */
+    totalVolumes?: number;
+}
+
+/**
+ * 构造丛编「收錄書籍」表。
+ *
+ * 三级数据源，按信息量降序：
+ *   1. volume_book_mapping.json —— 含部类/册次/缺册/附属子目，但生产仓只有 7 份
+ *   2. contained_works[] —— 含标题与册次，29 部丛编有（其中 16 部带 volume_index）
+ *   3. books[] —— 只有 ID，需逐条 getItem 才能拿标题
+ *
+ * 优先级很重要：武英殿聚珍版有 144 条 contained_works（自带标题+册次），
+ * 走第 2 级就能直接渲染，不必对 books[] 发 144 次请求。
+ */
+export function buildCollectionTable(
+    coll: CollectionDetailData,
+    catalog?: VolumeBookMapping | null,
+    resolvedBooks?: Map<string, { title?: string; edition?: string }>,
+): CollectionTable {
+    // 1. 目录档
+    if (catalog && catalog.books && catalog.books.length > 0) {
+        const rows = catalog.books.map((b: VolumeBookEntry) => ({
+            id: b.work_id || b.book_id || undefined,
+            title: b.title,
+            section: b.section,
+            volumes: b.volumes || [],
+            subItems: b.sub_items,
+            edition: b.edition,
+            found: b.found_volumes,
+            expected: b.expected_volumes,
+        }));
+        const sections = [...new Set(rows.map(r => r.section).filter(Boolean))] as string[];
+        return { rows, source: 'catalog', sections, totalVolumes: catalog.total_volumes };
+    }
+
+    // 2. contained_works
+    if (coll.contained_works && coll.contained_works.length > 0) {
+        const rows = coll.contained_works.map(w => ({
+            id: w.id,
+            title: w.title,
+            volumes: normalizeVolumeIndex(w.volume_index),
+        }));
+        return { rows, source: 'works', sections: [] };
+    }
+
+    // 3. books（惰性解析）
+    const rows = (coll.books || []).map(id => ({
+        id,
+        title: resolvedBooks?.get(id)?.title || id,
+        edition: resolvedBooks?.get(id)?.edition,
+        volumes: [] as number[],
+    }));
+    return { rows, source: 'books', sections: [] };
+}
+
+/** volume_index 有 int / number[] / string 三种形态（生产仓实测），统一成 number[] */
+export function normalizeVolumeIndex(vi: unknown): number[] {
+    if (vi == null) return [];
+    if (typeof vi === 'number') return [vi];
+    if (Array.isArray(vi)) return vi.filter((n): n is number => typeof n === 'number');
+    if (typeof vi === 'string') {
+        // "9-12" 或 "9,10,11"
+        const range = vi.match(/^(\d+)\s*[-–~]\s*(\d+)$/);
+        if (range) {
+            const [a, b] = [parseInt(range[1]), parseInt(range[2])];
+            return Array.from({ length: Math.max(0, b - a + 1) }, (_, i) => a + i);
+        }
+        return vi.split(/[,、]/).map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+    }
+    return [];
+}
+
+/** 格式化册号范围：连续用「321–343」，零散用逗号，过多用「a–b (N 冊)」 */
+export function formatVolumeRange(volumes: number[], unitVolume = '冊'): string {
+    if (volumes.length === 0) return '';
+    if (volumes.length === 1) return `${volumes[0]}`;
+    const sorted = [...volumes].sort((a, b) => a - b);
+    const first = sorted[0];
+    const last = sorted[sorted.length - 1];
+    if (last - first + 1 === sorted.length) return `${first}–${last}`;
+    if (sorted.length <= 3) return sorted.join(', ');
+    return `${first}–${last} (${sorted.length}${unitVolume})`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// facts 列（intro 右侧）
+// ══════════════════════════════════════════════════════════════
+
+export interface Fact {
+    key: string;
+    label: string;
+    value: string;
+    /** 点击跳转（如「收入」跳父丛编、「著錄」滚到书目区） */
+    href?: string;
+    /** 内部条目 ID（渲染成 BidLink） */
+    linkId?: string;
+    /** 锚点（页内滚动） */
+    anchor?: string;
+    /** hover 提示（如「據版本題名推斷」） */
+    title?: string;
+}
+
+/** 中文数字（用于「一百三十篇」这种计量文本的回退） */
+const CHINESE_DIGITS = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+const CHINESE_UNITS = ['', '十', '百', '千'];
+
+export function numberToChinese(n: number): string {
+    if (n <= 0) return '';
+    if (n >= 10000) return String(n);
+    const str = String(n);
+    const len = str.length;
+    let result = '';
+    let lastWasZero = false;
+    for (let i = 0; i < len; i++) {
+        const digit = parseInt(str[i]);
+        const unitIndex = len - 1 - i;
+        if (digit === 0) {
+            lastWasZero = true;
+        } else {
+            if (lastWasZero && result) result += '〇';
+            lastWasZero = false;
+            if (digit === 1 && unitIndex === 1 && i === 0) {
+                result += CHINESE_UNITS[unitIndex];
+            } else {
+                result += CHINESE_DIGITS[digit] + CHINESE_UNITS[unitIndex];
+            }
+        }
+    }
+    return result;
+}
+
+/** 计量文本：measure_info 优先（70% 有），回退 juan_count */
+export function measureText(detail: Partial<IndexDetailData>, juanUnit = '卷'): string {
+    const d = detail as { measure_info?: string; juan_count?: { number?: number; description?: string } };
+    if (d.measure_info) return d.measure_info;
+    if (d.juan_count?.number) return numberToChinese(d.juan_count.number) + juanUnit;
+    if (d.juan_count?.description) return d.juan_count.description;
+    return '';
+}
+
+/**
+ * 版本类型推断（写本 / 刻本 / 活字本…）。
+ * lineage.category 只有 1% 有，其余从题名尾缀猜。
+ */
+export function deriveEditionType(book: EraInferable): string {
+    if (book.lineage?.category) return book.lineage.category;
+    const text = book.edition || book.title || '';
+    const patterns: [RegExp, string][] = [
+        [/活字|聚珍/, '活字本'],
+        [/石印/, '石印本'],
+        [/影印|景印/, '影印本'],
+        [/寫本|写本|繕寫|缮写/, '寫本'],
+        [/鈔本|抄本/, '抄本'],
+        [/拓本/, '拓本'],
+        [/批校|評本|评本|校本/, '校本'],
+        [/刻本|刊本|梓行|開雕/, '刻本'],
+        [/排印|鉛印|铅印/, '排印本'],
+    ];
+    for (const [p, label] of patterns) {
+        if (p.test(text)) return label;
+    }
+    return '';
+}

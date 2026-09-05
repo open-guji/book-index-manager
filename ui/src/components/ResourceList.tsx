@@ -4,6 +4,16 @@ import { getResourceTypes } from '../types';
 import { useT, useConvert } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
 import type { LocaleMessages } from '../i18n/types';
+// 纯函数统一放 core/resources，与详情页新组件共用同一套语义
+// （否则两处各写一份「怎么算册数」「怎么合并分册」，迟早给出不一样的数字）
+import {
+    getDisplayNameFromUrl,
+    getTypeGroupKey,
+    mergeVolumeResources,
+    extractVolumeUrl,
+    getStartPage,
+    buildPageUrl,
+} from '../core/resources';
 
 export interface ResourceListProps {
     items: ResourceEntry[];
@@ -15,24 +25,6 @@ export interface ResourceListProps {
     onNavigate?: (id: string) => void;
     /** 渲染内部链接（优先于 onNavigate） */
     renderLink?: (id: string, label?: string) => React.ReactNode;
-}
-
-/** 域名 → 显示名称映射 */
-const DOMAIN_NAME_MAP: Record<string, string> = {
-    'commons.wikimedia.org': '維基共享',
-    'zh.wikisource.org': '維基文庫',
-    'taiwanebook.ncl.edu.tw': '臺灣華文電子書庫',
-    'ctext.org': '中國哲學書電子化計劃',
-};
-
-/** 从 URL 提取域名并映射为显示名称 */
-function getDisplayNameFromUrl(url: string): string | undefined {
-    try {
-        const hostname = new URL(url).hostname;
-        return DOMAIN_NAME_MAP[hostname];
-    } catch {
-        return undefined;
-    }
 }
 
 // 回退值即原本的硬编码色，消费者不覆盖时观感不变
@@ -50,92 +42,6 @@ const TYPE_COLORS: Record<ResourceType, string> = {
 function getCombinedTypeColor(types: ResourceTypeAtom[]): string {
     if (types.includes('text') && types.includes('image')) return TYPE_COLORS['text+image'];
     return TYPE_COLORS[types[0] || 'physical'];
-}
-
-/** 用于按类型分组的 key（多类型按 text > image > physical 顺序连接） */
-const ATOM_ORDER: Record<ResourceTypeAtom, number> = { text: 0, image: 1, physical: 2 };
-function getTypeGroupKey(types: ResourceTypeAtom[]): string {
-    if (types.length === 0) return 'physical';
-    return [...types].sort((a, b) => (ATOM_ORDER[a] ?? 99) - (ATOM_ORDER[b] ?? 99)).join('+');
-}
-
-const TYPE_ORDER: ResourceType[] = ['text', 'image', 'text+image', 'physical'];
-
-/**
- * 将同名模式的分册资源自动合并为一条带 volumes 的资源。
- * 匹配模式：名称包含 "第N冊" 或结尾为 "·N" 的同名系列。
- */
-function mergeVolumeResources(items: ResourceEntry[]): ResourceEntry[] {
-    // 尝试提取册号，返回 [基础名, 册号] 或 null
-    const extractVolume = (name: string): [string, number] | null => {
-        // 模式1: "XXX·第N冊" 或 "XXX·第N册"
-        const m1 = name.match(/^(.+?)·第(\d+)[冊册]$/);
-        if (m1) return [m1[1], parseInt(m1[2])];
-        // 模式2: "XXX (N)" 或 "XXX·N"
-        const m2 = name.match(/^(.+?)[·(](\d+)[)]?$/);
-        if (m2) return [m2[1], parseInt(m2[2])];
-        return null;
-    };
-
-    const groups = new Map<string, { base: ResourceEntry; volumes: ResourceVolume[] }>();
-    const result: ResourceEntry[] = [];
-    const usedIndices = new Set<number>();
-
-    for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        // 已经有 volumes 的资源直接保留
-        if (item.volumes && item.volumes.length > 0) continue;
-
-        const parsed = extractVolume(item.name);
-        if (!parsed) continue;
-
-        const [baseName, vol] = parsed;
-        const groupKey = `${baseName}|${getTypeGroupKey(getResourceTypes(item))}`;
-
-        if (!groups.has(groupKey)) {
-            groups.set(groupKey, {
-                base: { ...item, name: baseName, url: '', volumes: [] },
-                volumes: [],
-            });
-        }
-        groups.get(groupKey)!.volumes.push({
-            volume: vol,
-            url: item.url || undefined,
-            status: 'found',
-        });
-        usedIndices.add(i);
-    }
-
-    // 只有 2 册以上才合并
-    for (const [, group] of groups) {
-        if (group.volumes.length >= 2) {
-            group.volumes.sort((a, b) => a.volume - b.volume);
-            group.base.volumes = group.volumes;
-            group.base.expected_volumes = group.volumes.length;
-            result.push(group.base);
-        } else {
-            // 单册不合并，清除 usedIndices
-            for (let i = 0; i < items.length; i++) {
-                if (usedIndices.has(i)) {
-                    const parsed = extractVolume(items[i].name);
-                    const itemKey = parsed && `${parsed[0]}|${getTypeGroupKey(getResourceTypes(items[i]))}`;
-                    const baseKey = `${group.base.name}|${getTypeGroupKey(getResourceTypes(group.base))}`;
-                    if (itemKey === baseKey) {
-                        usedIndices.delete(i);
-                    }
-                }
-            }
-        }
-    }
-
-    // 加入未合并的项（保持原顺序）
-    for (let i = 0; i < items.length; i++) {
-        if (!usedIndices.has(i)) {
-            result.push(items[i]);
-        }
-    }
-
-    return result;
 }
 
 /**
@@ -315,49 +221,6 @@ const formatMetaValue = (key: string, value: unknown, t: LocaleMessages, convert
     const str = String(value);
     return convert ? convert(str) : str;
 };
-
-/** Build a URL that navigates to a specific page, based on the site */
-function buildPageUrl(baseUrl: string, pageNum: number): string {
-    try {
-        const url = new URL(baseUrl);
-        const host = url.hostname;
-        // Wikimedia Commons: /w/index.php?title=File:...&page=N
-        if (host.includes('wikimedia.org')) {
-            // Extract file title from wiki/File:xxx or already in index.php format
-            const wikiFileMatch = baseUrl.match(/\/wiki\/File:(.+?)(?:#|$)/);
-            if (wikiFileMatch) {
-                const fileTitle = encodeURIComponent(decodeURIComponent(wikiFileMatch[1]));
-                return `https://commons.wikimedia.org/w/index.php?title=File%3A${fileTitle}&page=${pageNum}`;
-            }
-            // Already in index.php format, just update/add page param
-            const u = new URL(baseUrl);
-            u.searchParams.set('page', String(pageNum));
-            return u.toString();
-        }
-        // Other sites: return as-is (no known page navigation)
-        return baseUrl;
-    } catch {
-        return baseUrl;
-    }
-}
-
-/** Extract the start page number from metadata (page_range or file_page_range) */
-function getStartPage(metadata?: Record<string, unknown>): number | undefined {
-    if (!metadata) return undefined;
-    const range = (metadata.file_page_range || metadata.page_range) as string | undefined;
-    if (!range || typeof range !== 'string') return undefined;
-    const match = range.match(/^(\d+)/);
-    return match ? parseInt(match[1], 10) : undefined;
-}
-
-/** 从 volume 对象中提取最佳 URL（兼容 url / tw_url / wiki_url 等字段） */
-function extractVolumeUrl(v: ResourceVolume): string | undefined {
-    if (v.url) return v.url;
-    for (const [k, val] of Object.entries(v)) {
-        if (k.endsWith('_url') && typeof val === 'string') return val;
-    }
-    return undefined;
-}
 
 const COLOR_MODE_STYLES: Record<string, { label: string; bg: string; fg: string }> = {
     bw: {

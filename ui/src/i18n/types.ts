@@ -105,6 +105,8 @@ export interface LocaleMessages {
         containedWorks: string;
         adaptations: string;
         derivativeWorks: string;
+        /** 本作品所研究/注解的对象（relation: studies / preceded_by） */
+        studies: string;
     };
     relation: {
         belongsToWork: string;
@@ -168,6 +170,13 @@ export interface LocaleMessages {
         collectionCatalog: string;
         collatedEdition: string;
         catalogSuffix: string;
+        fullText: string;
+        lineage: string;
+        feedback: string;
+        dataSource: string;
+        backToIndex: string;
+        submitVersion: string;
+        dataLicense: string;
     };
     metadata: Record<string, string>;
     editor: {

@@ -157,6 +157,36 @@ export { FeedbackList } from './components/FeedbackList';
 export type { FeedbackListProps, FeedbackItem } from './components/FeedbackList';
 export { FeedbackTab } from './components/FeedbackTab';
 export type { FeedbackTabProps } from './components/FeedbackTab';
+// 详情页（2026-09 版式重构）：三张页面 + 版式原语 + 数据派生层
+export { WorkPage, BookPage, CollectionPage } from './components/detail';
+export type { WorkPageProps, BookPageProps, CollectionPageProps } from './components/detail';
+export {
+    PageFrame, TopStrip, Breadcrumb, DetailHeader, IntroGrid, FactList,
+    SectionHead, DataTable, TableHead, TableRow, ExpandRow, Quote,
+    Chip, ChipWall, MoreButton, FilterChip, TextButton, VolumeChips,
+    ResourceGroup, ResourceRow, DetailFooter, EmptyNote, ExtLink, Dash,
+    GlyphBadge, DETAIL_CSS, PAGE_MAX_WIDTH,
+} from './components/detail';
+export type { FactItem, LinkContext, RenderLink } from './components/detail';
+export {
+    deriveEra, deriveYear, deriveEditionType, normalizeEra, eraRank,
+    groupRelatedWorks, bucketResources, resourceNote,
+    buildVersionTable, buildVersionRow, computeVersionPartition,
+    buildCollectionTable, normalizeVolumeIndex, formatVolumeRange,
+    measureText, numberToChinese, parseChineseNumber,
+} from './core/detail-model';
+export type {
+    DerivedEra, EraSource, EraInferable, RelatedWorkRef, RelatedGroup,
+    ResourceBucket, MirrorGroup, BucketedResources,
+    ResolvedVersion, VersionRow, VersionTable, VersionTableOptions,
+    VersionPartition, CollectionRow, CollectionTable, Fact,
+} from './core/detail-model';
+export {
+    mergeVolumeResources, volumeStats, normalizeVolumes, resourceHref,
+    getDisplayNameFromUrl, getTypeGroupKey, buildPageUrl, getStartPage,
+} from './core/resources';
+export type { VolumeStats } from './core/resources';
+
 export { BookDetailLayout } from './components/BookDetailLayout';
 export type {
     BookDetailLayoutProps,

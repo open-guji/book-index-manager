@@ -376,6 +376,11 @@ export interface BookDetailData extends BaseDetailData {
 /** Collection 详情 */
 export interface CollectionDetailData extends BaseDetailData {
     type: 'collection';
+    /**
+     * 丛编子类：book_collection（书籍汇编，60 部）/ work_collection（作品集，15 部）。
+     * 数据里一直有，此前没在类型里声明。
+     */
+    subtype?: 'book_collection' | 'work_collection' | string;
     work_id?: string;
     contained_in?: string[];
     history?: string[];
@@ -487,6 +492,16 @@ export interface IndexedByEntry {
     author_info?: string;
     /** 收录时的版本信息，如"內府藏本" */
     edition?: string;
+    /**
+     * 在该书目中的门类，如"六藝略／春秋"。
+     * 抽样 2480 部作品中 21.6% 有此字段，此前一直没在类型里声明，
+     * 于是详情页读不到、也就从没展示过。
+     */
+    section?: string;
+    /** section 的判定依据（整理时记录的推理过程，一般不展示） */
+    section_basis?: string;
+    /** 出处页码，如"KR2a0007_WYG_030-12b"（抽样 8.6% 有） */
+    page?: string;
     /** 提要/摘要 */
     summary?: string;
     /** 编者评论 */

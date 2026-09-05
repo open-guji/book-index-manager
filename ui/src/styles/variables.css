@@ -153,4 +153,56 @@
 
     /* 书目卡片「封面」的点缀色（IndexBrowser resultVariant="card"） */
     --bim-cover-accent: #8e6f3e;
+
+    /* =========================================================
+       详情页（作品 / 版本 / 丛编）
+       ---------------------------------------------------------
+       2026-09 版式重构新增。设计稿全用字面色，这里**一律由上面
+       已有的 --bim-* 派生**，于是消费者（kaiyuanguji-web 的宣纸
+       皮肤、未来的墨夜深色、VS Code 主题）只要覆盖了基础色，
+       详情页自动跟随，不需要再覆盖第二套。
+
+       右侧注释是设计稿里对应的字面值，仅作对照，不要写回代码。
+       ========================================================= */
+
+    /*
+     * 取值策略：详情页是「读书」的场面，用宣纸+朱砂一套独立的暖色，
+     * **不**继承 --bim-primary 等通用控件色——后者在 VS Code 里跟随
+     * 主题的按钮蓝，用在正文页会变成一片蓝链接，与设计稿差得很远。
+     *
+     * 消费者（kaiyuanguji-web）覆盖同名变量即可换肤；VS Code 插件里
+     * 若要跟随主题，把这几个覆盖成 var(--vscode-*) 就行。
+     */
+
+    /* ---- 底色 ---- */
+    --bim-page-bg: #fbf9f3;          /* 纸 */
+    --bim-row-hover-bg: #f5f1e5;     /* 行 hover */
+    --bim-selection-bg: #ecdcbc;     /* 选区 */
+
+    /* ---- 文字层次（墨 → 正文 → 提要 → meta → 标签 → 提示） ---- */
+    --bim-ink: #2a231c;
+    --bim-body-fg: #3b3228;
+    --bim-quiet-fg: #5b4f40;         /* 提要正文 */
+    --bim-meta-fg: #7b6a54;
+    --bim-label-fg: #a3937b;         /* 表头 / 计数 / facts key */
+    --bim-hint-fg: #b3a385;          /* 行号 / 空值 / 箭头 */
+
+    /* ---- 强调 ---- */
+    --bim-accent: #9c3a2c;           /* 朱 */
+    --bim-accent-deep: #6f2a20;      /* 链接 hover */
+
+    /* ---- 分隔线（强 → 常规 → 虚线 → 提要左线） ---- */
+    --bim-rule-strong: #2a231c;      /* header 底 / 表头 */
+    --bim-rule: #e4dbc9;
+    --bim-rule-dashed: #d6c9ae;      /* 展开按钮 */
+    --bim-rule-accent-soft: #e0d3b6; /* 提要左线 */
+
+    /*
+     * 字体：全站无衬线（2026-09-05 定）。
+     * 消费者若要换字体，覆盖这两个变量即可；--bim-font-body 影响标题与正文，
+     * --bim-font-ui 影响 meta / 表头 / 标签 / 数字。
+     */
+    --bim-font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    --bim-font-body: var(--bim-font-ui);
 }

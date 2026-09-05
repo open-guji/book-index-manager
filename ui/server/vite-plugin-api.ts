@@ -223,8 +223,12 @@ function getAllEntries(workspaceRoot: string, type: string) {
 }
 
 function findItemFile(workspaceRoot: string, id: string): string | null {
-    const prefix = id.padEnd(3, '_').substring(0, 3);
-    const [c1, c2, c3] = [prefix[0], prefix[1], prefix[2]];
+    // 分桶用 ID 的**后** 3 个字符，不是前 3 个。
+    // 这里原先写的是 padEnd(3,'_').substring(0,3)（取前 3 位），于是
+    // 除了 ID 恰好 ≤3 字符的条目，dev server 一律 404 —— 与 2026-09-04
+    // 在 kaiyuanguji-web/src/lib/local-data.ts 修掉的是同一个 bug。
+    const padded = id.padStart(3, '_');
+    const [c1, c2, c3] = padded.slice(-3);
 
     for (const folder of ['book-index', 'book-index-draft']) {
         for (const typeDir of ['Book', 'Collection', 'Work', 'Entity']) {
