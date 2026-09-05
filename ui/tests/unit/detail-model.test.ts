@@ -28,6 +28,7 @@ import {
     computeVersionPartition,
     normalizeRole,
     roleFacets,
+    displayAuthorRole,
 } from '../../src/core/detail-model';
 import type { ResourceEntry, CollectionDetailData, VersionGraph } from '../../src/types';
 
@@ -776,5 +777,27 @@ describe('normalizeRole / roleFacets', () => {
     it('只有一个粗类时不给筛选（筛了也没用）', () => {
         expect(roleFacets(['撰', '撰', '等奉敕撰'])).toEqual([]);
         expect(roleFacets([])).toEqual([]);
+    });
+});
+
+describe('displayAuthorRole', () => {
+    it('中文职任原样保留', () => {
+        expect(displayAuthorRole('撰')).toBe('撰');
+        expect(displayAuthorRole('總纂官')).toBe('總纂官');
+        expect(displayAuthorRole('等奉敕撰')).toBe('等奉敕撰');
+    });
+
+    it('英文占位值不显示', () => {
+        // 数据里有 16 条 authors[].role 写成 "author"（录入工具的占位值没换掉），
+        // 直接渲染就是「紀昀等編 author」这种中英夹杂
+        expect(displayAuthorRole('author')).toBe('');
+        expect(displayAuthorRole('ed.')).toBe('');
+        expect(displayAuthorRole('AUTHOR')).toBe('');
+    });
+
+    it('空值安全', () => {
+        expect(displayAuthorRole(undefined)).toBe('');
+        expect(displayAuthorRole('')).toBe('');
+        expect(displayAuthorRole('   ')).toBe('');
     });
 });

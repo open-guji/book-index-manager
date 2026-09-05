@@ -22,7 +22,7 @@ import {
     type FactItem, type RenderLink,
 } from './primitives';
 import {
-    bucketResources, deriveEra, deriveEditionType,
+    bucketResources, deriveEra, deriveEditionType, displayAuthorRole,
     normalizeVolumeIndex, formatVolumeRange, measureText,
 } from '../../core/detail-model';
 
@@ -252,9 +252,10 @@ export const BookPage: React.FC<BookPageProps> = ({
                                 <span style={{ fontSize: 12.5, color: 'var(--bim-meta-fg, #7b6a54)' }}>
                                     {[
                                         convert(measureText(work, t.unit.juan)),
-                                        work.authors?.map(a =>
-                                            `${a.dynasty ? `〔${convert(a.dynasty)}〕` : ''}${convert(a.name)}${a.role ? ' ' + convert(a.role) : ''}`,
-                                        ).join(' · '),
+                                        work.authors?.map(a => {
+                                            const role = displayAuthorRole(a.role);
+                                            return `${a.dynasty ? `〔${convert(a.dynasty)}〕` : ''}${convert(a.name)}${role ? ' ' + convert(role) : ''}`;
+                                        }).join(' · '),
                                     ].filter(Boolean).join(' · ')}
                                 </span>
                             </div>

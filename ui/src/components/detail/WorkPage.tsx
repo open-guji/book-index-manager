@@ -182,6 +182,13 @@ export const WorkPage: React.FC<WorkPageProps> = ({
         return out;
     }, [data, convert, t, table.allRows, needAll, versionIds.length]);
 
+    /** 整页无内容：header 之外什么都渲染不出来 */
+    const isEmpty = versionIds.length === 0
+        && resources.buckets.length === 0 && resources.mirrors.length === 0
+        && !data.indexed_by?.length && !data.emendated_by?.length
+        && relatedGroups.length === 0
+        && !data.description?.text;
+
     return (
         <>
             {/* ── intro ── */}
@@ -392,6 +399,22 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                     renderLink={renderLink}
                 />
             ))}
+
+            {/*
+              * 什么都没有的作品：生产仓 91,730 部里有 377 部（0.4%）既无版本、
+              * 无资源、无著录、无关联、也无简介 —— 页面上只剩一个标题和页脚，
+              * 读者不知道是没数据还是页面坏了。给一句说明。
+              */}
+            {isEmpty && (
+                <Section style={{ marginBottom: 0 }}>
+                    <SectionHead glyph="著" title={t.section.relatedVersions} />
+                    <DataTable>
+                        <EmptyNote>
+                            尚未著錄該作品的版本、資源與書目收錄。
+                        </EmptyNote>
+                    </DataTable>
+                </Section>
+            )}
         </>
     );
 };

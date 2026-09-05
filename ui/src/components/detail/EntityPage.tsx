@@ -258,6 +258,22 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                 )}
             </IntroGrid>
 
+            {/*
+              * 无关联作品：生产仓 30,122 条人物里有 450 条（1.5%）如此，
+              * 其中 389 条连别名和简介都没有——页面上只剩一行「時代 清」
+              * 和一大片空白，读者不知道是没数据还是页面坏了。给一句说明。
+              */}
+            {allRows.length === 0 && (
+                <Section style={{ marginBottom: 0 }}>
+                    <SectionHead glyph="著" title={t.label.relatedWorks} />
+                    <DataTable>
+                        <EmptyNote>
+                            尚未著錄該人物的關聯作品。
+                        </EmptyNote>
+                    </DataTable>
+                </Section>
+            )}
+
             {/* ── 相關作品 ── */}
             {allRows.length > 0 && (
                 <Section style={{ marginBottom: 0 }}>

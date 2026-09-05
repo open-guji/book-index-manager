@@ -779,6 +779,22 @@ export function normalizeRole(role?: string | null): RoleClass {
     return '其他';
 }
 
+/**
+ * 作者署名里的 role 显示值。
+ *
+ * 数据里有 16 条 `authors[].role` 写成英文 "author"（录入工具的占位值
+ * 没被替换掉），直接渲染就是「紀昀等編 author」这种中英夹杂。
+ * 这类无信息量的占位值不显示；真正的中文职任（撰/編/總纂官…）原样保留。
+ */
+export function displayAuthorRole(role?: string): string {
+    if (!role) return '';
+    const t = role.trim();
+    if (!t) return '';
+    // 不含任何 CJK 字符的（"author"、"ed."…）都是占位或未翻译值，不显示
+    if (!/[一-鿿]/.test(t)) return '';
+    return t;
+}
+
 export interface RoleFacet {
     cls: RoleClass | '全部';
     label: string;

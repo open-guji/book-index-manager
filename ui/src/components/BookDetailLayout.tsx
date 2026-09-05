@@ -44,7 +44,7 @@ import { WorkPage } from './detail/WorkPage';
 import { BookPage } from './detail/BookPage';
 import { CollectionPage } from './detail/CollectionPage';
 import { EntityPage } from './detail/EntityPage';
-import { measureText } from '../core/detail-model';
+import { measureText, displayAuthorRole } from '../core/detail-model';
 
 // ── 类型 ──
 
@@ -420,9 +420,10 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     const headerProps = useMemo(() => {
         if (!detail) return null;
         const authors = detail.authors ?? [];
-        const authorLine = authors.map(a =>
-            `${a.dynasty ? `〔${convert(a.dynasty)}〕` : ''}${convert(a.name)}${a.role ? ` ${convert(a.role)}` : ''}`,
-        ).join(' · ');
+        const authorLine = authors.map(a => {
+            const role = displayAuthorRole(a.role);
+            return `${a.dynasty ? `〔${convert(a.dynasty)}〕` : ''}${convert(a.name)}${role ? ` ${convert(role)}` : ''}`;
+        }).join(' · ');
 
         let isDraft = false;
         try { isDraft = extractStatus(detail.id) === 'draft'; } catch { /* 非标准 ID */ }
