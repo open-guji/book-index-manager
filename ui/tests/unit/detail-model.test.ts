@@ -951,8 +951,29 @@ describe('deriveYearRange：「某某間」', () => {
     });
 
     it('只有朝代没有年号时退到朝代起讫', () => {
+        // 明的下界是 1662 不是 1644：南明（弘光/隆武/永曆）归一到「明」，
+        // 刻本确有「明弘光元年」(1645)、「南明隆武二年」(1646)。
         const r = deriveYearRange({ edition: '明間刊本' });
-        expect(r).toEqual({ from: 1368, to: 1644 });
+        expect(r).toEqual({ from: 1368, to: 1662 });
+    });
+
+    it('lineage.year_range 优先于 lineage.year', () => {
+        // 水滸「文盛堂藏板」：year=1700 是区间中点不是考定年，源数据自带真区间
+        const r = deriveYearRange({
+            title: '忠義水滸全書',
+            lineage: { year: 1700, year_text: '明末清初', year_range: [1640, 1750], category: '刻本', status: 'extant' },
+        } as never);
+        expect(r).toEqual({ from: 1640, to: 1750 });
+    });
+
+    it('year_text 跨代（明末清初）给区间', () => {
+        const r = deriveYearRange({
+            title: '水滸忠義志傳',
+            lineage: { year: 1650, year_text: '明末清初（推定）', category: '刻本', status: 'extant' },
+        } as never);
+        expect(r).toBeDefined();
+        expect(r!.from).toBeLessThan(1644);
+        expect(r!.to).toBeGreaterThan(1644);
     });
 
     it('没有「間」字不返回区间', () => {
@@ -1234,5 +1255,45 @@ describe('全库一致性哨兵（2026-09-05 实测基线）', () => {
         expect(d!.year, `${d!.era} 的年份 ${d!.year} 落在 ${r[0]}–${r[1]} 之外`)
             .toBeGreaterThanOrEqual(r[0] - 30);
         expect(d!.year).toBeLessThanOrEqual(r[1] + 30);
+    });
+});
+
+describe('刊刻年代：lineage 路径（水滸六例）', () => {
+    const L = (lineage: unknown) => ({ title: '水滸傳', lineage } as never);
+
+    it('跨代 year_text 不产出确切年，改走区间', () => {
+        // 此前：era=明 + year=1700 → 明止 1644，朝代与年份打架
+        const d = deriveDating(L({ year: 1700, year_text: '明末清初', year_range: [1640, 1750], category: '刻本', status: 'extant' }));
+        expect(d!.year).toBeUndefined();
+        expect(d!.yearRange).toEqual({ from: 1640, to: 1750 });
+    });
+
+    it('「原刻…補印」取原刻年，补印记入 laterRepair', () => {
+        // 石渠閣補印本：lineage.year=1666 是补印年，主体是明萬曆 1589 原刻
+        const d = deriveDating(L({
+            year: 1666,
+            year_text: '明萬曆十七年（1589）原刻、清康熙五年（1666）石渠閣補印',
+            category: '刻本', status: 'extant',
+        }));
+        expect(d!.era).toBe('明');
+        expect(d!.year).toBe(1589);          // 不是 1666
+        expect(d!.laterRepair?.era).toBe('清');
+    });
+
+    it('朝代与年份必须自洽', () => {
+        const cases = [
+            { year: 1700, year_text: '明末清初', year_range: [1640, 1750] as [number, number], category: '刻本', status: 'extant' },
+            { year: 1650, year_text: '明末清初（推定）', category: '刻本', status: 'extant' },
+            { year: 1666, year_text: '明萬曆十七年（1589）原刻、清康熙五年（1666）石渠閣補印', category: '刻本', status: 'extant' },
+        ];
+        const BOUND: Record<string, [number, number]> = { 明: [1368, 1662], 清: [1616, 1911] };
+        for (const c of cases) {
+            const d = deriveDating(L(c));
+            if (d?.era && d.year != null && BOUND[d.era]) {
+                const [lo, hi] = BOUND[d.era];
+                expect(d.year, `${d.era} ${d.year} 越界（${c.year_text}）`).toBeGreaterThanOrEqual(lo);
+                expect(d.year, `${d.era} ${d.year} 越界（${c.year_text}）`).toBeLessThanOrEqual(hi);
+            }
+        }
     });
 });

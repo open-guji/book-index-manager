@@ -896,6 +896,12 @@ export interface BookLineage {
     year_text?: string;
     /** 年份是否仅为推断 */
     year_uncertain?: boolean;
+    /**
+     * 著录的年代区间。year_text 是「明末清初」这类跨代表述时，
+     * 录入者会在 year 填代表值、在此填真实区间——取区间才对，
+     * 拿代表值当确切年会和朝代打架（水滸文盛堂本 year=1700 配「明」越界）。
+     */
+    year_range?: [number, number];
     category: LineageCategory;
     status: LineageStatus;
     /** 现存范围说明 */

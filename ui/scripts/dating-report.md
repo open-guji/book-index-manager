@@ -4,13 +4,20 @@
 
 ## 两步走
 
-**第一步：算，不写。** 生成 `dating.json`（`{id: DatingInfo}`）与一份统计报告。
-脚本是临时的 vitest 用例（复用现成工具链，不引 tsx 依赖），跑完即删：
+**第一步：算，不写。** 生成 `dating.json`（`{id: DatingInfo}`）与统计报告
+`dating-stats.txt`。脚本借 vitest 的 TS 工具链跑（不引 tsx 依赖），
+未给 `DATING_ROOT` 时自动 skip，所以留在仓里不影响日常 `vitest run`：
 
 ```bash
-# tests/unit/_gen-dating.test.ts —— 见本次提交的 git 历史
-DATING_ROOT=D:/workspace/book-index   npx vitest run tests/unit/_gen-dating.test.ts --testTimeout=600000
+DATING_ROOT=D:/workspace/book-index   npx vitest run tests/unit/_gen-dating.test.ts --testTimeout=900000
 ```
+
+> 起初把它当一次性脚本跑完就删，结果隔天要重算时得从头再写一遍——
+> 现在常驻。重算是常态：推断规则每改一次就要全量重跑一次。
+
+报告里的**朝代—年份不自洽**清单是主要看点：越界的会逐条列出来。
+2026-09-06 一轮从 23 条降到 8 条，剩下的 7 条「清宣統九年」（遜帝紀年）
+与 1 条水滸源数据矛盾都不是推断错误。
 
 **第二步：批量写入。**
 
