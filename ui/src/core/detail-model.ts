@@ -115,7 +115,7 @@ const ERA_HINTS: { pattern: RegExp; era: string; reign?: string }[] = [
 /** 年号 → 元年公元年份。用于把「乾隆四十三年」折算成可排序的数字。 */
 const REIGN_YEARS: Record<string, number> = {
     // 汉唐
-    熹平: 172, 建安: 196, 黃初: 220, 太康: 280, 永和: 345, 開皇: 581, 貞觀: 627,
+    熹平: 172, 建安: 196, 黃初: 220, 正始: 240, 廣政: 938, 太康: 280, 永和: 345, 開皇: 581, 貞觀: 627,
     開元: 713, 天寶: 742, 貞元: 785, 元和: 806, 開成: 836, 會昌: 841, 咸通: 860,
     // 宋
     建隆: 960, 太平興國: 976, 咸平: 998, 天禧: 1017, 慶曆: 1041, 皇祐: 1049,
@@ -159,6 +159,61 @@ const REIGN_YEARS_BY_ERA: Record<string, number> = {
     '唐|元和': 806, '日本|元和': 1615,
     '明|正德': 1506, '日本|正德': 1711,
 };
+
+/**
+ * 出版著录里的纯公元年／区间：「1998」「1930-1937」「1983-」「2000-06 至 2001-03」。
+ * 只认**开头就是数字**的写法；「民國二十二年至二十四年（1933-1935）」走民國换算。
+ *
+ * 此前这类著录被塞进 reign（reign:"1998"）——全库 340 条，Collection 跑出来才看见。
+ */
+function parseCeSpan(text: string): { from: number; to?: number } | undefined {
+    const m = text.match(/^\s*(\d{3,4})(?:\s*[-–—~至]\s*(\d{3,4}))?/);
+    if (!m) return undefined;
+    const from = parseInt(m[1], 10);
+    if (from < 100 || from > 2100) return undefined;
+    const to = m[2] ? parseInt(m[2], 10) : undefined;
+    return { from, to: to != null && to >= from && to <= 2100 ? to : undefined };
+}
+
+/**
+ * 只有公元年、没有任何朝代字样时按主流朝代反推。交叠期取后者（1616–1644 归明）。
+ * 1950 以后不给朝代——词表里没有「現代」，硬塞「民國」是错的：
+ * 續修四庫全書 1995 年印，不是民國本。
+ */
+function eraFromYear(y: number): string {
+    if (y >= 1950) return '';
+    if (y >= 1912) return '民國';
+    if (y >= 1645) return '清';
+    if (y >= 1368) return '明';
+    if (y >= 1279) return '元';
+    if (y >= 960) return '宋';
+    if (y >= 907) return '五代';
+    if (y >= 618) return '唐';
+    if (y >= 581) return '隋';
+    if (y >= 420) return '南北朝';
+    if (y >= 265) return '晉';
+    if (y >= 220) return '三國';
+    if (y >= -202) return '漢';
+    return '';
+}
+
+/** 出版著录本身是模糊/推算表述 → 不产出确切年，可信度降为存疑 */
+const PUB_VAGUE = /末[宋元明清]初|[約约]|推定|推算|前後|前后|左右|[前中後后末]期/;
+
+/**
+ * 著录只写了一个朝代名：「漢」「清代」「曹魏」「日本」。
+ * 题名里的单字朝代要防地名（金陵≠金），著录栏不必——它本来就是年代栏。
+ */
+const BARE_ERA_ALIASES: Record<string, string> = { 曹魏: '三國', 蜀漢: '三國', 東吳: '三國', 前蜀: '五代', 後蜀: '五代' };
+function matchBareEra(text: string): string | undefined {
+    const t = text.trim().replace(/[代朝]$/, '');
+    for (const k of Object.keys(BARE_ERA_ALIASES)) if (t.startsWith(k)) return BARE_ERA_ALIASES[k];
+    const n = normalizeEra(t);
+    if (ERA_START_YEAR[n] != null) return n;
+    const p = matchEraPrefix(t);
+    if (p && t.length <= p.length + 1) return normalizeEra(p);
+    return undefined;
+}
 
 /** 取年号元年：优先按朝代消歧，其次用通用表 */
 function reignStartYear(reign: string, era?: string): number | undefined {
@@ -258,7 +313,8 @@ const REIGN_ERA: Record<string, string> = {};
         for (const r of reigns) REIGN_ERA[r] = era;
     };
     assign('東漢', ['熹平', '建安']);
-    assign('三國', ['黃初']);
+    assign('三國', ['黃初', '正始']);
+    assign('五代', ['廣政']);
     assign('西晉', ['太康']);
     assign('東晉', ['永和']);
     assign('隋', ['開皇']);
@@ -343,12 +399,17 @@ export function deriveEra(book: EraInferable): DerivedEra {
     // 2. publication_info.year
     const pubYear = book.publication_info?.year;
     if (pubYear) {
-        const era = matchEraPrefix(pubYear) ?? ERA_HINTS.find(h => h.pattern.test(pubYear))?.era ?? '';
+        // 纯公元年／区间优先；朝代按年反推，1950 以后不给（见 eraFromYear）
+        const span = parseCeSpan(pubYear);
+        if (span) return { era: eraFromYear(span.from), reign: '', source: 'publication' };
+        const era = matchEraPrefix(pubYear)
+            ?? matchBareEra(pubYear)
+            ?? ERA_HINTS.find(h => h.pattern.test(pubYear))?.era
+            ?? '';
         const reign = matchReign(pubYear, era) ?? '';
-        if (era || reign) return { era: normalizeEra(era), reign, source: 'publication' };
-        // 纯公元年（如「1773-1803」）也算著录
-        const ce = pubYear.match(/\d{3,4}/);
-        if (ce) return { era: '', reign: ce[0], source: 'publication' };
+        // 只给了年号没给朝代（「蔣衡書於雍正四年至乾隆二年」）→ 由年号反推
+        const eraOut = era || (reign ? (REIGN_ERA[reign] ?? '') : '');
+        if (eraOut || reign) return { era: normalizeEra(eraOut), reign, source: 'publication' };
     }
 
     // 3. 题名推断。同样只用 edition，edition 为空才退到 title——
@@ -394,6 +455,14 @@ export function deriveYear(book: EraInferable): number | undefined {
      * edition 为空时才退到 title——那种情况下题名本身兼作版本描述
      * （「宋乾道七年蔡夢弼東塾刻本」这类会被放进 title）。
      */
+    // 出版著录是纯公元年/区间就直接用，别再往下走到题名——
+    // 「續修四庫全書」pub=1995-2002 曾被题名里的「四庫全書」拉成乾隆 1736。
+    const pubText = book.publication_info?.year;
+    if (pubText) {
+        const span = parseCeSpan(pubText);
+        if (span) return span.from;
+    }
+
     const texts = [
         book.lineage?.year_text,
         book.publication_info?.year,
@@ -409,12 +478,12 @@ export function deriveYear(book: EraInferable): number | undefined {
          * 捞了就会得到「清 · 836」这种自相矛盾的组合。
          */
         const cited = book.publication_info?.year || book.lineage?.year_text;
-        if (cited && text !== cited && matchEraPrefix(cited)) break;
+        if (cited && text !== cited && (matchEraPrefix(cited) || matchBareEra(cited))) break;
         // 公元年。必须带「年」或被括号/边界包住，且前面不能是「第」——
         // 否则「摛藻堂四庫全書薈要·第321冊」会被读成公元 321 年，
         // 把一部清乾隆写本排到西晋去。
         const ce = text.match(/(?:^|[^\d第卷冊册頁页])(\d{3,4})\s*年/)
-            ?? text.match(/[（(](\d{3,4})\s*年?[）)]/);
+            ?? text.match(/[（(](\d{3,4})\s*(?:[-–—~至]\s*\d{3,4})?\s*年?[）)]/);   // 允许「（175–183）」
         if (ce) {
             const n = parseInt(ce[1], 10);
             if (n >= 100 && n <= 2100) return n;
@@ -506,10 +575,24 @@ export function deriveYearRange(book: EraInferable): YearRange | undefined {
         }
     }
 
-    const texts = [book.edition, book.title].filter(Boolean) as string[];
+    const pt = book.publication_info?.year;
+    if (pt) {
+        const span = parseCeSpan(pt);
+        if (span?.to != null) return { from: span.from, to: span.to };
+        const cross = pt.match(/([宋元明清])\s*末\s*([宋元明清])\s*初/);
+        if (cross) {
+            const a = ERA_END_YEAR[normalizeEra(cross[1])];
+            const b = ERA_START_YEAR[normalizeEra(cross[2])];
+            if (a != null && b != null) return { from: Math.min(a, b) - 20, to: Math.max(a, b) + 40 };
+        }
+    }
+
+    // 「南宋紹興年間」这种著录也是区间，与题名里的「間」同一处理
+    const texts = [book.publication_info?.year, book.edition, book.title].filter(Boolean) as string[];
     for (const text of texts) {
         if (!/[間间]/.test(text)) continue;
-        const era = matchEraPrefix(text) ?? ERA_HINTS.find(h => h.pattern.test(text))?.era;
+        // 著录栏的「曹魏正始年間」「後蜀廣政年間」：朝代名不在题名前缀表里，走 matchBareEra
+        const era = matchEraPrefix(text) ?? matchBareEra(text) ?? ERA_HINTS.find(h => h.pattern.test(text))?.era;
         const norm = era ? normalizeEra(era) : undefined;
 
         // 收集题名里出现的、属于该朝代的年号
@@ -544,7 +627,9 @@ export function deriveYearRange(book: EraInferable): YearRange | undefined {
             const latest = hitReigns.reduce((a, b) =>
                 (reignStartYear(a, norm)! >= reignStartYear(b, norm)! ? a : b));
             const to = reignEndYear(latest) ?? eraEndYear(norm ?? '') ?? Math.max(...starts);
-            return { from, to: Math.max(from, to) };
+            // 年号在表里没有后继（正始、廣政）时 to 会塌成 from（[240,240]）——
+            // 退到朝代末年，宁可宽也不给一个假的单点区间
+            return { from, to: to > from ? to : (eraEndYear(norm ?? REIGN_ERA[latest] ?? '') ?? from) };
         }
         // 只有朝代没有年号（「明間刊本」）：退到朝代起讫
         if (norm && ERA_START_YEAR[norm] != null) {
@@ -673,7 +758,10 @@ function findOtherEra(text: string, exclude: string):
 
 export function deriveDating(book: EraInferable): DerivedDating | undefined {
     const era = deriveEra(book);
-    if (!era.era && !era.reign) return undefined;
+    const ptext = book.publication_info?.year ?? '';
+    const pubSpan = ptext ? parseCeSpan(ptext) : undefined;
+    // 1950 以后的印本没有朝代但有年份，照样落 dating（sort_year 要用）
+    if (!era.era && !era.reign && !pubSpan) return undefined;
 
     const text = book.edition || book.title || '';
     /*
@@ -694,6 +782,10 @@ export function deriveDating(book: EraInferable): DerivedDating | undefined {
      */
     const ltext = book.lineage?.year_text ?? '';
     const lineageVague = /末[宋元明清]初|[約约]|推定|前後|前后|左右/.test(ltext);
+    // 出版著录同理：「明末清初（推算）」「南宋紹興年間」「日本江戶後期」都不是确切年
+    const pubVague = era.source === 'publication' && PUB_VAGUE.test(ptext);
+    // 「紹興年間」是区间不是存疑：不产确切年，但可信度仍按著录算
+    const pubIsRange = era.source === 'publication' && /[間间]/.test(ptext);
 
     /*
      * 「原刻…補印/補修」：主体是**原刻**，补印是后事。
@@ -706,7 +798,7 @@ export function deriveDating(book: EraInferable): DerivedDating | undefined {
     const reprint = ltext.match(/([宋元明清])[^、，,]*?[（(](\d{3,4})[）)][^、，,]*?原刻/);
 
     let year: number | undefined;
-    if (isRange || lineageVague) {
+    if (isRange || lineageVague || pubVague || pubIsRange) {
         year = undefined;
     } else if (reprint) {
         year = parseInt(reprint[2], 10);   // 取原刻年，不取补印年
@@ -717,7 +809,10 @@ export function deriveDating(book: EraInferable): DerivedDating | undefined {
 
     // ── 可信度 ──
     let certainty: DerivedDating['certainty'];
-    if (era.source === 'lineage' || era.source === 'publication') {
+    if (era.source === 'publication' && (pubVague || UNCERTAIN_PATTERN.test(ptext))) {
+        // 著录自己就说是推算/约略——不能标 attested
+        certainty = 'uncertain';
+    } else if (era.source === 'lineage' || era.source === 'publication') {
         certainty = 'attested';
     } else if (UNCERTAIN_PATTERN.test(text)) {
         // 题名明说存疑（「舊題」「相傳」「疑」…）

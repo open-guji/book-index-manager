@@ -30,7 +30,9 @@ function collectBooks(dir: string, out: string[] = []): string[] {
 
 describe.skipIf(!ROOT)('生成全库 dating', () => {
     it('扫描 Book 并写出 dating.json', () => {
-        const files = collectBooks(join(ROOT!, 'Book'));
+        // Collection 也算：76 条靠 publication_info.year 自由文本充当年代（「清」「（抽象作品集，李漁起源）」），
+        // deriveDating 的 publication_info 路径能吃，量小，结果人工过一遍。
+        const files = [...collectBooks(join(ROOT!, 'Book')), ...collectBooks(join(ROOT!, 'Collection'))];
         const out: Record<string, unknown> = {};
         const stats = {
             total: 0, generated: 0, year: 0, range: 0,
@@ -49,7 +51,7 @@ describe.skipIf(!ROOT)('生成全库 dating', () => {
         for (const f of files) {
             let meta: Record<string, unknown>;
             try { meta = JSON.parse(readFileSync(f, 'utf-8')); } catch { continue; }
-            if (meta?.type !== 'book') continue;
+            if (meta?.type !== 'book' && meta?.type !== 'collection') continue;
             stats.total++;
 
             // 重算时必须无视已落盘的 dating，否则回退链会直接把旧值原样返回
@@ -84,6 +86,16 @@ describe.skipIf(!ROOT)('生成全库 dating', () => {
         }
 
         writeFileSync(join(__dirname, '../../dating.json'), JSON.stringify(out, null, 0), 'utf-8');
+        // Collection 逐条列出供人工过目
+        const colLines: string[] = [];
+        for (const f of files) {
+            if (!f.includes('Collection')) continue;
+            let m: Record<string, unknown>; try { m = JSON.parse(readFileSync(f, 'utf-8')); } catch { continue; }
+            const d = out[m.id as string] as Record<string, unknown> | undefined;
+            const pub = (m.publication_info as { year?: string } | undefined)?.year ?? '';
+            colLines.push(`${String(m.title).padEnd(22)} pub=「${pub}」 → ${d ? JSON.stringify({ era: d.era, reign: d.reign, year: d.year, year_range: d.year_range, certainty: d.certainty }) : '—'}`);
+        }
+        writeFileSync(join(__dirname, '../../dating-collections.txt'), colLines.join('\n'), 'utf-8');
 
         const pct = (n: number) => `${((n / stats.total) * 100).toFixed(1)}%`;
         // 写文件而不只 console.log —— vitest 的 reporter 会吞掉 stdout

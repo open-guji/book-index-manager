@@ -81,7 +81,9 @@ describe('deriveEra', () => {
     it('纯公元年区间也算著录（丛编 publication_info 常见形态）', () => {
         const r = deriveEra({ publication_info: { year: '1773-1803' } });
         expect(r.source).toBe('publication');
-        expect(r.reign).toBe('1773');
+        // 年份归 deriveYear；朝代按年反推。此前把「1773」塞进 reign，全库 340 条
+        expect(r.era).toBe('清');
+        expect(r.reign).toBe('');
     });
 
     // 以下是生产仓 edition 首字分布 Top 榜的真实题名
@@ -1295,5 +1297,80 @@ describe('刊刻年代：lineage 路径（水滸六例）', () => {
                 expect(d.year, `${d.era} ${d.year} 越界（${c.year_text}）`).toBeLessThanOrEqual(hi);
             }
         }
+    });
+});
+
+describe('刊刻年代：publication_info 路径（Collection 跑出来的十类）', () => {
+    const P = (title: string, year: string) => deriveDating({ title, publication_info: { year } } as never);
+
+    it('纯公元年：年份进 year 不进 reign，朝代按年反推', () => {
+        const d = P('某書', '1811')!;
+        expect(d.year).toBe(1811);
+        expect(d.reign).toBe('');           // 此前 reign:"1811"，全库 340 条
+        expect(d.era).toBe('清');
+        expect(d.certainty).toBe('attested');
+    });
+
+    it('1950 以后：有年无朝代（词表没有「現代」）', () => {
+        const d = P('郭店楚墓竹簡', '1998')!;
+        expect(d.year).toBe(1998);
+        expect(d.era).toBe('');
+    });
+
+    it('公元区间取起点，且不被题名里的四庫拉成乾隆', () => {
+        const d = P('續修四庫全書', '1995-2002')!;
+        expect(d.year).toBe(1995);          // 此前 1736
+        expect(d.era).toBe('');
+        expect(P('二十四史', '1930-1937')!.year).toBe(1930);
+        expect(P('武英殿聚珍版叢書', '1773-1803')!).toMatchObject({ era: '清', year: 1773 });
+    });
+
+    it('著录只写朝代名：「漢」「清代（同文堂刊）」「曹魏正始年間」', () => {
+        expect(P('漢代緯書', '漢')!.era).toBe('漢');
+        expect(P('東西漢演義', '清代（同文堂刊）')!.era).toBe('清');
+        const d = P('正始石經', '曹魏正始年間')!;
+        expect(d.era).toBe('三國');
+        expect(d.reign).toBe('正始');
+        expect(d.year).toBeUndefined();     // 年間 = 区间
+        expect(d.yearRange).toMatchObject({ from: 240 });
+    });
+
+    it('只给年号不给朝代 → 由年号反推朝代', () => {
+        const d = P('清乾隆石經', '蔣衡書於雍正四年至乾隆二年，乾隆末詔刻')!;
+        expect(d.era).toBe('清');
+        expect(d.reign).toBe('雍正');
+        expect(d.year).toBe(1726);
+    });
+
+    it('「年間」是区间不是元年', () => {
+        const d = P('南宋紹興石經', '南宋紹興年間')!;
+        expect(d.era).toBe('宋');
+        expect(d.year).toBeUndefined();     // 此前 1131
+        expect(d.yearRange).toEqual({ from: 1131, to: 1162 });
+    });
+
+    it('模糊/推算表述：不产确切年，可信度存疑', () => {
+        const d = P('紙上春臺', '明末清初（推算）')!;
+        expect(d.year).toBeUndefined();
+        expect(d.yearRange!.from).toBeLessThan(1644);
+        expect(d.yearRange!.to).toBeGreaterThan(1644);
+        expect(d.certainty).toBe('uncertain');
+        expect(P('海內奇談', '日本江戶後期（推算）')!.certainty).toBe('uncertain');
+        expect(P('三教同理小說', '清初（推算）')!.certainty).toBe('uncertain');
+    });
+
+    it('括号里的公元区间取起点', () => {
+        const d = P('熹平石經', '東漢熹平四年至光和六年（175–183）')!;
+        expect(d.era).toBe('漢');
+        expect(d.reign).toBe('熹平');
+        expect(d.year).toBe(175);
+    });
+
+    it('民國中文纪年带括号公元：仍走民國换算', () => {
+        expect(P('四庫全書珍本初集', '民國二十二年至二十四年（1933-1935）')!).toMatchObject({ era: '民國', year: 1933 });
+    });
+
+    it('抽象说明不是年代', () => {
+        expect(P('四大奇書', '（抽象作品集，李漁起源）')).toBeUndefined();
     });
 });

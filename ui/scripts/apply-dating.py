@@ -45,16 +45,20 @@ def load_dating(path: Path) -> dict:
 
 
 def iter_book_files(root: Path):
-    """遍历 Book 下的顶层 item 文件 `<id>-<title>.json`。"""
-    book_dir = root / "Book"
-    for dirpath, _dirnames, filenames in os.walk(book_dir):
-        for fn in filenames:
-            if not fn.endswith(ITEM_FILE_SUFFIX):
-                continue
-            # 跳过 collated_edition/ full_text/ 等子目录里的辅助文件
-            if "-" not in fn:
-                continue
-            yield Path(dirpath) / fn
+    """遍历 Book/ 与 Collection/ 下的顶层 item 文件 `<id>-<title>.json`。
+
+    Collection 2026-09-06 起也落 dating（76 条，此前靠 publication_info.year
+    自由文本充当年代）。
+    """
+    for sub in ("Book", "Collection"):
+        for dirpath, _dirnames, filenames in os.walk(root / sub):
+            for fn in filenames:
+                if not fn.endswith(ITEM_FILE_SUFFIX):
+                    continue
+                # 跳过 collated_edition/ full_text/ 等子目录里的辅助文件
+                if "-" not in fn:
+                    continue
+                yield Path(dirpath) / fn
 
 
 def insert_dating(meta: dict, dating: dict) -> dict:
@@ -124,7 +128,7 @@ def main() -> int:
             print(f"  读取失败 {path.name}: {e}", file=sys.stderr)
             continue
 
-        if not isinstance(meta, dict) or meta.get("type") != "book":
+        if not isinstance(meta, dict) or meta.get("type") not in ("book", "collection"):
             continue
         item_id = meta.get("id")
         if not item_id or item_id not in dating:
