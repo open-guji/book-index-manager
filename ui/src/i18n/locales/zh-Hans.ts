@@ -210,7 +210,7 @@ export const zhHans: LocaleMessages = {
         bookTitle: '书名 (Book Title)',
         belongsToWork: '所属作品 (Work)',
         authorLabel: '作者 (Author)',
-        dynastyLabel: '朝代/年份 (Dynasty/Year)',
+        publicationYearLabel: '出版年 (Publication year)',
         containedIn: '收入丛编',
         holderLabel: '现藏于 (Holder)',
         pageLabel: '页数 (Pages)',

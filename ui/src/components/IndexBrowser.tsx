@@ -717,8 +717,13 @@ const EntryBookCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, get
                     </div>
                 )}
 
-                {entry.edition && (
-                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>{convert(entry.edition)}</div>
+                {/* 刊刻朝代 + 版本。era 是这个本子的朝代（dating.era），与上一行撰人的 dynasty 不同：
+                    史記·武英殿本 撰人〔西漢〕、刊刻〔清〕。 */}
+                {(entry.era || entry.edition) && (
+                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
+                        {entry.era && <span>〔{convert(entry.era)}〕</span>}
+                        {entry.edition && <span>{convert(entry.edition)}</span>}
+                    </div>
                 )}
 
                 {matchedAlias && (
@@ -796,10 +801,11 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                         {entry.has_text && <span title={t.misc.textResource}>📝</span>}
                         {entry.has_image && <span title={t.misc.imageResource}>🖼️</span>}
                     </span>
-                    {/* 版本 */}
-                    {entry.edition && (
+                    {/* 刊刻朝代 + 版本（era 是本子的朝代，非撰人 dynasty） */}
+                    {(entry.era || entry.edition) && (
                         <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)' }}>
-                            {convert(entry.edition)}
+                            {entry.era && <>〔{convert(entry.era)}〕</>}
+                            {entry.edition && convert(entry.edition)}
                         </span>
                     )}
                     {/* 卷/回数等計量：優先 measure_info，退回 juan_count */}

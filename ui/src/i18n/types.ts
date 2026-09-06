@@ -188,7 +188,7 @@ export interface LocaleMessages {
         bookTitle: string;
         belongsToWork: string;
         authorLabel: string;
-        dynastyLabel: string;
+        publicationYearLabel: string;
         containedIn: string;
         holderLabel: string;
         pageLabel: string;

@@ -22,7 +22,9 @@ import { LoadingDots } from './common/LoadingDots';
 /** IndexDetailData (结构化) → IndexEditorData (扁平化) */
 export function detailToEditor(data: IndexDetailData): IndexEditorData {
     const author = data.authors?.[0]?.name || '';
-    const dynasty = data.publication_info?.year || '';
+    // 表单里这一栏此前叫 dynasty，存的却是 publication_info.year——出版年被当朝代用，
+    // 连 Work 的撰人朝代都曾顺着 inheritData 灌进来。正名为 publicationYear。
+    const publicationYear = data.publication_info?.year || '';
     const holder = data.current_location?.name || '';
     const pages = data.page_count?.number
         ? String(data.page_count.number)
@@ -36,7 +38,7 @@ export function detailToEditor(data: IndexDetailData): IndexEditorData {
         title: data.title,
         type: data.type,
         author,
-        dynasty,
+        publicationYear,
         holder,
         pages,
         description,
@@ -79,7 +81,7 @@ export function editorToDetail(data: IndexEditorData): IndexDetailData {
         type: data.type,
         description: data.description ? { text: data.description } : undefined,
         authors: data.author ? [{ name: data.author }] : undefined,
-        publication_info: data.dynasty ? { year: data.dynasty } : undefined,
+        publication_info: data.publicationYear ? { year: data.publicationYear } : undefined,
         current_location: data.holder ? { name: data.holder } : undefined,
         page_count: data.pages ? { number: parseInt(data.pages) || 0, description: data.pages } : undefined,
         resources: data.resources,

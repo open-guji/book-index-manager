@@ -52,7 +52,8 @@ export interface IndexEditorData {
     title: string;
     type: IndexType;
     author?: string;
-    dynasty?: string;
+    /** 出版年（publication_info.year）。此前误名 dynasty，与撰人朝代混用 */
+    publicationYear?: string;
     holder?: string;
     pages?: string;
     firstImage?: string;
@@ -142,12 +143,14 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
     }, [onNavigate]);
 
     const handleCreateAndLink = useCallback((relationField: string, targetType: IndexType, inheritData?: Record<string, unknown>) => {
-        const enhanced = { ...inheritData, author: inheritData?.author || data.author, dynasty: inheritData?.dynasty || data.dynasty };
+        // dynasty 只从 inheritData 来（父条目撰人的朝代，给新建人物用）。原先还回退到
+        // 表单里那一栏——它实际存的是出版年，会把「1739」灌进人物的朝代里。
+        const enhanced = { ...inheritData, author: inheritData?.author || data.author, dynasty: inheritData?.dynasty };
         setCreateType(targetType);
         setCreateField(relationField);
         setCreateInheritData(enhanced);
         setCreateOpen(true);
-    }, [data.author, data.dynasty]);
+    }, [data.author]);
 
     const handleConfirmCreate = useCallback((name: string, inheritData: Record<string, unknown>) => {
         if (transport?.createAndLink) {
@@ -230,7 +233,7 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
                         <SmartBidInput label={t.editor.belongsToWork} value={data.workName || ''} onChange={v => handleChange('workName', v)} />
                     )}
                     <FormInput label={t.editor.authorLabel} value={data.author || ''} onChange={v => handleChange('author', v)} />
-                    <FormInput label={t.editor.dynastyLabel} value={data.dynasty || ''} onChange={v => handleChange('dynasty', v)} />
+                    <FormInput label={t.editor.publicationYearLabel} value={data.publicationYear || ''} onChange={v => handleChange('publicationYear', v)} />
                     {(isBook || isCollection) && (
                         <SmartBidInput label={t.editor.containedIn} value={data.collection || ''} onChange={v => handleChange('collection', v)} />
                     )}
