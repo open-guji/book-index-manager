@@ -340,6 +340,56 @@ describe('BookIndexStorage rebuildIndex', () => {
     });
 });
 
+describe('索引里的年代：era/sort_year 投影自 dating，year 已删', () => {
+    it('saveItem 把 dating.era / year 投影进索引，撰人 dynasty 不动', async () => {
+        const { storage } = makeStorage();
+        await storage.saveItem('work', WORK_ID_SHIJI, {
+            title: '史記',
+            authors: [{ name: '司馬遷', dynasty: '西漢' }],
+            publication_info: { year: '1739' },
+            dating: { era: '清', reign: '乾隆', year: 1739, certainty: 'inferred', basis: 'x' },
+        });
+        const e = (await storage.loadEntries('work', 'draft'))[0];
+        expect(e.dynasty).toBe('西漢');      // 撰人朝代
+        expect(e.era).toBe('清');            // 刊刻朝代
+        expect(e.sort_year).toBe(1739);
+        expect((e as any).year).toBeUndefined();   // publication_info.year 不再进索引
+    });
+
+    it('只有 year_range 时 sort_year 取下界', async () => {
+        const { storage } = makeStorage();
+        await storage.saveItem('work', WORK_ID_SHIJI, {
+            title: '史記', dating: { era: '明', year_range: [1368, 1398] },
+        });
+        const e = (await storage.loadEntries('work', 'draft'))[0];
+        expect(e.era).toBe('明');
+        expect(e.sort_year).toBe(1368);
+    });
+
+    it('没有 dating 就没有 era / sort_year', async () => {
+        const { storage } = makeStorage();
+        await storage.saveItem('work', WORK_ID_SHIJI, { title: '史記', publication_info: { year: '1850' } });
+        const e = (await storage.loadEntries('work', 'draft'))[0];
+        expect(e.era).toBeUndefined();
+        expect(e.sort_year).toBeUndefined();
+    });
+
+    it('rebuildIndex 也投影 dating，且不再丢 period', async () => {
+        const { storage, fs } = makeStorage();
+        await fs.writeFile(
+            `/ws/book-index-draft/Work/1/e/u/${WORK_ID_SHIJI}-史記.json`,
+            JSON.stringify({ id: WORK_ID_SHIJI, title: '史記', type: 'work', period: 'qin-han', dating: { era: '清', year: 1739 } })
+        );
+        await storage.rebuildIndex('draft');
+        const e = (await storage.loadEntries('work', 'draft')).find(x => x.id === WORK_ID_SHIJI)!;
+        expect(e.era).toBe('清');
+        expect(e.sort_year).toBe(1739);
+        // period 由重建路径产出——此前这条路径漏写，rebuild 一跑就把它抹掉
+        const raw = JSON.parse(await fs.readFile(`/ws/book-index-draft/index/works/${shardOf(WORK_ID_SHIJI)}.json`, 'utf-8') as string);
+        expect(raw[WORK_ID_SHIJI].period).toBe('qin-han');
+    });
+});
+
 // ─── scoring ───
 function entry(over: Partial<IndexEntry>): IndexEntry {
     return {

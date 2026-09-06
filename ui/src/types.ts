@@ -167,6 +167,10 @@ export interface IndexEntry {
     dynasty?: string;
     role?: string;
     path?: string;
+    /** 刊刻朝代（Book/Collection，= dating.era）。dynasty 是撰人朝代，两者不同 */
+    era?: string;
+    /** 年代排序锚点（= dating.year ?? dating.year_range[0]） */
+    sort_year?: number;
     /** Work 别名列表 */
     additional_titles?: string[];
     /** Book 附载篇目 */

@@ -29,15 +29,45 @@ export interface IndexFile {
     works: Record<string, IndexFileEntry>;
 }
 
+/**
+ * 从 Book.dating 投影索引要用的两个字段。
+ *
+ * 与 Python 端 entry_extractor._extract_dating 等价——两侧必须同步：少写一侧，
+ * 该侧每存一次就把字段从索引里抹掉一次（period / loss_status 就这么丢过）。
+ * 只投影 era + sort_year：索引是派生产物，reign/basis/based_on 留给详情页。
+ */
+export function datingProjection(metadata: Record<string, unknown>): Pick<IndexFileEntry, 'era' | 'sort_year'> {
+    const out: Pick<IndexFileEntry, 'era' | 'sort_year'> = {};
+    const d = metadata.dating;
+    if (typeof d !== 'object' || d === null) return out;
+    const era = (d as any).era;
+    if (typeof era === 'string' && era) out.era = era;
+    const year = (d as any).year;
+    if (typeof year === 'number') {
+        out.sort_year = year;
+    } else {
+        const r = (d as any).year_range;
+        if (Array.isArray(r) && r.length === 2 && typeof r[0] === 'number') out.sort_year = r[0];
+    }
+    return out;
+}
+
 export interface IndexFileEntry {
     id: string;
     title: string;
     type: string;
     path: string;
     author: string;
-    year: string;
     holder: string;
+    /** 撰人朝代（authors[0].dynasty）——不是刊刻朝代 */
     dynasty?: string;
+    /**
+     * 刊刻朝代，= Book.dating.era。与 dynasty 是两回事：史記·武英殿本
+     * dynasty=西漢（司馬遷）、era=清（武英殿）。Work 无此字段（Work 走 period）。
+     */
+    era?: string;
+    /** 年代排序锚点，= dating.year ?? dating.year_range[0]；只知朝代时缺省 */
+    sort_year?: number;
     role?: string;
     /** Work 别名 */
     additional_titles?: string[];
@@ -193,14 +223,8 @@ export class BookIndexStorage {
         }
         if (!dynasty && typeof metadata.dynasty === 'string') dynasty = metadata.dynasty;
 
-        // 提取 year
-        let year = '';
-        const pub = metadata.publication_info;
-        if (typeof pub === 'object' && pub !== null) {
-            year = (pub as any).year || '';
-        } else if (typeof pub === 'string') {
-            year = pub;
-        }
+        // publication_info.year 不再进索引：它是自由文本，IndexEntry 运行时类型
+        // 从不读它，搜索分片也不带——零消费者。刊刻年代改投影 dating（datingProjection）。
 
         // 提取 holder
         let holder = '';
@@ -258,8 +282,8 @@ export class BookIndexStorage {
             type: TYPE_TO_FOLDER[type],
             path: relativePath,
             author,
-            year,
             holder,
+            ...datingProjection(metadata),
         };
         if (additionalTitles && additionalTitles.length > 0) entry.additional_titles = additionalTitles;
         if (attachedTexts && attachedTexts.length > 0) entry.attached_texts = attachedTexts;
@@ -388,6 +412,8 @@ export class BookIndexStorage {
                     juan_count: entry.juan_count,
                     has_text: entry.has_text,
                     has_image: entry.has_image,
+                    era: entry.era,
+                    sort_year: entry.sort_year,
                 });
             }
         }
@@ -520,8 +546,8 @@ export class BookIndexStorage {
                         type: typeDir,
                         path: relPath,
                         author,
-                        year: typeof metadata.publication_info === 'object' ? ((metadata.publication_info as any)?.year || '') : '',
                         holder: typeof metadata.current_location === 'object' ? ((metadata.current_location as any)?.name || '') : '',
+                        ...datingProjection(metadata),
                     };
                     if (additionalTitles && additionalTitles.length > 0) entry.additional_titles = additionalTitles;
                     if (attachedTexts && attachedTexts.length > 0) entry.attached_texts = attachedTexts;
@@ -533,6 +559,23 @@ export class BookIndexStorage {
                     if (hasImage) entry.has_image = true;
                     if (dynasty) entry.dynasty = dynasty;
                     if (role) entry.role = role;
+                    // 以下与保存路径（updateIndexEntry）及 Python 端对齐。此前这条重建
+                    // 路径漏了它们——rebuildIndex 一跑，subtype/period/loss_status/
+                    // original_title/work_id/promoted_to 就从索引里整批消失。
+                    const subtype = typeof metadata.subtype === 'string' ? metadata.subtype : '';
+                    if (subtype) entry.subtype = subtype;
+                    const period = typeof metadata.period === 'string' ? metadata.period : '';
+                    if (period) entry.period = period;
+                    const lossStatus = typeof metadata.loss_status === 'string' ? metadata.loss_status : '';
+                    if (lossStatus) entry.loss_status = lossStatus;
+                    const originalTitle = typeof metadata.original_title === 'string' ? metadata.original_title : '';
+                    if (originalTitle) entry.original_title = originalTitle;
+                    const workId = typeof metadata.work_id === 'string' ? metadata.work_id : '';
+                    if (workId) entry.work_id = workId;
+                    const promotedTo = typeof metadata._promoted_to === 'string'
+                        ? metadata._promoted_to
+                        : (typeof metadata.promoted_to === 'string' ? metadata.promoted_to : '');
+                    if (promotedTo) entry.promoted_to = promotedTo;
 
                     const shardNum = typeKey === 'collections' ? 0 : shardOf(idStr);
                     shards[typeKey][shardNum][idStr] = entry;

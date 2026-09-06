@@ -14,7 +14,7 @@ from book_index_manager.entry_extractor import (
     build_entity_index_entry,
     _extract_titles_list,
     _extract_first_author,
-    _extract_year,
+    _extract_dating,
     _extract_holder,
     _extract_juan_count,
     _extract_resource_flags,
@@ -65,14 +65,26 @@ def test_extract_first_author_missing():
     assert _extract_first_author({"authors": []})["name"] == ""
 
 
-# ── _extract_year / holder / juan_count ──
+# ── _extract_dating / holder / juan_count ──
 
-def test_extract_year_dict():
-    assert _extract_year({"publication_info": {"year": "1850"}}) == "1850"
+def test_extract_dating_exact_year():
+    d = _extract_dating({"dating": {"era": "清", "reign": "同治", "year": 1872, "basis": "x"}})
+    assert d == {"era": "清", "sort_year": 1872}   # reign/basis 不投影
 
 
-def test_extract_year_string():
-    assert _extract_year({"publication_info": "明嘉靖"}) == "明嘉靖"
+def test_extract_dating_range_uses_lower_bound():
+    d = _extract_dating({"dating": {"era": "明", "year_range": [1368, 1398]}})
+    assert d == {"era": "明", "sort_year": 1368}
+
+
+def test_extract_dating_era_only():
+    assert _extract_dating({"dating": {"era": "明", "certainty": "uncertain"}}) == {"era": "明"}
+
+
+def test_extract_dating_missing_or_malformed():
+    assert _extract_dating({}) == {}
+    assert _extract_dating({"dating": "清"}) == {}
+    assert _extract_dating({"publication_info": {"year": "1850"}}) == {}   # 不再从 publication_info 取
 
 
 def test_extract_juan_count_dict():
@@ -294,3 +306,30 @@ def test_dynasty_omitted_when_neither_present():
     entry = build_index_entry({"id": "w1", "title": "X", "authors": []},
                               BookIndexType.Work, "Work/w/1.json")
     assert "dynasty" not in entry
+
+
+# ── 索引里的年代：era/sort_year 来自 dating，dynasty 是撰人朝代，year 已删 ──
+
+
+def test_book_entry_projects_dating_not_publication_year():
+    entry = build_index_entry(
+        {
+            "id": "b1", "title": "史記", "edition": "武英殿本",
+            "authors": [{"name": "司馬遷", "dynasty": "西漢", "role": "撰"}],
+            "publication_info": {"year": "1739"},
+            "dating": {"era": "清", "reign": "乾隆", "year": 1739, "certainty": "inferred"},
+        },
+        BookIndexType.Book, "Book/b/1.json",
+    )
+    assert entry["dynasty"] == "西漢"      # 撰人朝代不动
+    assert entry["era"] == "清"            # 刊刻朝代来自 dating
+    assert entry["sort_year"] == 1739
+    assert "year" not in entry            # publication_info.year 不再进索引
+
+
+def test_book_entry_without_dating_has_no_era():
+    entry = build_index_entry(
+        {"id": "b2", "title": "x", "publication_info": {"year": "1850"}},
+        BookIndexType.Book, "Book/b/2.json",
+    )
+    assert "era" not in entry and "sort_year" not in entry and "year" not in entry

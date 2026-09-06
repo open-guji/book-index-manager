@@ -59,14 +59,36 @@ def _extract_first_author(metadata: Dict[str, Any]) -> Dict[str, str]:
     return out
 
 
-def _extract_year(metadata: Dict[str, Any]) -> str:
-    """从 publication_info 提取年份字符串。"""
-    pub = metadata.get("publication_info")
-    if isinstance(pub, dict):
-        return pub.get("year", "")
-    if isinstance(pub, str):
-        return pub
-    return ""
+def _extract_dating(metadata: Dict[str, Any]) -> Dict[str, Any]:
+    """从 Book.dating 投影索引要用的两个字段：era（刊刻朝代）与 sort_year（排序锚点）。
+
+    只投影这两个——索引是派生产物，只放列表/搜索够用的；reign/basis/based_on
+    留在条目档给详情页。sort_year 取确切年，没有就取区间下界（「明洪武間」→ 1368），
+    再没有就不给（只知朝代的条目靠 era 排，前端 sortYear 会退到朝代起始年）。
+
+    读的是 dating，**不是** authors[0].dynasty——那是撰人朝代，走 dynasty 字段。
+    史記·武英殿本 dynasty=西漢（司馬遷）、era=清（武英殿），本就是两回事。
+
+    此前这里写的是 publication_info.year 的自由文本（"1589"／"清乾隆中後期抄本"），
+    但 TS 端 IndexEntry 运行时类型从不读它，搜索分片也不带——零消费者，已删。
+    与 ui/src/core/storage.ts 的 datingProjection 等价，两侧必须同步。
+    方案：overview/项目进展/古籍索引网站/整体设计/2026-09-年代字段统一方案.md
+    """
+    out: Dict[str, Any] = {}
+    dating = metadata.get("dating")
+    if not isinstance(dating, dict):
+        return out
+    era = dating.get("era")
+    if isinstance(era, str) and era:
+        out["era"] = era
+    year = dating.get("year")
+    if isinstance(year, int) and not isinstance(year, bool):
+        out["sort_year"] = year
+    else:
+        rng = dating.get("year_range")
+        if isinstance(rng, list) and len(rng) == 2 and isinstance(rng[0], int):
+            out["sort_year"] = rng[0]
+    return out
 
 
 def _extract_holder(metadata: Dict[str, Any]) -> str:
@@ -164,7 +186,7 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
 
     Entity 类型走单独的 build_entity_index_entry。
     其他类型（Book / Collection / Work）输出统一格式：
-      {id, title, type, path, [author, year, holder, dynasty, role,
+      {id, title, type, path, [author, era, sort_year, holder, dynasty, role,
        juan_count, measure_info, additional_titles, attached_texts,
        has_text, has_image, edition, subtype, period, loss_status,
        original_title, work_id, promoted_to]}
@@ -178,7 +200,7 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
 
     title = metadata.get("title", "未命名")
     author = _extract_first_author(metadata)
-    year = _extract_year(metadata)
+    dating = _extract_dating(metadata)
     holder = _extract_holder(metadata)
     juan_count = _extract_juan_count(metadata)
     measure_info = metadata.get("measure_info", "") or ""
@@ -196,8 +218,7 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
     }
     if author["name"]:
         entry["author"] = author["name"]
-    if year:
-        entry["year"] = year
+    entry.update(dating)  # era / sort_year，见 _extract_dating
     if holder:
         entry["holder"] = holder
     # dynasty：authors[0] 优先，顶层字段兜底。
