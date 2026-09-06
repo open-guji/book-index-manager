@@ -590,8 +590,11 @@ class BookIndexStorage:
                 rel_path = str(json_file.relative_to(root)).replace("\\", "/")
                 entry = self._build_index_entry(metadata, type_val, rel_path)
 
-                collated_dir = json_file.parent / id_str / "collated_edition"
-                if collated_dir.is_dir():
+                # 資產在 book-text，不在元資料倉。2026-08-26 文本拆分時這兩處
+                # 漏改，仍按 json_file.parent 找——拆分後那裡永遠是空的，
+                # 於是凡整理本已遷入 book-text 者，reindex 一跑 has_collated
+                # 就被抹掉，網站「整理本」頁籤隨之消失。改走 get_asset_dir()。
+                if (self.get_asset_dir(id_str) / "collated_edition").is_dir():
                     entry["has_collated"] = True
 
                 shard_num = 0 if type_key == "collections" else shard_of(id_str)
@@ -719,8 +722,8 @@ class BookIndexStorage:
                     metadata = self.load_metadata(json_file)
                     rel_path = str(json_file.relative_to(root)).replace("\\", "/")
                     entry = self._build_index_entry(metadata, type_val, rel_path)
-                    collated_dir = json_file.parent / id_str / "collated_edition"
-                    if collated_dir.is_dir():
+                    # 同上：資產一律在 book-text，見 reindex 處註釋
+                    if (self.get_asset_dir(id_str) / "collated_edition").is_dir():
                         entry["has_collated"] = True
                     added.append((id_str, entry))
                 except Exception as e:
