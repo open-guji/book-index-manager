@@ -59,7 +59,7 @@ const TYPE_EN2CN: Record<string, string> = {
     verification: '考证', prose: '书', reconstruction: '书',
     comment: '注释',
 };
-function normSectionType(t: unknown): string {
+export function normSectionType(t: unknown): string {
     if (typeof t !== 'string') return '';
     return TYPE_T2S[t] ?? TYPE_EN2CN[t] ?? t;
 }
@@ -219,8 +219,14 @@ const KAOZHEN_TYPE_COLORS: Record<string, string> = {
 // ── 子组件 ──
 
 /** 将文件名转为显示名 */
-function juanDisplayName(f: string): string {
-    const name = f.replace('.json', '');
+export function juanDisplayName(f: string): string {
+    /*
+     * 卷文件名有两种形态：扁平的 `juan001.json`，与带目录的 `juan/001.json`
+     * （漢書藝文志等即是后者）。原先只按前者剥前缀，`juan/001` 剥掉 `juan`
+     * 还剩 `/001`，读者看到的是「卷/001」——多一条斜杠。
+     * 统一把分隔符去掉再判断。
+     */
+    const name = f.replace('.json', '').replace(/[/\\]/g, '');
     if (name === 'fulu') return '附錄';
     if (name.startsWith('juanshou')) {
         const n = name.replace('juanshou', '');
@@ -526,7 +532,15 @@ function JuanNav({
 }
 
 function SectionTypeBadge({ type }: { type: string }) {
-    const color = SECTION_TYPE_COLORS[type] || 'var(--bim-desc-fg, #717171)';
+    /*
+     * 必须先归一。数据里的 section.type 自 2026-08 英文枚举迁移后是
+     * `category`/`book`/`preface`，而 SECTION_TYPE_COLORS 与本徽章的文案
+     * 都按中文（'类'/'书'/'序'）写的——直接拿原值，读者看到的就是一列
+     * 英文 `category`，颜色也全部落到灰色兜底。
+     * 漢書藝文志卷一（9 个 category 段）即是。
+     */
+    const label = normSectionType(type);
+    const color = SECTION_TYPE_COLORS[label] || 'var(--bim-desc-fg, #717171)';
     return (
         <span style={{
             display: 'inline-block',
@@ -539,7 +553,7 @@ function SectionTypeBadge({ type }: { type: string }) {
             background: `${color}08`,
             flexShrink: 0,
         }}>
-            {type}
+            {label}
         </span>
     );
 }
@@ -826,7 +840,7 @@ function CategoryHeader({ section, highlightQuery = '' }: { section: CollatedSec
                 <div style={{
                     marginTop: '8px',
                     padding: '10px 14px',
-                    borderLeft: `3px solid color-mix(in srgb, ${SECTION_TYPE_COLORS[section.type] || 'var(--bim-desc-fg, #717171)'} 25%, transparent)`,
+                    borderLeft: `3px solid color-mix(in srgb, ${SECTION_TYPE_COLORS[normSectionType(section.type)] || 'var(--bim-desc-fg, #717171)'} 25%, transparent)`,
                     borderRadius: '0 4px 4px 0',
                     background: 'var(--bim-bg, #fafafa)',
                 }}>
@@ -975,7 +989,8 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
     useEffect(() => {
         if (highlightQuery) setExpanded(true);
     }, [highlightQuery]);
-    const typeKey = section.type;
+    // 同 SectionTypeBadge：颜色表按中文写，type 是英文枚举，必须先归一
+    const typeKey = normSectionType(section.type);
     const typeColor = KAOZHEN_TYPE_COLORS[typeKey] || 'var(--bim-desc-fg, #717171)';
     const hasContent = !!section.content;
     const workIds = section.work_ids || [];

@@ -52,10 +52,19 @@ export interface WorkPageProps {
     renderLink?: RenderLink;
     /** 版本传承入口（由 layout 注入，渲染在版本区块头右侧） */
     lineageAction?: React.ReactNode;
+    /**
+     * 整理本区块（由 layout 注入，渲染在 intro 与「相關版本」之间）。
+     *
+     * 整理本是本站自己做的成果、点进去就能读全文，是这一页唯一的**终点内容**；
+     * 其余区块（相關版本、在線數字資源）都是指向别处的外链。此前它只在顶部
+     * 次级导航里有个 tab，正文一字不提——把唯一的终点内容藏在页签里，
+     * 读者一路读下去根本不知道有。
+     */
+    collatedSection?: React.ReactNode;
 }
 
 export const WorkPage: React.FC<WorkPageProps> = ({
-    data, transport, onNavigate, renderLink, lineageAction,
+    data, transport, onNavigate, renderLink, lineageAction, collatedSection,
 }) => {
     const t = useT();
     const { convert } = useConvert();
@@ -187,8 +196,9 @@ export const WorkPage: React.FC<WorkPageProps> = ({
         return out;
     }, [data, convert, t, table.allRows, needAll, versionIds.length]);
 
-    /** 整页无内容：header 之外什么都渲染不出来 */
-    const isEmpty = versionIds.length === 0
+    /** 整页无内容：header 之外什么都渲染不出来（有整理本就不算空） */
+    const isEmpty = !collatedSection
+        && versionIds.length === 0
         && resources.buckets.length === 0 && resources.mirrors.length === 0
         && !data.indexed_by?.length && !data.emendated_by?.length
         && relatedGroups.length === 0
@@ -246,6 +256,9 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                     },
                 ]} />
             </IntroGrid>
+
+            {/* ── 整理本：排在外链诸区块之前，见 collatedSection 注释 ── */}
+            {collatedSection}
 
             {/* ── 相關版本 ── */}
             {versionIds.length > 0 && (

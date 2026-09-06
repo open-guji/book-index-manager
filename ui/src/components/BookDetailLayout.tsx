@@ -25,7 +25,7 @@ import type {
 } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { CollectionCatalog } from './CollectionCatalog';
-import { CollatedEdition } from './CollatedEdition';
+import { CollatedEdition, juanDisplayName } from './CollatedEdition';
 import { BookFullText } from './BookFullText';
 import { VersionLineageView } from './VersionLineageView';
 import { buildLineageGraph } from '../core/lineage-graph';
@@ -38,6 +38,7 @@ import { extractStatus } from '../id';
 import {
     PageFrame, TopStrip, Breadcrumb, DetailHeader, DetailFooter,
     GlyphBadge, FilterChip, DETAIL_CSS,
+    Section, SectionHead, Chip, ChipWall, MoreButton,
     type RenderLink, type CrumbItem,
 } from './detail/primitives';
 import { WorkPage } from './detail/WorkPage';
@@ -501,6 +502,14 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     transport={transport}
                     onNavigate={onNavigate}
                     renderLink={renderLink}
+                    collatedSection={
+                        collatedIndex && (collatedIndex.juan_files?.length ?? 0) > 0 ? (
+                            <CollatedSection
+                                files={collatedIndex.juan_files!}
+                                onOpen={(f) => { setActiveJuan(f); onTabChange('collated'); }}
+                            />
+                        ) : null
+                    }
                     lineageAction={
                         lineageGraph && lineageGraph.nodes.length > 0 ? (
                             <button
@@ -823,3 +832,63 @@ function IdWithCopy({ id, label, copied: copiedLabel }: {
 }
 
 export { DETAIL_CSS };
+
+
+/** 首屏展示的卷数上限；整理本动辄数十卷（補南北史藝文志 97 卷），全铺会占很长一屏 */
+const COLLATED_JUAN_CAP = 24;
+
+/**
+ * 作品页正文里的整理本入口。
+ *
+ * 整理本是本站自己做的成果、点进去就能读全文，是作品页唯一的**终点内容**；
+ * 其余区块都是指向外部影像站/馆藏的链接。此前它只在顶部次级导航里有个 tab，
+ * 正文一字不提，读者一路往下读根本不知道有。
+ *
+ * 点卷号直接切到 collated tab 并定位该卷，与 tab 内的导航同一套状态，
+ * URL 形态也一致（?tab=collated&juan=…），不额外引入路由。
+ */
+function CollatedSection({ files, onOpen }: {
+    files: string[];
+    onOpen: (file: string) => void;
+}) {
+    const t = useT();
+    const { convert } = useConvert();
+    const [showAll, setShowAll] = useState(false);
+    const visible = showAll ? files : files.slice(0, COLLATED_JUAN_CAP);
+    return (
+        <Section>
+            <SectionHead
+                glyph="整"
+                tone="ink"
+                title={convert(t.detailTab.collatedEdition)}
+                count={`${files.length} ${convert(t.unit.juan)}`}
+                actions={
+                    <button
+                        type="button"
+                        onClick={() => onOpen(files[0])}
+                        className="bim-d-ui"
+                        style={{
+                            background: 'none', border: 'none', padding: '2px 0',
+                            cursor: 'pointer', fontFamily: 'inherit', fontSize: 12,
+                            color: 'var(--bim-accent, #9c3a2c)',
+                            borderBottom: '1px solid var(--bim-rule, #d6c9ae)',
+                        }}
+                    >
+                        {convert('閲讀全文')} →
+                    </button>
+                }
+            />
+            <ChipWall>
+                {visible.map(f => (
+                    <Chip key={f} onClick={() => onOpen(f)}>{convert(juanDisplayName(f))}</Chip>
+                ))}
+            </ChipWall>
+            {files.length > visible.length && (
+                <MoreButton
+                    label={`${convert('展開全部')} ${files.length} ${convert(t.unit.juan)}`}
+                    onClick={() => setShowAll(true)}
+                />
+            )}
+        </Section>
+    );
+}
