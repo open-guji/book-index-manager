@@ -484,7 +484,9 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             title: convert(detail.title),
             subtitle: [measure, authorLine].filter(Boolean).join(' · ') || undefined,
             aside: [
-                (detail as { subtype?: string }).subtype,
+                // subtype 是英文枚举（article/poem/chapter/book），直出会在标题旁
+                // 露出一个 `chapter`。全库 2,980 条 Work 有此字段。
+                workSubtypeLabel(t, (detail as { subtype?: string }).subtype),
                 isDraft ? t.status.draft : '',
             ].filter(Boolean).join(' · ') || undefined,
             secondLine: undefined,
@@ -833,6 +835,12 @@ function IdWithCopy({ id, label, copied: copiedLabel }: {
 
 export { DETAIL_CSS };
 
+
+/** Work.subtype 英文枚举 → 中文；未知值原样返回（宁可露出也不吞掉） */
+function workSubtypeLabel(t: ReturnType<typeof useT>, subtype?: string): string {
+    if (!subtype) return '';
+    return (t.workSubtype as Record<string, string>)[subtype] ?? subtype;
+}
 
 /** 首屏展示的卷数上限；整理本动辄数十卷（補南北史藝文志 97 卷），全铺会占很长一屏 */
 const COLLATED_JUAN_CAP = 24;

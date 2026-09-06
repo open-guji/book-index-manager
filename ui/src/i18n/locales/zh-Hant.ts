@@ -281,6 +281,7 @@ export const zhHant: LocaleMessages = {
         bu: '部',
         items: '條',
     },
+    workSubtype: { book: '書', article: '篇', poem: '詩', chapter: '篇章' },
     colorMode: { bw: '黑白', color: '彩色' },
     misc: {
         noResources: '暫無資源信息',
