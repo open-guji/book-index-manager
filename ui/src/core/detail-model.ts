@@ -482,6 +482,30 @@ export function deriveYear(book: EraInferable): number | undefined {
 export function deriveYearRange(book: EraInferable): YearRange | undefined {
     const r = book.dating?.year_range;
     if (r && r.length === 2) return { from: r[0], to: r[1] };
+
+    /*
+     * 人工著录的 lineage.year_range 直接用——录入者已经判过了。
+     * 水滸「文盛堂藏板」就带着 [1640, 1750]，此前被无视，
+     * 转而拿 lineage.year=1700 当确切年份，再配上「明」，1700 早过了 1644。
+     */
+    const lr = book.lineage?.year_range;
+    if (lr && lr.length === 2) return { from: lr[0], to: lr[1] };
+
+    /*
+     * year_text 是跨代/模糊表述（「明末清初」「宋元間」「約明中葉」）时，
+     * 给区间而不是确切年。录入者在 year 里填的是代表值（1650）或中点（1700），
+     * 不是考定的确切年份，当成确切年会和朝代打架。
+     */
+    const yt = book.lineage?.year_text;
+    if (yt) {
+        const cross = yt.match(/([宋元明清])\s*末\s*([宋元明清])\s*初/);
+        if (cross) {
+            const a = ERA_END_YEAR[normalizeEra(cross[1])];
+            const b = ERA_START_YEAR[normalizeEra(cross[2])];
+            if (a != null && b != null) return { from: Math.min(a, b) - 20, to: Math.max(a, b) + 40 };
+        }
+    }
+
     const texts = [book.edition, book.title].filter(Boolean) as string[];
     for (const text of texts) {
         if (!/[間间]/.test(text)) continue;
@@ -659,7 +683,36 @@ export function deriveDating(book: EraInferable): DerivedDating | undefined {
      * 这类一律走 yearRange。
      */
     const isRange = /[間间]/.test(text);
-    const year = isRange ? undefined : deriveYear(book);
+
+    /*
+     * lineage.year_text 是跨代/模糊表述时，lineage.year 不是考定的确切年份，
+     * 而是录入者填的代表值或区间中点——不能当确切年用。
+     *
+     * 水滸「慕尼黑藏本」year_text=「明末清初（推定）」、year=1650：era 取到「明」，
+     * year 取 1650 尚可；但「文盛堂藏板」year=1700 配「明」就越界了（明止 1644）。
+     * 这类一律退到区间。
+     */
+    const ltext = book.lineage?.year_text ?? '';
+    const lineageVague = /末[宋元明清]初|[約约]|推定|前後|前后|左右/.test(ltext);
+
+    /*
+     * 「原刻…補印/補修」：主体是**原刻**，补印是后事。
+     *
+     * 石渠閣補印本 year_text=「明萬曆十七年（1589）原刻、清康熙五年（1666）石渠閣補印」，
+     * 而 lineage.year=1666 记的是补印年。deriveEra 从文本抓第一个朝代得「明萬曆」，
+     * deriveYear 取 1666，拼成「明萬曆 1666」——萬曆 1573–1620 装不下。
+     * 与题名侧「清光緒…修民國九年排印本」是同一个错，此前只在 edition 路径修过。
+     */
+    const reprint = ltext.match(/([宋元明清])[^、，,]*?[（(](\d{3,4})[）)][^、，,]*?原刻/);
+
+    let year: number | undefined;
+    if (isRange || lineageVague) {
+        year = undefined;
+    } else if (reprint) {
+        year = parseInt(reprint[2], 10);   // 取原刻年，不取补印年
+    } else {
+        year = deriveYear(book);
+    }
     const range = year == null ? deriveYearRange(book) : undefined;
 
     // ── 可信度 ──
@@ -692,8 +745,14 @@ export function deriveDating(book: EraInferable): DerivedDating | undefined {
         basis,
     };
 
+    // ── 后修：lineage 的「原刻…補印」──
+    if (reprint) {
+        const repEra = ltext.match(/[、，,]\s*([宋元明清])/);
+        if (repEra && repEra[1] !== out.era) out.laterRepair = { era: repEra[1] };
+    }
+
     // ── 后修（方向：主体在前）──
-    if (REPAIR_PATTERN.test(text)) {
+    if (!out.laterRepair && REPAIR_PATTERN.test(text)) {
         const rep = text.match(/([宋元明清])\s*(?:初|末)?\s*(?:修補|修补|遞修|递修|修)/);
         if (rep && rep[1] !== era.era) out.laterRepair = { era: rep[1] };
     }
@@ -727,8 +786,16 @@ export function deriveDating(book: EraInferable): DerivedDating | undefined {
 /** 朝代终止年，供「某某間」取区间上界 */
 const ERA_END_YEAR: Record<string, number> = {
     漢: 220, 三國: 280, 晉: 420, 南北朝: 589, 隋: 618, 唐: 907, 五代: 960,
-    宋: 1279, 遼: 1125, 西夏: 1227, 金: 1234, 元: 1368, 明: 1644, 清: 1911,
-    民國: 1949,
+    宋: 1279, 遼: 1125, 西夏: 1227, 金: 1234, 元: 1368,
+    /*
+     * 明延至 1662：南明（弘光/隆武/永曆）归一到「明」，刻本确实有
+     * 「明弘光元年」(1645)、「南明隆武二年」(1646)。止于 1644 会误判为越界。
+     * 民國止于 1975：臺灣續用民國紀年，1955/1959/1969/1973 年的印本都是真的，
+     * 1949 会误判为越界。取 1975 而非一个哨兵大数——这个值会直接进 year_range
+     * 显示给读者（「民國間影印本」→ 1912–2100 是没法看的）。
+     */
+    明: 1662, 清: 1911,
+    民國: 1975,
     日本: 1912, 朝鮮: 1897, 高麗: 1392, 越南: 1945, 琉球: 1879,
 };
 
