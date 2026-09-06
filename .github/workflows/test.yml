@@ -4,7 +4,9 @@ name: Tests
 # 不用 push 因为 sheldonlidev 被 shadow ban
 on:
   pull_request:
-    branches: [dev, master]
+    # 主分支 2026-09-05 由 master 改名 main。`master` 暫留於此，
+    # 待該分支刪除後即可從本列表移除。
+    branches: [main, master, dev]
   workflow_dispatch:
   schedule:
     - cron: '0 3 * * *'  # 03:00 UTC 错开 web 项目
