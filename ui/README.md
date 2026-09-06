@@ -25,7 +25,12 @@ import 'book-index-ui/styles'                // CSS（用到组件时引入）
 |---|---|
 | `IndexBrowser` | 完整索引浏览器：搜索框 + 分类 tab + 推荐 + 最近浏览 |
 | `IndexView` | 单条目详情视图（基于 ID 拉数据 + 渲染） |
-| `IndexDetail` | 详情视图的纯渲染（已有 detailData 时用） |
+| `IndexDetail` | **旧版**详情纯渲染（2026-09 重构前，仍导出以兼容） |
+| `BookDetailLayout` | 详情页外壳：Tab（基本信息/整理本/全文/反馈）+ 路由到下面四个 Page；kaiyuanguji-web 用它 |
+| `WorkPage` / `BookPage` / `CollectionPage` / `EntityPage` | **现行详情页**（2026-09 版式重构）：作品 / 版本 / 丛编 / 人物 |
+| `primitives`（`PageFrame`、`SectionHead`、`DataTable`、`Chip` …） | 四个 Page 共用的版式原语与 `DETAIL_CSS` |
+| `deriveEra` / `deriveDating` / `buildVersionTable` … | `core/detail-model.ts` 的数据派生层（刊刻年代、角色归一、版本表） |
+| `BookFullText` / `WorkCatalog` | Book 全文 tab / 作品目录 |
 | `IndexEditor` | 详情编辑器（写入需 storage 实现 saveItem） |
 | `HomePage` | 首页：推荐丛编 + 经典作品（kaiyuanguji-web 用） |
 | `CollatedEdition` | 整理本（collated_edition）阅读 + 全文搜索 |

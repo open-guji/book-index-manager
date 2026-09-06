@@ -2,6 +2,11 @@
 
 古籍索引数据的存储、读写、校验与迁移工具。提供 Python 和 TypeScript 两套库，接口完全对齐。
 
+- `book_index_manager/`：Python 包，`book-index` CLI（reindex / promote / check-index …）
+- `ui/`：npm 包 **`book-index-ui`**——网站索引页的全部 React 组件（详情页在 `ui/src/components/detail/`），见 [ui/README.md](ui/README.md)
+
+网站、部署、数据仓三者的全貌见 overview 仓 `项目进展/古籍索引网站/2026-09-网站交接手册.html`（[线上版](https://claude.ai/code/artifact/0b4a9456-eaf9-4f4c-9e2d-72bba9f4e5c8)）。
+
 ## 设计文档
 
 - **ID Schema 规范**：[设计文档/古籍索引/索引ID.md](D:/workspace/overview/设计文档/古籍索引/索引ID.md)（Snowflake 位布局、type 枚举、base36 编码、合法性约束、迁移历史）
@@ -19,8 +24,10 @@ npm install book-index-ui  # TypeScript
 ```
 BookIndexManager (Facade API)
   └── Storage (多后端)
-        ├── LocalStorage   — 本地文件系统
-        └── GithubStorage  — GitHub 只读 (CDN fallback)
+        ├── LocalStorage    — 本地文件系统（Python / Node / VS Code 扩展）
+        ├── GithubStorage   — GitHub 只读 + jsDelivr CDN fallback（浏览器）
+        ├── BundleStorage   — 同域预打包 JSON（kaiyuanguji-web 生产：COS current/ + v/{commit}/search/）
+        └── DevApiStorage   — Vite dev 中间件 /api/*（仅 ui/ 的本地测试页，不导出）
 ```
 
 ## 模块对照
@@ -64,11 +71,21 @@ book-index draft "书名" --type work --root <path>
 book-index save - --root <path>
 book-index update --bid <ID> --key title --value "新标题" --root <path>
 book-index delete --bid <ID> --root <path>
-book-index reindex --root <path> --target all
+book-index reindex --root <path> --target all        # 全量重写 index/，能清孤儿；改了 extractor 后必跑
+book-index shadow-reindex --root <path> --target all # 增量：只补 item 有、index 无的，不删孤儿（日常用）
+book-index check-index --root <path> --target official
+book-index promote <draft-id>... --root <path> [--dry-run]   # draft → production 升格（换新 ID、写 tombstone、维护 promotions.json）
+book-index validate-promotions --root <path>
+book-index validate-lineage --root <path> [--work-id <ID>]
+book-index add-resource --bid <ID> --name ... --url ... --type text|image --root <path>
+book-index get-config --root <path>
 book-index parse-id <ID>
 book-index migrate --root <path> --target draft
 book-index init-asset --bid <ID> --root <path>
 ```
+
+`--root` 指 **workspace 父目录**（如 `D:/workspace`），三个数据仓在其下；传成某个仓会静默报 Item not found。
+含中文的 metadata 走 Python API 写入，别经 CLI 参数（Windows 控制台编码）。
 
 ## 用法
 
@@ -95,14 +112,19 @@ import { BookIndexManager, GithubStorage } from 'book-index-ui/storage'
 
 ```
 {workspace}/
-├── book-index/          # Official
-│   ├── Book/{c1}/{c2}/{c3}/{ID}-{名称}.json
-│   ├── Book/{c1}/{c2}/{c3}/{ID}/              # 资源目录 (可选)
-│   ├── Collection/...
-│   ├── Work/...
-│   └── index.json
-└── book-index-draft/    # Draft (同上)
+├── book-index/          # Official：只存元数据
+│   ├── Work|Book|Collection|Entity/{c1}/{c2}/{c3}/{ID}-{名称}.json
+│   ├── index/{works,books,entities}/{0-f}.json + index/collections.json   # 真正的索引
+│   └── index.json       # 废弃残留，勿读
+├── book-index-draft/    # Draft：同上 + promotions.json
+└── book-text/           # 文本资产（2026-08-26 拆出）：整理本 / 辑佚 / 全文
+    └── Work/{c1}/{c2}/{c3}/{ID}/collated_edition/{index.json, juan/NNN.json, text/*.md}
 ```
+
+- `{c1}/{c2}/{c3}` 取 ID **尾**三字符（2026-08-25 起），三仓共用 `storage.shard_dirs()`；由 id 推路径一律经它，勿自拼。
+- ID 为 Snowflake + **base36**（base58 只保留兼容解码）。
+- 两个元数据仓之下**再无资产目录**：`get_asset_dir()` 指向 book-text。写进元数据仓的整理本网站打包器不收、线上 404。
+- 索引条目由 Python `entry_extractor.py` 与 TS `ui/src/core/storage.ts` 各写一份，**加字段两侧必须同步**，否则 reindex 会把字段抹掉。
 
 ## 许可
 

@@ -1,5 +1,11 @@
 # book-index-ui 组件设计
 
+> **⚠ 2026-09-06 警示：本文描述的是 2026-09 版式重构之前的架构。** 现行详情页不再是 `IndexDetail`，而是
+> `src/components/detail/` 的 `WorkPage` / `BookPage` / `CollectionPage` / `EntityPage` + `primitives.tsx`（版式原语）+
+> `src/core/detail-model.ts`（数据派生），外壳为 `BookDetailLayout`（单栏 1000px 文档流，不再固定高度内滚动）。
+> 文末「kaiyuanguji-web 应迁移为 IndexDetail」的待办已被该重构取代。仍有效的部分：「设计原则」与 `--bim-*` CSS 变量约定。
+> 现行设计记录见 overview 仓 `项目进展/古籍索引网站/整体设计/2026-09-详情页重构方案.md`。
+
 ## 设计原则
 
 book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、布局和导航。组件本身不负责路由、Tab 切换、页面框架等外层逻辑。
