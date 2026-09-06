@@ -6,6 +6,7 @@ import { useConvert } from '../i18n';
 import { LoadingDots } from './common/LoadingDots';
 import { Tooltip } from './common/Tooltip';
 import { useBidUrl } from '../core/bid-url';
+import { renderInterlinear } from './detail/primitives';
 
 export interface CollatedEditionProps {
     /** 直接传入卷列表索引 */
@@ -560,8 +561,8 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
     const normalizer = useSearchNormalizer();
     const hl = (s: string | undefined | null): React.ReactNode => {
         if (!s) return '';
-        const c = convert(s);
-        return highlightQuery ? renderHighlighted(c, highlightQuery, normalizer) : c;
+        return renderInterlinear(convert(s), (seg) =>
+            highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
     };
     const [expanded, setExpanded] = useState(false);
     const hasSummary = !!section.summary;
@@ -785,8 +786,8 @@ function CategoryHeader({ section, highlightQuery = '' }: { section: CollatedSec
     const normalizer = useSearchNormalizer();
     const hl = (s: string | undefined | null): React.ReactNode => {
         if (!s) return '';
-        const c = convert(s);
-        return highlightQuery ? renderHighlighted(c, highlightQuery, normalizer) : c;
+        return renderInterlinear(convert(s), (seg) =>
+            highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
     };
     const [expanded, setExpanded] = useState(false);
     const hasContent = !!section.content;
@@ -967,8 +968,8 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
     const normalizer = useSearchNormalizer();
     const hl = (s: string | undefined | null): React.ReactNode => {
         if (!s) return '';
-        const c = convert(s);
-        return highlightQuery ? renderHighlighted(c, highlightQuery, normalizer) : c;
+        return renderInterlinear(convert(s), (seg) =>
+            highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
     };
     const [expanded, setExpanded] = useState(false);
     useEffect(() => {
@@ -1250,8 +1251,8 @@ function MdTextView({ text, highlightQuery = '' }: { text: string; highlightQuer
     const { convert } = useConvert();
     const normalizer = useSearchNormalizer();
     const hl = (s: string): React.ReactNode => {
-        const c = convert(s);
-        return highlightQuery ? renderHighlighted(c, highlightQuery, normalizer) : c;
+        return renderInterlinear(convert(s), (seg) =>
+            highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
     };
     const lines = text.split('\n');
     return (
@@ -1293,8 +1294,8 @@ function RawTextView({ sections, onNavigate, highlightQuery = '' }: { sections: 
     const normalizer = useSearchNormalizer();
     const hl = (s: string | undefined | null): React.ReactNode => {
         if (!s) return '';
-        const c = convert(s);
-        return highlightQuery ? renderHighlighted(c, highlightQuery, normalizer) : c;
+        return renderInterlinear(convert(s), (seg) =>
+            highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
     };
     // Group sections by 类
     const groups: { category: string; categoryContent?: string; items: CollatedSection[] }[] = [];

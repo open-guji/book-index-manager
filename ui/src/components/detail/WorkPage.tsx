@@ -21,7 +21,7 @@ import {
     Section, SectionHead, IntroGrid, FactList, DataTable, TableHead, TableRow,
     Chip, ChipWall, MoreButton, FilterChip, TextButton, ExpandRow, Quote,
     ResourceGroup, ResourceLine, TagRows, flattenTitles, BidLink, ExtLink,
-    Dash, EmptyNote, rowNo,
+    Dash, EmptyNote, rowNo, renderInterlinear,
     type FactItem, type RenderLink, type TableSpec,
 } from './primitives';
 import {
@@ -610,10 +610,10 @@ function AnnotationBlock({
                                     {e.edition && <span>{t.label.edition} {convert(e.edition)}</span>}
                                 </div>
                             )}
-                            {e.summary && <Quote>{convert(e.summary)}</Quote>}
-                            {e.comment && <Quote label={t.section.comment}>{convert(e.comment)}</Quote>}
+                            {e.summary && <Quote>{renderInterlinear(convert(e.summary))}</Quote>}
+                            {e.comment && <Quote label={t.section.comment}>{renderInterlinear(convert(e.comment))}</Quote>}
                             {e.additional_comment && (
-                                <Quote label={t.section.additionalComment}>{convert(e.additional_comment)}</Quote>
+                                <Quote label={t.section.additionalComment}>{renderInterlinear(convert(e.additional_comment))}</Quote>
                             )}
                             {showMeta && e.page && (
                                 <div className="bim-d-ui" style={{

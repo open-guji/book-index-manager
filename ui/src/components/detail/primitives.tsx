@@ -676,6 +676,57 @@ export function ExpandRow({ open, onToggle, main, action, children }: {
     );
 }
 
+/**
+ * 夾注渲染：把 `⟨…⟩` 之內作小字淡色，如古籍排印之小字雙行。
+ *
+ * 本庫整理本以 `⟨…⟩` 標夾注（見 collate-bibliography SKILL），2026-09-05
+ * 已將《宋史藝文志》之 `（（…））` 與《書目答問》之 `{{…}}` 一併歸此。
+ * 在此之前網站是**直出標記**的——《史記》頁上「書目答問」條顯示成
+ * `…一百三十卷。{{武昌局本，間有依明柯校汪刻本者…}}`。
+ *
+ * 不留尖括號：小字加淡色已足以別於正文，此亦 ctext 等古籍站之通例；
+ * 留著反而在正文裡多兩個現代符號。
+ *
+ * `renderText` 供呼叫處插入自己的加工（整理本要在注文內外都能檢索高亮），
+ * 預設原樣返回。**注文與正文分段各過一次 renderText**，故高亮在注裡也管用。
+ */
+export function renderInterlinear(
+    text: string | null | undefined,
+    renderText: (s: string) => React.ReactNode = (s) => s,
+): React.ReactNode {
+    if (!text) return '';
+    if (text.indexOf('\u27e8') < 0) return renderText(text);
+    const out: React.ReactNode[] = [];
+    const re = /\u27e8([^\u27e9]*)\u27e9/g;
+    let last = 0;
+    let k = 0;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text)) !== null) {
+        if (m.index > last) {
+            out.push(<React.Fragment key={k++}>{renderText(text.slice(last, m.index))}</React.Fragment>);
+        }
+        out.push(
+            <span
+                key={k++}
+                className="bim-jiazhu"
+                style={{
+                    fontSize: '.78em',
+                    color: 'var(--bim-meta-fg, #7b6a54)',
+                    // 注文常長，`.78em` 之後行距若不收，段落會被撐得參差
+                    lineHeight: 1.55,
+                }}
+            >
+                {renderText(m[1])}
+            </span>,
+        );
+        last = m.index + m[0].length;
+    }
+    if (last < text.length) {
+        out.push(<React.Fragment key={k++}>{renderText(text.slice(last))}</React.Fragment>);
+    }
+    return out;
+}
+
 /** 展开区里的引文块（提要 / 按语 / 附按） */
 export function Quote({ label, children }: { label?: string; children: React.ReactNode }) {
     return (
