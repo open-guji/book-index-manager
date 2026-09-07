@@ -1,122 +1,88 @@
 # book-index-ui 组件设计
 
-> **⚠ 2026-09-06 警示：本文描述的是 2026-09 版式重构之前的架构。** 现行详情页不再是 `IndexDetail`，而是
-> `src/components/detail/` 的 `WorkPage` / `BookPage` / `CollectionPage` / `EntityPage` + `primitives.tsx`（版式原语）+
-> `src/core/detail-model.ts`（数据派生），外壳为 `BookDetailLayout`（单栏 1000px 文档流，不再固定高度内滚动）。
-> 文末「kaiyuanguji-web 应迁移为 IndexDetail」的待办已被该重构取代。仍有效的部分：「设计原则」与 `--bim-*` CSS 变量约定。
-> 现行设计记录见 overview 仓 `项目进展/古籍索引网站/整体设计/2026-09-详情页重构方案.md`。
+> 2026-09-06 按版式重构（2026-09）后的现状重写。重构前以 `IndexDetail` 为中心的版本见 git 历史。
+> 重构本身的设计记录：overview 仓 `项目进展/古籍索引网站/整体设计/2026-09-详情页重构方案.md`。
 
 ## 设计原则
 
-book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、布局和导航。组件本身不负责路由、Tab 切换、页面框架等外层逻辑。
+book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、布局和导航。组件本身不负责路由、URL、数据源选择等外层逻辑；
+数据一律经 `IndexStorage` 接口取得，组件不直接发网络请求。
 
-## 核心组件
+## 组件分层
 
-### 1. IndexDetail — 索引基本信息页（只读）
+### 页面级
 
-显示一个索引条目（Book / Work / Collection）的完整详情。
+| 组件 | 职责 |
+|---|---|
+| `BookDetailLayout` | 条目详情页外壳：顶条（面包屑、繁简切换、反馈入口）、标题区、次级导航 Tab（概览 / 整理本 / 全文 / 版本传承 / 丛编目录 / 反馈）、页脚。按 `detail.type` 路由到下面四个 Page，并把跨 Tab 的入口注入进去（`lineageAction`、`collatedSection`）。单栏 1000px 文档流，不固定高度、不内滚动 |
+| `IndexBrowser` | 列表页：搜索框 + 分类 Tab + 推荐 + 最近浏览（`localStorage` 键 `bim-recent-ids`）。Book 行同时显示撰人朝代 `dynasty` 与刊刻朝代 `era` |
+| `HomePage` | 首页：推荐丛编、经典作品、资源导入进度、反馈列表 |
+| `IndexApp` | 内置左浏览 / 右详情布局的整页应用，测试页与 VS Code 扩展直接用 |
 
-**职责：**
-- 标题、类型徽章、ID、状态
-- 作者、年代、卷数等元数据
-- 简介 / 提要
-- 附录内容（`additional_works`）：标题 + 卷数，纯展示
-- 相关作品（`related_works`）：按 relation 分组（所属 / 包含 / 相关），可点击跳转
-- 收录信息（`indexed_by`）
-- 资源链接（`resources`）
-- 流转历史（Book）/ 历史沿革（Collection）
-- 相关版本（Book.related_books / Work.books）
-- 所属作品卡片（Book → Work）
-- 收录于（Book → Collection）
+### 详情页（`src/components/detail/`）
 
-**不负责：** 页面布局、Tab 切换、返回按钮、数字化视图等。
+四张页面共用一套版式原语，区块之间只用 1px / 2px 直线分隔，无卡片、无圆角、无阴影：
 
-### 2. IndexEditor — 索引编辑器
+| 组件 | 区块顺序 |
+|---|---|
+| `WorkPage` | header → intro（简介 / 别名 / 附录）→ **整理本入口**（由 layout 注入）→ 相關版本 → 在線數字資源 → 歷代書目收錄 ‖ 歷代考證 → 續書與評註 → 相關作品 |
+| `BookPage` | header → intro（多数只剩 facts）→ 收入叢編 → 所屬作品 ‖ 影印與全文 → 同作品其他版本 |
+| `CollectionPage` | header → intro → 收錄書籍（目录档 → `contained_works` → `books[]` 三来源降序）→ 影印與全文 ‖ 包含作品 |
+| `EntityPage` | header → intro（别名 + 简介 + facts）→ 相關作品 |
+| `primitives.tsx` | `PageFrame` `TopStrip` `Breadcrumb` `DetailHeader` `IntroGrid` `FactList` `SectionHead` `DataTable` `TableRow` `ExpandRow` `Chip` `ChipWall` `ResourceGroup` `ResourceRow` `VolumeLinks` `TagRows` … 以及全部样式 `DETAIL_CSS`。所有承载文字的原语内部调用 `useConvert()` 做繁简 |
 
-编辑一个索引条目的元数据。是 IndexDetail 的编辑对应版。
+**数据派生层**在 `src/core/detail-model.ts`（无 React，可单测）：刊刻年代 `deriveEra` / `deriveYear` / `deriveDating` / `sortYear`（先读落盘的 `Book.dating`，读不到才回退到题名推断）、角色归一 `normalizeRole` / `roleFacets`、版本表 `buildVersionTable`、资源分桶 `bucketResources`、关联作品分组 `groupRelatedWorks`、丛编表 `buildCollectionTable`。资源纯函数在 `src/core/resources.ts`，传承图合成在 `src/core/lineage-graph.ts`。
 
-### 3. IndexBrowser — 搜索与索引列表
+### 阅读器与其他
 
-搜索、过滤、分页浏览索引条目列表。
-
-### 4. CollectionCatalog — 丛编目录
-
-显示丛编的完整书目结构。
-
-### 5. CollatedEdition — 作品整理本
-
-显示作品的整理本（校勘版）内容。
+| 组件 | 职责 |
+|---|---|
+| `CollatedEdition` | 整理本阅读器：卷导航、目录 / 原文切换、全文搜索、文本质量徽章。`section.type` 是英文枚举，显示前一律经 `normSectionType()`；卷文件名经 `juanDisplayName()`（兼容 `juan001.json` 与 `juan/001.json`） |
+| `BookFullText` | Book 全文 Tab（读 book-text 的 `Book/…/full_text/`） |
+| `VersionLineageView` / `Graph` / `List` | 版本传承图：Graph 用 dagre + xyflow（可选依赖），List 是无图依赖的降级 |
+| `CollectionCatalog` / `WorkCatalog` | 丛编目录（按册 / 卷分组）/ 作品目录 |
+| `IndexEditor` 及 `Resource*` / `SourceEditor` / `RelationPanel` / `Entity*` 对话框 | 编辑态，VS Code 扩展用；网站不用 |
+| `IndexDetail` / `IndexView` | **重构前的详情组件**，仍导出以兼容 guji-platform；新功能不要加在这里 |
 
 ## 消费者
 
-### kaiyuanguji-web（Next.js 网站）
+### kaiyuanguji-web（Next.js 静态站）
 
-负责：
-- 页面路由（`/book-index/[id]`）
-- LayoutWrapper、Tab 切换（基本信息 / 数字化）
-- 返回按钮、数据源切换
-- DigitalizationView（数字化视图，网站特有）
-- 使用 `GithubStorage` 作为数据传输层
-
-组合方式：
-```tsx
-<LayoutWrapper>
-  <导航栏 />
-  <Tab 基本信息>
-    <IndexDetail data={detail} renderLink={...} />
-    <CollectionCatalog ... />  {/* 如果是丛编 */}
-  </Tab>
-  <Tab 数字化>
-    <DigitalizationView ... />  {/* 网站特有 */}
-  </Tab>
-</LayoutWrapper>
-```
+- `app/book-index/page.tsx` 装配 `IndexBrowser` / `HomePage`，选数据源、初始化搜索、管 URL 参数
+- `components/book-index/BookDetailContent.tsx` 用 `BookDetailLayout`，注入本站专属块：`footerExtra={<CitationBar/>}`、`extraTabs`（反馈、数字化视图）
+- 数据传输层：生产是 `cos-storage.ts` 对 `BundleStorage` 的包装（条目走 `current/entry/{id}.json`，搜索分片走 `v/{commit}/search/`）；dev 是 `LocalApiStorage`
+- 搜索不走本包：网站自己的 `lib/search/`（Meilisearch L1 + Web Worker L2）
 
 ### guji-platform（VS Code 扩展）
 
-负责：
-- WebView 面板管理
-- VS Code 风格的 Tab / 侧边栏布局
-- 编辑功能集成（IndexEditor）
-- 使用 `VscodeStorage`（通过 postMessage 桥接）作为数据传输层
+`IndexBrowser` + `IndexView` / `IndexEditor` + `CollatedEdition`，数据经 `VscodeStorage`（postMessage 桥接到 Node）。
 
-组合方式：
-```tsx
-<VSCode面板>
-  <IndexBrowser onSelect={...} />    {/* 左侧栏 */}
-  <IndexDetail data={...} />          {/* 右侧详情 */}
-  <IndexEditor data={...} />          {/* 编辑模式 */}
-  <CollatedEdition ... />             {/* 整理本标签页 */}
-</VSCode面板>
-```
+### 测试页（`src/app/main.tsx`，`npm run dev` → :5173）
 
-### book-index-ui 测试应用（Vite dev server）
+`DevApiStorage` 经 Vite 中间件 `/api/*` 直读 `D:/workspace` 下的 book-index / book-index-draft / book-text（`vite.config.ts` 写死了这个根）。三仓不在那里则页面空白。
 
-负责：
-- 开发调试用的完整页面
-- URL 路由
-- 使用 `DevApiStorage` 作为数据传输层
-
-组合方式：
-```tsx
-<IndexApp>  {/* 内置布局：左侧浏览 + 右侧详情/编辑 */}
-```
-
-## 数据传输层（IndexStorage）
-
-组件通过 `IndexStorage` 接口获取数据，不直接依赖网络请求。消费者负责提供合适的实现：
+## 数据传输层（`IndexStorage`）
 
 | 消费者 | 实现 | 说明 |
-|--------|------|------|
-| kaiyuanguji-web | `GithubStorage` | 只读，从 GitHub CDN 获取 |
-| guji-platform | `VscodeStorage` | 通过 postMessage 桥接到 Node.js |
-| 测试应用 | `DevApiStorage` | 本地 Vite dev server API |
+|---|---|---|
+| kaiyuanguji-web 生产 | `BundleStorage`（经 `cos-storage.ts`） | 同域 / COS 预打包 JSON |
+| kaiyuanguji-web dev | `LocalApiStorage` | Next API route 读本地仓 |
+| 浏览器无数据仓时 | `GithubStorage` | GitHub raw + jsDelivr fallback |
+| guji-platform | `VscodeStorage` | postMessage 桥接 |
+| 测试页 | `DevApiStorage` | Vite dev 中间件，不对外导出 |
+
+## 约定
+
+- **文案**：用户可见文字一律经 `useT()`（`i18n/locales/zh-Hans.ts` / `zh-Hant.ts`），动态内容经 `useConvert()` 繁简转换
+- **受控词汇是英文枚举，显示层负责翻译**：`section.type`（book / category / preface / tally / verification …）、`Work.subtype`（article / poem / chapter / book）。直出原值就是 bug
+- **索引条目字段**（`IndexEntry`）由 TS `core/storage.ts` 与 Python `entry_extractor.py` 各写一份，**加字段两侧必须同步**，否则 reindex 会把字段抹掉。`dynasty` 是撰人朝代，`era` / `sort_year` 是刊刻朝代与排序年，语义不同
+- `ai_note` 是整理者写给整理者的注，**不渲染**
 
 ## 样式策略
 
 - 组件使用 **CSS 变量 + inline styles**，不依赖 Tailwind
 - 消费者通过 CSS 变量（`--bim-*`）适配自己的主题
-- 导入 `book-index-ui/styles` 获取基础样式
+- 导入 `book-index-ui/styles` 获取基础样式（构建时由 `src/styles/variables.css` 原样复制而来）
 
 ### 换肤约定
 
@@ -156,5 +122,6 @@ book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、�
 
 ## 待办
 
-- [ ] kaiyuanguji-web 的 BookDetailContent 应迁移为使用 IndexDetail 组件，去除重复的 Tailwind 实现
-- [ ] 确保 IndexDetail 的 `renderLink` prop 足够灵活，支持 Next.js Link 组件
+- [ ] `IndexBrowser` 没有排序控件；`sort_year` 已进索引，可加「按年代」排序
+- [ ] Entity 的 `native_place`（2026-09 新增字段）尚未展示
+- [ ] guji-platform 迁到 `BookDetailLayout` 后，移除 `IndexDetail` / `IndexView`
