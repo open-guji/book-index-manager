@@ -1702,6 +1702,56 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
 
     const index = indexProp || indexData;
 
+    /*
+     * indexProp 到达时清掉内部 loading。
+     *
+     * 缺了这条会永远卡在「加载整理本...」：kyg 首帧 indexProp 还没就绪，
+     * 下面那个自主加载 effect 已经 setLoading(true)；等 indexProp 到达，
+     * 该 effect 因 `if (indexProp) return` 提前退出，setLoading(false)
+     * 再没有机会执行。
+     */
+    useEffect(() => {
+        if (indexProp) {
+            setLoading(false);
+            setError(null);
+        }
+    }, [indexProp]);
+
+    /*
+     * 外部没注入 index 时自行拉取（workId 模式）。
+     * kyg 走 indexProp 注入，这条路径给 VS Code 插件等直接用 workId 的场合。
+     */
+    useEffect(() => {
+        if (indexProp || !workId || !transport?.getCollatedEditionIndex) return;
+        let cancelled = false;
+        setLoading(true);
+        setError(null);
+        transport.getCollatedEditionIndex(workId).then(result => {
+            if (cancelled) return;
+            if (!result) setError('未找到整理本数据');
+            else setIndexData(result);
+        }).catch(err => {
+            if (!cancelled) setError(err instanceof Error ? err.message : '加载失败');
+        }).finally(() => {
+            if (!cancelled) setLoading(false);
+        });
+        return () => { cancelled = true; };
+    }, [indexProp, workId, transport]);
+
+    /*
+     * 自动选第一卷。
+     *
+     * 不选的话侧栏列着卷号、正文区却空着——URL 不带 juan 参数时（读者从
+     * 概览页横幅点进来就是这种）整页看起来像没加载出来。仅在外部未指定
+     * 时才代选，免得盖掉 URL/书签里的卷。
+     */
+    useEffect(() => {
+        if (index && !activeFile) {
+            const firstFile = getFirstFile(index);
+            if (firstFile) setActiveFile(firstFile);
+        }
+    }, [index, activeFile, setActiveFile]);
+
     const effectiveWorkId = workId || index?.work_id;
 
     // 加载单卷
