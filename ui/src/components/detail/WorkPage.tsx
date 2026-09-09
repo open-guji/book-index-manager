@@ -25,7 +25,7 @@ import {
     type FactItem, type RenderLink, type TableSpec,
 } from './primitives';
 import {
-    buildVersionTable, bucketResources, groupRelatedWorks, measureText,
+    buildVersionTable, bucketResources, groupRelatedWorks, measureText, sourceText,
     type ResolvedVersion, type VersionRow,
 } from '../../core/detail-model';
 import { getDisplayNameFromUrl, resourceHref } from '../../core/resources';
@@ -221,7 +221,10 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                             <div className="bim-d-ui" style={{
                                 marginTop: 8, fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)',
                             }}>
-                                {data.description.sources.map(s => convert(s)).join(' · ')}
+                                {data.description.sources
+                                    .map(s => convert(sourceText(s)))
+                                    .filter(Boolean)
+                                    .join(' · ')}
                             </div>
                         ) : null}
                     </>

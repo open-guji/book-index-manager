@@ -18,6 +18,7 @@ import {
     bucketResources,
     resourceNote,
     resourceDisambiguator,
+    sourceText,
     buildVersionTable,
     buildCollectionTable,
     normalizeVolumeIndex,
@@ -1372,5 +1373,32 @@ describe('刊刻年代：publication_info 路径（Collection 跑出来的十类
 
     it('抽象说明不是年代', () => {
         expect(P('四大奇書', '（抽象作品集，李漁起源）')).toBeUndefined();
+    });
+});
+
+describe('sourceText（来源标注两种形态）', () => {
+    /*
+     * 2026-09 线上故障：description.sources 全库并存两种形态——
+     * 裸字符串 105,666 条、`{title}` 对象 672 条（小说类为主）。
+     * WorkPage 此前直接把元素丢进 opencc 的 convert()，遇到对象形态
+     * 报 `s.slice is not a function`，红楼梦等 672 个条目**整页白屏**。
+     */
+    it('裸字符串原样返回', () => {
+        expect(sourceText('孫楷第《中國通俗小說書目》')).toBe('孫楷第《中國通俗小說書目》');
+    });
+
+    it('对象形态取 title —— 红楼梦实测数据', () => {
+        expect(sourceText({ title: '孫楷第《中國通俗小說書目》卷四·明清小說部乙·烟粉' }))
+            .toBe('孫楷第《中國通俗小說書目》卷四·明清小說部乙·烟粉');
+    });
+
+    it('带 url 的对象仍取 title', () => {
+        expect(sourceText({ title: '中國哲學書電子化計劃', url: 'https://ctext.org' }))
+            .toBe('中國哲學書電子化計劃');
+    });
+
+    it('空值不炸，返回空串（调用方 filter 掉）', () => {
+        expect(sourceText(null)).toBe('');
+        expect(sourceText(undefined)).toBe('');
     });
 });

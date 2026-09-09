@@ -19,6 +19,7 @@
 import type {
     BookDetailData,
     DatingInfo,
+    DescriptionSource,
     CollectionDetailData,
     WorkDetailData,
     IndexDetailData,
@@ -1604,6 +1605,20 @@ export function numberToChinese(n: number): string {
         }
     }
     return result;
+}
+
+/**
+ * 来源标注取显示文字。
+ *
+ * sources 元素有裸字符串与 `{title, url?}` 两种形态（见 DescriptionSource）。
+ * 早先各处直接把元素丢进 convert()，碰上对象形态时 opencc 收到非字符串，
+ * 报 `s.slice is not a function`，**整页白屏**——红楼梦等 672 条带对象形态
+ * 的条目全打不开。渲染前一律经过这里。
+ */
+export function sourceText(s: DescriptionSource | null | undefined): string {
+    if (s == null) return '';
+    if (typeof s === 'string') return s;
+    return s.title ?? '';
 }
 
 /** 计量文本：measure_info 优先（70% 有），回退 juan_count */

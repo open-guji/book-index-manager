@@ -268,10 +268,19 @@ export interface SyncConfig {
 
 // ── 详情数据类型 ──
 
+/**
+ * 来源标注。
+ *
+ * 历史上写成两种形态：早期是裸字符串，后来（小说类条目为主）改成
+ * `{title, url?}` 对象。全库两种并存（约 10.6 万条字符串 : 672 条对象），
+ * 谁也没法单方面废弃，所以类型上认下来，渲染前一律走 sourceText()。
+ */
+export type DescriptionSource = string | { title: string; url?: string };
+
 /** 描述信息 */
 export interface DescriptionInfo {
     text: string;
-    sources?: string[];
+    sources?: DescriptionSource[];
 }
 
 /** 附记条目：长篇补充材料，独立于 description。
@@ -283,7 +292,7 @@ export interface AppendixEntry {
     /** 正文 markdown 文本 */
     text: string;
     /** 来源标注（与 DescriptionInfo.sources 同形） */
-    sources?: string[];
+    sources?: DescriptionSource[];
 }
 
 /** 作者信息 */
