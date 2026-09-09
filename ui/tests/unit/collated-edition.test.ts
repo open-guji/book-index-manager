@@ -5,7 +5,7 @@
  * 漢書藝文志（d59f23o7ygw2）两样全中，页面上一列英文 `category` 加一排「卷/001」。
  */
 import { describe, expect, it } from 'vitest';
-import { juanDisplayName, normSectionType } from '../../src/components/CollatedEdition';
+import { juanDisplayName, normSectionType, isPageHeaderContent } from '../../src/components/CollatedEdition';
 
 describe('juanDisplayName：卷文件名 → 显示名', () => {
     it('带目录的 juan/001.json（漢書藝文志等）', () => {
@@ -42,5 +42,32 @@ describe('normSectionType：英文枚举 → 中文', () => {
         expect(normSectionType('考证')).toBe('考证');
         expect(normSectionType(undefined)).toBe('');
         expect(normSectionType(null)).toBe('');
+    });
+});
+
+describe('isPageHeaderContent：page_header 里混着页眉与正文', () => {
+    /*
+     * 欽定四庫全書總目把卷首一·聖諭（11250 字）、進書表、凡例二十則、
+     * 勘閱繕校諸臣職名都标成了 page_header，与「卷二 經部二」这类每页
+     * 重复的书口题名同型。此前一律丢弃，于是 29 段共 4 万余字在页面上
+     * 完全不存在，「卷首1」打开是空的。
+     *
+     * 实测该书 212 段：183 段短于 100 字（全是书口题名），29 段长于 100
+     * （全是正文），界限干净，故以 100 字为界。
+     */
+    it('书口题名（短）不当正文', () => {
+        expect(isPageHeaderContent({ type: 'page_header', content: '卷二 經部二' })).toBe(false);
+        expect(isPageHeaderContent({ type: 'page_header', content: '卷首四•門目' })).toBe(false);
+        expect(isPageHeaderContent({ type: 'page_header', content: '' })).toBe(false);
+    });
+
+    it('聖諭/進表这类长文当正文', () => {
+        expect(isPageHeaderContent({ type: 'page_header', content: '朕'.repeat(100) })).toBe(true);
+        expect(isPageHeaderContent({ type: 'page_header', content: '伏'.repeat(4386) })).toBe(true);
+    });
+
+    it('非 page_header 一律 false（该走各自的渲染分支）', () => {
+        expect(isPageHeaderContent({ type: 'book', content: '書'.repeat(500) })).toBe(false);
+        expect(isPageHeaderContent({ type: 'preface', content: '序'.repeat(500) })).toBe(false);
     });
 });

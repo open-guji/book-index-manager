@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { BookFullTextIndex } from '../types';
 import type { IndexStorage } from '../storage/types';
+import { ReaderLayout } from './detail/primitives';
 
 interface BookFullTextProps {
     /** 全文目录（外部可注入，避免重复请求） */
@@ -103,25 +104,25 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
         return <div style={{ padding: 24, color: 'var(--bim-desc-fg, #999)' }}>全文目录为空</div>;
     }
 
-    return (
-        <div style={{ display: 'flex', gap: 16, alignItems: 'stretch', minHeight: 400 }}>
-            {/* 左侧：章节列表 */}
-            <aside style={{
-                flex: '0 0 240px',
-                maxHeight: 'calc(100vh - 200px)',
-                overflowY: 'auto',
-                borderRight: '1px solid var(--bim-border, #e5e5e5)',
-                paddingRight: 12,
+    /*
+     * 章节列表交给共用的 ReaderLayout（sticky 侧栏，突破版心），
+     * 与整理本同一套骨架。原先这里是自带的 240px flex 侧栏 + 正文
+     * 各自 overflowY:auto —— 页面中间出现两条滚动条，浏览器的滚动
+     * 位置记忆、Ctrl+F、锚点跳转全部失效（详情页 2026-09 版式重构
+     * 已在外层去掉过一次，这里是漏网的一处）。
+     */
+    const aside = (
+        <>
+            <div style={{
+                padding: '0 8px 8px',
+                fontSize: 12.5,
+                color: 'var(--bim-desc-fg, #888)',
+                borderBottom: '1px solid var(--bim-border, #e5e5e5)',
+                marginBottom: 8,
             }}>
-                <div style={{
-                    padding: '8px 12px',
-                    fontSize: 13,
-                    color: 'var(--bim-desc-fg, #888)',
-                    borderBottom: '1px solid var(--bim-border, #e5e5e5)',
-                    marginBottom: 8,
-                }}>
-                    {index.version_label} · 共 {index.total_chapters} {index.chapters.length === 1 ? '章' : '章'}
-                </div>
+                {/* 章数不再写出：下面就是逐章列表，数量一目了然（与整理本同） */}
+                {index.version_label}
+            </div>
                 <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
                     {index.chapters.map(ch => {
                         const chKey = normalizeChapterKey(ch.file);
@@ -150,15 +151,12 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
                         );
                     })}
                 </ul>
-            </aside>
+        </>
+    );
 
-            {/* 右侧：正文 */}
-            <main style={{
-                flex: 1,
-                maxHeight: 'calc(100vh - 200px)',
-                overflowY: 'auto',
-                paddingLeft: 8,
-            }}>
+    return (
+        <ReaderLayout aside={aside}>
+            <div>
                 {currentChapterMeta && (
                     <header style={{
                         marginBottom: 16,
@@ -199,7 +197,7 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
                 {!textLoading && !chapterText && (
                     <div style={{ color: 'var(--bim-desc-fg, #999)' }}>无法加载章节内容</div>
                 )}
-            </main>
-        </div>
+            </div>
+        </ReaderLayout>
     );
 };

@@ -738,9 +738,12 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     }
     crumbs.push({ label: t.indexType[detail.type] });
 
+    /* 阅读 tab 放宽版心，容下左侧的卷/章导航（见 ReaderLayout） */
+    const isReaderTab = activeTab === 'collated' || activeTab === 'fulltext';
+
     return (
         <div className={className}>
-            <PageFrame style={{ minHeight: height, ...style }}>
+            <PageFrame wide={isReaderTab} style={{ minHeight: height, ...style }}>
                 <TopStrip
                     breadcrumb={
                         <>
@@ -770,10 +773,39 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     }
                 />
 
-                <DetailHeader {...headerProps} />
+                <DetailHeader
+                    {...headerProps}
+                    /*
+                     * 阅读页的 header 右上角换成回概览的入口。
+                     *
+                     * 常态那里是 subtype（「篇章」之类）——一个静态标签，
+                     * 在正读全文的场面里既不提供信息也不可点。读者此时唯一
+                     * 想回的地方是这部书的概览，于是把这块位置让给它，
+                     * 同时替下面撤掉的 tab 承担返回职责。
+                     */
+                    aside={isReaderTab ? (
+                        <button
+                            type="button"
+                            onClick={() => onTabChange('basic')}
+                            className="bim-d-ui"
+                            style={{
+                                background: 'none', border: 'none', padding: '2px 0',
+                                cursor: 'pointer', fontFamily: 'inherit', fontSize: 12,
+                                color: 'var(--bim-accent, #9c3a2c)',
+                                borderBottom: '1px solid var(--bim-rule, #d6c9ae)',
+                            }}
+                        >
+                            {convert('作品信息')} →
+                        </button>
+                    ) : headerProps.aside}
+                />
 
-                {/* 次级导航：>1 项才出现 */}
-                {navItems.length > 1 && (
+                {/*
+                  * 次级导航：>1 项才出现。
+                  * 阅读页不出现——概览/整理本这对 tab 与正文里的横幅、以及
+                  * 上面的「作品信息 →」重复，三个入口指同两个地方。
+                  */}
+                {!isReaderTab && navItems.length > 1 && (
                     <div style={{
                         display: 'flex', flexWrap: 'wrap', gap: 4,
                         margin: '14px 0 0', paddingBottom: 2,
@@ -789,7 +821,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     </div>
                 )}
 
-                <div style={{ marginTop: navItems.length > 1 ? 8 : 0 }}>
+                <div style={{ marginTop: !isReaderTab && navItems.length > 1 ? 8 : 0 }}>
                     {renderContent()}
                 </div>
 

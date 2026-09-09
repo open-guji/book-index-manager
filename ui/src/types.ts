@@ -718,8 +718,20 @@ export interface CollatedEditionIndex {
      * 和类型里一并删除，不要再加回来。
      */
     juan_files?: string[];
-    /** filename → 元数据（如所属源册号），渲染于 tab/button 旁 */
+    /**
+     * 元数据（如所属源册号），渲染于 tab/button 旁。
+     *
+     * 键必须是 juan_files 里的规范名（`juan/001.json`）。曾经存的是改名前的
+     * 原名（`49册.json`），查询一律落空、武職選簿 26 册的册号整批丢失；
+     * 2026-09-09 已随 juan_groups 一并订正，juan_files_original 那个迁移
+     * 临时字段也同时删除。**不要再引入以原名为键的形态。**
+     */
     juan_metadata?: Record<string, { vols?: number[]; vol_label?: string }>;
+    /**
+     * 分组导航。files 里必须是 juan_files 里的规范名——曾经存的是语义名
+     * （`易類.json`）或改名前的旧名（`juan001.json`），31 部整理本因此
+     * 一卷都点不开（欽定四庫全書總目 205 卷全中招）。2026-09-09 已订正。
+     */
     juan_groups?: JuanGroup[];
     /** 参考文献 */
     references?: CollatedReference[];

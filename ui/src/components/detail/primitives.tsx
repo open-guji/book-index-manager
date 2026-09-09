@@ -21,6 +21,9 @@ import { resourceNote, resourceDisambiguator } from '../../core/detail-model';
 
 export const PAGE_MAX_WIDTH = 1000;
 
+/** 全文阅读页左侧卷/章导航的宽度 */
+export const READER_ASIDE_WIDTH = 208;
+
 /** 窄屏断点。用 CSS media query 而非 window.innerWidth，保证 SSR/hydrate 一致 */
 export const NARROW_QUERY = '(max-width: 719px)';
 
@@ -43,6 +46,15 @@ export const DETAIL_CSS = `
   margin: 0 auto;
   padding: 24px clamp(16px, 4vw, 28px) 0;
 }
+/*
+ * 阅读视图放宽版心：给 .bim-d-main 加这个修饰类，让它容得下
+ * 「侧栏 + 正文」。header/面包屑等仍在同一容器里，故它们也跟着变宽——
+ * 这是有意的：全文页整页就是一个更宽的场面，只有正文列被约束在
+ * PAGE_MAX_WIDTH，读者的行宽体验不变。
+ */
+.bim-d-main.bim-d-main-wide {
+  max-width: ${READER_ASIDE_WIDTH + PAGE_MAX_WIDTH + 32}px;
+}
 .bim-d-ui { font-family: var(--bim-font-ui, system-ui, sans-serif); }
 
 .bim-d-page a { color: var(--bim-accent, #9c3a2c); text-decoration: none; }
@@ -58,6 +70,37 @@ export const DETAIL_CSS = `
 .bim-d-row { display: grid; align-items: center; padding: 9px 4px;
   border-bottom: 1px solid var(--bim-rule, #eae2d0); font-size: 14px; }
 .bim-d-row:hover { background: var(--bim-row-hover-bg, #f5f1e5); }
+
+/*
+ * 全文阅读布局（整理本 / Book 全文）。
+ *
+ * 与其余页面不同：这里正文旁边还挂一条卷/章导航，若挤在 1000px 版心
+ * 内部，正文会被压到 800px 上下——武職選簿这种整卷长文读起来明显变窄。
+ * 故让这一层**突破版心**：外层 .bim-d-reader 自己撑开到
+ * (侧栏 + 正文) 的宽度并居中，正文列仍保持 PAGE_MAX_WIDTH 的可读宽度，
+ * 侧栏吃掉的是原本左侧的留白。
+ *
+ * 侧栏 sticky 跟随滚动；正文很长时（205 卷的四庫總目）导航始终在视野里。
+ * 窄屏退化为单栏，导航折到正文上方（见 NARROW_QUERY 块）。
+ */
+.bim-d-reader {
+  display: grid;
+  grid-template-columns: ${READER_ASIDE_WIDTH}px minmax(0, ${PAGE_MAX_WIDTH}px);
+  gap: 32px;
+  max-width: ${READER_ASIDE_WIDTH + PAGE_MAX_WIDTH + 32}px;
+  margin: 0 auto;
+  align-items: start;
+}
+.bim-d-reader-aside {
+  position: sticky;
+  top: 12px;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+  border-right: 1px solid var(--bim-rule, #e4dbc9);
+}
+.bim-d-reader-main { min-width: 0; }
 
 /* intro / 成对区块：宽屏两栏，窄屏单栏 */
 .bim-d-intro { display: grid; grid-template-columns: minmax(0, 1fr) 244px; gap: 30px;
@@ -77,6 +120,13 @@ export const DETAIL_CSS = `
   .bim-d-row-meta { grid-column: 2; display: flex !important; flex-wrap: wrap;
     gap: 4px 14px; font-size: 12px; }
   .bim-d-h1 { font-size: 32px !important; }
+  /* 阅读视图：侧栏折到正文上方，限高避免占掉整屏 */
+  .bim-d-reader { grid-template-columns: 1fr; gap: 16px; }
+  .bim-d-reader-aside {
+    position: static; max-height: 240px;
+    border-right: none; border-bottom: 1px solid var(--bim-rule, #e4dbc9);
+    padding-right: 0; padding-bottom: 12px;
+  }
 }
 `;
 
@@ -84,9 +134,11 @@ export const DETAIL_CSS = `
 // 骨架
 // ══════════════════════════════════════════════════════════════
 
-export function PageFrame({ children, style }: {
+export function PageFrame({ children, style, wide }: {
     children: React.ReactNode;
     style?: React.CSSProperties;
+    /** 阅读视图：放宽版心，容下「侧栏 + 正文」（见 .bim-d-main-wide） */
+    wide?: boolean;
 }) {
     return (
         <div className="bim-d-page" style={style}>
@@ -97,7 +149,26 @@ export function PageFrame({ children, style }: {
               * 一个文档只该有一个主区域，e2e 里 locator('main') 也会因此
               * 命中两个元素而报 strict mode violation。
               */}
-            <div className="bim-d-main">{children}</div>
+            <div className={wide ? 'bim-d-main bim-d-main-wide' : 'bim-d-main'}>{children}</div>
+        </div>
+    );
+}
+
+/**
+ * 阅读视图骨架：左侧卷/章导航 + 右侧正文。
+ *
+ * 整理本与 Book 全文共用。侧栏 sticky 跟随滚动，正文列宽度受
+ * PAGE_MAX_WIDTH 约束（读长文时行宽不至于失控）；窄屏由 CSS
+ * 退化成单栏，导航折到正文上方。
+ */
+export function ReaderLayout({ aside, children }: {
+    aside: React.ReactNode;
+    children: React.ReactNode;
+}) {
+    return (
+        <div className="bim-d-reader">
+            <aside className="bim-d-reader-aside bim-d-ui">{aside}</aside>
+            <div className="bim-d-reader-main">{children}</div>
         </div>
     );
 }
