@@ -25,7 +25,7 @@ import type {
 } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { CollectionCatalog } from './CollectionCatalog';
-import { CollatedEdition, juanDisplayName } from './CollatedEdition';
+import { CollatedEdition } from './CollatedEdition';
 import { BookFullText } from './BookFullText';
 import { VersionLineageView } from './VersionLineageView';
 import { buildLineageGraph } from '../core/lineage-graph';
@@ -38,7 +38,7 @@ import { extractStatus } from '../id';
 import {
     PageFrame, TopStrip, Breadcrumb, DetailHeader, DetailFooter,
     GlyphBadge, FilterChip, DETAIL_CSS,
-    Section, SectionHead, Chip, ChipWall, MoreButton,
+    Section,
     type RenderLink, type CrumbItem,
 } from './detail/primitives';
 import { WorkPage } from './detail/WorkPage';
@@ -366,14 +366,21 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             }
         }
 
-        if (detail.type === 'work' && (collatedIndex || collatedLoading)) {
+        /*
+         * 整理本 / 全文**不再进 nav**：正文里的横幅已是更显眼的入口，
+         * 顶部再挂一个 tab 就成了同一目的地的两个按钮。只在**已经身处**
+         * 该 tab 时才列出来——否则 nav 只剩「概覽」一项会被整行隐藏，
+         * 读者进了全文页就没有返回入口（只能按浏览器后退）。
+         * 与下面 feedback 的处理同理。
+         */
+        if (detail.type === 'work' && (collatedIndex || collatedLoading) && activeTab === 'collated') {
             navItems.push({
                 key: 'collated',
                 label: collatedLoading ? `${t.detailTab.collatedEdition}…` : t.detailTab.collatedEdition,
             });
         }
 
-        if (detail.type === 'book' && (bookFullTextIndex || bookFullTextLoading)) {
+        if (detail.type === 'book' && (bookFullTextIndex || bookFullTextLoading) && activeTab === 'fulltext') {
             navItems.push({
                 key: 'fulltext',
                 label: bookFullTextLoading ? `${t.detailTab.fullText}…` : t.detailTab.fullText,
@@ -506,9 +513,13 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     renderLink={renderLink}
                     collatedSection={
                         collatedIndex && (collatedIndex.juan_files?.length ?? 0) > 0 ? (
-                            <CollatedSection
-                                files={collatedIndex.juan_files!}
-                                onOpen={(f) => { setActiveJuan(f); onTabChange('collated'); }}
+                            <FullTextBanner
+                                title={detail.title}
+                                measure={`${collatedIndex.juan_files!.length} ${convert(t.unit.juan)}`}
+                                onOpen={() => {
+                                    setActiveJuan(collatedIndex.juan_files![0]);
+                                    onTabChange('collated');
+                                }}
                             />
                         ) : null
                     }
@@ -539,6 +550,23 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     transport={transport}
                     onNavigate={onNavigate}
                     renderLink={renderLink}
+                    fullTextSection={
+                        bookFullTextIndex && bookFullTextIndex.chapters.length > 0 ? (
+                            <FullTextBanner
+                                /* 版本页的标题用作品名，副行才点出是哪个本子——
+                                   横幅上写「進入《程甲本（紅樓夢）》」会很怪 */
+                                title={detail.title}
+                                measure={[
+                                    `${bookFullTextIndex.total_chapters} ${convert('章')}`,
+                                    convert(bookFullTextIndex.version_label),
+                                ].filter(Boolean).join(' · ')}
+                                onOpen={() => {
+                                    setActiveJuan(null);
+                                    onTabChange('fulltext');
+                                }}
+                            />
+                        ) : null
+                    }
                 />
             );
         }
@@ -842,61 +870,116 @@ function workSubtypeLabel(t: ReturnType<typeof useT>, subtype?: string): string 
     return (t.workSubtype as Record<string, string>)[subtype] ?? subtype;
 }
 
-/** 首屏展示的卷数上限；整理本动辄数十卷（補南北史藝文志 97 卷），全铺会占很长一屏 */
-const COLLATED_JUAN_CAP = 24;
-
 /**
- * 作品页正文里的整理本入口。
+ * 正文里的全文入口横幅：作品页用于整理本，版本页用于 Book 全文。
  *
  * 整理本是本站自己做的成果、点进去就能读全文，是作品页唯一的**终点内容**；
  * 其余区块都是指向外部影像站/馆藏的链接。此前它只在顶部次级导航里有个 tab，
  * 正文一字不提，读者一路往下读根本不知道有。
  *
- * 点卷号直接切到 collated tab 并定位该卷，与 tab 内的导航同一套状态，
- * URL 形态也一致（?tab=collated&juan=…），不额外引入路由。
+ * 2026-09：从「区块标题 + 一墙卷号 chip」改成整条横幅。旧版的问题是
+ * 一屏几十个卷号 chip 反倒把「这里能读全文」这件事稀释掉了，读者要先
+ * 认出那是卷号、再挑一卷点进去；而绝大多数人只想从头读。横幅只留
+ * 一个动作（开始阅读 = 第一卷），卷号选择交给 collated tab 内部的导航。
+ *
+ * 整条横幅可点，hover 时底色加深；右侧的朱红按钮只作视觉落点，不单独绑
+ * 事件——否则同一区域两个 click 目标，键盘 Tab 会停两次。
  */
-function CollatedSection({ files, onOpen }: {
-    files: string[];
-    onOpen: (file: string) => void;
+function FullTextBanner({ title, measure, onOpen }: {
+    /** 作品名，嵌进「進入《…》全文閲讀」；缺省时退化为不带书名的说法 */
+    title?: string;
+    /** 副行首项，如「7 卷」「120 回」；作品页数卷、版本页数回 */
+    measure?: string;
+    onOpen: () => void;
 }) {
-    const t = useT();
     const { convert } = useConvert();
-    const [showAll, setShowAll] = useState(false);
-    const visible = showAll ? files : files.slice(0, COLLATED_JUAN_CAP);
+    const [hover, setHover] = useState(false);
+
+    const heading = title
+        ? convert(`進入《${title}》全文閲讀`)
+        : convert('進入全文閲讀');
+
+    /* 副行：篇幅 + 全文自身的卖点 */
+    const meta = [
+        measure,
+        convert('全文檢索'),
+        convert('原書對照'),
+    ].filter(Boolean).join(' · ');
+
     return (
-        <Section>
-            <SectionHead
-                glyph="整"
-                tone="ink"
-                title={convert(t.detailTab.collatedEdition)}
-                count={`${files.length} ${convert(t.unit.juan)}`}
-                actions={
-                    <button
-                        type="button"
-                        onClick={() => onOpen(files[0])}
-                        className="bim-d-ui"
-                        style={{
-                            background: 'none', border: 'none', padding: '2px 0',
-                            cursor: 'pointer', fontFamily: 'inherit', fontSize: 12,
-                            color: 'var(--bim-accent, #9c3a2c)',
-                            borderBottom: '1px solid var(--bim-rule, #d6c9ae)',
-                        }}
-                    >
-                        {convert('閲讀全文')} →
-                    </button>
-                }
-            />
-            <ChipWall>
-                {visible.map(f => (
-                    <Chip key={f} onClick={() => onOpen(f)}>{convert(juanDisplayName(f))}</Chip>
-                ))}
-            </ChipWall>
-            {files.length > visible.length && (
-                <MoreButton
-                    label={`${convert('展開全部')} ${files.length} ${convert(t.unit.juan)}`}
-                    onClick={() => setShowAll(true)}
-                />
-            )}
+        /* 上下都比常规 Section（48）收紧：横幅是一整块实色，四周留白按
+           区块间距给会显得它孤零零浮在页面中间 */
+        <Section style={{ marginTop: -12, marginBottom: 28 }}>
+            <div
+                role="button"
+                tabIndex={0}
+                onClick={onOpen}
+                onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onOpen();
+                    }
+                }}
+                onMouseEnter={() => setHover(true)}
+                onMouseLeave={() => setHover(false)}
+                style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    gap: 24, flexWrap: 'wrap',
+                    padding: '14px 26px',
+                    cursor: 'pointer',
+                    /*
+                     * 底色是「暖沙」，新增 --bim-band-bg / --bim-band-bg-hover 两个变量。
+                     *
+                     * 试过两条不新增变量的路子，都不行：
+                     *  - 掺 --bim-accent：朱砂偏红，淡化出来是**粉**的，一大片跟宣纸皮不搭；
+                     *  - 借 --bim-selection-bg：默认值 #ecdcbc 确实是暖沙，但 kyg 那边把它
+                     *    覆盖成了 color-mix(泥金 30%, transparent)——**半透明**。再套一层
+                     *    color-mix 等于按 30%×52% 稀释并与透明合成，颜色直接失真。
+                     * 所以这里给一个自带 fallback 的独立变量：默认值是设计稿的暖沙，
+                     * 消费者想换肤就覆盖这两个（kyg 覆盖成泥金掺纸，见 globals.css）。
+                     */
+                    background: hover
+                        ? 'var(--bim-band-bg-hover, #e6d5b4)'
+                        : 'var(--bim-band-bg, #f0e4cb)',
+                    borderLeft: '3px solid var(--bim-accent, #9c3a2c)',
+                    transition: 'background .18s ease',
+                }}
+            >
+                <div style={{ minWidth: 0 }}>
+                    <div style={{
+                        fontFamily: 'var(--bim-font-body, system-ui, sans-serif)',
+                        fontSize: 21, fontWeight: 600, letterSpacing: '.02em',
+                        /* 不设的话继承默认 ~1.5，21px 字上下各多出 5px 空白，
+                           副行的 marginTop 调再小也看不出来 */
+                        lineHeight: 1.3,
+                        color: 'var(--bim-ink, #2a231c)',
+                    }}>
+                        {heading}
+                    </div>
+                    <div className="bim-d-ui" style={{
+                        marginTop: 4, fontSize: 12.5, letterSpacing: '.06em',
+                        color: 'var(--bim-meta-fg, #7b6a54)',
+                    }}>
+                        {meta}
+                    </div>
+                </div>
+                <span
+                    className="bim-d-ui"
+                    aria-hidden
+                    style={{
+                        flex: 'none',
+                        padding: '11px 22px',
+                        fontSize: 14, letterSpacing: '.08em',
+                        background: hover
+                            ? 'var(--bim-accent-deep, #6f2a20)'
+                            : 'var(--bim-accent, #9c3a2c)',
+                        color: 'var(--bim-page-bg, #fbf9f3)',
+                        transition: 'background .18s ease',
+                    }}
+                >
+                    {convert('開始閲讀')} →
+                </span>
+            </div>
         </Section>
     );
 }

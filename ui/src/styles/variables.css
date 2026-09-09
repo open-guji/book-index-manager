@@ -179,6 +179,12 @@
     --bim-row-hover-bg: #f5f1e5;     /* 行 hover */
     --bim-selection-bg: #ecdcbc;     /* 选区 */
 
+    /* 全文入口横幅底色（作品页的整理本、版本页的全文）。这两个是少数
+       **不由上面派生**的值：朱砂淡化会发粉，选区色在消费者那边可能是
+       半透明的，再套 color-mix 会失真。 */
+    --bim-band-bg: #f0e4cb;          /* 暖沙 */
+    --bim-band-bg-hover: #e6d5b4;    /* 暖沙 · hover 加深 */
+
     /* ---- 文字层次（墨 → 正文 → 提要 → meta → 标签 → 提示） ---- */
     --bim-ink: #2a231c;
     --bim-body-fg: #3b3228;

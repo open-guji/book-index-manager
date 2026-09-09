@@ -33,6 +33,12 @@ export interface BookPageProps {
     transport?: IndexStorage;
     onNavigate?: (id: string) => void;
     renderLink?: RenderLink;
+    /**
+     * 全文入口横幅（由 layout 注入，渲染在 intro 之后）。
+     * 与作品页的 collatedSection 同一个位置、同一个理由：全文是点进去
+     * 就能读的**终点内容**，其余区块都是外链，不该只在顶部 tab 里露一次。
+     */
+    fullTextSection?: React.ReactNode;
 }
 
 interface ResolvedRef {
@@ -42,7 +48,7 @@ interface ResolvedRef {
 }
 
 export const BookPage: React.FC<BookPageProps> = ({
-    data, transport, onNavigate, renderLink,
+    data, transport, onNavigate, renderLink, fullTextSection,
 }) => {
     const t = useT();
     const { convert } = useConvert();
@@ -189,6 +195,9 @@ export const BookPage: React.FC<BookPageProps> = ({
                     />
                 ) : undefined}
             </IntroGrid>
+
+            {/* ── 全文入口：理由同作品页，见 fullTextSection 注释 ── */}
+            {fullTextSection}
 
             {/* ── 收入叢編 ── */}
             {(data.contained_in || []).length > 0 && (
