@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "description": "古籍数字资源来源站点目录。Book.resources / Work.resources 中 resource.id 应是本表中的 source.id。",
-  "updated_at": "2026-08-26",
+  "updated_at": "2026-09-09",
   "tier_definitions": {
     "1": {
       "label": "原图书馆 / 官方来源",
@@ -336,17 +336,20 @@
       "access": {
         "from_cn": true,
         "from_intl": true,
-        "needs_login": false
+        "needs_login": false,
+        "notes": "preserve 仅指向人工点击的资源链接，不代表可程序化取用——见 download.notes"
       },
       "download": {
-        "supported": true,
+        "supported": false,
         "method": "api",
-        "speed_kbps_typical": 100
+        "speed_kbps_typical": 100,
+        "notes": "2026-09-09 实测订正：原记 supported=true。站方明文禁止自动化／LLM 抓取——robots.txt 对 GPTBot／ChatGPT-User 设 Disallow: /；页面正文另有专对 'LLMs, robots, scrapers and other automated processes' 的禁止声明（'you do not have authorization to scrape this page'）。原 method=api 所指之具体接口未经复核是否为该站另一条经授权渠道，此次订正只改 supported，不臆断 method 一定有效或无效；若日后核实项目持有 ctext 机构订阅／授权，可回改并注明依据。"
       },
       "bookget": {
         "supported": true,
         "adapter_name": "ctext"
-      }
+      },
+      "notes": "2026-09-09 先秦佚书道实测：见上 download.notes。bookget.supported=true 只陈述仓内确有 adapter 文件之事实，不代表当下可合规调用——沿用前须先核实该 adapter 实际请求的端点是否属于站方允许之授权渠道。"
     },
     {
       "id": "wikisource",
