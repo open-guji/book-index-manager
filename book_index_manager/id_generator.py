@@ -28,6 +28,8 @@ class BookIndexIdComponents:
 
 class BookIndexIdGenerator:
     """
+    规范定义见 book-index 仓根目录 SCHEMA.md「ID 类型编码」一节。
+
     ID Layout (64 bits):
     [0] Sign (1 bit): Fixed to 0
     [1] Status (1 bit): 0=Official, 1=Draft

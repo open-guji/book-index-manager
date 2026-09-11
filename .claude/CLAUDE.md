@@ -35,7 +35,7 @@ book-index-manager/
 ## 数据存储位置
 - 元数据在 `D:\workspace` 下的 `book-index/`（生产）与 `book-index-draft/`（草稿）；文本资产在 `book-text/`（整理本、辑佚、全文，2026-08-26 拆出）
 - 三层目录结构：`{Type}/{c1}/{c2}/{c3}/{ID}-{名称}.json`，`c1..c3` 取 ID **尾**三字符（`storage.shard_dirs()`，三仓共用）
-- ID 体系：Work / Book / Collection / Entity 四类，Snowflake 64-bit + **base36** 编码；规范见 `book-index-draft/SCHEMA.md`
+- ID 体系：Work / Book / Collection / Entity 四类，Snowflake 64-bit + **base36** 编码；规范见 `book-index/SCHEMA.md`
 - CLI `--root` 指 `D:\workspace` 这个父目录，不是某个仓
 
 ## UI 组件设计
