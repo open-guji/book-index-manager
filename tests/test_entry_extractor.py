@@ -264,6 +264,28 @@ def test_tombstone_entry_keeps_promoted_to():
     assert entry["promoted_to"] == "d59dh3z6zmyo"
 
 
+def test_entity_tombstone_entry_keeps_promoted_to():
+    """entity 这一支曾整个漏掉 promoted_to，index 遂认不出哪些 entity 已升格。
+
+    后果：chk_entity 报「索引之 promoted_to 與墓碑不符」29058 条（全部 entity
+    墓碑），升格闸门放行不了；打包的 loadShardedIndex() 也跳不过这些墓碑。
+    """
+    entry = build_entity_index_entry(
+        {"primary_name": "X", "_promoted_to": "hixhd2h9bdxw"},
+        "e1", "Entity/e/1.json",
+    )
+    assert entry["promoted_to"] == "hixhd2h9bdxw"
+
+
+def test_entity_tombstone_accepts_legacy_unprefixed_name():
+    """兼容未迁移的无前缀旧名，与 build_index_entry 同（read_promoted_to）。"""
+    entry = build_entity_index_entry(
+        {"primary_name": "X", "promoted_to": "hixhd2h9bdxw"},
+        "e1", "Entity/e/1.json",
+    )
+    assert entry["promoted_to"] == "hixhd2h9bdxw"
+
+
 def test_entity_entry_keeps_period():
     entry = build_entity_index_entry(
         {"primary_name": "孫武", "dynasty": "先秦", "period": "pre-qin"},
@@ -276,7 +298,9 @@ def test_new_fields_omitted_when_absent():
     entry = build_index_entry({"id": "w1", "title": "X"}, BookIndexType.Work, "Work/w/1.json")
     for k in ("period", "loss_status", "original_title", "work_id", "promoted_to"):
         assert k not in entry
-    assert "period" not in build_entity_index_entry({"primary_name": "某"}, "e1", "Entity/e/1.json")
+    ent = build_entity_index_entry({"primary_name": "某"}, "e1", "Entity/e/1.json")
+    for k in ("period", "promoted_to"):
+        assert k not in ent
 
 
 def test_dynasty_falls_back_to_top_level_when_authors_empty():

@@ -178,6 +178,16 @@ def build_entity_index_entry(metadata: Dict[str, Any], id_str: str, rel_path: st
     period = metadata.get("period")
     if period:
         entry["period"] = period
+    # 与 build_index_entry 同：墓碑的 promoted_to 必须入 index。
+    # 此前唯独 entity 这一支漏了，index 认不出哪些 entity 已升格，后果有三：
+    #   一、chk_entity 报「索引之 promoted_to 與墓碑不符」29058 条（即全部
+    #       entity 墓碑），甲级非零，promote_entity 的闸门长期放行不了；
+    #   二、kaiyuanguji-web 打包的 loadShardedIndex() 靠 promoted_to 跳过
+    #       墓碑，认不出就会把 entity 墓碑当普通条目，去读其 path；
+    #   三、据此误判「entity 墓碑可随手清理」——实则 index 仍以其档为落点。
+    promoted_to = read_promoted_to(metadata)
+    if promoted_to:
+        entry["promoted_to"] = promoted_to
     return entry
 
 
