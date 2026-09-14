@@ -761,20 +761,60 @@ export function ExpandRow({ open, onToggle, main, action, children }: {
  * `renderText` 供呼叫處插入自己的加工（整理本要在注文內外都能檢索高亮），
  * 預設原樣返回。**注文與正文分段各過一次 renderText**，故高亮在注裡也管用。
  */
+/**
+ * 掃出一行文本裡的夾注，兩種記法都認：
+ *
+ *   `⟨…⟩`  庫中存量的舊記法（2026-09 之前所有整理本）
+ *   `<…>`  `guji-markdown` spec §1 的正規記法（新格式整理本，如 2026-09-14 並入的《漢書藝文志》）
+ *
+ * **兩種必須並存**：用戶 2026-09-14 定「不做全面返工，逐本隨整理自然轉」，
+ * 存量與新本會長期同時在庫裡，UI 只認一種就會把另一種當正文直出
+ * （改之前線上正是如此：汉志已換 `<…>`，本函數只認 `⟨…⟩`）。
+ *
+ * `<` 的生效條件照 spec §1 表：其後不得是 ASCII 字母、`/`、`!`、`?`、`>`、空白
+ * ——藉此避開 `<div>`、`</div>`、`<!-- -->`、`<?…`、自動連結 `<https://…>`。
+ * 另依 spec §0.2，起止記號必須同行，故內容不得跨 `\n`。
+ */
+function scanJiazhu(text: string): { start: number; end: number; inner: string }[] {
+    const out: { start: number; end: number; inner: string }[] = [];
+    for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        let close: string;
+        if (ch === '\u27e8') {
+            close = '\u27e9';
+        } else if (ch === '<') {
+            const nxt = text[i + 1];
+            // spec §1 生效條件 2
+            if (nxt === undefined || /[A-Za-z/!?>\s]/.test(nxt)) continue;
+            close = '>';
+        } else {
+            continue;
+        }
+        const j = text.indexOf(close, i + 1);
+        if (j < 0) continue;                                  // 未閉合 → 按字面（spec §0.3）
+        const inner = text.slice(i + 1, j);
+        // 跨行不算（spec §0.2 起止記號須同行）。
+        // ⚠️ **空內容照舊消掉**——`⟨⟩` 的既有行為如此（見單測「空注 ⟨⟩ 不炸」），
+        // 不因引入新記法而改動存量行為；`<>` 另由生效條件 2 擋掉（`<` 後為 `>`）。
+        if (inner.includes('\n')) continue;
+        out.push({ start: i, end: j + 1, inner });
+        i = j;
+    }
+    return out;
+}
+
 export function renderInterlinear(
     text: string | null | undefined,
     renderText: (s: string) => React.ReactNode = (s) => s,
 ): React.ReactNode {
     if (!text) return '';
-    if (text.indexOf('\u27e8') < 0) return renderText(text);
+    if (text.indexOf('\u27e8') < 0 && text.indexOf('<') < 0) return renderText(text);
     const out: React.ReactNode[] = [];
-    const re = /\u27e8([^\u27e9]*)\u27e9/g;
     let last = 0;
     let k = 0;
-    let m: RegExpExecArray | null;
-    while ((m = re.exec(text)) !== null) {
-        if (m.index > last) {
-            out.push(<React.Fragment key={k++}>{renderText(text.slice(last, m.index))}</React.Fragment>);
+    for (const m of scanJiazhu(text)) {
+        if (m.start > last) {
+            out.push(<React.Fragment key={k++}>{renderText(text.slice(last, m.start))}</React.Fragment>);
         }
         out.push(
             <span
@@ -787,10 +827,10 @@ export function renderInterlinear(
                     lineHeight: 1.55,
                 }}
             >
-                {renderText(m[1])}
+                {renderText(m.inner)}
             </span>,
         );
-        last = m.index + m[0].length;
+        last = m.end;
     }
     if (last < text.length) {
         out.push(<React.Fragment key={k++}>{renderText(text.slice(last))}</React.Fragment>);

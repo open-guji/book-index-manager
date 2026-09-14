@@ -36,6 +36,55 @@ describe('renderInterlinear', () => {
         expect(html(renderInterlinear('正文⟨注⟩')).textContent).toBe('正文注');
     });
 
+    // ── `<…>` 新記法（2026-09-14 補）──────────────────────────────────
+    //
+    // 背景：用戶 2026-09-14 定「不做全面返工，逐本隨整理自然轉」，
+    // ⇒ `⟨…⟩` 存量與 `<…>` 新本**長期並存**，兩種都必須認。
+    // 改之前線上實況：《漢書藝文志》整理本已換 `<…>`（`⟨…⟩` 歸零），
+    // 而本函數只認 `⟨…⟩` ⇒ 把夾注當正文直出，與坑 1 同型，只是換了記號。
+
+    it('把 <…> 之內包成小字（spec §1 正規記法）', () => {
+        const c = html(renderInterlinear('易傳周氏二篇<字王孫也。>'));
+        expect(c.textContent).toBe('易傳周氏二篇字王孫也。');
+        const jz = c.querySelectorAll('.bim-jiazhu');
+        expect(jz).toHaveLength(1);
+        expect(jz[0].textContent).toBe('字王孫也。');
+    });
+
+    it('兩種記法混排於同一段', () => {
+        const c = html(renderInterlinear('甲⟨舊注⟩乙<新注>丙'));
+        expect(c.textContent).toBe('甲舊注乙新注丙');
+        expect(c.querySelectorAll('.bim-jiazhu')).toHaveLength(2);
+    });
+
+    it('取自庫中實料：漢志條目連師古注', () => {
+        const c = html(renderInterlinear('服氏二篇<師古曰：“劉向《別録》云：服氏，齊人，號服光。”>'));
+        expect(c.querySelectorAll('.bim-jiazhu')[0].textContent)
+            .toBe('師古曰：“劉向《別録》云：服氏，齊人，號服光。”');
+    });
+
+    // spec §1 生效條件 2 的反例——這些都**不是**夾注，須原樣留在正文
+    it.each([
+        ['HTML 標籤', '<div>正文</div>'],
+        ['自動連結', '<https://example.com>'],
+        ['HTML 註釋', '正文<!-- p3 -->後文'],
+        ['比較運算', 'a < b 且 b > c'],
+        ['空記號', '甲<>乙'],
+    ])('不誤判：%s', (_name, src) => {
+        expect(html(renderInterlinear(src)).querySelectorAll('.bim-jiazhu')).toHaveLength(0);
+    });
+
+    it('未閉合按字面，不吞後文（spec §0.3）', () => {
+        const c = html(renderInterlinear('甲<注未閉合乙'));
+        expect(c.textContent).toBe('甲<注未閉合乙');
+        expect(c.querySelectorAll('.bim-jiazhu')).toHaveLength(0);
+    });
+
+    it('起止須同行，不跨 \n（spec §0.2）', () => {
+        const c = html(renderInterlinear('甲<注\n續>乙'));
+        expect(c.querySelectorAll('.bim-jiazhu')).toHaveLength(0);
+    });
+
     it('無注之文原樣返回，不拆成陣列', () => {
         expect(renderInterlinear('史記一百三十卷')).toBe('史記一百三十卷');
     });
