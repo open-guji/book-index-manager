@@ -5,6 +5,8 @@ export type FeedbackType = 'bug' | 'resource';
 export interface FeedbackData {
     type: FeedbackType;
     content: string;
+    /** 选填联系方式（邮箱等）。仅站方可见：后端公开读会剔除此字段 */
+    contact?: string;
 }
 
 export interface FeedbackDialogProps {
@@ -25,6 +27,7 @@ const TYPE_OPTIONS: { value: FeedbackType; label: string; icon: string; placehol
 export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose, onSubmit, feedbackListUrl }) => {
     const [type, setType] = useState<FeedbackType | null>(null);
     const [content, setContent] = useState('');
+    const [contact, setContact] = useState('');
     const [state, setState] = useState<SubmitState>('idle');
     const [errorMsg, setErrorMsg] = useState('');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -33,6 +36,7 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose,
         if (isOpen) {
             setType(null);
             setContent('');
+            setContact('');
             setState('idle');
             setErrorMsg('');
         }
@@ -65,7 +69,7 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose,
         setState('submitting');
         setErrorMsg('');
         try {
-            await onSubmit({ type, content: content.trim() });
+            await onSubmit({ type, content: content.trim(), ...(contact.trim() ? { contact: contact.trim() } : {}) });
             setState('success');
         } catch (e) {
             setState('error');
@@ -127,6 +131,18 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose,
                                 ...textareaStyle,
                                 opacity: type ? 1 : 0.6,
                             }}
+                        />
+
+                        {/* 选填联系方式：只给站方看，公开列表不显示（后端剔除） */}
+                        <input
+                            type="text"
+                            value={contact}
+                            onChange={e => setContact(e.target.value)}
+                            placeholder="邮箱（选填，仅站方可见，方便我们回复您）"
+                            maxLength={200}
+                            disabled={!type || state === 'submitting'}
+                            aria-label="联系方式（选填）"
+                            style={contactInputStyle}
                         />
 
                         {/* Character count */}
@@ -215,4 +231,12 @@ const successStyle: React.CSSProperties = {
 const errorStyle: React.CSSProperties = {
     fontSize: '13px', color: 'var(--bim-danger, #f44336)',
     padding: '8px 12px', background: 'rgba(244,67,54,0.08)', borderRadius: '4px', marginBottom: '12px',
+};
+
+const contactInputStyle: React.CSSProperties = {
+    width: '100%', marginTop: '8px', padding: '8px 12px',
+    fontSize: '13px',
+    border: '1px solid var(--bim-input-border, #ccc)', borderRadius: '6px',
+    background: 'var(--bim-bg, #fff)', color: 'var(--bim-input-fg, #333)',
+    outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
 };

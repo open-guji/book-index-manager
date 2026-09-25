@@ -9,7 +9,7 @@ export interface FeedbackTabProps {
     /**
      * 反馈 API 端点。
      * GET   `${apiUrl}?resourceId=...` 返回 `{ success: boolean, items: FeedbackItem[] }`
-     * POST  `${apiUrl}` body `{ type, content, pageUrl, resourceId }` 返回 2xx
+     * POST  `${apiUrl}` body `{ type, content, contact?, pageUrl, resourceId }`（contact 选填，仅站方可见） 返回 2xx
      * 默认 `/api/feedback`。
      * 也支持函数形式：根据当前 hostname 动态决定（如 localhost → 远程，生产 → 同源）。
      */
@@ -48,7 +48,7 @@ export const FeedbackTab: React.FC<FeedbackTabProps> = ({ resourceId, apiUrl }) 
         loadFeedback();
     }, [loadFeedback]);
 
-    const handleSubmit = async (data: { type: string; content: string }) => {
+    const handleSubmit = async (data: { type: string; content: string; contact?: string }) => {
         const url = resolveApiUrl(apiUrl);
         const res = await fetch(url, {
             method: 'POST',
