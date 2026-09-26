@@ -10,6 +10,8 @@ type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 const TYPE_OPTIONS: { value: FeedbackType; label: string; icon: string; placeholder: string }[] = [
     { value: 'bug', label: '反馈错误', icon: '🐛', placeholder: '请描述您发现的错误，包括页面位置和具体内容' },
     { value: 'resource', label: '添加资源', icon: '📚', placeholder: '请提供完整资源链接和简要版本说明' },
+    { value: 'suggestion', label: '功能建议', icon: '💡', placeholder: '您希望网站增加或改进什么？' },
+    { value: 'contact', label: '想参与', icon: '🤝', placeholder: '想参与整理、校对或合作？简单介绍一下您自己，并留下联系方式（此类留言不公开）' },
 ];
 
 export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit }) => {
@@ -57,7 +59,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit }) => {
     return (
         <div style={wrapperStyle}>
             {/* Type selector */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
                 {TYPE_OPTIONS.map(opt => (
                     <button
                         key={opt.value}

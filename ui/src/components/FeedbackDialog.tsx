@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-export type FeedbackType = 'bug' | 'resource';
+// 提交端可选的四类；服务端另有 'other'（仅后台改类型用，G-23 第二批）。
+// 'contact'（想参与）服务端永不公开。
+export type FeedbackType = 'bug' | 'resource' | 'suggestion' | 'contact';
 
 export interface FeedbackData {
     type: FeedbackType;
@@ -22,6 +24,8 @@ type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 const TYPE_OPTIONS: { value: FeedbackType; label: string; icon: string; placeholder: string }[] = [
     { value: 'bug', label: '反馈错误', icon: '🐛', placeholder: '请描述您发现的错误，包括页面位置和具体内容' },
     { value: 'resource', label: '添加资源', icon: '📚', placeholder: '请提供完整资源链接和简要版本说明' },
+    { value: 'suggestion', label: '功能建议', icon: '💡', placeholder: '您希望网站增加或改进什么？' },
+    { value: 'contact', label: '想参与', icon: '🤝', placeholder: '想参与整理、校对或合作？简单介绍一下您自己，并留下联系方式（此类留言不公开）' },
 ];
 
 export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose, onSubmit, feedbackListUrl }) => {
@@ -104,7 +108,7 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose,
                 ) : (
                     <>
                         {/* Type selector */}
-                        <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
                             {TYPE_OPTIONS.map(opt => (
                                 <button
                                     key={opt.value}
@@ -199,7 +203,7 @@ const closeBtnStyle: React.CSSProperties = {
 };
 
 const typeBtnStyle: React.CSSProperties = {
-    flex: 1, padding: '10px 12px', fontSize: '13px', border: '1px solid var(--bim-widget-border, #e0e0e0)',
+    flex: '1 1 calc(50% - 4px)', padding: '10px 12px', fontSize: '13px', border: '1px solid var(--bim-widget-border, #e0e0e0)',
     borderRadius: '6px', background: 'var(--bim-input-bg, #fff)', color: 'var(--bim-fg, #333)',
     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
     transition: 'border-color 0.2s, background 0.2s',

@@ -48,3 +48,26 @@ describe('FeedbackDialog 联系方式', () => {
         expect(onSubmit).toHaveBeenCalledWith({ type: 'bug', content: '链接坏了', contact: 'wx: reader01' });
     });
 });
+
+// ---------------------------------------------------------------------------
+// 2026-09-26 用户定：提交端也能直接选「功能建议」「想参与」（此前只能在后台改类型）。
+// ---------------------------------------------------------------------------
+describe('提交端可选「功能建议」「想参与」', () => {
+    it.each([
+        ['功能建议', 'suggestion', /您希望网站增加或改进什么/],
+        ['想参与', 'contact', /想参与整理、校对或合作/],
+    ])('FeedbackForm 选「%s」提交 type=%s', async (label, value, placeholder) => {
+        const onSubmit = vi.fn().mockResolvedValue(undefined);
+        render(<FeedbackForm onSubmit={onSubmit} />);
+        fireEvent.click(screen.getByText(label));
+        fireEvent.change(screen.getByPlaceholderText(placeholder), { target: { value: '内容' } });
+        fireEvent.click(screen.getByText('提交'));
+        await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+        expect(onSubmit.mock.calls[0][0]).toEqual({ type: value, content: '内容' });
+    });
+
+    it('FeedbackDialog 四类按钮都在', () => {
+        render(<FeedbackDialog isOpen onClose={() => {}} onSubmit={vi.fn()} />);
+        for (const t of ['反馈错误', '添加资源', '功能建议', '想参与']) expect(screen.getByText(t)).toBeTruthy();
+    });
+});
