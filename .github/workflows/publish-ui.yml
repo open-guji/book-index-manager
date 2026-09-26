@@ -70,9 +70,10 @@ jobs:
         if: ${{ !inputs.dry_run }}
         run: |
           V=$(node -p "require('./package.json').version")
-          for i in 1 2 3 4 5 6; do
-            got=$(npm view "book-index-ui@$V" version 2>/dev/null || true)
-            [ "$got" = "$V" ] && { echo "registry 已见 $V"; exit 0; }
+          # registry 回显常滞后 1 分钟以上（09-26 首发实测约 75 秒），等到 5 分钟
+          for i in $(seq 1 30); do
+            got=$(npm view "book-index-ui@$V" version --prefer-online 2>/dev/null || true)
+            [ "$got" = "$V" ] && { echo "registry 已见 $V（第 $i 次）"; exit 0; }
             sleep 10
           done
-          echo "::error::publish 后 60 秒内 registry 仍查不到 $V"; exit 1
+          echo "::error::publish 后 5 分钟内 registry 仍查不到 $V"; exit 1
