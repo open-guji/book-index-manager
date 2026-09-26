@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { BookFullTextIndex } from '../types';
 import type { IndexStorage } from '../storage/types';
-import { ReaderLayout } from './detail/primitives';
+import { ReaderLayout, renderInterlinear } from './detail/primitives';
 
 interface BookFullTextProps {
     /** 全文目录（外部可注入，避免重复请求） */
@@ -189,8 +189,9 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
                         wordBreak: 'break-word',
                         fontFamily: '"Songti SC", "Source Han Serif", "Noto Serif CJK SC", serif',
                     }}>
-                        {/* 去掉首行 ## 标题（已在 header 显示），其余原样展示 */}
-                        {chapterText.replace(/^##\s+[^\n]+\n+/, '')}
+                        {/* 去掉首行 ## 标题（已在 header 显示），其余原样展示；
+                            夹注（⟨…⟩／<…>）以小字渲染——此前未接，维基全文（如《公羊傳》）的注直出尖括号 */}
+                        {renderInterlinear(chapterText.replace(/^##\s+[^\n]+\n+/, ''))}
                     </article>
                 )}
 
