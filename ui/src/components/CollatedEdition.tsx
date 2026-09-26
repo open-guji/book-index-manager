@@ -7,6 +7,8 @@ import { LoadingDots } from './common/LoadingDots';
 import { Tooltip } from './common/Tooltip';
 import { useBidUrl } from '../core/bid-url';
 import { renderInterlinear, truncateOutsideJiazhu, ReaderLayout } from './detail/primitives';
+import { buildParagraphBlocks, useReadingMode, type ReadingMode } from '../core/paragraphize';
+import { LocaleToggle } from './LocaleToggle';
 
 export interface CollatedEditionProps {
     /** 直接传入卷列表索引 */
@@ -1319,14 +1321,52 @@ function KaozhenContent({
     );
 }
 
-/** 原文模式：直接渲染 md 文本（逐行处理标题和粗体） */
-function MdTextView({ text, highlightQuery = '' }: { text: string; highlightQuery?: string }) {
+/** 行内 **粗体** 处理，「条目分行」与「自然段」两种模式共用 */
+function renderBoldSegments(text: string, hl: (s: string) => React.ReactNode, keyPrefix: React.Key): React.ReactNode {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, j) =>
+        part.startsWith('**') && part.endsWith('**')
+            ? <strong key={`${keyPrefix}-${j}`}>{hl(part.slice(2, -2))}</strong>
+            : <React.Fragment key={`${keyPrefix}-${j}`}>{hl(part)}</React.Fragment>
+    );
+}
+
+const HEADING_STYLE: Record<number, React.CSSProperties> = {
+    1: { fontSize: '17px', fontWeight: 700, margin: '16px 0 8px' },
+    2: { fontSize: '16px', fontWeight: 600, margin: '14px 0 6px' },
+    3: { fontSize: '15px', fontWeight: 600, margin: '12px 0 4px' },
+};
+
+/** 原文模式：直接渲染 md 文本。mode='line'（条目分行，现状）逐行处理标题和粗体；
+ *  mode='paragraph'（自然段聚合）按体裁把条目拼成段落，见 core/paragraphize.ts。 */
+export function MdTextView({ text, highlightQuery = '', mode = 'line' }: { text: string; highlightQuery?: string; mode?: ReadingMode }) {
     const { convert } = useConvert();
     const normalizer = useSearchNormalizer();
     const hl = (s: string): React.ReactNode => {
         return renderInterlinear(convert(s), (seg) =>
             highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
     };
+
+    if (mode === 'paragraph') {
+        const blocks = buildParagraphBlocks(text);
+        return (
+            <div style={{ fontSize: '15px', lineHeight: 2.2, color: 'var(--bim-fg, #333)', textAlign: 'justify' }}>
+                {blocks.map((b, i) => {
+                    if (b.kind === 'heading') {
+                        const level = b.level && b.level <= 3 ? b.level : 3;
+                        const Tag: React.ElementType = level === 1 ? 'h2' : level === 2 ? 'h3' : 'h4';
+                        return <Tag key={i} style={HEADING_STYLE[level]}>{hl(b.text)}</Tag>;
+                    }
+                    return (
+                        <p key={i} style={{ margin: '8px 0', textIndent: '2em', whiteSpace: 'normal' }}>
+                            {renderBoldSegments(b.text, hl, i)}
+                        </p>
+                    );
+                })}
+            </div>
+        );
+    }
+
     const lines = text.split('\n');
     return (
         <div style={{ fontSize: '15px', lineHeight: 2.2, color: 'var(--bim-fg, #333)', textAlign: 'justify' }}>
@@ -1344,15 +1384,9 @@ function MdTextView({ text, highlightQuery = '' }: { text: string; highlightQuer
                     const prevEmpty = i > 0 && !lines[i - 1].trim();
                     return prevEmpty ? null : <div key={i} style={{ height: '0.5em' }} />;
                 }
-                // 处理行内 **粗体**
-                const parts = line.split(/(\*\*[^*]+\*\*)/g);
                 return (
                     <p key={i} style={{ margin: '6px 0', textIndent: '2em', whiteSpace: 'pre-wrap' }}>
-                        {parts.map((part, j) =>
-                            part.startsWith('**') && part.endsWith('**')
-                                ? <strong key={j}>{hl(part.slice(2, -2))}</strong>
-                                : <React.Fragment key={j}>{hl(part)}</React.Fragment>
-                        )}
+                        {renderBoldSegments(line, hl, i)}
                     </p>
                 );
             })}
@@ -1438,7 +1472,7 @@ function RawTextView({ sections, onNavigate, highlightQuery = '' }: { sections: 
     );
 }
 
-function JuanContent({
+export function JuanContent({
     juan,
     rawText,
     searchQuery,
@@ -1452,6 +1486,7 @@ function JuanContent({
     const { convert } = useConvert();
     const normalizer = useSearchNormalizer();
     const [viewMode, setViewMode] = useState<'catalog' | 'raw'>('catalog');
+    const [readingMode, setReadingMode] = useReadingMode();
     const q = searchQuery.trim();
 
     // 目录模式：过滤；原文模式：保持完整内容，仅做高亮
@@ -1518,10 +1553,45 @@ function JuanContent({
                 </div>
             </div>
 
+            {/* 原文视图工具栏：分行/自然段 ＋ 繁简（与「目錄／原文」切换并列，只在原文视图显示） */}
+            {viewMode === 'raw' && (
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '14px',
+                    marginBottom: '10px',
+                    fontSize: '12.5px',
+                    color: 'var(--bim-desc-fg, #999)',
+                }}>
+                    {rawText && (
+                        <div style={{ display: 'flex', gap: '2px' }}>
+                            {(['line', 'paragraph'] as const).map(m => (
+                                <button
+                                    key={m}
+                                    onClick={() => setReadingMode(m)}
+                                    style={{
+                                        padding: '2px 8px',
+                                        fontSize: '11px',
+                                        border: '1px solid var(--bim-widget-border, #ddd)',
+                                        borderRadius: m === 'line' ? '3px 0 0 3px' : '0 3px 3px 0',
+                                        background: readingMode === m ? 'var(--bim-primary, #8e6f3e)' : 'var(--bim-input-bg, #fff)',
+                                        color: readingMode === m ? '#fff' : 'var(--bim-desc-fg, #999)',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    {m === 'line' ? '條目分行' : '自然段'}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                    <LocaleToggle />
+                </div>
+            )}
+
             {/* 原文模式：完整内容 + 高亮 */}
             {viewMode === 'raw' && (
                 rawText
-                    ? <MdTextView text={rawText} highlightQuery={q} />
+                    ? <MdTextView text={rawText} highlightQuery={q} mode={readingMode} />
                     : <RawTextView sections={juan.sections} onNavigate={onNavigate} highlightQuery={q} />
             )}
 

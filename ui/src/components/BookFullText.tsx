@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { BookFullTextIndex } from '../types';
 import type { IndexStorage } from '../storage/types';
-import { ReaderLayout } from './detail/primitives';
+import { ReaderLayout, renderInterlinear } from './detail/primitives';
+import { useConvert } from '../i18n';
+import { buildParagraphBlocks, useReadingMode } from '../core/paragraphize';
+import { LocaleToggle } from './LocaleToggle';
 
 interface BookFullTextProps {
     /** 全文目录（外部可注入，避免重复请求） */
@@ -21,6 +24,51 @@ interface BookFullTextProps {
  */
 function normalizeChapterKey(s: string): string {
     return s.replace(/\.md$/, '');
+}
+
+const CHAPTER_HEADING_STYLE: Record<number, React.CSSProperties> = {
+    1: { fontSize: 19, fontWeight: 700, margin: '18px 0 10px' },
+    2: { fontSize: 18, fontWeight: 600, margin: '16px 0 8px' },
+    3: { fontSize: 17, fontWeight: 600, margin: '14px 0 6px' },
+};
+
+/**
+ * 章节正文渲染。mode='line'（条目分行，现状）保持原样一整块 pre-wrap 展示；
+ * mode='paragraph'（自然段聚合）按 core/paragraphize.ts 的体裁规则拼段。
+ * 两种模式都过 renderInterlinear／convert——此前本组件未接夹注渲染，
+ * 公羊傳这类傳文即长夹注的文本会直出尖括号，顺带在这里接上。
+ */
+export function ChapterBody({ text, mode, convert }: { text: string; mode: 'line' | 'paragraph'; convert: (s: string | undefined | null) => string }) {
+    const hl = (s: string): React.ReactNode => renderInterlinear(convert(s));
+    const articleStyle: React.CSSProperties = {
+        fontSize: 16,
+        lineHeight: 1.9,
+        color: 'var(--bim-fg, #2c2c2c)',
+        wordBreak: 'break-word',
+        fontFamily: '"Songti SC", "Source Han Serif", "Noto Serif CJK SC", serif',
+    };
+
+    if (mode === 'paragraph') {
+        const blocks = buildParagraphBlocks(text);
+        return (
+            <article style={{ ...articleStyle, whiteSpace: 'normal', textAlign: 'justify' }}>
+                {blocks.map((b, i) => {
+                    if (b.kind === 'heading') {
+                        const level = b.level && b.level <= 3 ? b.level : 3;
+                        const Tag: React.ElementType = level === 1 ? 'h3' : level === 2 ? 'h4' : 'h5';
+                        return <Tag key={i} style={CHAPTER_HEADING_STYLE[level]}>{hl(b.text)}</Tag>;
+                    }
+                    return <p key={i} style={{ margin: '8px 0', textIndent: '2em' }}>{hl(b.text)}</p>;
+                })}
+            </article>
+        );
+    }
+
+    return (
+        <article style={{ ...articleStyle, whiteSpace: 'pre-wrap' }}>
+            {hl(text)}
+        </article>
+    );
 }
 
 /**
@@ -46,6 +94,8 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
 
     const [chapterText, setChapterText] = useState<string | null>(null);
     const [textLoading, setTextLoading] = useState(false);
+    const { convert } = useConvert();
+    const [readingMode, setReadingMode] = useReadingMode();
 
     // 同步外部 index prop
     useEffect(() => {
@@ -163,9 +213,33 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
                         paddingBottom: 12,
                         borderBottom: '1px solid var(--bim-border, #e5e5e5)',
                     }}>
-                        <h2 style={{ margin: 0, fontSize: 20, color: 'var(--bim-fg, #2c2c2c)' }}>
-                            {currentChapterMeta.title}
-                        </h2>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+                            <h2 style={{ margin: 0, fontSize: 20, color: 'var(--bim-fg, #2c2c2c)' }}>
+                                {currentChapterMeta.title}
+                            </h2>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
+                                <div style={{ display: 'flex', gap: '2px' }}>
+                                    {(['line', 'paragraph'] as const).map(m => (
+                                        <button
+                                            key={m}
+                                            onClick={() => setReadingMode(m)}
+                                            style={{
+                                                padding: '2px 8px',
+                                                fontSize: '11px',
+                                                border: '1px solid var(--bim-widget-border, #ddd)',
+                                                borderRadius: m === 'line' ? '3px 0 0 3px' : '0 3px 3px 0',
+                                                background: readingMode === m ? 'var(--bim-primary, #8e6f3e)' : 'var(--bim-input-bg, #fff)',
+                                                color: readingMode === m ? '#fff' : 'var(--bim-desc-fg, #999)',
+                                                cursor: 'pointer',
+                                            }}
+                                        >
+                                            {m === 'line' ? '條目分行' : '自然段'}
+                                        </button>
+                                    ))}
+                                </div>
+                                <LocaleToggle />
+                            </div>
+                        </div>
                         <div style={{ marginTop: 6, fontSize: 12, color: 'var(--bim-desc-fg, #888)' }}>
                             来源：<a href={index.source.url} target="_blank" rel="noreferrer"
                                 style={{ color: 'var(--bim-primary, #8B0000)' }}>
@@ -181,17 +255,12 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
                 )}
 
                 {!textLoading && chapterText && (
-                    <article style={{
-                        fontSize: 16,
-                        lineHeight: 1.9,
-                        color: 'var(--bim-fg, #2c2c2c)',
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-word',
-                        fontFamily: '"Songti SC", "Source Han Serif", "Noto Serif CJK SC", serif',
-                    }}>
-                        {/* 去掉首行 ## 标题（已在 header 显示），其余原样展示 */}
-                        {chapterText.replace(/^##\s+[^\n]+\n+/, '')}
-                    </article>
+                    <ChapterBody
+                        // 去掉首行 ## 标题（已在 header 显示），其余原样展示
+                        text={chapterText.replace(/^##\s+[^\n]+\n+/, '')}
+                        mode={readingMode}
+                        convert={convert}
+                    />
                 )}
 
                 {!textLoading && !chapterText && (
