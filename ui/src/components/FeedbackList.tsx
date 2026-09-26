@@ -4,10 +4,12 @@ import { useBidUrl } from '../core/bid-url';
 
 export interface FeedbackItem {
     id: string;
-    type: 'bug' | 'resource';
+    // G-23 第二批：type/status 服务端已扩充（suggestion/contact/other、in_progress/wontfix/duplicate）。
+    // 旧版 UI 不认识的取值一律回退显示「其他」/「待处理」，不能崩——见 TYPE_CONFIG/STATUS_CONFIG 的 fallback。
+    type: 'bug' | 'resource' | 'suggestion' | 'contact' | 'other' | (string & {});
     content: string;
     createdAt: string;
-    status: 'pending' | 'resolved';
+    status: 'pending' | 'in_progress' | 'resolved' | 'wontfix' | 'duplicate' | (string & {});
     reply?: string;
     pageUrl?: string;
     resourceId?: string;
@@ -18,15 +20,22 @@ export interface FeedbackListProps {
     loading?: boolean;
 }
 
-const TYPE_CONFIG = {
+const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
     bug: { label: '错误反馈', color: 'var(--bim-danger, #f44336)' },
     resource: { label: '资源建议', color: 'var(--bim-primary, #0078d4)' },
+    suggestion: { label: '功能建议', color: 'var(--bim-primary, #0078d4)' },
+    other: { label: '其他', color: 'var(--bim-desc-fg, #999)' },
 };
+const FALLBACK_TYPE = { label: '其他', color: 'var(--bim-desc-fg, #999)' };
 
-const STATUS_CONFIG = {
+const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
     pending: { label: '待处理', color: 'var(--bim-warning, #ff9800)' },
+    in_progress: { label: '处理中', color: 'var(--bim-primary, #0078d4)' },
     resolved: { label: '已处理', color: 'var(--bim-success, #4caf50)' },
+    wontfix: { label: '不采纳', color: 'var(--bim-desc-fg, #999)' },
+    duplicate: { label: '重复', color: 'var(--bim-desc-fg, #999)' },
 };
+const FALLBACK_STATUS = { label: '待处理', color: 'var(--bim-warning, #ff9800)' };
 
 function formatTime(iso: string): string {
     try {
@@ -35,6 +44,22 @@ function formatTime(iso: string): string {
         return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
     } catch {
         return iso;
+    }
+}
+
+/**
+ * G-23 第二批 §一·10：pageUrl 只对本站域名渲染成链接，任意外部网址一律按纯文本展示。
+ * “本站”＝当前查看页面所在的域名（不硬编码域名——book-index-ui 是通用组件，不该认哪个站是自己）。
+ */
+export function isSameSiteUrl(url: string | undefined, currentHref: string): boolean {
+    if (!url) return false;
+    try {
+        const target = new URL(url, currentHref);
+        if (target.protocol !== 'http:' && target.protocol !== 'https:') return false;
+        const current = new URL(currentHref);
+        return target.hostname === current.hostname;
+    } catch {
+        return false;
     }
 }
 
@@ -51,8 +76,9 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({ items, loading }) =>
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {items.map(item => {
-                const typeConf = TYPE_CONFIG[item.type];
-                const statusConf = STATUS_CONFIG[item.status];
+                const typeConf = TYPE_CONFIG[item.type] || FALLBACK_TYPE;
+                const statusConf = STATUS_CONFIG[item.status] || FALLBACK_STATUS;
+                const pageUrlIsOwn = typeof window !== 'undefined' && isSameSiteUrl(item.pageUrl, window.location.href);
                 return (
                     <div key={item.id} style={cardStyle}>
                         {/* Header: type badge + status + time */}
@@ -77,9 +103,13 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({ items, loading }) =>
                                     </a>
                                 )}
                                 {item.pageUrl && !item.resourceId && (
-                                    <a href={item.pageUrl} style={sourceLinkStyle}>
-                                        {item.pageUrl.replace(/^https?:\/\/[^/]+/, '')}
-                                    </a>
+                                    pageUrlIsOwn ? (
+                                        <a href={item.pageUrl} style={sourceLinkStyle}>
+                                            {item.pageUrl.replace(/^https?:\/\/[^/]+/, '')}
+                                        </a>
+                                    ) : (
+                                        <span style={sourceLinkStyle}>{item.pageUrl}</span>
+                                    )
                                 )}
                             </div>
                         )}
