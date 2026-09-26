@@ -1,0 +1,78 @@
+name: Publish book-index-ui
+
+# 手动触发（Actions 页「Run workflow」，或 API workflow_dispatch）。
+# 不用 push/tag 触发：见 test.yml 注，push 事件在本仓不可靠。
+#
+# 走 npm Trusted Publishing（OIDC）：不存任何 npm token。
+# 前提：npmjs.com → book-index-ui → Settings → Trusted Publisher 里
+# 登记 GitHub Actions：open-guji / book-index-manager / publish-ui.yml。
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: '只跑测试与打包，不真发（npm publish --dry-run）'
+        type: boolean
+        default: false
+
+permissions:
+  id-token: write   # OIDC，Trusted Publishing 必需
+  contents: read
+
+concurrency:
+  group: publish-ui
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+          cache-dependency-path: ui/package-lock.json
+      - name: npm ≥ 11.5.1（Trusted Publishing 需要）
+        run: npm install -g npm@latest && npm --version
+
+      - name: 版本不得已在 npm 上
+        run: |
+          V=$(node -p "require('./package.json').version")
+          echo "package.json version: $V"
+          if npm view "book-index-ui@$V" version >/dev/null 2>&1; then
+            echo "::error::book-index-ui@$V 已发布过，先 bump ui/package.json 的 version"
+            exit 1
+          fi
+
+      - name: Install
+        run: npm ci
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build:lib
+      - name: 包内容
+        run: npm pack --dry-run
+
+      - name: Publish
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            npm publish --dry-run --ignore-scripts
+          else
+            npm publish --ignore-scripts
+          fi
+      # --ignore-scripts：上面已 build 过，避免 prepublishOnly 重复构建
+
+      - name: 核对 registry
+        if: ${{ !inputs.dry_run }}
+        run: |
+          V=$(node -p "require('./package.json').version")
+          for i in 1 2 3 4 5 6; do
+            got=$(npm view "book-index-ui@$V" version 2>/dev/null || true)
+            [ "$got" = "$V" ] && { echo "registry 已见 $V"; exit 0; }
+            sleep 10
+          done
+          echo "::error::publish 后 60 秒内 registry 仍查不到 $V"; exit 1
