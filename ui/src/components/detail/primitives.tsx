@@ -803,6 +803,27 @@ function scanJiazhu(text: string): { start: number; end: number; inner: string }
     return out;
 }
 
+/**
+ * 截取預覽：最多 `max` 字，但**不把夾注切成兩半**。
+ *
+ * 目錄視圖的摺疊摘要行原先是 `content.slice(0, 80)` 硬截；截斷點落在
+ * `<李奇曰…>` 中間時閉合記號被截掉，剩下半截按 spec §0.3「未閉合按字面」
+ * 直出成 `<李奇曰：“隱微…`（2026-09-26 E-03 線上核驗：漢志卷 1 目錄視圖 29 處）。
+ * 截斷點若落在某注之內：注前有正文就截在注前，注在開頭就整注保留。
+ */
+export function truncateOutsideJiazhu(text: string, max: number): string {
+    if (text.length <= max) return text;
+    let cut = max;
+    for (const m of scanJiazhu(text)) {
+        if (m.start >= cut) break;
+        if (m.end > cut) {
+            cut = m.start > 0 ? m.start : m.end;
+            break;
+        }
+    }
+    return text.slice(0, cut);
+}
+
 export function renderInterlinear(
     text: string | null | undefined,
     renderText: (s: string) => React.ReactNode = (s) => s,

@@ -113,3 +113,52 @@ describe('renderInterlinear', () => {
         expect(html(renderInterlinear('甲⟨⟩乙')).textContent).toBe('甲乙');
     });
 });
+
+// ---------------------------------------------------------------------------
+// 2026-09-26 E-03 線上核驗：0.9.2 之後「原文」視圖兩記法都好，「目錄」視圖仍直出——
+// 摺疊摘要行硬截 80 字切進了夾注；序文塊（OtherSection）根本沒走夾注渲染。
+// ---------------------------------------------------------------------------
+import { truncateOutsideJiazhu } from '../../src/components/detail/primitives';
+import { OtherSection } from '../../src/components/CollatedEdition';
+
+describe('truncateOutsideJiazhu：截預覽不切進夾注', () => {
+    it('不超長原樣返回', () => {
+        expect(truncateOutsideJiazhu('甲<注>乙', 80)).toBe('甲<注>乙');
+    });
+
+    it('截斷點落在 <…> 之內：截在注前', () => {
+        const s = '易經十二篇<李奇曰：“隱微不顯之言也。”師古曰：“精微要妙之言耳。”>施孟梁丘三家';
+        const out = truncateOutsideJiazhu(s, 10);
+        expect(out).toBe('易經十二篇');
+        // 截出來的片段再渲染，不得留半截記號
+        const c = html(renderInterlinear(out + '…'));
+        expect(c.textContent).not.toMatch(/[<⟨]/);
+    });
+
+    it('⟨…⟩ 同理', () => {
+        expect(truncateOutsideJiazhu('張敷華介軒集⟨字缺安福人都察院左都御史⟩', 8)).toBe('張敷華介軒集');
+    });
+
+    it('注在開頭：整注保留', () => {
+        const s = '<師古曰：“此總序也。”>' + '正文'.repeat(40);
+        const out = truncateOutsideJiazhu(s, 5);
+        expect(out).toBe('<師古曰：“此總序也。”>');
+        expect(html(renderInterlinear(out)).querySelectorAll('.bim-jiazhu')).toHaveLength(1);
+    });
+
+    it('截斷點在注外：照常截', () => {
+        expect(truncateOutsideJiazhu('甲<注>乙丙丁戊', 5)).toBe('甲<注>乙');
+    });
+
+    it('截斷點恰在注尾之後：不受影響', () => {
+        expect(truncateOutsideJiazhu('甲<注>乙', 4)).toBe('甲<注>');
+    });
+});
+
+describe('OtherSection（序文等塊）渲染夾注', () => {
+    it('<…> 與 ⟨…⟩ 都成小字、不留記號', () => {
+        const c = render(<OtherSection section={{ type: 'preface', content: '昔仲尼沒而微言絕<師古曰：“微言，精微要妙之言耳。”>，七十子喪而大義乖⟨注⟩。' } as never} />).container;
+        expect(c.textContent).not.toMatch(/[<>⟨⟩]/);
+        expect(c.querySelectorAll('.bim-jiazhu')).toHaveLength(2);
+    });
+});

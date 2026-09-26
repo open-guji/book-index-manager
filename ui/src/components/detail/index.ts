@@ -15,5 +15,6 @@ export {
     DetailFooter, EmptyNote, BidLink, ExtLink,
     Dash, GlyphBadge, DETAIL_CSS, PAGE_MAX_WIDTH,
     renderInterlinear,
+    truncateOutsideJiazhu,
 } from './primitives';
 export type { FactItem, LinkContext, RenderLink, TableSpec, CrumbItem } from './primitives';
