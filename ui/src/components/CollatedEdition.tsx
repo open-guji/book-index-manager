@@ -6,7 +6,7 @@ import { useConvert } from '../i18n';
 import { LoadingDots } from './common/LoadingDots';
 import { Tooltip } from './common/Tooltip';
 import { useBidUrl } from '../core/bid-url';
-import { renderInterlinear, ReaderLayout } from './detail/primitives';
+import { renderInterlinear, truncateOutsideJiazhu, ReaderLayout } from './detail/primitives';
 
 export interface CollatedEditionProps {
     /** 直接传入卷列表索引 */
@@ -626,7 +626,7 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
         if (highlightQuery) setExpanded(true);
     }, [highlightQuery]);
     // 缩略预览：直接截取 content 前段
-    const preview = !expanded && hasLongContent ? section.content!.replace(/\n/g, ' ').slice(0, 80) + '…' : null;
+    const preview = !expanded && hasLongContent ? truncateOutsideJiazhu(section.content!.replace(/\n/g, ' '), 80) + '…' : null;
 
     return (
         <div style={{
@@ -914,14 +914,16 @@ export function isPageHeaderContent(section: { type?: string; content?: string }
     return (section.content || '').length >= PAGE_HEADER_TEXT_MIN;
 }
 
-function OtherSection({ section, highlightQuery = '' }: { section: CollatedSection; highlightQuery?: string }) {
+export function OtherSection({ section, highlightQuery = '' }: { section: CollatedSection; highlightQuery?: string }) {
     const { convert } = useConvert();
     const normalizer = useSearchNormalizer();
     // 短 page_header 是每页重复的书口题名，丢弃；长的其实是正文，照常渲染
     if (normSectionType(section.type) === 'page_header' && !isPageHeaderContent(section)) return null;
     if (!section.content && !section.title) return null;
     const rawText = convert((section.content || section.title || '').replace(/\n{2,}/g, '\n'));
-    const text: React.ReactNode = highlightQuery ? renderHighlighted(rawText, highlightQuery, normalizer) : rawText;
+    // 序／結語等塊原先直出 rawText，夾注兩種記法都沒渲染（2026-09-26 E-03：漢志卷首總序整段 `<師古曰…>` 直出）
+    const text: React.ReactNode = renderInterlinear(rawText, (seg) =>
+        highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
     const normType = normSectionType(section.type);
     const typeColor = SECTION_TYPE_COLORS[normType] || 'var(--bim-desc-fg, #717171)';
     // 序/结语/注释：带左边框、类型标签，与"书"条目区分
@@ -1060,7 +1062,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
 
     // 截取前80字作为预览
     const preview = hasContent && !expanded
-        ? (section.content!.length > 80 ? section.content!.slice(0, 80) + '……' : null)
+        ? (section.content!.length > 80 ? truncateOutsideJiazhu(section.content!, 80) + '……' : null)
         : null;
 
     return (
