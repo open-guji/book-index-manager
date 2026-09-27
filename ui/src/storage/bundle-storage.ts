@@ -434,19 +434,15 @@ export class BundleStorage implements IndexStorage {
     // ─── 整理本 ───
 
     async getCollatedEditionIndex(workId: string): Promise<CollatedEditionIndex | null> {
-        // 2026-08-26 归一把清单档 collated_edition_index.json 更名 index.json
-        // （book-text 拆分后新写入的整理本全部用新名）。旧名仍保留兜底，兼容
-        // 尚未触碰过、还留着老文件名的存量条目。
+        // 2026-08-26 归一把清单档 collated_edition_index.json 更名 index.json；
+        // 旧名兜底已删——e2e 合同测试 `整理本清单档用新文件名 index.json`
+        // （kaiyuanguji-web e2e/contract/data-pipeline.spec.ts）把关，且 2026-09-27
+        // 抽查 5 部真实整理本（直齋書錄解題等）旧名 collated_edition_index.json
+        // 均已 404，无条目回退到它。保留旧名请求只会给没有整理本的条目多打
+        // 一个必 404 的请求。
         try {
             return await this.fetchJson<CollatedEditionIndex>(
                 `${this.basePath}/items/${workId}/collated_edition/index.json`
-            );
-        } catch {
-            // fall through to legacy name
-        }
-        try {
-            return await this.fetchJson<CollatedEditionIndex>(
-                `${this.basePath}/items/${workId}/collated_edition/collated_edition_index.json`
             );
         } catch {
             return null;
