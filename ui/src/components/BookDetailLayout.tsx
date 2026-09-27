@@ -18,6 +18,7 @@ import type {
     ResourceCatalog,
     CollatedEditionIndex,
     BookFullTextIndex,
+    WorkFullTextEntry,
     WorkDetailData,
     BookDetailData,
     CollectionDetailData,
@@ -177,6 +178,10 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     const [collatedLoading, setCollatedLoading] = useState(false);
     const [bookFullTextIndex, setBookFullTextIndex] = useState<BookFullTextIndex | null>(null);
     const [bookFullTextLoading, setBookFullTextLoading] = useState(false);
+    /* Work 全文：候选清单（首项 primary）＋当前选中哪一份 */
+    const [workFullTexts, setWorkFullTexts] = useState<WorkFullTextEntry[]>([]);
+    const [workFullTextLoading, setWorkFullTextLoading] = useState(false);
+    const [workFullTextKey, setWorkFullTextKey] = useState<string | null>(null);
     const [lineageGraph, setLineageGraph] = useState<LineageGraph | null>(null);
     const [lineageLoading, setLineageLoading] = useState(false);
     const lineageSourceRef = useRef<{ work: WorkDetailData; books: BookDetailData[] } | null>(null);
@@ -234,6 +239,22 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         }
     }, [transport]);
 
+    const loadWorkFullText = useCallback(async (workId: string) => {
+        if (!transport.getWorkFullTextList) { setWorkFullTexts([]); return; }
+        setWorkFullTextLoading(true);
+        try {
+            // 只收 Work 层的；primary 缺省时（实测有单份清单不带该字段）回退首项
+            const list = ((await transport.getWorkFullTextList(workId)) ?? [])
+                .filter(v => v.owner_type !== 'Book');
+            setWorkFullTexts(list);
+            setWorkFullTextKey((list.find(v => v.primary) ?? list[0])?.key ?? null);
+        } catch {
+            setWorkFullTexts([]);
+        } finally {
+            setWorkFullTextLoading(false);
+        }
+    }, [transport]);
+
     const loadLineage = useCallback(async (workId: string, workData: IndexDetailData) => {
         setLineageLoading(true);
         try {
@@ -286,6 +307,9 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             setDetail(null);
             setCatalogList([]);
             setCollatedIndex(null);
+            setBookFullTextIndex(null);
+            setWorkFullTexts([]);
+            setWorkFullTextKey(null);
             setLineageGraph(null);
             lineageSourceRef.current = null;
 
@@ -323,6 +347,9 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     if ((detailData as WorkDetailData).version_graph || transport.getLineageGraph) {
                         loadLineage(id, detailData);
                     }
+                    if (transport.getWorkFullTextList) {
+                        loadWorkFullText(id);
+                    }
                 } else if (detailData.type === 'book') {
                     if ((detailData as { has_full_text?: boolean }).has_full_text && transport.getBookFullTextIndex) {
                         loadBookFullText(id);
@@ -336,7 +363,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         };
         load();
         return () => { cancelled = true; };
-    }, [id, transport, enrichDetail, loadCatalogs, loadCollated, loadLineage, loadBookFullText]);
+    }, [id, transport, enrichDetail, loadCatalogs, loadCollated, loadLineage, loadBookFullText, loadWorkFullText]);
 
     // 切换 collection 时仅 rebuild graph，不重新拉 books
     useEffect(() => {
@@ -384,6 +411,13 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             navItems.push({
                 key: 'fulltext',
                 label: bookFullTextLoading ? `${t.detailTab.fullText}…` : t.detailTab.fullText,
+            });
+        }
+
+        if (detail.type === 'work' && (workFullTexts.length > 0 || workFullTextLoading) && activeTab === 'fulltext') {
+            navItems.push({
+                key: 'fulltext',
+                label: workFullTextLoading ? `${t.detailTab.fullText}…` : t.detailTab.fullText,
             });
         }
 
@@ -512,15 +546,40 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     onNavigate={onNavigate}
                     renderLink={renderLink}
                     collatedSection={
-                        collatedIndex && (collatedIndex.juan_files?.length ?? 0) > 0 ? (
-                            <FullTextBanner
-                                title={detail.title}
-                                measure={`${collatedIndex.juan_files!.length} ${convert(t.unit.juan)}`}
-                                onOpen={() => {
-                                    setActiveJuan(collatedIndex.juan_files![0]);
-                                    onTabChange('collated');
-                                }}
-                            />
+                        (collatedIndex && (collatedIndex.juan_files?.length ?? 0) > 0)
+                            || workFullTexts.length > 0 ? (
+                            <>
+                                {collatedIndex && (collatedIndex.juan_files?.length ?? 0) > 0 && (
+                                    <FullTextBanner
+                                        title={detail.title}
+                                        measure={`${collatedIndex.juan_files!.length} ${convert(t.unit.juan)}`}
+                                        onOpen={() => {
+                                            setActiveJuan(collatedIndex.juan_files![0]);
+                                            onTabChange('collated');
+                                        }}
+                                    />
+                                )}
+                                {/* Work 全文：与版本页 Book 全文同一横幅，点进去默认读 primary 那份 */}
+                                {workFullTexts.length > 0 && (() => {
+                                    const primary = workFullTexts.find(v => v.primary) ?? workFullTexts[0];
+                                    return (
+                                        <FullTextBanner
+                                            title={detail.title}
+                                            /* 不写篇幅：Work 全文的分章单位不一（宋史按卷、老子按章），
+                                               写「N 章」会错；副行只点出来源与份数，也好与整理本横幅区分 */
+                                            measure={[
+                                                primary.source_name ? convert(primary.source_name) : '',
+                                                workFullTexts.length > 1 ? convert(`${workFullTexts.length} 種`) : '',
+                                            ].filter(Boolean).join(' · ')}
+                                            onOpen={() => {
+                                                setWorkFullTextKey(primary.key);
+                                                setActiveJuan(null);
+                                                onTabChange('fulltext');
+                                            }}
+                                        />
+                                    );
+                                })()}
+                            </>
                         ) : null
                     }
                     lineageAction={
@@ -627,6 +686,37 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     onNavigate={onNavigate}
                     activeJuan={activeJuan}
                     onJuanChange={setActiveJuan}
+                />
+            );
+        }
+
+        if (activeTab === 'fulltext' && detail.type === 'work') {
+            /*
+             * Work 全文复用 Book 全文同一组件，只换取数口。清单还在取时先给
+             * 加载提示；取完仍为空（该作品没有 Work 全文）就直说，不再像旧版那样
+             * 拿 Work id 去取 Book 全文目录、永远停在「加载全文目录…」。
+             */
+            const key = workFullTextKey ?? workFullTexts[0]?.key;
+            if (!key) {
+                return (
+                    <div style={{ padding: 24, color: 'var(--bim-desc-fg, #999)' }}>
+                        {workFullTextLoading ? '加载全文目录…' : '暂无全文'}
+                    </div>
+                );
+            }
+            return (
+                <BookFullText
+                    key={key}
+                    bookId={id}
+                    workKey={key}
+                    versions={workFullTexts}
+                    onVersionChange={k => {
+                        setWorkFullTextKey(k);
+                        setActiveJuan(null);
+                    }}
+                    transport={transport}
+                    activeChapter={activeJuan}
+                    onChapterChange={setActiveJuan}
                 />
             );
         }
