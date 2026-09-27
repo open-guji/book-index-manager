@@ -125,6 +125,23 @@ describe('BookDetailLayout initialDetail', () => {
         expect(transport.getItem).not.toHaveBeenCalledWith('b1');
     });
 
+    it('挂载后 id 变了、initialDetail 不带 id：视为旧数据，照常取数', async () => {
+        const transport = spyTransport(BOOK);
+        const { id: _omit, ...noId } = SHIJI as unknown as Record<string, unknown>;
+        const seedNoId = noId as unknown as IndexDetailData;
+        const { rerender } = render(
+            <BookDetailLayout {...props({ transport: transport as never, initialDetail: seedNoId })} />,
+        );
+        // 首次挂载宽松：不带 id 也直接用
+        expect(screen.getAllByText('史記').length).toBeGreaterThan(0);
+        expect(transport.getItem).not.toHaveBeenCalledWith(SHIJI_ID);
+
+        rerender(<BookDetailLayout {...props({ id: 'b1', transport: transport as never, initialDetail: seedNoId })} />);
+        await waitFor(() => expect(screen.getByText('測試書')).toBeTruthy());
+        expect(transport.getItem).toHaveBeenCalledWith('b1');
+        expect(screen.queryByText('史記')).toBeNull();
+    });
+
     it('renderToString 后 hydrateRoot：无 hydration 警告、无可恢复错误', async () => {
         const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
         const transport = spyTransport(SHIJI);

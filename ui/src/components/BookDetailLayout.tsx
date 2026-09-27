@@ -88,7 +88,8 @@ export interface BookDetailLayoutProps {
      * 服务端已取好的条目数据（与 `transport.getItem(id)` 返回的形状相同）。
      * 传了就直接用它渲染首屏、不再为本条目发 getItem/getEntry 请求，
      * 服务端渲染（renderToString）也能出完整详情；不传则行为不变。
-     * 若它带 `id` 且与 `id` prop 不同，视为过期数据、忽略，照常取数。
+     * 若它带 `id` 且与 `id` prop 不同，视为过期数据、忽略，照常取数；
+     * 挂载后 `id` 变了，则只有 `initialDetail.id === id` 才用，否则照常取数。
      * 整理本／全文／版本谱系等次级数据仍在挂载后照常加载。
      */
     initialDetail?: IndexDetailData;
@@ -371,13 +372,14 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         /*
          * 有与当前 id 匹配的服务端数据：主条目不再取数，只补次级数据。
          * 首次挂载用初始 state 里的种子（这里的 setEntry/setDetail 是同值、不重渲染）；
-         * 之后 id 变了而父组件又给了新的 initialDetail（如服务端导航），同样直接用它。
+         * 之后 id 变了而父组件又给了新的 initialDetail（如服务端导航），只有它的
+         * id 字段与新 id **严格相等**才用——不带 id 的可能是父组件留着的旧数据。
          */
         const latest = initialRef.current;
         let seeded: { entry: IndexEntry; detail: IndexDetailData } | null = null;
         if (seed && seed.id === id) {
             seeded = seed;
-        } else if (seedMatches(id, latest.initialDetail)) {
+        } else if (latest.initialDetail && (latest.initialDetail as { id?: unknown }).id === id) {
             const d = { ...latest.initialDetail } as IndexDetailData;
             const e = latest.initialEntry ?? fallbackEntry(id, d);
             if (enrichDetail) enrichDetail(e, d);
