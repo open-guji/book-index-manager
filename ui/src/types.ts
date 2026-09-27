@@ -783,6 +783,11 @@ export interface BookFullTextIndex {
     scraped_at?: string;
     scraped_from?: string;
     revision?: string;
+    /**
+     * 全书采用的表格写法。`"guji-table-v1"` 表示章节 md 里的 `:::table … :::` 块
+     * 按 guji-table-v1 解析成表格（见 `core/guji-table.ts`）；缺省则一律按原文渲染。
+     */
+    table_notation?: string;
 }
 
 /** Book 全文单章 */
@@ -847,6 +852,11 @@ export interface WorkFullTextIndex {
     scraped_at?: string;
     scraped_from?: string;
     revision?: string;
+    /**
+     * 全书采用的表格写法。`"guji-table-v1"` 表示章节 md 里的 `:::table … :::` 块
+     * 按 guji-table-v1 解析成表格（见 `core/guji-table.ts`）；缺省则一律按原文渲染。
+     */
+    table_notation?: string;
 }
 
 /** 资料来源项 */
