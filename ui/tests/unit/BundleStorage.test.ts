@@ -156,6 +156,45 @@ describe('BundleStorage.getEntry — chunk 路径', () => {
     });
 });
 
+describe('BundleStorage.getCollatedEditionIndex — 旧文件名兜底已删（Q3b）', () => {
+    it('新文件名 index.json 命中，只发一次请求', async () => {
+        const { calls, restore } = setupFetch((url) => {
+            if (url.includes('/version.json')) return { ok: true, body: { commitId: 'abc' } };
+            if (url.includes('/collated_edition/index.json')) {
+                return { ok: true, body: { work_id: 'd59f2htm01du', juan_files: ['juan001.json'] } };
+            }
+            return { ok: false, status: 404 };
+        });
+        try {
+            const s = new BundleStorage({ basePath: '/data' });
+            const idx = await s.getCollatedEditionIndex('d59f2htm01du');
+            expect(idx).not.toBeNull();
+            expect(idx!.work_id).toBe('d59f2htm01du');
+            // 关键回归：绝不再请求旧名 collated_edition_index.json
+            expect(calls.some(c => c.url.includes('collated_edition_index.json'))).toBe(false);
+        } finally {
+            restore();
+        }
+    });
+
+    it('条目没有整理本时只 404 一次（不再退回旧名多打一枪）', async () => {
+        const { calls, restore } = setupFetch((url) => {
+            if (url.includes('/version.json')) return { ok: true, body: { commitId: 'abc' } };
+            return { ok: false, status: 404 };
+        });
+        try {
+            const s = new BundleStorage({ basePath: '/data' });
+            const idx = await s.getCollatedEditionIndex('d59f6egkp05j');
+            expect(idx).toBeNull();
+            const collatedCalls = calls.filter(c => c.url.includes('/collated_edition/'));
+            expect(collatedCalls.length).toBe(1);
+            expect(collatedCalls[0].url).toContain('/collated_edition/index.json');
+        } finally {
+            restore();
+        }
+    });
+});
+
 describe('BundleStorage.fetchJson — version.json 拼 ?v= 一次（不重复）', () => {
     it('getLineageGraph 不再产生重复 v= query', async () => {
         const { calls, restore } = setupFetch((url) => {
