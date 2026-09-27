@@ -800,6 +800,55 @@ export interface BookFullTextChapter {
     pdf_pages?: string;
 }
 
+// ── Work 全文（存于 Work/<id>/full_text/<key>/；与 Book 全文平行，但一 Work 可有多份）──
+
+/**
+ * Work 全文候选的质量等级：在整理本四级（TextQualityGrade）之外多一档
+ * 「source」（未经校对的原始抓取文本），full_text 索引专用，不进 TEXT_QUALITY_* 那三张表。
+ */
+export type FullTextGrade = TextQualityGrade | 'source';
+
+/**
+ * Work 全文候选清单里的一项，来自 book-text `index/full_text/{shard}.json[owner_id]`
+ * （生成脚本 `scripts/book-text/build_index.py`，字段与之一一对应）。
+ * 列表已按「哪份最好」排好序，且恰有一项 `primary === true`。
+ */
+export interface WorkFullTextEntry {
+    /** Work 层形如 `<来源>-NN`（如 `wikisource-01`、`shidian-01`）；Book 层固定 `"book"` */
+    key: string;
+    owner_type: 'Work' | 'Book';
+    /** 该份全文目录，相对 book-text 仓根 */
+    path: string;
+    version_label?: string;
+    source_name?: string;
+    source_url?: string;
+    license?: string;
+    grade?: FullTextGrade;
+    total_chapters?: number;
+    fetched_at?: string;
+    /** 恰一份为 true——按判据（primary 显式 > grade > 来源 > 抓取时间 > key）算出的「最好的一份」 */
+    primary: boolean;
+}
+
+/** Work 全文目录页（与 BookFullTextIndex 同 schema，用 work_id 代 book_id） */
+export interface WorkFullTextIndex {
+    work_id: string;
+    version_label: string;
+    source: {
+        name: string;
+        url: string;
+        license?: string;
+        note?: string;
+        type?: string;
+    };
+    total_chapters: number;
+    /** 章节列表（已按回数排序） */
+    chapters: BookFullTextChapter[];
+    scraped_at?: string;
+    scraped_from?: string;
+    revision?: string;
+}
+
 /** 资料来源项 */
 export interface SourceItem {
     id: string;

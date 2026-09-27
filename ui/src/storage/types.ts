@@ -1,4 +1,4 @@
-import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, BookFullTextIndex, ResourceProgress, RecommendedData } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, BookFullTextIndex, WorkFullTextEntry, WorkFullTextIndex, ResourceProgress, RecommendedData } from '../types';
 import type { LineageGraph } from '../core/lineage-graph';
 
 /**
@@ -98,6 +98,17 @@ export interface IndexStorage {
 
     /** 获取 Book 全文单章 markdown */
     getBookFullTextChapter?(bookId: string, file: string): Promise<string | null>;
+
+    // ── Work 全文（可选，一 Work 可有多份） ──
+
+    /** 获取 Work 下的全文候选清单（已按「哪份最好」排序，首项 primary） */
+    getWorkFullTextList?(workId: string): Promise<WorkFullTextEntry[]>;
+
+    /** 获取 Work 指定一份全文的目录（按 getWorkFullTextList 返回的 key） */
+    getWorkFullTextIndex?(workId: string, key: string): Promise<WorkFullTextIndex | null>;
+
+    /** 获取 Work 指定一份全文的单章 markdown */
+    getWorkFullTextChapter?(workId: string, key: string, file: string): Promise<string | null>;
 
     // ── 版本传承（可选） ──
 

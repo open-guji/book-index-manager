@@ -11,11 +11,14 @@ import type {
     VolumeBookMapping,
     CollatedEditionIndex,
     CollatedJuan,
+    WorkFullTextEntry,
+    WorkFullTextIndex,
 } from '../types';
 import type { IndexCounts } from './types';
 import { normalizeCatalog } from '../core/normalize-catalog';
 import { extractType } from '../id';
 import { buildPromotionMap } from './promotions';
+import { shardOf } from '../core/storage';
 
 export interface BundleStorageConfig {
     /** chunk 文件的基础路径，默认 '/data' */
@@ -498,6 +501,55 @@ export class BundleStorage implements IndexStorage {
         const txtFile = file.endsWith('.md') ? file.replace(/\.md$/, '.txt') : file;
         const version = await this.ensureVersion();
         const url = `${this.basePath}/items/${bookId}/full_text/${txtFile}`;
+        const fullUrl = version ? `${url}?v=${version}` : url;
+        try {
+            const res = await fetch(fullUrl, { cache: 'no-cache' });
+            if (!res.ok) return null;
+            return await res.text();
+        } catch {
+            return null;
+        }
+    }
+
+    // ─── Work 全文 ───
+
+    /**
+     * Work 全文候选清单：取自按内容分片的全局索引 `${basePath}/index/full_text/{shard}.json`。
+     *
+     * 这份分片文件与 book-text 仓自身的 `index/full_text/{0-f}.json` 同构、同分片算法
+     * （`shardOf` 与 book-text `scripts/book-text/build_index.py` 的 `shard()` 是同一套
+     * h*31+ord(c) 取模 16 哈希），构建时把 book-text 那 16 个文件原样拷进这个路径即可，
+     * 不需要另外转换。列表已排好序，首项即 `primary: true`——本函数不再重新排序。
+     */
+    async getWorkFullTextList(workId: string): Promise<WorkFullTextEntry[]> {
+        const shard = shardOf(workId).toString(16);
+        try {
+            const data = await this.fetchJson<Record<string, WorkFullTextEntry[]>>(
+                `${this.basePath}/index/full_text/${shard}.json`
+            );
+            return data[workId] ?? [];
+        } catch {
+            return [];
+        }
+    }
+
+    async getWorkFullTextIndex(workId: string, key: string): Promise<WorkFullTextIndex | null> {
+        if (key.includes('..') || key.includes('/')) return null;
+        try {
+            return await this.fetchJson<WorkFullTextIndex>(
+                `${this.basePath}/items/${workId}/full_text/${key}/index.json`
+            );
+        } catch {
+            return null;
+        }
+    }
+
+    async getWorkFullTextChapter(workId: string, key: string, file: string): Promise<string | null> {
+        if (key.includes('..') || key.includes('/') || file.includes('..')) return null;
+        // bundle-data 会把 .md 改名为 .txt（与 collated_edition/text/*、Book 全文同理）
+        const txtFile = file.endsWith('.md') ? file.replace(/\.md$/, '.txt') : file;
+        const version = await this.ensureVersion();
+        const url = `${this.basePath}/items/${workId}/full_text/${key}/${txtFile}`;
         const fullUrl = version ? `${url}?v=${version}` : url;
         try {
             const res = await fetch(fullUrl, { cache: 'no-cache' });
