@@ -111,6 +111,8 @@ export { BidUrlProvider, useBidUrl } from './core/bid-url';
 export type { BidUrlBuilder, BidUrlProviderProps } from './core/bid-url';
 export { BookIndexError, StorageError, IdGenerationError, ConfigError, MigrationError } from './core/exceptions';
 export { normalizeCatalog } from './core/normalize-catalog';
+export { SNIPPET_MARK_START, SNIPPET_MARK_END, splitHighlightSnippet } from './core/highlight';
+export type { HighlightSegment } from './core/highlight';
 
 // Components - Existing
 export { ResourceEditor } from './components/ResourceEditor';
