@@ -84,6 +84,16 @@ export interface BookDetailLayoutProps {
     id: string;
     /** 数据传输层 */
     transport: IndexStorage;
+    /**
+     * 服务端已取好的条目数据（与 `transport.getItem(id)` 返回的形状相同）。
+     * 传了就直接用它渲染首屏、不再为本条目发 getItem/getEntry 请求，
+     * 服务端渲染（renderToString）也能出完整详情；不传则行为不变。
+     * 若它带 `id` 且与 `id` prop 不同，视为过期数据、忽略，照常取数。
+     * 整理本／全文／版本谱系等次级数据仍在挂载后照常加载。
+     */
+    initialDetail?: IndexDetailData;
+    /** 与 initialDetail 配套的索引条目；不传则按 initialDetail 的 title/type 合成 */
+    initialEntry?: IndexEntry;
 
     // ── 受控 tab/卷状态 ──
     activeTab: BookDetailTabKey;
@@ -135,11 +145,31 @@ interface NavItem {
     label: string;
 }
 
+/** transport 不提供 getEntry 时，按详情数据合成一条最小索引条目 */
+function fallbackEntry(id: string, detailData: IndexDetailData): IndexEntry {
+    return {
+        id,
+        title: (detailData as { title?: string; primary_name?: string }).title
+            ?? (detailData as { primary_name?: string }).primary_name
+            ?? id,
+        type: (detailData.type as IndexEntry['type']) ?? 'book',
+    } as IndexEntry;
+}
+
+/** initialDetail 是否可用于当前 id：没带 id 字段，或 id 一致 */
+function seedMatches(id: string, detail: IndexDetailData | undefined): detail is IndexDetailData {
+    if (!detail) return false;
+    const seedId = (detail as { id?: unknown }).id;
+    return seedId === undefined || seedId === id;
+}
+
 // ── 主组件 ──
 
 export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     id,
     transport,
+    initialDetail,
+    initialEntry,
     activeTab,
     onTabChange,
     activeJuan: activeJuanProp,
@@ -167,9 +197,21 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     const t = useT();
     const { convert } = useConvert();
 
-    const [entry, setEntry] = useState<IndexEntry | null>(null);
-    const [detail, setDetail] = useState<IndexDetailData | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    /*
+     * 首屏种子：有 initialDetail 就在初始 state 里直接放好 entry/detail，
+     * 服务端渲染与浏览器首次渲染出同一份 HTML（hydrate 不失配）。
+     * 浅拷贝后再 enrichDetail，不改调用方传进来的对象。
+     */
+    const [seed] = useState(() => {
+        if (!seedMatches(id, initialDetail)) return null;
+        const d = { ...initialDetail } as IndexDetailData;
+        const e = initialEntry ?? fallbackEntry(id, d);
+        if (enrichDetail) enrichDetail(e, d);
+        return { id, entry: e, detail: d };
+    });
+    const [entry, setEntry] = useState<IndexEntry | null>(seed?.entry ?? null);
+    const [detail, setDetail] = useState<IndexDetailData | null>(seed?.detail ?? null);
+    const [isLoading, setIsLoading] = useState(!seed);
     const [notFound, setNotFound] = useState(false);
 
     const [catalogList, setCatalogList] = useState<ResourceCatalog[]>([]);
@@ -298,8 +340,65 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [transport]);
 
+    // 最新的 initialDetail/initialEntry：effect 里读，不进依赖（换对象不该触发重取）
+    const initialRef = useRef({ initialDetail, initialEntry });
+    initialRef.current = { initialDetail, initialEntry };
+
     useEffect(() => {
         let cancelled = false;
+
+        /** 按条目类型加载次级数据（整理本／全文／谱系／丛编目录） */
+        const loadSecondary = (detailData: IndexDetailData) => {
+            if (detailData.type === 'collection') {
+                loadCatalogs(id);
+            } else if (detailData.type === 'work') {
+                if ((detailData as { has_collated?: boolean }).has_collated || transport.getCollatedEditionIndex) {
+                    loadCollated(id);
+                }
+                if ((detailData as WorkDetailData).version_graph || transport.getLineageGraph) {
+                    loadLineage(id, detailData);
+                }
+                if (transport.getWorkFullTextList) {
+                    loadWorkFullText(id);
+                }
+            } else if (detailData.type === 'book') {
+                if ((detailData as { has_full_text?: boolean }).has_full_text && transport.getBookFullTextIndex) {
+                    loadBookFullText(id);
+                }
+            }
+        };
+
+        /*
+         * 有与当前 id 匹配的服务端数据：主条目不再取数，只补次级数据。
+         * 首次挂载用初始 state 里的种子（这里的 setEntry/setDetail 是同值、不重渲染）；
+         * 之后 id 变了而父组件又给了新的 initialDetail（如服务端导航），同样直接用它。
+         */
+        const latest = initialRef.current;
+        let seeded: { entry: IndexEntry; detail: IndexDetailData } | null = null;
+        if (seed && seed.id === id) {
+            seeded = seed;
+        } else if (seedMatches(id, latest.initialDetail)) {
+            const d = { ...latest.initialDetail } as IndexDetailData;
+            const e = latest.initialEntry ?? fallbackEntry(id, d);
+            if (enrichDetail) enrichDetail(e, d);
+            seeded = { entry: e, detail: d };
+        }
+        if (seeded) {
+            setNotFound(false);
+            setCatalogList(prev => (prev.length ? [] : prev));
+            setCollatedIndex(null);
+            setBookFullTextIndex(null);
+            setWorkFullTexts(prev => (prev.length ? [] : prev));
+            setWorkFullTextKey(null);
+            setLineageGraph(null);
+            lineageSourceRef.current = null;
+            setEntry(seeded.entry);
+            setDetail(seeded.detail);
+            setIsLoading(false);
+            loadSecondary(seeded.detail);
+            return () => { cancelled = true; };
+        }
+
         const load = async () => {
             setIsLoading(true);
             setNotFound(false);
@@ -324,37 +423,13 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     entryData = await transport.getEntry(id);
                     if (cancelled) return;
                 }
-                if (!entryData) {
-                    entryData = {
-                        id,
-                        title: (detailData as { title?: string; primary_name?: string }).title
-                            ?? (detailData as { primary_name?: string }).primary_name
-                            ?? id,
-                        type: (detailData.type as IndexEntry['type']) ?? 'book',
-                    } as IndexEntry;
-                }
+                if (!entryData) entryData = fallbackEntry(id, detailData);
 
                 if (enrichDetail) enrichDetail(entryData, detailData);
                 setEntry(entryData);
                 setDetail(detailData);
 
-                if (detailData.type === 'collection') {
-                    loadCatalogs(id);
-                } else if (detailData.type === 'work') {
-                    if ((detailData as { has_collated?: boolean }).has_collated || transport.getCollatedEditionIndex) {
-                        loadCollated(id);
-                    }
-                    if ((detailData as WorkDetailData).version_graph || transport.getLineageGraph) {
-                        loadLineage(id, detailData);
-                    }
-                    if (transport.getWorkFullTextList) {
-                        loadWorkFullText(id);
-                    }
-                } else if (detailData.type === 'book') {
-                    if ((detailData as { has_full_text?: boolean }).has_full_text && transport.getBookFullTextIndex) {
-                        loadBookFullText(id);
-                    }
-                }
+                loadSecondary(detailData);
             } catch {
                 if (!cancelled) setNotFound(true);
             } finally {
@@ -363,7 +438,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         };
         load();
         return () => { cancelled = true; };
-    }, [id, transport, enrichDetail, loadCatalogs, loadCollated, loadLineage, loadBookFullText, loadWorkFullText]);
+    }, [id, transport, seed, enrichDetail, loadCatalogs, loadCollated, loadLineage, loadBookFullText, loadWorkFullText]);
 
     // 切换 collection 时仅 rebuild graph，不重新拉 books
     useEffect(() => {
