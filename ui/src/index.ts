@@ -196,6 +196,13 @@ export {
 } from './core/resources';
 export type { VolumeStats } from './core/resources';
 
+// 全文 `:::table` 表格块（guji-table-v1）
+export {
+    parseGujiTable, splitFullTextTables, splitTableRow, hasGujiTableNotation, GUJI_TABLE_NOTATION,
+} from './core/guji-table';
+export type { GujiTable as GujiTableData, GujiTableRow, GujiTableCell, FullTextSegment } from './core/guji-table';
+export { GujiTable, renderFullTextBody } from './components/detail/GujiTable';
+
 export { BookDetailLayout } from './components/BookDetailLayout';
 export type {
     BookDetailLayoutProps,

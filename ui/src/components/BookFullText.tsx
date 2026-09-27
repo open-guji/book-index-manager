@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { BookFullTextIndex } from '../types';
 import type { IndexStorage } from '../storage/types';
-import { ReaderLayout, renderInterlinear } from './detail/primitives';
+import { ReaderLayout } from './detail/primitives';
+import { renderFullTextBody } from './detail/GujiTable';
+import { hasGujiTableNotation } from '../core/guji-table';
 
 interface BookFullTextProps {
     /** 全文目录（外部可注入，避免重复请求） */
@@ -190,8 +192,12 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
                         fontFamily: '"Songti SC", "Source Han Serif", "Noto Serif CJK SC", serif',
                     }}>
                         {/* 去掉首行 ## 标题（已在 header 显示），其余原样展示；
-                            夹注（⟨…⟩／<…>）以小字渲染——此前未接，维基全文（如《公羊傳》）的注直出尖括号 */}
-                        {renderInterlinear(chapterText.replace(/^##\s+[^\n]+\n+/, ''))}
+                            夹注（⟨…⟩／<…>）以小字渲染——此前未接，维基全文（如《公羊傳》）的注直出尖括号。
+                            目录声明 table_notation: guji-table-v1 的书，`:::table` 块渲染成表格 */}
+                        {renderFullTextBody(
+                            chapterText.replace(/^##\s+[^\n]+\n+/, ''),
+                            hasGujiTableNotation(index),
+                        )}
                     </article>
                 )}
 
