@@ -204,6 +204,11 @@ export {
 } from './core/guji-table';
 export type { GujiTable as GujiTableData, GujiTableRow, GujiTableCell, FullTextSegment } from './core/guji-table';
 export { GujiTable, renderFullTextBody } from './components/detail/GujiTable';
+// 全文 guji-markdown 0.2.0 行内新写法（组字／阙文／缺字猜测／夹注分行）
+export {
+    parseGujiInline, gujiInlineToPlain, hasGujiMarkdownV02, GUJI_MARKDOWN_FIELD,
+} from './core/guji-inline';
+export type { GujiInlineNode } from './core/guji-inline';
 
 export { BookDetailLayout } from './components/BookDetailLayout';
 export type {

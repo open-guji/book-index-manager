@@ -14,6 +14,8 @@ import { useBidUrl } from '../../core/bid-url';
 import { useConvert } from '../../i18n';
 import { getDisplayNameFromUrl, resourceHref, volumeStats } from '../../core/resources';
 import { resourceNote, resourceDisambiguator } from '../../core/detail-model';
+import { parseGujiInline, mayHaveGujiInline } from '../../core/guji-inline';
+import type { GujiInlineNode } from '../../core/guji-inline';
 
 // ══════════════════════════════════════════════════════════════
 // 布局常量
@@ -824,11 +826,79 @@ export function truncateOutsideJiazhu(text: string, max: number): string {
     return text.slice(0, cut);
 }
 
+/** 夾注小字的樣式（新舊兩條路徑共用，保證版式不變） */
+const JIAZHU_STYLE: React.CSSProperties = {
+    fontSize: '.78em',
+    color: 'var(--bim-meta-fg, #7b6a54)',
+    // 注文常長，`.78em` 之後行距若不收，段落會被撐得參差
+    lineHeight: 1.55,
+};
+
+/** 組字：與正文同高的細框，內容原樣（IDS 或部件描述），`title` 提示原描述 */
+const ZI_STYLE: React.CSSProperties = {
+    display: 'inline-block',
+    fontSize: '1em',
+    lineHeight: 1.15,
+    padding: '0 .12em',
+    margin: '0 .05em',
+    border: '1px solid color-mix(in srgb, currentColor 40%, transparent)',
+    borderRadius: 2,
+    verticalAlign: 'baseline',
+    whiteSpace: 'nowrap',
+};
+
+export interface InterlinearOptions {
+    /**
+     * 啟用 guji-markdown 0.2.0 行內新寫法（組字 `:zi[…]`、闕文 `[[…]]`、
+     * 缺字猜測 `□{guess=…}`、夾注內分行 `|`）。僅全文目錄聲明
+     * `guji_markdown: "0.2.0"` 的書開（見 `core/guji-inline.ts`）；不開時與改前逐字一致。
+     */
+    gujiMarkdown?: boolean;
+}
+
+function renderGujiNodes(
+    nodes: GujiInlineNode[],
+    renderText: (s: string) => React.ReactNode,
+    depth: number,
+): React.ReactNode[] {
+    return nodes.map((n, k) => {
+        switch (n.type) {
+            case 'text':
+                return <React.Fragment key={k}>{renderText(n.text)}</React.Fragment>;
+            case 'jz':
+                // 注中注不再二次縮小
+                return (
+                    <span key={k} className="bim-jiazhu" style={depth === 0 ? JIAZHU_STYLE : undefined}>
+                        {renderGujiNodes(n.children, renderText, depth + 1)}
+                    </span>
+                );
+            case 'qw':
+                return (
+                    <span key={k} className="bim-qw guji-qw" title={n.label ? `闕文：${n.label}` : '闕文'}>□</span>
+                );
+            case 'qz':
+                // 本組件無校對模式開關：只顯示 □，猜測字僅留在 data 屬性（spec §14）
+                return <span key={k} className="bim-qz guji-qz" data-guji-guess={n.guess}>□</span>;
+            case 'zi':
+                return (
+                    <span key={k} className="bim-zi guji-zi" title={`組字：${n.label}`} style={ZI_STYLE}>
+                        {n.label}
+                    </span>
+                );
+        }
+    });
+}
+
 export function renderInterlinear(
     text: string | null | undefined,
     renderText: (s: string) => React.ReactNode = (s) => s,
+    opts?: InterlinearOptions,
 ): React.ReactNode {
     if (!text) return '';
+    if (opts?.gujiMarkdown) {
+        if (!mayHaveGujiInline(text)) return renderText(text);
+        return renderGujiNodes(parseGujiInline(text), renderText, 0);
+    }
     if (text.indexOf('\u27e8') < 0 && text.indexOf('<') < 0) return renderText(text);
     const out: React.ReactNode[] = [];
     let last = 0;
@@ -841,12 +911,7 @@ export function renderInterlinear(
             <span
                 key={k++}
                 className="bim-jiazhu"
-                style={{
-                    fontSize: '.78em',
-                    color: 'var(--bim-meta-fg, #7b6a54)',
-                    // 注文常長，`.78em` 之後行距若不收，段落會被撐得參差
-                    lineHeight: 1.55,
-                }}
+                style={JIAZHU_STYLE}
             >
                 {renderText(m.inner)}
             </span>,

@@ -1,5 +1,6 @@
 import React from 'react';
 import { renderInterlinear } from './primitives';
+import type { InterlinearOptions } from './primitives';
 import { splitFullTextTables } from '../../core/guji-table';
 import type { GujiTable as GujiTableData } from '../../core/guji-table';
 
@@ -39,7 +40,7 @@ const HEAD_STYLE: React.CSSProperties = {
 };
 
 /** 一个 `:::table` 块；格内夹注照 `renderInterlinear` 以小字渲染 */
-export function GujiTable({ table }: { table: GujiTableData }) {
+export function GujiTable({ table, opts }: { table: GujiTableData; opts?: InterlinearOptions }) {
     return (
         <div className="bim-guji-table-wrap" style={WRAP_STYLE}>
             <table className="bim-guji-table" style={TABLE_STYLE}>
@@ -55,7 +56,7 @@ export function GujiTable({ table }: { table: GujiTableData }) {
                                         rowSpan={cell.rowspan > 1 ? cell.rowspan : undefined}
                                         style={row.header ? HEAD_STYLE : CELL_STYLE}
                                     >
-                                        {cell.empty ? null : renderInterlinear(cell.text)}
+                                        {cell.empty ? null : renderInterlinear(cell.text, undefined, opts)}
                                     </Tag>
                                 );
                             })}
@@ -68,13 +69,13 @@ export function GujiTable({ table }: { table: GujiTableData }) {
 }
 
 /** 整行 `**…**`（如宋史卷215 表前的房名 `**燕王房**`）按加粗显示；只在启用表格写法的书里用 */
-function renderBoldLines(text: string): React.ReactNode {
-    if (text.indexOf('**') < 0) return renderInterlinear(text);
+function renderBoldLines(text: string, opts?: InterlinearOptions): React.ReactNode {
+    if (text.indexOf('**') < 0) return renderInterlinear(text, undefined, opts);
     const parts = text.split(/(^\*\*[^*\n]+\*\*[ \t]*$)/m);
     return parts.map((p, i) =>
         i % 2 === 1
-            ? <strong key={i}>{renderInterlinear(p.trim().slice(2, -2))}</strong>
-            : <React.Fragment key={i}>{renderInterlinear(p)}</React.Fragment>,
+            ? <strong key={i}>{renderInterlinear(p.trim().slice(2, -2), undefined, opts)}</strong>
+            : <React.Fragment key={i}>{renderInterlinear(p, undefined, opts)}</React.Fragment>,
     );
 }
 
@@ -84,12 +85,15 @@ function renderBoldLines(text: string): React.ReactNode {
  * - `tableNotation` 为假（全文目录未声明 `table_notation: guji-table-v1`）：
  *   与改前完全相同，整章交给 `renderInterlinear`；
  * - 为真：`:::table … :::` 块渲染成表格，块外照旧（外加整行 `**…**` 加粗）。
+ * - `gujiMarkdown`（全文目录声明 `guji_markdown: "0.2.0"`）：块内外都认 0.2.0 行内新写法
+ *   （组字／阙文／缺字猜测／夹注分行），见 `core/guji-inline.ts`；为假时与改前逐字一致。
  */
-export function renderFullTextBody(text: string, tableNotation: boolean): React.ReactNode {
-    if (!tableNotation) return renderInterlinear(text);
+export function renderFullTextBody(text: string, tableNotation: boolean, gujiMarkdown = false): React.ReactNode {
+    const opts: InterlinearOptions | undefined = gujiMarkdown ? { gujiMarkdown: true } : undefined;
+    if (!tableNotation) return renderInterlinear(text, undefined, opts);
     return splitFullTextTables(text).map((seg, i) =>
         seg.type === 'table'
-            ? <GujiTable key={i} table={seg.table} />
-            : <React.Fragment key={i}>{renderBoldLines(seg.text)}</React.Fragment>,
+            ? <GujiTable key={i} table={seg.table} opts={opts} />
+            : <React.Fragment key={i}>{renderBoldLines(seg.text, opts)}</React.Fragment>,
     );
 }

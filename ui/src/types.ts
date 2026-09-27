@@ -788,6 +788,12 @@ export interface BookFullTextIndex {
      * 按 guji-table-v1 解析成表格（见 `core/guji-table.ts`）；缺省则一律按原文渲染。
      */
     table_notation?: string;
+    /**
+     * 章节 md 遵循的 guji-markdown 规范版本（如 `"0.2.0"`）。≥ 0.2.0 时启用组字 `:zi[…]`、
+     * 阙文 `[[…]]`、缺字猜测 `□{guess=…}`、夹注分行 `|` 与 `:::table`（见 `core/guji-inline.ts`）；
+     * 缺省则按改前方式渲染。
+     */
+    guji_markdown?: string;
 }
 
 /** Book 全文单章 */
@@ -857,6 +863,12 @@ export interface WorkFullTextIndex {
      * 按 guji-table-v1 解析成表格（见 `core/guji-table.ts`）；缺省则一律按原文渲染。
      */
     table_notation?: string;
+    /**
+     * 章节 md 遵循的 guji-markdown 规范版本（如 `"0.2.0"`）。≥ 0.2.0 时启用组字 `:zi[…]`、
+     * 阙文 `[[…]]`、缺字猜测 `□{guess=…}`、夹注分行 `|` 与 `:::table`（见 `core/guji-inline.ts`）；
+     * 缺省则按改前方式渲染。
+     */
+    guji_markdown?: string;
 }
 
 /** 资料来源项 */
