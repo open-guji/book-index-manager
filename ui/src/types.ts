@@ -202,6 +202,12 @@ export interface IndexEntry {
     /** Entity 关联的 CBDB ID */
     cbdb_id?: number;
     /**
+     * 简介搜索命中片段（A4，2026-09-27）。只有 L1/Meili 搜索命中了简介内容时才有值，
+     * 含 SNIPPET_MARK_START/END 标记（见 core/highlight.ts），渲染层用
+     * splitHighlightSnippet 切分后逐段包 <mark>，不要当 HTML 直接注入。
+     */
+    descriptionSnippet?: string;
+    /**
      * Tombstone 标记：该 draft 已升格为 production。
      * draft 索引 shard 在 promote 时会带这个字段；存储层据此从默认列表/搜索结果中
      * 过滤掉这类条目，避免与 production 条目重复出现。

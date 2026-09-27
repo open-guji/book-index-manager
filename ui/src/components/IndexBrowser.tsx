@@ -4,6 +4,7 @@ import type { IndexStorage } from '../storage/types';
 import { ModeIndicator } from './ModeIndicator';
 import { SearchInput } from './SearchInput';
 import { useT, useConvert, formatTemplate } from '../i18n';
+import { splitHighlightSnippet } from '../core/highlight';
 
 const RECENT_KEY = 'bim-recent-ids';
 const RECENT_KEY_LEGACY = 'bim-recent-entries';
@@ -603,6 +604,35 @@ interface EntryCardProps {
 }
 
 /**
+ * 简介搜索命中片段（A4，2026-09-27）。entry.descriptionSnippet 只在 L1/Meili
+ * 搜索命中简介时才有值，按 SNIPPET_MARK_START/END 切段渲染，不用
+ * dangerouslySetInnerHTML（简介原文可能含 `<`/`>`，直接当 HTML 注入不安全）。
+ */
+const DescriptionSnippet: React.FC<{ snippet: string }> = ({ snippet }) => {
+    const { convert } = useConvert();
+    return (
+        <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', lineHeight: 1.6 }}>
+            {splitHighlightSnippet(snippet).map((seg, i) => seg.marked
+                ? (
+                    <mark
+                        key={i}
+                        style={{
+                            background: 'var(--bim-highlight-bg, #fff3a3)',
+                            color: 'var(--bim-highlight-fg, inherit)',
+                            padding: '0 1px',
+                            borderRadius: '2px',
+                        }}
+                    >
+                        {convert(seg.text)}
+                    </mark>
+                )
+                : <React.Fragment key={i}>{convert(seg.text)}</React.Fragment>
+            )}
+        </div>
+    );
+};
+
+/**
  * 书目卡片形态（resultVariant='card'）。
  *
  * 对齐设计稿的 .bi-book-card：左侧「封面」用竖排书名生成（不需要真实书影图，
@@ -731,6 +761,8 @@ const EntryBookCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, get
                         {t.search.alias}：{convert(typeof matchedAlias === 'string' ? matchedAlias : (matchedAlias as { book_title?: string }).book_title || '')}
                     </div>
                 )}
+
+                {entry.descriptionSnippet && <DescriptionSnippet snippet={entry.descriptionSnippet} />}
 
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: 'auto', paddingTop: '4px' }}>
                     <span style={{
