@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import type { BookFullTextIndex } from '../types';
+import type { BookFullTextIndex, WorkFullTextEntry, WorkFullTextIndex } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { ReaderLayout } from './detail/primitives';
 import { renderFullTextBody } from './detail/GujiTable';
@@ -8,8 +8,17 @@ import { hasGujiTableNotation } from '../core/guji-table';
 interface BookFullTextProps {
     /** 全文目录（外部可注入，避免重复请求） */
     index?: BookFullTextIndex;
+    /** Book id；传了 `workKey` 时是 Work id */
     bookId: string;
     transport: IndexStorage;
+    /**
+     * Work 全文：一 Work 可有多份，按 `getWorkFullTextList` 给的 key 取其中一份。
+     * 传了它就改走 `getWorkFullTextIndex／getWorkFullTextChapter`，渲染与 Book 全文完全相同。
+     */
+    workKey?: string;
+    /** Work 全文候选清单；多于一份时在正文顶部给一个原生下拉切换 */
+    versions?: WorkFullTextEntry[];
+    onVersionChange?: (key: string) => void;
     /** 当前活动章节 key（受控）。不带扩展名的文件 stem，例如 "001"。 */
     activeChapter?: string | null;
     onChapterChange?: (chapter: string | null) => void;
@@ -26,6 +35,25 @@ function normalizeChapterKey(s: string): string {
 }
 
 /**
+ * 多份全文切换项的显示名。维基同一部书常有几份，version_label／source_name
+ * 往往完全相同（老子两份都叫「老子 · 維基文庫」），能区分的只有来源页名——
+ * 取 source_url 末段解码（「道德經 (王弼本)」／「老子 (匯校版)」）。
+ */
+export function workFullTextOptionLabel(v: WorkFullTextEntry): string {
+    let page = '';
+    if (v.source_url) {
+        try {
+            const tail = new URL(v.source_url).pathname.split('/').filter(Boolean).pop() ?? '';
+            page = decodeURIComponent(tail).replace(/_/g, ' ');
+        } catch { /* 坏 URL：不取页名 */ }
+    }
+    const head = [v.source_name, page || v.version_label].filter(Boolean).join(' · ');
+    return head || v.key;
+}
+
+const MUTED: React.CSSProperties = { padding: 24, color: 'var(--bim-desc-fg, #999)' };
+
+/**
  * Book 全文 viewer：左侧章节列表 + 右侧 markdown 渲染。
  *
  * 数据来源：Book/<id>/full_text/index.json + 第NNN.md。
@@ -37,8 +65,17 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
     transport,
     activeChapter: activeChapterProp,
     onChapterChange,
+    workKey,
+    versions,
+    onVersionChange,
 }) => {
     const [index, setIndex] = useState<BookFullTextIndex | null>(indexProp ?? null);
+    /*
+     * 目录取数结果：null 旧版既表示「还在取」又表示「取不到」，于是 404／断网／
+     * 没有全文的 Work 都永远停在「加载全文目录…」（宋史 Work 全文即因此卡死）。
+     * 现在失败与空各自落到明确的提示。
+     */
+    const [indexFailed, setIndexFailed] = useState(false);
     const [internalChapter, setInternalChapter] = useState<string | null>(null);
     const activeChapter = activeChapterProp !== undefined ? activeChapterProp : internalChapter;
     const setActiveChapter = useCallback((c: string | null) => {
@@ -54,16 +91,31 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
         if (indexProp) setIndex(indexProp);
     }, [indexProp]);
 
-    // 内部 fallback：直接调 transport
+    // 内部 fallback：直接调 transport。取不到（null／抛错／transport 不支持）→ 失败提示，不再转圈
     useEffect(() => {
         if (indexProp) return;
-        if (!bookId || !transport.getBookFullTextIndex) return;
+        setIndex(null);
+        setIndexFailed(false);
+        // Work 目录与 Book 目录同 schema（只是 work_id 代 book_id），渲染只读共有字段
+        const fetchIndex: (() => Promise<BookFullTextIndex | WorkFullTextIndex | null>) | null = workKey !== undefined
+            ? (transport.getWorkFullTextIndex
+                ? () => transport.getWorkFullTextIndex!(bookId, workKey)
+                : null)
+            : (transport.getBookFullTextIndex
+                ? () => transport.getBookFullTextIndex!(bookId)
+                : null);
+        if (!bookId || !fetchIndex) { setIndexFailed(true); return; }
         let cancelled = false;
-        transport.getBookFullTextIndex(bookId).then(r => {
-            if (!cancelled) setIndex(r);
-        });
+        Promise.resolve()
+            .then(fetchIndex)
+            .then(r => {
+                if (cancelled) return;
+                if (r) setIndex(r as BookFullTextIndex);
+                else setIndexFailed(true);
+            })
+            .catch(() => { if (!cancelled) setIndexFailed(true); });
         return () => { cancelled = true; };
-    }, [bookId, transport, indexProp]);
+    }, [bookId, transport, indexProp, workKey]);
 
     // 默认选第一章；若 activeChapter 是老书签 / 无效 URL（找不到对应 chapter），也回退到第一章
     useEffect(() => {
@@ -87,23 +139,53 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
     // 加载选中章节的 markdown。注意用 index 里登记的真实文件名 (chapter.file)，
     // 不能直接用 activeChapter（可能是 stem，没有扩展名）。
     useEffect(() => {
-        if (!bookId || !currentChapterMeta || !transport.getBookFullTextChapter) return;
+        if (!bookId || !currentChapterMeta) return;
+        const fetchChapter = workKey !== undefined
+            ? (transport.getWorkFullTextChapter
+                ? (f: string) => transport.getWorkFullTextChapter!(bookId, workKey, f)
+                : null)
+            : (transport.getBookFullTextChapter
+                ? (f: string) => transport.getBookFullTextChapter!(bookId, f)
+                : null);
+        if (!fetchChapter) return;
         let cancelled = false;
         setTextLoading(true);
         setChapterText(null);
-        transport.getBookFullTextChapter(bookId, currentChapterMeta.file)
+        Promise.resolve(currentChapterMeta.file)
+            .then(fetchChapter)
             .then(txt => { if (!cancelled) setChapterText(txt); })
             .catch(() => { if (!cancelled) setChapterText(null); })
             .finally(() => { if (!cancelled) setTextLoading(false); });
         return () => { cancelled = true; };
-    }, [bookId, currentChapterMeta, transport]);
+    }, [bookId, currentChapterMeta, transport, workKey]);
+
+    /* 多份全文切换：沿用最朴素的原生下拉，不另起设计（阅读器 UI 冻结中） */
+    const versionSwitcher = versions && versions.length > 1 && onVersionChange ? (
+        <div style={{ marginBottom: 12, fontSize: 13, color: 'var(--bim-desc-fg, #888)' }}>
+            <label>
+                版本：
+                <select
+                    value={workKey}
+                    onChange={e => onVersionChange(e.target.value)}
+                    style={{ fontSize: 13, fontFamily: 'inherit' }}
+                >
+                    {versions.map(v => (
+                        <option key={v.key} value={v.key}>{workFullTextOptionLabel(v)}</option>
+                    ))}
+                </select>
+            </label>
+        </div>
+    ) : null;
 
     if (!index) {
-        return <div style={{ padding: 24, color: 'var(--bim-desc-fg, #999)' }}>加载全文目录…</div>;
+        if (indexFailed) {
+            return <div style={MUTED}>{versionSwitcher}无法加载全文目录</div>;
+        }
+        return <div style={MUTED}>{versionSwitcher}加载全文目录…</div>;
     }
 
     if (index.chapters.length === 0) {
-        return <div style={{ padding: 24, color: 'var(--bim-desc-fg, #999)' }}>全文目录为空</div>;
+        return <div style={MUTED}>{versionSwitcher}全文目录为空</div>;
     }
 
     /*
@@ -159,6 +241,7 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
     return (
         <ReaderLayout aside={aside}>
             <div>
+                {versionSwitcher}
                 {currentChapterMeta && (
                     <header style={{
                         marginBottom: 16,

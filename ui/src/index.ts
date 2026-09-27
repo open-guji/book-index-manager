@@ -50,6 +50,8 @@ export type {
     CollatedEditionIndex,
     BookFullTextIndex,
     BookFullTextChapter,
+    WorkFullTextEntry,
+    WorkFullTextIndex,
     ResourceCatalog,
     ResourceImportStatus,
     ResourceImportType,
