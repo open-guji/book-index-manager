@@ -53,8 +53,11 @@ function jzOpens(s: string, i: number): boolean {
     return nxt !== undefined && !/[A-Za-z/!?>\s]/.test(nxt);
 }
 
-/** `:zi[` 起，按方括号计数找配对的 `]`（`\` 转义跳过，不跨行）；返回 `]` 的下标或 -1 */
-function matchZi(s: string, open: number): number {
+/**
+ * `:zi[` 起，按方括号计数找配对的 `]`（`\` 转义跳过，不跨行）；返回 `]` 的下标或 -1。
+ * `open` 是 `[` 的下标。表格切格（`guji-table.ts` 的 `splitTableRow`）共用这条配对规则。
+ */
+export function matchZi(s: string, open: number): number {
     let depth = 0;
     for (let j = open; j < s.length; j++) {
         const ch = s[j];

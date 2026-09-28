@@ -8,7 +8,8 @@ import { splitHighlightSnippet } from '../core/highlight';
 import { bim } from '../styles/tokens';
 import { useBidUrl } from '../core/bid-url';
 
-const RECENT_KEY = 'bim-recent-ids';
+/** 「最近浏览」存 localStorage 的键（值为 ID 数组，新的在前）；宿主要读写或清空时用它 */
+export const RECENT_IDS_STORAGE_KEY = 'bim-recent-ids';
 const RECENT_KEY_LEGACY = 'bim-recent-entries';
 const MAX_RECENT = 50;
 const SEARCH_LIMIT = 5;
@@ -17,12 +18,12 @@ const DEBOUNCE_MS = 200;
 
 function loadRecentIds(): string[] {
     try {
-        const raw = localStorage.getItem(RECENT_KEY);
+        const raw = localStorage.getItem(RECENT_IDS_STORAGE_KEY);
         if (raw) return JSON.parse(raw);
         const legacy = localStorage.getItem(RECENT_KEY_LEGACY);
         if (legacy) {
             const ids = (JSON.parse(legacy) as { id: string }[]).map(e => e.id);
-            localStorage.setItem(RECENT_KEY, JSON.stringify(ids));
+            localStorage.setItem(RECENT_IDS_STORAGE_KEY, JSON.stringify(ids));
             localStorage.removeItem(RECENT_KEY_LEGACY);
             return ids;
         }
@@ -37,20 +38,20 @@ function saveRecentId(id: string) {
         const list = loadRecentIds().filter(i => i !== id);
         list.unshift(id);
         if (list.length > MAX_RECENT) list.length = MAX_RECENT;
-        localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+        localStorage.setItem(RECENT_IDS_STORAGE_KEY, JSON.stringify(list));
     } catch { /* ignore */ }
 }
 
 function removeRecentId(id: string) {
     try {
         const list = loadRecentIds().filter(i => i !== id);
-        localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+        localStorage.setItem(RECENT_IDS_STORAGE_KEY, JSON.stringify(list));
     } catch { /* ignore */ }
 }
 
 function clearAllRecentIds() {
     try {
-        localStorage.removeItem(RECENT_KEY);
+        localStorage.removeItem(RECENT_IDS_STORAGE_KEY);
     } catch { /* ignore */ }
 }
 

@@ -124,7 +124,7 @@ export type { HighlightSegment } from './core/highlight';
 // Components - Existing
 export { ResourceEditor } from './components/ResourceEditor';
 export { ResourceList } from './components/ResourceList';
-export { IndexBrowser } from './components/IndexBrowser';
+export { IndexBrowser, RECENT_IDS_STORAGE_KEY } from './components/IndexBrowser';
 export { IndexDetail, EmendatedBySection } from './components/IndexDetail';
 export type { IndexDetailProps } from './components/IndexDetail';
 export { EntityDetail } from './components/EntityDetail';

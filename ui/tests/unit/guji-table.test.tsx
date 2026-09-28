@@ -141,6 +141,34 @@ describe('parseGujiTable 规则', () => {
         // 不生效的 `<`（后跟字母）照字面，其后的 | 照切
         expect(splitTableRow('a<b | c>')).toEqual(['a<b', 'c>']);
     });
+
+    it('组字 :zi[…] 里的 | 不切格', () => {
+        expect(splitTableRow('甲:zi[a|b]乙 | 丙')).toEqual(['甲:zi[a|b]乙', '丙']);
+        // 嵌套方括号按计数配对
+        expect(splitTableRow(':zi[⿰[a|b]c|d] | 戊')).toEqual([':zi[⿰[a|b]c|d]', '戊']);
+        // `\]` 转义不算闭合，`\|` 原样留在格内
+        expect(splitTableRow(':zi[a\\]|b] | 己')).toEqual([':zi[a\\]|b]', '己']);
+        expect(splitTableRow(':zi[a\\|b] | 己')).toEqual([':zi[a\\|b]', '己']);
+        // 格尾：组字后紧跟跨列／跨行记号，且在行末
+        expect(splitTableRow('甲 | :zi[x|y]{2}^3')).toEqual(['甲', ':zi[x|y]{2}^3']);
+        expect(splitTableRow('甲 | 乙:zi[x|y]')).toEqual(['甲', '乙:zi[x|y]']);
+        // 夹注里的组字、组字里的夹注记号都不切
+        expect(splitTableRow('<注:zi[a|b]> | 丙')).toEqual(['<注:zi[a|b]>', '丙']);
+    });
+
+    it('配不上的 :zi[ 按字面，其中的 | 照切', () => {
+        expect(splitTableRow(':zi[a | b')).toEqual([':zi[a', 'b']);
+        expect(splitTableRow(':zi[] | b')).toEqual([':zi[]', 'b']);
+        // 转义掉了唯一的 ]，配不上
+        expect(splitTableRow(':zi[a\\] | b')).toEqual([':zi[a\\]', 'b']);
+    });
+
+    it('组字 :zi[a|b] 在表格里算一个格', () => {
+        const t = parseGujiTable(['! 甲 | 乙', ':zi[a|b] | 丙']);
+        expect(t.columns).toBe(2);
+        expect(t.warnings).toEqual([]);
+        expect(t.rows[1].cells.map(c => c.text)).toEqual([':zi[a|b]', '丙']);
+    });
 });
 
 describe('splitFullTextTables', () => {

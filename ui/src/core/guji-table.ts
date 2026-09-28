@@ -62,19 +62,31 @@ export function hasGujiTableNotation(index: { table_notation?: string } | null |
     return !!index && index.table_notation === GUJI_TABLE_NOTATION;
 }
 
+import { matchZi } from './guji-inline';
+
 const OPEN_RE = /^:::table(?:\{[^}]*\})?[ \t]*$/;
 const CLOSE_RE = /^:::[ \t]*$/;
 
 /**
- * 按 `|` 切格，但不切夹注 `<…>`／`⟨…⟩` 里面的 `|`。
+ * 按 `|` 切格，但不切夹注 `<…>`／`⟨…⟩` 与组字 `:zi[…]` 里面的 `|`。
  * `<` 的生效条件与 `scanJiazhu` 相同（其后不是 ASCII 字母、`/`、`!`、`?`、`>`、空白），
  * 且须在本行内闭合，否则按字面。
+ * `:zi[…]` 的方括号按 `guji-inline` 的 `matchZi` 配对（计数嵌套、`\` 转义跳过）；
+ * 配不上或内容为空时按字面，其中的 `|` 照切。
  */
 export function splitTableRow(line: string): string[] {
     const out: string[] = [];
     let buf = '';
     for (let i = 0; i < line.length; i++) {
         const ch = line[i];
+        if (ch === ':' && line.startsWith(':zi[', i)) {
+            const j = matchZi(line, i + 3);
+            if (j > i + 4) {
+                buf += line.slice(i, j + 1);
+                i = j;
+                continue;
+            }
+        }
         let close: string | null = null;
         if (ch === '⟨') close = '⟩';
         else if (ch === '<') {

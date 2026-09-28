@@ -61,6 +61,29 @@ describe('跳过目录：「跳到正文」与游走 tabindex', () => {
         expect(document.activeElement).toBe(target);
     });
 
+    it('「跳到正文」平时按 visually-hidden 收起，获得焦点才出现', () => {
+        const base = READER_CSS.match(/\.bim-rd-skip \{([^}]*)\}/)![1];
+        // 标准写法：1px + 裁切，不靠位移藏到屏外（窄屏／宿主有顶栏时位移会外露）
+        expect(base).toMatch(/position: absolute/);
+        expect(base).toMatch(/width: 1px; height: 1px/);
+        expect(base).toMatch(/overflow: hidden/);
+        expect(base).toMatch(/clip: rect\(0 0 0 0\)/);
+        expect(base).toMatch(/clip-path: inset\(50%\)/);
+        expect(base).not.toMatch(/transform/);
+        const focus = READER_CSS.match(/\.bim-rd-skip:focus \{([^}]*)\}/)![1];
+        expect(focus).toMatch(/width: auto; height: auto/);
+        expect(focus).toMatch(/clip: auto; clip-path: none/);
+        expect(focus).toMatch(/overflow: visible/);
+        // 窄屏断点里不得再把它放出来
+        const narrow = READER_CSS.slice(READER_CSS.indexOf('@media (max-width: 719px)'));
+        expect(narrow).not.toMatch(/\.bim-rd-skip(?!:focus)[^{]*\{/);
+        render(<Harness toc={FEW} />);
+        const skip = screen.getByText('跳到正文');
+        expect(skip.className).toBe('bim-rd-skip');
+        skip.focus();
+        expect(document.activeElement).toBe(skip);
+    });
+
     it('496 卷的目录里只有当前卷进 Tab 序列', () => {
         const { container } = render(<Harness initial="120" />);
         const toc = container.querySelector('.bim-rd-toc')!;
