@@ -188,6 +188,14 @@ export const BIM_TOKEN_GROUPS = [
             note: '宿主吸顶导航的高度：阅读器工具条、目录与书影侧栏在它下面吸顶（如 60px）',
         },
     }),
+    group('反馈浮钮（2026-09-28 Q5）', {
+        'feedback-fab-z': { value: '40', note: '层级：低于页面抽屉、弹层（本包对话框为 1000）' },
+        /*
+         * 浮钮占掉的底部高度。FeedbackButton 挂载且未隐藏时写在 <html> 的内联样式上，
+         * 宿主正文 padding-bottom 引用它；不在 :root 声明，未挂载时走宿主自己的回退值。
+         */
+        'feedback-fab-offset': { value: '0px', root: false },
+    }),
     group('字体（全站无衬线，2026-09-05 定）', {
         'font-ui': {
             value: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", '
