@@ -135,6 +135,11 @@ export { CollectionCatalog } from './components/CollectionCatalog';
 export type { CollectionCatalogProps } from './components/CollectionCatalog';
 export { CollatedEdition } from './components/CollatedEdition';
 export { BookFullText } from './components/BookFullText';
+export type { BookFullTextProps } from './components/BookFullText';
+// 阅读器（整理本 / 全文共用的外壳、目录、书影、正文排版）
+export * from './components/Reader';
+export { buildParagraphBlocks, detectGenre } from './core/paragraphize';
+export type { ReadingMode, ReadingGenre, ParagraphBlock } from './core/paragraphize';
 export { WorkCatalog } from './components/WorkCatalog';
 export type { WorkCatalogProps } from './components/WorkCatalog';
 export type { CollatedEditionProps } from './components/CollatedEdition';

@@ -182,12 +182,23 @@ export const BIM_TOKEN_GROUPS = [
         'table-border': { value: 'color-mix(in srgb, currentColor 28%, transparent)', root: false, note: '古籍表格（跟随当前文字色）' },
         'table-head-bg': { value: 'color-mix(in srgb, currentColor 8%, transparent)', root: false },
     }),
+    group('阅读器（整理本 / 全文）', {
+        'reader-top': {
+            value: '0px',
+            note: '宿主吸顶导航的高度：阅读器工具条、目录与书影侧栏在它下面吸顶（如 60px）',
+        },
+    }),
     group('字体（全站无衬线，2026-09-05 定）', {
         'font-ui': {
             value: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", '
                 + '"PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif',
         },
         'font-body': { value: 'system-ui, sans-serif', css: 'var(--bim-font-ui)' },
+        'font-reading': {
+            value: '"Noto Serif SC", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "Songti TC", '
+                + '"STSong", "SimSun", serif',
+            note: '阅读器正文（整理本 / 全文）用宋体；界面仍是 font-ui',
+        },
     }),
 ] as const;
 

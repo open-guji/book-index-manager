@@ -1,0 +1,320 @@
+/**
+ * 阅读器外壳：整理本与全文共用。
+ *
+ *   ┌ 工具条（吸顶）：书名 · 副题 ……… 目录  书影 │ 繁简 │ A− A+ │ 自然段 专名线 ┐
+ *   ├ 目录（侧栏/抽屉）┬ 书影 ┬ 正文 ─────────────────────────────────────────┤
+ *
+ * - 书影在正文左边（阅读习惯，2026-09-28 定）；没有影像时默认收起，工具条上仍可点开看占位；
+ * - 目录：宽屏（≥1100px）是可收起的侧栏，默认展开；更窄时是抽屉，默认收起，选卷后自动合上；
+ * - 窄屏（≤719px）书影区不显示，只留正文；
+ * - 工具条只用文字与图标，不画按钮外框；
+ * - 第一个可聚焦元素是「跳到正文」，目录内部用游走 tabindex（只有当前卷进 Tab 序列）。
+ *
+ * 正文内容（卷名、元数据行、宋体正文）由调用方作为 children 传入，
+ * 偏好（字号、自然段、专名线）由调用方用 `useReaderPrefs` 持有后传进来——调用方渲染正文要用。
+ */
+import React, { useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { LocaleContext } from '../../i18n/context';
+import { READER_CSS, READER_WIDE_QUERY } from './reader-css';
+import { ReaderToc } from './ReaderToc';
+import { ImagePanel } from './ImagePanel';
+import { FONT_SIZE_STEPS, DEFAULT_FONT_SIZE, stepFontSize } from './prefs';
+import type { ReaderPrefs } from './prefs';
+import type { ReaderImageOverlay, ReaderPageImage, ReaderTocItem } from './types';
+
+export type PanelState = 'auto' | 'open' | 'closed';
+
+export interface ReaderShellProps {
+    /** 工具条左侧：书名 */
+    title?: React.ReactNode;
+    /** 工具条左侧：书名后的小字（作者、「整理本」等） */
+    subtitle?: React.ReactNode;
+
+    toc: ReaderTocItem[];
+    activeKey: string | null;
+    onSelect: (key: string) => void;
+    /** 目录顶上的附加内容（整理本的跨卷搜索框） */
+    tocHeader?: React.ReactNode;
+    /** 目录标题，如「目录 · 22 卷」 */
+    tocCaption?: React.ReactNode;
+
+    /** 当前卷的书影；null / 空数组 = 没有影像 */
+    images?: ReaderPageImage[] | null;
+    imagesLoading?: boolean;
+    renderImageOverlay?: ReaderImageOverlay;
+    /** 书影区初始状态：auto = 有影像才展开 */
+    imagePanel?: PanelState;
+
+    prefs: ReaderPrefs;
+    onPrefsChange: (patch: Partial<ReaderPrefs>) => void;
+    /** 当前正文可以按自然段排（体裁判得清）时才显示「自然段」开关 */
+    paragraphToggle?: boolean;
+    /** 显示「专名线」开关（正文里有书名号时才有意义） */
+    properNameToggle?: boolean;
+    /** 竖排开关（预留，默认不显示） */
+    allowVertical?: boolean;
+
+    /** 正文底部「上一卷 / 下一卷」；默认按目录顺序自动给出 */
+    pager?: boolean;
+
+    children: React.ReactNode;
+    className?: string;
+    style?: React.CSSProperties;
+}
+
+/** 目录里所有可选的叶子，按阅读顺序 */
+export function flattenToc(items: ReaderTocItem[]): ReaderTocItem[] {
+    const out: ReaderTocItem[] = [];
+    const walk = (list: ReaderTocItem[]) => {
+        for (const it of list) {
+            if (it.children && it.children.length > 0) walk(it.children);
+            else out.push(it);
+        }
+    };
+    walk(items);
+    return out;
+}
+
+const IconToc = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+        <path d="M4 6h16M4 12h10M4 18h16" />
+    </svg>
+);
+const IconImage = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="4" y="3" width="16" height="18" rx="1.5" />
+        <path d="M9 3v18M13 7v10M16.5 7v10" />
+    </svg>
+);
+
+function useMediaQuery(query: string, ssrDefault: boolean): boolean {
+    const [match, setMatch] = useState(ssrDefault);
+    useEffect(() => {
+        if (typeof window === 'undefined' || !window.matchMedia) return;
+        const mq = window.matchMedia(query);
+        setMatch(mq.matches);
+        const on = () => setMatch(mq.matches);
+        mq.addEventListener?.('change', on);
+        return () => mq.removeEventListener?.('change', on);
+    }, [query]);
+    return match;
+}
+
+function LocaleSwitch() {
+    const ctx = useContext(LocaleContext);
+    if (!ctx) return null;
+    const isHant = ctx.locale === 'zh-Hant';
+    return (
+        <button
+            type="button"
+            className="bim-rd-t"
+            title={isHant ? '切换为简体' : '切換為繁體'}
+            aria-label={isHant ? '切换为简体' : '切換為繁體'}
+            onClick={() => ctx.setLocale(isHant ? 'zh-Hans' : 'zh-Hant')}
+        >
+            <span className={isHant ? 'bim-rd-on' : 'bim-rd-off'}>繁</span>
+            <span className="bim-rd-off">｜</span>
+            <span className={isHant ? 'bim-rd-off' : 'bim-rd-on'}>简</span>
+        </button>
+    );
+}
+
+export function ReaderShell({
+    title, subtitle,
+    toc, activeKey, onSelect, tocHeader, tocCaption,
+    images, imagesLoading, renderImageOverlay, imagePanel = 'auto',
+    prefs, onPrefsChange, paragraphToggle, properNameToggle = true, allowVertical,
+    pager = true,
+    children, className, style,
+}: ReaderShellProps) {
+    const uid = useId().replace(/:/g, '');
+    const tocId = `bim-rd-toc-${uid}`;
+    const textId = `bim-rd-text-${uid}`;
+    const barRef = useRef<HTMLDivElement>(null);
+    const textRef = useRef<HTMLDivElement>(null);
+    const tocRef = useRef<HTMLDivElement>(null);
+    const tocBtnRef = useRef<HTMLButtonElement>(null);
+
+    const isWide = useMediaQuery(READER_WIDE_QUERY, true);
+    const [tocState, setTocState] = useState<PanelState>('auto');
+    const tocOpen = tocState === 'auto' ? isWide : tocState === 'open';
+    const drawer = !isWide;
+
+    const hasImages = !!images && images.length > 0;
+    const [imgState, setImgState] = useState<PanelState>(imagePanel);
+    useEffect(() => { setImgState(imagePanel); }, [imagePanel]);
+    const imgOpen = imgState === 'auto' ? (hasImages || !!imagesLoading) : imgState === 'open';
+
+    const closeDrawer = useCallback((refocus: boolean) => {
+        setTocState('auto');
+        if (refocus) tocBtnRef.current?.focus();
+    }, []);
+
+    const toggleToc = () => setTocState(tocOpen ? 'closed' : 'open');
+
+    // 抽屉打开后把焦点移进去（先搜索框，否则当前卷）
+    useEffect(() => {
+        if (!drawer || tocState !== 'open') return;
+        const root = tocRef.current;
+        const target = root?.querySelector<HTMLElement>('input, [data-rd-toc-key][tabindex="0"]');
+        target?.focus();
+    }, [drawer, tocState]);
+
+    const handleSelect = useCallback((key: string) => {
+        onSelect(key);
+        if (drawer) closeDrawer(false);
+        // 正文顶端若已滚出工具条下方，回到正文开头
+        const text = textRef.current;
+        const bar = barRef.current;
+        if (text && bar && typeof window !== 'undefined') {
+            const dy = text.getBoundingClientRect().top - bar.getBoundingClientRect().bottom;
+            if (dy < 0) window.scrollBy({ top: dy });
+        }
+    }, [onSelect, drawer, closeDrawer]);
+
+    const flat = useMemo(() => flattenToc(toc), [toc]);
+    const pos = flat.findIndex(it => it.key === activeKey);
+    const prev = pos > 0 ? flat.slice(0, pos).reverse().find(it => !it.disabled) : undefined;
+    const next = pos >= 0 ? flat.slice(pos + 1).find(it => !it.disabled) : undefined;
+
+    const fs = prefs.fontSize ?? DEFAULT_FONT_SIZE;
+    const rootStyle = {
+        ...style,
+        ...(prefs.fontSize ? { ['--bimrd-fs' as string]: `${prefs.fontSize}px` } : null),
+    } as React.CSSProperties;
+
+    return (
+        <div
+            className={['bim-rd', prefs.writingMode === 'vertical' && allowVertical ? 'bim-rd-vertical' : '', className].filter(Boolean).join(' ')}
+            data-toc={tocState}
+            data-img={imgOpen ? 'open' : 'closed'}
+            style={rootStyle}
+        >
+            <style>{READER_CSS}</style>
+            <a className="bim-rd-skip" href={`#${textId}`} onClick={e => {
+                e.preventDefault();
+                textRef.current?.focus();
+                textRef.current?.scrollIntoView?.({ block: 'start' });
+            }}>跳到正文</a>
+
+            <div className="bim-rd-bar" ref={barRef}>
+                {(title || subtitle) && (
+                    <p className="bim-rd-ttl" style={{ margin: 0 }}>
+                        {title && <b>{title}</b>}
+                        {subtitle && <span>{subtitle}</span>}
+                    </p>
+                )}
+                <div className="bim-rd-tools" role="group" aria-label="阅读设置">
+                    <button
+                        ref={tocBtnRef}
+                        type="button"
+                        className="bim-rd-t"
+                        aria-expanded={tocOpen}
+                        aria-controls={tocId}
+                        onClick={toggleToc}
+                    >
+                        <IconToc /><span className="bim-rd-tlabel">目录</span>
+                    </button>
+                    <button
+                        type="button"
+                        className="bim-rd-t bim-rd-hide-narrow"
+                        aria-pressed={imgOpen}
+                        onClick={() => setImgState(imgOpen ? 'closed' : 'open')}
+                    >
+                        <IconImage />书影
+                    </button>
+                    <span className="bim-rd-sep" aria-hidden="true" />
+                    <LocaleSwitch />
+                    <span className="bim-rd-sep" aria-hidden="true" />
+                    <button
+                        type="button"
+                        className="bim-rd-t"
+                        aria-label="缩小字号"
+                        disabled={fs <= FONT_SIZE_STEPS[0]}
+                        onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, -1) })}
+                    >A−</button>
+                    <button
+                        type="button"
+                        className="bim-rd-t"
+                        aria-label="放大字号"
+                        disabled={fs >= FONT_SIZE_STEPS[FONT_SIZE_STEPS.length - 1]}
+                        onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, 1) })}
+                    >A+</button>
+                    {(paragraphToggle || properNameToggle || allowVertical) && <span className="bim-rd-sep" aria-hidden="true" />}
+                    {paragraphToggle && (
+                        <button
+                            type="button"
+                            className="bim-rd-t"
+                            aria-pressed={prefs.readingMode === 'paragraph'}
+                            title="条目分行 ↔ 自然段"
+                            onClick={() => onPrefsChange({ readingMode: prefs.readingMode === 'paragraph' ? 'line' : 'paragraph' })}
+                        >自然段</button>
+                    )}
+                    {properNameToggle && (
+                        <button
+                            type="button"
+                            className="bim-rd-t"
+                            aria-pressed={prefs.properNames}
+                            title="书名加波浪线"
+                            onClick={() => onPrefsChange({ properNames: !prefs.properNames })}
+                        >专名线</button>
+                    )}
+                    {allowVertical && (
+                        <button
+                            type="button"
+                            className="bim-rd-t bim-rd-hide-narrow"
+                            aria-pressed={prefs.writingMode === 'vertical'}
+                            onClick={() => onPrefsChange({ writingMode: prefs.writingMode === 'vertical' ? 'horizontal' : 'vertical' })}
+                        >竖排</button>
+                    )}
+                </div>
+            </div>
+
+            <div className="bim-rd-body">
+                <div
+                    className="bim-rd-toc"
+                    id={tocId}
+                    ref={tocRef}
+                    role={drawer && tocOpen ? 'dialog' : undefined}
+                    aria-modal={drawer && tocOpen ? true : undefined}
+                    aria-label={drawer && tocOpen ? '目录' : undefined}
+                    onKeyDown={e => { if (e.key === 'Escape' && drawer && tocOpen) { e.stopPropagation(); closeDrawer(true); } }}
+                >
+                    <div className="bim-rd-toc-top">
+                        <div className="bim-rd-toc-head">
+                            <span>{tocCaption ?? '目录'}</span>
+                            {drawer && (
+                                <button type="button" className="bim-rd-t" aria-label="收起目录" onClick={() => closeDrawer(true)}>✕</button>
+                            )}
+                        </div>
+                        {tocHeader}
+                    </div>
+                    <ReaderToc items={toc} activeKey={activeKey} onSelect={handleSelect} />
+                </div>
+                <div className="bim-rd-scrim" aria-hidden="true" onClick={() => closeDrawer(true)} />
+
+                <aside className="bim-rd-img" aria-label="书影">
+                    {imgOpen && (
+                        <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} />
+                    )}
+                </aside>
+
+                <div className="bim-rd-text" id={textId} ref={textRef} tabIndex={-1}>
+                    <div className="bim-rd-col">
+                        {children}
+                        {pager && (prev || next) && (
+                            <nav className="bim-rd-pager" aria-label="翻卷">
+                                <span>{prev && (
+                                    <button type="button" className="bim-rd-t" onClick={() => handleSelect(prev.key)}>‹ {prev.label}</button>
+                                )}</span>
+                                <span>{next && (
+                                    <button type="button" className="bim-rd-t" onClick={() => handleSelect(next.key)}>{next.label} ›</button>
+                                )}</span>
+                            </nav>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
