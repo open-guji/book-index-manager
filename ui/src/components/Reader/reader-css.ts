@@ -14,6 +14,8 @@ import { bim } from '../../styles/tokens';
 
 export const READER_WIDE_QUERY = '(min-width: 1100px)';
 export const READER_NARROW_QUERY = '(max-width: 719px)';
+/** 窄屏或触屏：工具条点击区扩到 44×44（INT Q4） */
+const READER_COARSE_QUERY = `${READER_NARROW_QUERY}, (pointer: coarse)`;
 
 const TOP = bim('reader-top');
 const BAR_H = '48px';
@@ -73,6 +75,13 @@ export const READER_CSS = `
 .bim-rd-t svg { flex: none; }
 .bim-rd-t .bim-rd-on { color: ${bim('accent')}; font-weight: 700; }
 .bim-rd-t .bim-rd-off { opacity: 0.55; }
+.bim-rd-ver { position: relative; display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.bim-rd-ver-short { display: none; }
+.bim-rd-ver select {
+  max-width: 16em; min-height: 32px; margin: 0; padding: 0 2px;
+  background: none; border: 0; font: inherit; color: ${bim('ink')}; cursor: pointer;
+  text-overflow: ellipsis;
+}
 .bim-rd :focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: 2px; border-radius: 3px; }
 
 /* ── 主体：目录 | 书影 | 正文 ── */
@@ -176,6 +185,11 @@ export const READER_CSS = `
 .bim-rd-prose h3 { font-size: 1.06em; font-weight: 700; margin: 1.4em 0 0.3em; }
 .bim-rd-prose h4 { font-size: 1em; font-weight: 700; margin: 1.2em 0 0.2em; }
 .bim-rd-prose > :first-child { margin-top: 0; }
+/* 标题标签按层级不跳级（h1 下先 h2，INT Q5），外观按 md 原层级走 class */
+.bim-rd-prose .bim-rd-hl2 { font-size: 1.2em; font-weight: 700; margin: 1.6em 0 0.6em; }
+.bim-rd-prose .bim-rd-hl3 { font-size: 1.06em; font-weight: 700; margin: 1.4em 0 0.3em; }
+.bim-rd-prose .bim-rd-hl4 { font-size: 1em; font-weight: 700; margin: 1.2em 0 0.2em; }
+.bim-rd-prose > .bim-rd-hl2:first-child, .bim-rd-prose > .bim-rd-hl3:first-child, .bim-rd-prose > .bim-rd-hl4:first-child { margin-top: 0; }
 .bim-rd-prose .bim-rd-gap { height: 0.6em; }
 .bim-rd-entry { margin-top: 1.6em; }
 .bim-rd-entry h3 { margin: 0 !important; }
@@ -199,11 +213,25 @@ export const READER_CSS = `
   overflow-x: auto; text-align: start;
 }
 
+.bim-rd-src { margin: 48px 0 0; font-size: 12px; line-height: 1.8; color: ${bim('meta-fg')}; font-family: ${bim('font-ui')}; }
+.bim-rd-src .bim-rd-dot::before { content: "·"; margin: 0 0.5em; }
 .bim-rd-pager { display: flex; justify-content: space-between; gap: 16px; margin-top: 56px; font-size: 14px; font-family: ${bim('font-ui')}; }
 .bim-rd-pager .bim-rd-t { color: ${bim('quiet-fg')}; }
 .bim-rd-refs { margin-top: 48px; font-size: 12px; line-height: 1.8; color: ${bim('meta-fg')}; font-family: ${bim('font-ui')}; }
 .bim-rd-refs h2 { font-size: 12px; font-weight: 600; letter-spacing: 0.2em; margin: 0 0 6px; color: ${bim('meta-fg')}; }
 .bim-rd-refs ol { margin: 0; padding-left: 1.6em; }
+
+/* ── 点击区 ≥44×44（INT Q4）：伪元素向外扩，按钮外观与排布不变；
+      A− A+ 挨着，两边各扩约 10px 会叠在一起，所以二者之间多留 12px ── */
+@media ${READER_COARSE_QUERY} {
+  .bim-rd-tools .bim-rd-t, .bim-rd-toc-head .bim-rd-t { position: relative; }
+  .bim-rd-tools .bim-rd-t::after, .bim-rd-toc-head .bim-rd-t::after {
+    content: ""; position: absolute; left: 50%; top: 50%;
+    width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%);
+  }
+  .bim-rd-tools .bim-rd-fs + .bim-rd-fs { margin-left: 12px; }
+  .bim-rd-ver select { min-height: 44px; }
+}
 
 /* ── 中屏以下：目录改抽屉 ── */
 @media not all and ${READER_WIDE_QUERY} {
@@ -225,6 +253,10 @@ export const READER_CSS = `
   .bim-rd-ttl span, .bim-rd-hide-narrow { display: none !important; }
   .bim-rd-ttl { flex: 1 1 auto; }
   .bim-rd-tools { gap: 10px; }
+  .bim-rd-ver { min-width: 44px; min-height: 44px; justify-content: center; }
+  .bim-rd-ver-short { display: inline; white-space: nowrap; }
+  .bim-rd-ver select { position: absolute; inset: 0; width: 100%; max-width: none; opacity: 0; }
+  .bim-rd-ver:focus-within { outline: 2px solid ${bim('accent')}; outline-offset: 2px; border-radius: 3px; }
   .bim-rd-tlabel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .bim-rd-img { display: none !important; }
   .bim-rd-body { grid-template-columns: minmax(0, 1fr); }

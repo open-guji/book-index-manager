@@ -117,6 +117,8 @@ export const WorkPage: React.FC<WorkPageProps> = ({
         [versionIds, resolved],
     );
     const allResolved = versionIds.length > 0 && versionIds.every(id => resolved.has(id));
+    /** 还有版本在解析（次级数据未到）：提要卡给晚到的「最早存世」先占一行，免得整卡下推（INT Q3 CLS） */
+    const resolving = !!transport && idsToResolve.some(id => !resolved.has(id));
 
     // 能全量解析时按年代排；否则保持录入序（部分解析时按年代排会随解析跳动）
     const byYear = smallSet || needAll;
@@ -179,15 +181,20 @@ export const WorkPage: React.FC<WorkPageProps> = ({
         }
 
         const dated = table.allRows.filter(r => r.sortYear != null);
-        if (dated.length > 0) {
-            const earliest = dated.reduce((a, b) => (a.sortYear! <= b.sortYear! ? a : b));
-            if (earliest.era.era) {
-                out.push({
-                    label: '最早存世',
-                    value: convert([earliest.era.era, earliest.era.reign].filter(Boolean).join(' ')),
-                    title: earliest.era.source === 'edition' ? convert('據版本題名推斷') : undefined,
-                });
-            }
+        const earliest = dated.length > 0
+            ? dated.reduce((a, b) => (a.sortYear! <= b.sortYear! ? a : b))
+            : null;
+        if (earliest?.era.era) {
+            out.push({
+                label: '最早存世',
+                value: convert([earliest.era.era, earliest.era.reign].filter(Boolean).join(' ')),
+                title: earliest.era.source === 'edition' ? convert('據版本題名推斷') : undefined,
+            });
+        } else if (resolving) {
+            out.push({
+                label: '最早存世',
+                value: <span className="bim-d-meta" aria-label={convert('載入中')}>…</span>,
+            });
         }
 
         if (indexed.length || emendated.length) {
@@ -208,7 +215,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
             convert(w.book_title) + (w.n_juan != null ? ` ${w.n_juan}${convert(t.unit.juan)}` : ''));
         if (appendixWorks.length) out.push({ label: '附錄', value: appendixWorks.join('、') });
         return out;
-    }, [data, convert, t, versionIds.length, allResolved, imageCount, table.allRows, indexed.length, emendated.length]);
+    }, [data, convert, t, versionIds.length, allResolved, resolving, imageCount, table.allRows, indexed.length, emendated.length]);
 
     const cls = data.classification;
     const clsItems = cls
@@ -282,7 +289,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                         table.rows.length !== table.allRows.length ? convert(`當前 ${table.rows.length} 種`) : '',
                     ]} />}
                 >
-                    <div className="bim-d-filters bim-d-ui">
+                    <div className="bim-d-filters bim-d-ui" data-pending={resolving && eraTabs.length === 0 && versionIds.length > 1 ? '' : undefined}>
                         {eraTabs.length > 0 && (
                             <TabFilter
                                 items={eraTabs}
@@ -298,7 +305,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                         />
                         <span className="bim-d-meta">{convert(byYear ? '按年代排列' : '按著錄順序')}</span>
                     </div>
-                    <table className="bim-d-zt">
+                    <table className="bim-d-zt bim-d-zt-ver">
                         <thead className="bim-d-ui">
                             <tr>
                                 <th>{convert('版本')}</th>
@@ -434,7 +441,7 @@ function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
     const imageTitle = row.images.map(r => resourceName(r, convert)).join('、');
 
     return (
-        <tr>
+        <tr data-loading={loaded ? undefined : ''}>
             <td className="bim-d-zt-main">
                 <BidLink
                     id={row.id}

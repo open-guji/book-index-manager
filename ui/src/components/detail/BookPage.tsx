@@ -303,7 +303,7 @@ export const BookPage: React.FC<BookPageProps> = ({
         <>
             {work && (
                 <div id="work" className="bim-d-side" style={{ scrollMarginTop: 16 }}>
-                    <h3 className="bim-d-ui">{convert(t.section.belongsToWork)}</h3>
+                    <h2 className="bim-d-ui bim-d-side-h">{convert(t.section.belongsToWork)}</h2>
                     <div style={{ fontSize: 17, fontWeight: 500 }}>
                         <BidLink id={work.id} label={convert(work.title)} onNavigate={onNavigate} renderLink={renderLink} />
                     </div>

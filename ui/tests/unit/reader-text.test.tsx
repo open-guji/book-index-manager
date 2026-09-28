@@ -127,9 +127,10 @@ describe('md 杂项', () => {
         expect(stripBlockComments(text)).not.toContain('本档');
         const c = mount(<ReaderMdText text={text} mode="line" dropTitle="正史類" />);
         expect(c.textContent).not.toContain('本档');
-        expect(c.querySelector('h2')).toBeNull();
-        // 整行粗体是条目标题
-        expect(c.querySelector('h4')?.textContent).toBe('《史記》一百三十卷');
+        expect(c.textContent).not.toContain('正史類');
+        // 整行粗体是条目标题：外观是四级（bim-rd-hl4），标签不跳级——卷名 h1 之下第一个标题是 h2（INT Q5）
+        expect(c.querySelector('.bim-rd-hl4')?.textContent).toBe('《史記》一百三十卷');
+        expect(c.querySelector('.bim-rd-hl4')?.tagName).toBe('H2');
         expect(c.querySelector('p')?.textContent).toBe('漢太史令夏陽司馬遷子長撰。');
     });
 
