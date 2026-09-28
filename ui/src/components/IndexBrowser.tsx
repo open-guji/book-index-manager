@@ -6,6 +6,7 @@ import { SearchInput } from './SearchInput';
 import { useT, useConvert, formatTemplate } from '../i18n';
 import { splitHighlightSnippet } from '../core/highlight';
 import { bim } from '../styles/tokens';
+import { useBidUrl } from '../core/bid-url';
 
 const RECENT_KEY = 'bim-recent-ids';
 const RECENT_KEY_LEGACY = 'bim-recent-entries';
@@ -296,6 +297,21 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         onEntryClick?.(entry);
     };
 
+    /**
+     * 结果卡片（真 <a href>）的点击。普通左键 + 有 onEntryClick → 拦下走客户端路由；
+     * 修饰键 / 中键 / 无 onEntryClick → 交给浏览器（新标签、整页跳转）。
+     * 两种情况都记最近浏览。
+     */
+    const handleEntryLinkClick = (entry: IndexEntry, e: React.MouseEvent<HTMLAnchorElement>) => {
+        if (onEntryClick && isPlainLeftClick(e)) {
+            e.preventDefault();
+            handleEntryClick(entry);
+            return;
+        }
+        saveRecentId(entry.id);
+        setRecentIds(loadRecentIds());
+    };
+
     const handleRemoveRecent = (id: string) => {
         removeRecentId(id);
         setRecentIds(loadRecentIds());
@@ -470,7 +486,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                                 key={entry.id}
                                                 entry={entry}
                                                 selected={selectedId === entry.id}
-                                                onClick={handleEntryClick}
+                                                onClick={handleEntryLinkClick}
                                                 getConfig={getConfig}
                                                 onRemove={handleRemoveRecent}
                                             />
@@ -566,7 +582,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                                     key={entry.id}
                                                     entry={entry}
                                                     selected={selectedId === entry.id}
-                                                    onClick={handleEntryClick}
+                                                    onClick={handleEntryLinkClick}
                                                     getConfig={getConfig}
                                                     query={searchQuery}
                                                 />
@@ -598,11 +614,22 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
 interface EntryCardProps {
     entry: IndexEntry;
     selected: boolean;
-    onClick: (entry: IndexEntry) => void;
+    onClick: (entry: IndexEntry, e: React.MouseEvent<HTMLAnchorElement>) => void;
     getConfig: (type: IndexType) => { icon: string; name: string };
     query?: string;
     onRemove?: (id: string) => void;
 }
+
+/** 普通左键单击（无修饰键）。其余情况交给浏览器默认行为：新标签、新窗口、下载等 */
+function isPlainLeftClick(e: React.MouseEvent): boolean {
+    return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+}
+
+/** 结果卡片 <a> 的基础样式：去掉链接默认的下划线与颜色 */
+const cardLinkReset: React.CSSProperties = {
+    color: 'inherit',
+    textDecoration: 'none',
+};
 
 /**
  * 简介搜索命中片段（A4，2026-09-27）。entry.descriptionSnippet 只在 L1/Meili
@@ -660,11 +687,15 @@ const EntryBookCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, get
         : undefined;
 
     const accent = bim('cover-accent');
+    const buildUrl = useBidUrl();
 
     return (
-        <div
-            onClick={() => onClick(entry)}
+        <a
+            href={buildUrl(entry.id)}
+            onClick={e => onClick(entry, e)}
+            className="bim-result-card"
             style={{
+                ...cardLinkReset,
                 display: 'flex',
                 gap: '1.2rem',
                 alignItems: 'stretch',
@@ -789,7 +820,7 @@ const EntryBookCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, get
                     )}
                 </div>
             </div>
-        </div>
+        </a>
     );
 };
 
@@ -805,94 +836,109 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
             return s?.toLowerCase().includes(query.toLowerCase());
         })
         : undefined;
+    const buildUrl = useBidUrl();
 
+    // 链接与「移出最近浏览」按钮并列放在外框里，<a> 内不嵌套其他交互元素
     return (
         <div
-            onClick={() => onClick(entry)}
             style={{
                 display: 'flex',
                 alignItems: 'flex-start',
-                gap: '10px',
-                padding: '10px 12px',
                 borderRadius: '6px',
                 border: selected ? `1px solid ${bim('primary')}` : `1px solid ${bim('widget-border')}`,
-                cursor: 'pointer',
                 background: bim('input-bg'),
             }}
         >
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', marginTop: '2px' }}>
-                <span style={{ fontSize: '16px' }}>{getConfig(entry.type).icon}</span>
-                <span style={{ fontSize: '9px', color: bim('desc-fg'), lineHeight: 1 }}>{getConfig(entry.type).name}</span>
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '14px', fontWeight: 500, color: bim('fg') }}>
-                        {convert(entry.title || entry.primary_name || entry.id)}
-                    </span>
-                    {/* 资源图标 */}
-                    <span style={{ display: 'flex', gap: '2px', fontSize: '12px', opacity: 0.7 }}>
-                        {entry.has_text && <span title={t.misc.textResource}>📝</span>}
-                        {entry.has_image && <span title={t.misc.imageResource}>🖼️</span>}
-                    </span>
-                    {/* 刊刻朝代 + 版本（era 是本子的朝代，非撰人 dynasty） */}
-                    {(entry.era || entry.edition) && (
-                        <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
-                            {entry.era && <>〔{convert(entry.era)}〕</>}
-                            {entry.edition && convert(entry.edition)}
-                        </span>
-                    )}
-                    {/* 卷/回数等計量：優先 measure_info，退回 juan_count */}
-                    {entry.measure_info ? (
-                        <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
-                            {convert(entry.measure_info)}
-                        </span>
-                    ) : entry.juan_count != null && entry.juan_count > 0 ? (
-                        <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
-                            {entry.juan_count}{t.unit.juan}
-                        </span>
-                    ) : null}
+            <a
+                href={buildUrl(entry.id)}
+                onClick={e => onClick(entry, e)}
+                className="bim-result-card"
+                style={{
+                    ...cardLinkReset,
+                    flex: 1,
+                    minWidth: 0,
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                    padding: onRemove ? '10px 0 10px 12px' : '10px 12px',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                }}
+            >
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', marginTop: '2px' }}>
+                    <span style={{ fontSize: '16px' }}>{getConfig(entry.type).icon}</span>
+                    <span style={{ fontSize: '9px', color: bim('desc-fg'), lineHeight: 1 }}>{getConfig(entry.type).name}</span>
                 </div>
-                {/* 作者朝代 */}
-                {(entry.dynasty || entry.author) && (
-                    <div style={{ fontSize: '12px', color: bim('desc-fg'), marginTop: '2px' }}>
-                        {entry.dynasty && <span>〔{convert(entry.dynasty)}〕</span>}
-                        {entry.author && <span>{convert(entry.author)}</span>}
-                        {entry.role && entry.role !== 'author' && <span> {convert(entry.role)}</span>}
-                        {/* Entity 生卒年 */}
-                        {entry.type === 'entity' && (entry.birth_year != null || entry.death_year != null) && (
-                            <span style={{ marginLeft: entry.dynasty ? '4px' : 0 }}>
-                                {entry.birth_year ?? '?'}—{entry.death_year ?? '?'}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '14px', fontWeight: 500, color: bim('fg') }}>
+                            {convert(entry.title || entry.primary_name || entry.id)}
+                        </span>
+                        {/* 资源图标 */}
+                        <span style={{ display: 'flex', gap: '2px', fontSize: '12px', opacity: 0.7 }}>
+                            {entry.has_text && <span title={t.misc.textResource}>📝</span>}
+                            {entry.has_image && <span title={t.misc.imageResource}>🖼️</span>}
+                        </span>
+                        {/* 刊刻朝代 + 版本（era 是本子的朝代，非撰人 dynasty） */}
+                        {(entry.era || entry.edition) && (
+                            <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
+                                {entry.era && <>〔{convert(entry.era)}〕</>}
+                                {entry.edition && convert(entry.edition)}
                             </span>
                         )}
+                        {/* 卷/回数等計量：優先 measure_info，退回 juan_count */}
+                        {entry.measure_info ? (
+                            <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
+                                {convert(entry.measure_info)}
+                            </span>
+                        ) : entry.juan_count != null && entry.juan_count > 0 ? (
+                            <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
+                                {entry.juan_count}{t.unit.juan}
+                            </span>
+                        ) : null}
                     </div>
-                )}
-                {/* 别名匹配提示 */}
-                {matchedAlias && (
-                    <div style={{ fontSize: '11px', color: bim('desc-fg'), marginTop: '2px' }}>
-                        {t.search.alias}：{convert(matchedAlias)}
-                    </div>
-                )}
-            </div>
-            {onRemove ? (
+                    {/* 作者朝代 */}
+                    {(entry.dynasty || entry.author) && (
+                        <div style={{ fontSize: '12px', color: bim('desc-fg'), marginTop: '2px' }}>
+                            {entry.dynasty && <span>〔{convert(entry.dynasty)}〕</span>}
+                            {entry.author && <span>{convert(entry.author)}</span>}
+                            {entry.role && entry.role !== 'author' && <span> {convert(entry.role)}</span>}
+                            {/* Entity 生卒年 */}
+                            {entry.type === 'entity' && (entry.birth_year != null || entry.death_year != null) && (
+                                <span style={{ marginLeft: entry.dynasty ? '4px' : 0 }}>
+                                    {entry.birth_year ?? '?'}—{entry.death_year ?? '?'}
+                                </span>
+                            )}
+                        </div>
+                    )}
+                    {/* 别名匹配提示 */}
+                    {matchedAlias && (
+                        <div style={{ fontSize: '11px', color: bim('desc-fg'), marginTop: '2px' }}>
+                            {t.search.alias}：{convert(matchedAlias)}
+                        </div>
+                    )}
+                </div>
+                {!onRemove && <span aria-hidden="true" style={{ opacity: 0.4, marginTop: '2px' }}>→</span>}
+            </a>
+            {onRemove && (
                 <button
-                    onClick={e => { e.stopPropagation(); onRemove(entry.id); }}
+                    type="button"
+                    onClick={() => onRemove(entry.id)}
                     title={t.search.removeFromRecent}
+                    aria-label={t.search.removeFromRecent}
                     style={{
                         border: 'none',
                         background: 'transparent',
                         color: bim('desc-fg'),
                         cursor: 'pointer',
                         fontSize: '14px',
-                        padding: '2px 4px',
+                        padding: '12px 12px 12px 8px',
                         lineHeight: 1,
                         opacity: 0.5,
-                        marginTop: '2px',
                     }}
                 >
                     ×
                 </button>
-            ) : (
-                <span style={{ opacity: 0.4, marginTop: '2px' }}>→</span>
             )}
         </div>
     );

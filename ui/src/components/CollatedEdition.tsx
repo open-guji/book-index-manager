@@ -133,6 +133,12 @@ function ensureSearchNormalizer(): Promise<void> {
     return _searchNormLoading;
 }
 
+/**
+ * 词典未就绪时的兜底。必须是稳定引用：每次渲染新建函数会让 useCrossJuanSearch
+ * 的 effect 每轮重跑、setMatchStates({}) 又触发渲染，形成死循环（jsdom 下直接卡死）。
+ */
+const IDENTITY_NORMALIZER: Normalizer = (s: string) => s;
+
 /** 触发繁→简归一化加载，并在加载完成时刷新组件 */
 function useSearchNormalizer(): Normalizer {
     const [, force] = useState(0);
@@ -143,7 +149,7 @@ function useSearchNormalizer(): Normalizer {
         ensureSearchNormalizer();
         return () => { _searchNormSubs.delete(cb); };
     }, []);
-    return _searchNormalizer ?? ((s: string) => s);
+    return _searchNormalizer ?? IDENTITY_NORMALIZER;
 }
 
 function normalizeForSearch(s: string, normalizer: Normalizer): string {
@@ -437,9 +443,13 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta, matchS
 
     return (
         <div style={{ marginBottom: depth === 0 ? '4px' : '2px' }}>
-            <div
+            <button
+                type="button"
+                aria-expanded={expanded}
                 onClick={() => setExpanded(!expanded)}
                 style={{
+                    ...toggleBtnReset,
+                    width: '100%',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
@@ -457,7 +467,7 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta, matchS
                     opacity: groupNoMatch ? 0.6 : 1,
                 }}
             >
-                <span style={{
+                <span aria-hidden="true" style={{
                     fontSize: '9px',
                     transition: 'transform 0.15s',
                     transform: expanded ? 'rotate(90deg)' : 'none',
@@ -475,7 +485,7 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta, matchS
                 {groupState === 'loading' && (
                     <span style={{ fontSize: '11px', color: bim('desc-fg') }}>…</span>
                 )}
-            </div>
+            </button>
             {expanded && (
                 <>
                     {/* 直属文件 */}
@@ -569,6 +579,39 @@ function JuanNav({
     );
 }
 
+/** 折叠开关 <button> 的样式归零：外观与原先的 div 行一致 */
+const toggleBtnReset: React.CSSProperties = {
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    margin: 0,
+    font: 'inherit',
+    color: 'inherit',
+    textAlign: 'left',
+    cursor: 'pointer',
+};
+
+/**
+ * 「▶ 展开」开关。有可展开内容时渲染 <button aria-expanded>（键盘 Tab / Enter / 空格可操作），
+ * 否则退化为普通 span。不传 onClick 时点击冒泡给外层行处理——外层行里还有
+ * 「→作品」等链接，不能整行都包进 button（交互元素不可嵌套）。
+ * button 只能装行内内容，children 里用 span（需要块级就 display: block）。
+ */
+function ToggleArea({ enabled, expanded, onClick, style, children }: {
+    enabled: boolean;
+    expanded: boolean;
+    onClick?: () => void;
+    style?: React.CSSProperties;
+    children: React.ReactNode;
+}) {
+    if (!enabled) return <span style={style}>{children}</span>;
+    return (
+        <button type="button" aria-expanded={expanded} onClick={onClick} style={{ ...toggleBtnReset, ...style }}>
+            {children}
+        </button>
+    );
+}
+
 function SectionTypeBadge({ type }: { type: string }) {
     /*
      * 必须先归一。数据里的 section.type 自 2026-08 英文枚举迁移后是
@@ -648,57 +691,64 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                     background: bim('input-bg'),
                 }}
             >
-                {hasContent && (
-                    <span style={{
-                        fontSize: '9px',
-                        color: bim('desc-fg'),
-                        transition: 'transform 0.15s',
-                        transform: expanded ? 'rotate(90deg)' : 'none',
-                        display: 'inline-block',
-                        flexShrink: 0,
-                    }}>&#9654;</span>
-                )}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{
-                        fontSize: '14px',
-                        fontWeight: 500,
-                        color: bim('fg'),
-                    }}>
-                        {section.book_title ? <>《{hl(section.book_title)}》</> : hl(section.title)}
-                        {section.n_juan != null && (
+                <ToggleArea
+                    enabled={hasContent}
+                    expanded={expanded}
+                    style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: '8px' }}
+                >
+                    {hasContent && (
+                        <span aria-hidden="true" style={{
+                            fontSize: '9px',
+                            color: bim('desc-fg'),
+                            transition: 'transform 0.15s',
+                            transform: expanded ? 'rotate(90deg)' : 'none',
+                            display: 'inline-block',
+                            flexShrink: 0,
+                        }}>&#9654;</span>
+                    )}
+                    <span style={{ display: 'block', flex: 1, minWidth: 0 }}>
+                        <span style={{
+                            fontSize: '14px',
+                            fontWeight: 500,
+                            color: bim('fg'),
+                        }}>
+                            {section.book_title ? <>《{hl(section.book_title)}》</> : hl(section.title)}
+                            {section.n_juan != null && (
+                                <span style={{
+                                    fontSize: '12px',
+                                    fontWeight: 400,
+                                    color: bim('desc-fg'),
+                                    marginLeft: '6px',
+                                }}>
+                                    {toChineseNumeral(section.n_juan)}卷
+                                </span>
+                            )}
+                            {(section.author_info || section.author) && (
+                                <span style={{
+                                    fontSize: '12px',
+                                    fontWeight: 400,
+                                    color: bim('desc-fg'),
+                                    marginLeft: '8px',
+                                }}>
+                                    {hl(section.author_info || section.author)}
+                                </span>
+                            )}
+                        </span>
+                        {!expanded && preview && (
                             <span style={{
+                                display: 'block',
                                 fontSize: '12px',
-                                fontWeight: 400,
                                 color: bim('desc-fg'),
-                                marginLeft: '6px',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                marginTop: '2px',
                             }}>
-                                {toChineseNumeral(section.n_juan)}卷
-                            </span>
-                        )}
-                        {(section.author_info || section.author) && (
-                            <span style={{
-                                fontSize: '12px',
-                                fontWeight: 400,
-                                color: bim('desc-fg'),
-                                marginLeft: '8px',
-                            }}>
-                                {hl(section.author_info || section.author)}
+                                {hl(preview)}
                             </span>
                         )}
                     </span>
-                    {!expanded && preview && (
-                        <div style={{
-                            fontSize: '12px',
-                            color: bim('desc-fg'),
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            marginTop: '2px',
-                        }}>
-                            {hl(preview)}
-                        </div>
-                    )}
-                </div>
+                </ToggleArea>
                 {section.edition && (
                     <span style={{
                         fontSize: '11px',
@@ -846,8 +896,10 @@ function CategoryHeader({ section, highlightQuery = '' }: { section: CollatedSec
 
     return (
         <div style={{ padding: '12px 0 6px' }}>
-            <div
-                onClick={() => hasContent && setExpanded(!expanded)}
+            <ToggleArea
+                enabled={hasContent}
+                expanded={expanded}
+                onClick={() => setExpanded(!expanded)}
                 style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -865,7 +917,7 @@ function CategoryHeader({ section, highlightQuery = '' }: { section: CollatedSec
                     {hl(section.title)}
                 </span>
                 {hasContent && (
-                    <span style={{
+                    <span aria-hidden="true" style={{
                         fontSize: '9px',
                         color: bim('desc-fg'),
                         transition: 'transform 0.15s',
@@ -873,7 +925,7 @@ function CategoryHeader({ section, highlightQuery = '' }: { section: CollatedSec
                         display: 'inline-block',
                     }}>&#9654;</span>
                 )}
-            </div>
+            </ToggleArea>
             {expanded && hasContent && (
                 <div style={{
                     marginTop: '8px',
@@ -1082,38 +1134,45 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
                     userSelect: 'none',
                 }}
             >
-                {hasContent && (
-                    <span style={{
-                        fontSize: '9px',
-                        color: bim('desc-fg'),
-                        marginTop: '5px',
-                        transition: 'transform 0.15s',
-                        transform: expanded ? 'rotate(90deg)' : 'none',
-                        display: 'inline-block',
-                        flexShrink: 0,
-                    }}>&#9654;</span>
-                )}
-                <div style={{ flex: 1 }}>
-                    <span style={{
-                        fontSize: '14px',
-                        fontWeight: 500,
-                        color: bim('fg'),
-                        lineHeight: 1.6,
-                    }}>
-                        {section.header_line ? hl(section.header_line) : hl(section.title)}
-                    </span>
-                    {/* 折叠时的内容预览 */}
-                    {!expanded && preview && (
-                        <p style={{
-                            margin: '4px 0 0',
-                            fontSize: '12px',
+                <ToggleArea
+                    enabled={hasContent}
+                    expanded={expanded}
+                    style={{ flex: 1, display: 'flex', alignItems: 'flex-start', gap: '8px' }}
+                >
+                    {hasContent && (
+                        <span aria-hidden="true" style={{
+                            fontSize: '9px',
                             color: bim('desc-fg'),
-                            lineHeight: 1.7,
-                        }}>
-                            {hl(preview)}
-                        </p>
+                            marginTop: '5px',
+                            transition: 'transform 0.15s',
+                            transform: expanded ? 'rotate(90deg)' : 'none',
+                            display: 'inline-block',
+                            flexShrink: 0,
+                        }}>&#9654;</span>
                     )}
-                </div>
+                    <span style={{ display: 'block', flex: 1 }}>
+                        <span style={{
+                            fontSize: '14px',
+                            fontWeight: 500,
+                            color: bim('fg'),
+                            lineHeight: 1.6,
+                        }}>
+                            {section.header_line ? hl(section.header_line) : hl(section.title)}
+                        </span>
+                        {/* 折叠时的内容预览 */}
+                        {!expanded && preview && (
+                            <span style={{
+                                display: 'block',
+                                margin: '4px 0 0',
+                                fontSize: '12px',
+                                color: bim('desc-fg'),
+                                lineHeight: 1.7,
+                            }}>
+                                {hl(preview)}
+                            </span>
+                        )}
+                    </span>
+                </ToggleArea>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                     {/* 单作品：标题行右侧显示链接 */}
                     {workIds.length === 1 && onNavigate && (

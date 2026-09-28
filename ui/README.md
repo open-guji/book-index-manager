@@ -107,6 +107,14 @@ class MyStorage implements IndexStorage {
 
 参考 `kaiyuanguji-web/nextjs/src/lib/local-api-storage.ts`（浏览器 → Next.js API 路由）和 `guji-platform/src/storage/VscodeStorage.ts`（VS Code 文件系统）。
 
+### 4. 宿主接入要点（手机 / 无障碍，2026-09-28）
+
+- **搜索结果是真链接**：`IndexBrowser` 的结果卡片是 `<a href>`，href 由 `BidUrlProvider` 的 `buildUrl` 生成（默认 `/book-index?id=…`），站点路由不同时务必包一层 Provider。普通左键点击仍调 `onEntryClick` 走客户端路由；Ctrl / Cmd / Shift / 中键交给浏览器（新标签、复制链接）。不传 `onEntryClick` 则按 href 整页跳转。
+- **反馈浮钮** `FeedbackButton`：
+  - 层级取 `--bim-feedback-fab-z`（默认 40），低于抽屉与弹层；也可传 `zIndex` prop。
+  - 挂载且未隐藏时在 `<html>` 上写 `--bim-feedback-fab-offset`（浮钮占掉的底部高度）。正文容器写 `padding-bottom: var(--bim-feedback-fab-offset, 0px)`，右下角内容就不会被盖住。
+  - `hidden` prop：移动端菜单 / 抽屉打开时传 `true`，浮钮与留白一起撤掉。
+
 ## 数据约定
 
 `book-index-ui` 读写的数据格式与 Python 端 `book-index-manager` CLI 完全一致。详见 [根 README](../README.md) 的"存储结构"和"Manager API 对照表"。
