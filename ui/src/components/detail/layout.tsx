@@ -142,6 +142,82 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 .bim-d-card-byline { margin-top: 8px; font-size: 15px; color: ${bim('ink')}; }
 .bim-d-card-cls { margin-top: 4px; }
 .bim-d-card-desc { margin-top: 16px; color: ${bim('quiet-fg')}; line-height: 1.85; font-size: 15px; }
+/* 提要卡顶上的类型小字（版本 / 叢編 / 人物）：四类页长得一样，靠它区分 */
+.bim-d-card-kind { margin-bottom: 6px; font-size: 12px; letter-spacing: .3em; color: ${bim('aux-fg')}; }
+/* 简介折叠：截到 N 行（行数由 --detail-clamp 给），「展開」后放开 */
+.bim-d-card-desc.bim-d-clamp { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
+  -webkit-line-clamp: var(--detail-clamp, 6); }
+/* 截断时里面的 MarkdownText 段落不要再带上下外边距，免得第一行前空一截 */
+.bim-d-card-desc.bim-d-clamp > * { margin-top: 0; }
+.bim-d-card-toggle { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; font-size: 13px;
+  color: ${bim('accent')}; display: inline-flex; align-items: center; min-height: 28px; }
+.bim-d-card-toggle:hover { text-decoration: underline; text-underline-offset: 3px; }
+.bim-d-card details.bim-d-more-names { margin-top: 8px; font-size: 13px; }
+.bim-d-card details.bim-d-more-names summary { cursor: pointer; color: ${bim('accent')}; display: inline-flex;
+  align-items: center; min-height: 28px; }
+.bim-d-card details.bim-d-more-names dl { margin-top: 6px; }
+
+/* 左栏「上一级」：版本页的所属作品、丛编页的上级丛编 */
+.bim-d-up { display: block; margin-top: 16px; padding: 10px 12px; border-radius: 8px; background: ${bim('zebra-bg')}; }
+.bim-d-up-cap { display: block; font-size: 12px; letter-spacing: .1em; color: ${bim('aux-fg')}; }
+.bim-d-up a { font-size: 16px; font-weight: 700; color: ${bim('ink')} !important; }
+.bim-d-up a:hover { color: ${bim('accent')} !important; }
+.bim-d-up a::after { content: " →"; font-weight: 400; color: ${bim('aux-fg')}; }
+
+/* 资源分组：一组一个小标题、一句说明；镜像收成一行文字链接，不再逐行重复组名 */
+.bim-d-rg + .bim-d-rg { margin-top: 22px; }
+.bim-d-rg-h { font-size: 15px; font-weight: 700; color: ${bim('ink')}; margin: 0; }
+.bim-d-rg-d { font-size: 13px; color: ${bim('aux-fg')}; margin: 2px 0 8px; max-width: 46em;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.bim-d-rg-mir { padding: 6px 12px 0; font-size: 13px; color: ${bim('quiet-fg')}; }
+.bim-d-rg-mir a { color: ${bim('accent')} !important; margin-right: 14px; }
+
+/* 本站全文：一块浅底的阅读入口 + 回目网格（不另加按钮，主按钮在提要卡） */
+.bim-d-ft { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 24px; align-items: center;
+  padding: 18px 20px; border-radius: 10px; background: ${bim('zebra-bg')}; }
+.bim-d-ft-h { margin: 0; font-size: 17px; font-weight: 700; color: ${bim('ink')}; }
+.bim-d-ft .bim-d-meta { grid-column: 1; }
+.bim-d-ft-go { grid-column: 2; grid-row: 1 / span 2; color: ${bim('accent')} !important; font-weight: 500; white-space: nowrap; }
+.bim-d-chap { list-style: none; margin: 12px 0 0; padding: 0; display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0 20px; font-size: 14px; }
+.bim-d-chap a { display: flex; gap: 10px; padding: 5px 0; color: ${bim('quiet-fg')} !important;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.bim-d-chap a:hover { color: ${bim('accent')} !important; }
+.bim-d-chap-pending { height: 142px; margin-top: 12px; }
+.bim-d-chap b { font-weight: 400; color: ${bim('aux-fg')}; flex: none; }
+
+/* 版本源流：一条竖线，靠字重和颜色分层，不画框 */
+.bim-d-tl { list-style: none; margin: 0; padding: 0 0 0 18px; position: relative; }
+.bim-d-tl::before { content: ""; position: absolute; left: 4px; top: 10px; bottom: 10px; width: 1px; background: ${bim('rule')}; }
+.bim-d-tl > li { position: relative; padding: 6px 0; }
+.bim-d-tl > li::before { content: ""; position: absolute; left: -18px; top: 15px; width: 9px; height: 9px;
+  border-radius: 50%; background: ${bim('rule-dashed')}; }
+.bim-d-tl > li.bim-d-tl-cur::before { background: ${bim('accent')}; }
+.bim-d-tl-rel { display: inline-block; min-width: 4.5em; font-size: 12px; color: ${bim('aux-fg')}; letter-spacing: .1em; }
+.bim-d-tl-t { color: ${bim('ink')}; font-weight: 500; }
+.bim-d-tl-cur .bim-d-tl-t { color: ${bim('accent')}; }
+.bim-d-tl-ev { display: block; margin-left: 4.5em; font-size: 12px; color: ${bim('aux-fg')}; }
+.bim-d-tl details { margin: 4px 0 0 4.5em; font-size: 13px; }
+.bim-d-tl summary { cursor: pointer; color: ${bim('accent')}; display: inline-flex; align-items: center; min-height: 28px; }
+
+/* 著作举要：无框的排印块 */
+.bim-d-picks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 28px; }
+.bim-d-pick { padding: 16px 18px; border-radius: 10px; background: ${bim('zebra-bg')}; min-width: 0; }
+.bim-d-pick-t { display: block; font-size: 18px; font-weight: 700; letter-spacing: .04em; }
+.bim-d-pick-t a { color: ${bim('ink')} !important; }
+.bim-d-pick-t a:hover { color: ${bim('accent')} !important; }
+.bim-d-pick .bim-d-meta { display: block; margin-top: 4px; font-size: 12px; }
+.bim-d-pick-n { margin-top: 10px; font-size: 13px; color: ${bim('quiet-fg')}; display: flex; gap: 8px; align-items: center; }
+
+/* 本页内检索（丛编子目） */
+.bim-d-find { height: 30px; min-width: 190px; padding: 0 12px; border: 0; border-radius: 6px; box-sizing: border-box;
+  background: ${bim('tint-bg')}; color: ${bim('ink')}; font: inherit; font-size: 13px; }
+.bim-d-find::placeholder { color: ${bim('aux-fg')}; }
+.bim-d-find:focus { outline: 2px solid ${bim('accent')}; outline-offset: 1px; }
+
+/* 旁栏：当前条目高亮 */
+.bim-d-side-all a { color: ${bim('accent')} !important; }
+.bim-d-side li.bim-d-side-cur, .bim-d-side li.bim-d-side-cur .bim-d-meta { color: ${bim('accent')}; font-weight: 500; }
 .bim-d-card dl { margin: 18px 0 0; display: grid; grid-template-columns: auto minmax(0, 1fr);
   gap: 6px 16px; font-size: 13px; }
 .bim-d-card dt { color: ${bim('aux-fg')}; white-space: nowrap; }
@@ -160,6 +236,8 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
   text-decoration: none !important;
 }
 .bim-d-btn:hover { background: ${bim('accent-deep')}; }
+.bim-d-card-alt { display: flex; align-items: center; justify-content: center; min-height: 32px; margin-top: 8px;
+  font-size: 13px; color: ${bim('accent')} !important; }
 
 /* 旁栏清单：小标题是 h2（提要卡 h1 之下不跳级，INT Q5），外观仍是 15px 小标题 */
 .bim-d-side h3, .bim-d-side .bim-d-side-h { margin: 0 0 6px; font-size: 15px; font-weight: 700; color: ${bim('ink')};
@@ -174,7 +252,9 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 /* 点击目标 ≥44px（Q5）：触屏与窄屏 */
 @media ${COARSE_QUERY} {
   .bim-d-tab, .bim-d-check, .bim-d-more, .bim-d-rail-back,
-  .bim-d-card-foot summary { min-height: 44px; }
+  .bim-d-card-foot summary, .bim-d-card-toggle, .bim-d-card details.bim-d-more-names summary,
+  .bim-d-tl summary, .bim-d-chap a { min-height: 44px; }
+  .bim-d-chap a { align-items: center; }
   .bim-d-side li { padding: 0; }
   .bim-d-side a { display: inline-flex; align-items: center; min-height: 44px; }
   .bim-d-lu-list button { min-height: 44px; }
@@ -212,6 +292,7 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
   .bim-d-rail-links .bim-d-rail-cap { display: none; }
   .bim-d-rail-links .bim-d-rail-nav { display: flex; flex-wrap: wrap; gap: 0 16px; }
   .bim-d-rail-links .bim-d-rail-nav a { padding: 7px 0; color: ${bim('accent')} !important; font-size: 14px; }
+  .bim-d-up { display: inline-block; margin-top: 12px; }
 }
 
 /* 手机：左栏收起，提要卡 → 正文 → 旁栏 */
@@ -244,6 +325,17 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
   .bim-d-lu { grid-template-columns: 1fr; gap: 12px; }
   .bim-d-lu-list { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px; }
   .bim-d-lu-list button { white-space: nowrap; padding: 6px 12px; }
+  .bim-d-card .bim-d-card-desc.bim-d-clamp { -webkit-line-clamp: 4; }
+  .bim-d-up { display: inline-flex; gap: 8px; align-items: baseline; margin-top: 10px; padding: 6px 12px; }
+  .bim-d-up a { font-size: 14px; }
+  .bim-d-ft { grid-template-columns: minmax(0, 1fr); }
+  .bim-d-ft-go { grid-column: 1; grid-row: auto; margin-top: 6px; }
+  .bim-d-chap { grid-template-columns: 1fr 1fr; }
+  .bim-d-chap-pending { height: 270px; }
+  .bim-d-picks { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .bim-d-pick { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; padding: 12px 14px; }
+  .bim-d-pick-n { margin: 0; grid-column: 2; grid-row: 1 / span 2; }
+  .bim-d-find { flex-basis: 100%; min-height: 40px; }
 }
 `;
 
@@ -268,14 +360,16 @@ export interface RailNavItem {
 /**
  * 三栏骨架。
  *
- * rail   —— 左栏：宿主传入的检索框等（railTop）+ 返回链接 + 本页区块导航
+ * rail   —— 左栏：宿主传入的检索框等（railTop）+ 返回链接 + 「上一级」+ 本页区块导航
  * main   —— 中栏正文
  * card   —— 右栏提要卡
  * side   —— 右栏提要卡下的旁栏清单（手机上排到正文之后）
  */
-export function DetailGrid({ railTop, back, nav, railLinks, main, card, side }: {
+export function DetailGrid({ railTop, back, up, nav, railLinks, main, card, side }: {
     railTop?: React.ReactNode;
     back?: React.ReactNode;
+    /** 「上一级」：版本页的所属作品、丛编页的上级丛编（见 RailUp） */
+    up?: React.ReactNode;
     nav?: RailNavItem[];
     /**
      * 左栏「更多」：切到本条目其他页面的入口（丛编目录、宿主注入的 extraTabs 如「数字化」）。
@@ -293,6 +387,7 @@ export function DetailGrid({ railTop, back, nav, railLinks, main, card, side }: 
             <aside className="bim-d-g-rail bim-d-ui">
                 {railTop}
                 {back && <div style={{ marginTop: railTop ? 12 : 0 }}>{back}</div>}
+                {up}
                 {navItems.length > 1 && (
                     <nav className="bim-d-rail-navwrap" aria-label={convert('本頁導航')} style={{ marginTop: 20 }}>
                         <p className="bim-d-rail-cap" style={{ marginTop: 0 }}>{convert('本頁')}</p>
@@ -334,6 +429,17 @@ export function DetailGrid({ railTop, back, nav, railLinks, main, card, side }: 
             <div className="bim-d-g-main">{main}</div>
             <div className="bim-d-g-card">{card}</div>
             <div className="bim-d-g-side">{side}</div>
+        </div>
+    );
+}
+
+/** 左栏「上一级」块：小字说明 + 一个链接（链接由调用方给，通常是 BidLink） */
+export function RailUp({ caption, children }: { caption: string; children: React.ReactNode }) {
+    const { convert } = useConvert();
+    return (
+        <div className="bim-d-up bim-d-ui">
+            <span className="bim-d-up-cap">{convert(caption)}</span>
+            {children}
         </div>
     );
 }
@@ -443,16 +549,25 @@ export interface CardFact {
  * 整页唯一的主按钮就在这里（readAction）。
  */
 export function SummaryCard({
-    title, subtitle, byline, meta, description, facts, readAction, children, foot,
+    kind, title, subtitle, byline, meta, description, clampDescription, facts, readAction, secondaryAction, children, foot,
 }: {
+    /** 标题上方的类型小字（版本 / 叢編 / 人物） */
+    kind?: string;
     title: React.ReactNode;
     subtitle?: React.ReactNode;
     byline?: React.ReactNode;
     meta?: React.ReactNode;
     description?: React.ReactNode;
+    /**
+     * 简介截到几行（手机上统一 4 行），下附「展開」。调用方按字数判断要不要截
+     * （见 descNeedsClamp）：不量渲染高度，SSR 与首帧一致，「展開」也不会晚到把下面顶开。
+     */
+    clampDescription?: number;
     facts?: CardFact[];
     /** 「阅读全文」主按钮（ReadButton） */
     readAction?: React.ReactNode;
+    /** 主按钮下方的次要入口：只许文字链接（「看原書影印」） */
+    secondaryAction?: React.ReactNode;
     /** 事实表之后、按钮之前的附加内容（附记等） */
     children?: React.ReactNode;
     /** 卡底小字：数据版本、审核状态、待核事项 */
@@ -460,14 +575,30 @@ export function SummaryCard({
 }) {
     const { convert } = useConvert();
     const shownFacts = (facts || []).filter(f => f.value != null && f.value !== '');
+    const [descOpen, setDescOpen] = useState(false);
+    const clamped = !!clampDescription && !descOpen;
     return (
         <div className="bim-d-card">
+            {kind && <div className="bim-d-card-kind bim-d-ui">{convert(kind)}</div>}
             {/* 长标题（版本名「欽定四庫全書·文淵閣本」之类）降一级字号，免得折成三行 */}
             <h1 className={typeof title === 'string' && [...title].length > 7 ? 'bim-d-card-long' : undefined}>{title}</h1>
             {subtitle && <div className="bim-d-card-sub">{subtitle}</div>}
             {byline && <p className="bim-d-card-byline" style={{ marginBottom: 0 }}>{byline}</p>}
             {meta && <div className="bim-d-card-cls bim-d-ui">{meta}</div>}
-            {description && <div className="bim-d-card-desc">{description}</div>}
+            {description && (
+                <div
+                    className={clamped ? 'bim-d-card-desc bim-d-clamp' : 'bim-d-card-desc'}
+                    style={clamped ? { ['--detail-clamp' as string]: clampDescription } as React.CSSProperties : undefined}
+                >
+                    {description}
+                </div>
+            )}
+            {description && !!clampDescription && (
+                <button type="button" className="bim-d-card-toggle bim-d-ui" aria-expanded={descOpen}
+                    onClick={() => setDescOpen(v => !v)}>
+                    {convert(descOpen ? '收起' : '展開')}
+                </button>
+            )}
             {shownFacts.length > 0 && (
                 <dl className="bim-d-ui">
                     {shownFacts.map((f, i) => (
@@ -480,9 +611,18 @@ export function SummaryCard({
             )}
             {children}
             {readAction}
+            {secondaryAction}
             {foot && <div className="bim-d-card-foot bim-d-ui">{foot}</div>}
         </div>
     );
+}
+
+/**
+ * 简介要不要截：按字数估。提要卡 360px 宽约 17 字一行，截 6 行约 100 字；
+ * 手机 4 行约 80 字。110 字以上才截，免得「展開」后只多出半行。
+ */
+export function descNeedsClamp(text?: string): boolean {
+    return !!text && [...text.replace(/\s+/g, '')].length > 110;
 }
 
 /** 「阅读全文」：有 href 渲染成链接（指向宿主的阅读页），否则按钮 */
@@ -517,11 +657,15 @@ export function ReadButton({ href, onClick, label = '閱讀全文' }: {
 // ══════════════════════════════════════════════════════════════
 
 /** 旁栏清单：小标题 + 若干行（行内容由调用方给）+ 「显示更多（n）」 */
-export function SideList({ id, title, meta, items, cap = 8, moreLabel }: {
+export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8, moreLabel }: {
     id?: string;
     title: string;
     meta?: React.ReactNode;
     items: React.ReactNode[];
+    /** 每行右侧的辅助字（年代等），与 items 一一对应 */
+    metas?: React.ReactNode[];
+    /** 当前条目所在行（高亮，aria-current） */
+    currentIndex?: number;
     cap?: number;
     /** 默认「顯示更多（n）」 */
     moreLabel?: (rest: number) => string;
@@ -538,7 +682,13 @@ export function SideList({ id, title, meta, items, cap = 8, moreLabel }: {
                 {meta != null && meta !== '' && <span className="bim-d-meta">{meta}</span>}
             </h2>
             <ul>
-                {shown.map((it, i) => <li key={i}>{it}</li>)}
+                {shown.map((it, i) => (
+                    <li key={i} className={i === currentIndex ? 'bim-d-side-cur' : undefined}
+                        aria-current={i === currentIndex ? 'page' : undefined}>
+                        {it}
+                        {metas?.[i] ? <span className="bim-d-meta" style={{ marginLeft: 'auto' }}>{metas[i]}</span> : null}
+                    </li>
+                ))}
             </ul>
             {rest > 0 && (
                 <MoreLink
