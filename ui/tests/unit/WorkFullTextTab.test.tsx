@@ -95,7 +95,7 @@ describe('BookFullText 吃 Work 全文数据', () => {
         expect(container.querySelector('article')!.textContent).toContain('范質');
     });
 
-    it('多份时顶部给原生下拉，选中当前 key，切换回调给 key', async () => {
+    it('多份时工具条出「版本」下拉（ReaderShell），选中当前 key，切换回调给 key；正文来源行不再内嵌下拉', async () => {
         const onVersionChange = vi.fn();
         const transport = {
             getWorkFullTextIndex: async (_w: string, k: string) => workIndex(k),
@@ -113,6 +113,9 @@ describe('BookFullText 吃 Work 全文数据', () => {
             '維基文庫 · 道德經 (王弼本)',
             '維基文庫 · 老子 (匯校版)',
         ]);
+        expect(select.closest('.bim-rd-tools')).toBeTruthy();
+        expect(container.querySelectorAll('select')).toHaveLength(1);
+        expect(container.querySelector('.bim-rd-meta select')).toBeNull();
         fireEvent.change(select, { target: { value: 'wikisource-01' } });
         expect(onVersionChange).toHaveBeenCalledWith('wikisource-01');
     });
