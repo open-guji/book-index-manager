@@ -4,8 +4,8 @@ import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
 import { bookIndexApiPlugin } from './server/vite-plugin-api';
 
-/** 数据工作区路径 */
-const DATA_WORKSPACE = 'D:/workspace';
+/** 数据工作区路径（book-index / book-index-draft 的父目录）；BIM_DATA_WORKSPACE 可覆盖 */
+const DATA_WORKSPACE = process.env.BIM_DATA_WORKSPACE || 'D:/workspace';
 
 export default defineConfig(({ mode }) => {
   if (mode === 'lib') {

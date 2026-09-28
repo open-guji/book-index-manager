@@ -1136,3 +1136,26 @@ export interface VersionGraphCollection {
      *  缺省且未指定 groups 时，所有假想节点均纳入） */
     hypothetical_ids?: string[];
 }
+
+// ── 古籍总目（N4a 组件 / N4b 网站构建期索引共用的数据契约，overview#218 第 4 条） ──
+
+/** 总目分类树节点。count 为该节点整棵子树的作品数（含直接挂在本节点、未细分到下级的） */
+export interface CatalogNode {
+    id: string;
+    label: string;
+    count: number;
+    children?: CatalogNode[];
+}
+
+/** 总目作品卡片（一页 20 张） */
+export interface CatalogWorkCard {
+    id: string;
+    title: string;
+    /** 卷数：数字按「N卷」显示；字符串原样显示（如 measure_info「一百三十篇」） */
+    juan?: number | string;
+    authors?: { name: string; dynasty?: string }[];
+    /** 提要，卡片上三行截断 */
+    summary?: string;
+    /** 分类签，如 ['史部', '正史類']，卡片上以「·」连接 */
+    classification?: string[];
+}
