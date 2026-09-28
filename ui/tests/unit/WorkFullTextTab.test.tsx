@@ -169,26 +169,26 @@ describe('BookDetailLayout：Work 的全文 tab', () => {
         expect((container.querySelector('select') as HTMLSelectElement).value).toBe('wikisource-01');
     });
 
-    it('概览页出全文横幅，点进去走 fulltext tab', async () => {
+    it('概览页提要卡出「阅读全文」主按钮，点进去走 fulltext tab', async () => {
         const transport = workTransport(LAOZI);
         const onTabChange = vi.fn();
         render(
             <BookDetailLayout id="d59ezkx8dt6o" transport={transport as never}
                 activeTab="basic" onTabChange={onTabChange} showFeedbackTab={false} />,
         );
-        const banner = await screen.findByText(/全文閲讀/);
+        const banner = await screen.findByText(/閱讀全文/);
         fireEvent.click(banner);
         expect(onTabChange).toHaveBeenCalledWith('fulltext');
     });
 
-    it('没有 Work 全文：概览页无全文横幅；强进 fulltext 提示暂无，不转圈', async () => {
+    it('没有 Work 全文：概览页无「阅读全文」；强进 fulltext 提示暂无，不转圈', async () => {
         const transport = workTransport([]);
         const { unmount } = render(
             <BookDetailLayout id="w-none" transport={transport as never}
                 activeTab="basic" onTabChange={() => {}} showFeedbackTab={false} />,
         );
         await screen.findByText('老子');
-        expect(screen.queryByText(/全文閲讀/)).toBeNull();
+        expect(screen.queryByText(/閱讀全文/)).toBeNull();
         unmount();
 
         render(

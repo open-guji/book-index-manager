@@ -42,6 +42,7 @@ import {
     Section,
     type RenderLink, type CrumbItem,
 } from './detail/primitives';
+import { ReadButton } from './detail/layout';
 import { WorkPage } from './detail/WorkPage';
 import { BookPage } from './detail/BookPage';
 import { CollectionPage } from './detail/CollectionPage';
@@ -71,6 +72,18 @@ export interface ExtraTab {
     render: (ctx: ExtraTabContext) => React.ReactNode;
     /** 插入位置（默认 before-feedback） */
     position?: 'before-feedback' | 'after-feedback';
+}
+
+/** 「阅读全文」链接的上下文 */
+export interface ReadLinkContext {
+    detail: IndexDetailData;
+    /**
+     * 本条目已知可读的内容：collated 整理本（Work）／fulltext 全文（Work 或 Book）／
+     * null 尚未发现（次级数据未加载完，或确实没有）。
+     */
+    kind: 'collated' | 'fulltext' | null;
+    /** Work 全文的首选那份（kind 为 fulltext 且是 Work 时） */
+    fullTextKey?: string;
 }
 
 export interface SourceLinkContext {
@@ -119,6 +132,14 @@ export interface BookDetailLayoutProps {
     // ── 外部钩子 ──
     /** 加载 detail 后的额外加工（如注入 digital_assets） */
     enrichDetail?: (entry: IndexEntry, detail: IndexDetailData) => void;
+    /**
+     * 「阅读全文」主按钮指向的阅读页（2026-09 N3a）。
+     * 返回字符串 → 提要卡里出现唯一的主按钮「阅读全文」，链到该地址；返回 null → 不出现。
+     * 不传：整理本／全文存在时仍出现按钮，点击切到本组件内的 collated / fulltext tab（旧行为）。
+     */
+    readLink?: (ctx: ReadLinkContext) => string | null | undefined;
+    /** 三栏版左栏顶部（宿主的检索框等）；窄屏时显示在最上方 */
+    railTop?: React.ReactNode;
     /** 当前 tab 的源文件链接解析器 */
     getSourceLink?: (ctx: SourceLinkContext) => { href: string; label: string } | null;
 
@@ -188,6 +209,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     renderLink,
     enrichDetail,
     getSourceLink,
+    readLink,
+    railTop,
     extraTabs = [],
     showFeedbackTab = true,
     feedbackApiUrl,
@@ -614,6 +637,36 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
 
     // ── 内容 ──
 
+    // ── 「阅读全文」：整理本与全文两个入口合成一个主按钮 ──
+    const readKind: ReadLinkContext['kind'] = !detail ? null
+        : detail.type === 'work'
+            ? ((collatedIndex?.juan_files?.length ?? 0) > 0 ? 'collated' : workFullTexts.length > 0 ? 'fulltext' : null)
+            : detail.type === 'book'
+                ? ((bookFullTextIndex?.chapters.length ?? 0) > 0 ? 'fulltext' : null)
+                : null;
+    const primaryFullText = workFullTexts.find(v => v.primary) ?? workFullTexts[0];
+    const openReader = () => {
+        if (readKind === 'collated' && collatedIndex?.juan_files?.length) {
+            setActiveJuan(collatedIndex.juan_files[0]);
+            onTabChange('collated');
+        } else if (readKind === 'fulltext') {
+            if (detail?.type === 'work' && primaryFullText) setWorkFullTextKey(primaryFullText.key);
+            setActiveJuan(null);
+            onTabChange('fulltext');
+        }
+    };
+    let readAction: React.ReactNode = null;
+    if (detail && readLink) {
+        const href = readLink({
+            detail,
+            kind: readKind,
+            fullTextKey: detail.type === 'work' ? primaryFullText?.key : undefined,
+        });
+        if (href) readAction = <ReadButton href={href} />;
+    } else if (readKind) {
+        readAction = <ReadButton onClick={openReader} />;
+    }
+
     const renderBasic = (): React.ReactNode => {
         if (!detail) return null;
         if (detail.type === 'work') {
@@ -623,60 +676,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     transport={transport}
                     onNavigate={onNavigate}
                     renderLink={renderLink}
-                    collatedSection={
-                        (collatedIndex && (collatedIndex.juan_files?.length ?? 0) > 0)
-                            || workFullTexts.length > 0 ? (
-                            <>
-                                {collatedIndex && (collatedIndex.juan_files?.length ?? 0) > 0 && (
-                                    <FullTextBanner
-                                        title={detail.title}
-                                        measure={`${collatedIndex.juan_files!.length} ${convert(t.unit.juan)}`}
-                                        onOpen={() => {
-                                            setActiveJuan(collatedIndex.juan_files![0]);
-                                            onTabChange('collated');
-                                        }}
-                                    />
-                                )}
-                                {/* Work 全文：与版本页 Book 全文同一横幅，点进去默认读 primary 那份 */}
-                                {workFullTexts.length > 0 && (() => {
-                                    const primary = workFullTexts.find(v => v.primary) ?? workFullTexts[0];
-                                    return (
-                                        <FullTextBanner
-                                            title={detail.title}
-                                            /* 不写篇幅：Work 全文的分章单位不一（宋史按卷、老子按章），
-                                               写「N 章」会错；副行只点出来源与份数，也好与整理本横幅区分 */
-                                            measure={[
-                                                primary.source_name ? convert(primary.source_name) : '',
-                                                workFullTexts.length > 1 ? convert(`${workFullTexts.length} 種`) : '',
-                                            ].filter(Boolean).join(' · ')}
-                                            onOpen={() => {
-                                                setWorkFullTextKey(primary.key);
-                                                setActiveJuan(null);
-                                                onTabChange('fulltext');
-                                            }}
-                                        />
-                                    );
-                                })()}
-                            </>
-                        ) : null
-                    }
-                    lineageAction={
-                        lineageGraph && lineageGraph.nodes.length > 0 ? (
-                            <button
-                                type="button"
-                                onClick={() => onTabChange('lineage')}
-                                className="bim-d-ui"
-                                style={{
-                                    background: 'none', border: 'none', padding: '2px 0',
-                                    cursor: 'pointer', fontFamily: 'inherit', fontSize: 12,
-                                    color: bim('accent'),
-                                    borderBottom: `1px solid ${bim('rule')}`,
-                                }}
-                            >
-                                {t.detailTab.lineage} →
-                            </button>
-                        ) : null
-                    }
+                    readAction={readAction}
+                    railTop={railTop}
                 />
             );
         }
@@ -687,23 +688,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     transport={transport}
                     onNavigate={onNavigate}
                     renderLink={renderLink}
-                    fullTextSection={
-                        bookFullTextIndex && bookFullTextIndex.chapters.length > 0 ? (
-                            <FullTextBanner
-                                /* 版本页的标题用作品名，副行才点出是哪个本子——
-                                   横幅上写「進入《程甲本（紅樓夢）》」会很怪 */
-                                title={detail.title}
-                                measure={[
-                                    `${bookFullTextIndex.total_chapters} ${convert('章')}`,
-                                    convert(bookFullTextIndex.version_label),
-                                ].filter(Boolean).join(' · ')}
-                                onOpen={() => {
-                                    setActiveJuan(null);
-                                    onTabChange('fulltext');
-                                }}
-                            />
-                        ) : null
-                    }
+                    readAction={readAction}
+                    railTop={railTop}
                 />
             );
         }
@@ -715,21 +701,19 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     transport={transport}
                     onNavigate={onNavigate}
                     renderLink={renderLink}
+                    readAction={readAction}
+                    railTop={railTop}
                     catalogAction={
                         catalogList.length > 0 ? (
-                            <button
-                                type="button"
-                                onClick={() => onTabChange(`catalog:${catalogList[0].resource_id}`)}
-                                className="bim-d-ui"
-                                style={{
-                                    background: 'none', border: 'none', padding: '2px 0',
-                                    cursor: 'pointer', fontFamily: 'inherit', fontSize: 12,
-                                    color: bim('accent'),
-                                    borderBottom: `1px solid ${bim('rule')}`,
+                            <a
+                                href={`#catalog`}
+                                onClick={e => {
+                                    e.preventDefault();
+                                    onTabChange(`catalog:${catalogList[0].resource_id}`);
                                 }}
                             >
-                                {t.detailTab.collectionCatalog} →
-                            </button>
+                                {convert(t.detailTab.collectionCatalog)} →
+                            </a>
                         ) : null
                     }
                 />
@@ -741,6 +725,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                 transport={transport}
                 onNavigate={onNavigate}
                 renderLink={renderLink}
+                railTop={railTop}
             />
         );
     };
@@ -909,6 +894,68 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     /* 阅读 tab 放宽版心，容下左侧的卷/章导航（见 ReaderLayout） */
     const isReaderTab = activeTab === 'collated' || activeTab === 'fulltext';
 
+    const footer = (
+        <DetailFooter
+            left={
+                <>
+                    {footerExtra}
+                    {footerExtra ? ' · ' : ''}
+                    <IdWithCopy id={detail.id} label={t.label.id} copied={t.action.copied} copyLabel={t.action.copy} />
+                </>
+            }
+            right={
+                <>
+                    {/* 概览页不放反馈入口（2026-09 N3a：反馈 tab 暂不放） */}
+                    {showFeedbackTab && !isBasic && (
+                        <button
+                            type="button"
+                            onClick={() => onTabChange('feedback')}
+                            style={{
+                                background: 'none', border: 'none', padding: 0,
+                                cursor: 'pointer', fontFamily: 'inherit', fontSize: 12,
+                                color: bim('meta-fg'),
+                            }}
+                        >
+                            {t.detailTab.submitVersion}
+                        </button>
+                    )}
+                    {sourceLink && (
+                        <a href={sourceLink.href} target="_blank" rel="noopener noreferrer"
+                            className="bim-d-hit"
+                            style={{ color: bim('meta-fg') }}>
+                            {t.detailTab.dataLicense}
+                        </a>
+                    )}
+                </>
+            }
+        />
+    );
+
+    /*
+     * 概览（2026-09 N3a）：三栏版。没有大标题 header（标题在右栏提要卡里），
+     * 没有次级 tab 行——谱系、考证、反馈三个 tab 本阶段不放入口，
+     * 整理本／全文合成提要卡里唯一的主按钮「阅读全文」。
+     */
+    if (isBasic) {
+        return (
+            <div className={className}>
+                <PageFrame grid style={{ minHeight: height, ...style }}>
+                    <TopStrip
+                        breadcrumb={<Breadcrumb items={crumbs} />}
+                        actions={
+                            <>
+                                <LocaleToggle />
+                                {sourceLink && <RepoSourceLink {...sourceLink} />}
+                            </>
+                        }
+                    />
+                    {renderBasic()}
+                    {footer}
+                </PageFrame>
+            </div>
+        );
+    }
+
     return (
         <div className={className}>
             <PageFrame wide={isReaderTab} style={{ minHeight: height, ...style }}>
@@ -993,48 +1040,18 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     {renderContent()}
                 </div>
 
-                <DetailFooter
-                    left={
-                        <>
-                            {footerExtra}
-                            {footerExtra ? ' · ' : ''}
-                            <IdWithCopy id={detail.id} label={t.label.id} copied={t.action.copied} />
-                        </>
-                    }
-                    right={
-                        <>
-                            {showFeedbackTab && (
-                                <button
-                                    type="button"
-                                    onClick={() => onTabChange('feedback')}
-                                    style={{
-                                        background: 'none', border: 'none', padding: 0,
-                                        cursor: 'pointer', fontFamily: 'inherit', fontSize: 11.5,
-                                        color: bim('meta-fg'),
-                                    }}
-                                >
-                                    {t.detailTab.submitVersion}
-                                </button>
-                            )}
-                            {sourceLink && (
-                                <a href={sourceLink.href} target="_blank" rel="noopener noreferrer"
-                                    style={{ color: bim('meta-fg') }}>
-                                    {t.detailTab.dataLicense}
-                                </a>
-                            )}
-                        </>
-                    }
-                />
+                {footer}
             </PageFrame>
         </div>
     );
 };
 
 /** 页脚里的 ID + 复制按钮 */
-function IdWithCopy({ id, label, copied: copiedLabel }: {
+function IdWithCopy({ id, label, copied: copiedLabel, copyLabel }: {
     id: string;
     label: string;
     copied: string;
+    copyLabel: string;
 }) {
     const [copied, setCopied] = useState(false);
     return (
@@ -1048,11 +1065,16 @@ function IdWithCopy({ id, label, copied: copiedLabel }: {
                         setTimeout(() => setCopied(false), 1500);
                     }).catch(() => { /* 剪贴板不可用时静默 */ });
                 }}
-                title={copied ? copiedLabel : undefined}
+                title={copied ? copiedLabel : copyLabel}
+                aria-label={copied ? copiedLabel : copyLabel}
+                className="bim-d-hit"
+                /* 点击目标：视觉仍是一个小字形，热区 ≥ 32px（触屏 44px，见 .bim-d-hit） */
                 style={{
                     background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                    fontFamily: 'inherit', fontSize: 11.5,
-                    color: bim('hint-fg'),
+                    fontFamily: 'inherit', fontSize: 14,
+                    minWidth: 32, minHeight: 32,  /* 触屏由 .bim-d-hit 放到 44px */
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    color: bim('aux-fg'),
                 }}
             >
                 {copied ? '✓' : '⧉'}
@@ -1068,118 +1090,4 @@ export { DETAIL_CSS };
 function workSubtypeLabel(t: ReturnType<typeof useT>, subtype?: string): string {
     if (!subtype) return '';
     return (t.workSubtype as Record<string, string>)[subtype] ?? subtype;
-}
-
-/**
- * 正文里的全文入口横幅：作品页用于整理本，版本页用于 Book 全文。
- *
- * 整理本是本站自己做的成果、点进去就能读全文，是作品页唯一的**终点内容**；
- * 其余区块都是指向外部影像站/馆藏的链接。此前它只在顶部次级导航里有个 tab，
- * 正文一字不提，读者一路往下读根本不知道有。
- *
- * 2026-09：从「区块标题 + 一墙卷号 chip」改成整条横幅。旧版的问题是
- * 一屏几十个卷号 chip 反倒把「这里能读全文」这件事稀释掉了，读者要先
- * 认出那是卷号、再挑一卷点进去；而绝大多数人只想从头读。横幅只留
- * 一个动作（开始阅读 = 第一卷），卷号选择交给 collated tab 内部的导航。
- *
- * 整条横幅可点，hover 时底色加深；右侧的朱红按钮只作视觉落点，不单独绑
- * 事件——否则同一区域两个 click 目标，键盘 Tab 会停两次。
- */
-function FullTextBanner({ title, measure, onOpen }: {
-    /** 作品名，嵌进「進入《…》全文閲讀」；缺省时退化为不带书名的说法 */
-    title?: string;
-    /** 副行首项，如「7 卷」「120 回」；作品页数卷、版本页数回 */
-    measure?: string;
-    onOpen: () => void;
-}) {
-    const { convert } = useConvert();
-    const [hover, setHover] = useState(false);
-
-    const heading = title
-        ? convert(`進入《${title}》全文閲讀`)
-        : convert('進入全文閲讀');
-
-    /* 副行：篇幅 + 全文自身的卖点 */
-    const meta = [
-        measure,
-        convert('全文檢索'),
-        convert('原書對照'),
-    ].filter(Boolean).join(' · ');
-
-    return (
-        /* 上下都比常规 Section（48）收紧：横幅是一整块实色，四周留白按
-           区块间距给会显得它孤零零浮在页面中间 */
-        <Section style={{ marginTop: -12, marginBottom: 28 }}>
-            <div
-                role="button"
-                tabIndex={0}
-                onClick={onOpen}
-                onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        onOpen();
-                    }
-                }}
-                onMouseEnter={() => setHover(true)}
-                onMouseLeave={() => setHover(false)}
-                style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    gap: 24, flexWrap: 'wrap',
-                    padding: '14px 26px',
-                    cursor: 'pointer',
-                    /*
-                     * 底色是「暖沙」，新增 --bim-band-bg / --bim-band-bg-hover 两个变量。
-                     *
-                     * 试过两条不新增变量的路子，都不行：
-                     *  - 掺 --bim-accent：朱砂偏红，淡化出来是**粉**的，一大片跟宣纸皮不搭；
-                     *  - 借 --bim-selection-bg：默认值确实是暖沙，但 kyg 那边把它
-                     *    覆盖成了 color-mix(泥金 30%, transparent)——**半透明**。再套一层
-                     *    color-mix 等于按 30%×52% 稀释并与透明合成，颜色直接失真。
-                     * 所以这里给一个自带 fallback 的独立变量：默认值是设计稿的暖沙，
-                     * 消费者想换肤就覆盖这两个（kyg 覆盖成泥金掺纸，见 globals.css）。
-                     */
-                    background: hover
-                        ? bim('band-bg-hover')
-                        : bim('band-bg'),
-                    borderLeft: `3px solid ${bim('accent')}`,
-                    transition: 'background .18s ease',
-                }}
-            >
-                <div style={{ minWidth: 0 }}>
-                    <div style={{
-                        fontFamily: 'var(--bim-font-body, system-ui, sans-serif)',
-                        fontSize: 21, fontWeight: 600, letterSpacing: '.02em',
-                        /* 不设的话继承默认 ~1.5，21px 字上下各多出 5px 空白，
-                           副行的 marginTop 调再小也看不出来 */
-                        lineHeight: 1.3,
-                        color: bim('ink'),
-                    }}>
-                        {heading}
-                    </div>
-                    <div className="bim-d-ui" style={{
-                        marginTop: 4, fontSize: 12.5, letterSpacing: '.06em',
-                        color: bim('meta-fg'),
-                    }}>
-                        {meta}
-                    </div>
-                </div>
-                <span
-                    className="bim-d-ui"
-                    aria-hidden
-                    style={{
-                        flex: 'none',
-                        padding: '11px 22px',
-                        fontSize: 14, letterSpacing: '.08em',
-                        background: hover
-                            ? bim('accent-deep')
-                            : bim('accent'),
-                        color: bim('page-bg'),
-                        transition: 'background .18s ease',
-                    }}
-                >
-                    {convert('開始閲讀')} →
-                </span>
-            </div>
-        </Section>
-    );
 }

@@ -147,6 +147,8 @@ export interface AltName {
 export interface EntityWorkRef {
     work_id: string;
     role?: string;
+    /** 作品標題（部分數據帶，無則逐條解析） */
+    title?: string;
 }
 
 /** Entity.external_ids —— 外部数据库引用 */
@@ -373,6 +375,41 @@ export interface BaseDetailData {
     resources?: ResourceEntry[];
     /** 资源组元数据：key=group_key，value={label, description} */
     resource_groups?: Record<string, ResourceGroupInfo>;
+    /** 條目級待核清單（2026-09-28 S5）：只裝尚待辦者，做完即移除 */
+    todo?: TodoItem[];
+    /** 條目級人工審核狀態（2026-09-28 S5）；欄位不存在等同 unreviewed */
+    review?: ReviewInfo;
+    /** 存佚：extant 今存 / fragment 殘 / lost 佚 等 */
+    loss_status?: string;
+    /** 數據修訂號與修訂日期（詳情頁提要卡底部小字） */
+    revision?: number | string;
+    revised_at?: string;
+}
+
+/** 待核事項 `{what, by?, date?}` */
+export interface TodoItem {
+    what: string;
+    by?: string;
+    date?: string;
+}
+
+/** 人工審核狀態 */
+export interface ReviewInfo {
+    status: 'unreviewed' | 'reviewed' | 'disputed' | string;
+    by?: string;
+    date?: string;
+}
+
+/** 四部分類（Work.classification，2026-09-27）：未定之級為空串 */
+export interface WorkClassification {
+    l1: string;
+    l2?: string;
+    l3?: string;
+    l4?: string;
+    /** 依據強弱 S / A / B / C */
+    basis?: string;
+    /** 取自哪部目錄書，如「欽定四庫全書總目」或「經義考/易」 */
+    source?: string;
 }
 
 /** 收录关联：书籍被丛编收录的信息 */
@@ -448,6 +485,8 @@ export interface CollectionDetailData extends BaseDetailData {
     history?: string[];
     books?: string[];
     contained_works?: { id: string; title: string; volume_index?: number }[];
+    /** 派生：成員數（books ∪ contained_works ∪ 反掛 contained_in，去重）；=0 不寫 */
+    _member_count?: number;
 }
 
 /** Work 详情 */
@@ -459,9 +498,15 @@ export interface WorkDetailData extends BaseDetailData {
     books?: string[];
     /** 大型作品的版本列表（Collection ID 数组）—— 如四库全书七閣本 */
     collections?: string[];
-    related_works?: { id: string; title: string; relation?: 'part_of' | 'has_part' }[];
+    related_works?: { id: string; title: string; relation?: 'part_of' | 'has_part' | 'collected_in' | 'text_carried_by' | 'studied_by' | 'preceded_by' | 'followed_by' | 'related' | (string & {}); note?: string }[];
     /** 版本传承图（多版本作品如红楼梦、十三经等） */
     version_graph?: VersionGraph;
+    /** 派生：掛在本作品下的 Book 數（由 Book.work_id 反查）；=0 不寫 */
+    _edition_count?: number;
+    /** 四部分類；沒有此鍵只代表尚無可靠依據 */
+    classification?: WorkClassification;
+    /** Work 子類（book / article / poem / chapter） */
+    subtype?: string;
 }
 
 /** Entity（人物/地名等）详情

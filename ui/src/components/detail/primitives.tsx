@@ -17,6 +17,7 @@ import { resourceNote, resourceDisambiguator } from '../../core/detail-model';
 import { parseGujiInline, mayHaveGujiInline } from '../../core/guji-inline';
 import type { GujiInlineNode } from '../../core/guji-inline';
 import { bim } from '../../styles/tokens';
+import { LAYOUT_CSS } from './layout';
 
 // ══════════════════════════════════════════════════════════════
 // 布局常量
@@ -131,17 +132,19 @@ export const DETAIL_CSS = `
     padding-right: 0; padding-bottom: 12px;
   }
 }
-`;
+${LAYOUT_CSS}`;
 
 // ══════════════════════════════════════════════════════════════
 // 骨架
 // ══════════════════════════════════════════════════════════════
 
-export function PageFrame({ children, style, wide }: {
+export function PageFrame({ children, style, wide, grid }: {
     children: React.ReactNode;
     style?: React.CSSProperties;
     /** 阅读视图：放宽版心，容下「侧栏 + 正文」（见 .bim-d-main-wide） */
     wide?: boolean;
+    /** 三栏概览（2026-09 N3a）：版心放到 1440px（见 layout.tsx） */
+    grid?: boolean;
 }) {
     return (
         <div className="bim-d-page" style={style}>
@@ -152,7 +155,7 @@ export function PageFrame({ children, style, wide }: {
               * 一个文档只该有一个主区域，e2e 里 locator('main') 也会因此
               * 命中两个元素而报 strict mode violation。
               */}
-            <div className={wide ? 'bim-d-main bim-d-main-wide' : 'bim-d-main'}>{children}</div>
+            <div className={grid ? 'bim-d-main bim-d-main-grid' : wide ? 'bim-d-main bim-d-main-wide' : 'bim-d-main'}>{children}</div>
         </div>
     );
 }
@@ -183,7 +186,7 @@ export function TopStrip({ breadcrumb, actions }: {
 }) {
     return (
         <div
-            className="bim-d-ui"
+            className="bim-d-ui bim-d-top"
             style={{
                 display: 'flex', flexWrap: 'wrap', alignItems: 'center',
                 justifyContent: 'space-between', gap: '8px 16px', marginBottom: 24,
@@ -1087,7 +1090,8 @@ export function VolumeLinks({ item }: { item: ResourceEntry }) {
                 const missing = v.status === 'missing';
                 return v.url && !missing ? (
                     <a key={i} href={v.url} target="_blank" rel="noopener noreferrer"
-                        style={{ padding: '1px 5px', border: `1px solid ${bim('rule')}` }}>
+                        className="bim-d-hit"
+                        style={{ padding: '4px 8px', borderRadius: 4, background: bim('zebra-bg') }}>
                         {v.volume}
                     </a>
                 ) : (

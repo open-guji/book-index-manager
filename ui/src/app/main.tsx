@@ -223,9 +223,16 @@ function App() {
         navigateToDetail(id);
     }, [navigateToDetail]);
 
+    const [pendingQuery, setPendingQuery] = useState<string | undefined>(undefined);
     const handleBack = useCallback(() => {
         setCurrentId(null);
         pushUrl(null);
+    }, []);
+    /* 详情页左栏检索框：回到索引页并带上检索词 */
+    const handleRailSearch = useCallback((q: string) => {
+        setPendingQuery(q);
+        setCurrentId(null);
+        pushUrl(null, { q });
     }, []);
 
     // 浏览器前进/后退
@@ -283,10 +290,13 @@ function App() {
                     backLabel="返回索引"
                     getSourceLink={buildSourceLink}
                     feedbackApiUrl="/api/feedback"
+                    railTop={<RailSearch onSearch={handleRailSearch} />}
                 />
             ) : (
                 <div style={{ maxWidth: '800px', margin: '0 auto', padding: isMobile ? '16px 12px' : '32px 16px' }}>
                     <IndexBrowser
+                        key={pendingQuery ?? ''}
+                        initialQuery={pendingQuery ?? new URLSearchParams(window.location.search).get('q') ?? undefined}
                         transport={transport}
                         onEntryClick={handleEntryClick}
                         hideModeIndicator
@@ -318,3 +328,34 @@ root.render(
         <App />
     </LocaleProvider>,
 );
+
+/** 详情页左栏的检索框（dev app 示例；宿主网站传自己的 railTop） */
+function RailSearch({ onSearch }: { onSearch: (q: string) => void }) {
+    const [q, setQ] = useState('');
+    return (
+        <form
+            role="search"
+            onSubmit={e => { e.preventDefault(); if (q.trim()) onSearch(q.trim()); }}
+            style={{
+                display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 12px',
+                background: bim('tint-bg'), borderRadius: 8, color: bim('aux-fg'),
+            }}
+        >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="2" strokeLinecap="round" aria-hidden="true" style={{ flex: 'none' }}>
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+            </svg>
+            <input
+                value={q}
+                onChange={e => setQ(e.target.value)}
+                placeholder="檢索作品、版本、書目"
+                aria-label="檢索"
+                style={{
+                    flex: 1, minWidth: 0, height: '100%', border: 0, outline: 'none', background: 'transparent',
+                    font: 'inherit', fontSize: 14, color: bim('ink'),
+                }}
+            />
+        </form>
+    );
+}
