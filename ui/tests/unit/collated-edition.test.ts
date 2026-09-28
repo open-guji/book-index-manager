@@ -5,7 +5,7 @@
  * 漢書藝文志（d59f23o7ygw2）两样全中，页面上一列英文 `category` 加一排「卷/001」。
  */
 import { describe, expect, it } from 'vitest';
-import { juanDisplayName, normSectionType, isPageHeaderContent } from '../../src/components/CollatedEdition';
+import { juanDisplayName, normSectionType, isPageHeaderContent, entryHeadingLeveler } from '../../src/components/CollatedEdition';
 
 describe('juanDisplayName：卷文件名 → 显示名', () => {
     it('带目录的 juan/001.json（漢書藝文志等）', () => {
@@ -69,5 +69,17 @@ describe('isPageHeaderContent：page_header 里混着页眉与正文', () => {
     it('非 page_header 一律 false（该走各自的渲染分支）', () => {
         expect(isPageHeaderContent({ type: 'book', content: '書'.repeat(500) })).toBe(false);
         expect(isPageHeaderContent({ type: 'preface', content: '序'.repeat(500) })).toBe(false);
+    });
+});
+
+describe('entryHeadingLeveler：整理本标题不跳级（h1 是卷名）', () => {
+    it('没有「类」小标题时，条目标题落 h2，不是 h1 下直接 h3', () => {
+        const tag = entryHeadingLeveler();
+        expect([tag(3), tag(3)]).toEqual(['h2', 'h3']);
+    });
+
+    it('有「类」小标题时，条目标题照旧 h3', () => {
+        const tag = entryHeadingLeveler();
+        expect([tag(2), tag(3), tag(3)]).toEqual(['h2', 'h3', 'h3']);
     });
 });

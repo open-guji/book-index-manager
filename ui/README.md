@@ -55,6 +55,17 @@ import 'book-index-ui/styles'                // CSS（用到组件时引入）
 
 书影接口：`CollatedEdition` / `BookFullText` 的 `resolveImages(chapterKey)` 返回当卷的 `ReaderPageImage[]`（可异步）——每页一张图，URL 由宿主给，可带 `width/height` 与逐字框 `boxes`（暂定格式 `bim-charbox-v0`：原图像素坐标 `x/y/w/h`，可选 `char`/`textOffset`/`confidence`）。其他格式的框设 `boxFormat` 并用 `renderImageOverlay` 自己画，这是与 CV 交付格式对齐前的扩展点。没有影像时书影区默认收起（`imagePanel="auto"`），点工具条「书影」可看占位。
 
+版本下拉框（overview#235，同一 owner 有多份全文时用）：`ReaderShell` 的四个 props——
+
+| prop | 说明 |
+|---|---|
+| `versions` | `ReaderVersion[]`（`key / label / sourceName / license / sourceUrl / primary`）。两份以上时工具条出「版本」下拉框，只有一份不出；有值时正文末尾显示所选版本的出处与授权 |
+| `currentVersionKey` | 当前版本 key；不给（`undefined`）时组件自管，给了但无效则选 `primary`，再没有就第一份 |
+| `onVersionChange` | 下拉框切换回调 `(key) => void`；组件不改 URL，由宿主换 `toc` 与正文（换上新目录后自动选中第一卷） |
+| `versionSource` | 是否显示正文末尾的「出处 · 授权」，默认 `true`；宿主自己画出处时设 `false` |
+
+配套两个导出（`book-index-ui` 根入口与 `components/Reader`）：`readerVersionsFromFullText(entries)` 把 book-text 的 `WorkFullTextEntry[]` 换成 `ReaderVersion[]`（顺序不变，清单已按「哪份最好」排好）；`pickReaderVersion(versions, key?)` 给出当前选中的一份（key 有效用它，否则 primary，再否则第一份），宿主用它决定该载入哪份 toc / 正文。
+
 **`resolveImages` 要用 `useCallback`（或模块级函数）包一层**：组件按 `[resolveImages, 当前卷]` 重新取书影，每次渲染都传一个新函数会反复请求。
 
 ### 数据层（`book-index-ui/storage`）

@@ -103,6 +103,20 @@ describe('CatalogTree', () => {
         return { ...utils, onSelect, item };
     }
 
+    it('顶层最后一个节点不管 id 是什么，都有分隔样式（网站用 unclassified）', () => {
+        for (const id of ['未分類', 'unclassified']) {
+            const tree: CatalogNode[] = [
+                { id: '經部', label: '經部', count: 1 },
+                { id, label: '未分類', count: 2 },
+            ];
+            const { container, unmount } = render(<CatalogTree tree={tree} selectedId={null} onSelect={vi.fn()} />);
+            const last = container.querySelectorAll('.bim-ct-last');
+            expect(last).toHaveLength(1);
+            expect((last[0] as HTMLElement).dataset.ctId).toBe(id);
+            unmount();
+        }
+    });
+
     it('初始只展开选中节点的祖先链，游走 tabindex 只有一项为 0', () => {
         const { item, container } = setup('史部/正史類');
         expect(item('史部').getAttribute('aria-expanded')).toBe('true');
