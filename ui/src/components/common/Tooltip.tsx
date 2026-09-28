@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { bim } from '../../styles/tokens';
 
 export interface TooltipProps {
     content: React.ReactNode;
@@ -90,11 +91,11 @@ export const Tooltip: React.FC<TooltipProps> = ({
                         padding: '6px 10px',
                         fontSize: '12px',
                         lineHeight: 1.5,
-                        color: 'var(--bim-fg, #333)',
-                        background: 'var(--bim-input-bg, #fff)',
-                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        color: bim('fg'),
+                        background: bim('input-bg'),
+                        border: `1px solid ${bim('widget-border')}`,
                         borderRadius: '4px',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                        boxShadow: bim('shadow-tooltip'),
                         pointerEvents: 'none',
                         zIndex: 9999,
                         opacity: pos ? 1 : 0,
@@ -117,13 +118,13 @@ export const Tooltip: React.FC<TooltipProps> = ({
                                     ...(pos.placement === 'top'
                                         ? {
                                             bottom: -ARROW_SIZE,
-                                            borderTop: `${ARROW_SIZE}px solid var(--bim-widget-border, #e0e0e0)`,
+                                            borderTop: `${ARROW_SIZE}px solid ${bim('widget-border')}`,
                                             borderLeft: `${ARROW_SIZE}px solid transparent`,
                                             borderRight: `${ARROW_SIZE}px solid transparent`,
                                         }
                                         : {
                                             top: -ARROW_SIZE,
-                                            borderBottom: `${ARROW_SIZE}px solid var(--bim-widget-border, #e0e0e0)`,
+                                            borderBottom: `${ARROW_SIZE}px solid ${bim('widget-border')}`,
                                             borderLeft: `${ARROW_SIZE}px solid transparent`,
                                             borderRight: `${ARROW_SIZE}px solid transparent`,
                                         }),
@@ -140,13 +141,13 @@ export const Tooltip: React.FC<TooltipProps> = ({
                                     ...(pos.placement === 'top'
                                         ? {
                                             bottom: -(ARROW_SIZE - 1),
-                                            borderTop: `${ARROW_SIZE - 1}px solid var(--bim-input-bg, #fff)`,
+                                            borderTop: `${ARROW_SIZE - 1}px solid ${bim('input-bg')}`,
                                             borderLeft: `${ARROW_SIZE - 1}px solid transparent`,
                                             borderRight: `${ARROW_SIZE - 1}px solid transparent`,
                                         }
                                         : {
                                             top: -(ARROW_SIZE - 1),
-                                            borderBottom: `${ARROW_SIZE - 1}px solid var(--bim-input-bg, #fff)`,
+                                            borderBottom: `${ARROW_SIZE - 1}px solid ${bim('input-bg')}`,
                                             borderLeft: `${ARROW_SIZE - 1}px solid transparent`,
                                             borderRight: `${ARROW_SIZE - 1}px solid transparent`,
                                         }),

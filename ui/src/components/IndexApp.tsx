@@ -10,6 +10,7 @@ import type { IndexStorage } from '../storage/types';
 import type { IndexEntry, IndexDetailData, ResourceCatalog, CollatedEditionIndex } from '../types';
 import { useT, useConvert } from '../i18n';
 import { useIsMobile } from '../hooks/useIsMobile';
+import { bim } from '../styles/tokens';
 
 export interface IndexAppProps {
     transport: IndexStorage;
@@ -168,9 +169,9 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
-                            borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            borderBottom: `1px solid ${bim('widget-border')}`,
                             padding: isMobile ? '0 12px' : '0 48px',
-                            background: 'var(--bim-input-bg, #fff)',
+                            background: bim('input-bg'),
                             flexShrink: 0,
                             overflowX: isMobile ? 'auto' : undefined,
                         }}>
@@ -256,25 +257,25 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                 flexDirection: 'column',
                 height: '100%',
                 fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif',
-                background: 'var(--bim-bg, #f5f5f5)',
-                color: 'var(--bim-fg, #333)',
+                background: bim('bg'),
+                color: bim('fg'),
             }}>
                 {mobileShowDetail ? (
                     <>
                         <div style={{
                             padding: '8px 12px',
-                            borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
-                            background: 'var(--bim-input-bg, #fff)',
+                            borderBottom: `1px solid ${bim('widget-border')}`,
+                            background: bim('input-bg'),
                             flexShrink: 0,
                         }}>
                             <button
                                 onClick={handleMobileBack}
                                 style={{
                                     padding: '4px 12px',
-                                    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                    border: `1px solid ${bim('widget-border')}`,
                                     borderRadius: '4px',
                                     background: 'transparent',
-                                    color: 'var(--bim-fg, #333)',
+                                    color: bim('fg'),
                                     cursor: 'pointer',
                                     fontSize: '13px',
                                 }}
@@ -311,17 +312,17 @@ export const IndexApp: React.FC<IndexAppProps> = ({
             display: 'flex',
             height: '100%',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif',
-            background: 'var(--bim-bg, #f5f5f5)',
-            color: 'var(--bim-fg, #333)',
+            background: bim('bg'),
+            color: bim('fg'),
         }}>
             {/* 左侧：浏览器面板 */}
             <div style={{
                 width: '420px',
                 flexShrink: 0,
-                borderRight: '1px solid var(--bim-widget-border, #e0e0e0)',
+                borderRight: `1px solid ${bim('widget-border')}`,
                 display: 'flex',
                 flexDirection: 'column',
-                background: 'var(--bim-input-bg, #fff)',
+                background: bim('input-bg'),
                 overflow: 'hidden',
             }}>
                 <div style={{ flex: 1, overflow: 'auto' }}>
@@ -334,7 +335,7 @@ export const IndexApp: React.FC<IndexAppProps> = ({
             </div>
 
             {/* 右侧：详情面板 */}
-            <div style={{ flex: 1, overflow: 'auto', background: 'var(--bim-bg, #f5f5f5)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ flex: 1, overflow: 'auto', background: bim('bg'), display: 'flex', flexDirection: 'column' }}>
                 {detailContent}
             </div>
         </div>
@@ -345,9 +346,9 @@ function tabBtnStyle(active: boolean): React.CSSProperties {
     return {
         padding: '10px 16px',
         border: 'none',
-        borderBottom: active ? '2px solid var(--bim-primary, #0078d4)' : '2px solid transparent',
+        borderBottom: active ? `2px solid ${bim('primary')}` : '2px solid transparent',
         background: 'transparent',
-        color: active ? 'var(--bim-primary, #0078d4)' : 'var(--bim-desc-fg, #717171)',
+        color: active ? bim('primary') : bim('desc-fg'),
         cursor: 'pointer',
         fontSize: '13px',
         fontWeight: active ? 600 : 400,

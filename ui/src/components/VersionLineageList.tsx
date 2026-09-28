@@ -6,6 +6,7 @@ import type {
 } from '../core/lineage-graph';
 import { formatLineageYear } from '../core/lineage-graph';
 import { useConvert } from '../i18n';
+import { bim } from '../styles/tokens';
 
 export interface VersionLineageListProps {
     /** 由 buildLineageGraph 生成的数据 */
@@ -133,7 +134,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({
     const { convert } = useConvert();
     return (
     <div style={groupStyle}>
-        <div style={{ ...groupLabelStyle, borderLeftColor: color ?? 'var(--bim-widget-border, #ddd)' }}>
+        <div style={{ ...groupLabelStyle, borderLeftColor: color ?? bim('widget-border') }}>
             {convert(label)}
         </div>
         {nodes.map((n) => (
@@ -167,7 +168,7 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, 
             ...cardStyle,
             borderStyle: (isHypo || isBridge) ? 'dashed' : 'solid',
             opacity: isBridge ? 0.55 : (node.status === 'lost' ? 0.7 : 1),
-            background: isBridge ? 'var(--bim-bg-subtle, #fafafa)' : undefined,
+            background: isBridge ? bim('bg-subtle') : undefined,
         }}
         title={isBridge ? '桥接节点：本身不在核心集，为保持派生链完整而显示' : undefined}>
             <div style={cardHeaderStyle}>
@@ -246,9 +247,9 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, 
 
 const Tag: React.FC<{ children: React.ReactNode; tone?: 'default' | 'warn' | 'info' }> = ({ children, tone = 'default' }) => {
     const colors: Record<string, { bg: string; fg: string }> = {
-        default: { bg: 'var(--bim-tag-bg, #f0f0f0)', fg: 'var(--bim-fg, #555)' },
-        warn:    { bg: 'var(--bim-warn-bg, #fff3cd)', fg: 'var(--bim-warn-fg, #856404)' },
-        info:    { bg: 'var(--bim-info-bg, #e7f3ff)', fg: 'var(--bim-info-fg, #0c5380)' },
+        default: { bg: bim('tag-bg'), fg: bim('fg') },
+        warn:    { bg: bim('warn-bg'), fg: bim('warn-fg') },
+        info:    { bg: bim('info-bg'), fg: bim('info-fg') },
     };
     const c = colors[tone];
     return (
@@ -266,10 +267,10 @@ const Tag: React.FC<{ children: React.ReactNode; tone?: 'default' | 'warn' | 'in
 
 const ConfidenceBadge: React.FC<{ level: string }> = ({ level }) => {
     const map: Record<string, { label: string; color: string }> = {
-        certain:   { label: '确定',   color: 'var(--bim-confidence-certain, #2e7d32)' },
-        consensus: { label: '共识',   color: 'var(--bim-confidence-consensus, #1976d2)' },
-        probable:  { label: '推测',   color: 'var(--bim-confidence-probable, #ed6c02)' },
-        disputed:  { label: '有争议', color: 'var(--bim-confidence-disputed, #c62828)' },
+        certain:   { label: '确定',   color: bim('confidence-certain') },
+        consensus: { label: '共识',   color: bim('confidence-consensus') },
+        probable:  { label: '推测',   color: bim('confidence-probable') },
+        disputed:  { label: '有争议', color: bim('confidence-disputed') },
     };
     const e = map[level];
     if (!e) return null;
@@ -290,7 +291,7 @@ const ConfidenceBadge: React.FC<{ level: string }> = ({ level }) => {
 
 const containerStyle: React.CSSProperties = {
     fontSize: '14px',
-    color: 'var(--bim-fg, #333)',
+    color: bim('fg'),
 };
 const titleStyle: React.CSSProperties = {
     fontSize: '16px',
@@ -299,7 +300,7 @@ const titleStyle: React.CSSProperties = {
 };
 const descStyle: React.CSSProperties = {
     fontSize: '13px',
-    color: 'var(--bim-muted, #666)',
+    color: bim('muted'),
     marginBottom: '16px',
     lineHeight: 1.6,
 };
@@ -312,14 +313,14 @@ const groupLabelStyle: React.CSSProperties = {
     padding: '4px 12px',
     borderLeft: '4px solid',
     marginBottom: '8px',
-    color: 'var(--bim-fg, #333)',
+    color: bim('fg'),
 };
 const cardStyle: React.CSSProperties = {
-    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+    border: `1px solid ${bim('widget-border')}`,
     borderRadius: '6px',
     padding: '10px 12px',
     marginBottom: '8px',
-    background: 'var(--bim-bg, #fff)',
+    background: bim('bg'),
 };
 const cardHeaderStyle: React.CSSProperties = {
     display: 'flex',
@@ -333,30 +334,30 @@ const cardTitleStyle: React.CSSProperties = {
 };
 const cardYearStyle: React.CSSProperties = {
     fontSize: '12px',
-    color: 'var(--bim-muted, #777)',
+    color: bim('muted'),
 };
 const cardMetaStyle: React.CSSProperties = {
     marginBottom: '6px',
 };
 const cardLineStyle: React.CSSProperties = {
     fontSize: '12px',
-    color: 'var(--bim-muted, #666)',
+    color: bim('muted'),
     margin: '2px 0',
 };
 const cardNoteStyle: React.CSSProperties = {
     fontSize: '12px',
-    color: 'var(--bim-muted, #888)',
+    color: bim('muted'),
     fontStyle: 'italic',
     margin: '4px 0',
 };
 const cardSectionStyle: React.CSSProperties = {
     marginTop: '6px',
     paddingTop: '6px',
-    borderTop: '1px dashed var(--bim-widget-border, #e8e8e8)',
+    borderTop: `1px dashed ${bim('widget-border')}`,
 };
 const cardSectionLabelStyle: React.CSSProperties = {
     fontSize: '11px',
-    color: 'var(--bim-muted, #888)',
+    color: bim('muted'),
     marginBottom: '2px',
 };
 const cardEdgeStyle = (confidence: string): React.CSSProperties => ({
@@ -368,18 +369,18 @@ const relationTagStyle: React.CSSProperties = {
     display: 'inline-block',
     padding: '0 6px',
     fontSize: '11px',
-    background: 'var(--bim-tag-bg, #f0f0f0)',
-    color: 'var(--bim-fg, #555)',
+    background: bim('tag-bg'),
+    color: bim('fg'),
     borderRadius: '3px',
     marginRight: '6px',
 };
 const evidenceStyle: React.CSSProperties = {
     fontSize: '11px',
-    color: 'var(--bim-muted, #888)',
+    color: bim('muted'),
 };
 const placeholderStyle: React.CSSProperties = {
     padding: '20px',
     textAlign: 'center',
-    color: 'var(--bim-muted, #999)',
+    color: bim('muted'),
     fontSize: '13px',
 };

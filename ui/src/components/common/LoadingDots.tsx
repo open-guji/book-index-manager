@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { bim } from '../../styles/tokens';
 
 export const LoadingDots: React.FC = () => {
     const [dots, setDots] = useState(1);
@@ -7,7 +8,7 @@ export const LoadingDots: React.FC = () => {
         return () => clearInterval(timer);
     }, []);
     return (
-        <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--bim-desc-fg, #717171)', fontSize: '14px' }}>
+        <div style={{ textAlign: 'center', padding: '32px 0', color: bim('desc-fg'), fontSize: '14px' }}>
             {'加载中' + '.'.repeat(dots)}
         </div>
     );

@@ -17,6 +17,7 @@ import { RelationPanel } from './RelationPanel';
 import { EntitySelector } from './EntitySelector';
 import { CreateEntityDialog } from './CreateEntityDialog';
 import { EntityPickerDialog } from './EntityPickerDialog';
+import { bim } from '../styles/tokens';
 
 export interface IndexEditorProps {
     /** 元数据 */
@@ -79,10 +80,10 @@ export interface IndexEditorData {
 
 // 编辑器专用的一套类型色，与 IndexDetail 的 --bim-type-* 取值不同（历史如此，见 variables.css 说明）
 const TYPE_COLORS: Record<IndexType, string> = {
-    work: 'var(--bim-editor-type-work, #4caf50)',
-    collection: 'var(--bim-editor-type-collection, #2196f3)',
-    book: 'var(--bim-editor-type-book, #ff9800)',
-    entity: 'var(--bim-editor-type-entity, #9c27b0)',
+    work: bim('editor-type-work'),
+    collection: bim('editor-type-collection'),
+    book: bim('editor-type-book'),
+    entity: bim('editor-type-entity'),
 };
 const TYPE_ICONS: Record<IndexType, string> = { work: '📜', collection: '📚', book: '📖', entity: '👤' };
 
@@ -212,7 +213,7 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
             {/* Header */}
             <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                marginBottom: '24px', borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)', paddingBottom: '16px',
+                marginBottom: '24px', borderBottom: `1px solid ${bim('widget-border')}`, paddingBottom: '16px',
             }}>
                 <h1 style={{ fontSize: '20px', fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>{TYPE_ICONS[entityType]}</span>
@@ -349,19 +350,19 @@ export const IndexEditor: React.FC<IndexEditorProps> = ({
             {showDelete && onDelete && (
                 <div style={{
                     marginTop: '40px', padding: '16px',
-                    border: '1px solid rgba(244,67,54,0.13)', background: 'rgba(244,67,54,0.03)', borderRadius: '4px',
+                    border: `1px solid ${bim('danger-soft-border')}`, background: bim('danger-soft-bg'), borderRadius: '4px',
                 }}>
-                    <div style={{ color: 'var(--bim-danger, #f44336)', fontWeight: 600, marginBottom: '8px' }}>
+                    <div style={{ color: bim('danger'), fontWeight: 600, marginBottom: '8px' }}>
                         {t.section.dangerZone}
                     </div>
-                    <p style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginBottom: '12px' }}>
+                    <p style={{ fontSize: '12px', color: bim('desc-fg'), marginBottom: '12px' }}>
                         {t.editor.dangerZoneDesc}
                     </p>
                     <button onClick={onDelete} style={{
                         padding: '8px 16px', fontSize: '13px',
-                        border: '1px solid var(--bim-danger, #f44336)',
+                        border: `1px solid ${bim('danger')}`,
                         borderRadius: '4px', background: 'transparent',
-                        color: 'var(--bim-danger, #f44336)', cursor: 'pointer',
+                        color: bim('danger'), cursor: 'pointer',
                     }}>
                         {t.editor.deleteEntity}
                     </button>
@@ -417,15 +418,15 @@ function AdditionalWorksEditor({ items, onChange }: {
                         <FormInput label={t.label.juanCount} value={item.n_juan != null ? String(item.n_juan) : ''} onChange={v => update(i, 'n_juan', v ? parseInt(v, 10) || undefined : undefined)} />
                     </div>
                     <button onClick={() => remove(i)} style={{
-                        padding: '4px 8px', fontSize: '12px', border: '1px solid var(--bim-widget-border, #ddd)',
-                        borderRadius: '4px', background: 'transparent', cursor: 'pointer', color: 'var(--bim-muted, #999)',
+                        padding: '4px 8px', fontSize: '12px', border: `1px solid ${bim('widget-border')}`,
+                        borderRadius: '4px', background: 'transparent', cursor: 'pointer', color: bim('muted'),
                         marginTop: '18px',
                     }}>✕</button>
                 </div>
             ))}
             <button onClick={add} style={{
-                padding: '6px 12px', fontSize: '12px', border: '1px dashed var(--bim-input-border, #ccc)',
-                borderRadius: '4px', background: 'transparent', cursor: 'pointer', color: 'var(--bim-desc-fg, #666)',
+                padding: '6px 12px', fontSize: '12px', border: `1px dashed ${bim('input-border')}`,
+                borderRadius: '4px', background: 'transparent', cursor: 'pointer', color: bim('desc-fg'),
                 alignSelf: 'flex-start',
             }}>{t.action.addAdditionalWork}</button>
         </div>
@@ -474,18 +475,18 @@ function AnnotationEditor({ items, onChange, showMeta, addLabel }: {
                 const isExpanded = expandedIndex === i;
                 return (
                     <div key={i} style={{
-                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        border: `1px solid ${bim('widget-border')}`,
                         borderRadius: '6px', overflow: 'hidden',
                     }}>
                         {/* Header row */}
                         <div style={{
                             display: 'flex', alignItems: 'center', gap: '8px',
                             padding: '8px 12px',
-                            background: isExpanded ? 'color-mix(in srgb, var(--bim-primary, #0078d4) 5%, transparent)' : 'transparent',
+                            background: isExpanded ? `color-mix(in srgb, ${bim('primary')} 5%, transparent)` : 'transparent',
                             cursor: 'pointer',
                         }} onClick={() => setExpandedIndex(isExpanded ? null : i)}>
                             <span style={{
-                                fontSize: '10px', color: 'var(--bim-desc-fg, #717171)',
+                                fontSize: '10px', color: bim('desc-fg'),
                                 transition: 'transform 0.2s',
                                 transform: isExpanded ? 'rotate(90deg)' : 'none',
                             }}>▶</span>
@@ -493,18 +494,18 @@ function AnnotationEditor({ items, onChange, showMeta, addLabel }: {
                                 {item.source || t.editor.unnamedSource}
                             </span>
                             {item.source_bid && (
-                                <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)' }}>
+                                <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
                                     {item.source_bid}
                                 </span>
                             )}
                             <button onClick={e => { e.stopPropagation(); remove(i); }} style={{
-                                padding: '2px 6px', fontSize: '11px', border: '1px solid var(--bim-widget-border, #ddd)',
-                                borderRadius: '3px', background: 'transparent', cursor: 'pointer', color: 'var(--bim-muted, #999)',
+                                padding: '2px 6px', fontSize: '11px', border: `1px solid ${bim('widget-border')}`,
+                                borderRadius: '3px', background: 'transparent', cursor: 'pointer', color: bim('muted'),
                             }}>✕</button>
                         </div>
                         {/* Collapsed preview */}
                         {!isExpanded && showMeta && (item.title_info || item.author_info) && (
-                            <div style={{ padding: '0 12px 8px 28px', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
+                            <div style={{ padding: '0 12px 8px 28px', fontSize: '12px', color: bim('desc-fg') }}>
                                 {item.title_info}{item.title_info && item.author_info && ' — '}{item.author_info}
                             </div>
                         )}
@@ -533,8 +534,8 @@ function AnnotationEditor({ items, onChange, showMeta, addLabel }: {
                 );
             })}
             <button onClick={add} style={{
-                padding: '6px 12px', fontSize: '12px', border: '1px dashed var(--bim-input-border, #ccc)',
-                borderRadius: '4px', background: 'transparent', cursor: 'pointer', color: 'var(--bim-desc-fg, #666)',
+                padding: '6px 12px', fontSize: '12px', border: `1px dashed ${bim('input-border')}`,
+                borderRadius: '4px', background: 'transparent', cursor: 'pointer', color: bim('desc-fg'),
                 alignSelf: 'flex-start',
             }}>{addLabel}</button>
         </div>

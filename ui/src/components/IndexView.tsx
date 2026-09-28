@@ -16,6 +16,7 @@ import { IndexEditor } from './IndexEditor';
 import type { IndexEditorData, IndexEditorProps } from './IndexEditor';
 import { useT } from '../i18n';
 import { LoadingDots } from './common/LoadingDots';
+import { bim } from '../styles/tokens';
 
 // ── 数据转换 ──
 
@@ -212,10 +213,10 @@ export const IndexView: React.FC<IndexViewProps> = (props) => {
             style={{
                 padding: '4px 12px',
                 fontSize: '12px',
-                border: '1px solid var(--bim-widget-border, #d0d0d0)',
+                border: `1px solid ${bim('widget-border')}`,
                 borderRadius: '4px',
-                background: mode === 'edit' ? 'var(--bim-accent-bg, #1976d2)' : 'transparent',
-                color: mode === 'edit' ? '#fff' : 'var(--bim-fg, #333)',
+                background: mode === 'edit' ? bim('accent-bg') : 'transparent',
+                color: mode === 'edit' ? bim('on-color-fg') : bim('fg'),
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -255,7 +256,7 @@ export const IndexView: React.FC<IndexViewProps> = (props) => {
 
     // ── Edit 模式 ──
     if (!editorData) {
-        return <div style={{ padding: '24px', textAlign: 'center', color: 'var(--bim-muted, #999)' }}>无数据</div>;
+        return <div style={{ padding: '24px', textAlign: 'center', color: bim('muted') }}>无数据</div>;
     }
 
     return (

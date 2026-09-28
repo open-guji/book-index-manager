@@ -7,6 +7,7 @@ import { LoadingDots } from './common/LoadingDots';
 import { Tooltip } from './common/Tooltip';
 import { useBidUrl } from '../core/bid-url';
 import { renderInterlinear, truncateOutsideJiazhu, ReaderLayout } from './detail/primitives';
+import { bim } from '../styles/tokens';
 
 export interface CollatedEditionProps {
     /** 直接传入卷列表索引 */
@@ -151,7 +152,7 @@ function normalizeForSearch(s: string, normalizer: Normalizer): string {
 
 // ── 高亮 ──
 
-const HIGHLIGHT_BG = 'var(--bim-highlight-bg, #fff59d)';
+const HIGHLIGHT_BG = bim('highlight-bg');
 
 /**
  * 在 displayed 中查找 query 出现位置并用 <mark> 包裹。
@@ -205,15 +206,15 @@ function rawTextMatches(text: string, q: string, normalizer: Normalizer): boolea
 
 // 回退值即原本的硬编码色，消费者不覆盖时观感不变
 const SECTION_TYPE_COLORS: Record<string, string> = {
-    '类': 'var(--bim-section-lei, #8e6f3e)',
-    '书': 'var(--bim-section-shu, #c0392b)',
-    '序': 'var(--bim-section-xu, #1a5276)',
-    '结语': 'var(--bim-section-jieyu, #7d6608)',
-    '注释': 'var(--bim-section-zhushi, #6c5b7b)',
+    '类': bim('section-lei'),
+    '书': bim('section-shu'),
+    '序': bim('section-xu'),
+    '结语': bim('section-jieyu'),
+    '注释': bim('section-zhushi'),
 };
 
 const KAOZHEN_TYPE_COLORS: Record<string, string> = {
-    '考证': 'var(--bim-section-kaozhen, #5d6d7e)',
+    '考证': bim('section-kaozhen'),
 };
 
 // ── 子组件 ──
@@ -273,24 +274,24 @@ function JuanButton({ file, isActive, onSelect, meta, matchState, vertical }: {
                 border: vertical
                     ? '1px solid transparent'
                     : isActive
-                        ? '1px solid var(--bim-primary, #8e6f3e)'
+                        ? `1px solid ${bim('primary')}`
                         : disabled
-                            ? '1px dashed var(--bim-widget-border, #e0e0e0)'
-                            : '1px solid var(--bim-widget-border, #e0e0e0)',
+                            ? `1px dashed ${bim('widget-border')}`
+                            : `1px solid ${bim('widget-border')}`,
                 borderLeft: vertical
-                    ? `2px solid ${isActive ? 'var(--bim-primary, #8e6f3e)' : 'transparent'}`
+                    ? `2px solid ${isActive ? bim('primary') : 'transparent'}`
                     : undefined,
                 borderRadius: vertical ? 0 : '3px',
                 background: isActive
-                    ? 'color-mix(in srgb, var(--bim-primary, #8e6f3e) 10%, transparent)'
+                    ? `color-mix(in srgb, ${bim('primary')} 10%, transparent)`
                     : hasMatch
                         ? `${HIGHLIGHT_BG}40`
                         : 'transparent',
                 color: isActive
-                    ? 'var(--bim-primary, #8e6f3e)'
+                    ? bim('primary')
                     : disabled
-                        ? 'var(--bim-desc-fg, #bbb)'
-                        : 'var(--bim-fg, #333)',
+                        ? bim('desc-fg')
+                        : bim('fg'),
                 cursor: disabled ? 'not-allowed' : 'pointer',
                 fontSize: '12px',
                 fontWeight: isActive ? 600 : 400,
@@ -304,7 +305,7 @@ function JuanButton({ file, isActive, onSelect, meta, matchState, vertical }: {
                     marginLeft: '5px',
                     fontSize: '11px',
                     fontWeight: 400,
-                    color: 'var(--bim-desc-fg, #999)',
+                    color: bim('desc-fg'),
                 }}>
                     ({meta!.vol_label}冊)
                 </span>
@@ -314,7 +315,7 @@ function JuanButton({ file, isActive, onSelect, meta, matchState, vertical }: {
                     marginLeft: '5px',
                     fontSize: '11px',
                     fontWeight: 600,
-                    color: 'var(--bim-matchstate-fg, #b78900)',
+                    color: bim('matchstate-fg'),
                 }}>
                     {matchState}
                 </span>
@@ -323,7 +324,7 @@ function JuanButton({ file, isActive, onSelect, meta, matchState, vertical }: {
                 <span style={{
                     marginLeft: '5px',
                     fontSize: '11px',
-                    color: 'var(--bim-desc-fg, #aaa)',
+                    color: bim('desc-fg'),
                 }}>
                     …
                 </span>
@@ -401,21 +402,21 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta, matchS
                     margin: '2px 0',
                     marginLeft: `${8 + depth * 16}px`,
                     border: isActive
-                        ? '1px solid var(--bim-primary, #8e6f3e)'
+                        ? `1px solid ${bim('primary')}`
                         : disabled
-                            ? '1px dashed var(--bim-widget-border, #e0e0e0)'
-                            : '1px solid var(--bim-widget-border, #e0e0e0)',
+                            ? `1px dashed ${bim('widget-border')}`
+                            : `1px solid ${bim('widget-border')}`,
                     borderRadius: '3px',
                     background: isActive
-                        ? 'color-mix(in srgb, var(--bim-primary, #8e6f3e) 10%, transparent)'
+                        ? `color-mix(in srgb, ${bim('primary')} 10%, transparent)`
                         : hasMatch
                             ? `${HIGHLIGHT_BG}40`
                             : 'transparent',
                     color: isActive
-                        ? 'var(--bim-primary, #8e6f3e)'
+                        ? bim('primary')
                         : disabled
-                            ? 'var(--bim-desc-fg, #bbb)'
-                            : 'var(--bim-fg, #333)',
+                            ? bim('desc-fg')
+                            : bim('fg'),
                     cursor: disabled ? 'not-allowed' : 'pointer',
                     fontSize: '12px',
                     fontWeight: isActive ? 600 : 400,
@@ -425,10 +426,10 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta, matchS
             >
                 {group.label}
                 {hasMatch && (
-                    <span style={{ marginLeft: '5px', fontSize: '11px', fontWeight: 600, color: 'var(--bim-matchstate-fg, #b78900)' }}>{ms}</span>
+                    <span style={{ marginLeft: '5px', fontSize: '11px', fontWeight: 600, color: bim('matchstate-fg') }}>{ms}</span>
                 )}
                 {loading && (
-                    <span style={{ marginLeft: '5px', fontSize: '11px', color: 'var(--bim-desc-fg, #aaa)' }}>…</span>
+                    <span style={{ marginLeft: '5px', fontSize: '11px', color: bim('desc-fg') }}>…</span>
                 )}
             </button>
         );
@@ -449,10 +450,10 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta, matchS
                     fontSize: depth === 0 ? '13px' : '12px',
                     fontWeight: depth === 0 ? 600 : 500,
                     color: hasActive
-                        ? 'var(--bim-primary, #8e6f3e)'
+                        ? bim('primary')
                         : groupNoMatch
-                            ? 'var(--bim-desc-fg, #bbb)'
-                            : 'var(--bim-fg, #333)',
+                            ? bim('desc-fg')
+                            : bim('fg'),
                     opacity: groupNoMatch ? 0.6 : 1,
                 }}
             >
@@ -463,16 +464,16 @@ function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta, matchS
                     display: 'inline-block',
                 }}>&#9654;</span>
                 <span>{group.label}</span>
-                <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--bim-desc-fg, #999)' }}>
+                <span style={{ fontSize: '11px', fontWeight: 400, color: bim('desc-fg') }}>
                     ({count})
                 </span>
                 {groupHasMatch && (
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--bim-matchstate-fg, #b78900)' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 600, color: bim('matchstate-fg') }}>
                         匹配 {groupState}
                     </span>
                 )}
                 {groupState === 'loading' && (
-                    <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #aaa)' }}>…</span>
+                    <span style={{ fontSize: '11px', color: bim('desc-fg') }}>…</span>
                 )}
             </div>
             {expanded && (
@@ -577,7 +578,7 @@ function SectionTypeBadge({ type }: { type: string }) {
      * 漢書藝文志卷一（9 个 category 段）即是。
      */
     const label = normSectionType(type);
-    const color = SECTION_TYPE_COLORS[label] || 'var(--bim-desc-fg, #717171)';
+    const color = SECTION_TYPE_COLORS[label] || bim('desc-fg');
     return (
         <span style={{
             display: 'inline-block',
@@ -630,7 +631,7 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
 
     return (
         <div style={{
-            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            border: `1px solid ${bim('widget-border')}`,
             borderRadius: '6px',
             overflow: 'hidden',
             marginBottom: '6px',
@@ -644,13 +645,13 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                     gap: '8px',
                     cursor: hasContent ? 'pointer' : 'default',
                     userSelect: 'none',
-                    background: 'var(--bim-input-bg, #fff)',
+                    background: bim('input-bg'),
                 }}
             >
                 {hasContent && (
                     <span style={{
                         fontSize: '9px',
-                        color: 'var(--bim-desc-fg, #717171)',
+                        color: bim('desc-fg'),
                         transition: 'transform 0.15s',
                         transform: expanded ? 'rotate(90deg)' : 'none',
                         display: 'inline-block',
@@ -661,14 +662,14 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                     <span style={{
                         fontSize: '14px',
                         fontWeight: 500,
-                        color: 'var(--bim-fg, #1a1a1a)',
+                        color: bim('fg'),
                     }}>
                         {section.book_title ? <>《{hl(section.book_title)}》</> : hl(section.title)}
                         {section.n_juan != null && (
                             <span style={{
                                 fontSize: '12px',
                                 fontWeight: 400,
-                                color: 'var(--bim-desc-fg, #999)',
+                                color: bim('desc-fg'),
                                 marginLeft: '6px',
                             }}>
                                 {toChineseNumeral(section.n_juan)}卷
@@ -678,7 +679,7 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                             <span style={{
                                 fontSize: '12px',
                                 fontWeight: 400,
-                                color: 'var(--bim-desc-fg, #999)',
+                                color: bim('desc-fg'),
                                 marginLeft: '8px',
                             }}>
                                 {hl(section.author_info || section.author)}
@@ -688,7 +689,7 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                     {!expanded && preview && (
                         <div style={{
                             fontSize: '12px',
-                            color: 'var(--bim-desc-fg, #999)',
+                            color: bim('desc-fg'),
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -701,7 +702,7 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                 {section.edition && (
                     <span style={{
                         fontSize: '11px',
-                        color: 'var(--bim-desc-fg, #aaa)',
+                        color: bim('desc-fg'),
                     }}>
                         {hl(section.edition)}
                     </span>
@@ -709,7 +710,7 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                 {section.tag && (
                     <span style={{
                         fontSize: '11px',
-                        color: 'var(--bim-section-tag-fg, #e74c3c)',
+                        color: bim('section-tag-fg'),
                     }}>
                         {section.tag === 'triangle' ? '△' : section.tag}
                     </span>
@@ -720,7 +721,7 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                         onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(section.work_id!); }}
                         style={{
                             fontSize: '11px',
-                            color: 'var(--bim-link-fg, #0066cc)',
+                            color: bim('link-fg'),
                             cursor: 'pointer',
                             textDecoration: 'none',
                             flexShrink: 0,
@@ -735,13 +736,13 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
             {expanded && hasContent && (
                 <div style={{
                     padding: '8px 12px 12px',
-                    borderTop: '1px solid var(--bim-widget-border, #f0f0f0)',
-                    background: 'var(--bim-bg, #fafafa)',
+                    borderTop: `1px solid ${bim('widget-border')}`,
+                    background: bim('bg'),
                 }}>
                     {section.author_info && (
                         <div style={{
                             fontSize: '13px',
-                            color: 'var(--bim-desc-fg, #717171)',
+                            color: bim('desc-fg'),
                             marginBottom: '8px',
                         }}>
                             {hl(section.author_info)}
@@ -751,20 +752,20 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                         <div style={{
                             marginBottom: '8px',
                             padding: '10px 14px',
-                            borderLeft: '3px solid var(--bim-primary, #8e6f3e)',
-                            background: 'color-mix(in srgb, var(--bim-primary, #8e6f3e) 4%, transparent)',
+                            borderLeft: `3px solid ${bim('primary')}`,
+                            background: `color-mix(in srgb, ${bim('primary')} 4%, transparent)`,
                             borderRadius: '0 4px 4px 0',
                         }}>
                             <div style={{
                                 fontSize: '11px',
                                 fontWeight: 600,
-                                color: 'var(--bim-desc-fg, #717171)',
+                                color: bim('desc-fg'),
                                 marginBottom: '4px',
                                 letterSpacing: '1px',
                             }}>提要</div>
                             <p style={{
                                 fontSize: '13px',
-                                color: 'var(--bim-fg, #333)',
+                                color: bim('fg'),
                                 lineHeight: 1.9,
                                 margin: 0,
                                 textAlign: 'justify',
@@ -775,19 +776,19 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                         <div style={{
                             marginBottom: '8px',
                             padding: '8px 14px',
-                            borderLeft: '3px solid var(--bim-desc-fg, #aaa)',
+                            borderLeft: `3px solid ${bim('desc-fg')}`,
                             borderRadius: '0 4px 4px 0',
                         }}>
                             <div style={{
                                 fontSize: '11px',
                                 fontWeight: 600,
-                                color: 'var(--bim-desc-fg, #717171)',
+                                color: bim('desc-fg'),
                                 marginBottom: '4px',
                                 letterSpacing: '1px',
                             }}>按語</div>
                             <p style={{
                                 fontSize: '13px',
-                                color: 'var(--bim-fg, #555)',
+                                color: bim('fg'),
                                 lineHeight: 1.8,
                                 margin: 0,
                                 fontStyle: 'italic',
@@ -797,19 +798,19 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                     {section.additional_comment && (
                         <div style={{
                             padding: '8px 14px',
-                            borderLeft: '3px solid var(--bim-desc-fg, #ccc)',
+                            borderLeft: `3px solid ${bim('desc-fg')}`,
                             borderRadius: '0 4px 4px 0',
                         }}>
                             <div style={{
                                 fontSize: '11px',
                                 fontWeight: 600,
-                                color: 'var(--bim-desc-fg, #717171)',
+                                color: bim('desc-fg'),
                                 marginBottom: '4px',
                                 letterSpacing: '1px',
                             }}>附按</div>
                             <p style={{
                                 fontSize: '13px',
-                                color: 'var(--bim-fg, #555)',
+                                color: bim('fg'),
                                 lineHeight: 1.8,
                                 margin: 0,
                                 fontStyle: 'italic',
@@ -819,7 +820,7 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                     {hasLongContent && !hasSummary && !hasComment && !hasAdditionalComment && (
                         <p style={{
                             fontSize: '13px',
-                            color: 'var(--bim-fg, #333)',
+                            color: bim('fg'),
                             lineHeight: 1.9,
                             margin: 0,
                             textAlign: 'justify',
@@ -859,14 +860,14 @@ function CategoryHeader({ section, highlightQuery = '' }: { section: CollatedSec
                 <span style={{
                     fontSize: '15px',
                     fontWeight: 600,
-                    color: 'var(--bim-fg, #1a1a1a)',
+                    color: bim('fg'),
                 }}>
                     {hl(section.title)}
                 </span>
                 {hasContent && (
                     <span style={{
                         fontSize: '9px',
-                        color: 'var(--bim-desc-fg, #999)',
+                        color: bim('desc-fg'),
                         transition: 'transform 0.15s',
                         transform: expanded ? 'rotate(90deg)' : 'none',
                         display: 'inline-block',
@@ -877,13 +878,13 @@ function CategoryHeader({ section, highlightQuery = '' }: { section: CollatedSec
                 <div style={{
                     marginTop: '8px',
                     padding: '10px 14px',
-                    borderLeft: `3px solid color-mix(in srgb, ${SECTION_TYPE_COLORS[normSectionType(section.type)] || 'var(--bim-desc-fg, #717171)'} 25%, transparent)`,
+                    borderLeft: `3px solid color-mix(in srgb, ${SECTION_TYPE_COLORS[normSectionType(section.type)] || bim('desc-fg')} 25%, transparent)`,
                     borderRadius: '0 4px 4px 0',
-                    background: 'var(--bim-bg, #fafafa)',
+                    background: bim('bg'),
                 }}>
                     <p style={{
                         fontSize: '13px',
-                        color: 'var(--bim-fg, #333)',
+                        color: bim('fg'),
                         lineHeight: 1.9,
                         margin: 0,
                         textAlign: 'justify',
@@ -925,7 +926,7 @@ export function OtherSection({ section, highlightQuery = '' }: { section: Collat
     const text: React.ReactNode = renderInterlinear(rawText, (seg) =>
         highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
     const normType = normSectionType(section.type);
-    const typeColor = SECTION_TYPE_COLORS[normType] || 'var(--bim-desc-fg, #717171)';
+    const typeColor = SECTION_TYPE_COLORS[normType] || bim('desc-fg');
     // 序/结语/注释：带左边框、类型标签，与"书"条目区分
     const isLabeled = normType === '序' || normType === '结语' || normType === '注释';
     return (
@@ -933,11 +934,11 @@ export function OtherSection({ section, highlightQuery = '' }: { section: Collat
             padding: isLabeled ? '10px 12px' : '6px 0',
             margin: isLabeled ? '8px 0' : undefined,
             fontSize: '13px',
-            color: 'var(--bim-desc-fg, #555)',
+            color: bim('desc-fg'),
             lineHeight: 1.8,
             whiteSpace: 'pre-line',
             borderLeft: isLabeled ? `3px solid ${typeColor}40` : undefined,
-            background: isLabeled ? 'var(--bim-bg, #fafafa)' : undefined,
+            background: isLabeled ? bim('bg') : undefined,
             borderRadius: isLabeled ? '0 4px 4px 0' : undefined,
             position: 'relative',
         }}>
@@ -1049,7 +1050,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
     }, [highlightQuery]);
     // 同 SectionTypeBadge：颜色表按中文写，type 是英文枚举，必须先归一
     const typeKey = normSectionType(section.type);
-    const typeColor = KAOZHEN_TYPE_COLORS[typeKey] || 'var(--bim-desc-fg, #717171)';
+    const typeColor = KAOZHEN_TYPE_COLORS[typeKey] || bim('desc-fg');
     const hasContent = !!section.content;
     const workIds = section.work_ids || [];
     const hasMultipleWorks = workIds.length > 1;
@@ -1067,7 +1068,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
 
     return (
         <div style={{
-            borderBottom: '1px solid var(--bim-widget-border, #f0f0f0)',
+            borderBottom: `1px solid ${bim('widget-border')}`,
             padding: '10px 0',
         }}>
             {/* 标题行 */}
@@ -1084,7 +1085,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
                 {hasContent && (
                     <span style={{
                         fontSize: '9px',
-                        color: 'var(--bim-desc-fg, #aaa)',
+                        color: bim('desc-fg'),
                         marginTop: '5px',
                         transition: 'transform 0.15s',
                         transform: expanded ? 'rotate(90deg)' : 'none',
@@ -1096,7 +1097,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
                     <span style={{
                         fontSize: '14px',
                         fontWeight: 500,
-                        color: 'var(--bim-fg, #1a1a1a)',
+                        color: bim('fg'),
                         lineHeight: 1.6,
                     }}>
                         {section.header_line ? hl(section.header_line) : hl(section.title)}
@@ -1106,7 +1107,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
                         <p style={{
                             margin: '4px 0 0',
                             fontSize: '12px',
-                            color: 'var(--bim-desc-fg, #aaa)',
+                            color: bim('desc-fg'),
                             lineHeight: 1.7,
                         }}>
                             {hl(preview)}
@@ -1121,7 +1122,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
                             onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(workIds[0]); }}
                             style={{
                                 fontSize: '11px',
-                                color: 'var(--bim-link-fg, #0066cc)',
+                                color: bim('link-fg'),
                                 cursor: 'pointer',
                                 textDecoration: 'none',
                                 flexShrink: 0,
@@ -1135,7 +1136,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
                     {hasMultipleWorks && (
                         <span style={{
                             fontSize: '11px',
-                            color: 'var(--bim-link-fg, #0066cc)',
+                            color: bim('link-fg'),
                             flexShrink: 0,
                         }}>
                             {workIds.length}部作品
@@ -1176,7 +1177,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
                                 onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(wid); }}
                                 style={{
                                     fontSize: '12px',
-                                    color: 'var(--bim-link-fg, #0066cc)',
+                                    color: bim('link-fg'),
                                     cursor: 'pointer',
                                     textDecoration: 'none',
                                     lineHeight: 1.8,
@@ -1197,11 +1198,11 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
                     padding: '12px 16px',
                     borderLeft: `3px solid ${typeColor}40`,
                     borderRadius: '0 4px 4px 0',
-                    background: 'var(--bim-bg, #fafafa)',
+                    background: bim('bg'),
                 }}>
                     <p style={{
                         fontSize: '13px',
-                        color: 'var(--bim-fg, #333)',
+                        color: bim('fg'),
                         lineHeight: 2.0,
                         margin: 0,
                         textAlign: 'justify',
@@ -1213,9 +1214,9 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
                         <div style={{
                             marginTop: '10px',
                             paddingTop: '8px',
-                            borderTop: '1px solid var(--bim-widget-border, #eee)',
+                            borderTop: `1px solid ${bim('widget-border')}`,
                             fontSize: '12px',
-                            color: 'var(--bim-desc-fg, #717171)',
+                            color: bim('desc-fg'),
                             lineHeight: 1.8,
                             fontStyle: 'italic',
                         }}>
@@ -1266,14 +1267,14 @@ function KaozhenContent({
                 <h3 style={{
                     fontSize: '16px',
                     fontWeight: 600,
-                    color: 'var(--bim-fg, #1a1a1a)',
+                    color: bim('fg'),
                     margin: 0,
                 }}>
                     {convert(juan.title)}
                 </h3>
                 <span style={{
                     fontSize: '12px',
-                    color: 'var(--bim-desc-fg, #999)',
+                    color: bim('desc-fg'),
                     marginLeft: 'auto',
                 }}>
                     {q ? `${sectionCount} / ${totalCount} 條` : `${totalCount} 條`}
@@ -1287,9 +1288,9 @@ function KaozhenContent({
                         rel="noopener noreferrer"
                         style={{
                             fontSize: '11px',
-                            color: 'var(--bim-desc-fg, #aaa)',
+                            color: bim('desc-fg'),
                             textDecoration: 'underline',
-                            textDecorationColor: 'var(--bim-widget-border, #ddd)',
+                            textDecorationColor: bim('widget-border'),
                             textUnderlineOffset: '2px',
                         }}
                     >
@@ -1309,7 +1310,7 @@ function KaozhenContent({
                 <div style={{
                     padding: '32px',
                     textAlign: 'center',
-                    color: 'var(--bim-desc-fg, #999)',
+                    color: bim('desc-fg'),
                     fontSize: '13px',
                 }}>
                     无匹配结果
@@ -1329,7 +1330,7 @@ function MdTextView({ text, highlightQuery = '' }: { text: string; highlightQuer
     };
     const lines = text.split('\n');
     return (
-        <div style={{ fontSize: '15px', lineHeight: 2.2, color: 'var(--bim-fg, #333)', textAlign: 'justify' }}>
+        <div style={{ fontSize: '15px', lineHeight: 2.2, color: bim('fg'), textAlign: 'justify' }}>
             {lines.map((line, i) => {
                 if (line.startsWith('# ')) {
                     return <h2 key={i} style={{ fontSize: '17px', fontWeight: 700, margin: '16px 0 8px' }}>{hl(line.slice(2))}</h2>;
@@ -1397,14 +1398,14 @@ function RawTextView({ sections, onNavigate, highlightQuery = '' }: { sections: 
     if (current) groups.push(current);
 
     return (
-        <div style={{ fontSize: '15px', lineHeight: 2.2, color: 'var(--bim-fg, #333)', textAlign: 'justify' }}>
+        <div style={{ fontSize: '15px', lineHeight: 2.2, color: bim('fg'), textAlign: 'justify' }}>
             {groups.map((g, gi) => (
                 <div key={gi} style={{ marginBottom: '20px' }}>
                     {g.category && (
-                        <h4 style={{ fontSize: '15px', fontWeight: 600, margin: '16px 0 8px', color: 'var(--bim-fg, #1a1a1a)' }}>
+                        <h4 style={{ fontSize: '15px', fontWeight: 600, margin: '16px 0 8px', color: bim('fg') }}>
                             {hl(g.category)}
                             {g.categoryContent && (
-                                <span style={{ fontWeight: 400, fontSize: '14px', marginLeft: '8px', color: 'var(--bim-desc-fg, #717171)' }}>
+                                <span style={{ fontWeight: 400, fontSize: '14px', marginLeft: '8px', color: bim('desc-fg') }}>
                                     {hl(g.categoryContent)}
                                 </span>
                             )}
@@ -1420,7 +1421,7 @@ function RawTextView({ sections, onNavigate, highlightQuery = '' }: { sections: 
                                     <a
                                         href={buildUrl(s.work_id)}
                                         onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(s.work_id!); }}
-                                        style={{ color: 'var(--bim-fg, #333)', textDecoration: 'underline', textDecorationColor: 'var(--bim-widget-border, #ddd)', textUnderlineOffset: '3px', cursor: 'pointer' }}
+                                        style={{ color: bim('fg'), textDecoration: 'underline', textDecorationColor: bim('widget-border'), textUnderlineOffset: '3px', cursor: 'pointer' }}
                                         title={convert(s.title)}
                                     >
                                         <strong>{hl(s.title)}</strong>
@@ -1476,7 +1477,7 @@ function JuanContent({
                 <h3 style={{
                     fontSize: '16px',
                     fontWeight: 600,
-                    color: 'var(--bim-fg, #1a1a1a)',
+                    color: bim('fg'),
                     margin: 0,
                 }}>
                     {convert(juan.title)}
@@ -1484,7 +1485,7 @@ function JuanContent({
                 {/* 计数与切换一并靠右：标题在左，视图控制在右上角 */}
                 <span style={{
                     fontSize: '12px',
-                    color: 'var(--bim-desc-fg, #999)',
+                    color: bim('desc-fg'),
                     marginLeft: 'auto',
                 }}>
                     {/*
@@ -1505,10 +1506,10 @@ function JuanContent({
                             style={{
                                 padding: '2px 8px',
                                 fontSize: '11px',
-                                border: '1px solid var(--bim-widget-border, #ddd)',
+                                border: `1px solid ${bim('widget-border')}`,
                                 borderRadius: mode === 'catalog' ? '3px 0 0 3px' : '0 3px 3px 0',
-                                background: viewMode === mode ? 'var(--bim-primary, #8e6f3e)' : 'var(--bim-input-bg, #fff)',
-                                color: viewMode === mode ? '#fff' : 'var(--bim-desc-fg, #999)',
+                                background: viewMode === mode ? bim('primary') : bim('input-bg'),
+                                color: viewMode === mode ? bim('on-color-fg') : bim('desc-fg'),
                                 cursor: 'pointer',
                             }}
                         >
@@ -1543,7 +1544,7 @@ function JuanContent({
                 <div style={{
                     padding: '32px',
                     textAlign: 'center',
-                    color: 'var(--bim-desc-fg, #999)',
+                    color: bim('desc-fg'),
                     fontSize: '13px',
                 }}>
                     无匹配结果
@@ -1798,7 +1799,7 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
     if (loading) {
         return (
             <div className={className} style={{ ...style, padding: '24px' }}>
-                <div style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '13px' }}>
+                <div style={{ color: bim('desc-fg'), fontSize: '13px' }}>
                     加载整理本...
                 </div>
             </div>
@@ -1811,7 +1812,7 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
                 ...style,
                 padding: '24px',
                 textAlign: 'center',
-                color: 'var(--bim-desc-fg, #717171)',
+                color: bim('desc-fg'),
                 fontSize: '13px',
             }}>
                 {error}
@@ -1901,10 +1902,10 @@ const CollatedEditionInner: React.FC<{
                     width: '100%',
                     padding: '6px 9px',
                     marginBottom: '12px',
-                    border: '1px solid var(--bim-input-border, #ccc)',
+                    border: `1px solid ${bim('input-border')}`,
                     borderRadius: '4px',
-                    background: 'var(--bim-input-bg, #fff)',
-                    color: 'var(--bim-input-fg, #333)',
+                    background: bim('input-bg'),
+                    color: bim('input-fg'),
                     fontSize: '12.5px',
                     boxSizing: 'border-box',
                 }}
@@ -1929,10 +1930,10 @@ const CollatedEditionInner: React.FC<{
               * 数量一目了然，再写一遍是同一事实的第二处表述。
               * 考证类的「考證對象」不是计数、别处没有，故保留。
               */}
-            <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '13px', color: 'var(--bim-desc-fg, #717171)' }}>
+            <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '13px', color: bim('desc-fg') }}>
                 <div>
                     {isKaozhen && index.target_source && (
-                        <span>考證對象：<strong style={{ color: 'var(--bim-fg, #333)' }}>{index.target_source}</strong></span>
+                        <span>考證對象：<strong style={{ color: bim('fg') }}>{index.target_source}</strong></span>
                     )}
                 </div>
                 {index.text_quality && (() => {
@@ -1951,7 +1952,7 @@ const CollatedEditionInner: React.FC<{
                                         borderRadius: '3px',
                                         fontWeight: 600,
                                         fontSize: '12px',
-                                        color: '#fff',
+                                        color: bim('on-color-fg'),
                                         background: TEXT_QUALITY_COLORS[grade],
                                         cursor: 'help',
                                     }}
@@ -1989,7 +1990,7 @@ const CollatedEditionInner: React.FC<{
                 <div style={{
                     padding: '24px',
                     textAlign: 'center',
-                    color: 'var(--bim-desc-fg, #999)',
+                    color: bim('desc-fg'),
                     fontSize: '13px',
                 }}>
                     选择一卷查看内容
@@ -2001,12 +2002,12 @@ const CollatedEditionInner: React.FC<{
                 <div style={{
                     marginTop: '32px',
                     paddingTop: '16px',
-                    borderTop: '1px solid var(--bim-widget-border, #eee)',
+                    borderTop: `1px solid ${bim('widget-border')}`,
                 }}>
                     <div style={{
                         fontSize: '11px',
                         fontWeight: 600,
-                        color: 'var(--bim-desc-fg, #aaa)',
+                        color: bim('desc-fg'),
                         marginBottom: '8px',
                         letterSpacing: '2px',
                     }}>
@@ -2015,7 +2016,7 @@ const CollatedEditionInner: React.FC<{
                     {index.references.map((ref, i) => (
                         <div key={i} style={{
                             fontSize: '12px',
-                            color: 'var(--bim-desc-fg, #999)',
+                            color: bim('desc-fg'),
                             lineHeight: 1.8,
                             paddingLeft: '12px',
                         }}>
@@ -2026,9 +2027,9 @@ const CollatedEditionInner: React.FC<{
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style={{
-                                        color: 'var(--bim-desc-fg, #999)',
+                                        color: bim('desc-fg'),
                                         textDecoration: 'underline',
-                                        textDecorationColor: 'var(--bim-widget-border, #ddd)',
+                                        textDecorationColor: bim('widget-border'),
                                         textUnderlineOffset: '2px',
                                     }}
                                 >

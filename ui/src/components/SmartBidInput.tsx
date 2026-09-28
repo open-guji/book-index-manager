@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Badge } from './common/Badge';
+import { bim } from '../styles/tokens';
 
 export interface SmartBidInputProps {
     /** 值格式: "[Name](bid:ID)" 或普通文本 */
@@ -39,14 +40,14 @@ export const SmartBidInput: React.FC<SmartBidInputProps> = ({ value, onChange, l
                         alignItems: 'center',
                         gap: '8px',
                         padding: '6px 8px',
-                        border: '1px solid var(--bim-input-border, #ccc)',
+                        border: `1px solid ${bim('input-border')}`,
                         borderRadius: '2px',
-                        background: 'var(--bim-input-bg, #fff)',
+                        background: bim('input-bg'),
                         cursor: 'pointer',
                         minHeight: '30px',
                     }}
                 >
-                    <span style={{ fontWeight: 500, fontSize: '13px', color: 'var(--bim-fg, #333)' }}>
+                    <span style={{ fontWeight: 500, fontSize: '13px', color: bim('fg') }}>
                         {parsed.name}
                     </span>
                     <Badge>{parsed.id}</Badge>
@@ -67,9 +68,9 @@ export const SmartBidInput: React.FC<SmartBidInputProps> = ({ value, onChange, l
                 style={{
                     width: '100%',
                     padding: '6px 8px',
-                    background: 'var(--bim-input-bg, #fff)',
-                    color: 'var(--bim-input-fg, #333)',
-                    border: '1px solid var(--bim-input-border, #ccc)',
+                    background: bim('input-bg'),
+                    color: bim('input-fg'),
+                    border: `1px solid ${bim('input-border')}`,
                     borderRadius: '2px',
                     fontSize: '13px',
                     boxSizing: 'border-box',
@@ -83,7 +84,7 @@ export const SmartBidInput: React.FC<SmartBidInputProps> = ({ value, onChange, l
 const labelStyle: React.CSSProperties = {
     display: 'block',
     fontSize: '11px',
-    color: 'var(--bim-desc-fg, #717171)',
+    color: bim('desc-fg'),
     marginBottom: '4px',
     fontWeight: 500,
 };

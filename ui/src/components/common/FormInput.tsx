@@ -1,4 +1,5 @@
 import React from 'react';
+import { bim } from '../../styles/tokens';
 
 export interface FormInputProps {
     label: string;
@@ -13,7 +14,7 @@ export const FormInput: React.FC<FormInputProps> = ({ label, value, onChange, pl
         <label style={{
             display: 'block',
             fontSize: '11px',
-            color: 'var(--bim-desc-fg, #717171)',
+            color: bim('desc-fg'),
             marginBottom: '4px',
             fontWeight: 500,
         }}>
@@ -28,9 +29,9 @@ export const FormInput: React.FC<FormInputProps> = ({ label, value, onChange, pl
             style={{
                 width: '100%',
                 padding: '6px 8px',
-                background: 'var(--bim-input-bg, #fff)',
-                color: 'var(--bim-input-fg, #333)',
-                border: '1px solid var(--bim-input-border, #ccc)',
+                background: bim('input-bg'),
+                color: bim('input-fg'),
+                border: `1px solid ${bim('input-border')}`,
                 borderRadius: '2px',
                 fontSize: '13px',
                 boxSizing: 'border-box',

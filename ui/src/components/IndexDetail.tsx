@@ -24,6 +24,7 @@ import { MarkdownText } from './common/MarkdownText';
 import { useT, useConvert } from '../i18n';
 import { formatTemplate } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
+import { bim } from '../styles/tokens';
 
 /** 已解析的收录关联（ID → 标题 + 册号） */
 interface ResolvedContainedIn {
@@ -104,10 +105,10 @@ function badgeStyle(color: string): React.CSSProperties {
 }
 
 const TYPE_BADGE_COLORS: Record<IndexType, string> = {
-    book: 'var(--bim-type-book, #c0392b)',
-    work: 'var(--bim-type-work, #8e6f3e)',
-    collection: 'var(--bim-type-collection, #2471a3)',
-    entity: 'var(--bim-type-entity, #5b3e8e)',
+    book: bim('type-book'),
+    work: bim('type-work'),
+    collection: bim('type-collection'),
+    entity: bim('type-entity'),
 };
 
 function TypeBadge({ type }: { type: IndexType }) {
@@ -122,8 +123,8 @@ function TypeBadge({ type }: { type: IndexType }) {
 function StatusBadge({ isDraft }: { isDraft: boolean }) {
     const t = useT();
     const color = isDraft
-        ? 'var(--bim-status-draft, #e67e22)'
-        : 'var(--bim-status-official, #27ae60)';
+        ? bim('status-draft')
+        : bim('status-official');
     return (
         <span style={badgeStyle(color)}>
             {isDraft ? t.status.draft : t.status.official}
@@ -147,16 +148,16 @@ function IdBadge({ id }: { id: string }) {
             gap: '4px',
             padding: '1px 6px',
             fontSize: '11px',
-            color: 'var(--bim-desc-fg, #717171)',
-            background: 'var(--bim-bg-subtle, #f6f6f6)',
-            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            color: bim('desc-fg'),
+            background: bim('bg-subtle'),
+            border: `1px solid ${bim('widget-border')}`,
             borderRadius: '2px',
         }}>
             <span>{t.label.id}</span>
             <span style={{
                 fontFamily: 'monospace',
                 fontSize: '11px',
-                color: 'var(--bim-fg, #333)',
+                color: bim('fg'),
             }}>
                 {id}
             </span>
@@ -183,7 +184,7 @@ function Divider() {
         <div style={{
             height: '1px',
             margin: '8px 0 20px',
-            background: 'linear-gradient(to right, var(--bim-widget-border, #e0e0e0), transparent)',
+            background: `linear-gradient(to right, ${bim('widget-border')}, transparent)`,
         }} />
     );
 }
@@ -200,7 +201,7 @@ function SectionLabel({ children, extra }: { children: React.ReactNode; extra?: 
             <span style={{
                 fontSize: '13px',
                 fontWeight: 600,
-                color: 'var(--bim-desc-fg, #717171)',
+                color: bim('desc-fg'),
                 letterSpacing: '1px',
             }}>
                 {children}
@@ -214,8 +215,8 @@ function SectionLabel({ children, extra }: { children: React.ReactNode; extra?: 
 function MetaItem({ label, children }: { label: string; children: React.ReactNode }) {
     return (
         <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '4px', fontSize: '13px' }}>
-            <span style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '12px' }}>{label}</span>
-            <span style={{ color: 'var(--bim-fg, #333)' }}>{children}</span>
+            <span style={{ color: bim('desc-fg'), fontSize: '12px' }}>{label}</span>
+            <span style={{ color: bim('fg') }}>{children}</span>
         </span>
     );
 }
@@ -230,7 +231,7 @@ function AuthorLine({ authors, type, onNavigate, renderLink }: {
     return (
         <span style={{
             fontSize: '14px',
-            color: 'var(--bim-fg, #333)',
+            color: bim('fg'),
             lineHeight: 1.6,
         }}>
             {authors.map((a, i) => {
@@ -242,17 +243,17 @@ function AuthorLine({ authors, type, onNavigate, renderLink }: {
                 );
                 return (
                     <span key={i}>
-                        {i > 0 && <span style={{ color: 'var(--bim-desc-fg, #aaa)', margin: '0 4px' }}>·</span>}
+                        {i > 0 && <span style={{ color: bim('desc-fg'), margin: '0 4px' }}>·</span>}
                         {a.dynasty && (
                             <span style={{
-                                color: 'var(--bim-desc-fg, #717171)',
+                                color: bim('desc-fg'),
                                 fontSize: '12px',
                             }}>〔{convert(a.dynasty)}〕</span>
                         )}
                         {nameNode}
                         {a.role && (
                             <span style={{
-                                color: 'var(--bim-desc-fg, #999)',
+                                color: bim('desc-fg'),
                                 fontSize: '12px',
                                 marginLeft: '2px',
                             }}> {convert(a.role)}</span>
@@ -278,10 +279,10 @@ function IdLink({ id, label, onNavigate, renderLink }: {
                 href={buildUrl(id)}
                 onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(id); }}
                 style={{
-                    color: 'var(--bim-link-fg, #0066cc)',
+                    color: bim('link-fg'),
                     cursor: 'pointer',
                     textDecoration: 'none',
-                    borderBottom: '1px dashed var(--bim-link-fg, #0066cc)',
+                    borderBottom: `1px dashed ${bim('link-fg')}`,
                     paddingBottom: '1px',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.borderBottomStyle = 'solid')}
@@ -316,7 +317,7 @@ function DetailHeader({ id, title, edition, type, isDraft, authors, volumeText, 
                 <h1 style={{
                     fontSize: 'clamp(18px, 4vw, 24px)',
                     fontWeight: 700,
-                    color: 'var(--bim-fg, #1a1a1a)',
+                    color: bim('fg'),
                     margin: '0 0 6px',
                     lineHeight: 1.4,
                     letterSpacing: '0.5px',
@@ -329,7 +330,7 @@ function DetailHeader({ id, title, edition, type, isDraft, authors, volumeText, 
                         <span style={{
                             fontSize: '14px',
                             fontWeight: 400,
-                            color: 'var(--bim-desc-fg, #717171)',
+                            color: bim('desc-fg'),
                             marginLeft: '6px',
                         }}>
                             {edition}
@@ -339,7 +340,7 @@ function DetailHeader({ id, title, edition, type, isDraft, authors, volumeText, 
                         <span style={{
                             fontSize: '15px',
                             fontWeight: 400,
-                            color: 'var(--bim-desc-fg, #717171)',
+                            color: bim('desc-fg'),
                             marginLeft: '8px',
                         }}>
                             {volumeText}
@@ -416,17 +417,17 @@ function AnnotationSection({ items, label, showMeta, onNavigate, renderLink }: {
                     const isExpanded = expandedIndex === i;
                     return (
                         <div key={i} style={{
-                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            border: `1px solid ${bim('widget-border')}`,
                             borderRadius: '6px',
                             overflow: 'hidden',
                             transition: 'box-shadow 0.15s',
-                            ...(isExpanded ? { boxShadow: '0 1px 4px rgba(0,0,0,0.06)' } : {}),
+                            ...(isExpanded ? { boxShadow: bim('shadow-card') } : {}),
                         }}>
                             <div
                                 onClick={() => setExpandedIndex(isExpanded ? null : i)}
                                 style={{
                                     padding: '8px 12px',
-                                    background: 'var(--bim-input-bg, #fff)',
+                                    background: bim('input-bg'),
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'baseline',
@@ -436,7 +437,7 @@ function AnnotationSection({ items, label, showMeta, onNavigate, renderLink }: {
                             >
                                 <span style={{
                                     fontSize: '10px',
-                                    color: 'var(--bim-desc-fg, #717171)',
+                                    color: bim('desc-fg'),
                                     transition: 'transform 0.15s',
                                     transform: isExpanded ? 'rotate(90deg)' : 'none',
                                     display: 'inline-block',
@@ -445,14 +446,14 @@ function AnnotationSection({ items, label, showMeta, onNavigate, renderLink }: {
                                 <span style={{
                                     fontSize: '13px',
                                     fontWeight: 600,
-                                    color: 'var(--bim-fg, #333)',
+                                    color: bim('fg'),
                                 }}>
                                     {convert(entry.source)}
                                 </span>
                                 {!isExpanded && showMeta && entry.title_info && (
                                     <span style={{
                                         fontSize: '12px',
-                                        color: 'var(--bim-desc-fg, #999)',
+                                        color: bim('desc-fg'),
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
@@ -468,7 +469,7 @@ function AnnotationSection({ items, label, showMeta, onNavigate, renderLink }: {
                                 )}
                             </div>
                             {isExpanded && (
-                                <div style={{ padding: '4px 12px 12px', borderTop: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
+                                <div style={{ padding: '4px 12px 12px', borderTop: `1px solid ${bim('widget-border')}` }}>
                                     {showMeta && (entry.title_info || entry.author_info || entry.edition) && (
                                         <div style={{
                                             display: 'flex',
@@ -486,20 +487,20 @@ function AnnotationSection({ items, label, showMeta, onNavigate, renderLink }: {
                                         <div style={{
                                             marginTop: '6px',
                                             padding: '10px 14px',
-                                            borderLeft: '3px solid var(--bim-primary, #8e6f3e)',
-                                            background: 'color-mix(in srgb, var(--bim-primary, #8e6f3e) 4%, transparent)',
+                                            borderLeft: `3px solid ${bim('primary')}`,
+                                            background: `color-mix(in srgb, ${bim('primary')} 4%, transparent)`,
                                             borderRadius: '0 4px 4px 0',
                                         }}>
                                             <div style={{
                                                 fontSize: '11px',
                                                 fontWeight: 600,
-                                                color: 'var(--bim-desc-fg, #717171)',
+                                                color: bim('desc-fg'),
                                                 marginBottom: '4px',
                                                 letterSpacing: '1px',
                                             }}>{t.section.summary}</div>
                                             <p style={{
                                                 fontSize: '13px',
-                                                color: 'var(--bim-fg, #333)',
+                                                color: bim('fg'),
                                                 lineHeight: 1.9,
                                                 margin: 0,
                                                 textAlign: 'justify',
@@ -510,19 +511,19 @@ function AnnotationSection({ items, label, showMeta, onNavigate, renderLink }: {
                                         <div style={{
                                             marginTop: '8px',
                                             padding: '8px 14px',
-                                            borderLeft: '3px solid var(--bim-desc-fg, #aaa)',
+                                            borderLeft: `3px solid ${bim('desc-fg')}`,
                                             borderRadius: '0 4px 4px 0',
                                         }}>
                                             <div style={{
                                                 fontSize: '11px',
                                                 fontWeight: 600,
-                                                color: 'var(--bim-desc-fg, #717171)',
+                                                color: bim('desc-fg'),
                                                 marginBottom: '4px',
                                                 letterSpacing: '1px',
                                             }}>{t.section.comment}</div>
                                             <p style={{
                                                 fontSize: '13px',
-                                                color: 'var(--bim-fg, #555)',
+                                                color: bim('fg'),
                                                 lineHeight: 1.8,
                                                 margin: 0,
                                                 fontStyle: 'italic',
@@ -533,19 +534,19 @@ function AnnotationSection({ items, label, showMeta, onNavigate, renderLink }: {
                                         <div style={{
                                             marginTop: '8px',
                                             padding: '8px 14px',
-                                            borderLeft: '3px solid var(--bim-desc-fg, #ccc)',
+                                            borderLeft: `3px solid ${bim('desc-fg')}`,
                                             borderRadius: '0 4px 4px 0',
                                         }}>
                                             <div style={{
                                                 fontSize: '11px',
                                                 fontWeight: 600,
-                                                color: 'var(--bim-desc-fg, #717171)',
+                                                color: bim('desc-fg'),
                                                 marginBottom: '4px',
                                                 letterSpacing: '1px',
                                             }}>{t.section.additionalComment}</div>
                                             <p style={{
                                                 fontSize: '13px',
-                                                color: 'var(--bim-fg, #555)',
+                                                color: bim('fg'),
                                                 lineHeight: 1.8,
                                                 margin: 0,
                                                 fontStyle: 'italic',
@@ -602,10 +603,10 @@ function TitleTagList({ label, items }: { label: string; items: (string | { book
                             gap: '3px',
                             padding: '3px 8px',
                             fontSize: '13px',
-                            color: 'var(--bim-fg, #333)',
-                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            color: bim('fg'),
+                            border: `1px solid ${bim('widget-border')}`,
                             borderRadius: '4px',
-                            background: 'var(--bim-input-bg, #fff)',
+                            background: bim('input-bg'),
                         }}>
                             {convert(title)}
                         </span>
@@ -647,14 +648,14 @@ function AdditionalWorksList({ items }: { items: AdditionalWork[] }) {
                         gap: '3px',
                         padding: '3px 8px',
                         fontSize: '13px',
-                        color: 'var(--bim-fg, #333)',
-                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        color: bim('fg'),
+                        border: `1px solid ${bim('widget-border')}`,
                         borderRadius: '4px',
-                        background: 'var(--bim-input-bg, #fff)',
+                        background: bim('input-bg'),
                     }}>
                         《{convert(aw.book_title)}》
                         {aw.n_juan != null && (
-                            <span style={{ color: 'var(--bim-desc-fg, #999)', fontSize: '12px' }}>{aw.n_juan}{t.unit.juan}</span>
+                            <span style={{ color: bim('desc-fg'), fontSize: '12px' }}>{aw.n_juan}{t.unit.juan}</span>
                         )}
                     </span>
                 ))}
@@ -679,7 +680,7 @@ function HistoryTimeline({ items }: { items: LocationInfo[] }) {
                     top: '6px',
                     bottom: '6px',
                     width: '1px',
-                    background: 'var(--bim-widget-border, #ddd)',
+                    background: bim('widget-border'),
                 }} />
                 {items.map((loc, i) => (
                     <div key={i} style={{ position: 'relative', marginBottom: '10px' }}>
@@ -690,14 +691,14 @@ function HistoryTimeline({ items }: { items: LocationInfo[] }) {
                             width: '7px',
                             height: '7px',
                             borderRadius: '50%',
-                            background: 'var(--bim-primary, #8e6f3e)',
-                            border: '1.5px solid var(--bim-input-bg, #fff)',
+                            background: bim('primary'),
+                            border: `1.5px solid ${bim('input-bg')}`,
                         }} />
-                        <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>
+                        <span style={{ fontSize: '13px', fontWeight: 500, color: bim('fg') }}>
                             {convert(loc.name)}
                         </span>
                         {loc.description && (
-                            <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #999)', marginLeft: '8px' }}>
+                            <span style={{ fontSize: '12px', color: bim('desc-fg'), marginLeft: '8px' }}>
                                 {convert(loc.description)}
                             </span>
                         )}
@@ -721,7 +722,7 @@ function HistoryList({ items }: { items: string[] }) {
                 {items.map((item, i) => (
                     <div key={i} style={{
                         fontSize: '13px',
-                        color: 'var(--bim-fg, #333)',
+                        color: bim('fg'),
                         lineHeight: 1.7,
                         paddingLeft: '12px',
                         position: 'relative',
@@ -730,7 +731,7 @@ function HistoryList({ items }: { items: string[] }) {
                             position: 'absolute',
                             left: 0,
                             top: 0,
-                            color: 'var(--bim-desc-fg, #ccc)',
+                            color: bim('desc-fg'),
                         }}>·</span>
                         {convert(item)}
                     </div>
@@ -788,7 +789,7 @@ function RelationList({ title, ids, transport, onNavigate, renderLink }: {
         <>
             <SectionLabel>
                 {title}
-                <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #aaa)', fontWeight: 400 }}>
+                <span style={{ fontSize: '12px', color: bim('desc-fg'), fontWeight: 400 }}>
                     ({ids.length})
                 </span>
             </SectionLabel>
@@ -808,9 +809,9 @@ function RelationList({ title, ids, transport, onNavigate, renderLink }: {
                             gap: '4px',
                             padding: '3px 10px',
                             fontSize: '13px',
-                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            border: `1px solid ${bim('widget-border')}`,
                             borderRadius: '4px',
-                            background: 'var(--bim-input-bg, #fff)',
+                            background: bim('input-bg'),
                             transition: 'border-color 0.15s',
                         }}>
                             <IdLink id={item.id} label={label} onNavigate={onNavigate} renderLink={renderLink} />
@@ -847,15 +848,15 @@ function BookVersionCard({ book, onNavigate, renderLink }: {
 
     return (
         <div style={{
-            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            border: `1px solid ${bim('widget-border')}`,
             borderRadius: '6px',
             overflow: 'hidden',
-            background: 'var(--bim-input-bg, #fff)',
+            background: bim('input-bg'),
         }}>
             <div style={{
                 padding: '6px 12px',
                 borderBottom: hasDetails && !collapsed
-                    ? '1px solid var(--bim-widget-border, #e0e0e0)'
+                    ? `1px solid ${bim('widget-border')}`
                     : 'none',
                 display: 'flex',
                 alignItems: 'center',
@@ -870,7 +871,7 @@ function BookVersionCard({ book, onNavigate, renderLink }: {
                         style={{
                             cursor: 'pointer',
                             fontSize: '10px',
-                            color: 'var(--bim-desc-fg, #999)',
+                            color: bim('desc-fg'),
                             userSelect: 'none',
                             transition: 'transform 0.15s',
                             transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
@@ -933,7 +934,7 @@ function BookVersionList({ ids, workData, transport, onNavigate, renderLink, foo
         <>
             <SectionLabel>
                 {t.section.relatedVersions}
-                <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #aaa)', fontWeight: 400 }}>
+                <span style={{ fontSize: '12px', color: bim('desc-fg'), fontWeight: 400 }}>
                     ({ids.length})
                 </span>
             </SectionLabel>
@@ -954,24 +955,24 @@ function BookVersionList({ ids, workData, transport, onNavigate, renderLink, foo
                     {partition.groupedIds.map(grp => (
                         <details key={grp.id} style={{
                             marginTop: 12,
-                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            border: `1px solid ${bim('widget-border')}`,
                             borderRadius: 6,
-                            background: 'var(--bim-bg-subtle, #fafafa)',
+                            background: bim('bg-subtle'),
                         }}>
                             <summary style={{
                                 cursor: 'pointer',
                                 padding: '8px 14px',
                                 fontSize: 14,
                                 fontWeight: 600,
-                                color: 'var(--bim-fg, #333)',
+                                color: bim('fg'),
                                 userSelect: 'none',
                             }}>
                                 {convert(grp.label)}
-                                <span style={{ marginLeft: 6, fontSize: 12, color: 'var(--bim-desc-fg, #888)', fontWeight: 400 }}>
+                                <span style={{ marginLeft: 6, fontSize: 12, color: bim('desc-fg'), fontWeight: 400 }}>
                                     （{grp.ids.length}）
                                 </span>
                                 {grp.description && (
-                                    <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--bim-desc-fg, #888)', fontWeight: 400 }}>
+                                    <span style={{ marginLeft: 8, fontSize: 12, color: bim('desc-fg'), fontWeight: 400 }}>
                                         {convert(grp.description)}
                                     </span>
                                 )}
@@ -1089,39 +1090,39 @@ function WorkInfoCard({ workData, onNavigate, renderLink }: {
     const hasBody = !!workData.description?.text || !!workData.parent_work;
     return (
         <div style={{
-            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            border: `1px solid ${bim('widget-border')}`,
             borderRadius: '8px',
             overflow: 'hidden',
-            background: 'var(--bim-input-bg, #fff)',
+            background: bim('input-bg'),
             marginTop: '4px',
         }}>
             <div style={{
                 padding: '6px 14px',
-                borderBottom: hasBody ? '1px solid var(--bim-widget-border, #e0e0e0)' : 'none',
+                borderBottom: hasBody ? `1px solid ${bim('widget-border')}` : 'none',
                 display: 'flex',
                 alignItems: 'baseline',
                 gap: '8px',
                 flexWrap: 'wrap',
-                background: 'color-mix(in srgb, var(--bim-primary, #8e6f3e) 4%, transparent)',
+                background: `color-mix(in srgb, ${bim('primary')} 4%, transparent)`,
             }}>
                 <span style={{
                     fontSize: '15px',
                     fontWeight: 600,
-                    color: 'var(--bim-fg, #333)',
+                    color: bim('fg'),
                 }}>
                     <IdLink id={workData.id} label={convert(workData.title)} onNavigate={onNavigate} renderLink={renderLink} />
                 </span>
                 {workData.measure_info ? (
                     <span style={{
                         fontSize: '12px',
-                        color: 'var(--bim-desc-fg, #717171)',
+                        color: bim('desc-fg'),
                     }}>
                         {convert(workData.measure_info)}
                     </span>
                 ) : workData.juan_count?.number != null && workData.juan_count.number > 0 ? (
                     <span style={{
                         fontSize: '12px',
-                        color: 'var(--bim-desc-fg, #717171)',
+                        color: bim('desc-fg'),
                     }}>
                         {numberToChinese(workData.juan_count.number)}{t.unit.juan}
                     </span>
@@ -1139,7 +1140,7 @@ function WorkInfoCard({ workData, onNavigate, renderLink }: {
                             text={workData.description.text}
                             style={{
                                 fontSize: '13px',
-                                color: 'var(--bim-fg, #444)',
+                                color: bim('fg'),
                                 lineHeight: 1.8,
                                 textAlign: 'justify',
                             }}
@@ -1182,16 +1183,16 @@ function ContainedInLinks({ items, onNavigate, renderLink }: {
                     gap: '4px',
                     padding: '3px 10px',
                     fontSize: '13px',
-                    border: '1px solid color-mix(in srgb, var(--bim-type-collection, #2471a3) 25%, transparent)',
+                    border: `1px solid color-mix(in srgb, ${bim('type-collection')} 25%, transparent)`,
                     borderRadius: '4px',
-                    background: 'color-mix(in srgb, var(--bim-type-collection, #2471a3) 3%, transparent)',
+                    background: `color-mix(in srgb, ${bim('type-collection')} 3%, transparent)`,
                 }}>
-                    <span style={{ fontSize: '11px', color: 'var(--bim-type-collection, #2471a3)' }}>{t.indexType.collection}</span>
+                    <span style={{ fontSize: '11px', color: bim('type-collection') }}>{t.indexType.collection}</span>
                     <IdLink id={item.id} label={convert(item.title) || item.id} onNavigate={onNavigate} renderLink={renderLink} />
                     {item.volume_index != null && (
                         <span style={{
                             fontSize: '11px',
-                            color: 'var(--bim-desc-fg, #717171)',
+                            color: bim('desc-fg'),
                             marginLeft: '2px',
                         }}>
                             {formatTemplate(t.catalog.volume, { n: item.volume_index })}
@@ -1305,7 +1306,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                         <div key={i} style={{
                             height: i === 1 ? '32px' : '16px',
                             width: `${w}px`,
-                            background: 'var(--bim-widget-border, #e0e0e0)',
+                            background: bim('widget-border'),
                             borderRadius: '4px',
                             opacity: 0.4,
                         }} />
@@ -1321,7 +1322,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                 ...style,
                 padding: '24px',
                 textAlign: 'center',
-                color: 'var(--bim-desc-fg, #717171)',
+                color: bim('desc-fg'),
                 fontSize: '13px',
             }}>
                 {error}
@@ -1420,7 +1421,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                     text={detail.description.text}
                     style={{
                         fontSize: '14px',
-                        color: 'var(--bim-fg, #444)',
+                        color: bim('fg'),
                         lineHeight: 1.9,
                         margin: '0 0 4px',
                         textAlign: 'justify',
@@ -1434,15 +1435,15 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                         <details key={i} style={{
                             marginTop: 6,
                             padding: '6px 10px',
-                            background: 'var(--bim-bg-subtle, #fafafa)',
+                            background: bim('bg-subtle'),
                             borderRadius: 4,
-                            border: '1px solid var(--bim-widget-border, #ececec)',
+                            border: `1px solid ${bim('widget-border')}`,
                         }}>
                             <summary style={{
                                 cursor: 'pointer',
                                 fontWeight: 600,
                                 fontSize: 13,
-                                color: 'var(--bim-muted, #666)',
+                                color: bim('muted'),
                             }}>
                                 {convert(entry.title)}
                             </summary>
@@ -1453,7 +1454,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                                     marginTop: 8,
                                     fontSize: 13,
                                     lineHeight: 1.9,
-                                    color: 'var(--bim-fg, #444)',
+                                    color: bim('fg'),
                                 }}
                             />
 
@@ -1523,7 +1524,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                 <div>
                     <SectionLabel>
                         {t.section.containedWorks}
-                        <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #aaa)', fontWeight: 400 }}>
+                        <span style={{ fontSize: '12px', color: bim('desc-fg'), fontWeight: 400 }}>
                             ({collectionData.contained_works.length})
                         </span>
                     </SectionLabel>
@@ -1535,9 +1536,9 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                                 gap: '4px',
                                 padding: '3px 10px',
                                 fontSize: '13px',
-                                border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                border: `1px solid ${bim('widget-border')}`,
                                 borderRadius: '4px',
-                                background: 'var(--bim-input-bg, #fff)',
+                                background: bim('input-bg'),
                             }}>
                                 <IdLink id={cw.id} label={convert(cw.title)} onNavigate={onNavigate} renderLink={renderLink} />
                             </span>
@@ -1574,7 +1575,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                     <div key={group.label}>
                         <SectionLabel>
                             {group.label}
-                            <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #aaa)', fontWeight: 400 }}>
+                            <span style={{ fontSize: '12px', color: bim('desc-fg'), fontWeight: 400 }}>
                                 ({group.items!.length})
                             </span>
                         </SectionLabel>
@@ -1586,9 +1587,9 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                                     gap: '4px',
                                     padding: '3px 10px',
                                     fontSize: '13px',
-                                    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                    border: `1px solid ${bim('widget-border')}`,
                                     borderRadius: '4px',
-                                    background: 'var(--bim-input-bg, #fff)',
+                                    background: bim('input-bg'),
                                 }}>
                                     <IdLink id={rw.id} label={convert(rw.title)} onNavigate={onNavigate} renderLink={renderLink} />
                                 </span>

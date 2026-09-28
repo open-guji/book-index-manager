@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import type { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useConvert } from '../../i18n';
+import { bim } from '../../styles/tokens';
 
 export interface MarkdownTextProps {
     text: string;
@@ -20,13 +21,13 @@ const baseComponents: Components = {
     a: ({ href, children }) => (
         <a href={href} target={href?.startsWith('http') ? '_blank' : undefined}
            rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-           style={{ color: 'var(--bim-link, #1976d2)' }}>
+           style={{ color: bim('link') }}>
             {children}
         </a>
     ),
     code: ({ children }) => (
         <code style={{
-            background: 'var(--bim-bg-subtle, #f4f4f4)',
+            background: bim('bg-subtle'),
             padding: '1px 4px',
             borderRadius: 3,
             fontSize: '0.92em',

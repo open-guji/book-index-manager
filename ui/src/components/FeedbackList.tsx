@@ -1,6 +1,7 @@
 import React from 'react';
 import { LoadingDots } from './common/LoadingDots';
 import { useBidUrl } from '../core/bid-url';
+import { bim } from '../styles/tokens';
 
 export interface FeedbackItem {
     id: string;
@@ -21,21 +22,21 @@ export interface FeedbackListProps {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
-    bug: { label: '错误反馈', color: 'var(--bim-danger, #f44336)' },
-    resource: { label: '资源建议', color: 'var(--bim-primary, #0078d4)' },
-    suggestion: { label: '功能建议', color: 'var(--bim-primary, #0078d4)' },
-    other: { label: '其他', color: 'var(--bim-desc-fg, #999)' },
+    bug: { label: '错误反馈', color: bim('danger') },
+    resource: { label: '资源建议', color: bim('primary') },
+    suggestion: { label: '功能建议', color: bim('primary') },
+    other: { label: '其他', color: bim('desc-fg') },
 };
-const FALLBACK_TYPE = { label: '其他', color: 'var(--bim-desc-fg, #999)' };
+const FALLBACK_TYPE = { label: '其他', color: bim('desc-fg') };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-    pending: { label: '待处理', color: 'var(--bim-warning, #ff9800)' },
-    in_progress: { label: '处理中', color: 'var(--bim-primary, #0078d4)' },
-    resolved: { label: '已处理', color: 'var(--bim-success, #4caf50)' },
-    wontfix: { label: '不采纳', color: 'var(--bim-desc-fg, #999)' },
-    duplicate: { label: '重复', color: 'var(--bim-desc-fg, #999)' },
+    pending: { label: '待处理', color: bim('warning') },
+    in_progress: { label: '处理中', color: bim('primary') },
+    resolved: { label: '已处理', color: bim('success') },
+    wontfix: { label: '不采纳', color: bim('desc-fg') },
+    duplicate: { label: '重复', color: bim('desc-fg') },
 };
-const FALLBACK_STATUS = { label: '待处理', color: 'var(--bim-warning, #ff9800)' };
+const FALLBACK_STATUS = { label: '待处理', color: bim('warning') };
 
 function formatTime(iso: string): string {
     try {
@@ -135,12 +136,12 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({ items, loading }) =>
 
 const emptyStyle: React.CSSProperties = {
     textAlign: 'center', padding: '40px 0',
-    color: 'var(--bim-desc-fg, #999)', fontSize: '14px',
+    color: bim('desc-fg'), fontSize: '14px',
 };
 
 const cardStyle: React.CSSProperties = {
-    background: 'var(--bim-bg, #fff)',
-    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+    background: bim('bg'),
+    border: `1px solid ${bim('widget-border')}`,
     borderRadius: '8px', padding: '16px',
 };
 
@@ -150,12 +151,12 @@ const cardHeaderStyle: React.CSSProperties = {
 };
 
 const badgeStyle: React.CSSProperties = {
-    fontSize: '12px', color: '#fff', padding: '2px 8px',
+    fontSize: '12px', color: bim('on-color-fg'), padding: '2px 8px',
     borderRadius: '4px', fontWeight: 500,
 };
 
 const timeStyle: React.CSSProperties = {
-    fontSize: '12px', color: 'var(--bim-desc-fg, #999)',
+    fontSize: '12px', color: bim('desc-fg'),
 };
 
 const sourceStyle: React.CSSProperties = {
@@ -163,22 +164,22 @@ const sourceStyle: React.CSSProperties = {
 };
 
 const sourceLinkStyle: React.CSSProperties = {
-    color: 'var(--bim-primary, #0078d4)', textDecoration: 'none',
-    borderBottom: '1px dashed var(--bim-primary, #0078d4)',
+    color: bim('primary'), textDecoration: 'none',
+    borderBottom: `1px dashed ${bim('primary')}`,
 };
 
 const contentStyle: React.CSSProperties = {
     fontSize: '14px', lineHeight: '1.6',
-    color: 'var(--bim-fg, #333)', whiteSpace: 'pre-wrap',
+    color: bim('fg'), whiteSpace: 'pre-wrap',
 };
 
 const replyStyle: React.CSSProperties = {
     marginTop: '12px', padding: '10px 12px',
-    background: 'var(--bim-input-bg, #f5f5f5)', borderRadius: '6px',
-    fontSize: '13px', lineHeight: '1.6', color: 'var(--bim-fg, #333)',
+    background: bim('input-bg'), borderRadius: '6px',
+    fontSize: '13px', lineHeight: '1.6', color: bim('fg'),
 };
 
 const replyLabelStyle: React.CSSProperties = {
     fontSize: '12px', fontWeight: 600, marginBottom: '4px',
-    color: 'var(--bim-primary, #0078d4)',
+    color: bim('primary'),
 };

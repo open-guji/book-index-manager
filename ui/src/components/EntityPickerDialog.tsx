@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import type { IndexType, EntityOption } from '../types';
+import { bim } from '../styles/tokens';
 
 export interface EntityPickerDialogProps {
     isOpen: boolean;
@@ -24,7 +25,7 @@ function getTypeName(type: string): string {
 }
 
 function getTypeColor(type: string): string {
-    switch (type) { case 'work': return 'var(--bim-editor-type-work, #4caf50)'; case 'collection': return 'var(--bim-editor-type-collection, #2196f3)'; case 'book': return 'var(--bim-editor-type-book, #ff9800)'; default: return 'var(--bim-desc-fg, #717171)'; }
+    switch (type) { case 'work': return bim('editor-type-work'); case 'collection': return bim('editor-type-collection'); case 'book': return bim('editor-type-book'); default: return bim('desc-fg'); }
 }
 
 export const EntityPickerDialog: React.FC<EntityPickerDialogProps> = ({
@@ -72,7 +73,7 @@ export const EntityPickerDialog: React.FC<EntityPickerDialogProps> = ({
         <div style={overlayStyle}>
             <div style={dialogStyle}>
                 {/* Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: `1px solid ${bim('widget-border')}` }}>
                     <div style={{ fontSize: '15px', fontWeight: 600 }}>{displayTitle}</div>
                     <button onClick={onCancel} style={closeBtnStyle}>✕</button>
                 </div>
@@ -89,7 +90,7 @@ export const EntityPickerDialog: React.FC<EntityPickerDialogProps> = ({
 
                 {/* Tabs */}
                 {filteredRecent.length > 0 && (
-                    <div style={{ display: 'flex', padding: '0 20px', gap: '4px', borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
+                    <div style={{ display: 'flex', padding: '0 20px', gap: '4px', borderBottom: `1px solid ${bim('widget-border')}` }}>
                         <TabBtn active={activeTab === 'recent'} onClick={() => setActiveTab('recent')}>最近使用 ({filteredRecent.length})</TabBtn>
                         <TabBtn active={activeTab === 'search'} onClick={() => setActiveTab('search')}>搜索结果 {filteredResults.length > 0 && `(${filteredResults.length})`}</TabBtn>
                     </div>
@@ -110,7 +111,7 @@ export const EntityPickerDialog: React.FC<EntityPickerDialogProps> = ({
 
                 {/* Footer */}
                 {showCreateButton && onCreate && (
-                    <div style={{ padding: '12px 20px', borderTop: '1px solid var(--bim-widget-border, #e0e0e0)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ padding: '12px 20px', borderTop: `1px solid ${bim('widget-border')}`, display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontSize: '12px', opacity: 0.7 }}>找不到？</span>
                         <button onClick={onCreate} style={createBtnStyle}>{createButtonText || '创建新实体'}</button>
                     </div>
@@ -123,9 +124,9 @@ export const EntityPickerDialog: React.FC<EntityPickerDialogProps> = ({
 const TabBtn: React.FC<{ active: boolean; onClick: () => void; children: React.ReactNode }> = ({ active, onClick, children }) => (
     <button onClick={onClick} style={{
         padding: '10px 16px', border: 'none',
-        borderBottom: active ? '2px solid var(--bim-primary, #0078d4)' : '2px solid transparent',
+        borderBottom: active ? `2px solid ${bim('primary')}` : '2px solid transparent',
         background: 'transparent',
-        color: active ? 'var(--bim-fg, #333)' : 'var(--bim-desc-fg, #717171)',
+        color: active ? bim('fg') : bim('desc-fg'),
         cursor: 'pointer', fontSize: '12px', fontWeight: active ? 600 : 400, marginBottom: '-1px',
     }}>
         {children}
@@ -146,22 +147,22 @@ const EntityItem: React.FC<{ entity: EntityOption; onClick: () => void }> = ({ e
         <div onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
             style={{
                 display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', borderRadius: '6px',
-                cursor: 'pointer', background: hovered ? 'var(--bim-primary-soft, rgba(0,120,212,0.15))' : 'var(--bim-primary-soft, rgba(0,120,212,0.05))',
+                cursor: 'pointer', background: hovered ? bim('primary-soft') : bim('primary-soft'),
                 transition: 'background 0.1s',
             }}>
             <span style={{ fontSize: '18px' }}>{getTypeIcon(entity.type)}</span>
             <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontWeight: 500, fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {entity.title}
-                    {entity.edition && <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--bim-desc-fg, #717171)', marginLeft: '4px' }}>{entity.edition}</span>}
+                    {entity.edition && <span style={{ fontSize: '11px', fontWeight: 400, color: bim('desc-fg'), marginLeft: '4px' }}>{entity.edition}</span>}
                 </div>
                 <div style={{ fontSize: '11px', opacity: 0.7, display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
-                    <code style={{ fontSize: '10px', background: 'var(--bim-primary-soft, rgba(0,120,212,0.15))', padding: '1px 4px', borderRadius: '2px' }}>{entity.id}</code>
+                    <code style={{ fontSize: '10px', background: bim('primary-soft'), padding: '1px 4px', borderRadius: '2px' }}>{entity.id}</code>
                     {entity.author && <span>{entity.author}</span>}
                     {entity.dynasty && <span>{entity.dynasty}</span>}
                 </div>
             </div>
-            <span style={{ fontSize: '10px', padding: '3px 8px', background: getTypeColor(entity.type), color: 'white', borderRadius: '4px', fontWeight: 500, flexShrink: 0 }}>
+            <span style={{ fontSize: '10px', padding: '3px 8px', background: getTypeColor(entity.type), color: bim('on-color-fg'), borderRadius: '4px', fontWeight: 500, flexShrink: 0 }}>
                 {getTypeName(entity.type)}
             </span>
         </div>
@@ -169,18 +170,18 @@ const EntityItem: React.FC<{ entity: EntityOption; onClick: () => void }> = ({ e
 };
 
 const EmptyState: React.FC<{ message: string }> = ({ message }) => (
-    <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--bim-desc-fg, #717171)', fontSize: '13px' }}>{message}</div>
+    <div style={{ padding: '40px 20px', textAlign: 'center', color: bim('desc-fg'), fontSize: '13px' }}>{message}</div>
 );
 
 const overlayStyle: React.CSSProperties = {
     position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-    background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+    background: bim('backdrop'), display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
 };
 
 const dialogStyle: React.CSSProperties = {
-    background: 'var(--bim-bg, #fff)', border: '1px solid var(--bim-widget-border, #e0e0e0)',
+    background: bim('bg'), border: `1px solid ${bim('widget-border')}`,
     borderRadius: '8px', width: '550px', maxWidth: 'calc(100vw - 32px)', maxHeight: '80vh',
-    display: 'flex', flexDirection: 'column', boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+    display: 'flex', flexDirection: 'column', boxShadow: bim('shadow-dialog'),
 };
 
 const closeBtnStyle: React.CSSProperties = {
@@ -189,12 +190,12 @@ const closeBtnStyle: React.CSSProperties = {
 
 const searchInputStyle: React.CSSProperties = {
     width: '100%', padding: '12px 16px', paddingLeft: '40px',
-    border: '1px solid var(--bim-input-border, #ccc)', borderRadius: '6px',
-    background: 'var(--bim-input-bg, #fff)', color: 'var(--bim-input-fg, #333)',
+    border: `1px solid ${bim('input-border')}`, borderRadius: '6px',
+    background: bim('input-bg'), color: bim('input-fg'),
     fontSize: '13px', boxSizing: 'border-box',
 };
 
 const createBtnStyle: React.CSSProperties = {
     padding: '6px 14px', fontSize: '12px', border: 'none', borderRadius: '4px',
-    background: 'var(--bim-primary, #0078d4)', color: 'var(--bim-primary-fg, #fff)', cursor: 'pointer',
+    background: bim('primary'), color: bim('primary-fg'), cursor: 'pointer',
 };

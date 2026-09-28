@@ -25,6 +25,7 @@ import {
     bucketResources, deriveEra, deriveEditionType, displayAuthorRole,
     normalizeVolumeIndex, formatVolumeRange, measureText,
 } from '../../core/detail-model';
+import { bim } from '../../styles/tokens';
 
 const CAP_SIBLINGS = 8;
 
@@ -190,7 +191,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                         text={data.description!.text}
                         style={{
                             fontSize: 15, lineHeight: 2.05,
-                            color: 'var(--bim-body-fg, #3b3228)', textAlign: 'justify',
+                            color: bim('body-fg'), textAlign: 'justify',
                         }}
                     />
                 ) : undefined}
@@ -204,8 +205,8 @@ export const BookPage: React.FC<BookPageProps> = ({
                 <Section>
                     <SectionHead glyph="收" title={t.section.containedIn} />
                     <div style={{
-                        borderTop: '1px solid var(--bim-rule-strong, #2a231c)',
-                        borderBottom: '1px solid var(--bim-rule, #eae2d0)',
+                        borderTop: `1px solid ${bim('rule-strong')}`,
+                        borderBottom: `1px solid ${bim('rule')}`,
                         padding: '14px 4px',
                         display: 'flex', flexDirection: 'column', gap: 12,
                     }}>
@@ -226,7 +227,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                                                 onNavigate={onNavigate} renderLink={renderLink} />
                                         </span>
                                         <span className="bim-d-ui" style={{
-                                            fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)',
+                                            fontSize: 11.5, color: bim('label-fg'),
                                         }}>
                                             {total > 0 && `全 ${total} ${t.unit.bu}`}
                                             {total > 0 && vols.length > 0 && ' · '}
@@ -247,7 +248,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                     <section>
                         <SectionHead glyph="作" tone="ink" title={t.section.belongsToWork} />
                         <div style={{
-                            borderTop: '1px solid var(--bim-rule-strong, #2a231c)',
+                            borderTop: `1px solid ${bim('rule-strong')}`,
                             padding: '12px 4px 0',
                         }}>
                             <div style={{
@@ -258,7 +259,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                                     <BidLink id={work.id} label={convert(work.title)}
                                         onNavigate={onNavigate} renderLink={renderLink} />
                                 </span>
-                                <span style={{ fontSize: 12.5, color: 'var(--bim-meta-fg, #7b6a54)' }}>
+                                <span style={{ fontSize: 12.5, color: bim('meta-fg') }}>
                                     {[
                                         convert(measureText(work, t.unit.juan)),
                                         work.authors?.map(a => {
@@ -273,7 +274,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                                     text={work.description.text}
                                     style={{
                                         fontSize: 13.5, lineHeight: 2,
-                                        color: 'var(--bim-quiet-fg, #5b4f40)', textAlign: 'justify',
+                                        color: bim('quiet-fg'), textAlign: 'justify',
                                     }}
                                 />
                             )}
@@ -293,12 +294,12 @@ export const BookPage: React.FC<BookPageProps> = ({
                 {(resources.buckets.length > 0 || resources.mirrors.length > 0) && (
                     <section>
                         <SectionHead glyph="源" tone="ink" title="影印與全文" />
-                        <div style={{ borderTop: '1px solid var(--bim-rule-strong, #2a231c)' }}>
+                        <div style={{ borderTop: `1px solid ${bim('rule-strong')}` }}>
                             {resources.mirrors.map(g => (
                                 <div key={g.key} style={{ marginBottom: 8 }}>
                                     <div className="bim-d-ui" style={{
                                         padding: '8px 4px 4px', fontSize: 11.5,
-                                        color: 'var(--bim-label-fg, #a3937b)',
+                                        color: bim('label-fg'),
                                     }}>
                                         {convert(g.label)}
                                     </div>
@@ -321,17 +322,17 @@ export const BookPage: React.FC<BookPageProps> = ({
             {data.location_history?.length ? (
                 <Section>
                     <SectionHead glyph="藏" tone="ink" title={t.section.locationHistory} />
-                    <div style={{ borderTop: '1px solid var(--bim-rule-strong, #2a231c)' }}>
+                    <div style={{ borderTop: `1px solid ${bim('rule-strong')}` }}>
                         {data.location_history.map((loc, i) => (
                             <div key={i} style={{
                                 display: 'flex', flexWrap: 'wrap', gap: '4px 12px',
                                 padding: '9px 4px', fontSize: 14,
-                                borderBottom: '1px solid var(--bim-rule, #eae2d0)',
+                                borderBottom: `1px solid ${bim('rule')}`,
                             }}>
                                 <span>{convert(loc.name)}</span>
                                 {loc.description && (
                                     <span className="bim-d-ui" style={{
-                                        fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)',
+                                        fontSize: 11.5, color: bim('label-fg'),
                                     }}>
                                         {convert(loc.description)}
                                     </span>
@@ -356,7 +357,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                                 label="在作品頁查看全部 →"
                                 onNavigate={onNavigate}
                                 renderLink={renderLink}
-                                style={{ color: 'var(--bim-meta-fg, #7b6a54)', fontSize: 11.5 }}
+                                style={{ color: bim('meta-fg'), fontSize: 11.5 }}
                             />
                         ) : undefined}
                     />

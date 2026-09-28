@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useT, useConvert } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
+import { bim } from '../styles/tokens';
 
 /** 四库总目等分类目录数据 */
 interface CatalogBook {
@@ -57,11 +58,11 @@ export const WorkCatalog: React.FC<WorkCatalogProps> = ({
         <div className={className} style={style}>
             {/* 标题和统计 */}
             <div style={{ marginBottom: '16px' }}>
-                <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--bim-fg, #1a1a1a)', margin: '0 0 8px' }}>
+                <h2 style={{ fontSize: '18px', fontWeight: 600, color: bim('fg'), margin: '0 0 8px' }}>
                     {convert(data.title)}
                 </h2>
                 {data.stats && (
-                    <div style={{ fontSize: '13px', color: 'var(--bim-desc-fg, #717171)', display: 'flex', gap: '16px' }}>
+                    <div style={{ fontSize: '13px', color: bim('desc-fg'), display: 'flex', gap: '16px' }}>
                         {data.total_volumes != null && <span>{t.catalog.totalVolumes} <strong>{data.total_volumes}</strong> {t.unit.juan}</span>}
                         {data.stats.zhulu != null && <span>著錄 <strong>{data.stats.zhulu}</strong> {t.unit.bu}</span>}
                         {data.stats.cunmu != null && <span>存目 <strong>{data.stats.cunmu}</strong> {t.unit.bu}</span>}
@@ -104,7 +105,7 @@ const DivisionSection: React.FC<{
 
     return (
         <div style={{
-            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            border: `1px solid ${bim('widget-border')}`,
             borderRadius: '6px',
             overflow: 'hidden',
         }}>
@@ -117,16 +118,16 @@ const DivisionSection: React.FC<{
                     justifyContent: 'space-between',
                     padding: '10px 14px',
                     border: 'none',
-                    background: expanded ? 'color-mix(in srgb, var(--bim-primary, #2563eb) 6%, transparent)' : 'var(--bim-bg, #f8f8f8)',
+                    background: expanded ? `color-mix(in srgb, ${bim('primary')} 6%, transparent)` : bim('bg'),
                     cursor: 'pointer',
                     fontSize: '15px',
                     fontWeight: 600,
-                    color: 'var(--bim-fg, #333)',
+                    color: bim('fg'),
                     textAlign: 'left',
                 }}
             >
                 <span>{convert(division.name)}</span>
-                <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--bim-desc-fg, #717171)' }}>
+                <span style={{ fontSize: '12px', fontWeight: 400, color: bim('desc-fg') }}>
                     {division.categories.length} 類 · {totalBooks} 部
                     <span style={{ marginLeft: '8px' }}>{expanded ? '▲' : '▼'}</span>
                 </span>
@@ -173,22 +174,22 @@ const CategorySection: React.FC<{
                     justifyContent: 'space-between',
                     padding: '6px 14px 6px 28px',
                     border: 'none',
-                    background: expanded ? 'var(--bim-input-bg, #fff)' : 'transparent',
+                    background: expanded ? bim('input-bg') : 'transparent',
                     cursor: 'pointer',
                     fontSize: '13px',
-                    color: 'var(--bim-fg, #333)',
+                    color: bim('fg'),
                     textAlign: 'left',
                 }}
             >
                 <span style={{ fontWeight: 500 }}>
                     {convert(category.name)}
                     {category.volumes && (
-                        <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #999)', marginLeft: '8px', fontWeight: 400 }}>
+                        <span style={{ fontSize: '11px', color: bim('desc-fg'), marginLeft: '8px', fontWeight: 400 }}>
                             卷{category.volumes}
                         </span>
                     )}
                 </span>
-                <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #999)' }}>
+                <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
                     {total} 部 {expanded ? '▲' : '▼'}
                 </span>
             </button>
@@ -218,28 +219,28 @@ const BookList: React.FC<{
 
     return (
         <div style={{ marginBottom: '8px' }}>
-            <div style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #999)', marginBottom: '4px', fontWeight: 500 }}>
+            <div style={{ fontSize: '11px', color: bim('desc-fg'), marginBottom: '4px', fontWeight: 500 }}>
                 {label} ({books.length})
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 {displayed.map((book, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: '8px', fontSize: '13px', lineHeight: 1.6 }}>
-                        <span style={{ fontWeight: 500, color: 'var(--bim-fg, #333)' }}>
+                        <span style={{ fontWeight: 500, color: bim('fg') }}>
                             {book.work_id && onNavigate ? (
                                 <a
                                     href={buildUrl(book.work_id)}
                                     onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(book.work_id!); }}
-                                    style={{ color: 'inherit', textDecoration: 'none', borderBottom: '1px dashed var(--bim-link-fg, #0066cc)' }}
+                                    style={{ color: 'inherit', textDecoration: 'none', borderBottom: `1px dashed ${bim('link-fg')}` }}
                                 >
                                     {convert(book.title)}
                                 </a>
                             ) : convert(book.title)}
                         </span>
                         {book.volumes && (
-                            <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #999)' }}>{convert(book.volumes)}</span>
+                            <span style={{ fontSize: '11px', color: bim('desc-fg') }}>{convert(book.volumes)}</span>
                         )}
                         {book.author && (
-                            <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #aaa)' }}>{convert(book.author).slice(0, 20)}</span>
+                            <span style={{ fontSize: '11px', color: bim('desc-fg') }}>{convert(book.author).slice(0, 20)}</span>
                         )}
                     </div>
                 ))}
@@ -251,9 +252,9 @@ const BookList: React.FC<{
                         marginTop: '4px',
                         padding: '2px 12px',
                         fontSize: '11px',
-                        color: 'var(--bim-primary, #0078d4)',
+                        color: bim('primary'),
                         background: 'transparent',
-                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        border: `1px solid ${bim('widget-border')}`,
                         borderRadius: '4px',
                         cursor: 'pointer',
                     }}

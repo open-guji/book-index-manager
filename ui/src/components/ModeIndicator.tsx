@@ -1,6 +1,7 @@
 import React from 'react';
 import type { IndexSource, SyncConfig } from '../types';
 import { useT } from '../i18n';
+import { bim } from '../styles/tokens';
 
 export interface ModeIndicatorProps {
     indexSource: IndexSource;
@@ -42,8 +43,8 @@ export const ModeIndicator: React.FC<ModeIndicatorProps> = ({
         cursor: 'pointer',
         transition: 'opacity 0.2s',
         border: 'none',
-        background: 'var(--bim-primary-soft, #0078d415)',
-        color: 'var(--bim-primary, #0078d4)',
+        background: bim('primary-soft'),
+        color: bim('primary'),
     };
 
     const hoverHandlers = {
@@ -57,8 +58,8 @@ export const ModeIndicator: React.FC<ModeIndicatorProps> = ({
             title={isDraft ? t.mode.switchToOfficial : t.mode.switchToDraft}
             style={{
                 ...buttonStyle,
-                background: isDraft ? 'var(--bim-warning, #ff9800)' : 'var(--bim-success, #4caf50)',
-                color: 'white',
+                background: isDraft ? bim('warning') : bim('success'),
+                color: bim('on-color-fg'),
             }}
             {...hoverHandlers}
         >
@@ -143,7 +144,7 @@ export const ModeIndicator: React.FC<ModeIndicatorProps> = ({
             )}
             {!isLocal && shortName && (
                 <div
-                    style={{ ...buttonStyle, background: 'var(--bim-mode-active-bg, #2196f3)', color: 'white', cursor: 'default' }}
+                    style={{ ...buttonStyle, background: bim('mode-active-bg'), color: bim('on-color-fg'), cursor: 'default' }}
                     title={folderPath}
                 >
                     <span>📂</span>

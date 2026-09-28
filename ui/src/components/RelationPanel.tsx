@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { IndexType, RelatedEntity } from '../types';
 import { useT } from '../i18n';
+import { bim } from '../styles/tokens';
 
 export interface RelationPanelProps {
     entityType: IndexType;
@@ -31,15 +32,15 @@ export const RelationPanel: React.FC<RelationPanelProps> = ({
 
     return (
         <div style={{
-            background: 'var(--bim-bg, #fff)',
-            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            background: bim('bg'),
+            border: `1px solid ${bim('widget-border')}`,
             borderRadius: '4px',
             padding: '16px',
             marginBottom: '12px',
         }}>
             <div style={{
                 fontSize: '14px', fontWeight: 600, marginBottom: '16px', paddingBottom: '8px',
-                borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                borderBottom: `1px solid ${bim('widget-border')}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -149,18 +150,18 @@ const RelationSection: React.FC<{
     viewLabel: string;
     unlinkLabel: string;
 }> = ({ direction, title, entity, onView, onUnlink, onLink, onCreate, linkLabel, createLabel, notLinkedLabel, viewLabel, unlinkLabel }) => {
-    const dirColor = direction === 'up' ? 'var(--bim-relation-up, #2196f3)'
-        : direction === 'down' ? 'var(--bim-relation-down, #4caf50)'
-        : 'var(--bim-relation-flat, #ff9800)';
+    const dirColor = direction === 'up' ? bim('relation-up')
+        : direction === 'down' ? bim('relation-down')
+        : bim('relation-flat');
     const dirIcon = direction === 'up' ? '\u2B06\uFE0F' : direction === 'down' ? '\u2B07\uFE0F' : '\u2194\uFE0F';
 
     return (
-        <div style={{ border: '1px solid var(--bim-widget-border, #e0e0e0)', borderRadius: '4px', padding: '10px', background: 'var(--bim-input-bg, #fff)' }}>
+        <div style={{ border: `1px solid ${bim('widget-border')}`, borderRadius: '4px', padding: '10px', background: bim('input-bg') }}>
             <div style={{ fontSize: '12px', color: dirColor, fontWeight: 500, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span>{dirIcon}</span><span>{title}</span>
             </div>
             {entity ? (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px', background: 'var(--bim-bg, #fff)', borderRadius: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px', background: bim('bg'), borderRadius: '4px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span>{getTypeIcon(entity.type)}</span>
                         <span style={{ fontWeight: 500 }}>{entity.title}</span>
@@ -172,7 +173,7 @@ const RelationSection: React.FC<{
                     </div>
                 </div>
             ) : (
-                <div style={{ padding: '8px', background: 'var(--bim-bg, #fff)', borderRadius: '4px', color: 'var(--bim-desc-fg, #717171)', fontSize: '12px', textAlign: 'center' }}>
+                <div style={{ padding: '8px', background: bim('bg'), borderRadius: '4px', color: bim('desc-fg'), fontSize: '12px', textAlign: 'center' }}>
                     {notLinkedLabel}
                 </div>
             )}
@@ -195,32 +196,32 @@ const RelationListSection: React.FC<{
     expandMoreLabel: string;
 }> = ({ direction, title, entities, onView, onAdd, addLabel, noneLabel, expandMoreLabel }) => {
     const [expanded, setExpanded] = useState(false);
-    const dirColor = direction === 'up' ? 'var(--bim-relation-up, #2196f3)'
-        : direction === 'down' ? 'var(--bim-relation-down, #4caf50)'
-        : 'var(--bim-relation-flat, #ff9800)';
+    const dirColor = direction === 'up' ? bim('relation-up')
+        : direction === 'down' ? bim('relation-down')
+        : bim('relation-flat');
     const dirIcon = direction === 'up' ? '\u2B06\uFE0F' : direction === 'down' ? '\u2B07\uFE0F' : '\u2194\uFE0F';
     const display = expanded ? entities : entities.slice(0, 5);
 
     return (
-        <div style={{ border: '1px solid var(--bim-widget-border, #e0e0e0)', borderRadius: '4px', padding: '10px', background: 'var(--bim-input-bg, #fff)' }}>
+        <div style={{ border: `1px solid ${bim('widget-border')}`, borderRadius: '4px', padding: '10px', background: bim('input-bg') }}>
             <div style={{ fontSize: '12px', color: dirColor, fontWeight: 500, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span>{dirIcon}</span><span>{title}</span>
             </div>
             {entities.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {display.map(e => (
-                        <div key={e.id} onClick={() => onView(e)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 8px', background: 'var(--bim-bg, #fff)', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>
+                        <div key={e.id} onClick={() => onView(e)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 8px', background: bim('bg'), borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>
                             <span>{getTypeIcon(e.type)}</span><span>{e.title}</span>
                         </div>
                     ))}
                     {entities.length > 5 && !expanded && (
-                        <div onClick={() => setExpanded(true)} style={{ padding: '4px 8px', textAlign: 'center', fontSize: '12px', color: 'var(--bim-link-fg, #0066cc)', cursor: 'pointer' }}>
+                        <div onClick={() => setExpanded(true)} style={{ padding: '4px 8px', textAlign: 'center', fontSize: '12px', color: bim('link-fg'), cursor: 'pointer' }}>
                             {expandMoreLabel} ({entities.length - 5})
                         </div>
                     )}
                 </div>
             ) : (
-                <div style={{ padding: '8px', background: 'var(--bim-bg, #fff)', borderRadius: '4px', color: 'var(--bim-desc-fg, #717171)', fontSize: '12px', textAlign: 'center' }}>
+                <div style={{ padding: '8px', background: bim('bg'), borderRadius: '4px', color: bim('desc-fg'), fontSize: '12px', textAlign: 'center' }}>
                     {noneLabel}
                 </div>
             )}
@@ -233,7 +234,7 @@ const RelationListSection: React.FC<{
 
 const ActionBtn: React.FC<{ onClick: () => void; title: string; danger?: boolean; children: React.ReactNode }> = ({ onClick, title, danger, children }) => (
     <button onClick={e => { e.stopPropagation(); onClick(); }} title={title}
-        style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 6px', fontSize: '12px', color: danger ? 'var(--bim-danger, #f44336)' : 'inherit', opacity: 0.7 }}>
+        style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 6px', fontSize: '12px', color: danger ? bim('danger') : 'inherit', opacity: 0.7 }}>
         {children}
     </button>
 );
@@ -241,10 +242,10 @@ const ActionBtn: React.FC<{ onClick: () => void; title: string; danger?: boolean
 const SmallBtn: React.FC<{ onClick: () => void; primary?: boolean; children: React.ReactNode }> = ({ onClick, primary, children }) => (
     <button onClick={onClick} style={{
         padding: '4px 10px', fontSize: '11px',
-        border: primary ? 'none' : '1px solid var(--bim-widget-border, #e0e0e0)',
+        border: primary ? 'none' : `1px solid ${bim('widget-border')}`,
         borderRadius: '4px',
-        background: primary ? 'var(--bim-primary, #0078d4)' : 'transparent',
-        color: primary ? 'var(--bim-primary-fg, #fff)' : 'inherit',
+        background: primary ? bim('primary') : 'transparent',
+        color: primary ? bim('primary-fg') : 'inherit',
         cursor: 'pointer',
     }}>
         {children}
@@ -257,6 +258,6 @@ function getTypeIcon(type: IndexType): string {
 
 const saveBtnStyle: React.CSSProperties = {
     padding: '4px 12px', fontSize: '12px', border: 'none', borderRadius: '4px',
-    background: 'var(--bim-primary, #0078d4)', color: 'var(--bim-primary-fg, #fff)', cursor: 'pointer',
+    background: bim('primary'), color: bim('primary-fg'), cursor: 'pointer',
     display: 'flex', alignItems: 'center', gap: '4px',
 };

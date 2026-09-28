@@ -15,6 +15,7 @@ import type { IndexStorage } from '../storage/types';
 import type { IndexEntry, IndexDetailData } from '../types';
 import { useIsMobile } from '../hooks/useIsMobile';
 import '../styles/variables.css';
+import { bim } from '../styles/tokens';
 
 // ── 数据源 ──
 
@@ -262,8 +263,8 @@ function App() {
         <div style={{
             minHeight: '100vh',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif',
-            background: 'var(--bim-bg, #f5f5f5)',
-            color: 'var(--bim-fg, #333)',
+            background: bim('bg'),
+            color: bim('fg'),
         }}>
             {currentId ? (
                 <BookDetailLayout

@@ -82,43 +82,29 @@ book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、�
 
 - 组件使用 **CSS 变量 + inline styles**，不依赖 Tailwind
 - 消费者通过 CSS 变量（`--bim-*`）适配自己的主题
-- 导入 `book-index-ui/styles` 获取基础样式（构建时由 `src/styles/variables.css` 原样复制而来）
+- 导入 `book-index-ui/styles` 获取基础样式（即 `src/styles/variables.css`，由 `src/styles/tokens.ts` 生成）
 
-### 换肤约定
+### 换肤约定（2026-09 N2 起）
 
-组件内部一律以 `var(--bim-x, <默认值>)` 取色，**不写死颜色**。默认值与
-`src/styles/variables.css` 保持一致，因此：
+**颜色只在 [src/styles/tokens.ts](src/styles/tokens.ts) 定义一次**，组件一律 `bim('fg')` 取色，
+得到 `var(--bim-fg, #333333)`——回退值由 tokens.ts 统一给出，不再每处各写一份，
+也**不许**再写 `#hex` / `rgba()` / 命名色（单测 `tests/unit/tokens.test.ts` 守门）。
 
-- 消费者只要在自己的 `:root` 覆盖同名变量即可整体换肤
-- 不覆盖时观感与历史版本完全一致
-- 若同时引入了 `book-index-ui/styles`，请确保覆盖声明在其**之后**加载
+- 新增或改动变量：改 tokens.ts → `npm run gen:tokens` 重新生成 variables.css（单测校验两者同步）
+- 消费者只要在自己的 `:root` 覆盖同名变量即可整体换肤；若同时引入了
+  `book-index-ui/styles`，覆盖声明须在其**之后**加载
+- 没引样式表时，内联回退值与样式表默认值相同，观感一致
 
-带透明度的描边/底色请用 `color-mix()` 从主色推出，不要再写 `${color}40`
-这类十六进制拼接——那样无法与 `var()` 组合。
+带透明度的描边/底色请用 `color-mix()` 从变量推出，不要再写 `${color}40`
+这类十六进制拼接——那样无法与 `var()` 组合（存量里 CollatedEdition / EntityDetail 还有几处这样拼出了无效 CSS、实际不生效，为保持观感暂未改）。
 
-完整变量清单见 [src/styles/variables.css](src/styles/variables.css)：
+变量分组见 tokens.ts 里的 `BIM_TOKEN_GROUPS`：基础（跟随 VS Code）、底色/文字/描边、提示与警告、
+遮罩与阴影、条目类型/状态徽章、资源（含校对程度 `--bim-check-*`）、整理本（含文本质量
+`--bim-quality-*`）、版本传承/关系方向、编辑器视图、详情页（宣纸+朱砂）、字体。
 
-| 分组 | 变量 |
-|------|------|
-| 底色与层次 | `--bim-bg` `--bim-bg-subtle` `--bim-widget-bg` `--bim-sidebar-bg` |
-| 文字 | `--bim-fg` `--bim-desc-fg` `--bim-muted` |
-| 描边 | `--bim-widget-border` `--bim-border` `--bim-input-border` `--bim-focus-border` |
-| 输入控件 | `--bim-input-bg` `--bim-input-fg` |
-| 主色 | `--bim-primary` `--bim-primary-fg` `--bim-primary-soft` `--bim-primary-bg` |
-| 链接 | `--bim-link` `--bim-link-fg` |
-| 列表交互态 | `--bim-list-hover-bg` `--bim-list-active-bg` |
-| 标签点缀 | `--bim-tag-bg` `--bim-accent-bg` |
-| 语义状态 | `--bim-danger` `--bim-warning` `--bim-success` `--bim-info-*` `--bim-warn-*` |
-| 条目类型徽章 | `--bim-type-book` `--bim-type-work` `--bim-type-collection` `--bim-type-entity` |
-| 条目状态徽章 | `--bim-status-draft` `--bim-status-official` |
-| 资源类型标记 | `--bim-restype-*` `--bim-missing-fg` |
-| 影印色彩模式 | `--bim-colormode-bw-*` `--bim-colormode-color-*` |
-| 导入进度 | `--bim-progress-active` `--bim-progress-done` `--bim-progress-todo` |
-
-> 文本质量等级色（`types.ts` 的 `published/fine/rough/ocr`、i18n locale 里的
-> `精校/粗校/AI整理`）目前仍写死：这些颜色本身承载「质量分级」语义，
-> 更接近数据而非皮肤，换肤时不应随主题漂移。同理，`--bim-danger` /
-> `--bim-warning` / `--bim-success` 也建议消费者保持默认。
+> 文本质量等级（`--bim-quality-*`）与校对程度（`--bim-check-*`）承载分级语义，
+> 更接近数据而非皮肤；`--bim-danger` / `--bim-warning` / `--bim-success` 同理，
+> 建议消费者保持默认。
 
 ## 待办
 

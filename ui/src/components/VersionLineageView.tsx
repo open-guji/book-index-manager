@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { LineageGraph } from '../core/lineage-graph';
 import { VersionLineageList } from './VersionLineageList';
 import { VersionLineageGraph } from './VersionLineageGraph';
+import { bim } from '../styles/tokens';
 
 export interface VersionLineageViewProps {
     /** 由 buildLineageGraph 生成 */
@@ -72,7 +73,7 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
 
     if (!graph.nodes.length) {
         return (
-            <div style={{ padding: 24, color: 'var(--bim-muted, #999)', textAlign: 'center' }}>
+            <div style={{ padding: 24, color: bim('muted'), textAlign: 'center' }}>
                 暂无版本传承数据
             </div>
         );
@@ -97,7 +98,7 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
                 </button>
                 {showCollectionToggle && (
                     <div style={{ marginLeft: 'auto', marginRight: 80, display: 'flex', gap: 4, alignItems: 'center', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: 12, color: 'var(--bim-muted, #888)', marginRight: 4 }}>
+                        <span style={{ fontSize: 12, color: bim('muted'), marginRight: 4 }}>
                             集合：
                         </span>
                         {collectionEntries.map(([key, meta]) => {
@@ -117,7 +118,7 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
                 )}
             </div>
             {showCollectionToggle && activeDesc && (
-                <div style={{ fontSize: 12, color: 'var(--bim-muted, #888)', marginBottom: 8, padding: '4px 8px', background: 'var(--bim-bg-subtle, #fafafa)', borderRadius: 4 }}>
+                <div style={{ fontSize: 12, color: bim('muted'), marginBottom: 8, padding: '4px 8px', background: bim('bg-subtle'), borderRadius: 4 }}>
                     {activeDesc}
                 </div>
             )}
@@ -149,9 +150,9 @@ const toolbarStyle: React.CSSProperties = {
 const btnStyle = (active: boolean): React.CSSProperties => ({
     padding: '4px 12px',
     fontSize: 12,
-    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+    border: `1px solid ${bim('widget-border')}`,
     borderRadius: 4,
-    background: active ? 'var(--bim-primary, #0078d4)' : 'transparent',
-    color: active ? 'var(--bim-primary-fg, #fff)' : 'var(--bim-fg, #333)',
+    background: active ? bim('primary') : 'transparent',
+    color: active ? bim('primary-fg') : bim('fg'),
     cursor: 'pointer',
 });

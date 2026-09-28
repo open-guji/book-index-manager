@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import type { IndexEntry, IndexType } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { useT } from '../i18n';
+import { bim } from '../styles/tokens';
 
 const HISTORY_KEY = 'bim-search-history';
 const MAX_HISTORY = 10;
@@ -255,10 +256,10 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                 style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid var(--bim-input-border, #ccc)',
+                    border: `1px solid ${bim('input-border')}`,
                     borderRadius: '6px',
-                    background: 'var(--bim-input-bg, #fff)',
-                    color: 'var(--bim-input-fg, #333)',
+                    background: bim('input-bg'),
+                    color: bim('input-fg'),
                     fontSize: '14px',
                     boxSizing: 'border-box',
                 }}
@@ -272,10 +273,10 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                         left: 0,
                         right: 0,
                         marginTop: '4px',
-                        background: 'var(--bim-input-bg, #fff)',
-                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        background: bim('input-bg'),
+                        border: `1px solid ${bim('widget-border')}`,
                         borderRadius: '6px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                        boxShadow: bim('shadow-dropdown'),
                         zIndex: 100,
                         maxHeight: '320px',
                         overflow: 'auto',
@@ -288,8 +289,8 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                             alignItems: 'center',
                             padding: '6px 12px',
                             fontSize: '11px',
-                            color: 'var(--bim-desc-fg, #717171)',
-                            borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            color: bim('desc-fg'),
+                            borderBottom: `1px solid ${bim('widget-border')}`,
                         }}>
                             <span>{t.search.history}</span>
                             <button
@@ -297,7 +298,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                                 style={{
                                     border: 'none',
                                     background: 'transparent',
-                                    color: 'var(--bim-desc-fg, #717171)',
+                                    color: bim('desc-fg'),
                                     cursor: 'pointer',
                                     fontSize: '11px',
                                     padding: '0 4px',
@@ -318,9 +319,9 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                                 padding: '8px 12px',
                                 cursor: 'pointer',
                                 fontSize: '13px',
-                                color: 'var(--bim-fg, #333)',
+                                color: bim('fg'),
                                 background: i === activeIndex
-                                    ? 'var(--bim-list-active-bg, #e8f0fe)'
+                                    ? bim('list-active-bg')
                                     : 'transparent',
                             }}
                         >
@@ -331,7 +332,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                                 {item.text}
                             </span>
                             {item.entry && (
-                                <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)', flexShrink: 0 }}>
+                                <span style={{ fontSize: '11px', color: bim('desc-fg'), flexShrink: 0 }}>
                                     {TYPE_LABEL[item.entry.type]}
                                     {item.entry.edition && ` · ${item.entry.edition}`}
                                     {item.entry.author && ` · ${item.entry.author}`}
@@ -343,7 +344,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                                     style={{
                                         border: 'none',
                                         background: 'transparent',
-                                        color: 'var(--bim-desc-fg, #717171)',
+                                        color: bim('desc-fg'),
                                         cursor: 'pointer',
                                         fontSize: '12px',
                                         padding: '0 2px',

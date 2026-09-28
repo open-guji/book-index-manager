@@ -20,6 +20,7 @@ import {
 import {
     buildCollectionTable, bucketResources, formatVolumeRange, measureText,
 } from '../../core/detail-model';
+import { bim } from '../../styles/tokens';
 
 const CAP = { titles: 16, works: 16 };
 
@@ -132,7 +133,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                         text={data.description.text}
                         style={{
                             fontSize: 15, lineHeight: 2.05,
-                            color: 'var(--bim-body-fg, #3b3228)', textAlign: 'justify',
+                            color: bim('body-fg'), textAlign: 'justify',
                         }}
                     />
                 )}
@@ -141,7 +142,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                         {data.history.map((h, i) => (
                             <div key={i} style={{
                                 fontSize: 13.5, lineHeight: 2,
-                                color: 'var(--bim-quiet-fg, #5b4f40)',
+                                color: bim('quiet-fg'),
                             }}>
                                 · {convert(h)}
                             </div>
@@ -195,7 +196,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                                         {row.subItems?.length ? (
                                             <span className="bim-d-ui" style={{
                                                 marginLeft: 6, fontSize: 11.5,
-                                                color: 'var(--bim-hint-fg, #b3a385)',
+                                                color: bim('hint-fg'),
                                             }}>
                                                 （{row.subItems.map(s => convert(s)).join('、')}）
                                             </span>
@@ -208,7 +209,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                                         {row.edition && !uniformEdition && (
                                             <span className="bim-d-ui" style={{
                                                 marginLeft: 8, fontSize: 11,
-                                                color: 'var(--bim-hint-fg, #b3a385)',
+                                                color: bim('hint-fg'),
                                             }}>
                                                 {convert(row.edition)}
                                             </span>
@@ -218,7 +219,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                                 meta={
                                     <>
                                         {hasSectionColumn && (
-                                            <span style={{ color: 'var(--bim-meta-fg, #7b6a54)' }}>
+                                            <span style={{ color: bim('meta-fg') }}>
                                                 {/* section 可能已自带「部」字，别再拼一个出来 */}
                                                 {row.section
                                                     ? (row.section.endsWith('部') ? row.section : `${row.section}部`)
@@ -226,7 +227,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                                             </span>
                                         )}
                                         <span className="bim-d-ui" style={{
-                                            color: 'var(--bim-label-fg, #a3937b)',
+                                            color: bim('label-fg'),
                                         }}>
                                             {row.volumes.length > 0
                                                 ? `第 ${formatVolumeRange(row.volumes, t.unit.volume)} ${t.unit.volume}`
@@ -257,7 +258,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                     {(resources.buckets.length > 0 || resources.mirrors.length > 0) && (
                         <section>
                             <SectionHead glyph="源" tone="ink" title="影印與全文" />
-                            <div style={{ borderTop: '1px solid var(--bim-rule-strong, #2a231c)' }}>
+                            <div style={{ borderTop: `1px solid ${bim('rule-strong')}` }}>
                                 {[...resources.mirrors.flatMap(g => g.items),
                                   ...resources.buckets.flatMap(b => b.items)].map((r, i) => (
                                     <ResourceLine

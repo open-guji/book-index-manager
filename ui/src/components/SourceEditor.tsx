@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { SourceItem, EntityOption } from '../types';
 import { useT } from '../i18n';
+import { bim } from '../styles/tokens';
 
 export interface SourceEditorProps {
     items: SourceItem[];
@@ -11,9 +12,9 @@ export interface SourceEditorProps {
 
 function getTypeColor(type: string): string {
     switch (type) {
-        case 'url': return 'var(--bim-source-url, #2196f3)';
-        case 'bookID': return 'var(--bim-source-bookid, #4caf50)';
-        default: return 'var(--bim-desc-fg, #717171)';
+        case 'url': return bim('source-url');
+        case 'bookID': return bim('source-bookid');
+        default: return bim('desc-fg');
     }
 }
 
@@ -73,9 +74,9 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {items.map((item, index) => (
                 <div key={index} style={{
-                    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                    border: `1px solid ${bim('widget-border')}`,
                     borderRadius: '4px',
-                    background: 'var(--bim-input-bg, #fff)',
+                    background: bim('input-bg'),
                     overflow: 'hidden',
                 }}>
                     {/* Header */}
@@ -84,17 +85,17 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
                         onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
                     >
                         <span style={{ opacity: 0.6, fontSize: '12px' }}>{expandedIndex === index ? '\u25BC' : '\u25B6'}</span>
-                        <span style={{ flex: 1, fontSize: '13px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>
+                        <span style={{ flex: 1, fontSize: '13px', fontWeight: 500, color: bim('fg') }}>
                             {item.name || `${t.editor.sourcePlaceholder} ${index + 1}`}
                         </span>
                         {item.type && (
-                            <span style={{ fontSize: '11px', padding: '2px 8px', background: getTypeColor(item.type), color: 'white', borderRadius: '3px', fontWeight: 500 }}>
+                            <span style={{ fontSize: '11px', padding: '2px 8px', background: getTypeColor(item.type), color: bim('on-color-fg'), borderRadius: '3px', fontWeight: 500 }}>
                                 {getTypeName(item.type)}
                             </span>
                         )}
                         <button
                             onClick={e => { e.stopPropagation(); handleRemove(index); }}
-                            style={{ background: 'transparent', border: 'none', color: 'var(--bim-danger, #f44336)', cursor: 'pointer', padding: '2px 6px', fontSize: '14px' }}
+                            style={{ background: 'transparent', border: 'none', color: bim('danger'), cursor: 'pointer', padding: '2px 6px', fontSize: '14px' }}
                             title={t.editor.deleteThisSource}
                         >
                             ✕
@@ -103,19 +104,19 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
 
                     {/* Expanded content */}
                     {expandedIndex === index && (
-                        <div style={{ padding: '12px', borderTop: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
+                        <div style={{ padding: '12px', borderTop: `1px solid ${bim('widget-border')}` }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                 {/* Type selection */}
                                 {!item.type && (
                                     <div>
                                         <label style={labelStyle}>{t.editor.selectSourceType}</label>
                                         <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                                            <button onClick={() => handleTypeSelect(index, 'bookID')} style={{ ...typeButtonStyle, borderColor: 'var(--bim-source-bookid, #4caf50)', color: 'var(--bim-source-bookid, #4caf50)' }}>
+                                            <button onClick={() => handleTypeSelect(index, 'bookID')} style={{ ...typeButtonStyle, borderColor: bim('source-bookid'), color: bim('source-bookid') }}>
                                                 <span style={{ fontSize: '18px' }}>📚</span>
                                                 <span>Book ID</span>
                                                 <span style={{ fontSize: '11px', opacity: 0.7 }}>{t.editor.fromExistingBook}</span>
                                             </button>
-                                            <button onClick={() => handleTypeSelect(index, 'url')} style={{ ...typeButtonStyle, borderColor: 'var(--bim-source-url, #2196f3)', color: 'var(--bim-source-url, #2196f3)' }}>
+                                            <button onClick={() => handleTypeSelect(index, 'url')} style={{ ...typeButtonStyle, borderColor: bim('source-url'), color: bim('source-url') }}>
                                                 <span style={{ fontSize: '18px' }}>🔗</span>
                                                 <span>URL</span>
                                                 <span style={{ fontSize: '11px', opacity: 0.7 }}>{t.editor.enterUrl}</span>
@@ -133,16 +134,16 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
                                                 <button onClick={() => { const n = [...items]; n[index] = { ...n[index], type: '', id: '', name: '' }; onChange(n); }} style={changeTypeBtnStyle}>{t.action.changeType}</button>
                                             </div>
                                             {item.id && item.name ? (
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: 'var(--bim-bg, #fff)', border: '1px solid var(--bim-source-bookid, #4caf50)', borderRadius: '6px' }}>
-                                                    <span style={{ color: 'var(--bim-source-bookid, #4caf50)', fontSize: '16px' }}>✓</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: bim('bg'), border: `1px solid ${bim('source-bookid')}`, borderRadius: '6px' }}>
+                                                    <span style={{ color: bim('source-bookid'), fontSize: '16px' }}>✓</span>
                                                     <div style={{ flex: 1 }}>
                                                         <div style={{ fontWeight: 500 }}>{item.name}</div>
-                                                        <code style={{ fontSize: '11px', background: 'var(--bim-primary-soft, rgba(0,120,212,0.15))', padding: '2px 6px', borderRadius: '3px' }}>{item.id}</code>
+                                                        <code style={{ fontSize: '11px', background: bim('primary-soft'), padding: '2px 6px', borderRadius: '3px' }}>{item.id}</code>
                                                     </div>
-                                                    <button onClick={() => handleSelectBook(index)} style={{ background: 'transparent', border: '1px solid var(--bim-widget-border, #e0e0e0)', color: 'var(--bim-fg, #333)', cursor: 'pointer', padding: '4px 10px', borderRadius: '4px', fontSize: '12px' }}>{t.action.reselect}</button>
+                                                    <button onClick={() => handleSelectBook(index)} style={{ background: 'transparent', border: `1px solid ${bim('widget-border')}`, color: bim('fg'), cursor: 'pointer', padding: '4px 10px', borderRadius: '4px', fontSize: '12px' }}>{t.action.reselect}</button>
                                                 </div>
                                             ) : (
-                                                <button onClick={() => handleSelectBook(index)} style={{ width: '100%', padding: '14px', border: '2px dashed var(--bim-widget-border, #e0e0e0)', borderRadius: '6px', background: 'transparent', color: 'var(--bim-fg, #333)', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                                <button onClick={() => handleSelectBook(index)} style={{ width: '100%', padding: '14px', border: `2px dashed ${bim('widget-border')}`, borderRadius: '6px', background: 'transparent', color: bim('fg'), cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                                                     <span>🔍</span><span>{t.action.clickToSelectBookOrWork}</span>
                                                 </button>
                                             )}
@@ -170,7 +171,7 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
                                 {/* Optional fields */}
                                 {item.type && (
                                     <>
-                                        <div style={{ borderTop: '1px dashed var(--bim-widget-border, #e0e0e0)', paddingTop: '12px', marginTop: '4px' }}>
+                                        <div style={{ borderTop: `1px dashed ${bim('widget-border')}`, paddingTop: '12px', marginTop: '4px' }}>
                                             <label style={{ ...labelStyle, opacity: 0.7 }}>{t.label.optionalInfo}</label>
                                         </div>
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -203,8 +204,8 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
 
             <button onClick={handleAdd} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                padding: '8px 16px', border: '1px dashed var(--bim-widget-border, #e0e0e0)', borderRadius: '4px',
-                background: 'transparent', color: 'var(--bim-fg, #333)', cursor: 'pointer', fontSize: '13px', opacity: 0.8,
+                padding: '8px 16px', border: `1px dashed ${bim('widget-border')}`, borderRadius: '4px',
+                background: 'transparent', color: bim('fg'), cursor: 'pointer', fontSize: '13px', opacity: 0.8,
             }}>
                 <span>+</span><span>{t.action.addSource}</span>
             </button>
@@ -213,22 +214,22 @@ export const SourceEditor: React.FC<SourceEditorProps> = ({ items, onChange, onO
 };
 
 const labelStyle: React.CSSProperties = {
-    display: 'block', fontSize: '11px', color: 'var(--bim-desc-fg, #717171)', marginBottom: '4px', fontWeight: 500,
+    display: 'block', fontSize: '11px', color: bim('desc-fg'), marginBottom: '4px', fontWeight: 500,
 };
 
 const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '6px 8px', background: 'var(--bim-input-bg, #fff)', color: 'var(--bim-input-fg, #333)',
-    border: '1px solid var(--bim-input-border, #ccc)', borderRadius: '2px', fontSize: '13px', boxSizing: 'border-box',
+    width: '100%', padding: '6px 8px', background: bim('input-bg'), color: bim('input-fg'),
+    border: `1px solid ${bim('input-border')}`, borderRadius: '2px', fontSize: '13px', boxSizing: 'border-box',
 };
 
 const typeButtonStyle: React.CSSProperties = {
     flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-    padding: '16px 12px', background: 'var(--bim-bg, #fff)', border: '2px solid', borderRadius: '8px',
+    padding: '16px 12px', background: bim('bg'), border: '2px solid', borderRadius: '8px',
     cursor: 'pointer', fontSize: '13px', fontWeight: 500, transition: 'all 0.2s',
 };
 
 const changeTypeBtnStyle: React.CSSProperties = {
-    background: 'transparent', border: 'none', color: 'var(--bim-link-fg, #0066cc)', cursor: 'pointer', fontSize: '11px', padding: 0,
+    background: 'transparent', border: 'none', color: bim('link-fg'), cursor: 'pointer', fontSize: '11px', padding: 0,
 };
 
 /** 解析 JSON 格式的来源数组 */

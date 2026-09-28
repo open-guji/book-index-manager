@@ -14,6 +14,7 @@ import {
     getStartPage,
     buildPageUrl,
 } from '../core/resources';
+import { bim } from '../styles/tokens';
 
 export interface ResourceListProps {
     items: ResourceEntry[];
@@ -29,10 +30,10 @@ export interface ResourceListProps {
 
 // 回退值即原本的硬编码色，消费者不覆盖时观感不变
 const TYPE_COLORS: Record<ResourceType, string> = {
-    text: 'var(--bim-restype-text, #2196f3)',
-    image: 'var(--bim-restype-image, #ff9800)',
-    'text+image': 'var(--bim-restype-text-image, #9c27b0)',
-    physical: 'var(--bim-restype-physical, #795548)',
+    text: bim('restype-text'),
+    image: bim('restype-image'),
+    'text+image': bim('restype-text-image'),
+    physical: bim('restype-physical'),
 };
 
 /**
@@ -100,7 +101,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
 
     if (!mergedItems || mergedItems.length === 0) {
         return (
-            <div style={{ padding: '16px', color: 'var(--bim-desc-fg, #717171)', fontSize: '13px', textAlign: 'center' }}>
+            <div style={{ padding: '16px', color: bim('desc-fg'), fontSize: '13px', textAlign: 'center' }}>
                 {t.misc.noResources}
             </div>
         );
@@ -122,18 +123,18 @@ export const ResourceList: React.FC<ResourceListProps> = ({
         return (
             <div key={`group-${gk}`} style={{
                 padding: '10px 12px',
-                border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                border: `1px solid ${bim('widget-border')}`,
                 borderRadius: '6px',
-                background: 'var(--bim-input-bg, #fafafa)',
+                background: bim('input-bg'),
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '8px',
             }}>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--bim-fg, #333)' }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: bim('fg') }}>
                     {convert(label)}
                 </div>
                 {desc && (
-                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', lineHeight: 1.5 }}>
+                    <div style={{ fontSize: '12px', color: bim('desc-fg'), lineHeight: 1.5 }}>
                         {convert(desc)}
                     </div>
                 )}
@@ -225,13 +226,13 @@ const formatMetaValue = (key: string, value: unknown, t: LocaleMessages, convert
 const COLOR_MODE_STYLES: Record<string, { label: string; bg: string; fg: string }> = {
     bw: {
         label: '',
-        bg: 'var(--bim-colormode-bw-bg, #f5f5f5)',
-        fg: 'var(--bim-colormode-bw-fg, #757575)',
+        bg: bim('colormode-bw-bg'),
+        fg: bim('colormode-bw-fg'),
     },
     color: {
         label: '',
-        bg: 'var(--bim-colormode-color-bg, #fff8e1)',
-        fg: 'var(--bim-colormode-color-fg, #f57f17)',
+        bg: bim('colormode-color-bg'),
+        fg: bim('colormode-color-fg'),
     },
 };
 
@@ -269,11 +270,11 @@ const ResourceChip: React.FC<{
         alignItems: 'center',
         gap: '5px',
         padding: '4px 10px',
-        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+        border: `1px solid ${bim('widget-border')}`,
         borderRadius: '5px',
-        background: 'var(--bim-input-bg, #fff)',
+        background: bim('input-bg'),
         fontSize: '12px',
-        color: 'var(--bim-fg, #333)',
+        color: bim('fg'),
         lineHeight: 1.4,
         verticalAlign: 'middle',
     };
@@ -295,12 +296,12 @@ const ResourceChip: React.FC<{
                     </span>
                 )}
                 {details && (
-                    <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #999)' }}>{details}</span>
+                    <span style={{ fontSize: '11px', color: bim('desc-fg') }}>{details}</span>
                 )}
                 {hasVolumes && (
-                    <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #999)' }}>
+                    <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
                         {uniqueFound}/{expectedTotal}{t.unit.volume}
-                        {uniqueMissing > 0 && <span style={{ color: 'var(--bim-missing-fg, #e67e22)', marginLeft: '3px' }}>缺{uniqueMissing}</span>}
+                        {uniqueMissing > 0 && <span style={{ color: bim('missing-fg'), marginLeft: '3px' }}>缺{uniqueMissing}</span>}
                     </span>
                 )}
                 {item.url && (
@@ -311,7 +312,7 @@ const ResourceChip: React.FC<{
                         })()}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ fontSize: '11px', color: 'var(--bim-link-fg, #0066cc)', textDecoration: 'none', whiteSpace: 'nowrap' }}
+                        style={{ fontSize: '11px', color: bim('link-fg'), textDecoration: 'none', whiteSpace: 'nowrap' }}
                     >
                         {t.action.visit}
                     </a>
@@ -324,7 +325,7 @@ const ResourceChip: React.FC<{
                             fontSize: '11px',
                             border: 'none',
                             background: 'transparent',
-                            color: 'var(--bim-desc-fg, #999)',
+                            color: bim('desc-fg'),
                             cursor: 'pointer',
                             lineHeight: 1.4,
                         }}
@@ -336,7 +337,7 @@ const ResourceChip: React.FC<{
             {hasVolumes && expanded && (
                 <div style={{
                     padding: '6px 10px',
-                    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                    border: `1px solid ${bim('widget-border')}`,
                     borderRadius: '5px',
                     display: 'flex',
                     flexWrap: 'wrap',
@@ -348,15 +349,15 @@ const ResourceChip: React.FC<{
                         return v.url && !isMissing ? (
                             <a key={v.volume} href={v.url} target="_blank" rel="noopener noreferrer" style={{
                                 display: 'inline-block', padding: '1px 5px', fontSize: '11px',
-                                borderRadius: '3px', border: '1px solid var(--bim-widget-border, #e0e0e0)',
-                                color: 'var(--bim-link-fg, #0066cc)', textDecoration: 'none',
+                                borderRadius: '3px', border: `1px solid ${bim('widget-border')}`,
+                                color: bim('link-fg'), textDecoration: 'none',
                             }}>
                                 {v.volume}
                             </a>
                         ) : (
                             <span key={v.volume} style={{
                                 display: 'inline-block', padding: '1px 5px', fontSize: '11px',
-                                color: isMissing ? 'var(--bim-missing-fg, #e67e22)' : 'var(--bim-desc-fg, #999)',
+                                color: isMissing ? bim('missing-fg') : bim('desc-fg'),
                                 textDecoration: isMissing ? 'line-through' : 'none', opacity: isMissing ? 0.6 : 1,
                             }}>
                                 {v.volume}
@@ -413,13 +414,13 @@ const ResourceCard: React.FC<{
     return (
         <div style={{
             padding: '10px 14px',
-            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+            border: `1px solid ${bim('widget-border')}`,
             borderRadius: '6px',
-            background: 'var(--bim-input-bg, #fff)',
+            background: bim('input-bg'),
         }}>
             {/* 标题行 */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: (hasExtra(item) || hasVolumes) ? '6px' : '0' }}>
-                <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>{displayName}</span>
+                <span style={{ fontSize: '13px', fontWeight: 500, color: bim('fg') }}>{displayName}</span>
                 {colorModeInfo && (
                     <span style={{
                         display: 'inline-block',
@@ -436,7 +437,7 @@ const ResourceCard: React.FC<{
                 {item.source_label && (
                     <span style={{
                         fontSize: '11px',
-                        color: 'var(--bim-desc-fg, #717171)',
+                        color: bim('desc-fg'),
                         fontStyle: 'italic',
                     }}>
                         {item.source_label}
@@ -449,13 +450,13 @@ const ResourceCard: React.FC<{
                     <span style={{
                         padding: '1px 8px',
                         fontSize: '11px',
-                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        border: `1px solid ${bim('widget-border')}`,
                         borderRadius: '3px',
                         background: 'transparent',
-                        color: 'var(--bim-desc-fg, #717171)',
+                        color: bim('desc-fg'),
                     }}>
                         {uniqueFound}/{expectedTotal}{t.unit.volume}
-                        {uniqueMissing > 0 && <span style={{ color: 'var(--bim-missing-fg, #e67e22)', marginLeft: '4px' }}>缺{uniqueMissing}</span>}
+                        {uniqueMissing > 0 && <span style={{ color: bim('missing-fg'), marginLeft: '4px' }}>缺{uniqueMissing}</span>}
                     </span>
                 )}
 
@@ -468,7 +469,7 @@ const ResourceCard: React.FC<{
                         })()}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ fontSize: '12px', color: 'var(--bim-link-fg, #0066cc)', textDecoration: 'none' }}
+                        style={{ fontSize: '12px', color: bim('link-fg'), textDecoration: 'none' }}
                     >
                         {t.action.visit}
                     </a>
@@ -483,10 +484,10 @@ const ResourceCard: React.FC<{
                             marginLeft: 'auto',
                             padding: '1px 10px',
                             fontSize: '12px',
-                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            border: `1px solid ${bim('widget-border')}`,
                             borderRadius: '3px',
-                            background: expanded ? 'var(--bim-widget-border, #e0e0e0)' : 'transparent',
-                            color: 'var(--bim-fg, #333)',
+                            background: expanded ? bim('widget-border') : 'transparent',
+                            color: bim('fg'),
                             cursor: 'pointer',
                             lineHeight: 1.4,
                         }}
@@ -498,7 +499,7 @@ const ResourceCard: React.FC<{
 
             {/* 元数据 */}
             {hasExtra(item) && (
-                <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <div style={{ fontSize: '12px', color: bim('desc-fg'), display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                     {item.metadata && Object.entries(item.metadata)
                         .filter(([key]) => key !== 'check_type')
                         .map(([key, value]) => (
@@ -542,8 +543,8 @@ const ResourceCard: React.FC<{
                                     padding: '2px 6px',
                                     fontSize: '11px',
                                     borderRadius: '3px',
-                                    border: '1px solid var(--bim-widget-border, #e0e0e0)',
-                                    color: 'var(--bim-link-fg, #0066cc)',
+                                    border: `1px solid ${bim('widget-border')}`,
+                                    color: bim('link-fg'),
                                     textDecoration: 'none',
                                     lineHeight: 1.4,
                                 }}
@@ -560,7 +561,7 @@ const ResourceCard: React.FC<{
                             fontSize: '11px',
                             borderRadius: '3px',
                             border: '1px solid transparent',
-                            color: isMissing ? 'var(--bim-missing-fg, #e67e22)' : 'var(--bim-desc-fg, #999)',
+                            color: isMissing ? bim('missing-fg') : bim('desc-fg'),
                             textDecoration: isMissing ? 'line-through' : 'none',
                             opacity: isMissing ? 0.6 : 1,
                             lineHeight: 1.4,
@@ -574,7 +575,7 @@ const ResourceCard: React.FC<{
                     <div style={{
                         marginTop: '8px',
                         padding: '8px 0',
-                        borderTop: '1px solid var(--bim-widget-border, #f0f0f0)',
+                        borderTop: `1px solid ${bim('widget-border')}`,
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '8px',
@@ -591,10 +592,10 @@ const ResourceCard: React.FC<{
                                             href={buildUrl(g.group_id)}
                                             onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(g.group_id!); }}
                                             style={{
-                                                color: 'var(--bim-link-fg, #0066cc)',
+                                                color: bim('link-fg'),
                                                 cursor: 'pointer',
                                                 textDecoration: 'none',
-                                                borderBottom: '1px dashed var(--bim-link-fg, #0066cc)',
+                                                borderBottom: `1px dashed ${bim('link-fg')}`,
                                             }}
                                             onMouseEnter={e => (e.currentTarget.style.borderBottomStyle = 'solid')}
                                             onMouseLeave={e => (e.currentTarget.style.borderBottomStyle = 'dashed')}
@@ -610,11 +611,11 @@ const ResourceCard: React.FC<{
                                         <div style={{
                                             fontSize: '12px',
                                             fontWeight: 500,
-                                            color: 'var(--bim-fg, #333)',
+                                            color: bim('fg'),
                                             marginBottom: '4px',
                                         }}>
                                             {titleNode}
-                                            <span style={{ color: 'var(--bim-desc-fg, #999)', fontWeight: 400, marginLeft: '6px' }}>
+                                            <span style={{ color: bim('desc-fg'), fontWeight: 400, marginLeft: '6px' }}>
                                                 ({g.vols.length})
                                             </span>
                                         </div>

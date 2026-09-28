@@ -43,6 +43,7 @@
     "build:app": "vite build",
     "preview": "vite preview",
     "prepublishOnly": "npm run build:lib",
+    "gen:tokens": "node --experimental-strip-types scripts/gen-tokens-css.mts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
