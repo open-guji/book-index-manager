@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import MiniSearch from 'minisearch';
 import { tokenize, hasCjkBigram } from './normalize.js';
+import { loadCatalog, catalogWorksPage } from './catalog-demo';
 
 /** 繁→简转换器（懒加载 opencc-js） */
 let t2sConverter: ((text: string) => string) | null | false = null; // null=未加载, false=不可用
@@ -1011,6 +1012,24 @@ export function bookIndexApiPlugin(workspaceRoot: string): Plugin {
                         counts[st] = (counts[st] ?? 0) + 1;
                     }
                     sendJson(counts);
+                    return;
+                }
+
+                // GET /api/catalog-tree — 古籍总目分类树（N4a 示例页，book-index 生产数据现场算）
+                if (pathname === '/api/catalog-tree' && req.method === 'GET') {
+                    sendJson(loadCatalog(workspaceRoot).tree);
+                    return;
+                }
+
+                // GET /api/catalog-works?node=<id>&page=<n> — 某节点某页的作品卡片
+                if (pathname === '/api/catalog-works' && req.method === 'GET') {
+                    const result = catalogWorksPage(
+                        workspaceRoot,
+                        url.searchParams.get('node'),
+                        parseInt(url.searchParams.get('page') || '1'),
+                    );
+                    if (!result) sendJson({ error: 'Not found' }, 404);
+                    else sendJson(result);
                     return;
                 }
 

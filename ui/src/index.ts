@@ -75,6 +75,8 @@ export type {
     VersionGraph,
     VersionGraphGroup,
     VersionGraphHypotheticalNode,
+    CatalogNode,
+    CatalogWorkCard,
 } from './types';
 
 // ID encoding/decoding
@@ -221,6 +223,9 @@ export {
     parseGujiInline, gujiInlineToPlain, hasGujiMarkdownV02, GUJI_MARKDOWN_FIELD,
 } from './core/guji-inline';
 export type { GujiInlineNode } from './core/guji-inline';
+
+// 古籍总目（N4a）：分类树 + 作品卡片网格；与网站构建期索引（N4b）共用 CatalogNode / CatalogWorkCard
+export * from './components/catalog';
 
 export { BookDetailLayout } from './components/BookDetailLayout';
 export type {

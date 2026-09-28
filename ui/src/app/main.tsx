@@ -16,6 +16,7 @@ import type { IndexEntry, IndexDetailData } from '../types';
 import { useIsMobile } from '../hooks/useIsMobile';
 import '../styles/variables.css';
 import { bim } from '../styles/tokens';
+import { CatalogDemo } from './CatalogDemo';
 
 // ── 数据源 ──
 
@@ -325,7 +326,8 @@ function App() {
 const root = createRoot(document.getElementById('root')!);
 root.render(
     <LocaleProvider>
-        <App />
+        {/* /catalog：古籍总目示例页（N4a） */}
+        {window.location.pathname === '/catalog' ? <CatalogDemo /> : <App />}
     </LocaleProvider>,
 );
 
