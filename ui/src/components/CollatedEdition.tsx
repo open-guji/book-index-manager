@@ -1049,15 +1049,14 @@ function KaozhenContent({
 }
 
 /**
- * 整理本标题标签不跳级（同 ReaderText 的 headingLeveler）：阅读器 h1 是卷名，
- * 没有「类」小标题时条目标题落 h2，有了再落 h3；外观走 CSS 类，不随标签变。
+ * 整理本标题标签不跳级（阅读器 h1 是卷名）：「类」小标题始终 h2；条目的级别只看它前面
+ * 出现过「类」没有——出现过是 h3，没出现过是 h2。同级条目因此始终同级。外观走 CSS 类，不随标签变。
  */
-export function entryHeadingLeveler(): (want: 2 | 3) => 'h2' | 'h3' {
-    let prev = 1;
-    return want => {
-        const lv = Math.min(want, prev + 1) as 2 | 3;
-        prev = lv;
-        return `h${lv}` as 'h2' | 'h3';
+export function entryHeadingLeveler(): (kind: '类' | '条目') => 'h2' | 'h3' {
+    let seenCategory = false;
+    return kind => {
+        if (kind === '类') { seenCategory = true; return 'h2'; }
+        return seenCategory ? 'h3' : 'h2';
     };
 }
 
@@ -1083,7 +1082,7 @@ function CollatedEntries({ sections, onNavigate, inline }: {
                 if (t === '类') {
                     return (
                         <React.Fragment key={i}>
-                            {React.createElement(tagOf(2), null, inline(convert(s.title)))}
+                            {React.createElement(tagOf('类'), null, inline(convert(s.title)))}
                             {s.content && <p>{inline(convert(s.content))}</p>}
                         </React.Fragment>
                     );
@@ -1095,7 +1094,7 @@ function CollatedEntries({ sections, onNavigate, inline }: {
                     const title = inline(convert(head));
                     return (
                         <section key={i} className="bim-rd-entry">
-                            {React.createElement(tagOf(3), { className: 'bim-rd-entry-h' }, s.work_id && onNavigate ? (
+                            {React.createElement(tagOf('条目'), { className: 'bim-rd-entry-h' }, s.work_id && onNavigate ? (
                                     <a
                                         href={buildUrl(s.work_id)}
                                         onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(s.work_id!); }}

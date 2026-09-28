@@ -72,14 +72,18 @@ describe('isPageHeaderContent：page_header 里混着页眉与正文', () => {
     });
 });
 
-describe('entryHeadingLeveler：整理本标题不跳级（h1 是卷名）', () => {
-    it('没有「类」小标题时，条目标题落 h2，不是 h1 下直接 h3', () => {
-        const tag = entryHeadingLeveler();
-        expect([tag(3), tag(3)]).toEqual(['h2', 'h3']);
+describe('entryHeadingLeveler：整理本标题不跳级（h1 是卷名），同级条目同级', () => {
+    const run = (kinds: ('类' | '条目')[]) => { const tag = entryHeadingLeveler(); return kinds.map(tag); };
+
+    it('只有条目：全是 h2，不是 h1 下直接 h3', () => {
+        expect(run(['条目', '条目'])).toEqual(['h2', 'h2']);
     });
 
-    it('有「类」小标题时，条目标题照旧 h3', () => {
-        const tag = entryHeadingLeveler();
-        expect([tag(2), tag(3), tag(3)]).toEqual(['h2', 'h3', 'h3']);
+    it('类、条目、条目：h2 h3 h3', () => {
+        expect(run(['类', '条目', '条目'])).toEqual(['h2', 'h3', 'h3']);
+    });
+
+    it('条目、类、条目：第一个类之前的条目是 h2，之后是 h3', () => {
+        expect(run(['条目', '类', '条目'])).toEqual(['h2', 'h2', 'h3']);
     });
 });
