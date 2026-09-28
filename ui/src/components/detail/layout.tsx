@@ -69,8 +69,8 @@ export const LAYOUT_CSS = `
 .bim-d-sec-head h2 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: .04em; color: ${bim('ink')}; }
 .bim-d-sec-head .bim-d-sec-act { margin-left: auto; font-size: 13px; }
 
-/* 文字页签式筛选 */
-.bim-d-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; margin-bottom: 10px; font-size: 13px; }
+/* 文字页签式筛选。min-height = 页签行高：朝代页签随次级数据晚到，行高先占好（INT Q3） */
+.bim-d-filters { min-height: 26px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; margin-bottom: 10px; font-size: 13px; }
 .bim-d-tab {
   background: none; border: 0; padding: 4px 0; cursor: pointer; font: inherit;
   color: ${bim('quiet-fg')};
@@ -99,6 +99,8 @@ export const LAYOUT_CSS = `
 .bim-d-zt .bim-d-zt-sub { color: ${bim('quiet-fg')}; font-size: 13px; }
 .bim-d-zt .bim-d-zt-nowrap { white-space: nowrap; }
 .bim-d-zt .bim-d-zt-empty { color: ${bim('aux-fg')}; }
+/* 版本表：行高先按「有影印」色块那一行的高度占好，解析到的年代、馆藏、色块进来时行不再长高（INT Q3） */
+.bim-d-zt-ver tbody tr { height: 42px; }
 
 .bim-d-flag {
   display: inline-block; padding: 1px 8px; border-radius: 4px;
@@ -159,10 +161,10 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 }
 .bim-d-btn:hover { background: ${bim('accent-deep')}; }
 
-/* 旁栏清单 */
-.bim-d-side h3 { margin: 0 0 6px; font-size: 15px; font-weight: 700; color: ${bim('ink')};
+/* 旁栏清单：小标题是 h2（提要卡 h1 之下不跳级，INT Q5），外观仍是 15px 小标题 */
+.bim-d-side h3, .bim-d-side .bim-d-side-h { margin: 0 0 6px; font-size: 15px; font-weight: 700; color: ${bim('ink')};
   display: flex; align-items: baseline; gap: 8px; }
-.bim-d-side h3 .bim-d-meta { font-weight: 400; font-size: 12px; }
+.bim-d-side h3 .bim-d-meta, .bim-d-side .bim-d-side-h .bim-d-meta { font-weight: 400; font-size: 12px; }
 .bim-d-side ul { list-style: none; margin: 0; padding: 0; }
 .bim-d-side li { display: flex; align-items: baseline; gap: 10px; padding: 5px 0; font-size: 15px; min-width: 0; }
 .bim-d-side li > a, .bim-d-side li > span:first-child { color: ${bim('ink')}; min-width: 0; overflow-wrap: anywhere; }
@@ -180,12 +182,21 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
     align-items: center; justify-content: center; }
   .bim-d-zt td.bim-d-zt-main > a, .bim-d-zt td.bim-d-zt-main > span.bim-d-zt-name {
     min-height: 44px; box-sizing: border-box; display: flex; align-items: center; }
-  /* 视觉不变、热区外扩到 44px：「有影印」色块、顶条的面包屑 / 繁简 / GitHub */
-  .bim-d-flag, .bim-d-top a, .bim-d-top button { position: relative; }
-  .bim-d-flag::after, .bim-d-top a::after, .bim-d-top button::after {
-    content: ""; position: absolute; left: -4px; right: -4px; top: 50%;
-    height: 44px; transform: translateY(-50%);
+  /*
+   * 视觉不变、热区外扩到 44×44（INT Q4）：「有影印」色块、顶条的面包屑（返回索引）/ 繁简 / GitHub 图标、
+   * 朝代页签（单字「宋」「元」只有 13px 宽）。伪元素居中外扩，宽高都至少 44px。
+   */
+  .bim-d-flag, .bim-d-top a, .bim-d-top button, .bim-d-tab { position: relative; }
+  .bim-d-flag::after, .bim-d-top a::after, .bim-d-top button::after, .bim-d-tab::after {
+    content: ""; position: absolute; left: 50%; top: 50%;
+    width: max(calc(100% + 8px), 44px); height: max(100%, 44px); transform: translate(-50%, -50%);
   }
+  /*
+   * 相邻热区不能叠：两字页签（26px）两边各扩 9px，间距 18px 正好贴边，放宽到 20px；
+   * 单字页签（13px）两边各扩 15.5px，再左右各多留 7px
+   */
+  .bim-d-filters { column-gap: 20px; }
+  .bim-d-tab.bim-d-tab-1 { margin: 0 7px; }
 }
 
 /* 中等宽度：左栏折到顶部一行 */
@@ -225,6 +236,11 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
     color: ${bim('aux-fg')}; }
   .bim-d-zt td.bim-d-zt-blank { display: none; }
   .bim-d-zt td.bim-d-zt-main .bim-d-meta { padding-bottom: 2px; }
+  /* 手机上版本行是块：解析前只有版本名一行，先按「名 + 一行年代馆藏」占高 */
+  .bim-d-zt-ver tbody tr { height: auto; }
+  /* 朝代页签晚到、在手机上自成一行：解析中先占两行（页签一行 + 复选框一行） */
+  .bim-d-filters[data-pending] { min-height: 92px; align-content: flex-end; }
+  .bim-d-zt-ver tbody tr[data-loading] { min-height: 64px; }
   .bim-d-lu { grid-template-columns: 1fr; gap: 12px; }
   .bim-d-lu-list { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px; }
   .bim-d-lu-list button { white-space: nowrap; padding: 6px 12px; }
@@ -376,7 +392,7 @@ export function TabFilter<K extends string>({ items, value, onChange }: {
                 <button
                     key={it.key}
                     type="button"
-                    className="bim-d-tab"
+                    className={[...convert(it.label)].length === 1 ? 'bim-d-tab bim-d-tab-1' : 'bim-d-tab'}
                     aria-pressed={it.key === value}
                     onClick={() => onChange(it.key)}
                 >
@@ -517,10 +533,10 @@ export function SideList({ id, title, meta, items, cap = 8, moreLabel }: {
     const rest = items.length - shown.length;
     return (
         <div id={id} className="bim-d-side" style={{ scrollMarginTop: 16 }}>
-            <h3 className="bim-d-ui">
+            <h2 className="bim-d-ui bim-d-side-h">
                 {convert(title)}
                 {meta != null && meta !== '' && <span className="bim-d-meta">{meta}</span>}
-            </h3>
+            </h2>
             <ul>
                 {shown.map((it, i) => <li key={i}>{it}</li>)}
             </ul>
