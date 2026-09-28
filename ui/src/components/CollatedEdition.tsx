@@ -1049,6 +1049,18 @@ function KaozhenContent({
 }
 
 /**
+ * 整理本标题标签不跳级（阅读器 h1 是卷名）：「类」小标题始终 h2；条目的级别只看它前面
+ * 出现过「类」没有——出现过是 h3，没出现过是 h2。同级条目因此始终同级。外观走 CSS 类，不随标签变。
+ */
+export function entryHeadingLeveler(): (kind: '类' | '条目') => 'h2' | 'h3' {
+    let seenCategory = false;
+    return kind => {
+        if (kind === '类') { seenCategory = true; return 'h2'; }
+        return seenCategory ? 'h3' : 'h2';
+    };
+}
+
+/**
  * 整理本正文（按 sections 排）：类名作小标题，每条书目「书名（链到作品）＋ 解题」，
  * 与阅读页样张同一版式。取代旧的 RawTextView。
  *
@@ -1061,6 +1073,7 @@ function CollatedEntries({ sections, onNavigate, inline }: {
 }) {
     const buildUrl = useBidUrl();
     const { convert } = useConvert();
+    const tagOf = entryHeadingLeveler();
     return (
         <>
             {sections.map((s, i) => {
@@ -1069,7 +1082,7 @@ function CollatedEntries({ sections, onNavigate, inline }: {
                 if (t === '类') {
                     return (
                         <React.Fragment key={i}>
-                            <h2>{inline(convert(s.title))}</h2>
+                            {React.createElement(tagOf('类'), null, inline(convert(s.title)))}
                             {s.content && <p>{inline(convert(s.content))}</p>}
                         </React.Fragment>
                     );
@@ -1081,15 +1094,13 @@ function CollatedEntries({ sections, onNavigate, inline }: {
                     const title = inline(convert(head));
                     return (
                         <section key={i} className="bim-rd-entry">
-                            <h3>
-                                {s.work_id && onNavigate ? (
+                            {React.createElement(tagOf('条目'), { className: 'bim-rd-entry-h' }, s.work_id && onNavigate ? (
                                     <a
                                         href={buildUrl(s.work_id)}
                                         onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(s.work_id!); }}
                                         title="查看作品"
                                     >{title}</a>
-                                ) : title}
-                            </h3>
+                                ) : title)}
                             {s.author_info && <p className="bim-rd-sub">{inline(convert(s.author_info))}</p>}
                             {s.content && s.content.split(/\n+/).map((para, j) => <p key={j}>{inline(convert(para))}</p>)}
                             {s.summary && <p><span className="bim-rd-lbl">提要</span>{inline(convert(s.summary))}</p>}

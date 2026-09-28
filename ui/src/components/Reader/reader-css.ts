@@ -192,9 +192,9 @@ export const READER_CSS = `
 .bim-rd-prose > .bim-rd-hl2:first-child, .bim-rd-prose > .bim-rd-hl3:first-child, .bim-rd-prose > .bim-rd-hl4:first-child { margin-top: 0; }
 .bim-rd-prose .bim-rd-gap { height: 0.6em; }
 .bim-rd-entry { margin-top: 1.6em; }
-.bim-rd-entry h3 { margin: 0 !important; }
-.bim-rd-entry h3 a { color: inherit !important; text-decoration: none; }
-.bim-rd-entry h3 a:hover { color: ${bim('accent')} !important; text-decoration: underline; text-underline-offset: 4px; }
+.bim-rd-entry .bim-rd-entry-h { margin: 0 !important; font-size: 1.06em; }
+.bim-rd-entry .bim-rd-entry-h a { color: inherit !important; text-decoration: none; }
+.bim-rd-entry .bim-rd-entry-h a:hover { color: ${bim('accent')} !important; text-decoration: underline; text-underline-offset: 4px; }
 .bim-rd-entry .bim-rd-sub { font-family: ${bim('font-ui')}; font-size: 13px; color: ${bim('meta-fg')}; text-indent: 0; margin: 0.2em 0 0; }
 .bim-rd-entry .bim-rd-lbl { font-family: ${bim('font-ui')}; font-size: 0.72em; letter-spacing: 0.1em; color: ${bim('meta-fg')}; margin-right: 0.6em; }
 .bim-rd-prose strong { font-weight: 700; }

@@ -5,7 +5,7 @@
  * 漢書藝文志（d59f23o7ygw2）两样全中，页面上一列英文 `category` 加一排「卷/001」。
  */
 import { describe, expect, it } from 'vitest';
-import { juanDisplayName, normSectionType, isPageHeaderContent } from '../../src/components/CollatedEdition';
+import { juanDisplayName, normSectionType, isPageHeaderContent, entryHeadingLeveler } from '../../src/components/CollatedEdition';
 
 describe('juanDisplayName：卷文件名 → 显示名', () => {
     it('带目录的 juan/001.json（漢書藝文志等）', () => {
@@ -69,5 +69,21 @@ describe('isPageHeaderContent：page_header 里混着页眉与正文', () => {
     it('非 page_header 一律 false（该走各自的渲染分支）', () => {
         expect(isPageHeaderContent({ type: 'book', content: '書'.repeat(500) })).toBe(false);
         expect(isPageHeaderContent({ type: 'preface', content: '序'.repeat(500) })).toBe(false);
+    });
+});
+
+describe('entryHeadingLeveler：整理本标题不跳级（h1 是卷名），同级条目同级', () => {
+    const run = (kinds: ('类' | '条目')[]) => { const tag = entryHeadingLeveler(); return kinds.map(tag); };
+
+    it('只有条目：全是 h2，不是 h1 下直接 h3', () => {
+        expect(run(['条目', '条目'])).toEqual(['h2', 'h2']);
+    });
+
+    it('类、条目、条目：h2 h3 h3', () => {
+        expect(run(['类', '条目', '条目'])).toEqual(['h2', 'h3', 'h3']);
+    });
+
+    it('条目、类、条目：第一个类之前的条目是 h2，之后是 h3', () => {
+        expect(run(['条目', '类', '条目'])).toEqual(['h2', 'h2', 'h3']);
     });
 });

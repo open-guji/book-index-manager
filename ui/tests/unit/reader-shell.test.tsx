@@ -307,8 +307,10 @@ describe('CollatedEdition（整理本阅读页）', () => {
         const meta = container.querySelector('.bim-rd-meta')!;
         expect(meta.textContent).toBe('卷1·2 部書·底本 維基文庫（粗校）'.replace(/·/g, ''));
         expect(meta.querySelectorAll('.bim-rd-dot')).toHaveLength(2);
-        const h3 = container.querySelectorAll('article.bim-rd-prose h3');
+        const h3 = container.querySelectorAll('article.bim-rd-prose .bim-rd-entry-h');
         expect(h3).toHaveLength(2);
+        // 没有「类」小标题：h1 下条目都是 h2，不跳级、同级同标签
+        expect([...h3].map(h => h.tagName)).toEqual(['H2', 'H2']);
         fireEvent.click(within(h3[0] as HTMLElement).getByRole('link'));
         expect(onNavigate).toHaveBeenCalledWith('wsj');
         // 工具条书名取自索引

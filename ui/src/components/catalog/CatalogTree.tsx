@@ -12,7 +12,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CatalogNode } from '../../types';
 import { useConvert } from '../../i18n';
-import { CATALOG_ALL_ID, CATALOG_UNCLASSIFIED_ID, catalogTotal, findCatalogPath } from './model';
+import { CATALOG_ALL_ID, catalogTotal, findCatalogPath } from './model';
 
 export interface CatalogTreeProps {
     tree: CatalogNode[];
@@ -148,11 +148,12 @@ export function CatalogTree({ tree, selectedId, onSelect, allLabel = '全部', l
         if (next && next !== id) focusItem(next);
     }, [visible, expanded, toggle, focusItem, select]);
 
-    const renderNodes = (nodes: CatalogNode[], level: number): React.ReactNode => nodes.map(n => {
+    const renderNodes = (nodes: CatalogNode[], level: number): React.ReactNode => nodes.map((n, idx) => {
         const kids = n.children?.length ? n.children : null;
         const open = !!kids && expanded.has(n.id);
         const isSel = n.id === current;
-        const last = level === 1 && n.id === CATALOG_UNCLASSIFIED_ID;
+        // 顶层最后一个节点（未分類）上方画分隔线；不认 id：网站用 `unclassified`，插件用 `未分類`
+        const last = level === 1 && nodes.length > 1 && idx === nodes.length - 1;
         return (
             <li
                 key={n.id}

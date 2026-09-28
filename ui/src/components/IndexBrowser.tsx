@@ -524,6 +524,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                 ) : hasAnyResults ? (
                     /* Grouped search results */
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <style>{VIEW_ALL_CSS}</style>
                         {TYPE_CONFIG.map(({ type, icon, name, key }) => {
                             const entries = (searchResults[key] as IndexEntry[] | undefined) ?? [];
                             const totalKey = TOTAL_KEYS[key];
@@ -551,6 +552,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                         </span>
                                         {showExpandBtn && (
                                             <button
+                                                className="bim-ib-viewall"
                                                 onClick={() => handleExpandType(type)}
                                                 style={{
                                                     border: 'none',
@@ -625,6 +627,16 @@ interface EntryCardProps {
 function isPlainLeftClick(e: React.MouseEvent): boolean {
     return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
 }
+
+/** 「查看全部 →」触屏 / 窄屏：外观不变，伪元素把热区扩到至少 44×44（INT Q4，做法同 detail/layout.tsx） */
+export const VIEW_ALL_CSS = `
+@media (max-width: 719px), (pointer: coarse) {
+  .bim-ib-viewall { position: relative; }
+  .bim-ib-viewall::after {
+    content: ""; position: absolute; left: 50%; top: 50%;
+    width: max(calc(100% + 8px), 44px); height: max(100%, 44px); transform: translate(-50%, -50%);
+  }
+}`;
 
 /** 结果卡片 <a> 的基础样式：去掉链接默认的下划线与颜色 */
 const cardLinkReset: React.CSSProperties = {
