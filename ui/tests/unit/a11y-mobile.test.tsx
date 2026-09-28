@@ -209,6 +209,8 @@ describe('B7 整理本「▶ 展开」是可键盘操作的 button', () => {
                 activeJuan="juan/001.json"
             />,
         );
+        // N5a 起阅读页默认是「正文」看法；「▶ 展开」卡片在「條目」看法里
+        fireEvent.click(await screen.findByRole('button', { name: '條目' }));
         await screen.findByRole('link', { name: /作品/ });
     }
 

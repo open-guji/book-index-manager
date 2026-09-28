@@ -762,6 +762,8 @@ export interface CollatedEditionIndex {
     /** 整理本类型：catalog（目录志书）| kaozhen（考证） */
     type?: 'catalog' | 'kaozhen';
     work_id: string;
+    /** 书名（数据里有，如「直齋書錄解題」）；阅读器工具条用 */
+    title?: string;
     /**
      * 卷文件清单——**卷数的唯一可信来源**，取 juan_files.length。
      *

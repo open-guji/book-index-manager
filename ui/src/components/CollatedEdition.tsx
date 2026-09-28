@@ -1,13 +1,19 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import type { CollatedEditionIndex, CollatedJuan, CollatedSection, JuanGroup, TextQualityGrade } from '../types';
-import { TEXT_QUALITY_LABELS, TEXT_QUALITY_CRITERIA, TEXT_QUALITY_COLORS } from '../types';
+import { TEXT_QUALITY_LABELS, TEXT_QUALITY_CRITERIA } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { useConvert } from '../i18n';
 import { LoadingDots } from './common/LoadingDots';
-import { Tooltip } from './common/Tooltip';
 import { useBidUrl } from '../core/bid-url';
-import { renderInterlinear, truncateOutsideJiazhu, ReaderLayout } from './detail/primitives';
+import { renderInterlinear, truncateOutsideJiazhu } from './detail/primitives';
 import { bim } from '../styles/tokens';
+import { ReaderShell } from './Reader/ReaderShell';
+import type { PanelState } from './Reader/ReaderShell';
+import { ReaderMdText, canParagraphize, renderReaderInline } from './Reader/ReaderText';
+import { useReaderPrefs } from './Reader/prefs';
+import type { ReaderPrefs } from './Reader/prefs';
+import { useChapterImages } from './Reader/useChapterImages';
+import type { ReaderImageOverlay, ReaderImageResolver, ReaderTocItem } from './Reader/types';
 
 export interface CollatedEditionProps {
     /** 直接传入卷列表索引 */
@@ -24,7 +30,21 @@ export interface CollatedEditionProps {
     onJuanChange?: (juan: string | null) => void;
     className?: string;
     style?: React.CSSProperties;
+    /** 工具条上的书名；缺省用索引里的 title */
+    title?: React.ReactNode;
+    /** 书名后的小字；缺省「整理本」（考证类为「考證」） */
+    subtitle?: React.ReactNode;
+    /** 按卷取书影（每页一张图 + 可选逐字框），URL 由宿主给；不传则书影区收起 */
+    resolveImages?: ReaderImageResolver;
+    /** 书影上的自定义层（逐字框以外的格式） */
+    renderImageOverlay?: ReaderImageOverlay;
+    /** 书影区初始状态：auto = 有影像才展开 */
+    imagePanel?: PanelState;
+    /** 竖排开关（预留） */
+    allowVertical?: boolean;
 }
+
+type ReaderOptions = Pick<CollatedEditionProps, 'title' | 'subtitle' | 'resolveImages' | 'renderImageOverlay' | 'imagePanel' | 'allowVertical'>;
 
 // ── 工具函数 ──
 
@@ -250,100 +270,6 @@ export function juanDisplayName(f: string): string {
 /** 每卷搜索状态：number = match 数；'loading' = 正在加载；undefined = 未触发搜索 */
 type JuanMatchState = number | 'loading' | undefined;
 
-function JuanButton({ file, isActive, onSelect, meta, matchState, vertical }: {
-    file: string; isActive: boolean; onSelect: (f: string) => void;
-    meta?: { vol_label?: string };
-    matchState?: JuanMatchState;
-    /** 侧栏竖排：整行可点、左对齐、无圆角边框 */
-    vertical?: boolean;
-}) {
-    const disabled = matchState === 0;
-    const loading = matchState === 'loading';
-    const hasMatch = typeof matchState === 'number' && matchState > 0;
-    /*
-     * 有册号时**以册号为正名**：武職選簿是按册（第 49–74 册）编的，
-     * 书里根本没有「卷」这个层级，侧栏写「卷1」纯属杜撰。
-     * 没有册号的整理本仍回退到 juanDisplayName 的「卷N」。
-     */
-    const volName = meta?.vol_label ? `${meta.vol_label}冊` : null;
-    const displayName = volName ?? juanDisplayName(file);
-    const showVolLabel = !volName && !!meta?.vol_label && !displayName.includes(meta.vol_label);
-
-    return (
-        <button
-            onClick={() => { if (!disabled) onSelect(file); }}
-            disabled={disabled}
-            style={{
-                padding: vertical ? '4px 8px' : '3px 8px',
-                textAlign: vertical ? 'left' : 'center',
-                width: vertical ? '100%' : undefined,
-                border: vertical
-                    ? '1px solid transparent'
-                    : isActive
-                        ? `1px solid ${bim('primary')}`
-                        : disabled
-                            ? `1px dashed ${bim('widget-border')}`
-                            : `1px solid ${bim('widget-border')}`,
-                borderLeft: vertical
-                    ? `2px solid ${isActive ? bim('primary') : 'transparent'}`
-                    : undefined,
-                borderRadius: vertical ? 0 : '3px',
-                background: isActive
-                    ? `color-mix(in srgb, ${bim('primary')} 10%, transparent)`
-                    : hasMatch
-                        ? `${HIGHLIGHT_BG}40`
-                        : 'transparent',
-                color: isActive
-                    ? bim('primary')
-                    : disabled
-                        ? bim('desc-fg')
-                        : bim('fg'),
-                cursor: disabled ? 'not-allowed' : 'pointer',
-                fontSize: '12px',
-                fontWeight: isActive ? 600 : 400,
-                lineHeight: 1.4,
-                opacity: disabled ? 0.5 : 1,
-            }}
-        >
-            {displayName}
-            {showVolLabel && (
-                <span style={{
-                    marginLeft: '5px',
-                    fontSize: '11px',
-                    fontWeight: 400,
-                    color: bim('desc-fg'),
-                }}>
-                    ({meta!.vol_label}冊)
-                </span>
-            )}
-            {hasMatch && (
-                <span style={{
-                    marginLeft: '5px',
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    color: bim('matchstate-fg'),
-                }}>
-                    {matchState}
-                </span>
-            )}
-            {loading && (
-                <span style={{
-                    marginLeft: '5px',
-                    fontSize: '11px',
-                    color: bim('desc-fg'),
-                }}>
-                    …
-                </span>
-            )}
-        </button>
-    );
-}
-
-function groupContainsFile(group: JuanGroup, file: string): boolean {
-    if (group.files.includes(file)) return true;
-    return !!group.children?.some(c => groupContainsFile(c, file));
-}
-
 function groupFileCount(group: JuanGroup): number {
     const own = group.files.length;
     const childCount = group.children?.reduce((sum, c) => sum + groupFileCount(c), 0) || 0;
@@ -365,218 +291,6 @@ function groupMatchState(group: JuanGroup, matchStates: Record<string, JuanMatch
     let sum = 0;
     for (const s of states) if (typeof s === 'number') sum += s;
     return sum;
-}
-
-function JuanGroupNav({ group, activeFile, onSelect, depth = 0, juanMeta, matchStates, vertical }: {
-    group: JuanGroup; activeFile: string | null; onSelect: (f: string) => void; depth?: number;
-    juanMeta?: Record<string, { vol_label?: string }>;
-    matchStates: Record<string, JuanMatchState>;
-    /** 侧栏竖排（见 JuanNav 的 vertical） */
-    vertical?: boolean;
-}) {
-    const hasActive = groupContainsFile(group, activeFile || '');
-    const groupState = groupMatchState(group, matchStates);
-    const groupHasMatch = typeof groupState === 'number' && groupState > 0;
-    const groupNoMatch = groupState === 0;
-    const [expanded, setExpanded] = useState(hasActive || groupHasMatch);
-    const count = groupFileCount(group);
-    const hasChildren = !!group.children?.length;
-
-    useEffect(() => {
-        if (hasActive) setExpanded(true);
-    }, [hasActive]);
-
-    useEffect(() => {
-        if (groupHasMatch) setExpanded(true);
-    }, [groupHasMatch]);
-
-    // 叶子分组且只有1个文件：直接渲染为按钮，不需要展开层级
-    if (group.files.length === 1 && !hasChildren) {
-        const f = group.files[0];
-        const isActive = activeFile === f;
-        const ms = matchStates[f];
-        const disabled = ms === 0;
-        const loading = ms === 'loading';
-        const hasMatch = typeof ms === 'number' && ms > 0;
-        return (
-            <button
-                onClick={() => { if (!disabled) onSelect(f); }}
-                disabled={disabled}
-                style={{
-                    display: 'inline-block',
-                    padding: '3px 8px',
-                    margin: '2px 0',
-                    marginLeft: `${8 + depth * 16}px`,
-                    border: isActive
-                        ? `1px solid ${bim('primary')}`
-                        : disabled
-                            ? `1px dashed ${bim('widget-border')}`
-                            : `1px solid ${bim('widget-border')}`,
-                    borderRadius: '3px',
-                    background: isActive
-                        ? `color-mix(in srgb, ${bim('primary')} 10%, transparent)`
-                        : hasMatch
-                            ? `${HIGHLIGHT_BG}40`
-                            : 'transparent',
-                    color: isActive
-                        ? bim('primary')
-                        : disabled
-                            ? bim('desc-fg')
-                            : bim('fg'),
-                    cursor: disabled ? 'not-allowed' : 'pointer',
-                    fontSize: '12px',
-                    fontWeight: isActive ? 600 : 400,
-                    lineHeight: 1.4,
-                    opacity: disabled ? 0.5 : 1,
-                }}
-            >
-                {group.label}
-                {hasMatch && (
-                    <span style={{ marginLeft: '5px', fontSize: '11px', fontWeight: 600, color: bim('matchstate-fg') }}>{ms}</span>
-                )}
-                {loading && (
-                    <span style={{ marginLeft: '5px', fontSize: '11px', color: bim('desc-fg') }}>…</span>
-                )}
-            </button>
-        );
-    }
-
-    return (
-        <div style={{ marginBottom: depth === 0 ? '4px' : '2px' }}>
-            <button
-                type="button"
-                aria-expanded={expanded}
-                onClick={() => setExpanded(!expanded)}
-                style={{
-                    ...toggleBtnReset,
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: depth === 0 ? '4px 8px' : '2px 8px',
-                    paddingLeft: `${8 + depth * 16}px`,
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                    fontSize: depth === 0 ? '13px' : '12px',
-                    fontWeight: depth === 0 ? 600 : 500,
-                    color: hasActive
-                        ? bim('primary')
-                        : groupNoMatch
-                            ? bim('desc-fg')
-                            : bim('fg'),
-                    opacity: groupNoMatch ? 0.6 : 1,
-                }}
-            >
-                <span aria-hidden="true" style={{
-                    fontSize: '9px',
-                    transition: 'transform 0.15s',
-                    transform: expanded ? 'rotate(90deg)' : 'none',
-                    display: 'inline-block',
-                }}>&#9654;</span>
-                <span>{group.label}</span>
-                <span style={{ fontSize: '11px', fontWeight: 400, color: bim('desc-fg') }}>
-                    ({count})
-                </span>
-                {groupHasMatch && (
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: bim('matchstate-fg') }}>
-                        匹配 {groupState}
-                    </span>
-                )}
-                {groupState === 'loading' && (
-                    <span style={{ fontSize: '11px', color: bim('desc-fg') }}>…</span>
-                )}
-            </button>
-            {expanded && (
-                <>
-                    {/* 直属文件 */}
-                    {group.files.length > 0 && (
-                        <div style={{
-                            display: 'flex',
-                            flexDirection: vertical ? 'column' : 'row',
-                            flexWrap: vertical ? 'nowrap' : 'wrap',
-                            gap: vertical ? '1px' : '4px',
-                            padding: vertical
-                                ? `2px 0 2px ${8 + depth * 10}px`
-                                : `4px 0 4px ${24 + depth * 16}px`,
-                        }}>
-                            {group.files.map(f => (
-                                <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} meta={juanMeta?.[f]} matchState={matchStates[f]} vertical={vertical} />
-                            ))}
-                        </div>
-                    )}
-                    {/* 子分组 */}
-                    {hasChildren && group.children!.map((child, i) => (
-                        <JuanGroupNav key={i} group={child} activeFile={activeFile} onSelect={onSelect} depth={depth + 1} juanMeta={juanMeta} matchStates={matchStates} vertical={vertical} />
-                    ))}
-                </>
-            )}
-        </div>
-    );
-}
-
-function JuanNav({
-    files,
-    groups,
-    activeFile,
-    onSelect,
-    juanMeta,
-    matchStates,
-    vertical,
-}: {
-    files: string[] | undefined;
-    groups?: JuanGroup[];
-    activeFile: string | null;
-    onSelect: (file: string) => void;
-    juanMeta?: Record<string, { vol_label?: string }>;
-    matchStates: Record<string, JuanMatchState>;
-    /** 侧栏模式：竖排一列，卷号不再横向折行（见 ReaderLayout） */
-    vertical?: boolean;
-}) {
-    const fileList = files || [];
-
-    // 有分组信息时按分组显示
-    if (groups && groups.length > 0) {
-        return (
-            <div style={{ marginBottom: vertical ? 0 : '16px' }}>
-                {groups.map((g, i) => (
-                    <JuanGroupNav key={i} group={g} activeFile={activeFile} onSelect={onSelect} juanMeta={juanMeta} matchStates={matchStates} vertical={vertical} />
-                ))}
-            </div>
-        );
-    }
-
-    if (fileList.length === 0) return null;
-
-    /*
-     * 侧栏里竖排一列：卷号左对齐、整行可点，205 卷（四庫總目）也能顺着
-     * 扫下去。原先的横向折行在 208px 宽里会碎成很多短行，读起来更费劲。
-     */
-    if (vertical) {
-        return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                {fileList.map(f => (
-                    <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} meta={juanMeta?.[f]} matchState={matchStates[f]} vertical />
-                ))}
-            </div>
-        );
-    }
-
-    // 无分组时平铺显示
-    return (
-        <div style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '4px',
-            marginBottom: '16px',
-            maxHeight: '120px',
-            overflow: 'auto',
-            padding: '4px 0',
-        }}>
-            {fileList.map(f => (
-                <JuanButton key={f} file={f} isActive={activeFile === f} onSelect={onSelect} meta={juanMeta?.[f]} matchState={matchStates[f]} />
-            ))}
-        </div>
-    );
 }
 
 /** 折叠开关 <button> 的样式归零：外观与原先的 div 行一致 */
@@ -1302,62 +1016,17 @@ function KaozhenContent({
     transport?: IndexStorage;
     workLabelCache?: React.RefObject<WorkLabelCache>;
 }) {
-    const { convert } = useConvert();
     const normalizer = useSearchNormalizer();
     const q = searchQuery.trim();
 
+    // 章名、条数与原文来源已移到阅读器的卷头（JuanReading）
     const filteredSections = useMemo(() => {
         if (!q) return juan.sections;
         return juan.sections.filter(s => sectionMatches(s, q, true, normalizer));
     }, [juan.sections, q, normalizer]);
 
-    const totalCount = juan.sections.filter(s => normSectionType(s.type) === '考证').length;
-    const sectionCount = filteredSections.filter(s => normSectionType(s.type) === '考证').length;
-
     return (
         <div>
-            {/* 章标题 */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: '12px',
-                marginBottom: '4px',
-            }}>
-                <h3 style={{
-                    fontSize: '16px',
-                    fontWeight: 600,
-                    color: bim('fg'),
-                    margin: 0,
-                }}>
-                    {convert(juan.title)}
-                </h3>
-                <span style={{
-                    fontSize: '12px',
-                    color: bim('desc-fg'),
-                    marginLeft: 'auto',
-                }}>
-                    {q ? `${sectionCount} / ${totalCount} 條` : `${totalCount} 條`}
-                </span>
-            </div>
-            {juan.source_url && (
-                <div style={{ marginBottom: '12px' }}>
-                    <a
-                        href={juan.source_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                            fontSize: '11px',
-                            color: bim('desc-fg'),
-                            textDecoration: 'underline',
-                            textDecorationColor: bim('widget-border'),
-                            textUnderlineOffset: '2px',
-                        }}
-                    >
-                        原文來源
-                    </a>
-                </div>
-            )}
-
             {/* 考证条目列表 */}
             <div>
                 {filteredSections.map((section, i) => (
@@ -1379,237 +1048,212 @@ function KaozhenContent({
     );
 }
 
-/** 原文模式：直接渲染 md 文本（逐行处理标题和粗体） */
-function MdTextView({ text, highlightQuery = '' }: { text: string; highlightQuery?: string }) {
-    const { convert } = useConvert();
-    const normalizer = useSearchNormalizer();
-    const hl = (s: string): React.ReactNode => {
-        return renderInterlinear(convert(s), (seg) =>
-            highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
-    };
-    const lines = text.split('\n');
-    return (
-        <div style={{ fontSize: '15px', lineHeight: 2.2, color: bim('fg'), textAlign: 'justify' }}>
-            {lines.map((line, i) => {
-                if (line.startsWith('# ')) {
-                    return <h2 key={i} style={{ fontSize: '17px', fontWeight: 700, margin: '16px 0 8px' }}>{hl(line.slice(2))}</h2>;
-                }
-                if (line.startsWith('## ')) {
-                    return <h3 key={i} style={{ fontSize: '16px', fontWeight: 600, margin: '14px 0 6px' }}>{hl(line.slice(3))}</h3>;
-                }
-                if (line.startsWith('### ')) {
-                    return <h4 key={i} style={{ fontSize: '15px', fontWeight: 600, margin: '12px 0 4px' }}>{hl(line.slice(4))}</h4>;
-                }
-                if (!line.trim()) {
-                    const prevEmpty = i > 0 && !lines[i - 1].trim();
-                    return prevEmpty ? null : <div key={i} style={{ height: '0.5em' }} />;
-                }
-                // 处理行内 **粗体**
-                const parts = line.split(/(\*\*[^*]+\*\*)/g);
-                return (
-                    <p key={i} style={{ margin: '6px 0', textIndent: '2em', whiteSpace: 'pre-wrap' }}>
-                        {parts.map((part, j) =>
-                            part.startsWith('**') && part.endsWith('**')
-                                ? <strong key={j}>{hl(part.slice(2, -2))}</strong>
-                                : <React.Fragment key={j}>{hl(part)}</React.Fragment>
-                        )}
-                    </p>
-                );
-            })}
-        </div>
-    );
-}
-
-/** 原文模式：将 sections 渲染为连续文本 */
-function RawTextView({ sections, onNavigate, highlightQuery = '' }: { sections: CollatedSection[]; onNavigate?: (id: string) => void; highlightQuery?: string }) {
-    const { convert } = useConvert();
+/**
+ * 整理本正文（按 sections 排）：类名作小标题，每条书目「书名（链到作品）＋ 解题」，
+ * 与阅读页样张同一版式。取代旧的 RawTextView。
+ *
+ * 只跳过真页眉（书口题名）；长 page_header 其实是正文，见 isPageHeaderContent。
+ */
+function CollatedEntries({ sections, onNavigate, inline }: {
+    sections: CollatedSection[];
+    onNavigate?: (id: string) => void;
+    inline: (s: string) => React.ReactNode;
+}) {
     const buildUrl = useBidUrl();
-    const normalizer = useSearchNormalizer();
-    const hl = (s: string | undefined | null): React.ReactNode => {
-        if (!s) return '';
-        return renderInterlinear(convert(s), (seg) =>
-            highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
-    };
-    // Group sections by 类
-    const groups: { category: string; categoryContent?: string; items: CollatedSection[] }[] = [];
-    let current: { category: string; categoryContent?: string; items: CollatedSection[] } | null = null;
-
-    for (const s of sections) {
-        const t = normSectionType(s.type);
-        // 只跳过真页眉（书口题名）；长 page_header 其实是正文，见 isPageHeaderContent
-        if (t === 'page_header' && !isPageHeaderContent(s)) continue;
-        if (t === '类') {
-            if (current) groups.push(current);
-            current = { category: s.title, categoryContent: s.content || undefined, items: [] };
-        } else if (t === '书' || t === '诗' || t === '考证' || t === '注释') {
-            if (!current) current = { category: '', items: [] };
-            current.items.push(s);
-        } else if (t === '序' || t === '结语') {
-            if (!current) current = { category: '', items: [] };
-            current.items.push(s);
-            // 结语意味着类结束
-            if (t === '结语') {
-                groups.push(current);
-                current = null;
-            }
-        }
-    }
-    if (current) groups.push(current);
-
+    const { convert } = useConvert();
     return (
-        <div style={{ fontSize: '15px', lineHeight: 2.2, color: bim('fg'), textAlign: 'justify' }}>
-            {groups.map((g, gi) => (
-                <div key={gi} style={{ marginBottom: '20px' }}>
-                    {g.category && (
-                        <h4 style={{ fontSize: '15px', fontWeight: 600, margin: '16px 0 8px', color: bim('fg') }}>
-                            {hl(g.category)}
-                            {g.categoryContent && (
-                                <span style={{ fontWeight: 400, fontSize: '14px', marginLeft: '8px', color: bim('desc-fg') }}>
-                                    {hl(g.categoryContent)}
-                                </span>
-                            )}
-                        </h4>
-                    )}
-                    {g.items.map((s, si) => {
-                        if (normSectionType(s.type) === '序' || normSectionType(s.type) === '结语') {
-                            return <p key={si} style={{ margin: '12px 0', textIndent: '2em' }}>{hl(s.content || '')}</p>;
-                        }
-                        return (
-                            <p key={si} style={{ margin: '8px 0', textIndent: '2em', whiteSpace: 'pre-line' }}>
-                                {onNavigate && s.work_id ? (
+        <>
+            {sections.map((s, i) => {
+                const t = normSectionType(s.type);
+                if (t === 'page_header' && !isPageHeaderContent(s)) return null;
+                if (t === '类') {
+                    return (
+                        <React.Fragment key={i}>
+                            <h2>{inline(convert(s.title))}</h2>
+                            {s.content && <p>{inline(convert(s.content))}</p>}
+                        </React.Fragment>
+                    );
+                }
+                if (t === '书' || t === '诗' || t === '考证' || t === '注释') {
+                    const head = s.book_title
+                        ? `《${s.book_title}》${s.n_juan != null ? toChineseNumeral(s.n_juan) + '卷' : ''}`
+                        : s.title;
+                    const title = inline(convert(head));
+                    return (
+                        <section key={i} className="bim-rd-entry">
+                            <h3>
+                                {s.work_id && onNavigate ? (
                                     <a
                                         href={buildUrl(s.work_id)}
-                                        onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); e.stopPropagation(); onNavigate(s.work_id!); }}
-                                        style={{ color: bim('fg'), textDecoration: 'underline', textDecorationColor: bim('widget-border'), textUnderlineOffset: '3px', cursor: 'pointer' }}
-                                        title={convert(s.title)}
-                                    >
-                                        <strong>{hl(s.title)}</strong>
-                                    </a>
-                                ) : (
-                                    <strong>{hl(s.title)}</strong>
-                                )}
-                                {s.content && hl(s.content)}
-                            </p>
-                        );
-                    })}
-                </div>
-            ))}
-        </div>
+                                        onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(s.work_id!); }}
+                                        title="查看作品"
+                                    >{title}</a>
+                                ) : title}
+                            </h3>
+                            {s.author_info && <p className="bim-rd-sub">{inline(convert(s.author_info))}</p>}
+                            {s.content && s.content.split(/\n+/).map((para, j) => <p key={j}>{inline(convert(para))}</p>)}
+                            {s.summary && <p><span className="bim-rd-lbl">提要</span>{inline(convert(s.summary))}</p>}
+                            {s.comment && <p><span className="bim-rd-lbl">按語</span>{inline(convert(s.comment))}</p>}
+                            {s.additional_comment && <p><span className="bim-rd-lbl">附按</span>{inline(convert(s.additional_comment))}</p>}
+                        </section>
+                    );
+                }
+                if (s.content) return <p key={i}>{inline(convert(s.content))}</p>;
+                return null;
+            })}
+        </>
     );
 }
 
-function JuanContent({
+/** 这一卷有没有可按 sections 排的正文（书目条目、序、结语、长页眉……） */
+function hasSectionText(sections: CollatedSection[]): boolean {
+    return sections.some(s => {
+        const t = normSectionType(s.type);
+        return t === '书' || t === '诗' || t === '考证' || t === '注释' || t === '类'
+            || ((t === '序' || t === '结语') && !!s.content)
+            || (t === 'page_header' && isPageHeaderContent(s));
+    });
+}
+
+type JuanView = 'text' | 'entries';
+
+/**
+ * 一卷的阅读区：卷名 h1、元数据一行（不用 badge）、「正文 / 条目」两种看法。
+ *
+ * - 正文（默认）：宋体连续排。条目分行时按 sections 排（书名可点到作品）；
+ *   自然段时用 md 原文按体裁拼段（W7）。没有 sections 正文就用 md 原文。
+ * - 条目：原先的「目錄」卡片视图（逐条展开看提要／按语），搜索时只列命中条目。
+ * 考证类整理本只有条目看法。
+ */
+export function JuanReading({
     juan,
     rawText,
+    positionLabel,
+    index,
     searchQuery,
     onNavigate,
+    transport,
+    workLabelCache,
+    prefs,
 }: {
     juan: CollatedJuan;
     rawText?: string | null;
+    /** 「卷11」「49冊」等 */
+    positionLabel?: string;
+    index?: CollatedEditionIndex;
     searchQuery: string;
     onNavigate?: (id: string) => void;
+    transport?: IndexStorage;
+    workLabelCache?: React.RefObject<WorkLabelCache>;
+    prefs: ReaderPrefs;
 }) {
     const { convert } = useConvert();
     const normalizer = useSearchNormalizer();
-    const [viewMode, setViewMode] = useState<'catalog' | 'raw'>('catalog');
+    const [view, setView] = useState<JuanView>('text');
     const q = searchQuery.trim();
+    const isKaozhen = index?.type === 'kaozhen';
 
-    // 目录模式：过滤；原文模式：保持完整内容，仅做高亮
+    const renderText = useCallback((seg: string) => (q ? renderHighlighted(seg, q, normalizer) : seg), [q, normalizer]);
+    const inline = (s: string) => renderReaderInline(s, { renderText, properNames: prefs.properNames });
+
     const catalogSections = useMemo(() => {
         if (!q) return juan.sections;
-        return juan.sections.filter(s => sectionMatches(s, q, false, normalizer));
-    }, [juan.sections, q, normalizer]);
+        return juan.sections.filter(s => sectionMatches(s, q, isKaozhen, normalizer));
+    }, [juan.sections, q, isKaozhen, normalizer]);
 
-    const bookCount = juan.sections.filter(s => normSectionType(s.type) === '书').length;
-    const poemCount = juan.sections.filter(s => normSectionType(s.type) === '诗').length;
-    const matchedCount = q ? catalogSections.filter(s => normSectionType(s.type) === '书' || normSectionType(s.type) === '诗').length : null;
+    const count = (t: string, list: CollatedSection[]) => list.filter(s => normSectionType(s.type) === t).length;
+    const bookCount = count('书', juan.sections);
+    const poemCount = count('诗', juan.sections);
+    const kaozhenCount = count('考证', juan.sections);
+    /*
+     * 一条书目都没有的卷（四庫總目的卷首：聖諭、進表、凡例…通篇是正文）不写「0 部书」——
+     * 那是拿目录式的口径去量纯正文，读者会以为内容没加载出来。
+     */
+    let countText = '';
+    if (isKaozhen) countText = q ? `${count('考证', catalogSections)} / ${kaozhenCount} ${convert('條')}` : `${kaozhenCount} ${convert('條')}`;
+    else if (poemCount > 0) countText = q ? `${count('诗', catalogSections)} / ${poemCount} 首` : `${poemCount} 首`;
+    else if (bookCount > 0) countText = q ? `${count('书', catalogSections)} / ${bookCount} ${convert('部書')}` : `${bookCount} ${convert('部書')}`;
+
+    const grade = index?.text_quality ? normalizeTextQualityGrade(index.text_quality.grade) : null;
+    const meta: React.ReactNode[] = [];
+    if (positionLabel) meta.push(positionLabel);
+    if (countText) meta.push(countText);
+    if (isKaozhen && index?.target_source) meta.push(<>{convert('考證對象')} {convert(index.target_source)}</>);
+    if (grade) {
+        meta.push(
+            <span title={TEXT_QUALITY_CRITERIA[grade]}>
+                {index?.text_quality?.source_note ? <>底本 {convert(index.text_quality.source_note)}（{convert(TEXT_QUALITY_LABELS[grade])}）</> : <>{convert('文本質量')} {convert(TEXT_QUALITY_LABELS[grade])}</>}
+            </span>,
+        );
+    }
+    if (juan.source_url) {
+        meta.push(<a className="bim-rd-link" href={juan.source_url} target="_blank" rel="noopener noreferrer">{convert('原文來源')}</a>);
+    }
+
+    const sectionText = !isKaozhen && hasSectionText(juan.sections);
+    const useMd = !!rawText && (!sectionText || (prefs.readingMode === 'paragraph' && canParagraphize(rawText)));
+    const hasText = !isKaozhen && (sectionText || !!rawText);
+    const effectiveView: JuanView = isKaozhen || !hasText ? 'entries' : view;
 
     return (
-        <div>
-            {/* 卷标题 + 模式切换 */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: '12px',
-                marginBottom: '12px',
-            }}>
-                <h3 style={{
-                    fontSize: '16px',
-                    fontWeight: 600,
-                    color: bim('fg'),
-                    margin: 0,
-                }}>
-                    {convert(juan.title)}
-                </h3>
-                {/* 计数与切换一并靠右：标题在左，视图控制在右上角 */}
-                <span style={{
-                    fontSize: '12px',
-                    color: bim('desc-fg'),
-                    marginLeft: 'auto',
-                }}>
-                    {/*
-                      * 一条书目都没有的卷（四庫總目的卷首：聖諭、進表、凡例…
-                      * 通篇是正文）不写「0 部书」——那是拿目录式的口径去量
-                      * 纯正文，读者会以为内容没加载出来。
-                      */}
-                    {matchedCount != null
-                        ? `${matchedCount} / ${poemCount > 0 ? `${poemCount} 首` : `${bookCount} 部書`}`
-                        : (poemCount > 0 ? `${poemCount} 首`
-                            : bookCount > 0 ? `${bookCount} 部书` : '')}
-                </span>
-                <div style={{ display: 'flex', gap: '2px' }}>
-                    {(['catalog', 'raw'] as const).map(mode => (
-                        <button
-                            key={mode}
-                            onClick={() => setViewMode(mode)}
-                            style={{
-                                padding: '2px 8px',
-                                fontSize: '11px',
-                                border: `1px solid ${bim('widget-border')}`,
-                                borderRadius: mode === 'catalog' ? '3px 0 0 3px' : '0 3px 3px 0',
-                                background: viewMode === mode ? bim('primary') : bim('input-bg'),
-                                color: viewMode === mode ? bim('on-color-fg') : bim('desc-fg'),
-                                cursor: 'pointer',
-                            }}
-                        >
-                            {mode === 'catalog' ? '目錄' : '原文'}
-                        </button>
-                    ))}
-                </div>
-            </div>
+        <>
+            <header>
+                <h1 className="bim-rd-h1">{convert(juan.title)}</h1>
+                {meta.length > 0 && (
+                    <p className="bim-rd-meta">
+                        {meta.map((m, i) => (
+                            <React.Fragment key={i}>{i > 0 && <span className="bim-rd-dot" />}{m}</React.Fragment>
+                        ))}
+                    </p>
+                )}
+                {hasText && juan.sections.length > 0 && (
+                    <div className="bim-rd-views" role="group" aria-label="看法">
+                        <button type="button" className="bim-rd-t" aria-pressed={effectiveView === 'text'} onClick={() => setView('text')}>正文</button>
+                        <button type="button" className="bim-rd-t" aria-pressed={effectiveView === 'entries'} onClick={() => setView('entries')}>{convert('條目')}</button>
+                    </div>
+                )}
+            </header>
 
-            {/* 原文模式：完整内容 + 高亮 */}
-            {viewMode === 'raw' && (
-                rawText
-                    ? <MdTextView text={rawText} highlightQuery={q} />
-                    : <RawTextView sections={juan.sections} onNavigate={onNavigate} highlightQuery={q} />
+            {effectiveView === 'text' && (
+                <article className="bim-rd-prose">
+                    {useMd
+                        ? <ReaderMdText text={rawText!} mode={prefs.readingMode} properNames={prefs.properNames} renderText={renderText} dropTitle={juan.title} />
+                        : <CollatedEntries sections={juan.sections} onNavigate={onNavigate} inline={inline} />}
+                </article>
             )}
 
-            {/* 目录模式：仅显示匹配条目 + 高亮 */}
-            {viewMode === 'catalog' && catalogSections.map((section, i) => {
-                const t = normSectionType(section.type);
-                // 考证条目（如「史記一百三十卷目錄一卷」）title 与 content 各自独立，
-                // 与「书」同样需要标题+正文一并展示，走 OtherSection 会丢标题。
-                if (t === '书' || t === '诗' || t === '考证') {
-                    return <BookSection key={i} section={section} onNavigate={onNavigate} highlightQuery={q} />;
-                }
-                if (t === '类') {
-                    return <CategoryHeader key={i} section={section} highlightQuery={q} />;
-                }
-                return <OtherSection key={i} section={section} highlightQuery={q} />;
-            })}
-
-            {viewMode === 'catalog' && catalogSections.length === 0 && (
-                <div style={{
-                    padding: '32px',
-                    textAlign: 'center',
-                    color: bim('desc-fg'),
-                    fontSize: '13px',
-                }}>
-                    无匹配结果
+            {effectiveView === 'entries' && (
+                <div className="bim-rd-entries" style={{ marginTop: 24 }}>
+                    {isKaozhen ? (
+                        <KaozhenContent
+                            juan={juan}
+                            searchQuery={searchQuery}
+                            onNavigate={onNavigate}
+                            transport={transport}
+                            workLabelCache={workLabelCache}
+                        />
+                    ) : (
+                        <>
+                            {catalogSections.map((section, i) => {
+                                const t = normSectionType(section.type);
+                                // 考证条目（如「史記一百三十卷目錄一卷」）title 与 content 各自独立，
+                                // 与「书」同样需要标题+正文一并展示，走 OtherSection 会丢标题。
+                                if (t === '书' || t === '诗' || t === '考证') {
+                                    return <BookSection key={i} section={section} onNavigate={onNavigate} highlightQuery={q} />;
+                                }
+                                if (t === '类') {
+                                    return <CategoryHeader key={i} section={section} highlightQuery={q} />;
+                                }
+                                return <OtherSection key={i} section={section} highlightQuery={q} />;
+                            })}
+                            {catalogSections.length === 0 && (
+                                <div className="bim-rd-state" style={{ textAlign: 'center' }}>无匹配结果</div>
+                            )}
+                        </>
+                    )}
                 </div>
             )}
-        </div>
+        </>
     );
 }
 
@@ -1650,18 +1294,29 @@ function useCrossJuanSearch(opts: {
     const normalizer = useSearchNormalizer();
     const cacheRef = useRef<Map<string, JuanCacheEntry>>(new Map());
     const [matchStates, setMatchStates] = useState<Record<string, JuanMatchState>>({});
+    /**
+     * 已读到的卷名（「正史類」）。索引里只有文件名，目录先写「卷11」，
+     * 读过的卷（打开过或被跨卷搜索取过）补上卷名，不为此额外取数。
+     */
+    const [titles, setTitles] = useState<Record<string, string>>({});
+    const noteTitle = useCallback((f: string, juan: CollatedJuan | null) => {
+        const t = juan?.title;
+        if (t) setTitles(prev => (prev[f] === t ? prev : { ...prev, [f]: t }));
+    }, []);
 
     // 把当前 active 卷塞入缓存
     useEffect(() => {
         if (activeFile && activeJuan) {
             cacheRef.current.set(activeFile, { juan: activeJuan, rawText: activeRawText });
+            noteTitle(activeFile, activeJuan);
         }
-    }, [activeFile, activeJuan, activeRawText]);
+    }, [activeFile, activeJuan, activeRawText, noteTitle]);
 
     // workId 切换 → 清空缓存与状态
     useEffect(() => {
         cacheRef.current.clear();
         setMatchStates({});
+        setTitles({});
     }, [workId]);
 
     // 计算单册 matchCount
@@ -1714,6 +1369,7 @@ function useCrossJuanSearch(opts: {
                     ]);
                     const entry: JuanCacheEntry = { juan, rawText };
                     cacheRef.current.set(f, entry);
+                    noteTitle(f, juan);
                     if (cancelled) return;
                     setMatchStates(prev => ({ ...prev, [f]: computeMatch(entry, q) }));
                 } catch {
@@ -1726,9 +1382,9 @@ function useCrossJuanSearch(opts: {
         Promise.all(workers);
 
         return () => { cancelled = true; };
-    }, [query, workId, transport, files.join(','), computeMatch, normalizer]);
+    }, [query, workId, transport, files.join(','), computeMatch, normalizer, noteTitle]);
 
-    return { matchStates };
+    return { matchStates, titles };
 }
 
 // ── 主组件 ──
@@ -1742,6 +1398,12 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
     onJuanChange,
     className,
     style,
+    title,
+    subtitle,
+    resolveImages,
+    renderImageOverlay,
+    imagePanel,
+    allowVertical,
 }) => {
     const [indexData, setIndexData] = useState<CollatedEditionIndex | null>(null);
     const [loading, setLoading] = useState(false);
@@ -1901,8 +1563,65 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
         setSearchQuery={setSearchQuery}
         onNavigate={onNavigate}
         workLabelCacheRef={workLabelCacheRef}
+        reader={{ title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical }}
     />;
 };
+
+/** 卷在目录与卷头里的名字：有册号以册号为正名，读过的卷补上卷名 */
+function juanLabel(file: string, index: CollatedEditionIndex, titles: Record<string, string>, convert: (s: string) => string): {
+    position: string;
+    label: string;
+} {
+    /*
+     * 有册号时**以册号为正名**：武職選簿是按册（第 49–74 册）编的，
+     * 书里根本没有「卷」这个层级，写「卷1」纯属杜撰。
+     */
+    const vol = index.juan_metadata?.[file]?.vol_label;
+    const position = convert(vol ? `${vol}冊` : juanDisplayName(file));
+    const kaozhenTitle = index.files?.find(f => f.filename === file)?.title;
+    const t = kaozhenTitle ?? titles[file];
+    if (!t) return { position, label: position };
+    const ct = convert(t);
+    // 中文文件名（考证类）显示名就是标题本身，不重复
+    return { position, label: position === t || position === ct ? ct : `${position}　${ct}` };
+}
+
+/** 索引 → 目录树（分组 / 平铺） */
+function buildJuanToc(
+    index: CollatedEditionIndex,
+    files: string[],
+    matchStates: Record<string, JuanMatchState>,
+    titles: Record<string, string>,
+    convert: (s: string) => string,
+): ReaderTocItem[] {
+    const hintOf = (ms: JuanMatchState): React.ReactNode =>
+        ms === 'loading' ? '…' : typeof ms === 'number' && ms > 0 ? ms : undefined;
+    const leaf = (f: string, label?: string): ReaderTocItem => ({
+        key: f,
+        label: label ?? juanLabel(f, index, titles, convert).label,
+        hint: hintOf(matchStates[f]),
+        disabled: matchStates[f] === 0,
+    });
+    const walk = (g: JuanGroup, path: string): ReaderTocItem => {
+        // 叶子分组且只有 1 个文件：直接是一项，不要多一层展开
+        if (g.files.length === 1 && !g.children?.length) return leaf(g.files[0], convert(g.label));
+        const gs = groupMatchState(g, matchStates);
+        return {
+            key: `group:${path}`,
+            label: convert(g.label),
+            hint: gs === 'loading' ? '…' : typeof gs === 'number' && gs > 0 ? `${gs}` : groupFileCount(g),
+            defaultExpanded: typeof gs === 'number' && gs > 0,
+            children: [
+                ...g.files.map(f => leaf(f)),
+                ...(g.children ?? []).map((c, i) => walk(c, `${path}.${i}`)),
+            ],
+        };
+    };
+    if (index.juan_groups && index.juan_groups.length > 0) {
+        return index.juan_groups.map((g, i) => walk(g, `${i}`));
+    }
+    return files.map(f => leaf(f));
+}
 
 // 拆出 inner 组件以便在 hook 调用前确保 index 存在（避免在条件后调用 hook）
 const CollatedEditionInner: React.FC<{
@@ -1922,12 +1641,15 @@ const CollatedEditionInner: React.FC<{
     setSearchQuery: (s: string) => void;
     onNavigate?: (id: string) => void;
     workLabelCacheRef: React.RefObject<WorkLabelCache>;
+    reader: ReaderOptions;
 }> = ({
     className, style, index, allFiles, isKaozhen, effectiveWorkId, transport,
     activeFile, handleSelectFile, juanData, juanRawText, juanLoading,
-    searchQuery, setSearchQuery, onNavigate, workLabelCacheRef,
+    searchQuery, setSearchQuery, onNavigate, workLabelCacheRef, reader,
 }) => {
-    const { matchStates } = useCrossJuanSearch({
+    const { convert } = useConvert();
+    const [prefs, setPrefs] = useReaderPrefs();
+    const { matchStates, titles } = useCrossJuanSearch({
         workId: effectiveWorkId,
         transport,
         files: allFiles,
@@ -1937,177 +1659,86 @@ const CollatedEditionInner: React.FC<{
         query: searchQuery,
         isKaozhen,
     });
+    const images = useChapterImages(reader.resolveImages, activeFile);
 
-    /*
-     * 侧栏：搜索 + 卷/章导航。
-     *
-     * 这两样原先横铺在正文上方——导航 maxHeight 120px 里塞 205 个卷号
-     * （四庫總目），读者要在一个小滚动窗里翻找；搜索框又把正文推得更低。
-     * 移到左侧后不再与正文抢垂直空间，且 sticky 跟随滚动，翻到第 80 卷
-     * 也不用滚回顶部换卷。
-     */
-    /*
-     * juan_metadata 的键是原始文件名，这里一次性转成以 juan_files 的
-     * 文件名为键，下游组件就不必各自记得这条错配（见 resolveJuanMeta）。
-     */
-    const asideContent = (
-        <>
-            <input
-                type="text"
-                placeholder={isKaozhen ? '搜索全部章节…' : '搜索全部卷…'}
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                style={{
-                    width: '100%',
-                    padding: '6px 9px',
-                    marginBottom: '12px',
-                    border: `1px solid ${bim('input-border')}`,
-                    borderRadius: '4px',
-                    background: bim('input-bg'),
-                    color: bim('input-fg'),
-                    fontSize: '12.5px',
-                    boxSizing: 'border-box',
-                }}
-            />
-            <JuanNav
-                files={allFiles}
-                groups={index.juan_groups}
-                activeFile={activeFile}
-                onSelect={handleSelectFile}
-                juanMeta={index.juan_metadata}
-                matchStates={matchStates}
-                vertical
-            />
-        </>
+    const toc = useMemo(
+        () => buildJuanToc(index, allFiles, matchStates, titles, convert),
+        [index, allFiles, matchStates, titles, convert],
     );
 
-    return (
-        <div className={className} style={style}>
-          <ReaderLayout aside={asideContent}>
-            {/*
-              * 头部。「共 N 卷」已撤：左侧栏本身就把每一卷列了出来，
-              * 数量一目了然，再写一遍是同一事实的第二处表述。
-              * 考证类的「考證對象」不是计数、别处没有，故保留。
-              */}
-            <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '13px', color: bim('desc-fg') }}>
-                <div>
-                    {isKaozhen && index.target_source && (
-                        <span>考證對象：<strong style={{ color: bim('fg') }}>{index.target_source}</strong></span>
-                    )}
-                </div>
-                {index.text_quality && (() => {
-                    const grade = normalizeTextQualityGrade(index.text_quality.grade);
-                    if (!grade) return null;
-                    return (
-                        <div style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <span>文本質量：</span>
-                            <Tooltip content={TEXT_QUALITY_CRITERIA[grade]}>
-                                <span
-                                    style={{
-                                        display: 'inline-block',
-                                        padding: '2px 8px',
-                                        lineHeight: '16px',
-                                        textAlign: 'center',
-                                        borderRadius: '3px',
-                                        fontWeight: 600,
-                                        fontSize: '12px',
-                                        color: bim('on-color-fg'),
-                                        background: TEXT_QUALITY_COLORS[grade],
-                                        cursor: 'help',
-                                    }}
-                                >{TEXT_QUALITY_LABELS[grade]}</span>
-                            </Tooltip>
-                            {index.text_quality.source_note && (
-                                <span style={{ marginLeft: '4px' }}>— {index.text_quality.source_note}</span>
-                            )}
-                        </div>
-                    );
-                })()}
-            </div>
+    /*
+     * 目录抽屉顶上是跨卷搜索。原先搜索框与 205 个卷号（四庫總目）横铺在正文上方，
+     * 后来挪进左侧栏；现在连同目录一起收进可收起的侧栏 / 抽屉。
+     */
+    const tocHeader = (
+        <input
+            type="search"
+            className="bim-rd-toc-search"
+            placeholder={isKaozhen ? '搜索全部章节…' : '搜索全部卷…'}
+            aria-label={isKaozhen ? '搜索全部章节' : '搜索全部卷'}
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+        />
+    );
 
-            {/* 卷内容（卷/章导航已移至左侧 ReaderLayout 的 aside） */}
+    const unit = isKaozhen ? '章' : index.juan_metadata && Object.values(index.juan_metadata).some(m => m.vol_label) ? '冊' : '卷';
+    const position = activeFile ? juanLabel(activeFile, index, titles, convert).position : undefined;
+
+    return (
+        <ReaderShell
+            className={className}
+            style={style}
+            title={reader.title ?? (index.title ? convert(index.title) : undefined)}
+            subtitle={reader.subtitle ?? convert(isKaozhen ? '考證' : '整理本')}
+            toc={toc}
+            tocCaption={`目录 · ${allFiles.length} ${convert(unit)}`}
+            tocHeader={tocHeader}
+            activeKey={activeFile}
+            onSelect={handleSelectFile}
+            images={images.images}
+            imagesLoading={images.loading}
+            renderImageOverlay={reader.renderImageOverlay}
+            imagePanel={reader.imagePanel}
+            prefs={prefs}
+            onPrefsChange={setPrefs}
+            paragraphToggle={!isKaozhen && canParagraphize(juanRawText)}
+            allowVertical={reader.allowVertical}
+        >
             {juanLoading ? (
                 <LoadingDots />
             ) : juanData ? (
-                isKaozhen ? (
-                    <KaozhenContent
-                        juan={juanData}
-                        searchQuery={searchQuery}
-                        onNavigate={onNavigate}
-                        transport={transport}
-                        workLabelCache={workLabelCacheRef}
-                    />
-                ) : (
-                    <JuanContent
-                        juan={juanData}
-                        rawText={juanRawText}
-                        searchQuery={searchQuery}
-                        onNavigate={onNavigate}
-                    />
-                )
+                <JuanReading
+                    key={activeFile ?? ''}
+                    juan={juanData}
+                    rawText={juanRawText}
+                    positionLabel={position}
+                    index={index}
+                    searchQuery={searchQuery}
+                    onNavigate={onNavigate}
+                    transport={transport}
+                    workLabelCache={workLabelCacheRef}
+                    prefs={prefs}
+                />
             ) : activeFile ? (
-                <div style={{
-                    padding: '24px',
-                    textAlign: 'center',
-                    color: bim('desc-fg'),
-                    fontSize: '13px',
-                }}>
-                    选择一卷查看内容
-                </div>
+                <div className="bim-rd-state">无法加载这一卷</div>
             ) : null}
 
-            {/* 参考文献 */}
             {index.references && index.references.length > 0 && (
-                <div style={{
-                    marginTop: '32px',
-                    paddingTop: '16px',
-                    borderTop: `1px solid ${bim('widget-border')}`,
-                }}>
-                    <div style={{
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        color: bim('desc-fg'),
-                        marginBottom: '8px',
-                        letterSpacing: '2px',
-                    }}>
-                        參考文獻
-                    </div>
-                    {index.references.map((ref, i) => (
-                        <div key={i} style={{
-                            fontSize: '12px',
-                            color: bim('desc-fg'),
-                            lineHeight: 1.8,
-                            paddingLeft: '12px',
-                        }}>
-                            <span>{i + 1}. </span>
-                            {ref.url ? (
-                                <a
-                                    href={ref.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{
-                                        color: bim('desc-fg'),
-                                        textDecoration: 'underline',
-                                        textDecorationColor: bim('widget-border'),
-                                        textUnderlineOffset: '2px',
-                                    }}
-                                >
-                                    {ref.title}
-                                </a>
-                            ) : (
-                                <span>{ref.title}</span>
-                            )}
-                            {ref.author && (
-                                <span>，{ref.author}</span>
-                            )}
-                            {ref.note && (
-                                <span>。{ref.note}</span>
-                            )}
-                        </div>
-                    ))}
-                </div>
+                <section className="bim-rd-refs">
+                    <h2>{convert('參考文獻')}</h2>
+                    <ol>
+                        {index.references.map((ref, i) => (
+                            <li key={i}>
+                                {ref.url
+                                    ? <a className="bim-rd-link" href={ref.url} target="_blank" rel="noopener noreferrer">{ref.title}</a>
+                                    : <span>{ref.title}</span>}
+                                {ref.author && <span>，{ref.author}</span>}
+                                {ref.note && <span>。{ref.note}</span>}
+                            </li>
+                        ))}
+                    </ol>
+                </section>
             )}
-          </ReaderLayout>
-        </div>
+        </ReaderShell>
     );
 };

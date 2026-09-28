@@ -185,6 +185,10 @@
     /* 唯一的状态色块「有影印」 */
     --bim-flag-bg: rgba(158, 42, 43, 0.08);
 
+    /* ==== 阅读器（整理本 / 全文） ==== */
+    /* 宿主吸顶导航的高度：阅读器工具条、目录与书影侧栏在它下面吸顶（如 60px） */
+    --bim-reader-top: 0px;
+
     /* ==== 反馈浮钮（2026-09-28 Q5） ==== */
     /* 层级：低于页面抽屉、弹层（本包对话框为 1000） */
     --bim-feedback-fab-z: 40;
@@ -194,4 +198,6 @@
     --bim-font-body: var(--bim-font-ui);
     /* 著录原文（提要、按语）用宋体 */
     --bim-font-serif: "Songti SC", "Songti TC", STSong, "Noto Serif CJK SC", "Source Han Serif SC", SimSun, serif;
+    /* 阅读器正文（整理本 / 全文）；默认接 font-serif，只需覆盖那一个就同时换掉 */
+    --bim-font-reading: var(--bim-font-serif);
 }

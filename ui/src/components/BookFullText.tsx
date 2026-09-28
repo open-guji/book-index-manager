@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { BookFullTextIndex, WorkFullTextEntry, WorkFullTextIndex } from '../types';
 import type { IndexStorage } from '../storage/types';
-import { ReaderLayout } from './detail/primitives';
-import { renderFullTextBody } from './detail/GujiTable';
 import { hasGujiTableNotation } from '../core/guji-table';
 import { hasGujiMarkdownV02 } from '../core/guji-inline';
 import { bim } from '../styles/tokens';
+import { useConvert } from '../i18n';
+import { ReaderShell } from './Reader/ReaderShell';
+import type { PanelState } from './Reader/ReaderShell';
+import { ReaderMdText, canParagraphize } from './Reader/ReaderText';
+import { useReaderPrefs } from './Reader/prefs';
+import { useChapterImages } from './Reader/useChapterImages';
+import type { ReaderImageOverlay, ReaderImageResolver, ReaderTocItem } from './Reader/types';
 
-interface BookFullTextProps {
+export interface BookFullTextProps {
     /** 全文目录（外部可注入，避免重复请求） */
     index?: BookFullTextIndex;
     /** Book id；传了 `workKey` 时是 Work id */
@@ -24,6 +29,20 @@ interface BookFullTextProps {
     /** 当前活动章节 key（受控）。不带扩展名的文件 stem，例如 "001"。 */
     activeChapter?: string | null;
     onChapterChange?: (chapter: string | null) => void;
+    /** 工具条上的书名；缺省用全文目录的 version_label */
+    title?: React.ReactNode;
+    /** 书名后的小字；缺省「全文」 */
+    subtitle?: React.ReactNode;
+    /** 按章取书影（每页一张图 + 可选逐字框），URL 由宿主给；不传则书影区收起 */
+    resolveImages?: ReaderImageResolver;
+    /** 书影上的自定义层（逐字框以外的格式） */
+    renderImageOverlay?: ReaderImageOverlay;
+    /** 书影区初始状态：auto = 有影像才展开 */
+    imagePanel?: PanelState;
+    /** 竖排开关（预留） */
+    allowVertical?: boolean;
+    className?: string;
+    style?: React.CSSProperties;
 }
 
 /**
@@ -56,10 +75,10 @@ export function workFullTextOptionLabel(v: WorkFullTextEntry): string {
 const MUTED: React.CSSProperties = { padding: 24, color: bim('desc-fg') };
 
 /**
- * Book 全文 viewer：左侧章节列表 + 右侧 markdown 渲染。
+ * 全文阅读页（Book 全文 / Work 全文）。
  *
- * 数据来源：Book/<id>/full_text/index.json + 第NNN.md。
- * 设计参考 CollatedEdition 但极简化（小说连续叙事，无 sections 结构化）。
+ * 数据来源：Book/<id>/full_text/index.json + 第NNN.md（Work 全文见 `workKey`）。
+ * 版式交给 Reader/ReaderShell：目录侧栏/抽屉、书影在左、宋体正文，与整理本同一套。
  */
 export const BookFullText: React.FC<BookFullTextProps> = ({
     index: indexProp,
@@ -70,6 +89,14 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
     workKey,
     versions,
     onVersionChange,
+    title,
+    subtitle,
+    resolveImages,
+    renderImageOverlay,
+    imagePanel,
+    allowVertical,
+    className,
+    style,
 }) => {
     const [index, setIndex] = useState<BookFullTextIndex | null>(indexProp ?? null);
     /*
@@ -161,137 +188,95 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
         return () => { cancelled = true; };
     }, [bookId, currentChapterMeta, transport, workKey]);
 
-    /* 多份全文切换：沿用最朴素的原生下拉，不另起设计（阅读器 UI 冻结中） */
+    const images = useChapterImages(resolveImages, currentChapterMeta ? normalizeChapterKey(currentChapterMeta.file) : null);
+    const [prefs, setPrefs] = useReaderPrefs();
+    const { convert } = useConvert();
+
+    /* 多份全文切换：原生下拉，外观收成一行小字（阅读页不放按钮） */
     const versionSwitcher = versions && versions.length > 1 && onVersionChange ? (
-        <div style={{ marginBottom: 12, fontSize: 13, color: bim('desc-fg') }}>
-            <label>
-                版本：
-                <select
-                    value={workKey}
-                    onChange={e => onVersionChange(e.target.value)}
-                    style={{ fontSize: 13, fontFamily: 'inherit' }}
-                >
-                    {versions.map(v => (
-                        <option key={v.key} value={v.key}>{workFullTextOptionLabel(v)}</option>
-                    ))}
-                </select>
-            </label>
-        </div>
+        <label>
+            版本：
+            <select value={workKey} onChange={e => onVersionChange(e.target.value)}>
+                {versions.map(v => (
+                    <option key={v.key} value={v.key}>{workFullTextOptionLabel(v)}</option>
+                ))}
+            </select>
+        </label>
     ) : null;
 
     if (!index) {
-        if (indexFailed) {
-            return <div style={MUTED}>{versionSwitcher}无法加载全文目录</div>;
-        }
-        return <div style={MUTED}>{versionSwitcher}加载全文目录…</div>;
+        return (
+            <div style={MUTED}>
+                {versionSwitcher && <div style={{ marginBottom: 12 }}>{versionSwitcher}</div>}
+                {indexFailed ? '无法加载全文目录' : '加载全文目录…'}
+            </div>
+        );
     }
 
     if (index.chapters.length === 0) {
-        return <div style={MUTED}>{versionSwitcher}全文目录为空</div>;
+        return <div style={MUTED}>{versionSwitcher && <div style={{ marginBottom: 12 }}>{versionSwitcher}</div>}全文目录为空</div>;
     }
 
-    /*
-     * 章节列表交给共用的 ReaderLayout（sticky 侧栏，突破版心），
-     * 与整理本同一套骨架。原先这里是自带的 240px flex 侧栏 + 正文
-     * 各自 overflowY:auto —— 页面中间出现两条滚动条，浏览器的滚动
-     * 位置记忆、Ctrl+F、锚点跳转全部失效（详情页 2026-09 版式重构
-     * 已在外层去掉过一次，这里是漏网的一处）。
-     */
-    const aside = (
-        <>
-            <div style={{
-                padding: '0 8px 8px',
-                fontSize: 12.5,
-                color: bim('desc-fg'),
-                borderBottom: `1px solid ${bim('border')}`,
-                marginBottom: 8,
-            }}>
-                {/* 章数不再写出：下面就是逐章列表，数量一目了然（与整理本同） */}
-                {index.version_label}
-            </div>
-                <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-                    {index.chapters.map(ch => {
-                        const chKey = normalizeChapterKey(ch.file);
-                        const isActive = chKey === normalizeChapterKey(activeChapter ?? '');
-                        return (
-                            <li key={ch.file}>
-                                <button
-                                    onClick={() => setActiveChapter(chKey)}
-                                    style={{
-                                        display: 'block',
-                                        width: '100%',
-                                        textAlign: 'left',
-                                        padding: '6px 12px',
-                                        background: isActive ? bim('primary-bg') : 'transparent',
-                                        border: 'none',
-                                        borderLeft: isActive ? `3px solid ${bim('primary')}` : '3px solid transparent',
-                                        color: isActive ? bim('primary') : bim('fg'),
-                                        cursor: 'pointer',
-                                        fontSize: 14,
-                                        lineHeight: 1.5,
-                                    }}
-                                >
-                                    {ch.title}
-                                </button>
-                            </li>
-                        );
-                    })}
-                </ul>
-        </>
-    );
+    const toc: ReaderTocItem[] = index.chapters.map(ch => ({
+        key: normalizeChapterKey(ch.file),
+        label: convert(ch.title),
+    }));
+    const tables = hasGujiTableNotation(index) || hasGujiMarkdownV02(index);
+    /* 去掉首行 ## 标题（已在 h1 显示） */
+    const body = chapterText ? chapterText.replace(/^##\s+[^\n]+\n+/, '') : null;
 
     return (
-        <ReaderLayout aside={aside}>
-            <div>
-                {versionSwitcher}
-                {currentChapterMeta && (
-                    <header style={{
-                        marginBottom: 16,
-                        paddingBottom: 12,
-                        borderBottom: `1px solid ${bim('border')}`,
-                    }}>
-                        <h2 style={{ margin: 0, fontSize: 20, color: bim('fg') }}>
-                            {currentChapterMeta.title}
-                        </h2>
-                        <div style={{ marginTop: 6, fontSize: 12, color: bim('desc-fg') }}>
-                            来源：<a href={index.source.url} target="_blank" rel="noreferrer"
-                                style={{ color: bim('primary') }}>
-                                {index.source.name}
-                            </a>
-                            {index.source.license && <> · {index.source.license}</>}
-                        </div>
-                    </header>
-                )}
+        <ReaderShell
+            title={title ?? convert(index.version_label)}
+            subtitle={subtitle ?? '全文'}
+            toc={toc}
+            tocCaption={`目录 · ${index.chapters.length} ${index.chapters.length > 1 ? '卷' : '篇'}`}
+            activeKey={activeChapter ? normalizeChapterKey(activeChapter) : null}
+            onSelect={setActiveChapter}
+            images={images.images}
+            imagesLoading={images.loading}
+            renderImageOverlay={renderImageOverlay}
+            imagePanel={imagePanel}
+            prefs={prefs}
+            onPrefsChange={setPrefs}
+            paragraphToggle={canParagraphize(body)}
+            allowVertical={allowVertical}
+            className={className}
+            style={style}
+        >
+            {currentChapterMeta && (
+                <header>
+                    <h1 className="bim-rd-h1">{convert(currentChapterMeta.title)}</h1>
+                    <p className="bim-rd-meta">
+                        来源 <a className="bim-rd-link" href={index.source.url} target="_blank" rel="noreferrer">
+                            {convert(index.source.name)}
+                        </a>
+                        {index.source.license && <><span className="bim-rd-dot" />{index.source.license}</>}
+                        {versionSwitcher && <><span className="bim-rd-dot" />{versionSwitcher}</>}
+                    </p>
+                </header>
+            )}
 
-                {textLoading && (
-                    <div style={{ color: bim('desc-fg') }}>加载中…</div>
-                )}
+            {textLoading && <div className="bim-rd-state">加载中…</div>}
 
-                {!textLoading && chapterText && (
-                    <article style={{
-                        fontSize: 16,
-                        lineHeight: 1.9,
-                        color: bim('fg'),
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-word',
-                        fontFamily: '"Songti SC", "Source Han Serif", "Noto Serif CJK SC", serif',
-                    }}>
-                        {/* 去掉首行 ## 标题（已在 header 显示），其余原样展示；
-                            夹注（⟨…⟩／<…>）以小字渲染——此前未接，维基全文（如《公羊傳》）的注直出尖括号。
-                            目录声明 table_notation: guji-table-v1（或 guji_markdown ≥ 0.2.0）的书，`:::table` 块渲染成表格；
-                            声明 guji_markdown ≥ 0.2.0 的书另认组字／阙文／缺字猜测／夹注分行 */}
-                        {renderFullTextBody(
-                            chapterText.replace(/^##\s+[^\n]+\n+/, ''),
-                            hasGujiTableNotation(index) || hasGujiMarkdownV02(index),
-                            hasGujiMarkdownV02(index),
-                        )}
-                    </article>
-                )}
+            {!textLoading && body != null && (
+                <article className="bim-rd-prose">
+                    {/*
+                      * 夹注（⟨…⟩／<…>）以小字渲染；目录声明 table_notation: guji-table-v1
+                      * （或 guji_markdown ≥ 0.2.0）的书，`:::table` 块渲染成表格；
+                      * 声明 guji_markdown ≥ 0.2.0 的书另认组字／阙文／缺字猜测／夹注分行
+                      */}
+                    <ReaderMdText
+                        text={body}
+                        mode={prefs.readingMode}
+                        tables={tables}
+                        gujiMarkdown={hasGujiMarkdownV02(index)}
+                        properNames={prefs.properNames}
+                    />
+                </article>
+            )}
 
-                {!textLoading && !chapterText && (
-                    <div style={{ color: bim('desc-fg') }}>无法加载章节内容</div>
-                )}
-            </div>
-        </ReaderLayout>
+            {!textLoading && !chapterText && <div className="bim-rd-state">无法加载章节内容</div>}
+        </ReaderShell>
     );
 };

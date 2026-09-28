@@ -31,6 +31,9 @@ function group<T extends Record<string, BimToken>>(title: string, tokens: T) {
     return { title, tokens };
 }
 
+/** 宋体字体栈：font-serif 与 font-reading 共用这一份（N3a 定的顺序） */
+const SERIF_STACK = '"Songti SC", "Songti TC", STSong, "Noto Serif CJK SC", "Source Han Serif SC", SimSun, serif';
+
 /** 分组仅用于生成 variables.css 时的注释标题 */
 export const BIM_TOKEN_GROUPS = [
     group('基础（VS Code 环境下跟随 --vscode-*）', {
@@ -191,6 +194,12 @@ export const BIM_TOKEN_GROUPS = [
         'table-border': { value: 'color-mix(in srgb, currentColor 28%, transparent)', root: false, note: '古籍表格（跟随当前文字色）' },
         'table-head-bg': { value: 'color-mix(in srgb, currentColor 8%, transparent)', root: false },
     }),
+    group('阅读器（整理本 / 全文）', {
+        'reader-top': {
+            value: '0px',
+            note: '宿主吸顶导航的高度：阅读器工具条、目录与书影侧栏在它下面吸顶（如 60px）',
+        },
+    }),
     group('反馈浮钮（2026-09-28 Q5）', {
         'feedback-fab-z': { value: '40', note: '层级：低于页面抽屉、弹层（本包对话框为 1000）' },
         /*
@@ -206,8 +215,13 @@ export const BIM_TOKEN_GROUPS = [
         },
         'font-body': { value: 'system-ui, sans-serif', css: 'var(--bim-font-ui)' },
         'font-serif': {
-            value: '"Songti SC", "Songti TC", STSong, "Noto Serif CJK SC", "Source Han Serif SC", SimSun, serif',
+            value: SERIF_STACK,
             note: '著录原文（提要、按语）用宋体',
+        },
+        'font-reading': {
+            value: SERIF_STACK,
+            css: 'var(--bim-font-serif)',
+            note: '阅读器正文（整理本 / 全文）；默认接 font-serif，只需覆盖那一个就同时换掉',
         },
     }),
 ] as const;
