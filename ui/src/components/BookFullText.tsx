@@ -7,6 +7,7 @@ import { bim } from '../styles/tokens';
 import { useConvert } from '../i18n';
 import { ReaderShell } from './Reader/ReaderShell';
 import type { PanelState } from './Reader/ReaderShell';
+import { readerVersionsFromFullText } from './Reader/versions';
 import { ReaderMdText, canParagraphize } from './Reader/ReaderText';
 import { useReaderPrefs } from './Reader/prefs';
 import { useChapterImages } from './Reader/useChapterImages';
@@ -192,11 +193,21 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
     const [prefs, setPrefs] = useReaderPrefs();
     const { convert } = useConvert();
 
-    /* 多份全文切换：原生下拉，外观收成一行小字（阅读页不放按钮） */
-    const versionSwitcher = versions && versions.length > 1 && onVersionChange ? (
+    const multiVersion = !!(versions && versions.length > 1 && onVersionChange);
+    /* 多份全文切换：正常时走 ReaderShell 工具条的「版本」下拉框（overview#235）；
+       目录没取到或为空时 ReaderShell 不渲染，只在这两种状态下给一个小字下拉，免得切不回去 */
+    const readerVersions = useMemo(
+        // 选项文字沿用 workFullTextOptionLabel：同为維基文庫的两份（如老子）要靠页名区分，
+        // 只用 version_label 会得到两个一样的「老子 · 維基文庫」
+        () => (multiVersion
+            ? readerVersionsFromFullText(versions!).map((rv, i) => ({ ...rv, label: workFullTextOptionLabel(versions![i]) }))
+            : undefined),
+        [multiVersion, versions],
+    );
+    const versionSwitcher = multiVersion ? (
         <label>
             版本：
-            <select value={workKey} onChange={e => onVersionChange(e.target.value)}>
+            <select value={workKey} onChange={e => onVersionChange!(e.target.value)}>
                 {versions.map(v => (
                     <option key={v.key} value={v.key}>{workFullTextOptionLabel(v)}</option>
                 ))}
@@ -239,6 +250,10 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
             imagePanel={imagePanel}
             prefs={prefs}
             onPrefsChange={setPrefs}
+            versions={readerVersions}
+            currentVersionKey={readerVersions ? workKey ?? null : undefined}
+            onVersionChange={readerVersions ? onVersionChange : undefined}
+            versionSource={false}
             paragraphToggle={canParagraphize(body)}
             allowVertical={allowVertical}
             className={className}
@@ -252,7 +267,6 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
                             {convert(index.source.name)}
                         </a>
                         {index.source.license && <><span className="bim-rd-dot" />{index.source.license}</>}
-                        {versionSwitcher && <><span className="bim-rd-dot" />{versionSwitcher}</>}
                     </p>
                 </header>
             )}
