@@ -31,6 +31,9 @@ function group<T extends Record<string, BimToken>>(title: string, tokens: T) {
     return { title, tokens };
 }
 
+/** 宋体字体栈：font-serif 与 font-reading 共用这一份（N3a 定的顺序） */
+const SERIF_STACK = '"Songti SC", "Songti TC", STSong, "Noto Serif CJK SC", "Source Han Serif SC", SimSun, serif';
+
 /** 分组仅用于生成 variables.css 时的注释标题 */
 export const BIM_TOKEN_GROUPS = [
     group('基础（VS Code 环境下跟随 --vscode-*）', {
@@ -171,14 +174,23 @@ export const BIM_TOKEN_GROUPS = [
         'body-fg': { value: '#3b3228' },
         'quiet-fg': { value: '#5b4f40' },
         'meta-fg': { value: '#7b6a54' },
-        'label-fg': { value: '#a3937b' },
-        'hint-fg': { value: '#b3a385' },
+        'label-fg': { value: '#6f6457', note: '标签 / 提示：2026-09 N3a 调深，纸底与斑马底上对比度均 ≥4.5（原 #a3937b 2.8、#b3a385 2.3）' },
+        'hint-fg': { value: '#756a5e' },
         'accent': { value: '#9c3a2c', note: '朱' },
         'accent-deep': { value: '#6f2a20', note: '链接 hover' },
         'rule-strong': { value: '#2a231c', note: '分隔线：强 → 常规 → 虚线 → 提要左线' },
         'rule': { value: '#e4dbc9' },
         'rule-dashed': { value: '#d6c9ae' },
         'rule-accent-soft': { value: '#e0d3b6' },
+        'aux-fg': {
+            value: '#6f6457',
+            note: '辅助字（元数据、注记、「·」分隔的浅色小字）。须在 page-bg / zebra-bg 上对比度 ≥4.5（Q5 巡检）',
+        },
+        'card-bg': { value: '#fffdf9', note: '提要卡：抬起的面' },
+        'zebra-bg': { value: '#f6f2eb', note: '表格斑马纹 / 左栏分组底（不画格线，靠这一阶底色分行）' },
+        'tint-bg': { value: '#f3eee6', note: '检索框、悬停' },
+        'shadow-summary': { value: '0 10px 32px rgba(60, 50, 40, 0.07)', note: '提要卡投影' },
+        'flag-bg': { value: 'rgba(158, 42, 43, 0.08)', note: '唯一的状态色块「有影印」' },
         'table-border': { value: 'color-mix(in srgb, currentColor 28%, transparent)', root: false, note: '古籍表格（跟随当前文字色）' },
         'table-head-bg': { value: 'color-mix(in srgb, currentColor 8%, transparent)', root: false },
     }),
@@ -202,10 +214,14 @@ export const BIM_TOKEN_GROUPS = [
                 + '"PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif',
         },
         'font-body': { value: 'system-ui, sans-serif', css: 'var(--bim-font-ui)' },
+        'font-serif': {
+            value: SERIF_STACK,
+            note: '著录原文（提要、按语）用宋体',
+        },
         'font-reading': {
-            value: '"Noto Serif SC", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "Songti TC", '
-                + '"STSong", "SimSun", serif',
-            note: '阅读器正文（整理本 / 全文）用宋体；界面仍是 font-ui',
+            value: SERIF_STACK,
+            css: 'var(--bim-font-serif)',
+            note: '阅读器正文（整理本 / 全文）；默认接 font-serif，只需覆盖那一个就同时换掉',
         },
     }),
 ] as const;

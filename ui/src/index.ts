@@ -16,6 +16,9 @@ export type {
     SyncConfig,
     DescriptionInfo,
     AuthorInfo,
+    WorkClassification,
+    TodoItem,
+    ReviewInfo,
     PublicationInfo,
     LocationInfo,
     JuanCount,
@@ -181,6 +184,10 @@ export {
 } from './components/detail';
 export type { FactItem, LinkContext, RenderLink, TableSpec, CrumbItem } from './components/detail';
 export {
+    DetailGrid, Sec, MetaLine, TabFilter, CheckFilter, MoreLink, SummaryCard, ReadButton, SideList, CardFoot,
+} from './components/detail';
+export type { RailNavItem, CardFact } from './components/detail';
+export {
     deriveEra, deriveYear, deriveEditionType, normalizeEra, eraRank,
     groupRelatedWorks, bucketResources, resourceNote,
     buildVersionTable, buildVersionRow, computeVersionPartition,
@@ -222,6 +229,7 @@ export type {
     ExtraTab,
     ExtraTabContext,
     SourceLinkContext,
+    ReadLinkContext,
 } from './components/BookDetailLayout';
 
 // i18n
