@@ -46,14 +46,16 @@ import 'book-index-ui/styles'                // CSS（用到组件时引入）
 
 整理本与全文共用一个外壳 `ReaderShell`：
 
-- 布局：**书影在正文左边**，目录在最左。宽屏（≥1100px）目录是可收起的侧栏（默认展开）；更窄时是抽屉（默认收起，选卷后自动合上，Esc 关闭）；窄屏（≤719px）书影区不显示，只留正文。
+- 布局：**书影在正文左边**，目录在最左。宽屏（≥1100px）目录是可收起的侧栏（默认展开）；更窄时是抽屉（默认收起，选卷后自动合上，Esc 关闭，打开时 Tab 圈在抽屉内）；窄屏（≤719px）书影区不显示，只留正文。
 - 工具条（吸顶）只用文字与图标：目录、书影、繁｜简、A− A+、自然段（体裁判得清时才出现，W7）、专名线（书名加波浪线）。竖排预留 `allowVertical`，默认不显示。
-- 正文：`--bim-font-reading`（宋体）18px、行高 2.05，`line-break: strict` 避头尾；界面黑体。
+- 正文：`--bim-font-reading`（宋体）18px、行高 2.05（手机端同样），`line-break: strict` 避头尾；界面黑体。
 - 无障碍：第一个可聚焦元素是「跳到正文」；目录用游走 tabindex，几百卷也只有当前卷进 Tab 序列（↑↓ Home End 移动）。
 - 偏好（字号、自然段、专名线）存 `localStorage['bim-reader-prefs']`，首帧用默认值，SSR 安全。
 - 宿主若有吸顶导航，设 `--bim-reader-top`（如 `60px`）。
 
 书影接口：`CollatedEdition` / `BookFullText` 的 `resolveImages(chapterKey)` 返回当卷的 `ReaderPageImage[]`（可异步）——每页一张图，URL 由宿主给，可带 `width/height` 与逐字框 `boxes`（暂定格式 `bim-charbox-v0`：原图像素坐标 `x/y/w/h`，可选 `char`/`textOffset`/`confidence`）。其他格式的框设 `boxFormat` 并用 `renderImageOverlay` 自己画，这是与 CV 交付格式对齐前的扩展点。没有影像时书影区默认收起（`imagePanel="auto"`），点工具条「书影」可看占位。
+
+**`resolveImages` 要用 `useCallback`（或模块级函数）包一层**：组件按 `[resolveImages, 当前卷]` 重新取书影，每次渲染都传一个新函数会反复请求。
 
 ### 数据层（`book-index-ui/storage`）
 

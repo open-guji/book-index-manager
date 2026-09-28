@@ -317,3 +317,51 @@ describe('CollatedEdition（整理本阅读页）', () => {
         await waitFor(() => expect(container.querySelector('article mark')?.textContent).toBe('蕭常'));
     });
 });
+
+describe('审查修订（#24 网站总管）', () => {
+    it('窄屏正文仍是 18px、行高 2.05：窄屏样式不覆盖字号与行高', () => {
+        const narrow = READER_CSS.slice(READER_CSS.indexOf('@media (max-width: 719px)'));
+        expect(narrow).not.toMatch(/bimrd-fs, 1[0-7]px/);
+        expect(narrow).not.toMatch(/line-height/);
+        expect(READER_CSS).toMatch(/\.bim-rd-col \{[^}]*var\(--bimrd-fs, 18px\)/);
+        expect(READER_CSS).toMatch(/\.bim-rd-prose \{[^}]*line-height: 2\.05;/);
+    });
+
+    it('抽屉打开时 Tab 圈在抽屉里（aria-modal 配焦点陷阱）', () => {
+        const orig = window.matchMedia;
+        window.matchMedia = ((q: string) => ({
+            matches: false, media: q, addEventListener() {}, removeEventListener() {},
+        })) as unknown as typeof window.matchMedia;
+        try {
+            const { container } = render(<Harness toc={FEW} />);
+            fireEvent.click(screen.getByRole('button', { name: '目录' }));
+            const toc = container.querySelector<HTMLElement>('.bim-rd-toc')!;
+            expect(toc.getAttribute('aria-modal')).toBe('true');
+            const close = within(toc).getByRole('button', { name: '收起目录' });
+            const cur = toc.querySelector<HTMLElement>('[aria-current="true"]')!;
+            // 最后一个可 Tab 项上按 Tab → 回到第一个
+            cur.focus();
+            fireEvent.keyDown(cur, { key: 'Tab' });
+            expect(document.activeElement).toBe(close);
+            // 第一个上 Shift+Tab → 到最后一个
+            fireEvent.keyDown(close, { key: 'Tab', shiftKey: true });
+            expect(document.activeElement).toBe(cur);
+        } finally {
+            window.matchMedia = orig;
+        }
+    });
+
+    it('简体模式下整理本元数据行也转成简体', async () => {
+        const transport = {
+            getCollatedJuan: vi.fn(async () => JUAN),
+            getCollatedJuanText: vi.fn(async () => null),
+        } as never;
+        const { container } = render(
+            <LocaleProvider locale="zh-Hans">
+                <CollatedEdition index={CE_INDEX} workId="w1" transport={transport} />
+            </LocaleProvider>,
+        );
+        await waitFor(() => expect(container.querySelector('.bim-rd-meta')?.textContent).toContain('2 部书'), { timeout: 8000 });
+        expect(container.querySelector('.bim-rd-meta')?.textContent).toContain('底本 维基文库（粗校）');
+    }, 10000);
+});

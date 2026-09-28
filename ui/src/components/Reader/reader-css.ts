@@ -224,8 +224,7 @@ export const READER_CSS = `
   .bim-rd-img { display: none !important; }
   .bim-rd-body { grid-template-columns: minmax(0, 1fr); }
   .bim-rd-text { grid-column: 1; padding: 20px 16px 64px; }
-  .bim-rd-col { font-size: var(--bimrd-fs, 17px); }
   .bim-rd-h1 { font-size: 20px; letter-spacing: 0.06em; }
-  .bim-rd-prose { margin-top: 20px; line-height: 1.95; }
+  .bim-rd-prose { margin-top: 20px; }
 }
 `;

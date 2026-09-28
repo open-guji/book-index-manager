@@ -10,7 +10,7 @@ import type { ReadingMode } from '../../core/paragraphize';
 import type { ReaderWritingMode } from './types';
 
 export interface ReaderPrefs {
-    /** 正文字号（px）；null = 跟随样式默认（宽屏 18、窄屏 17） */
+    /** 正文字号（px）；null = 默认 18（宽窄屏一致，2026-09-28 定：宋体 18px、行高 2.05） */
     fontSize: number | null;
     /** 条目分行（现状）／自然段 */
     readingMode: ReadingMode;

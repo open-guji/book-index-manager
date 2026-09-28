@@ -249,7 +249,7 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
                     <h1 className="bim-rd-h1">{convert(currentChapterMeta.title)}</h1>
                     <p className="bim-rd-meta">
                         来源 <a className="bim-rd-link" href={index.source.url} target="_blank" rel="noreferrer">
-                            {index.source.name}
+                            {convert(index.source.name)}
                         </a>
                         {index.source.license && <><span className="bim-rd-dot" />{index.source.license}</>}
                         {versionSwitcher && <><span className="bim-rd-dot" />{versionSwitcher}</>}

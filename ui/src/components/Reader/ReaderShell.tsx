@@ -87,6 +87,28 @@ const IconImage = () => (
     </svg>
 );
 
+/**
+ * 抽屉（aria-modal）打开时把 Tab 圈在抽屉里：可 Tab 到的只有关闭键、搜索框与目录当前项
+ * （目录内部靠方向键），在首尾之间循环。
+ */
+function trapFocus(e: React.KeyboardEvent, root: HTMLElement | null) {
+    if (!root) return;
+    const items = Array.from(root.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+    )).filter(el => el.tabIndex >= 0);
+    if (items.length === 0) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    const cur = document.activeElement as HTMLElement | null;
+    if (e.shiftKey && (cur === first || !root.contains(cur))) {
+        e.preventDefault();
+        last.focus();
+    } else if (!e.shiftKey && (cur === last || !root.contains(cur))) {
+        e.preventDefault();
+        first.focus();
+    }
+}
+
 function useMediaQuery(query: string, ssrDefault: boolean): boolean {
     const [match, setMatch] = useState(ssrDefault);
     useEffect(() => {
@@ -278,7 +300,11 @@ export function ReaderShell({
                     role={drawer && tocOpen ? 'dialog' : undefined}
                     aria-modal={drawer && tocOpen ? true : undefined}
                     aria-label={drawer && tocOpen ? '目录' : undefined}
-                    onKeyDown={e => { if (e.key === 'Escape' && drawer && tocOpen) { e.stopPropagation(); closeDrawer(true); } }}
+                    onKeyDown={e => {
+                        if (!drawer || !tocOpen) return;
+                        if (e.key === 'Escape') { e.stopPropagation(); closeDrawer(true); return; }
+                        if (e.key === 'Tab') trapFocus(e, tocRef.current);
+                    }}
                 >
                     <div className="bim-rd-toc-top">
                         <div className="bim-rd-toc-head">

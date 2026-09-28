@@ -1170,24 +1170,24 @@ export function JuanReading({
      * 那是拿目录式的口径去量纯正文，读者会以为内容没加载出来。
      */
     let countText = '';
-    if (isKaozhen) countText = q ? `${count('考证', catalogSections)} / ${kaozhenCount} 條` : `${kaozhenCount} 條`;
+    if (isKaozhen) countText = q ? `${count('考证', catalogSections)} / ${kaozhenCount} ${convert('條')}` : `${kaozhenCount} ${convert('條')}`;
     else if (poemCount > 0) countText = q ? `${count('诗', catalogSections)} / ${poemCount} 首` : `${poemCount} 首`;
-    else if (bookCount > 0) countText = q ? `${count('书', catalogSections)} / ${bookCount} 部書` : `${bookCount} 部書`;
+    else if (bookCount > 0) countText = q ? `${count('书', catalogSections)} / ${bookCount} ${convert('部書')}` : `${bookCount} ${convert('部書')}`;
 
     const grade = index?.text_quality ? normalizeTextQualityGrade(index.text_quality.grade) : null;
     const meta: React.ReactNode[] = [];
     if (positionLabel) meta.push(positionLabel);
     if (countText) meta.push(countText);
-    if (isKaozhen && index?.target_source) meta.push(<>考證對象 {convert(index.target_source)}</>);
+    if (isKaozhen && index?.target_source) meta.push(<>{convert('考證對象')} {convert(index.target_source)}</>);
     if (grade) {
         meta.push(
             <span title={TEXT_QUALITY_CRITERIA[grade]}>
-                {index?.text_quality?.source_note ? <>底本 {convert(index.text_quality.source_note)}（{TEXT_QUALITY_LABELS[grade]}）</> : <>文本質量 {TEXT_QUALITY_LABELS[grade]}</>}
+                {index?.text_quality?.source_note ? <>底本 {convert(index.text_quality.source_note)}（{convert(TEXT_QUALITY_LABELS[grade])}）</> : <>{convert('文本質量')} {convert(TEXT_QUALITY_LABELS[grade])}</>}
             </span>,
         );
     }
     if (juan.source_url) {
-        meta.push(<a className="bim-rd-link" href={juan.source_url} target="_blank" rel="noopener noreferrer">原文來源</a>);
+        meta.push(<a className="bim-rd-link" href={juan.source_url} target="_blank" rel="noopener noreferrer">{convert('原文來源')}</a>);
     }
 
     const sectionText = !isKaozhen && hasSectionText(juan.sections);
@@ -1209,7 +1209,7 @@ export function JuanReading({
                 {hasText && juan.sections.length > 0 && (
                     <div className="bim-rd-views" role="group" aria-label="看法">
                         <button type="button" className="bim-rd-t" aria-pressed={effectiveView === 'text'} onClick={() => setView('text')}>正文</button>
-                        <button type="button" className="bim-rd-t" aria-pressed={effectiveView === 'entries'} onClick={() => setView('entries')}>條目</button>
+                        <button type="button" className="bim-rd-t" aria-pressed={effectiveView === 'entries'} onClick={() => setView('entries')}>{convert('條目')}</button>
                     </div>
                 )}
             </header>
@@ -1577,7 +1577,7 @@ function juanLabel(file: string, index: CollatedEditionIndex, titles: Record<str
      * 书里根本没有「卷」这个层级，写「卷1」纯属杜撰。
      */
     const vol = index.juan_metadata?.[file]?.vol_label;
-    const position = vol ? `${vol}冊` : juanDisplayName(file);
+    const position = convert(vol ? `${vol}冊` : juanDisplayName(file));
     const kaozhenTitle = index.files?.find(f => f.filename === file)?.title;
     const t = kaozhenTitle ?? titles[file];
     if (!t) return { position, label: position };
@@ -1689,9 +1689,9 @@ const CollatedEditionInner: React.FC<{
             className={className}
             style={style}
             title={reader.title ?? (index.title ? convert(index.title) : undefined)}
-            subtitle={reader.subtitle ?? (isKaozhen ? '考證' : '整理本')}
+            subtitle={reader.subtitle ?? convert(isKaozhen ? '考證' : '整理本')}
             toc={toc}
-            tocCaption={`目录 · ${allFiles.length} ${unit}`}
+            tocCaption={`目录 · ${allFiles.length} ${convert(unit)}`}
             tocHeader={tocHeader}
             activeKey={activeFile}
             onSelect={handleSelectFile}
@@ -1725,7 +1725,7 @@ const CollatedEditionInner: React.FC<{
 
             {index.references && index.references.length > 0 && (
                 <section className="bim-rd-refs">
-                    <h2>參考文獻</h2>
+                    <h2>{convert('參考文獻')}</h2>
                     <ol>
                         {index.references.map((ref, i) => (
                             <li key={i}>
