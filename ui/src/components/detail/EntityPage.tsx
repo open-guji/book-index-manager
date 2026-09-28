@@ -18,7 +18,7 @@ import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, type RenderLink } from './primitives';
 import {
     DetailGrid, Sec, MetaLine, TabFilter, MoreLink, SummaryCard, CardFoot,
-    type CardFact, type RailNavItem,
+    type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import { normalizeRole, roleFacets, type RoleClass } from '../../core/detail-model';
 
@@ -34,6 +34,8 @@ export interface EntityPageProps {
     railTop?: React.ReactNode;
     /** 左栏的返回链接 */
     back?: React.ReactNode;
+    /** 左栏「更多」：切到丛编目录、extraTabs 等其他页面的入口（由 layout 注入） */
+    railLinks?: RailLink[];
 }
 
 /** 已解析的作品行 */
@@ -80,7 +82,7 @@ function yr(n?: number): string {
 }
 
 export const EntityPage: React.FC<EntityPageProps> = ({
-    data, transport, onNavigate, renderLink, railTop, back,
+    data, transport, onNavigate, renderLink, railTop, back, railLinks,
 }) => {
     const t = useT();
     const { convert } = useConvert();
@@ -273,5 +275,5 @@ export const EntityPage: React.FC<EntityPageProps> = ({
         </Sec>
     );
 
-    return <DetailGrid railTop={railTop} back={back} nav={nav} main={main} card={card} />;
+    return <DetailGrid railTop={railTop} back={back} nav={nav} railLinks={railLinks} main={main} card={card} />;
 };

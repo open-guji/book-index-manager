@@ -20,7 +20,7 @@ import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, VolumeLinks, flattenTitles, type RenderLink } from './primitives';
 import {
     DetailGrid, Sec, MetaLine, SummaryCard, SideList, CardFoot, MoreLink,
-    type CardFact, type RailNavItem,
+    type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import {
     bucketResources, deriveEra, deriveEditionType,
@@ -42,6 +42,8 @@ export interface BookPageProps {
     railTop?: React.ReactNode;
     /** 左栏的返回链接 */
     back?: React.ReactNode;
+    /** 左栏「更多」：切到丛编目录、extraTabs 等其他页面的入口（由 layout 注入） */
+    railLinks?: RailLink[];
     /** @deprecated 2026-09 N3a 起全文入口统一为 readAction，此 prop 不再渲染 */
     fullTextSection?: React.ReactNode;
 }
@@ -53,7 +55,7 @@ interface ResolvedRef {
 }
 
 export const BookPage: React.FC<BookPageProps> = ({
-    data, transport, onNavigate, renderLink, readAction, railTop, back,
+    data, transport, onNavigate, renderLink, readAction, railTop, back, railLinks,
 }) => {
     const t = useT();
     const { convert } = useConvert();
@@ -348,7 +350,7 @@ export const BookPage: React.FC<BookPageProps> = ({
         </>
     );
 
-    return <DetailGrid railTop={railTop} back={back} nav={nav} main={main} card={card} side={side} />;
+    return <DetailGrid railTop={railTop} back={back} nav={nav} railLinks={railLinks} main={main} card={card} side={side} />;
 };
 
 // ══════════════════════════════════════════════════════════════

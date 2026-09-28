@@ -20,7 +20,7 @@ import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, renderInterlinear, type RenderLink } from './primitives';
 import {
     DetailGrid, Sec, MetaLine, TabFilter, CheckFilter, MoreLink, SummaryCard, SideList, CardFoot,
-    type CardFact, type RailNavItem,
+    type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import {
     buildVersionTable, bucketResources, measureText, sourceText,
@@ -45,6 +45,8 @@ export interface WorkPageProps {
     railTop?: React.ReactNode;
     /** 左栏的返回链接 */
     back?: React.ReactNode;
+    /** 左栏「更多」：切到丛编目录、extraTabs 等其他页面的入口（由 layout 注入） */
+    railLinks?: RailLink[];
     /** @deprecated 2026-09 N3a 起谱系入口暂不放，此 prop 不再渲染 */
     lineageAction?: React.ReactNode;
     /** @deprecated 2026-09 N3a 起整理本/全文入口统一为 readAction，此 prop 不再渲染 */
@@ -54,7 +56,7 @@ export interface WorkPageProps {
 type Resolved = ResolvedVersion & { measure_info?: string };
 
 export const WorkPage: React.FC<WorkPageProps> = ({
-    data, transport, onNavigate, renderLink, readAction, railTop, back,
+    data, transport, onNavigate, renderLink, readAction, railTop, back, railLinks,
 }) => {
     const t = useT();
     const { convert } = useConvert();
@@ -399,7 +401,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
         </>
     );
 
-    return <DetailGrid railTop={railTop} back={back} nav={nav} main={main} card={card} side={side} />;
+    return <DetailGrid railTop={railTop} back={back} nav={nav} railLinks={railLinks} main={main} card={card} side={side} />;
 };
 
 // ══════════════════════════════════════════════════════════════

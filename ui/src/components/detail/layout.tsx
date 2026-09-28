@@ -58,6 +58,7 @@ export const LAYOUT_CSS = `
 }
 .bim-d-rail-nav a:hover { background: ${bim('zebra-bg')}; color: ${bim('ink')} !important; }
 .bim-d-rail-nav .bim-d-meta { font-size: 12px; }
+.bim-d-rail-links { margin-top: 20px; }
 .bim-d-rail-back { display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px;
   font-size: 13px; color: ${bim('aux-fg')} !important; }
 
@@ -196,6 +197,10 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
   }
   .bim-d-g-rail { position: static; }
   .bim-d-rail-navwrap { display: none; }
+  .bim-d-rail-links { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; }
+  .bim-d-rail-links .bim-d-rail-cap { display: none; }
+  .bim-d-rail-links .bim-d-rail-nav { display: flex; flex-wrap: wrap; gap: 0 16px; }
+  .bim-d-rail-links .bim-d-rail-nav a { padding: 7px 0; color: ${bim('accent')} !important; font-size: 14px; }
 }
 
 /* 手机：左栏收起，提要卡 → 正文 → 旁栏 */
@@ -230,6 +235,13 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 // 骨架
 // ══════════════════════════════════════════════════════════════
 
+export interface RailLink {
+    key: string;
+    label: string;
+    onClick: () => void;
+    href?: string;
+}
+
 export interface RailNavItem {
     /** 区块锚点 id */
     id: string;
@@ -245,10 +257,15 @@ export interface RailNavItem {
  * card   —— 右栏提要卡
  * side   —— 右栏提要卡下的旁栏清单（手机上排到正文之后）
  */
-export function DetailGrid({ railTop, back, nav, main, card, side }: {
+export function DetailGrid({ railTop, back, nav, railLinks, main, card, side }: {
     railTop?: React.ReactNode;
     back?: React.ReactNode;
     nav?: RailNavItem[];
+    /**
+     * 左栏「更多」：切到本条目其他页面的入口（丛编目录、宿主注入的 extraTabs 如「数字化」）。
+     * 与本页锚点导航不同，窄屏也显示（折成一行文字链接），否则手机上就没有入口了。
+     */
+    railLinks?: RailLink[];
     main: React.ReactNode;
     card: React.ReactNode;
     side?: React.ReactNode;
@@ -269,6 +286,28 @@ export function DetailGrid({ railTop, back, nav, main, card, side }: {
                                     <a href={`#${it.id}`}>
                                         <span>{convert(it.label)}</span>
                                         {it.count != null && <span className="bim-d-meta">{it.count}</span>}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                )}
+                {railLinks && railLinks.length > 0 && (
+                    <nav className="bim-d-rail-links" aria-label={convert('更多')}>
+                        <p className="bim-d-rail-cap">{convert('更多')}</p>
+                        <ul className="bim-d-rail-nav">
+                            {railLinks.map(l => (
+                                <li key={l.key}>
+                                    <a
+                                        href={l.href ?? '#'}
+                                        onClick={e => {
+                                            if (e.metaKey || e.ctrlKey) return;
+                                            e.preventDefault();
+                                            l.onClick();
+                                        }}
+                                    >
+                                        <span>{convert(l.label)}</span>
+                                        <span className="bim-d-meta" aria-hidden="true">→</span>
                                     </a>
                                 </li>
                             ))}

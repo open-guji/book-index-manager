@@ -160,9 +160,54 @@ describe('WorkPage（三栏）', () => {
         expect(within(related).getByText('研究').className).toContain('bim-d-meta');
     });
 
-    it('宿主的 railTop 渲染在左栏', () => {
+    it('概览页顶条与页脚的辅助字走 --bim-aux-fg（不再用 label-fg）', () => {
+        render(<BookDetailLayout {...props(WORK)} />);
+        const top = document.querySelector('.bim-d-top') as HTMLElement;
+        const foot = document.querySelector('footer') as HTMLElement;
+        expect(top.style.color).toContain('--bim-aux-fg');
+        expect(foot.style.color).toContain('--bim-aux-fg');
+    });
+
+        it('宿主的 railTop 渲染在左栏', () => {
         render(<BookDetailLayout {...props(WORK, { railTop: <input aria-label="站內檢索" /> })} />);
         expect(screen.getByLabelText('站內檢索').closest('.bim-d-g-rail')).toBeTruthy();
+    });
+});
+
+describe('左栏「更多」：extraTabs 与丛编目录的入口', () => {
+    it('宿主注入的 extraTabs 在概览页有入口，点了切 tab', () => {
+        const onTabChange = vi.fn();
+        render(<BookDetailLayout {...props(WORK, {
+            onTabChange,
+            extraTabs: [{ key: 'digital', label: '數字化', shouldShow: () => true, render: () => null }],
+        })} />);
+        const link = screen.getByRole('link', { name: /數字化/ });
+        expect(link.closest('.bim-d-g-rail')).toBeTruthy();
+        fireEvent.click(link);
+        expect(onTabChange).toHaveBeenCalledWith('digital');
+    });
+
+    it('shouldShow 为假的 extraTab 不出入口', () => {
+        render(<BookDetailLayout {...props(WORK, {
+            extraTabs: [{ key: 'digital', label: '數字化', shouldShow: () => false, render: () => null }],
+        })} />);
+        expect(screen.queryByRole('link', { name: /數字化/ })).toBeNull();
+    });
+
+    it('丛编有多份目录：每份都有入口', async () => {
+        const coll = { id: 'c2', type: 'collection', title: '某叢書', books: ['b1'] } as unknown as IndexDetailData;
+        const tr = transportFor(coll, BOOKS) as Record<string, unknown>;
+        tr.getCollectionCatalogs = vi.fn(async () => [
+            { resource_id: 'r1', short_name: '甲本', data: { volumes: [] } },
+            { resource_id: 'r2', short_name: '乙本', data: { volumes: [] } },
+        ]);
+        const onTabChange = vi.fn();
+        render(<BookDetailLayout id="c2" transport={tr as never} initialDetail={coll}
+            activeTab="basic" onTabChange={onTabChange} />);
+        const second = await screen.findByRole('link', { name: /乙本/ });
+        expect(screen.getByRole('link', { name: /甲本/ })).toBeTruthy();
+        fireEvent.click(second);
+        expect(onTabChange).toHaveBeenCalledWith('catalog:r2');
     });
 });
 

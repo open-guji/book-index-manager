@@ -190,7 +190,7 @@ export function TopStrip({ breadcrumb, actions }: {
             style={{
                 display: 'flex', flexWrap: 'wrap', alignItems: 'center',
                 justifyContent: 'space-between', gap: '8px 16px', marginBottom: 24,
-                fontSize: 12, color: bim('label-fg'),
+                fontSize: 12, color: bim('aux-fg'),
             }}
         >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
@@ -1165,7 +1165,7 @@ export function DetailFooter({ left, right }: {
             marginTop: 52, paddingTop: 14,
             borderTop: `1px solid ${bim('rule')}`,
             display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between',
-            gap: '8px 16px', fontSize: 11.5, color: bim('label-fg'),
+            gap: '8px 16px', fontSize: 11.5, color: bim('aux-fg'),
         }}>
             <span>{left}</span>
             {right && <span style={{ display: 'flex', gap: 16 }}>{right}</span>}
@@ -1181,7 +1181,7 @@ export function EmptyNote({ children, action }: {
     return (
         <div className="bim-d-ui" style={{
             padding: '18px 4px', fontSize: 12.5,
-            color: bim('label-fg'),
+            color: bim('aux-fg'),
             borderBottom: `1px solid ${bim('rule')}`,
             display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12,
         }}>

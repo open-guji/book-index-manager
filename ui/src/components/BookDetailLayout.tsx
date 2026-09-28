@@ -42,7 +42,7 @@ import {
     Section,
     type RenderLink, type CrumbItem,
 } from './detail/primitives';
-import { ReadButton } from './detail/layout';
+import { ReadButton, type RailLink } from './detail/layout';
 import { WorkPage } from './detail/WorkPage';
 import { BookPage } from './detail/BookPage';
 import { CollectionPage } from './detail/CollectionPage';
@@ -667,6 +667,16 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         readAction = <ReadButton onClick={openReader} />;
     }
 
+    /*
+     * 概览页不再有次级 tab 行，但丛编目录（可能不止一份）和宿主注入的 extraTabs
+     * （网站的「数字化」等）仍须有入口：放到左栏「更多」，窄屏折成一行文字链接。
+     * 谱系、反馈本阶段不放入口（N3a）。
+     */
+    const extraKeys = new Set(extraTabs.map(tab => tab.key));
+    const railLinks: RailLink[] = navItems
+        .filter(item => (item.key.startsWith('catalog:') && item.key !== 'catalog:loading') || extraKeys.has(item.key))
+        .map(item => ({ key: item.key, label: item.label, onClick: () => onTabChange(item.key) }));
+
     const renderBasic = (): React.ReactNode => {
         if (!detail) return null;
         if (detail.type === 'work') {
@@ -678,6 +688,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     renderLink={renderLink}
                     readAction={readAction}
                     railTop={railTop}
+                    railLinks={railLinks}
                 />
             );
         }
@@ -690,6 +701,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     renderLink={renderLink}
                     readAction={readAction}
                     railTop={railTop}
+                    railLinks={railLinks}
                 />
             );
         }
@@ -703,6 +715,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     renderLink={renderLink}
                     readAction={readAction}
                     railTop={railTop}
+                    railLinks={railLinks}
                     catalogAction={
                         catalogList.length > 0 ? (
                             <a
@@ -726,6 +739,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                 onNavigate={onNavigate}
                 renderLink={renderLink}
                 railTop={railTop}
+                railLinks={railLinks}
             />
         );
     };
@@ -944,7 +958,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                         breadcrumb={<Breadcrumb items={crumbs} />}
                         actions={
                             <>
-                                <LocaleToggle />
+                                {/* 少边框：概览页的繁简切换去掉自带的描边 */}
+                                <LocaleToggle style={{ border: 'none', background: 'transparent' }} />
                                 {sourceLink && <RepoSourceLink {...sourceLink} />}
                             </>
                         }

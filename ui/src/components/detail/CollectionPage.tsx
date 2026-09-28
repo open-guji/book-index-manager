@@ -14,7 +14,7 @@ import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, type RenderLink } from './primitives';
 import {
     DetailGrid, Sec, MetaLine, TabFilter, MoreLink, SummaryCard, SideList, CardFoot,
-    type CardFact, type RailNavItem,
+    type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import {
     buildCollectionTable, bucketResources, formatVolumeRange, measureText, resourceNote,
@@ -39,10 +39,12 @@ export interface CollectionPageProps {
     railTop?: React.ReactNode;
     /** 左栏的返回链接 */
     back?: React.ReactNode;
+    /** 左栏「更多」：切到丛编目录、extraTabs 等其他页面的入口（由 layout 注入） */
+    railLinks?: RailLink[];
 }
 
 export const CollectionPage: React.FC<CollectionPageProps> = ({
-    data, catalog, transport, onNavigate, renderLink, catalogAction, readAction, railTop, back,
+    data, catalog, transport, onNavigate, renderLink, catalogAction, readAction, railTop, back, railLinks,
 }) => {
     const t = useT();
     const { convert } = useConvert();
@@ -291,5 +293,5 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
         />
     ) : null;
 
-    return <DetailGrid railTop={railTop} back={back} nav={nav} main={main} card={card} side={side} />;
+    return <DetailGrid railTop={railTop} back={back} nav={nav} railLinks={railLinks} main={main} card={card} side={side} />;
 };
