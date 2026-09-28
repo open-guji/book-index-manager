@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { bim } from '../../styles/tokens';
 
 export interface FormTextAreaProps {
     value: string;
@@ -27,9 +28,9 @@ export const FormTextArea: React.FC<FormTextAreaProps> = ({ value, onChange, pla
                 minHeight: '40px',
                 resize: 'none',
                 overflow: 'hidden',
-                background: 'var(--bim-input-bg, #fff)',
-                color: 'var(--bim-input-fg, #333)',
-                border: '1px solid var(--bim-input-border, #ccc)',
+                background: bim('input-bg'),
+                color: bim('input-fg'),
+                border: `1px solid ${bim('input-border')}`,
                 borderRadius: '2px',
                 padding: '8px',
                 fontFamily: 'inherit',

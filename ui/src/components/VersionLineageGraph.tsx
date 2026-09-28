@@ -6,6 +6,7 @@ import type {
 } from '../core/lineage-graph';
 import { formatLineageYear } from '../core/lineage-graph';
 import { useConvert } from '../i18n';
+import { bim } from '../styles/tokens';
 
 export interface VersionLineageGraphProps {
     graph: LineageGraph;
@@ -183,8 +184,8 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                                     fontSize: 11,
                                     fontWeight: 500,
                                     whiteSpace: 'nowrap',
-                                    background: 'var(--bim-bg, #fff)',
-                                    border: '0.5px solid var(--bim-widget-border, #ddd)',
+                                    background: bim('bg'),
+                                    border: `0.5px solid ${bim('widget-border')}`,
                                     ...labelBgStyle,
                                     ...labelStyle,
                                 }}
@@ -207,15 +208,15 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
             const isLost = d.status === 'lost';
             const isSelected = d.isSelected;
             const isBridge = d.bridge;
-            const borderColor = d.borderColor ?? 'var(--bim-muted, #888)';
+            const borderColor = d.borderColor ?? bim('muted');
             // 桥接节点：虚边框 + 半透明 + 灰色背景，提示"非核心，仅为链路完整而显示"
             const borderStyle = isBridge ? 'dashed' : (isHypo ? 'dashed' : 'solid');
             const baseOpacity = isBridge ? 0.5 : (isLost ? 0.6 : 1);
             return (
                 <div
                     style={{
-                        background: isBridge ? 'var(--bim-bg-subtle, #fafafa)' : 'var(--bim-bg, #fff)',
-                        border: `2px ${borderStyle} ${isSelected ? 'var(--bim-primary, #0078d4)' : borderColor}`,
+                        background: isBridge ? bim('bg-subtle') : bim('bg'),
+                        border: `2px ${borderStyle} ${isSelected ? bim('primary') : borderColor}`,
                         borderRadius: 8,
                         padding: '6px 10px',
                         minWidth: 120,
@@ -224,8 +225,8 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                         wordBreak: 'break-word',
                         opacity: baseOpacity,
                         boxShadow: isSelected
-                            ? '0 0 0 3px rgba(0, 120, 212, 0.2), 0 2px 8px rgba(0, 120, 212, 0.3)'
-                            : (isHypo || isBridge) ? 'none' : '0 1px 3px rgba(0,0,0,0.1)',
+                            ? bim('shadow-node-selected')
+                            : (isHypo || isBridge) ? 'none' : bim('shadow-node'),
                     }}
                     title={isBridge ? '桥接节点：本身不在核心集，为保持派生链完整而显示' : undefined}
                 >
@@ -236,17 +237,17 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                             : d.renderLink(d.bookId!, d.label)}
                     </div>
                     {d.description && (
-                        <div style={{ fontSize: 10, color: 'var(--bim-muted, #777)', lineHeight: 1.25, marginTop: 1 }}>
+                        <div style={{ fontSize: 10, color: bim('muted'), lineHeight: 1.25, marginTop: 1 }}>
                             {d.description}
                         </div>
                     )}
                     {d.yearText && (
-                        <div style={{ fontSize: 10, color: 'var(--bim-muted, #777)', lineHeight: 1.2 }}>
+                        <div style={{ fontSize: 10, color: bim('muted'), lineHeight: 1.2 }}>
                             {formatLineageYear(d.yearText, undefined, d.uncertain)}
                         </div>
                     )}
                     {isLost && (
-                        <div style={{ fontSize: 9, color: 'var(--bim-lost-fg, #c62828)', marginTop: 1 }}>已佚</div>
+                        <div style={{ fontSize: 9, color: bim('lost-fg'), marginTop: 1 }}>已佚</div>
                     )}
                     <Handle type="source" position={Position.Right} style={{ visibility: 'hidden' }} />
                 </div>
@@ -328,7 +329,7 @@ function layoutGraph(
     g.setDefaultEdgeLabel(() => ({}));
 
     // 颜色查表
-    const groupColor = new Map(graph.groups.map((gr) => [gr.id, gr.color ?? 'var(--bim-muted, #888)']));
+    const groupColor = new Map(graph.groups.map((gr) => [gr.id, gr.color ?? bim('muted')]));
 
     for (const n of graph.nodes) {
         g.setNode(n.id, { width: NODE_W, height: NODE_H });
@@ -453,7 +454,7 @@ function buildRfEdge(
         // labelStyle/labelBgStyle 通过 data 传给自定义边组件
         data: {
             labelStyle: {
-                color: 'var(--bim-fg, #444)',
+                color: bim('fg'),
             } as React.CSSProperties,
             isSibling,
             stepPosition,
@@ -480,22 +481,22 @@ function formatYear(n: LineageGraphNode): string | undefined {
 
 function confidenceColor(level: string) {
     switch (level) {
-        case 'certain':   return 'var(--bim-confidence-certain, #2e7d32)';
-        // 注意：List 里 consensus 是蓝色 #1976d2，此处是灰色 #555。
+        case 'certain':   return bim('confidence-certain');
+        // 注意：List 里 consensus 是蓝色（--bim-confidence-consensus），此处是灰色（--bim-lineage-edge-consensus）。
         // 两者取值历史上就不同，为保证零变化各自保留，故用独立变量名。
-        case 'consensus': return 'var(--bim-lineage-edge-consensus, #555)';
-        case 'probable':  return 'var(--bim-confidence-probable, #ed6c02)';
-        case 'disputed':  return 'var(--bim-confidence-disputed, #c62828)';
-        default:          return 'var(--bim-muted, #888)';
+        case 'consensus': return bim('lineage-edge-consensus');
+        case 'probable':  return bim('confidence-probable');
+        case 'disputed':  return bim('confidence-disputed');
+        default:          return bim('muted');
     }
 }
 
 const placeholderStyle: React.CSSProperties = {
     padding: '40px 20px',
     textAlign: 'center',
-    color: 'var(--bim-muted, #888)',
+    color: bim('muted'),
     fontSize: '13px',
-    border: '1px dashed var(--bim-widget-border, #ddd)',
+    border: `1px dashed ${bim('widget-border')}`,
     borderRadius: 8,
-    background: 'var(--bim-bg, #fafafa)',
+    background: bim('bg'),
 };

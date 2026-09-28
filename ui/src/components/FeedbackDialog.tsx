@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { bim } from '../styles/tokens';
 
 // 提交端可选的四类；服务端另有 'other'（仅后台改类型用，G-23 第二批）。
 // 'contact'（想参与）服务端永不公开。
@@ -100,7 +101,7 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose,
                         <span style={{ fontSize: '32px' }}>✓</span>
                         <div style={{ fontSize: '15px', fontWeight: 500 }}>感谢您的反馈！</div>
                         {feedbackListUrl && (
-                            <a href={feedbackListUrl} style={{ fontSize: '13px', color: 'var(--bim-primary, #2563eb)', marginTop: '8px' }}>
+                            <a href={feedbackListUrl} style={{ fontSize: '13px', color: bim('primary'), marginTop: '8px' }}>
                                 查看反馈列表 →
                             </a>
                         )}
@@ -150,7 +151,7 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose,
                         />
 
                         {/* Character count */}
-                        <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #999)', textAlign: 'right', marginBottom: '12px' }}>
+                        <div style={{ fontSize: '12px', color: bim('desc-fg'), textAlign: 'right', marginBottom: '12px' }}>
                             {content.length} / 2000
                         </div>
 
@@ -184,13 +185,13 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose,
 
 const overlayStyle: React.CSSProperties = {
     position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-    background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+    background: bim('backdrop'), display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
 };
 
 const dialogStyle: React.CSSProperties = {
-    background: 'var(--bim-bg, #fff)', border: '1px solid var(--bim-widget-border, #e0e0e0)',
+    background: bim('bg'), border: `1px solid ${bim('widget-border')}`,
     borderRadius: '8px', padding: '20px', width: '450px', maxWidth: '90vw',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+    boxShadow: bim('shadow-dialog'),
 };
 
 const headerStyle: React.CSSProperties = {
@@ -199,48 +200,48 @@ const headerStyle: React.CSSProperties = {
 
 const closeBtnStyle: React.CSSProperties = {
     background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer',
-    color: 'var(--bim-desc-fg, #999)', padding: '4px 8px', borderRadius: '4px',
+    color: bim('desc-fg'), padding: '4px 8px', borderRadius: '4px',
 };
 
 const typeBtnStyle: React.CSSProperties = {
-    flex: '1 1 calc(50% - 4px)', padding: '10px 12px', fontSize: '13px', border: '1px solid var(--bim-widget-border, #e0e0e0)',
-    borderRadius: '6px', background: 'var(--bim-input-bg, #fff)', color: 'var(--bim-fg, #333)',
+    flex: '1 1 calc(50% - 4px)', padding: '10px 12px', fontSize: '13px', border: `1px solid ${bim('widget-border')}`,
+    borderRadius: '6px', background: bim('input-bg'), color: bim('fg'),
     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
     transition: 'border-color 0.2s, background 0.2s',
 };
 
 const typeBtnActiveStyle: React.CSSProperties = {
-    borderColor: 'var(--bim-primary, #0078d4)', background: 'var(--bim-list-active-bg, #e8f0fe)',
-    color: 'var(--bim-primary, #0078d4)', fontWeight: 500,
+    borderColor: bim('primary'), background: bim('list-active-bg'),
+    color: bim('primary'), fontWeight: 500,
 };
 
 const textareaStyle: React.CSSProperties = {
     width: '100%', minHeight: '120px', padding: '10px 12px', fontSize: '14px', lineHeight: '1.6',
-    border: '1px solid var(--bim-input-border, #ccc)', borderRadius: '6px',
-    background: 'var(--bim-input-bg, #fff)', color: 'var(--bim-input-fg, #333)',
+    border: `1px solid ${bim('input-border')}`, borderRadius: '6px',
+    background: bim('input-bg'), color: bim('input-fg'),
     outline: 'none', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit',
 };
 
 const submitBtnStyle: React.CSSProperties = {
     padding: '8px 24px', fontSize: '14px', border: 'none', borderRadius: '6px',
-    background: 'var(--bim-primary, #0078d4)', color: 'var(--bim-primary-fg, #fff)',
+    background: bim('primary'), color: bim('primary-fg'),
     fontWeight: 500,
 };
 
 const successStyle: React.CSSProperties = {
     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px',
-    padding: '32px 0', color: 'var(--bim-success, #4caf50)',
+    padding: '32px 0', color: bim('success'),
 };
 
 const errorStyle: React.CSSProperties = {
-    fontSize: '13px', color: 'var(--bim-danger, #f44336)',
-    padding: '8px 12px', background: 'rgba(244,67,54,0.08)', borderRadius: '4px', marginBottom: '12px',
+    fontSize: '13px', color: bim('danger'),
+    padding: '8px 12px', background: bim('danger-bg'), borderRadius: '4px', marginBottom: '12px',
 };
 
 const contactInputStyle: React.CSSProperties = {
     width: '100%', marginTop: '8px', padding: '8px 12px',
     fontSize: '13px',
-    border: '1px solid var(--bim-input-border, #ccc)', borderRadius: '6px',
-    background: 'var(--bim-bg, #fff)', color: 'var(--bim-input-fg, #333)',
+    border: `1px solid ${bim('input-border')}`, borderRadius: '6px',
+    background: bim('bg'), color: bim('input-fg'),
     outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
 };

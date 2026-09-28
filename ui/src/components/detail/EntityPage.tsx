@@ -27,6 +27,7 @@ import {
     type FactItem, type RenderLink, type TableSpec,
 } from './primitives';
 import { normalizeRole, roleFacets, type RoleClass } from '../../core/detail-model';
+import { bim } from '../../styles/tokens';
 
 /** 桌面 cap，与作品页版本表同一量级 */
 const CAP_WORKS = 16;
@@ -233,12 +234,12 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                                         display: 'flex', alignItems: 'baseline', gap: 8, minWidth: 0,
                                     }}>
                                         <span className="bim-d-ui" style={{
-                                            fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)',
+                                            fontSize: 11.5, color: bim('label-fg'),
                                             letterSpacing: '.1em', flex: 'none',
                                         }}>
                                             {convert(g.label)}
                                         </span>
-                                        <span style={{ color: 'var(--bim-ink, #2a231c)' }}>
+                                        <span style={{ color: bim('ink') }}>
                                             {g.names.map(n => convert(n)).join(' · ')}
                                         </span>
                                     </span>
@@ -250,7 +251,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                                 text={data.description!.text}
                                 style={{
                                     fontSize: 14, lineHeight: 2,
-                                    color: 'var(--bim-body-fg, #3b3228)', textAlign: 'justify',
+                                    color: bim('body-fg'), textAlign: 'justify',
                                 }}
                             />
                         )}
@@ -333,17 +334,17 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                                 }
                                 meta={
                                     <>
-                                        <span style={{ color: 'var(--bim-meta-fg, #7b6a54)' }}>
+                                        <span style={{ color: bim('meta-fg') }}>
                                             {row.role ? convert(row.role) : <Dash />}
                                         </span>
                                         <span className="bim-d-ui" style={{
-                                            color: 'var(--bim-label-fg, #a3937b)',
+                                            color: bim('label-fg'),
                                         }}>
                                             {!row.loaded
                                                 ? ''
                                                 : row.versionCount
                                                     ? `${row.versionCount} 種版本`
-                                                    : <span style={{ color: 'var(--bim-hint-fg, #cbbda0)' }}>
+                                                    : <span style={{ color: bim('hint-fg') }}>
                                                         未著錄版本
                                                     </span>}
                                         </span>
@@ -365,7 +366,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
 
                     {cbdb != null && (
                         <div className="bim-d-ui" style={{
-                            marginTop: 14, fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)',
+                            marginTop: 14, fontSize: 11.5, color: bim('label-fg'),
                         }}>
                             人物編號 CBDB {cbdb}
                             {data.external_ids?.cbdb_match === 'auto' && (

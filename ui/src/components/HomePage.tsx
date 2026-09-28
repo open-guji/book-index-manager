@@ -9,6 +9,7 @@ import type { FeedbackItem } from './FeedbackList';
 
 import { LoadingDots } from './common/LoadingDots';
 import { useBidUrl } from '../core/bid-url';
+import { bim } from '../styles/tokens';
 
 export interface RecommendedItem {
     id: string;
@@ -237,13 +238,13 @@ export const HomePage: React.FC<HomePageProps> = ({
             alignItems: 'center',
             height: '100%',
             padding: '20px',
-            color: 'var(--bim-fg, #333)',
+            color: bim('fg'),
         }}>
             {/* Tabs */}
             <div style={{ width: '100%', maxWidth: '600px', marginBottom: '24px' }}>
                 <div style={{
                     display: 'flex',
-                    borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                    borderBottom: `1px solid ${bim('widget-border')}`,
                     marginBottom: '16px',
                 }}>
                     <TabButton
@@ -315,10 +316,10 @@ const TabButton: React.FC<{ label: string; active: boolean; onClick: () => void 
             padding: '8px 16px',
             fontSize: '14px',
             fontWeight: active ? 600 : 400,
-            color: active ? 'var(--bim-primary, #2563eb)' : 'var(--bim-desc-fg, #717171)',
+            color: active ? bim('primary') : bim('desc-fg'),
             background: 'none',
             border: 'none',
-            borderBottom: active ? '2px solid var(--bim-primary, #2563eb)' : '2px solid transparent',
+            borderBottom: active ? `2px solid ${bim('primary')}` : '2px solid transparent',
             cursor: 'pointer',
             marginBottom: '-1px',
         }}
@@ -354,7 +355,7 @@ const RecommendContent: React.FC<{
                     <div style={{
                         fontSize: '13px',
                         fontWeight: 500,
-                        color: 'var(--bim-desc-fg, #717171)',
+                        color: bim('desc-fg'),
                         marginBottom: '8px',
                     }}>
                         {groupName}
@@ -379,9 +380,9 @@ const RecommendContent: React.FC<{
                                         gap: '12px',
                                         padding: '12px 16px',
                                         borderRadius: '8px',
-                                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                        border: `1px solid ${bim('widget-border')}`,
                                         cursor: 'pointer',
-                                        background: 'var(--bim-input-bg, #fff)',
+                                        background: bim('input-bg'),
                                         textDecoration: 'none',
                                         color: 'inherit',
                                     }}
@@ -391,13 +392,13 @@ const RecommendContent: React.FC<{
                                         <div style={{ fontSize: '14px', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                             {entry.title}
                                             {entry.edition && (
-                                                <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--bim-desc-fg, #717171)', marginLeft: '4px' }}>
+                                                <span style={{ fontSize: '11px', fontWeight: 400, color: bim('desc-fg'), marginLeft: '4px' }}>
                                                     {entry.edition}
                                                 </span>
                                             )}
                                         </div>
                                         {desc && (
-                                            <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            <div style={{ fontSize: '12px', color: bim('desc-fg'), marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                 {desc}
                                             </div>
                                         )}
@@ -430,9 +431,9 @@ const ProgressContent: React.FC<{
         todo: t.home.statusTodo,
     };
     const statusColors: Record<ResourceImportStatus, string> = {
-        in_progress: 'var(--bim-progress-active, #f59e0b)',
-        done: 'var(--bim-progress-done, #10b981)',
-        todo: 'var(--bim-progress-todo, #9ca3af)',
+        in_progress: bim('progress-active'),
+        done: bim('progress-done'),
+        todo: bim('progress-todo'),
     };
 
     return (
@@ -448,7 +449,7 @@ const ProgressContent: React.FC<{
                             gap: '8px',
                             fontSize: '13px',
                             fontWeight: 500,
-                            color: 'var(--bim-desc-fg, #717171)',
+                            color: bim('desc-fg'),
                             marginBottom: '8px',
                         }}>
                             <span style={{
@@ -486,8 +487,8 @@ const ProgressItem: React.FC<{
         <div style={{
             padding: '12px 16px',
             borderRadius: '8px',
-            border: '1px solid var(--bim-widget-border, #e0e0e0)',
-            background: 'var(--bim-input-bg, #fff)',
+            border: `1px solid ${bim('widget-border')}`,
+            background: bim('input-bg'),
         }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
@@ -501,7 +502,7 @@ const ProgressItem: React.FC<{
                                     <a
                                         href={buildUrl(linkId)}
                                         onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(linkId); }}
-                                        style={{ color: 'inherit', textDecoration: 'none', borderBottom: '1px dashed var(--bim-link-fg, #0066cc)' }}
+                                        style={{ color: 'inherit', textDecoration: 'none', borderBottom: `1px dashed ${bim('link-fg')}` }}
                                         onMouseEnter={e => (e.currentTarget.style.borderBottomStyle = 'solid')}
                                         onMouseLeave={e => (e.currentTarget.style.borderBottomStyle = 'dashed')}
                                     >
@@ -520,14 +521,14 @@ const ProgressItem: React.FC<{
                         fontSize: '11px',
                         padding: '1px 6px',
                         borderRadius: '4px',
-                        background: 'var(--bim-widget-border, #e0e0e0)',
-                        color: 'var(--bim-desc-fg, #717171)',
+                        background: bim('widget-border'),
+                        color: bim('desc-fg'),
                         whiteSpace: 'nowrap',
                     }}>
                         {item.collection_id ? t.indexType.collection : item.work_id ? t.indexType.work : typeLabel}
                     </span>
                 </div>
-                <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', whiteSpace: 'nowrap', marginLeft: '8px' }}>
+                <span style={{ fontSize: '12px', color: bim('desc-fg'), whiteSpace: 'nowrap', marginLeft: '8px' }}>
                     {item.total > 0
                         ? formatTemplate(t.home.progressFormat, { imported: String(item.imported), total: String(item.total) })
                         : t.home.totalPending
@@ -540,7 +541,7 @@ const ProgressItem: React.FC<{
                 <div style={{
                     height: '4px',
                     borderRadius: '2px',
-                    background: 'var(--bim-widget-border, #e0e0e0)',
+                    background: bim('widget-border'),
                     overflow: 'hidden',
                     marginBottom: '4px',
                 }}>
@@ -555,7 +556,7 @@ const ProgressItem: React.FC<{
             )}
 
             {item.description && (
-                <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginTop: '4px' }}>
+                <div style={{ fontSize: '12px', color: bim('desc-fg'), marginTop: '4px' }}>
                     {item.description}
                 </div>
             )}
@@ -588,9 +589,9 @@ const SiteProgressContent: React.FC<{
                     padding: '12px 16px',
                     marginBottom: '16px',
                     borderRadius: '8px',
-                    background: 'color-mix(in srgb, var(--bim-primary, #2563eb) 6%, transparent)',
+                    background: `color-mix(in srgb, ${bim('primary')} 6%, transparent)`,
                     fontSize: '13px',
-                    color: 'var(--bim-fg, #333)',
+                    color: bim('fg'),
                 }}>
                     {t.home.siteCoverage}: <strong>{totalCovered.toLocaleString()}</strong> / {totalWorks.toLocaleString()} {t.indexType.work} ({coveragePct}%)
                 </div>
@@ -601,9 +602,9 @@ const SiteProgressContent: React.FC<{
                 <div style={{ marginBottom: '20px' }}>
                     <div style={{
                         display: 'flex', alignItems: 'center', gap: '8px',
-                        fontSize: '13px', fontWeight: 500, color: 'var(--bim-desc-fg, #717171)', marginBottom: '8px',
+                        fontSize: '13px', fontWeight: 500, color: bim('desc-fg'), marginBottom: '8px',
                     }}>
-                        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--bim-progress-done, #10b981)' }} />
+                        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: bim('progress-done') }} />
                         {t.home.statusInProgress} ({active.length})
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -619,9 +620,9 @@ const SiteProgressContent: React.FC<{
                 <div style={{ marginBottom: '20px' }}>
                     <div style={{
                         display: 'flex', alignItems: 'center', gap: '8px',
-                        fontSize: '13px', fontWeight: 500, color: 'var(--bim-desc-fg, #717171)', marginBottom: '8px',
+                        fontSize: '13px', fontWeight: 500, color: bim('desc-fg'), marginBottom: '8px',
                     }}>
-                        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--bim-progress-todo, #9ca3af)' }} />
+                        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: bim('progress-todo') }} />
                         {t.home.statusTodo} ({todo.length})
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -646,8 +647,8 @@ const SiteItem: React.FC<{
         <div style={{
             padding: '12px 16px',
             borderRadius: '8px',
-            border: '1px solid var(--bim-widget-border, #e0e0e0)',
-            background: 'var(--bim-input-bg, #fff)',
+            border: `1px solid ${bim('widget-border')}`,
+            background: bim('input-bg'),
         }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
@@ -659,7 +660,7 @@ const SiteItem: React.FC<{
                         ) : item.name}
                     </span>
                 </div>
-                <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', whiteSpace: 'nowrap', marginLeft: '8px' }}>
+                <span style={{ fontSize: '12px', color: bim('desc-fg'), whiteSpace: 'nowrap', marginLeft: '8px' }}>
                     {item.imported > 0
                         ? `${item.imported.toLocaleString()} ${t.indexType.work} (${coverPct}%)`
                         : t.home.statusTodo
@@ -671,19 +672,19 @@ const SiteItem: React.FC<{
             {item.imported > 0 && totalWorks > 0 && (
                 <div style={{
                     height: '4px', borderRadius: '2px',
-                    background: 'var(--bim-widget-border, #e0e0e0)',
+                    background: bim('widget-border'),
                     overflow: 'hidden', marginBottom: '4px',
                 }}>
                     <div style={{
                         height: '100%', width: `${coverPct}%`,
-                        borderRadius: '2px', background: 'var(--bim-progress-done, #10b981)',
+                        borderRadius: '2px', background: bim('progress-done'),
                         transition: 'width 0.3s ease',
                     }} />
                 </div>
             )}
 
             {item.description && (
-                <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginTop: '4px' }}>
+                <div style={{ fontSize: '12px', color: bim('desc-fg'), marginTop: '4px' }}>
                     {item.description}
                 </div>
             )}

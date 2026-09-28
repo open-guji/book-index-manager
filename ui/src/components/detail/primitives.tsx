@@ -16,6 +16,7 @@ import { getDisplayNameFromUrl, resourceHref, volumeStats } from '../../core/res
 import { resourceNote, resourceDisambiguator } from '../../core/detail-model';
 import { parseGujiInline, mayHaveGujiInline } from '../../core/guji-inline';
 import type { GujiInlineNode } from '../../core/guji-inline';
+import { bim } from '../../styles/tokens';
 
 // ══════════════════════════════════════════════════════════════
 // 布局常量
@@ -37,8 +38,8 @@ export const NARROW_QUERY = '(max-width: 719px)';
  */
 export const DETAIL_CSS = `
 .bim-d-page {
-  background: var(--bim-page-bg, #fbf9f3);
-  color: var(--bim-ink, #2a231c);
+  background: ${bim('page-bg')};
+  color: ${bim('ink')};
   font-family: var(--bim-font-body, system-ui, sans-serif);
   min-height: 100%;
   padding-bottom: 64px;
@@ -59,19 +60,19 @@ export const DETAIL_CSS = `
 }
 .bim-d-ui { font-family: var(--bim-font-ui, system-ui, sans-serif); }
 
-.bim-d-page a { color: var(--bim-accent, #9c3a2c); text-decoration: none; }
+.bim-d-page a { color: ${bim('accent')}; text-decoration: none; }
 .bim-d-page a:hover {
-  color: var(--bim-accent-deep, #6f2a20);
+  color: ${bim('accent-deep')};
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
-.bim-d-page ::selection { background: var(--bim-selection-bg, #ecdcbc); }
+.bim-d-page ::selection { background: ${bim('selection-bg')}; }
 
 /* 表格行 */
 .bim-d-row { display: grid; align-items: center; padding: 9px 4px;
-  border-bottom: 1px solid var(--bim-rule, #eae2d0); font-size: 14px; }
-.bim-d-row:hover { background: var(--bim-row-hover-bg, #f5f1e5); }
+  border-bottom: 1px solid ${bim('rule')}; font-size: 14px; }
+.bim-d-row:hover { background: ${bim('row-hover-bg')}; }
 
 /*
  * 全文阅读布局（整理本 / Book 全文）。
@@ -100,13 +101,13 @@ export const DETAIL_CSS = `
   overflow-y: auto;
   overscroll-behavior: contain;
   padding-right: 4px;
-  border-right: 1px solid var(--bim-rule, #e4dbc9);
+  border-right: 1px solid ${bim('rule')};
 }
 .bim-d-reader-main { min-width: 0; }
 
 /* intro / 成对区块：宽屏两栏，窄屏单栏 */
 .bim-d-intro { display: grid; grid-template-columns: minmax(0, 1fr) 244px; gap: 30px;
-  padding: 20px 0 26px; border-bottom: 1px solid var(--bim-rule, #e4dbc9);
+  padding: 20px 0 26px; border-bottom: 1px solid ${bim('rule')};
   margin-bottom: 40px; align-items: start; }
 .bim-d-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 34px;
   align-items: start; margin-bottom: 48px; }
@@ -126,7 +127,7 @@ export const DETAIL_CSS = `
   .bim-d-reader { grid-template-columns: 1fr; gap: 16px; }
   .bim-d-reader-aside {
     position: static; max-height: 240px;
-    border-right: none; border-bottom: 1px solid var(--bim-rule, #e4dbc9);
+    border-right: none; border-bottom: 1px solid ${bim('rule')};
     padding-right: 0; padding-bottom: 12px;
   }
 }
@@ -186,7 +187,7 @@ export function TopStrip({ breadcrumb, actions }: {
             style={{
                 display: 'flex', flexWrap: 'wrap', alignItems: 'center',
                 justifyContent: 'space-between', gap: '8px 16px', marginBottom: 24,
-                fontSize: 12, color: 'var(--bim-label-fg, #8b7a62)',
+                fontSize: 12, color: bim('label-fg'),
             }}
         >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
@@ -212,9 +213,9 @@ export function GlyphBadge({ char, tone = 'accent' }: {
                 width: 20, height: 20, flex: 'none', fontSize: 11,
                 fontFamily: 'var(--bim-font-ui, system-ui, sans-serif)',
                 background: tone === 'accent'
-                    ? 'var(--bim-accent, #9c3a2c)'
-                    : 'var(--bim-ink, #2a231c)',
-                color: 'var(--bim-page-bg, #fbf9f3)',
+                    ? bim('accent')
+                    : bim('ink'),
+                color: bim('page-bg'),
             }}
         >
             {char}
@@ -241,11 +242,11 @@ export function Breadcrumb({ items }: { items: CrumbItem[] }) {
             {items.map((it, i) => {
                 const last = i === items.length - 1;
                 const sep = i > 0 && (
-                    <span key={`s${i}`} style={{ color: 'var(--bim-hint-fg, #cbbda0)' }}>／</span>
+                    <span key={`s${i}`} style={{ color: bim('hint-fg') }}>／</span>
                 );
                 const url = it.id ? buildUrl(it.id) : it.href;
                 const label = last || (!it.onClick && !url)
-                    ? <span key={i} style={{ color: 'var(--bim-ink, #2a231c)' }}>{it.label}</span>
+                    ? <span key={i} style={{ color: bim('ink') }}>{it.label}</span>
                     : (
                         <a
                             key={i}
@@ -255,7 +256,7 @@ export function Breadcrumb({ items }: { items: CrumbItem[] }) {
                                 e.preventDefault();
                                 it.onClick!();
                             } : undefined}
-                            style={{ color: 'var(--bim-meta-fg, #7b6a54)' }}
+                            style={{ color: bim('meta-fg') }}
                         >
                             {it.label}
                         </a>
@@ -274,7 +275,7 @@ export function DetailHeader({ title, subtitle, aside, secondLine }: {
     secondLine?: React.ReactNode;
 }) {
     return (
-        <header style={{ borderBottom: '2px solid var(--bim-rule-strong, #2a231c)', paddingBottom: 18 }}>
+        <header style={{ borderBottom: `2px solid ${bim('rule-strong')}`, paddingBottom: 18 }}>
             <div style={{
                 display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end',
                 justifyContent: 'space-between', gap: '10px 24px',
@@ -288,7 +289,7 @@ export function DetailHeader({ title, subtitle, aside, secondLine }: {
                     </h1>
                     {subtitle && (
                         <span style={{
-                            fontSize: 15, color: 'var(--bim-meta-fg, #7b6a54)', letterSpacing: '.06em',
+                            fontSize: 15, color: bim('meta-fg'), letterSpacing: '.06em',
                         }}>
                             {subtitle}
                         </span>
@@ -296,14 +297,14 @@ export function DetailHeader({ title, subtitle, aside, secondLine }: {
                 </div>
                 {aside && (
                     <span className="bim-d-ui" style={{
-                        fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)', letterSpacing: '.06em',
+                        fontSize: 11.5, color: bim('label-fg'), letterSpacing: '.06em',
                     }}>
                         {aside}
                     </span>
                 )}
             </div>
             {secondLine && (
-                <div style={{ marginTop: 12, fontSize: 13.5, color: 'var(--bim-quiet-fg, #5b4f40)' }}>
+                <div style={{ marginTop: 12, fontSize: 13.5, color: bim('quiet-fg') }}>
                     {secondLine}
                 </div>
             )}
@@ -322,7 +323,7 @@ export function IntroGrid({ children, facts }: {
         return (
             <div style={{
                 padding: '20px 0 26px',
-                borderBottom: '1px solid var(--bim-rule, #e4dbc9)',
+                borderBottom: `1px solid ${bim('rule')}`,
                 marginBottom: 40,
             }}>
                 {facts}
@@ -359,7 +360,7 @@ export function FactList({ items, horizontal }: {
     if (!items.length) return null;
     return (
         <div style={{
-            borderLeft: '2px solid var(--bim-accent, #9c3a2c)',
+            borderLeft: `2px solid ${bim('accent')}`,
             paddingLeft: 16,
             display: horizontal ? 'grid' : 'flex',
             gridTemplateColumns: horizontal ? 'repeat(auto-fit, minmax(150px, max-content))' : undefined,
@@ -373,12 +374,12 @@ export function FactList({ items, horizontal }: {
                         ? { display: 'flex', flexDirection: 'column', gap: 3 }
                         : { display: 'flex', justifyContent: 'space-between', gap: 10 }}>
                     <span className="bim-d-ui" style={{
-                        color: 'var(--bim-label-fg, #a3937b)', letterSpacing: '.08em', flex: 'none',
+                        color: bim('label-fg'), letterSpacing: '.08em', flex: 'none',
                     }}>
                         {convert(f.label)}
                     </span>
                     <span style={{
-                        color: 'var(--bim-body-fg, #3b3228)',
+                        color: bim('body-fg'),
                         textAlign: horizontal ? 'left' : 'right',
                         minWidth: 0,
                     }}>
@@ -423,7 +424,7 @@ export function SectionHead({ glyph, tone, title, count, actions, id }: {
                 </h2>
                 {count != null && (
                     <span className="bim-d-ui" style={{
-                        fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)',
+                        fontSize: 11.5, color: bim('label-fg'),
                     }}>
                         {count}
                     </span>
@@ -466,10 +467,10 @@ export function FilterChip({ label, active, onClick, dashed }: {
             style={{
                 padding: '5px 13px',
                 border: `1px ${dashed && !active ? 'dashed' : 'solid'} ${active
-                    ? 'var(--bim-accent, #9c3a2c)'
-                    : 'var(--bim-rule, #e0d6c0)'}`,
-                background: active ? 'var(--bim-accent, #9c3a2c)' : 'transparent',
-                color: active ? 'var(--bim-page-bg, #fbf9f3)' : 'var(--bim-meta-fg, #7b6a54)',
+                    ? bim('accent')
+                    : bim('rule')}`,
+                background: active ? bim('accent') : 'transparent',
+                color: active ? bim('page-bg') : bim('meta-fg'),
                 fontSize: 12, cursor: 'pointer', letterSpacing: '.04em', lineHeight: 1.4,
             }}
         >
@@ -488,8 +489,8 @@ export function TextButton({ label, onClick }: { label: string; onClick?: () => 
             className="bim-d-ui"
             style={{
                 background: 'none', border: 'none', padding: '2px 0', cursor: 'pointer',
-                fontFamily: 'inherit', fontSize: 12, color: 'var(--bim-meta-fg, #7b6a54)',
-                borderBottom: '1px solid var(--bim-rule, #d6c9ae)',
+                fontFamily: 'inherit', fontSize: 12, color: bim('meta-fg'),
+                borderBottom: `1px solid ${bim('rule')}`,
             }}
         >
             {convert(label)}
@@ -515,9 +516,9 @@ export function MoreButton({ label, onClick, inline }: {
                 width: inline ? undefined : '100%',
                 padding: inline ? '4px 12px' : 9,
                 background: 'none',
-                border: '1px dashed var(--bim-rule-dashed, #d6c9ae)',
+                border: `1px dashed ${bim('rule-dashed')}`,
                 cursor: 'pointer', fontSize: 12,
-                color: 'var(--bim-meta-fg, #7b6a54)',
+                color: bim('meta-fg'),
                 letterSpacing: inline ? undefined : '.08em',
             }}
         >
@@ -535,8 +536,8 @@ export function Chip({ children, href, onClick, title }: {
 }) {
     const style: React.CSSProperties = {
         display: 'inline-block', padding: '4px 10px',
-        border: '1px solid var(--bim-rule, #e0d6c0)',
-        fontSize: 13, color: 'var(--bim-body-fg, #3b3228)', lineHeight: 1.5,
+        border: `1px solid ${bim('rule')}`,
+        fontSize: 13, color: bim('body-fg'), lineHeight: 1.5,
     };
     if (href || onClick) {
         return (
@@ -576,8 +577,8 @@ export function VolumeChips({ volumes, unit = '冊', max = 60 }: {
             {shown.map(n => (
                 <span key={n} style={{
                     minWidth: 30, textAlign: 'center', padding: '2px 5px',
-                    border: '1px solid var(--bim-rule, #e0d6c0)',
-                    color: 'var(--bim-meta-fg, #7b6a54)',
+                    border: `1px solid ${bim('rule')}`,
+                    color: bim('meta-fg'),
                 }}>
                     {n}
                 </span>
@@ -586,13 +587,13 @@ export function VolumeChips({ volumes, unit = '冊', max = 60 }: {
                 <button type="button" onClick={() => setAll(true)}
                     style={{
                         padding: '2px 8px', background: 'none', cursor: 'pointer',
-                        border: '1px dashed var(--bim-rule-dashed, #d6c9ae)',
-                        fontFamily: 'inherit', fontSize: 11.5, color: 'var(--bim-meta-fg, #7b6a54)',
+                        border: `1px dashed ${bim('rule-dashed')}`,
+                        fontFamily: 'inherit', fontSize: 11.5, color: bim('meta-fg'),
                     }}>
                     +{volumes.length - max}
                 </button>
             )}
-            <span style={{ padding: '2px 6px', color: 'var(--bim-hint-fg, #b3a385)' }}>{unit}</span>
+            <span style={{ padding: '2px 6px', color: bim('hint-fg') }}>{unit}</span>
         </div>
     );
 }
@@ -603,7 +604,7 @@ export function VolumeChips({ volumes, unit = '冊', max = 60 }: {
 
 /** 表格容器：顶部墨线 */
 export function DataTable({ children }: { children: React.ReactNode }) {
-    return <div style={{ borderTop: '1px solid var(--bim-rule-strong, #2a231c)' }}>{children}</div>;
+    return <div style={{ borderTop: `1px solid ${bim('rule-strong')}` }}>{children}</div>;
 }
 
 /**
@@ -635,8 +636,8 @@ export function TableHead({ spec }: { spec: TableSpec }) {
                 display: 'grid',
                 gridTemplateColumns: `${spec.leadWidth}px 1fr ${spec.metaWidth}px`,
                 gap: 12, padding: '7px 4px',
-                borderBottom: '1px solid var(--bim-rule-strong, #2a231c)',
-                fontSize: 11, color: 'var(--bim-label-fg, #8b7a62)', letterSpacing: '.1em',
+                borderBottom: `1px solid ${bim('rule-strong')}`,
+                fontSize: 11, color: bim('label-fg'), letterSpacing: '.1em',
             }}
         >
             <span />
@@ -668,7 +669,7 @@ export function TableRow({ no, main, meta, spec }: {
             }}
         >
             <span className="bim-d-ui" style={{
-                fontSize: 10.5, color: 'var(--bim-hint-fg, #c2b294)', textAlign: 'right',
+                fontSize: 10.5, color: bim('hint-fg'), textAlign: 'right',
             }}>
                 {no}
             </span>
@@ -694,7 +695,7 @@ export function rowNo(i: number): string {
 
 /** 空值占位「—」 */
 export function Dash() {
-    return <span style={{ color: 'var(--bim-hint-fg, #cbbda0)' }}>—</span>;
+    return <span style={{ color: bim('hint-fg') }}>—</span>;
 }
 
 /**
@@ -709,7 +710,7 @@ export function ExpandRow({ open, onToggle, main, action, children }: {
     children?: React.ReactNode;
 }) {
     return (
-        <div style={{ borderBottom: '1px solid var(--bim-rule, #eae2d0)' }}>
+        <div style={{ borderBottom: `1px solid ${bim('rule')}` }}>
             <div
                 className="bim-d-expand-head"
                 style={{
@@ -726,9 +727,9 @@ export function ExpandRow({ open, onToggle, main, action, children }: {
                         width: 18, height: 18, display: 'inline-flex',
                         alignItems: 'center', justifyContent: 'center', padding: 0,
                         cursor: 'pointer', fontSize: 12, lineHeight: 1,
-                        border: `1px solid ${open ? 'var(--bim-accent, #9c3a2c)' : 'var(--bim-rule-dashed, #d6c9ae)'}`,
-                        background: open ? 'var(--bim-accent, #9c3a2c)' : 'transparent',
-                        color: open ? 'var(--bim-page-bg, #fbf9f3)' : 'var(--bim-accent, #9c3a2c)',
+                        border: `1px solid ${open ? bim('accent') : bim('rule-dashed')}`,
+                        background: open ? bim('accent') : 'transparent',
+                        color: open ? bim('page-bg') : bim('accent'),
                     }}
                 >
                     {open ? '－' : '＋'}
@@ -739,7 +740,7 @@ export function ExpandRow({ open, onToggle, main, action, children }: {
             {open && children && (
                 <div style={{
                     padding: '2px 4px 14px 38px',
-                    borderLeft: '2px solid var(--bim-rule-accent-soft, #e0d3b6)',
+                    borderLeft: `2px solid ${bim('rule-accent-soft')}`,
                     marginLeft: 12,
                 }}>
                     {children}
@@ -829,7 +830,7 @@ export function truncateOutsideJiazhu(text: string, max: number): string {
 /** 夾注小字的樣式（新舊兩條路徑共用，保證版式不變） */
 const JIAZHU_STYLE: React.CSSProperties = {
     fontSize: '.78em',
-    color: 'var(--bim-meta-fg, #7b6a54)',
+    color: bim('meta-fg'),
     // 注文常長，`.78em` 之後行距若不收，段落會被撐得參差
     lineHeight: 1.55,
 };
@@ -931,13 +932,13 @@ export function Quote({ label, children }: { label?: string; children: React.Rea
             {label && (
                 <div className="bim-d-ui" style={{
                     fontSize: 11, fontWeight: 600, letterSpacing: '.1em',
-                    color: 'var(--bim-label-fg, #a3937b)', marginBottom: 4,
+                    color: bim('label-fg'), marginBottom: 4,
                 }}>
                     {label}
                 </div>
             )}
             <div style={{
-                fontSize: 13.5, lineHeight: 2, color: 'var(--bim-quiet-fg, #5b4f40)',
+                fontSize: 13.5, lineHeight: 2, color: bim('quiet-fg'),
                 textAlign: 'justify',
             }}>
                 {children}
@@ -962,12 +963,12 @@ export function ResourceGroup({ title, tag, children }: {
             <div style={{
                 display: 'flex', alignItems: 'baseline', justifyContent: 'space-between',
                 gap: 8, paddingBottom: 7,
-                borderBottom: '1px solid var(--bim-rule-strong, #2a231c)', marginBottom: 2,
+                borderBottom: `1px solid ${bim('rule-strong')}`, marginBottom: 2,
             }}>
                 <span style={{ fontSize: 14.5, letterSpacing: '.08em' }}>{convert(title)}</span>
                 {tag && (
                     <span className="bim-d-ui" style={{
-                        fontSize: 10.5, color: 'var(--bim-accent, #9c3a2c)', letterSpacing: '.06em',
+                        fontSize: 10.5, color: bim('accent'), letterSpacing: '.06em',
                     }}>
                         {convert(tag)}
                     </span>
@@ -990,13 +991,13 @@ export function ResourceRow({ name, note, href, extra }: {
         <>
             <span style={{ fontSize: 14, minWidth: 0 }}>{name}</span>
             <span className="bim-d-ui" style={{
-                fontSize: 11, color: 'var(--bim-hint-fg, #b3a385)', flex: 'none',
+                fontSize: 11, color: bim('hint-fg'), flex: 'none',
             }}>
                 {href ? '↗' : ''}
             </span>
             {note && (
                 <span className="bim-d-ui" style={{
-                    gridColumn: '1 / -1', fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)',
+                    gridColumn: '1 / -1', fontSize: 11.5, color: bim('label-fg'),
                 }}>
                     {note}
                 </span>
@@ -1005,8 +1006,8 @@ export function ResourceRow({ name, note, href, extra }: {
     );
     const style: React.CSSProperties = {
         display: 'grid', gridTemplateColumns: '1fr auto', gap: '4px 12px',
-        padding: '9px 4px', borderBottom: '1px solid var(--bim-rule, #eae2d0)',
-        color: 'var(--bim-body-fg, #3b3228)', alignItems: 'baseline',
+        padding: '9px 4px', borderBottom: `1px solid ${bim('rule')}`,
+        color: bim('body-fg'), alignItems: 'baseline',
     };
     return (
         <>
@@ -1063,8 +1064,8 @@ export function ResourceLine({
                         style={{
                             alignSelf: 'flex-start', padding: '2px 0', marginTop: 4,
                             background: 'none', border: 'none', cursor: 'pointer', fontSize: 11,
-                            color: 'var(--bim-meta-fg, #7b6a54)',
-                            borderBottom: '1px solid var(--bim-rule, #e0d6c0)',
+                            color: bim('meta-fg'),
+                            borderBottom: `1px solid ${bim('rule')}`,
                         }}
                     >
                         {open ? '收起分冊' : `展開 ${stats!.expected} 冊`}
@@ -1086,15 +1087,15 @@ export function VolumeLinks({ item }: { item: ResourceEntry }) {
                 const missing = v.status === 'missing';
                 return v.url && !missing ? (
                     <a key={i} href={v.url} target="_blank" rel="noopener noreferrer"
-                        style={{ padding: '1px 5px', border: '1px solid var(--bim-rule, #e0d6c0)' }}>
+                        style={{ padding: '1px 5px', border: `1px solid ${bim('rule')}` }}>
                         {v.volume}
                     </a>
                 ) : (
                     <span key={i} style={{
                         padding: '1px 5px',
                         color: missing
-                            ? 'var(--bim-missing-fg, #e67e22)'
-                            : 'var(--bim-hint-fg, #b3a385)',
+                            ? bim('missing-fg')
+                            : bim('hint-fg'),
                         textDecoration: missing ? 'line-through' : undefined,
                     }}>
                         {v.volume}
@@ -1115,7 +1116,7 @@ export function TagRow({ label, items }: { label: string; items: string[] }) {
     return (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
             <span className="bim-d-ui" style={{
-                fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)', letterSpacing: '.08em',
+                fontSize: 11.5, color: bim('label-fg'), letterSpacing: '.08em',
             }}>
                 {label}
             </span>
@@ -1158,9 +1159,9 @@ export function DetailFooter({ left, right }: {
     return (
         <footer className="bim-d-ui" style={{
             marginTop: 52, paddingTop: 14,
-            borderTop: '1px solid var(--bim-rule, #e4dbc9)',
+            borderTop: `1px solid ${bim('rule')}`,
             display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between',
-            gap: '8px 16px', fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)',
+            gap: '8px 16px', fontSize: 11.5, color: bim('label-fg'),
         }}>
             <span>{left}</span>
             {right && <span style={{ display: 'flex', gap: 16 }}>{right}</span>}
@@ -1176,8 +1177,8 @@ export function EmptyNote({ children, action }: {
     return (
         <div className="bim-d-ui" style={{
             padding: '18px 4px', fontSize: 12.5,
-            color: 'var(--bim-label-fg, #a3937b)',
-            borderBottom: '1px solid var(--bim-rule, #eae2d0)',
+            color: bim('label-fg'),
+            borderBottom: `1px solid ${bim('rule')}`,
             display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12,
         }}>
             <span>{children}</span>

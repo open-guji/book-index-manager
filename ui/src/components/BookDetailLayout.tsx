@@ -47,6 +47,7 @@ import { BookPage } from './detail/BookPage';
 import { CollectionPage } from './detail/CollectionPage';
 import { EntityPage } from './detail/EntityPage';
 import { measureText, displayAuthorRole } from '../core/detail-model';
+import { bim } from '../styles/tokens';
 
 // ── 类型 ──
 
@@ -668,8 +669,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                                 style={{
                                     background: 'none', border: 'none', padding: '2px 0',
                                     cursor: 'pointer', fontFamily: 'inherit', fontSize: 12,
-                                    color: 'var(--bim-accent, #9c3a2c)',
-                                    borderBottom: '1px solid var(--bim-rule, #d6c9ae)',
+                                    color: bim('accent'),
+                                    borderBottom: `1px solid ${bim('rule')}`,
                                 }}
                             >
                                 {t.detailTab.lineage} →
@@ -723,8 +724,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                                 style={{
                                     background: 'none', border: 'none', padding: '2px 0',
                                     cursor: 'pointer', fontFamily: 'inherit', fontSize: 12,
-                                    color: 'var(--bim-accent, #9c3a2c)',
-                                    borderBottom: '1px solid var(--bim-rule, #d6c9ae)',
+                                    color: bim('accent'),
+                                    borderBottom: `1px solid ${bim('rule')}`,
                                 }}
                             >
                                 {t.detailTab.collectionCatalog} →
@@ -776,7 +777,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             const key = workFullTextKey ?? workFullTexts[0]?.key;
             if (!key) {
                 return (
-                    <div style={{ padding: 24, color: 'var(--bim-desc-fg, #999)' }}>
+                    <div style={{ padding: 24, color: bim('desc-fg') }}>
                         {workFullTextLoading ? '加载全文目录…' : '暂无全文'}
                     </div>
                 );
@@ -813,7 +814,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         if (activeTab === 'lineage') {
             if (!lineageGraph) {
                 return (
-                    <div style={{ color: 'var(--bim-label-fg, #a3937b)', padding: '24px 0' }}>
+                    <div style={{ color: bim('label-fg'), padding: '24px 0' }}>
                         {lineageLoading ? '加載中…' : '暫無版本圖數據'}
                     </div>
                 );
@@ -871,7 +872,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     {[180, 320, 160].map((w, i) => (
                         <div key={i} style={{
                             height: i === 1 ? 40 : 16, width: w, opacity: 0.35,
-                            background: 'var(--bim-rule, #e0d6c0)',
+                            background: bim('rule'),
                         }} />
                     ))}
                 </div>
@@ -884,7 +885,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             <PageFrame style={{ minHeight: height, ...style }}>
                 <div style={{
                     padding: '64px 0', textAlign: 'center',
-                    color: 'var(--bim-label-fg, #a3937b)', fontSize: 14,
+                    color: bim('label-fg'), fontSize: 14,
                 }}>
                     找不到該條目，可能已被刪除或 ID 不正確
                 </div>
@@ -929,7 +930,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                                     style={{
                                         background: 'none', border: 'none', padding: 0,
                                         cursor: 'pointer', fontFamily: 'inherit', fontSize: 12,
-                                        color: 'var(--bim-meta-fg, #7b6a54)',
+                                        color: bim('meta-fg'),
                                     }}
                                 >
                                     {t.detailTab.feedback}
@@ -958,8 +959,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                             style={{
                                 background: 'none', border: 'none', padding: '2px 0',
                                 cursor: 'pointer', fontFamily: 'inherit', fontSize: 12,
-                                color: 'var(--bim-accent, #9c3a2c)',
-                                borderBottom: '1px solid var(--bim-rule, #d6c9ae)',
+                                color: bim('accent'),
+                                borderBottom: `1px solid ${bim('rule')}`,
                             }}
                         >
                             {convert('作品信息')} →
@@ -1009,7 +1010,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                                     style={{
                                         background: 'none', border: 'none', padding: 0,
                                         cursor: 'pointer', fontFamily: 'inherit', fontSize: 11.5,
-                                        color: 'var(--bim-meta-fg, #7b6a54)',
+                                        color: bim('meta-fg'),
                                     }}
                                 >
                                     {t.detailTab.submitVersion}
@@ -1017,7 +1018,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                             )}
                             {sourceLink && (
                                 <a href={sourceLink.href} target="_blank" rel="noopener noreferrer"
-                                    style={{ color: 'var(--bim-meta-fg, #7b6a54)' }}>
+                                    style={{ color: bim('meta-fg') }}>
                                     {t.detailTab.dataLicense}
                                 </a>
                             )}
@@ -1051,7 +1052,7 @@ function IdWithCopy({ id, label, copied: copiedLabel }: {
                 style={{
                     background: 'none', border: 'none', padding: 0, cursor: 'pointer',
                     fontFamily: 'inherit', fontSize: 11.5,
-                    color: 'var(--bim-hint-fg, #b3a385)',
+                    color: bim('hint-fg'),
                 }}
             >
                 {copied ? '✓' : '⧉'}
@@ -1131,16 +1132,16 @@ function FullTextBanner({ title, measure, onOpen }: {
                      *
                      * 试过两条不新增变量的路子，都不行：
                      *  - 掺 --bim-accent：朱砂偏红，淡化出来是**粉**的，一大片跟宣纸皮不搭；
-                     *  - 借 --bim-selection-bg：默认值 #ecdcbc 确实是暖沙，但 kyg 那边把它
+                     *  - 借 --bim-selection-bg：默认值确实是暖沙，但 kyg 那边把它
                      *    覆盖成了 color-mix(泥金 30%, transparent)——**半透明**。再套一层
                      *    color-mix 等于按 30%×52% 稀释并与透明合成，颜色直接失真。
                      * 所以这里给一个自带 fallback 的独立变量：默认值是设计稿的暖沙，
                      * 消费者想换肤就覆盖这两个（kyg 覆盖成泥金掺纸，见 globals.css）。
                      */
                     background: hover
-                        ? 'var(--bim-band-bg-hover, #e6d5b4)'
-                        : 'var(--bim-band-bg, #f0e4cb)',
-                    borderLeft: '3px solid var(--bim-accent, #9c3a2c)',
+                        ? bim('band-bg-hover')
+                        : bim('band-bg'),
+                    borderLeft: `3px solid ${bim('accent')}`,
                     transition: 'background .18s ease',
                 }}
             >
@@ -1151,13 +1152,13 @@ function FullTextBanner({ title, measure, onOpen }: {
                         /* 不设的话继承默认 ~1.5，21px 字上下各多出 5px 空白，
                            副行的 marginTop 调再小也看不出来 */
                         lineHeight: 1.3,
-                        color: 'var(--bim-ink, #2a231c)',
+                        color: bim('ink'),
                     }}>
                         {heading}
                     </div>
                     <div className="bim-d-ui" style={{
                         marginTop: 4, fontSize: 12.5, letterSpacing: '.06em',
-                        color: 'var(--bim-meta-fg, #7b6a54)',
+                        color: bim('meta-fg'),
                     }}>
                         {meta}
                     </div>
@@ -1170,9 +1171,9 @@ function FullTextBanner({ title, measure, onOpen }: {
                         padding: '11px 22px',
                         fontSize: 14, letterSpacing: '.08em',
                         background: hover
-                            ? 'var(--bim-accent-deep, #6f2a20)'
-                            : 'var(--bim-accent, #9c3a2c)',
-                        color: 'var(--bim-page-bg, #fbf9f3)',
+                            ? bim('accent-deep')
+                            : bim('accent'),
+                        color: bim('page-bg'),
                         transition: 'background .18s ease',
                     }}
                 >

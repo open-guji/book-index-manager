@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { IndexType, EntityOption } from '../types';
+import { bim } from '../styles/tokens';
 
 export interface EntitySelectorProps {
     isOpen: boolean;
@@ -42,7 +43,7 @@ export const EntitySelector: React.FC<EntitySelectorProps> = ({
         <div style={overlayStyle}>
             <div style={dialogStyle}>
                 {/* Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderBottom: `1px solid ${bim('widget-border')}` }}>
                     <div style={{ fontSize: '14px', fontWeight: 600 }}>{title}</div>
                     <button onClick={onCancel} style={closeBtnStyle}>✕</button>
                 </div>
@@ -82,7 +83,7 @@ export const EntitySelector: React.FC<EntitySelectorProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div style={{ padding: '12px 16px', borderTop: '1px solid var(--bim-widget-border, #e0e0e0)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ padding: '12px 16px', borderTop: `1px solid ${bim('widget-border')}`, display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '12px', opacity: 0.7 }}>找不到？</span>
                     <button onClick={onCreate} style={createBtnStyle}>创建新{typeLabel}并关联</button>
                 </div>
@@ -93,13 +94,13 @@ export const EntitySelector: React.FC<EntitySelectorProps> = ({
 
 const overlayStyle: React.CSSProperties = {
     position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-    background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+    background: bim('backdrop'), display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
 };
 
 const dialogStyle: React.CSSProperties = {
-    background: 'var(--bim-bg, #fff)', border: '1px solid var(--bim-widget-border, #e0e0e0)',
+    background: bim('bg'), border: `1px solid ${bim('widget-border')}`,
     borderRadius: '8px', width: '500px', maxWidth: 'calc(100vw - 32px)', maxHeight: '70vh',
-    display: 'flex', flexDirection: 'column', boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+    display: 'flex', flexDirection: 'column', boxShadow: bim('shadow-dialog'),
 };
 
 const closeBtnStyle: React.CSSProperties = {
@@ -107,21 +108,21 @@ const closeBtnStyle: React.CSSProperties = {
 };
 
 const searchInputStyle: React.CSSProperties = {
-    width: '100%', padding: '10px 12px', border: '1px solid var(--bim-input-border, #ccc)',
-    borderRadius: '4px', background: 'var(--bim-input-bg, #fff)', color: 'var(--bim-input-fg, #333)',
+    width: '100%', padding: '10px 12px', border: `1px solid ${bim('input-border')}`,
+    borderRadius: '4px', background: bim('input-bg'), color: bim('input-fg'),
     fontSize: '13px', boxSizing: 'border-box',
 };
 
 const itemStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-    borderRadius: '4px', cursor: 'pointer', background: 'var(--bim-primary-soft, rgba(0,120,212,0.05))',
+    borderRadius: '4px', cursor: 'pointer', background: bim('primary-soft'),
 };
 
 const emptyStyle: React.CSSProperties = {
-    padding: '20px', textAlign: 'center', color: 'var(--bim-desc-fg, #717171)',
+    padding: '20px', textAlign: 'center', color: bim('desc-fg'),
 };
 
 const createBtnStyle: React.CSSProperties = {
     padding: '6px 12px', fontSize: '12px', border: 'none', borderRadius: '4px',
-    background: 'var(--bim-primary, #0078d4)', color: 'var(--bim-primary-fg, #fff)', cursor: 'pointer',
+    background: bim('primary'), color: bim('primary-fg'), cursor: 'pointer',
 };

@@ -1,4 +1,5 @@
 import type { LocaleMessages } from '../types';
+import { bim } from '../../styles/tokens';
 
 export const zhHant: LocaleMessages = {
     indexType: { work: '作品', book: '書籍', collection: '叢編', entity: '人物' },
@@ -7,9 +8,9 @@ export const zhHant: LocaleMessages = {
     rootType: { catalog: '目錄式', search: '搜索式' },
     status: { draft: '草稿', official: '正式' },
     checkType: {
-        '精校': { label: '精校', bg: '#e8f5e9', fg: '#2e7d32' },
-        '粗校': { label: '粗校', bg: '#fff3e0', fg: '#e65100' },
-        'AI整理': { label: 'AI整理', bg: '#e3f2fd', fg: '#1565c0' },
+        '精校': { label: '精校', bg: bim('check-fine-bg'), fg: bim('check-fine-fg') },
+        '粗校': { label: '粗校', bg: bim('check-rough-bg'), fg: bim('check-rough-fg') },
+        'AI整理': { label: 'AI整理', bg: bim('check-ai-bg'), fg: bim('check-ai-fg') },
     },
     action: {
         save: '保存',

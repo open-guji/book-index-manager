@@ -1,16 +1,11 @@
 /**
- * CSS 变量默认值（换肤接口）
+ * CSS 变量默认值（换肤接口）—— 由 src/styles/tokens.ts 生成，勿手改；
+ * 改完 tokens.ts 后运行 `npm run gen:tokens`。
  *
- * - VS Code 环境下会被 --vscode-* 覆盖
- * - 非 VS Code 环境使用这里的默认值
- * - 消费者（如 kaiyuanguji-web）在自己的 :root 里覆盖同名变量即可换肤；
- *   若同时引入了本文件，请确保覆盖声明在 `book-index-ui/styles` 之后加载
- *
- * 组件内部一律以 `var(--bim-x, <默认值>)` 取色。本文件中新增变量的取值
- * 与组件里原本写死的字面值逐一相同，因此不改变任何既有消费者的观感。
+ * 消费者在自己的 :root 里覆盖同名变量即可换肤；覆盖声明须在本文件之后加载。
  */
 :root {
-    /* ================= 原有变量（取值保持不变） ================= */
+    /* ==== 基础（VS Code 环境下跟随 --vscode-*） ==== */
     --bim-bg: var(--vscode-editor-background, #ffffff);
     --bim-fg: var(--vscode-foreground, #333333);
     --bim-input-bg: var(--vscode-input-background, #ffffff);
@@ -30,79 +25,100 @@
     --bim-list-active-bg: var(--vscode-list-activeSelectionBackground, rgba(0, 120, 212, 0.1));
     --bim-focus-border: var(--vscode-focusBorder, #0078d4);
 
-    /* ================= 新增：补齐组件已在用、此前只有内联回退值的变量 ================= */
-
-    /* ---- 底色层次 ---- */
+    /* ==== 底色层次 / 文字与描边 / 链接 ==== */
     --bim-bg-subtle: #fafafa;
     --bim-widget-bg: #f8f8f8;
-
-    /* ---- 文字与描边 ---- */
     --bim-muted: #888888;
     --bim-border: #e5e5e5;
-
-    /* ---- 主色衍生 / 链接 ---- */
     --bim-primary-bg: #fdf4f4;
     --bim-link: #1976d2;
-
-    /* ---- 标签与点缀 ---- */
     --bim-tag-bg: #f0f0f0;
     --bim-accent-bg: #1976d2;
+    /* 彩色底（徽章、选中态按钮）上的文字 */
+    --bim-on-color-fg: #ffffff;
 
-    /* ---- 提示与警告 ---- */
+    /* ==== 提示与警告 ==== */
     --bim-info-fg: #0c5380;
     --bim-info-bg: #e7f3ff;
     --bim-info-border: #b3dbff;
     --bim-warn-fg: #856404;
     --bim-warn-bg: #fff3cd;
     --bim-warn-border: #ffc107;
+    /* 错误提示条底色 */
+    --bim-danger-bg: rgba(244, 67, 54, 0.08);
+    /* 编辑器危险区块 */
+    --bim-danger-soft-bg: rgba(244, 67, 54, 0.03);
+    --bim-danger-soft-border: rgba(244, 67, 54, 0.13);
 
-    /* ================= 新增：原本写死在组件里、现已变量化 ================= */
+    /* ==== 遮罩与阴影 ==== */
+    /* 对话框遮罩 */
+    --bim-backdrop: rgba(0, 0, 0, 0.5);
+    /* 轻量遮罩底（图片占位等） */
+    --bim-overlay-bg: #00000010;
+    --bim-shadow-dialog: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --bim-shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --bim-shadow-tooltip: 0 2px 8px rgba(0, 0, 0, 0.08);
+    /* 悬浮按钮（反馈） */
+    --bim-shadow-fab: 0 2px 8px rgba(0, 0, 0, 0.25);
+    /* 展开的卡片 */
+    --bim-shadow-card: 0 1px 4px rgba(0, 0, 0, 0.06);
+    /* 谱系图节点 */
+    --bim-shadow-node: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --bim-shadow-node-selected: 0 0 0 3px rgba(0, 120, 212, 0.2), 0 2px 8px rgba(0, 120, 212, 0.3);
 
-    /* ---- 条目类型徽章（Book / Work / Collection / Entity） ---- */
+    /* ==== 条目类型 / 状态徽章 ==== */
     --bim-type-book: #c0392b;
     --bim-type-work: #8e6f3e;
     --bim-type-collection: #2471a3;
     --bim-type-entity: #5b3e8e;
-
-    /* ---- 条目状态徽章 ---- */
     --bim-status-draft: #e67e22;
     --bim-status-official: #27ae60;
 
-    /* ---- 资源类型标记 ---- */
+    /* ==== 资源 ==== */
     --bim-restype-text: #2196f3;
     --bim-restype-image: #ff9800;
     --bim-restype-text-image: #9c27b0;
     --bim-restype-physical: #795548;
-
     /* 资源缺册提示 */
     --bim-missing-fg: #e67e22;
-
     /* 影印件色彩模式标记（黑白 / 彩色） */
     --bim-colormode-bw-bg: #f5f5f5;
     --bim-colormode-bw-fg: #757575;
     --bim-colormode-color-bg: #fff8e1;
     --bim-colormode-color-fg: #f57f17;
-
-    /* ---- 资源导入进度 ---- */
+    /* 资源导入进度 */
     --bim-progress-active: #f59e0b;
     --bim-progress-done: #10b981;
     --bim-progress-todo: #9ca3af;
+    /* 文字资源校对程度徽章（精校 / 粗校 / AI整理） */
+    --bim-check-fine-bg: #e8f5e9;
+    --bim-check-fine-fg: #2e7d32;
+    --bim-check-rough-bg: #fff3e0;
+    --bim-check-rough-fg: #e65100;
+    --bim-check-ai-bg: #e3f2fd;
+    --bim-check-ai-fg: #1565c0;
 
-    /* ---- 整理本（CollatedEdition） ---- */
+    /* ==== 整理本（CollatedEdition） ==== */
     /* 搜索命中高亮底 */
     --bim-highlight-bg: #fff59d;
-    /* 章节类型标记：类 / 书 / 序 / 结语 / 考证 */
+    /* 章节类型标记：类 / 书 / 序 / 结语 / 考证 / 注释 */
     --bim-section-lei: #8e6f3e;
     --bim-section-shu: #c0392b;
     --bim-section-xu: #1a5276;
     --bim-section-jieyu: #7d6608;
     --bim-section-kaozhen: #5d6d7e;
+    --bim-section-zhushi: #6c5b7b;
     /* 章节标记（△ 等） */
     --bim-section-tag-fg: #e74c3c;
     /* 与底本匹配状态提示 */
     --bim-matchstate-fg: #b78900;
+    /* 文本质量等级（出版 / 精校 / 粗校 / OCR） */
+    --bim-quality-published: #1b5e20;
+    --bim-quality-fine: #2e7d32;
+    --bim-quality-rough: #1565c0;
+    --bim-quality-ocr: #e65100;
 
-    /* ---- 版本传承（VersionLineageGraph / List） ---- */
+    /* ==== 版本传承（VersionLineageGraph / List） / 关系方向（RelationPanel） ==== */
     /* 佚失标记 */
     --bim-lost-fg: #c62828;
     /* 关系置信度 */
@@ -110,105 +126,53 @@
     --bim-confidence-consensus: #1976d2;
     --bim-confidence-probable: #ed6c02;
     --bim-confidence-disputed: #c62828;
-    /*
-     * ⚠️ 历史遗留的不一致：同为 consensus（共识），
-     *    VersionLineageList 的徽章用蓝色 #1976d2，
-     *    VersionLineageGraph 的连线用灰色 #555。
-     * 变量化时为保证零变化，各自保留原值，故 Graph 单独用下面这个变量。
-     * 若要统一，把 --bim-lineage-edge-consensus 覆盖成
-     * var(--bim-confidence-consensus) 即可。
-     */
-    --bim-lineage-edge-consensus: #555;
-
-    /* ---- 关系方向（RelationPanel） ---- */
+    /* ⚠️ 同为 consensus，List 徽章用 --bim-confidence-consensus（蓝），Graph 连线用这个（灰）。若要统一，覆盖成 var(--bim-confidence-consensus) */
+    --bim-lineage-edge-consensus: #555555;
     --bim-relation-up: #2196f3;
     --bim-relation-down: #4caf50;
     --bim-relation-flat: #ff9800;
 
-    /* ================= 编辑器视图（主要在 guji-platform 插件中可见） ================= */
-
-    /*
-     * ⚠️ 历史遗留的不一致：条目类型（Work/Collection/Book/Entity）在
-     *    展示视图（IndexDetail）与编辑视图（IndexEditor / EntityPickerDialog）
-     *    用的是两套完全不同的配色：
-     *      展示：--bim-type-*        work 泥金 / book 朱红 / collection 靛蓝 / entity 紫
-     *      编辑：--bim-editor-type-* work 绿   / book 橙   / collection 蓝   / entity 紫
-     * 变量化时为保证零变化各自保留。若要统一，把 --bim-editor-type-* 覆盖成
-     * 对应的 var(--bim-type-*) 即可。
-     */
+    /* ==== 编辑器视图（主要在 guji-platform 插件中可见） ==== */
+    /* ⚠️ 与展示视图的 --bim-type-* 是两套配色（历史如此）。若要统一，覆盖成对应的 var(--bim-type-*) */
     --bim-editor-type-work: #4caf50;
     --bim-editor-type-collection: #2196f3;
     --bim-editor-type-book: #ff9800;
     --bim-editor-type-entity: #9c27b0;
-
     /* 来源类型（SourceEditor） */
     --bim-source-url: #2196f3;
     --bim-source-bookid: #4caf50;
-
-    /* 轻量遮罩底（图片占位等） */
-    --bim-overlay-bg: #00000010;
-
-    /* 模式指示器当前态底色（ModeIndicator） */
+    /* 模式指示器当前态（ModeIndicator） */
     --bim-mode-active-bg: #2196f3;
-
-    /* 书目卡片「封面」的点缀色（IndexBrowser resultVariant="card"） */
+    /* 书目卡片「封面」点缀（IndexBrowser resultVariant="card"） */
     --bim-cover-accent: #8e6f3e;
 
-    /* =========================================================
-       详情页（作品 / 版本 / 丛编）
-       ---------------------------------------------------------
-       2026-09 版式重构新增。设计稿全用字面色，这里**一律由上面
-       已有的 --bim-* 派生**，于是消费者（kaiyuanguji-web 的宣纸
-       皮肤、未来的墨夜深色、VS Code 主题）只要覆盖了基础色，
-       详情页自动跟随，不需要再覆盖第二套。
-
-       右侧注释是设计稿里对应的字面值，仅作对照，不要写回代码。
-       ========================================================= */
-
-    /*
-     * 取值策略：详情页是「读书」的场面，用宣纸+朱砂一套独立的暖色，
-     * **不**继承 --bim-primary 等通用控件色——后者在 VS Code 里跟随
-     * 主题的按钮蓝，用在正文页会变成一片蓝链接，与设计稿差得很远。
-     *
-     * 消费者（kaiyuanguji-web）覆盖同名变量即可换肤；VS Code 插件里
-     * 若要跟随主题，把这几个覆盖成 var(--vscode-*) 就行。
-     */
-
-    /* ---- 底色 ---- */
-    --bim-page-bg: #fbf9f3;          /* 纸 */
-    --bim-row-hover-bg: #f5f1e5;     /* 行 hover */
-    --bim-selection-bg: #ecdcbc;     /* 选区 */
-
-    /* 全文入口横幅底色（作品页的整理本、版本页的全文）。这两个是少数
-       **不由上面派生**的值：朱砂淡化会发粉，选区色在消费者那边可能是
-       半透明的，再套 color-mix 会失真。 */
-    --bim-band-bg: #f0e4cb;          /* 暖沙 */
-    --bim-band-bg-hover: #e6d5b4;    /* 暖沙 · hover 加深 */
-
-    /* ---- 文字层次（墨 → 正文 → 提要 → meta → 标签 → 提示） ---- */
+    /* ==== 详情页（作品 / 版本 / 丛编）：宣纸 + 朱砂一套独立暖色，不继承 --bim-primary 等控件色 ==== */
+    /* 纸 */
+    --bim-page-bg: #fbf9f3;
+    --bim-row-hover-bg: #f5f1e5;
+    /* 选区 */
+    --bim-selection-bg: #ecdcbc;
+    /* 全文入口横幅（暖沙） */
+    --bim-band-bg: #f0e4cb;
+    --bim-band-bg-hover: #e6d5b4;
+    /* 文字层次：墨 → 正文 → 提要 → meta → 标签 → 提示 */
     --bim-ink: #2a231c;
     --bim-body-fg: #3b3228;
-    --bim-quiet-fg: #5b4f40;         /* 提要正文 */
+    --bim-quiet-fg: #5b4f40;
     --bim-meta-fg: #7b6a54;
-    --bim-label-fg: #a3937b;         /* 表头 / 计数 / facts key */
-    --bim-hint-fg: #b3a385;          /* 行号 / 空值 / 箭头 */
-
-    /* ---- 强调 ---- */
-    --bim-accent: #9c3a2c;           /* 朱 */
-    --bim-accent-deep: #6f2a20;      /* 链接 hover */
-
-    /* ---- 分隔线（强 → 常规 → 虚线 → 提要左线） ---- */
-    --bim-rule-strong: #2a231c;      /* header 底 / 表头 */
+    --bim-label-fg: #a3937b;
+    --bim-hint-fg: #b3a385;
+    /* 朱 */
+    --bim-accent: #9c3a2c;
+    /* 链接 hover */
+    --bim-accent-deep: #6f2a20;
+    /* 分隔线：强 → 常规 → 虚线 → 提要左线 */
+    --bim-rule-strong: #2a231c;
     --bim-rule: #e4dbc9;
-    --bim-rule-dashed: #d6c9ae;      /* 展开按钮 */
-    --bim-rule-accent-soft: #e0d3b6; /* 提要左线 */
+    --bim-rule-dashed: #d6c9ae;
+    --bim-rule-accent-soft: #e0d3b6;
 
-    /*
-     * 字体：全站无衬线（2026-09-05 定）。
-     * 消费者若要换字体，覆盖这两个变量即可；--bim-font-body 影响标题与正文，
-     * --bim-font-ui 影响 meta / 表头 / 标签 / 数字。
-     */
-    --bim-font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    /* ==== 字体（全站无衬线，2026-09-05 定） ==== */
+    --bim-font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
     --bim-font-body: var(--bim-font-ui);
 }

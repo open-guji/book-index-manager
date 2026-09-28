@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { LocaleContext } from '../i18n/context';
+import { bim } from '../styles/tokens';
 
 export interface LocaleToggleProps {
     /** 自定义样式 */
@@ -32,22 +33,22 @@ export const LocaleToggle: React.FC<LocaleToggleProps> = ({ style }) => {
                 fontSize: '13px',
                 fontWeight: 500,
                 lineHeight: 1,
-                border: '1px solid var(--bim-border, #ddd)',
+                border: `1px solid ${bim('border')}`,
                 borderRadius: '4px',
-                background: 'var(--bim-bg, #fff)',
-                color: 'var(--bim-fg, #333)',
+                background: bim('bg'),
+                color: bim('fg'),
                 cursor: 'pointer',
                 userSelect: 'none',
                 ...style,
             }}
         >
             <span style={{
-                color: isHant ? 'var(--bim-primary, #0078d4)' : undefined,
+                color: isHant ? bim('primary') : undefined,
                 fontWeight: isHant ? 700 : 400,
             }}>繁</span>
             <span style={{ opacity: 0.3 }}>/</span>
             <span style={{
-                color: !isHant ? 'var(--bim-primary, #0078d4)' : undefined,
+                color: !isHant ? bim('primary') : undefined,
                 fontWeight: !isHant ? 700 : 400,
             }}>简</span>
         </button>

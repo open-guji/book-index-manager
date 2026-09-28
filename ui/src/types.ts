@@ -1,3 +1,5 @@
+import { bim } from './styles/tokens';
+
 /** 资源原子类型 */
 export type ResourceTypeAtom = 'text' | 'image' | 'physical';
 
@@ -42,10 +44,10 @@ export const TEXT_QUALITY_CRITERIA: Record<TextQualityGrade, string> = {
 
 /** enum → 主题色 */
 export const TEXT_QUALITY_COLORS: Record<TextQualityGrade, string> = {
-    published: '#1b5e20',
-    fine: '#2e7d32',
-    rough: '#1565c0',
-    ocr: '#e65100',
+    published: bim('quality-published'),
+    fine: bim('quality-fine'),
+    rough: bim('quality-rough'),
+    ocr: bim('quality-ocr'),
 };
 
 /** 覆盖信息 */

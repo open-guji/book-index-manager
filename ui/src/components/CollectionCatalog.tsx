@@ -3,6 +3,7 @@ import type { VolumeBookMapping, VolumeBookEntry, VolumeSection } from '../types
 import type { IndexStorage } from '../storage/types';
 import { useT, useConvert, formatTemplate } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
+import { bim } from '../styles/tokens';
 
 export interface CollectionCatalogProps {
     /** 直接传入数据 */
@@ -37,13 +38,13 @@ function CatalogHeader({ data }: { data: VolumeBookMapping }) {
             <h2 style={{
                 fontSize: '18px',
                 fontWeight: 600,
-                color: 'var(--bim-fg, #1a1a1a)',
+                color: bim('fg'),
                 margin: '0 0 8px',
             }}>
                 {convert(data.title)}
             </h2>
             {data.resource_name && (
-                <div style={{ fontSize: '13px', color: 'var(--bim-desc-fg, #717171)', marginBottom: '6px' }}>
+                <div style={{ fontSize: '13px', color: bim('desc-fg'), marginBottom: '6px' }}>
                     {convert(data.resource_name)}
                 </div>
             )}
@@ -52,22 +53,22 @@ function CatalogHeader({ data }: { data: VolumeBookMapping }) {
                 flexWrap: 'wrap',
                 gap: '16px',
                 fontSize: '13px',
-                color: 'var(--bim-desc-fg, #717171)',
+                color: bim('desc-fg'),
             }}>
-                <span>{t.catalog.totalVolumes} <strong style={{ color: 'var(--bim-fg, #333)' }}>{data.total_volumes}</strong> {t.unit.volume}</span>
+                <span>{t.catalog.totalVolumes} <strong style={{ color: bim('fg') }}>{data.total_volumes}</strong> {t.unit.volume}</span>
                 {progressPct != null && (
-                    <span>{t.catalog.processed} <strong style={{ color: 'var(--bim-fg, #333)' }}>{processed}</strong> {t.unit.volume} ({progressPct}%)</span>
+                    <span>{t.catalog.processed} <strong style={{ color: bim('fg') }}>{processed}</strong> {t.unit.volume} ({progressPct}%)</span>
                 )}
-                <span>{t.catalog.contains} <strong style={{ color: 'var(--bim-fg, #333)' }}>{stats.total_books}</strong> {t.unit.bu}</span>
+                <span>{t.catalog.contains} <strong style={{ color: bim('fg') }}>{stats.total_books}</strong> {t.unit.bu}</span>
                 {stats.matched_works != null && stats.matched_works > 0 && (
-                    <span>{t.catalog.matched} <strong style={{ color: 'var(--bim-fg, #333)' }}>{stats.matched_works}</strong> {t.unit.bu}</span>
+                    <span>{t.catalog.matched} <strong style={{ color: bim('fg') }}>{stats.matched_works}</strong> {t.unit.bu}</span>
                 )}
                 {stats.unmatched_works != null && stats.unmatched_works > 0 && (
-                    <span>{t.catalog.unmatched} <strong style={{ color: 'var(--bim-missing-fg, #e67e22)' }}>{stats.unmatched_works}</strong> {t.unit.bu}</span>
+                    <span>{t.catalog.unmatched} <strong style={{ color: bim('missing-fg') }}>{stats.unmatched_works}</strong> {t.unit.bu}</span>
                 )}
             </div>
             {data.source && (
-                <div style={{ marginTop: '6px', fontSize: '12px', color: 'var(--bim-desc-fg, #999)' }}>
+                <div style={{ marginTop: '6px', fontSize: '12px', color: bim('desc-fg') }}>
                     {t.catalog.source} {data.source}
                 </div>
             )}
@@ -124,10 +125,10 @@ function SectionNav({
 function navBtnStyle(active: boolean): React.CSSProperties {
     return {
         padding: '4px 12px',
-        border: active ? '1px solid var(--bim-primary, #2471a3)' : '1px solid var(--bim-widget-border, #e0e0e0)',
+        border: active ? `1px solid ${bim('primary')}` : `1px solid ${bim('widget-border')}`,
         borderRadius: '4px',
-        background: active ? 'color-mix(in srgb, var(--bim-primary, #2471a3) 8%, transparent)' : 'transparent',
-        color: active ? 'var(--bim-primary, #2471a3)' : 'var(--bim-fg, #333)',
+        background: active ? `color-mix(in srgb, ${bim('primary')} 8%, transparent)` : 'transparent',
+        color: active ? bim('primary') : bim('fg'),
         cursor: 'pointer',
         fontSize: '13px',
         fontWeight: active ? 600 : 400,
@@ -148,10 +149,10 @@ function BidLink({ id, label, onNavigate, renderLink }: {
                 href={buildUrl(id)}
                 onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(id); }}
                 style={{
-                    color: 'var(--bim-link-fg, #0066cc)',
+                    color: bim('link-fg'),
                     cursor: 'pointer',
                     textDecoration: 'none',
-                    borderBottom: '1px dashed var(--bim-link-fg, #0066cc)',
+                    borderBottom: `1px dashed ${bim('link-fg')}`,
                     paddingBottom: '1px',
                     fontSize: '12px',
                 }}
@@ -162,7 +163,7 @@ function BidLink({ id, label, onNavigate, renderLink }: {
             </a>
         );
     }
-    return <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #999)' }}>{label || id}</span>;
+    return <span style={{ fontSize: '12px', color: bim('desc-fg') }}>{label || id}</span>;
 }
 
 /** 格式化册号范围显示 */
@@ -204,7 +205,7 @@ function BookRow({ book, onNavigate, renderLink, showVolumes }: {
             alignItems: 'baseline',
             gap: '8px',
             padding: '6px 12px',
-            borderBottom: '1px solid var(--bim-widget-border, #f0f0f0)',
+            borderBottom: `1px solid ${bim('widget-border')}`,
             fontSize: '14px',
             lineHeight: 1.8,
         }}>
@@ -214,7 +215,7 @@ function BookRow({ book, onNavigate, renderLink, showVolumes }: {
                     flexShrink: 0,
                     minWidth: '48px',
                     fontSize: '12px',
-                    color: 'var(--bim-desc-fg, #999)',
+                    color: bim('desc-fg'),
                     textAlign: 'right',
                 }}>
                     {volInfo}
@@ -225,13 +226,13 @@ function BookRow({ book, onNavigate, renderLink, showVolumes }: {
             <span style={{
                 flex: 1,
                 fontWeight: 500,
-                color: 'var(--bim-fg, #1a1a1a)',
+                color: bim('fg'),
             }}>
                 {convert(book.title)}
                 {book.sub_items && book.sub_items.length > 0 && (
                     <span style={{
                         fontSize: '12px',
-                        color: 'var(--bim-desc-fg, #999)',
+                        color: bim('desc-fg'),
                         fontWeight: 400,
                         marginLeft: '6px',
                     }}>
@@ -241,7 +242,7 @@ function BookRow({ book, onNavigate, renderLink, showVolumes }: {
                 {book.edition && (
                     <span style={{
                         fontSize: '11px',
-                        color: 'var(--bim-desc-fg, #aaa)',
+                        color: bim('desc-fg'),
                         fontWeight: 400,
                         marginLeft: '8px',
                     }}>
@@ -254,7 +255,7 @@ function BookRow({ book, onNavigate, renderLink, showVolumes }: {
             {book.expected_volumes != null && (
                 <span style={{
                     fontSize: '11px',
-                    color: hasMissing ? 'var(--bim-missing-fg, #e67e22)' : 'var(--bim-desc-fg, #999)',
+                    color: hasMissing ? bim('missing-fg') : bim('desc-fg'),
                     flexShrink: 0,
                 }}>
                     {book.found_volumes ?? 0}/{book.expected_volumes}{t.unit.volume}
@@ -273,7 +274,7 @@ function BookRow({ book, onNavigate, renderLink, showVolumes }: {
             {!linkId && (
                 <span style={{
                     fontSize: '11px',
-                    color: 'var(--bim-desc-fg, #ccc)',
+                    color: bim('desc-fg'),
                     flexShrink: 0,
                 }}>
                     {t.catalog.unmatched_label}
@@ -383,7 +384,7 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
     if (loading) {
         return (
             <div className={className} style={{ ...style, padding: '24px' }}>
-                <div style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '13px' }}>
+                <div style={{ color: bim('desc-fg'), fontSize: '13px' }}>
                     {t.catalog.loading}
                 </div>
             </div>
@@ -396,7 +397,7 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
                 ...style,
                 padding: '24px',
                 textAlign: 'center',
-                color: 'var(--bim-desc-fg, #717171)',
+                color: bim('desc-fg'),
                 fontSize: '13px',
             }}>
                 {error}
@@ -429,10 +430,10 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
                         width: '100%',
                         maxWidth: '320px',
                         padding: '6px 10px',
-                        border: '1px solid var(--bim-input-border, #ccc)',
+                        border: `1px solid ${bim('input-border')}`,
                         borderRadius: '4px',
-                        background: 'var(--bim-input-bg, #fff)',
-                        color: 'var(--bim-input-fg, #333)',
+                        background: bim('input-bg'),
+                        color: bim('input-fg'),
                         fontSize: '13px',
                         boxSizing: 'border-box',
                     }}
@@ -440,7 +441,7 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
                 <span style={{
                     marginLeft: '12px',
                     fontSize: '12px',
-                    color: 'var(--bim-desc-fg, #999)',
+                    color: bim('desc-fg'),
                 }}>
                     {filteredBooks.length} {t.unit.bu}
                 </span>
@@ -448,7 +449,7 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
 
             {/* 目录列表 */}
             <div style={{
-                border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                border: `1px solid ${bim('widget-border')}`,
                 borderRadius: '6px',
                 overflow: 'hidden',
             }}>
@@ -458,11 +459,11 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
                         <div key={`${group.volume}-${gi}`}>
                             <div style={{
                                 padding: '4px 12px',
-                                background: 'var(--bim-bg, #f8f8f8)',
-                                borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                background: bim('bg'),
+                                borderBottom: `1px solid ${bim('widget-border')}`,
                                 fontSize: '12px',
                                 fontWeight: 600,
-                                color: 'var(--bim-desc-fg, #717171)',
+                                color: bim('desc-fg'),
                                 position: 'sticky',
                                 top: 0,
                                 zIndex: 1,
@@ -496,7 +497,7 @@ export const CollectionCatalog: React.FC<CollectionCatalogProps> = ({
                     <div style={{
                         padding: '32px',
                         textAlign: 'center',
-                        color: 'var(--bim-desc-fg, #999)',
+                        color: bim('desc-fg'),
                         fontSize: '13px',
                     }}>
                         {t.catalog.noMatch}

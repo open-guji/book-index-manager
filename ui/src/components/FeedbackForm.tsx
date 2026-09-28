@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { FeedbackType, FeedbackData } from './FeedbackDialog';
+import { bim } from '../styles/tokens';
 
 export interface FeedbackFormProps {
     onSubmit: (data: FeedbackData) => Promise<void>;
@@ -101,7 +102,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit }) => {
 
             {/* Footer: char count + error + submit */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
-                <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #999)' }}>
+                <span style={{ fontSize: '12px', color: bim('desc-fg') }}>
                     {content.length} / 2000
                 </span>
                 <button
@@ -128,60 +129,60 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit }) => {
 
 const wrapperStyle: React.CSSProperties = {
     padding: '16px',
-    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+    border: `1px solid ${bim('widget-border')}`,
     borderRadius: '8px',
-    background: 'var(--bim-input-bg, #fff)',
+    background: bim('input-bg'),
 };
 
 const typeBtnStyle: React.CSSProperties = {
     padding: '8px 16px', fontSize: '13px',
-    border: '1px solid var(--bim-widget-border, #e0e0e0)',
+    border: `1px solid ${bim('widget-border')}`,
     borderRadius: '6px', background: 'transparent',
-    color: 'var(--bim-fg, #333)', cursor: 'pointer',
+    color: bim('fg'), cursor: 'pointer',
     display: 'flex', alignItems: 'center', gap: '6px',
     transition: 'border-color 0.2s, background 0.2s',
 };
 
 const typeBtnActiveStyle: React.CSSProperties = {
-    borderColor: 'var(--bim-primary, #0078d4)',
-    background: 'var(--bim-list-active-bg, #e8f0fe)',
-    color: 'var(--bim-primary, #0078d4)', fontWeight: 500,
+    borderColor: bim('primary'),
+    background: bim('list-active-bg'),
+    color: bim('primary'), fontWeight: 500,
 };
 
 const textareaStyle: React.CSSProperties = {
     width: '100%', minHeight: '100px', padding: '10px 12px',
     fontSize: '14px', lineHeight: '1.6',
-    border: '1px solid var(--bim-input-border, #ccc)', borderRadius: '6px',
-    background: 'var(--bim-bg, #fff)', color: 'var(--bim-input-fg, #333)',
+    border: `1px solid ${bim('input-border')}`, borderRadius: '6px',
+    background: bim('bg'), color: bim('input-fg'),
     outline: 'none', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit',
 };
 
 const submitBtnStyle: React.CSSProperties = {
     padding: '6px 20px', fontSize: '13px', border: 'none', borderRadius: '6px',
-    background: 'var(--bim-primary, #0078d4)', color: 'var(--bim-primary-fg, #fff)',
+    background: bim('primary'), color: bim('primary-fg'),
     fontWeight: 500,
 };
 
 const successStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center', gap: '12px',
-    color: 'var(--bim-success, #4caf50)', fontSize: '14px',
+    color: bim('success'), fontSize: '14px',
 };
 
 const linkBtnStyle: React.CSSProperties = {
-    background: 'none', border: 'none', color: 'var(--bim-primary, #0078d4)',
+    background: 'none', border: 'none', color: bim('primary'),
     cursor: 'pointer', fontSize: '13px', textDecoration: 'underline',
 };
 
 const errorStyle: React.CSSProperties = {
-    fontSize: '13px', color: 'var(--bim-danger, #f44336)',
-    padding: '8px 12px', background: 'rgba(244,67,54,0.08)',
+    fontSize: '13px', color: bim('danger'),
+    padding: '8px 12px', background: bim('danger-bg'),
     borderRadius: '4px', marginTop: '8px',
 };
 
 const contactInputStyle: React.CSSProperties = {
     width: '100%', marginTop: '8px', padding: '8px 12px',
     fontSize: '13px',
-    border: '1px solid var(--bim-input-border, #ccc)', borderRadius: '6px',
-    background: 'var(--bim-bg, #fff)', color: 'var(--bim-input-fg, #333)',
+    border: `1px solid ${bim('input-border')}`, borderRadius: '6px',
+    background: bim('bg'), color: bim('input-fg'),
     outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
 };

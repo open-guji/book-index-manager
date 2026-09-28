@@ -1,4 +1,5 @@
 import React from 'react';
+import { bim } from '../../styles/tokens';
 
 export interface BadgeProps {
     children: React.ReactNode;
@@ -13,8 +14,8 @@ export const Badge: React.FC<BadgeProps> = ({ children, color, style }) => (
         fontSize: '11px',
         fontWeight: 500,
         borderRadius: '4px',
-        background: color || 'var(--bim-primary-soft, rgba(0,120,212,0.15))',
-        color: color ? '#fff' : 'var(--bim-fg, #333)',
+        background: color || bim('primary-soft'),
+        color: color ? bim('on-color-fg') : bim('fg'),
         ...style,
     }}>
         {children}

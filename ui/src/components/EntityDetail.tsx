@@ -9,6 +9,7 @@ import type { IndexStorage } from '../storage/types';
 import { extractStatus } from '../id';
 import { useT, useConvert } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
+import { bim } from '../styles/tokens';
 
 export interface EntityDetailProps {
     data: EntityDetailData;
@@ -48,7 +49,7 @@ function DynastyAndYears({ data }: { data: EntityDetailData }) {
     return (
         <span style={{
             fontSize: '14px',
-            color: 'var(--bim-desc-fg, #717171)',
+            color: bim('desc-fg'),
             marginLeft: '8px',
             fontWeight: 'normal',
         }}>
@@ -81,7 +82,7 @@ function AltNamesSection({ alt_names }: { alt_names: AltName[] }) {
     return (
         <div style={{
             fontSize: '14px',
-            color: 'var(--bim-fg, #444)',
+            color: bim('fg'),
             lineHeight: 1.9,
             margin: '8px 0 4px',
         }}>
@@ -90,7 +91,7 @@ function AltNamesSection({ alt_names }: { alt_names: AltName[] }) {
                 return (
                     <div key={type} style={{ display: 'flex', gap: '6px', marginBottom: '2px' }}>
                         <span style={{
-                            color: 'var(--bim-desc-fg, #999)',
+                            color: bim('desc-fg'),
                             fontSize: '12px',
                             minWidth: '36px',
                             paddingTop: '2px',
@@ -98,7 +99,7 @@ function AltNamesSection({ alt_names }: { alt_names: AltName[] }) {
                         <span>
                             {names.map((n, i) => (
                                 <span key={i}>
-                                    {i > 0 && <span style={{ color: 'var(--bim-desc-fg, #aaa)', margin: '0 4px' }}>·</span>}
+                                    {i > 0 && <span style={{ color: bim('desc-fg'), margin: '0 4px' }}>·</span>}
                                     {convert(n)}
                                 </span>
                             ))}
@@ -126,11 +127,11 @@ function ExternalIdsSection({ data }: { data: EntityDetailData }) {
                     display: 'inline-block',
                     padding: '2px 8px',
                     fontSize: '12px',
-                    color: 'var(--bim-link-fg, #0066cc)',
-                    border: '1px solid var(--bim-link-fg, #0066cc)40',
+                    color: bim('link-fg'),
+                    border: `1px solid ${bim('link-fg')}40`,
                     borderRadius: '3px',
                     textDecoration: 'none',
-                    background: 'var(--bim-link-fg, #0066cc)08',
+                    background: `${bim('link-fg')}08`,
                 }}
                 title="CBDB 中国历代人物传记数据库"
             >
@@ -237,13 +238,13 @@ function WorksSection({ works, transport, onNavigate, renderLink }: {
             <h3 style={{
                 fontSize: '14px',
                 fontWeight: 600,
-                color: 'var(--bim-fg, #333)',
+                color: bim('fg'),
                 margin: '0 0 8px',
                 paddingBottom: '4px',
-                borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                borderBottom: `1px solid ${bim('widget-border')}`,
             }}>
                 {t.label.relatedWorks} <span style={{
-                    color: 'var(--bim-desc-fg, #999)',
+                    color: bim('desc-fg'),
                     fontWeight: 'normal',
                     fontSize: '12px',
                 }}>({works.length})</span>
@@ -255,10 +256,10 @@ function WorksSection({ works, transport, onNavigate, renderLink }: {
                         {role && (
                             <div style={{
                                 fontSize: '12px',
-                                color: 'var(--bim-desc-fg, #999)',
+                                color: bim('desc-fg'),
                                 marginBottom: '2px',
                             }}>
-                                {convert(role)} <span style={{ color: 'var(--bim-desc-fg, #bbb)' }}>({items.length})</span>
+                                {convert(role)} <span style={{ color: bim('desc-fg') }}>({items.length})</span>
                             </div>
                         )}
                         <ul style={{
@@ -284,7 +285,7 @@ function WorksSection({ works, transport, onNavigate, renderLink }: {
                                                     onNavigate(w.work_id);
                                                 }}
                                                 style={{
-                                                    color: 'var(--bim-link-fg, #0066cc)',
+                                                    color: bim('link-fg'),
                                                     textDecoration: 'underline',
                                                     cursor: 'pointer',
                                                 }}
@@ -343,7 +344,7 @@ export const EntityDetail: React.FC<EntityDetailProps> = ({
                     fontWeight: 600,
                     margin: 0,
                     lineHeight: 1.3,
-                    color: 'var(--bim-fg, #222)',
+                    color: bim('fg'),
                 }}>
                     {convert(data.primary_name)}
                     <DynastyAndYears data={data} />
@@ -357,7 +358,7 @@ export const EntityDetail: React.FC<EntityDetailProps> = ({
                 alignItems: 'center',
                 gap: '8px',
                 fontSize: '11px',
-                color: 'var(--bim-desc-fg, #999)',
+                color: bim('desc-fg'),
                 marginBottom: '8px',
             }}>
                 <span style={{
@@ -366,10 +367,10 @@ export const EntityDetail: React.FC<EntityDetailProps> = ({
                     fontSize: '11px',
                     fontWeight: 500,
                     letterSpacing: '1px',
-                    color: 'var(--bim-type-entity, #5b3e8e)',
-                    border: '1px solid color-mix(in srgb, var(--bim-type-entity, #5b3e8e) 25%, transparent)',
+                    color: bim('type-entity'),
+                    border: `1px solid color-mix(in srgb, ${bim('type-entity')} 25%, transparent)`,
                     borderRadius: '2px',
-                    background: 'color-mix(in srgb, var(--bim-type-entity, #5b3e8e) 3%, transparent)',
+                    background: `color-mix(in srgb, ${bim('type-entity')} 3%, transparent)`,
                 }}>
                     {t.indexType.entity}
                 </span>
@@ -379,10 +380,10 @@ export const EntityDetail: React.FC<EntityDetailProps> = ({
                 {isDraft && (
                     <span style={{
                         padding: '1px 6px',
-                        background: 'var(--bim-warn-bg, #fff3cd)',
-                        border: '1px solid var(--bim-warn-border, #ffc107)',
+                        background: bim('warn-bg'),
+                        border: `1px solid ${bim('warn-border')}`,
                         borderRadius: '2px',
-                        color: 'var(--bim-warn-fg, #856404)',
+                        color: bim('warn-fg'),
                     }}>
                         {t.status.draft}
                     </span>
@@ -395,11 +396,11 @@ export const EntityDetail: React.FC<EntityDetailProps> = ({
             {placeholder && (
                 <div style={{
                     fontSize: '13px',
-                    color: 'var(--bim-desc-fg, #999)',
+                    color: bim('desc-fg'),
                     fontStyle: 'italic',
                     padding: '8px 12px',
-                    background: 'var(--bim-widget-bg, #f8f8f8)',
-                    border: '1px dashed var(--bim-widget-border, #ddd)',
+                    background: bim('widget-bg'),
+                    border: `1px dashed ${bim('widget-border')}`,
                     borderRadius: '4px',
                     margin: '8px 0',
                 }}>
@@ -419,7 +420,7 @@ export const EntityDetail: React.FC<EntityDetailProps> = ({
             {data.description?.text && (
                 <p style={{
                     fontSize: '14px',
-                    color: 'var(--bim-fg, #444)',
+                    color: bim('fg'),
                     lineHeight: 1.9,
                     margin: '8px 0',
                     textAlign: 'justify',

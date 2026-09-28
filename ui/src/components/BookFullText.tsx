@@ -5,6 +5,7 @@ import { ReaderLayout } from './detail/primitives';
 import { renderFullTextBody } from './detail/GujiTable';
 import { hasGujiTableNotation } from '../core/guji-table';
 import { hasGujiMarkdownV02 } from '../core/guji-inline';
+import { bim } from '../styles/tokens';
 
 interface BookFullTextProps {
     /** 全文目录（外部可注入，避免重复请求） */
@@ -52,7 +53,7 @@ export function workFullTextOptionLabel(v: WorkFullTextEntry): string {
     return head || v.key;
 }
 
-const MUTED: React.CSSProperties = { padding: 24, color: 'var(--bim-desc-fg, #999)' };
+const MUTED: React.CSSProperties = { padding: 24, color: bim('desc-fg') };
 
 /**
  * Book 全文 viewer：左侧章节列表 + 右侧 markdown 渲染。
@@ -162,7 +163,7 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
 
     /* 多份全文切换：沿用最朴素的原生下拉，不另起设计（阅读器 UI 冻结中） */
     const versionSwitcher = versions && versions.length > 1 && onVersionChange ? (
-        <div style={{ marginBottom: 12, fontSize: 13, color: 'var(--bim-desc-fg, #888)' }}>
+        <div style={{ marginBottom: 12, fontSize: 13, color: bim('desc-fg') }}>
             <label>
                 版本：
                 <select
@@ -201,8 +202,8 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
             <div style={{
                 padding: '0 8px 8px',
                 fontSize: 12.5,
-                color: 'var(--bim-desc-fg, #888)',
-                borderBottom: '1px solid var(--bim-border, #e5e5e5)',
+                color: bim('desc-fg'),
+                borderBottom: `1px solid ${bim('border')}`,
                 marginBottom: 8,
             }}>
                 {/* 章数不再写出：下面就是逐章列表，数量一目了然（与整理本同） */}
@@ -221,10 +222,10 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
                                         width: '100%',
                                         textAlign: 'left',
                                         padding: '6px 12px',
-                                        background: isActive ? 'var(--bim-primary-bg, #fdf4f4)' : 'transparent',
+                                        background: isActive ? bim('primary-bg') : 'transparent',
                                         border: 'none',
-                                        borderLeft: isActive ? '3px solid var(--bim-primary, #8B0000)' : '3px solid transparent',
-                                        color: isActive ? 'var(--bim-primary, #8B0000)' : 'var(--bim-fg, #2c2c2c)',
+                                        borderLeft: isActive ? `3px solid ${bim('primary')}` : '3px solid transparent',
+                                        color: isActive ? bim('primary') : bim('fg'),
                                         cursor: 'pointer',
                                         fontSize: 14,
                                         lineHeight: 1.5,
@@ -247,14 +248,14 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
                     <header style={{
                         marginBottom: 16,
                         paddingBottom: 12,
-                        borderBottom: '1px solid var(--bim-border, #e5e5e5)',
+                        borderBottom: `1px solid ${bim('border')}`,
                     }}>
-                        <h2 style={{ margin: 0, fontSize: 20, color: 'var(--bim-fg, #2c2c2c)' }}>
+                        <h2 style={{ margin: 0, fontSize: 20, color: bim('fg') }}>
                             {currentChapterMeta.title}
                         </h2>
-                        <div style={{ marginTop: 6, fontSize: 12, color: 'var(--bim-desc-fg, #888)' }}>
+                        <div style={{ marginTop: 6, fontSize: 12, color: bim('desc-fg') }}>
                             来源：<a href={index.source.url} target="_blank" rel="noreferrer"
-                                style={{ color: 'var(--bim-primary, #8B0000)' }}>
+                                style={{ color: bim('primary') }}>
                                 {index.source.name}
                             </a>
                             {index.source.license && <> · {index.source.license}</>}
@@ -263,14 +264,14 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
                 )}
 
                 {textLoading && (
-                    <div style={{ color: 'var(--bim-desc-fg, #999)' }}>加载中…</div>
+                    <div style={{ color: bim('desc-fg') }}>加载中…</div>
                 )}
 
                 {!textLoading && chapterText && (
                     <article style={{
                         fontSize: 16,
                         lineHeight: 1.9,
-                        color: 'var(--bim-fg, #2c2c2c)',
+                        color: bim('fg'),
                         whiteSpace: 'pre-wrap',
                         wordBreak: 'break-word',
                         fontFamily: '"Songti SC", "Source Han Serif", "Noto Serif CJK SC", serif',
@@ -288,7 +289,7 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
                 )}
 
                 {!textLoading && !chapterText && (
-                    <div style={{ color: 'var(--bim-desc-fg, #999)' }}>无法加载章节内容</div>
+                    <div style={{ color: bim('desc-fg') }}>无法加载章节内容</div>
                 )}
             </div>
         </ReaderLayout>

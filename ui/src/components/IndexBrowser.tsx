@@ -5,6 +5,7 @@ import { ModeIndicator } from './ModeIndicator';
 import { SearchInput } from './SearchInput';
 import { useT, useConvert, formatTemplate } from '../i18n';
 import { splitHighlightSnippet } from '../core/highlight';
+import { bim } from '../styles/tokens';
 
 const RECENT_KEY = 'bim-recent-ids';
 const RECENT_KEY_LEGACY = 'bim-recent-entries';
@@ -311,9 +312,9 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
 
     return (
         <div className="bim-browser-container">
-            <header style={{ padding: '12px 20px', borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
+            <header style={{ padding: '12px 20px', borderBottom: `1px solid ${bim('widget-border')}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h1 style={{ margin: 0, fontSize: '18px', color: 'var(--bim-fg, #333)' }}>{t.browser.title}</h1>
+                    <h1 style={{ margin: 0, fontSize: '18px', color: bim('fg') }}>{t.browser.title}</h1>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {headerRight}
                         {!hideModeIndicator && (
@@ -345,10 +346,10 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                         onClick={() => onNewEntry('work')}
                         style={{
                             padding: '8px 14px',
-                            border: '1px solid var(--bim-primary, #0078d4)',
+                            border: `1px solid ${bim('primary')}`,
                             borderRadius: '6px',
                             background: 'transparent',
-                            color: 'var(--bim-primary, #0078d4)',
+                            color: bim('primary'),
                             cursor: 'pointer',
                             fontSize: '13px',
                         }}
@@ -363,7 +364,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                 <div style={{
                     padding: '0 20px 8px',
                     fontSize: '12px',
-                    color: 'var(--bim-desc-fg, #999)',
+                    color: bim('desc-fg'),
                     display: 'flex',
                     justifyContent: 'space-between',
                     flexWrap: 'wrap',
@@ -374,36 +375,36 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                             <>
                                 {(subtypeStats['book'] ?? 0) > 0 && (
                                     <>
-                                        書 <strong style={{ color: 'var(--bim-fg, #555)' }}>{subtypeStats['book'].toLocaleString()}</strong> 部
-                                        ，<strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.books.toLocaleString()}</strong> 本
+                                        書 <strong style={{ color: bim('fg') }}>{subtypeStats['book'].toLocaleString()}</strong> 部
+                                        ，<strong style={{ color: bim('fg') }}>{stats.books.toLocaleString()}</strong> 本
                                     </>
                                 )}
                                 {subtypeStats['article'] ? (
                                     <>
                                         <span style={{ margin: '0 6px' }}>·</span>
-                                        文章 <strong style={{ color: 'var(--bim-fg, #555)' }}>{subtypeStats['article'].toLocaleString()}</strong> 篇
+                                        文章 <strong style={{ color: bim('fg') }}>{subtypeStats['article'].toLocaleString()}</strong> 篇
                                     </>
                                 ) : null}
                                 {subtypeStats['poem'] ? (
                                     <>
                                         <span style={{ margin: '0 6px' }}>·</span>
-                                        詩詞 <strong style={{ color: 'var(--bim-fg, #555)' }}>{subtypeStats['poem'].toLocaleString()}</strong> 首
+                                        詩詞 <strong style={{ color: bim('fg') }}>{subtypeStats['poem'].toLocaleString()}</strong> 首
                                     </>
                                 ) : null}
                                 <span style={{ margin: '0 6px' }}>·</span>
-                                叢編 <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.collections.toLocaleString()}</strong>
+                                叢編 <strong style={{ color: bim('fg') }}>{stats.collections.toLocaleString()}</strong>
                             </>
                         ) : (
                             <>
-                                {t.indexType.work} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.works.toLocaleString()}</strong>
+                                {t.indexType.work} <strong style={{ color: bim('fg') }}>{stats.works.toLocaleString()}</strong>
                                 <span style={{ margin: '0 6px' }}>·</span>
-                                {t.indexType.book} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.books.toLocaleString()}</strong>
+                                {t.indexType.book} <strong style={{ color: bim('fg') }}>{stats.books.toLocaleString()}</strong>
                                 <span style={{ margin: '0 6px' }}>·</span>
-                                {t.indexType.collection} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.collections.toLocaleString()}</strong>
+                                {t.indexType.collection} <strong style={{ color: bim('fg') }}>{stats.collections.toLocaleString()}</strong>
                                 {stats.entities > 0 && (
                                     <>
                                         <span style={{ margin: '0 6px' }}>·</span>
-                                        {t.indexType.entity} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.entities.toLocaleString()}</strong>
+                                        {t.indexType.entity} <strong style={{ color: bim('fg') }}>{stats.entities.toLocaleString()}</strong>
                                     </>
                                 )}
                             </>
@@ -411,9 +412,9 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     </span>
                     {stats.hasImage != null && stats.hasText != null && (
                         <span>
-                            {t.resourceType.image} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.hasImage.toLocaleString()}</strong>
+                            {t.resourceType.image} <strong style={{ color: bim('fg') }}>{stats.hasImage.toLocaleString()}</strong>
                             <span style={{ margin: '0 6px' }}>·</span>
-                            {t.resourceType.text} <strong style={{ color: 'var(--bim-fg, #555)' }}>{stats.hasText.toLocaleString()}</strong>
+                            {t.resourceType.text} <strong style={{ color: bim('fg') }}>{stats.hasText.toLocaleString()}</strong>
                         </span>
                     )}
                 </div>
@@ -422,31 +423,31 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
             {/* Content */}
             <div style={{ padding: '0 20px 20px', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
                 {isLoading ? (
-                    <div style={{ textAlign: 'center', padding: '40px', color: 'var(--bim-desc-fg, #717171)' }}>
+                    <div style={{ textAlign: 'center', padding: '40px', color: bim('desc-fg') }}>
                         {t.search.searching}
                     </div>
                 ) : errorMessage ? (
                     <div style={{ textAlign: 'center', padding: '40px' }}>
                         <div style={{ fontSize: '24px', marginBottom: '8px' }}>⚠️</div>
-                        <p style={{ color: 'var(--bim-desc-fg, #717171)' }}>{errorMessage}</p>
+                        <p style={{ color: bim('desc-fg') }}>{errorMessage}</p>
                     </div>
                 ) : showingRecent ? (
                     /* Recent entries view */
                     <div style={{ flex: 1 }}>
                         {recentLoading ? (
-                            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--bim-desc-fg, #717171)' }}>
+                            <div style={{ textAlign: 'center', padding: '40px', color: bim('desc-fg') }}>
                                 {t.search.loading}
                             </div>
                         ) : recentEntries.length > 0 ? (
                             <>
-                                <div style={{ padding: '8px 0', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ padding: '8px 0', fontSize: '12px', color: bim('desc-fg'), display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span>{t.search.recentBrowse}</span>
                                     <button
                                         onClick={handleClearAllRecent}
                                         style={{
                                             border: 'none',
                                             background: 'transparent',
-                                            color: 'var(--bim-desc-fg, #999)',
+                                            color: bim('desc-fg'),
                                             cursor: 'pointer',
                                             fontSize: '11px',
                                             padding: '2px 4px',
@@ -484,9 +485,9 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                             margin: '8px auto 0',
                                             padding: '4px 16px',
                                             fontSize: '12px',
-                                            color: 'var(--bim-primary, #0078d4)',
+                                            color: bim('primary'),
                                             background: 'transparent',
-                                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                            border: `1px solid ${bim('widget-border')}`,
                                             borderRadius: '4px',
                                             cursor: 'pointer',
                                         }}
@@ -498,8 +499,8 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                         ) : (
                             <div style={{ textAlign: 'center', padding: '40px' }}>
                                 <div style={{ fontSize: '32px', marginBottom: '8px' }}>📚</div>
-                                <h3 style={{ margin: '0 0 8px', color: 'var(--bim-fg, #333)' }}>{t.search.searchTitle}</h3>
-                                <p style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '13px' }}>{t.search.searchSubtitle}</p>
+                                <h3 style={{ margin: '0 0 8px', color: bim('fg') }}>{t.search.searchTitle}</h3>
+                                <p style={{ color: bim('desc-fg'), fontSize: '13px' }}>{t.search.searchSubtitle}</p>
                             </div>
                         )}
                     </div>
@@ -522,12 +523,12 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
                                         padding: '6px 0',
-                                        borderBottom: '1px solid var(--bim-widget-border, #e0e0e0)',
+                                        borderBottom: `1px solid ${bim('widget-border')}`,
                                         marginBottom: '6px',
                                     }}>
-                                        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--bim-fg, #333)' }}>
+                                        <span style={{ fontSize: '13px', fontWeight: 600, color: bim('fg') }}>
                                             {icon} {name}
-                                            <span style={{ fontWeight: 400, color: 'var(--bim-desc-fg, #717171)', marginLeft: '6px' }}>
+                                            <span style={{ fontWeight: 400, color: bim('desc-fg'), marginLeft: '6px' }}>
                                                 {total} {t.unit.items}
                                             </span>
                                         </span>
@@ -537,7 +538,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                                 style={{
                                                     border: 'none',
                                                     background: 'transparent',
-                                                    color: 'var(--bim-primary, #0078d4)',
+                                                    color: bim('primary'),
                                                     cursor: 'pointer',
                                                     fontSize: '12px',
                                                 }}
@@ -579,10 +580,10 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                 ) : (
                     <div style={{ textAlign: 'center', padding: '40px' }}>
                         <div style={{ fontSize: '32px', marginBottom: '8px' }}>📚</div>
-                        <h3 style={{ margin: '0 0 8px', color: 'var(--bim-fg, #333)' }}>
+                        <h3 style={{ margin: '0 0 8px', color: bim('fg') }}>
                             {formatTemplate(t.search.noResultsFor, { query: searchQuery })}
                         </h3>
-                        <p style={{ color: 'var(--bim-desc-fg, #717171)', fontSize: '13px' }}>
+                        <p style={{ color: bim('desc-fg'), fontSize: '13px' }}>
                             {t.search.tryOther}
                         </p>
                     </div>
@@ -611,14 +612,14 @@ interface EntryCardProps {
 const DescriptionSnippet: React.FC<{ snippet: string }> = ({ snippet }) => {
     const { convert } = useConvert();
     return (
-        <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: '12px', color: bim('desc-fg'), lineHeight: 1.6 }}>
             {splitHighlightSnippet(snippet).map((seg, i) => seg.marked
                 ? (
                     <mark
                         key={i}
                         style={{
-                            background: 'var(--bim-highlight-bg, #fff3a3)',
-                            color: 'var(--bim-highlight-fg, inherit)',
+                            background: bim('highlight-bg'),
+                            color: bim('highlight-fg'),
                             padding: '0 1px',
                             borderRadius: '2px',
                         }}
@@ -658,7 +659,7 @@ const EntryBookCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, get
         })
         : undefined;
 
-    const accent = 'var(--bim-cover-accent, #8e6f3e)';
+    const accent = bim('cover-accent');
 
     return (
         <div
@@ -670,10 +671,10 @@ const EntryBookCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, get
                 padding: '1.1rem 1.3rem',
                 borderRadius: '12px',
                 cursor: 'pointer',
-                background: 'var(--bim-bg, #fff)',
+                background: bim('bg'),
                 border: selected
-                    ? '1px solid var(--bim-primary, #0078d4)'
-                    : '1px solid var(--bim-widget-border, #e0e0e0)',
+                    ? `1px solid ${bim('primary')}`
+                    : `1px solid ${bim('widget-border')}`,
                 transition: 'border-color .2s ease, transform .2s ease, box-shadow .2s ease',
             }}
         >
@@ -686,8 +687,8 @@ const EntryBookCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, get
                     minHeight: '126px',
                     flexShrink: 0,
                     borderRadius: '4px',
-                    border: `1px solid color-mix(in srgb, ${accent} 50%, var(--bim-widget-border, #e0e0e0))`,
-                    background: `linear-gradient(color-mix(in srgb, ${accent} 14%, var(--bim-bg, #fff)), color-mix(in srgb, ${accent} 7%, var(--bim-bg, #fff)))`,
+                    border: `1px solid color-mix(in srgb, ${accent} 50%, ${bim('widget-border')})`,
+                    background: `linear-gradient(color-mix(in srgb, ${accent} 14%, ${bim('bg')}), color-mix(in srgb, ${accent} 7%, ${bim('bg')}))`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -733,14 +734,14 @@ const EntryBookCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, get
             {/* 信息区 */}
             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '17px', fontWeight: 600, color: 'var(--bim-fg, #333)' }}>{title}</span>
+                    <span style={{ fontSize: '17px', fontWeight: 600, color: bim('fg') }}>{title}</span>
                     {measure && (
-                        <span style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>{measure}</span>
+                        <span style={{ fontSize: '12px', color: bim('desc-fg') }}>{measure}</span>
                     )}
                 </div>
 
                 {(entry.dynasty || entry.author) && (
-                    <div style={{ fontSize: '13px', color: 'var(--bim-desc-fg, #717171)' }}>
+                    <div style={{ fontSize: '13px', color: bim('desc-fg') }}>
                         {entry.dynasty && <span>〔{convert(entry.dynasty)}〕</span>}
                         {entry.author && <span>{convert(entry.author)}</span>}
                         {entry.role && entry.role !== 'author' && <span> {convert(entry.role)}</span>}
@@ -750,14 +751,14 @@ const EntryBookCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, get
                 {/* 刊刻朝代 + 版本。era 是这个本子的朝代（dating.era），与上一行撰人的 dynasty 不同：
                     史記·武英殿本 撰人〔西漢〕、刊刻〔清〕。 */}
                 {(entry.era || entry.edition) && (
-                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
+                    <div style={{ fontSize: '12px', color: bim('desc-fg') }}>
                         {entry.era && <span>〔{convert(entry.era)}〕</span>}
                         {entry.edition && <span>{convert(entry.edition)}</span>}
                     </div>
                 )}
 
                 {matchedAlias && (
-                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
+                    <div style={{ fontSize: '12px', color: bim('desc-fg') }}>
                         {t.search.alias}：{convert(typeof matchedAlias === 'string' ? matchedAlias : (matchedAlias as { book_title?: string }).book_title || '')}
                     </div>
                 )}
@@ -767,23 +768,23 @@ const EntryBookCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, get
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: 'auto', paddingTop: '4px' }}>
                     <span style={{
                         fontSize: '11px', padding: '2px 8px', borderRadius: '999px',
-                        color: 'var(--bim-desc-fg, #717171)',
-                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        color: bim('desc-fg'),
+                        border: `1px solid ${bim('widget-border')}`,
                     }}>
                         {getConfig(entry.type).icon} {getConfig(entry.type).name}
                     </span>
                     {entry.has_text && (
                         <span style={{
                             fontSize: '11px', padding: '2px 8px', borderRadius: '999px',
-                            color: 'var(--bim-desc-fg, #717171)',
-                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            color: bim('desc-fg'),
+                            border: `1px solid ${bim('widget-border')}`,
                         }}>📝 {t.misc.textResource}</span>
                     )}
                     {entry.has_image && (
                         <span style={{
                             fontSize: '11px', padding: '2px 8px', borderRadius: '999px',
-                            color: 'var(--bim-desc-fg, #717171)',
-                            border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                            color: bim('desc-fg'),
+                            border: `1px solid ${bim('widget-border')}`,
                         }}>🖼️ {t.misc.imageResource}</span>
                     )}
                 </div>
@@ -814,18 +815,18 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                 gap: '10px',
                 padding: '10px 12px',
                 borderRadius: '6px',
-                border: selected ? '1px solid var(--bim-primary, #0078d4)' : '1px solid var(--bim-widget-border, #e0e0e0)',
+                border: selected ? `1px solid ${bim('primary')}` : `1px solid ${bim('widget-border')}`,
                 cursor: 'pointer',
-                background: 'var(--bim-input-bg, #fff)',
+                background: bim('input-bg'),
             }}
         >
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', marginTop: '2px' }}>
                 <span style={{ fontSize: '16px' }}>{getConfig(entry.type).icon}</span>
-                <span style={{ fontSize: '9px', color: 'var(--bim-desc-fg, #999)', lineHeight: 1 }}>{getConfig(entry.type).name}</span>
+                <span style={{ fontSize: '9px', color: bim('desc-fg'), lineHeight: 1 }}>{getConfig(entry.type).name}</span>
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--bim-fg, #333)' }}>
+                    <span style={{ fontSize: '14px', fontWeight: 500, color: bim('fg') }}>
                         {convert(entry.title || entry.primary_name || entry.id)}
                     </span>
                     {/* 资源图标 */}
@@ -835,25 +836,25 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                     </span>
                     {/* 刊刻朝代 + 版本（era 是本子的朝代，非撰人 dynasty） */}
                     {(entry.era || entry.edition) && (
-                        <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)' }}>
+                        <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
                             {entry.era && <>〔{convert(entry.era)}〕</>}
                             {entry.edition && convert(entry.edition)}
                         </span>
                     )}
                     {/* 卷/回数等計量：優先 measure_info，退回 juan_count */}
                     {entry.measure_info ? (
-                        <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)' }}>
+                        <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
                             {convert(entry.measure_info)}
                         </span>
                     ) : entry.juan_count != null && entry.juan_count > 0 ? (
-                        <span style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)' }}>
+                        <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
                             {entry.juan_count}{t.unit.juan}
                         </span>
                     ) : null}
                 </div>
                 {/* 作者朝代 */}
                 {(entry.dynasty || entry.author) && (
-                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginTop: '2px' }}>
+                    <div style={{ fontSize: '12px', color: bim('desc-fg'), marginTop: '2px' }}>
                         {entry.dynasty && <span>〔{convert(entry.dynasty)}〕</span>}
                         {entry.author && <span>{convert(entry.author)}</span>}
                         {entry.role && entry.role !== 'author' && <span> {convert(entry.role)}</span>}
@@ -867,7 +868,7 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                 )}
                 {/* 别名匹配提示 */}
                 {matchedAlias && (
-                    <div style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #717171)', marginTop: '2px' }}>
+                    <div style={{ fontSize: '11px', color: bim('desc-fg'), marginTop: '2px' }}>
                         {t.search.alias}：{convert(matchedAlias)}
                     </div>
                 )}
@@ -879,7 +880,7 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                     style={{
                         border: 'none',
                         background: 'transparent',
-                        color: 'var(--bim-desc-fg, #999)',
+                        color: bim('desc-fg'),
                         cursor: 'pointer',
                         fontSize: '14px',
                         padding: '2px 4px',
@@ -911,15 +912,15 @@ const NotFoundCard: React.FC<{
             gap: '10px',
             padding: '10px 12px',
             borderRadius: '6px',
-            border: '1px solid var(--bim-widget-border, #e0e0e0)',
-            background: 'var(--bim-input-bg, #fff)',
+            border: `1px solid ${bim('widget-border')}`,
+            background: bim('input-bg'),
             opacity: 0.6,
         }}
     >
         <span style={{ fontSize: '16px' }}>❓</span>
         <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '13px', color: 'var(--bim-fg, #333)', fontFamily: 'monospace' }}>{id}</div>
-            <div style={{ fontSize: '11px', color: 'var(--bim-desc-fg, #999)', marginTop: '2px' }}>
+            <div style={{ fontSize: '13px', color: bim('fg'), fontFamily: 'monospace' }}>{id}</div>
+            <div style={{ fontSize: '11px', color: bim('desc-fg'), marginTop: '2px' }}>
                 {t.search.itemNotFound}
             </div>
         </div>
@@ -929,7 +930,7 @@ const NotFoundCard: React.FC<{
             style={{
                 border: 'none',
                 background: 'transparent',
-                color: 'var(--bim-desc-fg, #999)',
+                color: bim('desc-fg'),
                 cursor: 'pointer',
                 fontSize: '14px',
                 padding: '2px 4px',

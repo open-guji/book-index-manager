@@ -3,6 +3,7 @@ import type { ResourceEntry, ResourceType, ResourceTypeAtom, DownloadProgress } 
 import { getResourceTypes, hasResourceType } from '../types';
 import { useT } from '../i18n';
 import type { LocaleMessages } from '../i18n';
+import { bim } from '../styles/tokens';
 
 /** 从 URL 提取默认 id */
 function extractIdFromUrl(url: string): string {
@@ -130,9 +131,9 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                 <div
                     key={originalIndex}
                     style={{
-                        border: '1px solid var(--bim-widget-border, #e0e0e0)',
+                        border: `1px solid ${bim('widget-border')}`,
                         borderRadius: '4px',
-                        background: 'var(--bim-input-bg, #fff)',
+                        background: bim('input-bg'),
                         overflow: 'hidden',
                     }}
                 >
@@ -155,7 +156,7 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                             padding: '1px 6px',
                             borderRadius: '3px',
                             background: typeColor(item.type ?? 'text'),
-                            color: '#fff',
+                            color: bim('on-color-fg'),
                         }}>
                             {(() => {
                                 const types = getResourceTypes(item);
@@ -188,7 +189,7 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                             style={{
                                 background: 'transparent',
                                 border: 'none',
-                                color: 'var(--bim-danger, #f44336)',
+                                color: bim('danger'),
                                 cursor: 'pointer',
                                 padding: '2px 6px',
                                 fontSize: '14px',
@@ -201,7 +202,7 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
 
                     {/* 展开内容 */}
                     {expandedIndex === originalIndex && (
-                        <div style={{ padding: '12px', borderTop: '1px solid var(--bim-widget-border, #e0e0e0)' }}>
+                        <div style={{ padding: '12px', borderTop: `1px solid ${bim('widget-border')}` }}>
                             {/* 图片预览 */}
                             {hasResourceType(item, 'image') && item.url && renderImagePreview(item, t)}
 
@@ -304,8 +305,8 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                                 />
 
                                 {/* metadata */}
-                                <div style={{ borderTop: '1px solid var(--bim-widget-border, #e0e0e0)', paddingTop: '8px', marginTop: '4px' }}>
-                                    <div style={{ fontSize: '12px', color: 'var(--bim-desc-fg, #717171)', marginBottom: '6px' }}>{t.label.metadata}</div>
+                                <div style={{ borderTop: `1px solid ${bim('widget-border')}`, paddingTop: '8px', marginTop: '4px' }}>
+                                    <div style={{ fontSize: '12px', color: bim('desc-fg'), marginBottom: '6px' }}>{t.label.metadata}</div>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                                         {Object.entries(t.metadata).map(([key, label]) => (
                                             <label key={key} style={{ ...labelStyle, gap: '4px' }}>
@@ -335,10 +336,10 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                     justifyContent: 'center',
                     gap: '6px',
                     padding: '8px 16px',
-                    border: '1px dashed var(--bim-widget-border, #e0e0e0)',
+                    border: `1px dashed ${bim('widget-border')}`,
                     borderRadius: '4px',
                     background: 'transparent',
-                    color: 'var(--bim-fg, #333)',
+                    color: bim('fg'),
                     cursor: 'pointer',
                     fontSize: '13px',
                     opacity: 0.8,
@@ -353,10 +354,10 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
 
 function typeColor(type: ResourceType): string {
     switch (type) {
-        case 'text': return 'var(--bim-restype-text, #2196f3)';
-        case 'image': return 'var(--bim-restype-image, #ff9800)';
-        case 'text+image': return 'var(--bim-restype-text-image, #9c27b0)';
-        case 'physical': return 'var(--bim-restype-physical, #795548)';
+        case 'text': return bim('restype-text');
+        case 'image': return bim('restype-image');
+        case 'text+image': return bim('restype-text-image');
+        case 'physical': return bim('restype-physical');
     }
 }
 
@@ -375,7 +376,7 @@ function renderDownloadBtn(
             style={{
                 background: 'transparent',
                 border: 'none',
-                color: isCompleted ? 'var(--bim-success, #4caf50)' : isDownloading ? 'var(--bim-desc-fg, #717171)' : 'var(--bim-link-fg, #0066cc)',
+                color: isCompleted ? bim('success') : isDownloading ? bim('desc-fg') : bim('link-fg'),
                 cursor: isDownloading ? 'default' : 'pointer',
                 padding: '2px 6px',
                 fontSize: '12px',
@@ -395,7 +396,7 @@ function renderImagePreview(item: ResourceEntry, t: LocaleMessages) {
     return (
         <div style={{ marginBottom: '12px' }}>
             {isImageUrl ? (
-                <div style={{ width: '100%', maxHeight: '150px', overflow: 'hidden', borderRadius: '4px', background: 'var(--bim-overlay-bg, #00000010)' }}>
+                <div style={{ width: '100%', maxHeight: '150px', overflow: 'hidden', borderRadius: '4px', background: bim('overlay-bg') }}>
                     <img
                         src={item.url}
                         alt={item.name}
@@ -404,7 +405,7 @@ function renderImagePreview(item: ResourceEntry, t: LocaleMessages) {
                     />
                 </div>
             ) : (
-                <div style={{ padding: '12px', background: 'var(--bim-overlay-bg, #00000010)', borderRadius: '4px', fontSize: '12px', color: 'var(--bim-desc-fg, #717171)' }}>
+                <div style={{ padding: '12px', background: bim('overlay-bg'), borderRadius: '4px', fontSize: '12px', color: bim('desc-fg') }}>
                     {t.editor.imageResourceLink}
                 </div>
             )}
@@ -415,9 +416,9 @@ function renderImagePreview(item: ResourceEntry, t: LocaleMessages) {
 const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '6px 8px',
-    background: 'var(--bim-input-bg, #fff)',
-    color: 'var(--bim-input-fg, #333)',
-    border: '1px solid var(--bim-input-border, #ccc)',
+    background: bim('input-bg'),
+    color: bim('input-fg'),
+    border: `1px solid ${bim('input-border')}`,
     borderRadius: '2px',
     fontSize: '13px',
     boxSizing: 'border-box',
@@ -431,6 +432,6 @@ const labelStyle: React.CSSProperties = {
 
 const labelTextStyle: React.CSSProperties = {
     fontSize: '12px',
-    color: 'var(--bim-desc-fg, #717171)',
+    color: bim('desc-fg'),
     whiteSpace: 'nowrap',
 };

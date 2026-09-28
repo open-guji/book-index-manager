@@ -1,4 +1,5 @@
 import React from 'react';
+import { bim } from '../../styles/tokens';
 
 export interface RepoSourceLinkProps {
     /** 目标 URL（如 GitHub blob/tree 链接） */
@@ -37,16 +38,16 @@ export const RepoSourceLink: React.FC<RepoSourceLinkProps> = ({
                 width: size + 8,
                 height: size + 8,
                 borderRadius: 4,
-                color: 'var(--bim-desc-fg, #717171)',
+                color: bim('desc-fg'),
                 textDecoration: 'none',
                 transition: 'color 120ms, background 120ms',
                 ...style,
             }}
             onMouseEnter={e => {
-                (e.currentTarget as HTMLAnchorElement).style.color = 'var(--bim-fg, #1a1a1a)';
+                (e.currentTarget as HTMLAnchorElement).style.color = bim('fg');
             }}
             onMouseLeave={e => {
-                (e.currentTarget as HTMLAnchorElement).style.color = 'var(--bim-desc-fg, #717171)';
+                (e.currentTarget as HTMLAnchorElement).style.color = bim('desc-fg');
             }}
         >
             <svg

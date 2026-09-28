@@ -3,6 +3,7 @@ import { renderInterlinear } from './primitives';
 import type { InterlinearOptions } from './primitives';
 import { splitFullTextTables } from '../../core/guji-table';
 import type { GujiTable as GujiTableData } from '../../core/guji-table';
+import { bim } from '../../styles/tokens';
 
 /*
  * 表格样式：细边框、表头加底色、窄屏横向滚动。
@@ -23,7 +24,7 @@ const TABLE_STYLE: React.CSSProperties = {
     whiteSpace: 'normal',
 };
 
-const BORDER = '1px solid var(--bim-table-border, color-mix(in srgb, currentColor 28%, transparent))';
+const BORDER = `1px solid ${bim('table-border')}`;
 
 const CELL_STYLE: React.CSSProperties = {
     border: BORDER,
@@ -35,7 +36,7 @@ const CELL_STYLE: React.CSSProperties = {
 
 const HEAD_STYLE: React.CSSProperties = {
     ...CELL_STYLE,
-    background: 'var(--bim-table-head-bg, color-mix(in srgb, currentColor 8%, transparent))',
+    background: bim('table-head-bg'),
     fontWeight: 600,
 };
 

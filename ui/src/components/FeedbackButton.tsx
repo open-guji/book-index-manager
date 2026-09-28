@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FeedbackDialog } from './FeedbackDialog';
 import type { FeedbackData } from './FeedbackDialog';
+import { bim } from '../styles/tokens';
 
 export interface FeedbackButtonProps {
     onSubmit: (data: FeedbackData) => Promise<void>;
@@ -44,12 +45,12 @@ const fabStyle: React.CSSProperties = {
     height: '48px',
     borderRadius: '50%',
     border: 'none',
-    background: 'var(--bim-primary, #0078d4)',
-    color: 'var(--bim-primary-fg, #fff)',
+    background: bim('primary'),
+    color: bim('primary-fg'),
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+    boxShadow: bim('shadow-fab'),
     transition: 'transform 0.2s, box-shadow 0.2s',
 };

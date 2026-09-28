@@ -29,6 +29,7 @@ import {
     type ResolvedVersion, type VersionRow,
 } from '../../core/detail-model';
 import { getDisplayNameFromUrl, resourceHref } from '../../core/resources';
+import { bim } from '../../styles/tokens';
 
 /** 桌面 cap；窄屏由 CSS 控制不了行数，故统一用桌面值，窄屏靠展开按钮 */
 const CAP = { versions: 12, catalogs: 8, chips: 12 };
@@ -214,12 +215,12 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                             text={data.description.text}
                             style={{
                                 fontSize: 15, lineHeight: 2.05,
-                                color: 'var(--bim-body-fg, #3b3228)', textAlign: 'justify',
+                                color: bim('body-fg'), textAlign: 'justify',
                             }}
                         />
                         {data.description.sources?.length ? (
                             <div className="bim-d-ui" style={{
-                                marginTop: 8, fontSize: 11.5, color: 'var(--bim-label-fg, #a3937b)',
+                                marginTop: 8, fontSize: 11.5, color: bim('label-fg'),
                             }}>
                                 {data.description.sources
                                     .map(s => convert(sourceText(s)))
@@ -233,8 +234,8 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                     <details key={i} style={{ marginTop: 12 }}>
                         <summary className="bim-d-ui" style={{
                             cursor: 'pointer', fontSize: 12,
-                            color: 'var(--bim-accent, #9c3a2c)',
-                            borderBottom: '1px solid var(--bim-rule, #e0d6c0)',
+                            color: bim('accent'),
+                            borderBottom: `1px solid ${bim('rule')}`,
                             display: 'inline-block',
                         }}>
                             {convert(entry.title)}
@@ -244,7 +245,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                             plainStrong
                             style={{
                                 marginTop: 10, fontSize: 13.5, lineHeight: 2,
-                                color: 'var(--bim-quiet-fg, #5b4f40)',
+                                color: bim('quiet-fg'),
                             }}
                         />
                     </details>
@@ -331,7 +332,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                     {table.hasInferredEra && (
                         <div className="bim-d-ui" style={{
                             marginTop: 10, fontSize: 11,
-                            color: 'var(--bim-hint-fg, #b3a385)',
+                            color: bim('hint-fg'),
                         }}>
                             部分刊刻年代據版本題名推斷，非著錄原文
                         </div>
@@ -489,7 +490,7 @@ function VersionTableRow({ row, no, onNavigate, renderLink }: {
                       * 改为只在 hover 提示，区块底部另有一行统一说明。
                       */}
                     <span
-                        style={{ color: 'var(--bim-meta-fg, #7b6a54)', letterSpacing: '.04em' }}
+                        style={{ color: bim('meta-fg'), letterSpacing: '.04em' }}
                         title={inferred ? '據版本題名推斷' : undefined}
                     >
                         {eraLabel || <Dash />}
@@ -529,7 +530,7 @@ function ResourceCell({ items, convert, fallback }: {
         <span style={{ minWidth: 0 }}>
             {href ? <ExtLink href={href}>{name}</ExtLink> : name}
             <span className="bim-d-ui" style={{
-                marginLeft: 4, fontSize: 11, color: 'var(--bim-hint-fg, #b3a385)',
+                marginLeft: 4, fontSize: 11, color: bim('hint-fg'),
             }}>
                 +{items.length - 1}
             </span>
@@ -591,7 +592,7 @@ function AnnotationBlock({
                                     {showMeta && e.section && (
                                         <span className="bim-d-ui" style={{
                                             marginLeft: 8, fontSize: 11,
-                                            color: 'var(--bim-hint-fg, #b3a385)',
+                                            color: bim('hint-fg'),
                                         }}>
                                             {convert(e.section)}
                                         </span>
@@ -609,7 +610,7 @@ function AnnotationBlock({
                                         style={{
                                             fontFamily: 'var(--bim-font-ui, system-ui, sans-serif)',
                                             fontSize: 11.5,
-                                            color: 'var(--bim-meta-fg, #7b6a54)',
+                                            color: bim('meta-fg'),
                                         }}
                                     />
                                 ) : undefined
@@ -619,7 +620,7 @@ function AnnotationBlock({
                                 <div className="bim-d-ui" style={{
                                     display: 'flex', flexWrap: 'wrap', gap: '4px 16px',
                                     marginBottom: 8, fontSize: 12,
-                                    color: 'var(--bim-meta-fg, #7b6a54)',
+                                    color: bim('meta-fg'),
                                 }}>
                                     {e.title_info && <span>{t.label.titleInfo} {convert(e.title_info)}</span>}
                                     {e.author_info && <span>{t.label.authorInfo} {convert(e.author_info)}</span>}
@@ -633,7 +634,7 @@ function AnnotationBlock({
                             )}
                             {showMeta && e.page && (
                                 <div className="bim-d-ui" style={{
-                                    fontSize: 11, color: 'var(--bim-hint-fg, #b3a385)',
+                                    fontSize: 11, color: bim('hint-fg'),
                                 }}>
                                     {e.page}
                                 </div>
