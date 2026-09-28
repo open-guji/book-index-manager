@@ -1,7 +1,7 @@
 export { WorkPage } from './WorkPage';
 export type { WorkPageProps } from './WorkPage';
 export { BookPage } from './BookPage';
-export type { BookPageProps } from './BookPage';
+export type { BookPageProps, ChapterLink } from './BookPage';
 export { CollectionPage } from './CollectionPage';
 export type { CollectionPageProps } from './CollectionPage';
 export { EntityPage } from './EntityPage';
@@ -20,6 +20,6 @@ export {
 export type { FactItem, LinkContext, RenderLink, TableSpec, CrumbItem } from './primitives';
 export {
     DetailGrid, Sec, MetaLine, TabFilter, CheckFilter, MoreLink, SummaryCard, ReadButton, SideList, CardFoot,
-    LAYOUT_CSS,
+    RailUp, descNeedsClamp, LAYOUT_CSS,
 } from './layout';
 export type { RailNavItem, CardFact } from './layout';

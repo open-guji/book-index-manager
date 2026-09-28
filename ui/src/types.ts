@@ -526,6 +526,8 @@ export interface EntityDetailData extends BaseDetailData {
     birth_year?: number;
     /** 卒年（公历） */
     death_year?: number;
+    /** 籍贯（「建州」），人物页提要卡写成「建州人」 */
+    native_place?: string;
     /** 关联作品反查 */
     works?: EntityWorkRef[];
     /** 外部数据库引用（CBDB 等） */

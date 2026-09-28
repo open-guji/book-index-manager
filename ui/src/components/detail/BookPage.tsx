@@ -1,35 +1,48 @@
 /**
- * 版本页（御定佩文韻府这类）—— 2026-09 N3a 三栏版。
+ * 版本页（程甲本、御定佩文韻府这类）—— 2026-09 B1 新设计（overview#251）。
  *
- * 中栏：影印与全文（资源清单，斑马行）→ 收入丛编（册次）→ 流转历史；
- * 右栏：提要卡（版本名、作品署名、版本类型·年代、事实表、唯一主按钮「阅读全文」）
- * → 所属作品 → 同作品其他版本。
+ * 中栏：全文（本站全文的阅读入口 + 回目，站外全文）→ 影印（按资源组分，镜像收成一行）
+ * → 版本源流（底本 / 參校 / 本版 / 附记里的翻刻，一条竖线）→ 收入丛编 → 流转历史；
+ * 右栏：提要卡（「版本」小字、书名、版本名、署名、版本类型·年代·卷帙、简介截 6 行、
+ * 事实表、唯一主按钮「阅读全文」+ 文字链接「看原书影印」）→ 所属作品 → 同作品版本（按年代，本页高亮）。
+ * 左栏：检索 →「所屬作品」→ 本页导航。
  *
- * Book 的 description 只有 2.5% 有，所以提要卡多数时候只有事实表。
+ * 顺序「全文 → 影印 → 源流」是用户 09-28 在样张上定的：能读的放最前。
  */
 import React, { useState, useEffect, useMemo } from 'react';
 import type {
     BookDetailData,
+    BookFullTextIndex,
     WorkDetailData,
     CollectionDetailData,
-    ResourceEntry,
+    LineageConfidence,
 } from '../../types';
 import type { IndexStorage } from '../../storage/types';
 import { useT, useConvert } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
-import { BidLink, VolumeLinks, flattenTitles, type RenderLink } from './primitives';
+import { BidLink, flattenTitles, type RenderLink } from './primitives';
 import {
-    DetailGrid, Sec, MetaLine, SummaryCard, SideList, CardFoot, MoreLink,
+    DetailGrid, Sec, MetaLine, SummaryCard, SideList, CardFoot, MoreLink, RailUp, descNeedsClamp,
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import {
-    bucketResources, deriveEra, deriveEditionType,
-    normalizeVolumeIndex, formatVolumeRange, measureText, resourceNote, resourceDisambiguator,
+    deriveEra, deriveEditionType, sortYear,
+    normalizeVolumeIndex, formatVolumeRange, measureText,
 } from '../../core/detail-model';
-import { getDisplayNameFromUrl, resourceHref, volumeStats } from '../../core/resources';
-import { AuthorByline, resourceKindLabel } from './shared';
+import { AuthorByline, ResourceGroupList, ResourceRow, splitResources } from './shared';
 
-const CAP_SIBLINGS = 8;
+/** 同作品版本：全部解析后按年代排的上限（再多就只取前几条，不排） */
+const SIBLINGS_SORT_MAX = 40;
+/** 同作品版本：本页前后各露几条 */
+const SIBLINGS_WINDOW = 2;
+/** 回目网格先露几回 */
+const CAP_CHAPTERS = 9;
+
+/** 回目链接：有 href 走宿主的阅读页，否则 onClick 切到本组件内的全文 tab */
+export interface ChapterLink {
+    href?: string;
+    onClick?: () => void;
+}
 
 export interface BookPageProps {
     data: BookDetailData;
@@ -38,6 +51,12 @@ export interface BookPageProps {
     renderLink?: RenderLink;
     /** 右栏提要卡里的「阅读全文」主按钮（由 layout 注入） */
     readAction?: React.ReactNode;
+    /** 本站全文目录（由 layout 预加载；没有全文时为空） */
+    fullText?: BookFullTextIndex | null;
+    /** 数据标了有全文、目录还没取回：先按一块阅读入口 + 三行回目占位（CLS） */
+    fullTextPending?: boolean;
+    /** 某一回的阅读链接（file 为章节文件名）；不给则回目不可点 */
+    chapterLink?: (file: string) => ChapterLink | null | undefined;
     /** 左栏顶部（宿主的检索框等） */
     railTop?: React.ReactNode;
     /** 左栏的返回链接 */
@@ -52,10 +71,26 @@ interface ResolvedRef {
     id: string;
     title?: string;
     edition?: string;
+    year?: number;
+}
+
+const CONFIDENCE_LABEL: Record<LineageConfidence, string> = {
+    certain: '確證',
+    consensus: '通說',
+    probable: '可能',
+    disputed: '有爭議',
+};
+
+/** 章名「第一回　甄士隱夢幻識通靈　賈雨村風塵懷閨秀」→ ['第一回', '甄士隱夢幻識通靈'] */
+function splitChapterTitle(title: string | undefined): [string, string] {
+    if (!title) return ['', ''];
+    const parts = title.split(/[　 ]+/).filter(Boolean);
+    if (parts.length >= 2 && /^第.+[回章卷篇節节]$/.test(parts[0])) return [parts[0], parts[1]];
+    return ['', title];
 }
 
 export const BookPage: React.FC<BookPageProps> = ({
-    data, transport, onNavigate, renderLink, readAction, railTop, back, railLinks,
+    data, transport, onNavigate, renderLink, readAction, fullText, fullTextPending, chapterLink, railTop, back, railLinks,
 }) => {
     const t = useT();
     const { convert } = useConvert();
@@ -63,7 +98,8 @@ export const BookPage: React.FC<BookPageProps> = ({
     const [work, setWork] = useState<WorkDetailData | null>(null);
     const [collections, setCollections] = useState<Map<string, CollectionDetailData>>(new Map());
     const [siblings, setSiblings] = useState<ResolvedRef[]>([]);
-    const [showAllSiblings, setShowAllSiblings] = useState(false);
+    const [lineageRefs, setLineageRefs] = useState<Map<string, ResolvedRef>>(new Map());
+    const [showAllChapters, setShowAllChapters] = useState(false);
 
     // ── 所属作品 ──
     useEffect(() => {
@@ -98,40 +134,68 @@ export const BookPage: React.FC<BookPageProps> = ({
         return () => { cancelled = true; };
     }, [transport, data.contained_in]);
 
-    // ── 同作品其他版本：只取前 cap 条做导航入口 ──
+    // ── 同作品版本：不多于 40 种时全解析、按年代排；本页也在列里（高亮） ──
     const siblingIds = useMemo(() => {
         const ids = new Set<string>([...(work?.books || []), ...(data.related_books || [])]);
-        ids.delete(data.id);
+        ids.add(data.id);
         return [...ids];
     }, [work?.books, data.related_books, data.id]);
+    const otherCount = siblingIds.length - 1;
 
     useEffect(() => {
-        if (!transport || siblingIds.length === 0) { setSiblings([]); return; }
-        const wanted = showAllSiblings ? siblingIds : siblingIds.slice(0, CAP_SIBLINGS);
+        if (!transport || otherCount <= 0) { setSiblings([]); return; }
+        const sortable = siblingIds.length <= SIBLINGS_SORT_MAX;
+        const wanted = sortable ? siblingIds : siblingIds.slice(0, 8);
         let cancelled = false;
-        Promise.all(wanted.map(id =>
+        Promise.all(wanted.map(id => {
+            if (id === data.id) return Promise.resolve({ id, title: data.title, edition: data.edition, year: sortYear(data) });
+            return transport.getItem(id)
+                .then(raw => {
+                    const b = (raw ?? {}) as unknown as BookDetailData;
+                    return { id, title: b.title, edition: b.edition, year: raw ? sortYear(b) : undefined };
+                })
+                .catch(() => ({ id }) as ResolvedRef);
+        })).then(list => {
+            if (cancelled) return;
+            // 解析不到的（已删、墓碑）不列；有年代的按年代排，没有的排后面、保持原序
+            const ok = list.filter(s => s.id === data.id || s.title || s.edition);
+            if (sortable) {
+                ok.sort((a, b) => (a.year ?? Infinity) - (b.year ?? Infinity));
+            }
+            setSiblings(ok);
+        });
+        return () => { cancelled = true; };
+    }, [transport, siblingIds, otherCount, data]);
+
+    // ── 源流里引到的其他版本：取版本名 ──
+    const lineage = data.lineage;
+    const lineageBookIds = useMemo(() => [
+        ...(lineage?.derived_from || []).filter(d => d.ref_type === 'book').map(d => d.ref),
+        ...(lineage?.related_to || []).map(r => r.book_id),
+    ].filter(Boolean), [lineage]);
+    useEffect(() => {
+        if (!transport || lineageBookIds.length === 0) { setLineageRefs(new Map()); return; }
+        let cancelled = false;
+        Promise.all(lineageBookIds.map(id =>
             transport.getItem(id)
-                .then(raw => ({
+                .then(raw => [id, {
                     id,
                     title: (raw as { title?: string } | null)?.title,
                     edition: (raw as { edition?: string } | null)?.edition,
-                }))
-                .catch(() => ({ id })),
-        )).then(list => { if (!cancelled) setSiblings(list); });
+                }] as const)
+                .catch(() => [id, { id }] as const),
+        )).then(pairs => { if (!cancelled) setLineageRefs(new Map(pairs)); });
         return () => { cancelled = true; };
-    }, [transport, siblingIds, showAllSiblings]);
+    }, [transport, lineageBookIds]);
 
     // ── 资源 ──
-    const resources = useMemo(() => {
-        const b = bucketResources(data.resources, data.resource_groups);
-        return [
-            ...b.mirrors.flatMap(g => g.items.map(r => ({ r, kind: convert(g.label), all: g.items }))),
-            ...b.buckets.flatMap(k => k.items.map(r => ({ r, kind: convert(resourceKindLabel(k.key)), all: k.items }))),
-        ];
-    }, [data.resources, data.resource_groups, convert]);
+    const res = useMemo(() => splitResources(data.resources, data.resource_groups), [data.resources, data.resource_groups]);
+    const imageCount = res.groups.reduce((n, g) => n + g.rows.length + g.mirrors.length, 0);
+    const hasPhysicalOnly = res.groups.length > 0 && res.groups.every(g => g.key === '_physical');
 
     const era = deriveEra(data);
     const editionType = deriveEditionType(data);
+    const measure = measureText(data, t.unit.juan);
 
     /*
      * 「收入叢編」已把册号列出来时，资源行不再给「展开 N 册」——
@@ -139,6 +203,15 @@ export const BookPage: React.FC<BookPageProps> = ({
      */
     const listedVolumeCounts = new Set((data.contained_in || []).map(e =>
         typeof e === 'string' ? 0 : normalizeVolumeIndex(e.volume_index).length).filter(n => n > 0));
+
+    /** 底本名：base_edition 有名字的优先，其次解析到的版本名 */
+    const refName = (id: string): string => {
+        const be = (data as { base_edition?: { book_id?: string; name?: string }[] }).base_edition
+            ?.find(x => x.book_id === id && x.name);
+        if (be?.name) return be.name;
+        const r = lineageRefs.get(id);
+        return r?.edition || r?.title || '';
+    };
 
     // ── 提要卡 ──
     const facts: CardFact[] = useMemo(() => {
@@ -150,14 +223,15 @@ export const BookPage: React.FC<BookPageProps> = ({
                 title: data.lineage?.category ? undefined : convert('據版本題名推斷'),
             });
         }
-        if (era.era || era.reign) {
+        if (data.publication_info?.details) {
+            out.push({ label: '刊印', value: convert(data.publication_info.details) });
+        } else if (era.era || era.reign) {
             out.push({
                 label: '刊寫年代',
                 value: convert([era.era, era.reign].filter(Boolean).join(' ')),
                 title: era.source === 'edition' ? convert('據版本題名推斷') : undefined,
             });
         }
-        const measure = measureText(data, t.unit.juan);
         if (measure) out.push({ label: '卷帙', value: convert(measure) });
 
         const volumes = (data.contained_in || []).flatMap(e =>
@@ -166,6 +240,13 @@ export const BookPage: React.FC<BookPageProps> = ({
             out.push({
                 label: '冊次',
                 value: convert(`第 ${formatVolumeRange(volumes, t.unit.volume)} ${t.unit.volume}（${volumes.length} ${t.unit.volume}）`),
+            });
+        }
+        const base = (data.lineage?.derived_from || []).find(d => d.relation === '底本' && d.ref_type === 'book');
+        if (base && refName(base.ref)) {
+            out.push({
+                label: '底本',
+                value: <BidLink id={base.ref} label={convert(refName(base.ref))} onNavigate={onNavigate} renderLink={renderLink} dense />,
             });
         }
 
@@ -184,59 +265,211 @@ export const BookPage: React.FC<BookPageProps> = ({
         if (data.page_count?.description) {
             out.push({ label: t.label.pageCount, value: convert(data.page_count.description) });
         }
-        if (data.publication_info?.details) {
-            out.push({ label: '刊印', value: convert(data.publication_info.details) });
-        }
         const aliases = [...flattenTitles(data.additional_titles), ...flattenTitles(data.attached_texts)];
         if (aliases.length) out.push({ label: '又名', value: aliases.map(convert).join('、') });
         return out;
-    }, [data, convert, t, era, editionType]);
+        // refName 读 lineageRefs
+    }, [data, convert, t, era, editionType, measure, lineageRefs, onNavigate, renderLink]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    /* 标题：大标题是书名，版本名作副题（与旧版一致，也免得长版本名撑成三行） */
+    /* 标题：大标题是书名，版本名作副题（也免得长版本名撑成三行） */
     const heading = convert(data.title);
     const subtitle = data.edition ? convert(data.edition) : undefined;
+    const yearText = data.lineage?.year_text || '';
 
     const card = (
         <SummaryCard
+            kind="版本"
             title={heading}
             subtitle={subtitle}
             byline={<AuthorByline authors={data.authors ?? work?.authors} onNavigate={onNavigate} renderLink={renderLink} />}
-            meta={<MetaLine items={[convert('版本'), editionType ? convert(editionType) : '', era.era ? convert(era.era) : '']} />}
+            meta={<MetaLine items={[
+                editionType ? convert(editionType) : '',
+                era.era ? convert([era.era, era.reign].filter(Boolean).join('')) : '',
+                measure ? convert(measure) : '',
+            ]} />}
             description={data.description?.text
                 ? <MarkdownText text={data.description.text} style={{ fontSize: 15, lineHeight: 1.85 }} />
                 : undefined}
+            clampDescription={descNeedsClamp(data.description?.text) ? 6 : undefined}
             facts={facts}
             readAction={readAction}
+            secondaryAction={readAction && imageCount > 0 && !hasPhysicalOnly
+                ? <a className="bim-d-card-alt bim-d-ui" href="#images">{convert('看原書影印')}</a>
+                : undefined}
             foot={<CardFoot revision={data.revision} revisedAt={data.revised_at} review={data.review} todo={data.todo} />}
         />
     );
 
     const containedIn = data.contained_in || [];
+    const chapters = fullText?.chapters || [];
+    /** 章节单位：小说「回」，其余「章」「卷」——取第一章章名的末字 */
+    const chapUnit = (chapters[0] && splitChapterTitle(chapters[0].title)[0].slice(-1)) || '章';
+    const hasLineage = !!(lineage?.derived_from?.length || lineage?.related_to?.length || data.appendix?.length);
 
     const nav: RailNavItem[] = [];
-    if (resources.length) nav.push({ id: 'resources', label: '影印與全文', count: resources.length });
+    if (chapters.length || res.text.length || fullTextPending) nav.push({ id: 'fulltext', label: '全文', count: chapters.length ? convert(`${chapters.length} ${chapUnit}`) : undefined });
+    if (res.groups.length) nav.push({ id: 'images', label: hasPhysicalOnly ? '館藏' : '影印', count: imageCount });
+    if (hasLineage) nav.push({ id: 'lineage', label: '版本源流' });
     if (containedIn.length) nav.push({ id: 'collections', label: '收入叢編', count: containedIn.length });
     if (data.location_history?.length) nav.push({ id: 'provenance', label: '流轉歷史' });
-    if (work) nav.push({ id: 'work', label: '所屬作品' });
-    if (siblingIds.length) nav.push({ id: 'siblings', label: '其他版本', count: siblingIds.length });
+
+    const openChapter = (file: string) => chapterLink?.(file) ?? null;
+    const first = chapters[0];
+    const firstLink = first ? openChapter(first.file) : null;
+    const visibleChapters = showAllChapters ? chapters : chapters.slice(0, CAP_CHAPTERS);
+
+    const renderChapterAnchor = (link: ChapterLink | null, children: React.ReactNode, className?: string) => (
+        link
+            ? (
+                <a
+                    className={className}
+                    href={link.href ?? '#'}
+                    onClick={link.onClick ? (e) => {
+                        if (e.metaKey || e.ctrlKey) return;
+                        e.preventDefault();
+                        link.onClick!();
+                    } : undefined}
+                >
+                    {children}
+                </a>
+            )
+            : <span className={className}>{children}</span>
+    );
 
     const main = (
         <>
-            {resources.length > 0 && (
-                <Sec id="resources" title="影印與全文" meta={convert(`${resources.length} 處`)}>
-                    <table className="bim-d-zt">
-                        <tbody>
-                            {resources.map(({ r, kind, all }, i) => (
-                                <ResourceRowView
-                                    key={`${r.id || r.url || r.name}-${i}`}
-                                    item={r}
-                                    kind={kind}
-                                    siblings={all}
-                                    listedVolumeCounts={listedVolumeCounts}
-                                />
-                            ))}
-                        </tbody>
-                    </table>
+            {(chapters.length > 0 || res.text.length > 0 || fullTextPending) && (
+                <Sec
+                    id="fulltext"
+                    title="全文"
+                    meta={chapters.length > 0 ? (
+                        <MetaLine items={[
+                            convert(`${chapters.length} ${chapUnit}`),
+                            fullText?.source?.name
+                                ? convert(`據${fullText.source.name}${fullText.source.license ? ` ${fullText.source.license}` : ''}`)
+                                : '',
+                        ]} />
+                    ) : undefined}
+                >
+                    {fullTextPending && !first && (
+                        <>
+                            <div className="bim-d-ft" aria-busy="true">
+                                <span className="bim-d-ft-h">&nbsp;</span>
+                                <span className="bim-d-meta">&nbsp;</span>
+                            </div>
+                            <div className="bim-d-chap-pending" aria-hidden="true" />
+                        </>
+                    )}
+                    {first && (
+                        <div className="bim-d-ft">
+                            <h3 className="bim-d-ft-h">
+                                {convert(`從${splitChapterTitle(first.title)[0] || '第一章'}讀起`)}
+                            </h3>
+                            <span className="bim-d-meta">{convert((first.title || '').replace(/^第.+?[回章卷篇節节][　 ]*/, ''))}</span>
+                            {renderChapterAnchor(firstLink, <>{convert('進入閱讀頁')} <span aria-hidden="true">→</span></>, 'bim-d-ft-go bim-d-ui')}
+                        </div>
+                    )}
+                    {chapters.length > 1 && (
+                        <ul className="bim-d-chap">
+                            {visibleChapters.map(ch => {
+                                const [head, rest] = splitChapterTitle(ch.title);
+                                return (
+                                    <li key={ch.file}>
+                                        {renderChapterAnchor(openChapter(ch.file), (
+                                            <>{head && <b>{convert(head)}</b>}{convert(rest || ch.file)}</>
+                                        ))}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
+                    {chapters.length > visibleChapters.length && (
+                        <MoreLink
+                            label={`展開其餘 ${chapters.length - visibleChapters.length} ${chapUnit}`}
+                            onClick={() => setShowAllChapters(true)}
+                        />
+                    )}
+                    {res.text.length > 0 && (
+                        <>
+                            {(chapters.length > 0 || fullTextPending) && (
+                                <p className="bim-d-meta bim-d-ui" style={{ margin: '14px 0 4px' }}>{convert('站外全文')}</p>
+                            )}
+                            <table className="bim-d-zt">
+                                <tbody>
+                                    {res.text.map((r, i) => (
+                                        <ResourceRow key={`${r.id || r.url || r.name}-${i}`} item={r} siblings={res.text}
+                                            listedVolumeCounts={listedVolumeCounts} />
+                                    ))}
+                                </tbody>
+                            </table>
+                        </>
+                    )}
+                </Sec>
+            )}
+
+            {res.groups.length > 0 && (
+                <Sec
+                    id="images"
+                    title={hasPhysicalOnly ? '館藏' : '影印'}
+                    meta={<MetaLine items={[
+                        res.groups.length > 1 ? convert(`${res.groups.length} 組`) : '',
+                        convert(`${imageCount} 處`),
+                    ]} />}
+                >
+                    <ResourceGroupList groups={res.groups} listedVolumeCounts={listedVolumeCounts} />
+                </Sec>
+            )}
+
+            {hasLineage && (
+                <Sec id="lineage" title="版本源流" meta={lineage?.derived_from?.length ? convert('據版本傳承著錄') : undefined}>
+                    <ul className="bim-d-tl">
+                        {(lineage?.derived_from || []).map((d, i) => {
+                            const name = d.ref_type === 'book' ? refName(d.ref) : '';
+                            return (
+                                <li key={`d-${i}`}>
+                                    <span className="bim-d-tl-rel bim-d-ui">{convert(d.relation)}</span>
+                                    {d.ref_type === 'book'
+                                        ? <span className="bim-d-tl-t"><BidLink id={d.ref} label={convert(name || d.ref)} onNavigate={onNavigate} renderLink={renderLink} dense /></span>
+                                        : <span className="bim-d-tl-t">{convert('擬構祖本')}</span>}
+                                    {(d.evidence || d.confidence) && (
+                                        <span className="bim-d-tl-ev">
+                                            {d.evidence ? convert(d.evidence) : ''}
+                                            {d.confidence && CONFIDENCE_LABEL[d.confidence] ? convert(`（${CONFIDENCE_LABEL[d.confidence]}）`) : ''}
+                                        </span>
+                                    )}
+                                </li>
+                            );
+                        })}
+                        {(lineage?.derived_from?.length || lineage?.related_to?.length) ? (
+                            <li className="bim-d-tl-cur">
+                                <span className="bim-d-tl-rel bim-d-ui">{convert('本版')}</span>
+                                <span className="bim-d-tl-t">{subtitle || heading}</span>
+                                {yearText && <span className="bim-d-meta"><span className="bim-d-dot" />{convert(yearText)}</span>}
+                            </li>
+                        ) : null}
+                        {(lineage?.related_to || []).map((r, i) => (
+                            <li key={`r-${i}`}>
+                                <span className="bim-d-tl-rel bim-d-ui">{convert(r.relation)}</span>
+                                <span className="bim-d-tl-t">
+                                    <BidLink id={r.book_id} label={convert(refName(r.book_id) || r.book_id)} onNavigate={onNavigate} renderLink={renderLink} dense />
+                                </span>
+                                {r.evidence && <span className="bim-d-tl-ev">{convert(r.evidence)}</span>}
+                            </li>
+                        ))}
+                        {data.appendix?.map((entry, i) => (
+                            <li key={`a-${i}`}>
+                                <span className="bim-d-tl-rel bim-d-ui">{convert('附記')}</span>
+                                <span className="bim-d-tl-t">{convert(entry.title)}</span>
+                                <details>
+                                    <summary className="bim-d-ui">{convert('展開')}</summary>
+                                    <MarkdownText text={entry.text} plainStrong style={{ marginTop: 6, fontSize: 14, lineHeight: 1.9 }} />
+                                </details>
+                            </li>
+                        ))}
+                    </ul>
+                    {lineage?.note && (
+                        <p className="bim-d-meta" style={{ margin: '10px 0 0', maxWidth: '46em' }}>{convert(lineage.note)}</p>
+                    )}
                 </Sec>
             )}
 
@@ -269,27 +502,25 @@ export const BookPage: React.FC<BookPageProps> = ({
 
             {data.location_history?.length ? (
                 <Sec id="provenance" title="流轉歷史">
-                    <table className="bim-d-zt">
-                        <tbody>
-                            {data.location_history.map((loc, i) => (
-                                <tr key={i}>
-                                    <td className="bim-d-zt-main">
-                                        <span className="bim-d-zt-name">{convert(loc.name)}</span>
-                                    </td>
-                                    <td className={`bim-d-zt-sub${loc.description || loc.start_date ? '' : ' bim-d-zt-blank'}`}>
+                    <ul className="bim-d-tl">
+                        {data.location_history.map((loc, i) => (
+                            <li key={i}>
+                                <span className="bim-d-tl-t">{convert(loc.name)}</span>
+                                {([loc.start_date, loc.end_date].filter(Boolean).join('—') || loc.description) && (
+                                    <span className="bim-d-tl-ev" style={{ marginLeft: 0 }}>
                                         <MetaLine items={[
                                             [loc.start_date, loc.end_date].filter(Boolean).join('—'),
                                             loc.description ? convert(loc.description) : '',
                                         ]} />
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                    </span>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
                 </Sec>
             ) : null}
 
-            {resources.length === 0 && containedIn.length === 0 && !data.location_history?.length && (
+            {nav.length === 0 && (
                 <Sec title="影印與全文">
                     <p className="bim-d-meta bim-d-ui" style={{ margin: 0 }}>
                         {convert('尚未著錄該版本的影印、全文與收藏信息。')}
@@ -298,6 +529,13 @@ export const BookPage: React.FC<BookPageProps> = ({
             )}
         </>
     );
+
+    // 同作品版本：本页前后各 2 条；列表不全（>40 种未排序）时只列前几条
+    const curIdx = siblings.findIndex(s => s.id === data.id);
+    const sortable = siblingIds.length <= SIBLINGS_SORT_MAX;
+    const windowed = sortable && curIdx >= 0
+        ? siblings.slice(Math.max(0, curIdx - SIBLINGS_WINDOW), curIdx + SIBLINGS_WINDOW + 1)
+        : siblings.filter(s => s.id !== data.id);
 
     const side = (
         <>
@@ -311,90 +549,62 @@ export const BookPage: React.FC<BookPageProps> = ({
                         className="bim-d-ui"
                         style={{ display: 'block', marginTop: 2 }}
                         items={[
-                            convert(measureText(work, t.unit.juan)),
                             ...(work.authors || []).slice(0, 2).map(a =>
                                 `${a.dynasty ? `〔${convert(a.dynasty)}〕` : ''}${convert(a.name)}`),
+                            convert(measureText(work, t.unit.juan)),
                             work._edition_count ? convert(`${work._edition_count} 種版本`) : '',
                         ]}
                     />
                     {work.description?.text && (
                         <p style={{
                             margin: '8px 0 0', fontSize: 14, lineHeight: 1.8,
-                            display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                            display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                         }} className="bim-d-card-desc">
                             {convert(work.description.text.replace(/[#*_>`[\]]/g, ''))}
                         </p>
                     )}
                 </div>
             )}
-            {siblingIds.length > 0 && (
+            {otherCount > 0 && windowed.length > 0 && (
                 <div>
                     <SideList
                         id="siblings"
-                        title={t.relation.siblingVersions}
-                        meta={convert(`${siblingIds.length} 種`)}
-                        cap={showAllSiblings ? siblings.length : CAP_SIBLINGS}
-                        items={siblings.map(s => (
-                            <BidLink id={s.id} label={convert(s.edition || s.title || s.id)}
+                        title={sortable ? '同作品版本' : t.relation.siblingVersions}
+                        meta={sortable ? convert('按年代') : convert(`${otherCount} 種`)}
+                        cap={windowed.length}
+                        items={windowed.map(s => (s.id === data.id
+                            ? <span className="bim-d-side-cur-mark" data-current="true">{convert(s.edition || s.title || s.id)}</span>
+                            : <BidLink id={s.id} label={convert(s.edition || s.title || s.id)}
                                 onNavigate={onNavigate} renderLink={renderLink} dense />
                         ))}
+                        metas={windowed.map(s => [
+                            s.year != null ? (s.year < 0 ? `前${-s.year}` : String(s.year)) : '',
+                            s.id === data.id ? convert('本頁') : '',
+                        ].filter(Boolean).join(' '))}
+                        currentIndex={windowed.findIndex(s => s.id === data.id)}
                     />
-                    {!showAllSiblings && siblingIds.length > siblings.length && siblings.length > 0 && (
-                        <MoreLink
-                            label={`顯示更多（${siblingIds.length - siblings.length}）`}
-                            onClick={() => setShowAllSiblings(true)}
-                        />
+                    {work && (
+                        <div className="bim-d-ui bim-d-side-all" style={{ marginTop: 4, fontSize: 13 }}>
+                            <BidLink id={work.id} label={convert(`在作品頁看全部 ${siblingIds.length} 種 →`)}
+                                onNavigate={onNavigate} renderLink={renderLink} dense />
+                        </div>
                     )}
                 </div>
             )}
         </>
     );
 
-    return <DetailGrid railTop={railTop} back={back} nav={nav} railLinks={railLinks} main={main} card={card} side={side} />;
+    /* work_id 一开始就知道：先出块、书名晚到，免得左栏（手机上在最顶）晚到把整页顶下去 */
+    const up = data.work_id ? (
+        <RailUp caption={t.section.belongsToWork}>
+            <BidLink id={data.work_id} label={work ? convert(work.title) : '\u3000'} onNavigate={onNavigate} renderLink={renderLink} dense />
+        </RailUp>
+    ) : undefined;
+
+    return <DetailGrid railTop={railTop} back={back} up={up} nav={nav} railLinks={railLinks} main={main} card={card} side={side} />;
 };
 
 // ══════════════════════════════════════════════════════════════
-
-/** 资源一行：名称 ↗（下附说明小字）｜类别｜「展开 N 册」 */
-function ResourceRowView({ item, kind, siblings, listedVolumeCounts }: {
-    item: ResourceEntry;
-    kind?: string;
-    siblings: ResourceEntry[];
-    /** 「收入叢編」已列出的册数；与本资源分册数相同时不再给展开（展开的是同一串册号） */
-    listedVolumeCounts: Set<number>;
-}) {
-    const { convert } = useConvert();
-    const [open, setOpen] = useState(false);
-    const stats = volumeStats(item);
-    const hasVolumes = !!stats && stats.expected > 0 && !listedVolumeCounts.has(stats.expected);
-    const base = (item.url ? getDisplayNameFromUrl(item.url) : undefined) || item.name;
-    const suffix = resourceDisambiguator(item, siblings);
-    const name = convert(suffix ? `${base}（${suffix}）` : base);
-    const href = resourceHref(item);
-    const note = resourceNote(item) || item.details;
-    return (
-        <tr>
-            <td className="bim-d-zt-main">
-                {href
-                    ? <a href={href} target="_blank" rel="noopener noreferrer">{name} <span aria-hidden="true">↗</span></a>
-                    : <span className="bim-d-zt-name">{name}</span>}
-                {note && <span className="bim-d-meta">{convert(note)}</span>}
-                {hasVolumes && open && (
-                    <div style={{ padding: '0 12px 10px' }}><VolumeLinks item={item} /></div>
-                )}
-            </td>
-            <td className={`bim-d-zt-sub bim-d-zt-nowrap${kind ? '' : ' bim-d-zt-blank'}`}>{kind}</td>
-            <td className={hasVolumes ? undefined : 'bim-d-zt-blank'} style={{ textAlign: 'right' }}>
-                {hasVolumes && (
-                    <button type="button" className="bim-d-more bim-d-ui" style={{ marginTop: 0 }}
-                        aria-expanded={open} onClick={() => setOpen(v => !v)}>
-                        {convert(open ? '收起分冊' : `展開 ${stats!.expected} 冊`)}
-                    </button>
-                )}
-            </td>
-        </tr>
-    );
-}
 
 /** 册次：一行辅助字「第 243–244 冊 · 2 冊」，不再逐个画方框 */
 function VolumeList({ volumes, unit }: { volumes: number[]; unit: string }) {

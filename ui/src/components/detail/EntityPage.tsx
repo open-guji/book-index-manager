@@ -1,8 +1,12 @@
 /**
- * 人物页（孔子、歐陽修这类）—— 2026-09 N3a 三栏版。
+ * 人物页（朱熹、歐陽修这类）—— 2026-09 B1 新设计（overview#251）。
  *
- * 中栏：著作表（职任页签 + 斑马表，只解析可见行）；
- * 右栏：提要卡（名号、时代·生卒、别名分类、简介、事实表、CBDB）。
+ * 中栏：著作——「著作舉要」三块（已解析的行里版本最多的三种）＋ 著作表
+ * （职任页签 + 斑马表：作品，下附部类·卷数｜职任｜版本｜有影印；只解析可见行）；
+ * 右栏：提要卡（「人物」小字、名、「字某，號某」、时代·生卒·籍贯、字与號、
+ * 其余别名收进「更多別名」、著作数；不放主按钮）→ 站外资料（CBDB / Wikidata / VIAF）。
+ *
+ * 用户 09-28 在样张上定：别名折叠；「举要」排序先随意（按已解析行的版本数）。
  *
  * 设计稿另有「籍貫 / 官至」「傳記出處」「相關人物」，数据里没有对应字段
  * （2026-09-05 全量 30,120 条 Entity 实测 0%），先不做；补字段时：
@@ -17,10 +21,10 @@ import { useT, useConvert } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, type RenderLink } from './primitives';
 import {
-    DetailGrid, Sec, MetaLine, TabFilter, MoreLink, SummaryCard, CardFoot,
+    DetailGrid, Sec, MetaLine, TabFilter, MoreLink, SummaryCard, CardFoot, SideList, descNeedsClamp,
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
-import { normalizeRole, roleFacets, type RoleClass } from '../../core/detail-model';
+import { measureText, normalizeRole, roleFacets, type RoleClass } from '../../core/detail-model';
 
 /** 桌面 cap，与作品页版本表同一量级 */
 const CAP_WORKS = 16;
@@ -44,6 +48,10 @@ interface ResolvedWork {
     title?: string;
     /** 该作品的版本数（_edition_count，缺省时 books ∪ collections 的长度） */
     versionCount?: number;
+    /** 部类：classification.l1 l2 */
+    cls?: string;
+    measure?: string;
+    hasImage?: boolean;
     loaded?: boolean;
 }
 
@@ -54,6 +62,9 @@ interface WorkRow {
     role: string;
     cls: RoleClass;
     versionCount?: number;
+    section?: string;
+    measure?: string;
+    hasImage?: boolean;
     loaded: boolean;
 }
 
@@ -100,6 +111,9 @@ export const EntityPage: React.FC<EntityPageProps> = ({
             role: w.role || '',
             cls: normalizeRole(w.role),
             versionCount: r?.versionCount,
+            section: r?.cls,
+            measure: r?.measure,
+            hasImage: r?.hasImage,
             loaded: !!r?.loaded,
         };
     }), [data.works, resolved]);
@@ -131,9 +145,17 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                 .then(raw => {
                     const w = (raw ?? {}) as {
                         title?: string; books?: string[]; collections?: string[]; _edition_count?: number;
+                        classification?: { l1?: string; l2?: string };
+                        has_image?: boolean; _has_image?: boolean;
                     };
                     const n = w._edition_count ?? ((w.books?.length ?? 0) + (w.collections?.length ?? 0));
-                    return [id, { id, title: w.title, versionCount: n, loaded: true }] as const;
+                    const cls = [w.classification?.l1, w.classification?.l2].filter(Boolean).join(' ');
+                    return [id, {
+                        id, title: w.title, versionCount: n, loaded: true,
+                        cls: cls || undefined,
+                        measure: raw ? measureText(raw as never, t.unit.juan) || undefined : undefined,
+                        hasImage: !!(w.has_image ?? w._has_image),
+                    }] as const;
                 })
                 .catch(() => [id, { id, loaded: true }] as const),
         )).then(entries => {
@@ -145,7 +167,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
             });
         });
         return () => { cancelled = true; };
-    }, [transport, idsToResolve]);
+    }, [transport, idsToResolve, t.unit.juan]);
 
     // ── 别名（按类分组，正式名号在前） ──
     const nameGroups = useMemo(() => {
@@ -164,43 +186,89 @@ export const EntityPage: React.FC<EntityPageProps> = ({
         ? `${yr(data.birth_year) || '?'}—${yr(data.death_year) || '?'}`
         : '';
 
+    /** 提要卡常露的只有字、號；其余（諡號、小字、小名、別名…）收进「更多別名」 */
+    const MAIN_NAME_TYPES = new Set(['本名', '字', '號', '号']);
+    const mainNames = nameGroups.filter(g => MAIN_NAME_TYPES.has(g.label));
+    const moreNames = nameGroups.filter(g => !MAIN_NAME_TYPES.has(g.label));
+    const moreCount = moreNames.reduce((n, g) => n + g.names.length, 0);
+
     const facts: CardFact[] = useMemo(() => {
         const out: CardFact[] = [];
-        for (const g of nameGroups) {
+        for (const g of mainNames) {
             out.push({ label: g.label, value: g.names.map(n => convert(n)).join('、') });
         }
-        if (data.dynasty) out.push({ label: '時代', value: convert(data.dynasty) });
-        if (life) out.push({ label: '生卒', value: life });
         const n = (data.works || []).length;
         if (n) out.push({ label: '著作', value: `${n} ${convert('種')}` });
-        const cbdb = data.external_ids?.cbdb_id;
-        if (cbdb != null) {
-            out.push({
-                label: 'CBDB',
-                value: <>{cbdb}{data.external_ids?.cbdb_match === 'auto' && (
-                    <span className="bim-d-meta" title={convert('由姓名、朝代與著作重合度自動匹配，未經人工複核')}>
-                        　{convert('自動匹配')}
-                    </span>
-                )}</>,
-            });
-        }
         return out;
-    }, [data, nameGroups, life, convert]);
+    }, [data.works, mainNames, convert]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    /** 副题「字元晦，號晦庵」：各取第一个 */
+    const firstOf = (types: string[]) => nameGroups.find(g => types.includes(g.label))?.names[0];
+    const zi = firstOf(['字']);
+    const hao = firstOf(['號', '号']);
+    const subtitle = [zi ? `字${zi}` : '', hao ? `號${hao}` : ''].filter(Boolean).join('，');
+    const nativePlace = data.native_place;
 
     const card = (
         <SummaryCard
+            kind={SUBTYPE_LABEL[data.subtype] ?? '人物'}
             title={convert(data.primary_name || data.title)}
+            subtitle={subtitle ? convert(subtitle) : undefined}
             meta={<MetaLine items={[
-                convert(SUBTYPE_LABEL[data.subtype] ?? ''),
+                data.dynasty ? convert(data.dynasty) : '',
                 life,
+                nativePlace ? convert(`${nativePlace}人`) : '',
             ]} />}
             description={data.description?.text
                 ? <MarkdownText text={data.description.text} style={{ fontSize: 15, lineHeight: 1.85 }} />
                 : undefined}
+            clampDescription={descNeedsClamp(data.description?.text) ? 6 : undefined}
             facts={facts}
             foot={<CardFoot revision={data.revision} revisedAt={data.revised_at} review={data.review} todo={data.todo} />}
-        />
+        >
+            {moreCount > 0 && (
+                <details className="bim-d-more-names bim-d-ui">
+                    <summary>{convert(`更多別名（${moreCount}）`)}</summary>
+                    <dl>
+                        {moreNames.map(g => (
+                            <React.Fragment key={g.label}>
+                                <dt>{convert(g.label)}</dt>
+                                <dd>{g.names.map(n => convert(n)).join('、')}</dd>
+                            </React.Fragment>
+                        ))}
+                    </dl>
+                </details>
+            )}
+        </SummaryCard>
     );
+
+    // ── 著作举要：已解析的行里版本最多的三种（全部解析太贵：歐陽修 306 部） ──
+    const picks = useMemo(() => allRows
+        .filter(r => r.loaded && (r.versionCount ?? 0) > 0)
+        .sort((a, b) => (b.versionCount ?? 0) - (a.versionCount ?? 0))
+        .slice(0, 3), [allRows]);
+
+    /*
+     * 举要要等可见行解析完才知道。三部以上著作时先占好三块的位置（INT Q3 的 CLS），
+     * 解析完不足两部有版本的才收起。
+     */
+    const picksPending = !!transport && allRows.length >= 3 && visible.some(r => !r.loaded);
+    const showPicks = role === '全部' && (picksPending || picks.length >= 2);
+
+    // ── 站外资料 ──
+    const ext = data.external_ids || {};
+    const extLinks: { label: string; id: string; href: string; note?: string }[] = [];
+    if (ext.cbdb_id != null) {
+        extLinks.push({
+            label: 'CBDB', id: String(ext.cbdb_id),
+            href: `https://cbdb.fas.harvard.edu/cbdbapi/person.php?id=${ext.cbdb_id}`,
+            note: ext.cbdb_match === 'auto' ? '自動匹配' : undefined,
+        });
+    }
+    const wikidata = (ext as { wikidata_id?: string }).wikidata_id;
+    if (wikidata) extLinks.push({ label: 'Wikidata', id: wikidata, href: `https://www.wikidata.org/wiki/${wikidata}` });
+    const viaf = (ext as { viaf_id?: string }).viaf_id;
+    if (viaf) extLinks.push({ label: 'VIAF', id: viaf, href: `https://viaf.org/viaf/${viaf}` });
 
     const roleTabs = facets.map(f => ({ key: f.cls as RoleClass | '全部', label: `${f.label} ${f.count}` }));
 
@@ -221,6 +289,32 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                 filtered.length !== allRows.length ? convert(`當前 ${filtered.length} 種`) : '',
             ]} />}
         >
+            {showPicks && (
+                <>
+                    <p className="bim-d-meta bim-d-ui" style={{ margin: '-6px 0 10px', fontSize: 14 }}>{convert('著作舉要')}</p>
+                    <div className="bim-d-picks" aria-busy={picksPending || undefined}>
+                        {picksPending && [0, 1, 2].map(i => (
+                            <div key={i} className="bim-d-pick" aria-hidden="true">
+                                <span className="bim-d-pick-t">&nbsp;</span>
+                                <span className="bim-d-meta">&nbsp;</span>
+                                <div className="bim-d-pick-n">&nbsp;</div>
+                            </div>
+                        ))}
+                        {!picksPending && picks.map(p => (
+                            <div key={p.id} className="bim-d-pick">
+                                <span className="bim-d-pick-t">
+                                    <BidLink id={p.id} label={convert(p.title)} onNavigate={onNavigate} renderLink={renderLink} dense />
+                                </span>
+                                <MetaLine items={[p.section ? convert(p.section) : '', p.measure ? convert(p.measure) : '']} />
+                                <div className="bim-d-pick-n bim-d-ui">
+                                    {convert(`${p.versionCount} 種版本`)}
+                                    {p.hasImage && <span className="bim-d-flag">{convert('有影印')}</span>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
             <div className="bim-d-filters bim-d-ui">
                 {roleTabs.length > 1 && (
                     <TabFilter items={roleTabs} value={role}
@@ -246,6 +340,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                         <th>{convert('作品')}</th>
                         <th>{convert('職任')}</th>
                         <th>{convert('存世版本')}</th>
+                        <th aria-label={convert('影印')} />
                     </tr>
                 </thead>
                 <tbody>
@@ -253,6 +348,9 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                         <tr key={row.id}>
                             <td className="bim-d-zt-main">
                                 <BidLink id={row.id} label={convert(row.title)} onNavigate={onNavigate} renderLink={renderLink} dense />
+                                {(row.section || row.measure)
+                                    ? <MetaLine items={[row.section ? convert(row.section) : '', row.measure ? convert(row.measure) : '']} />
+                                    : !row.loaded && transport ? <span className="bim-d-meta" aria-hidden="true">&nbsp;</span> : null}
                             </td>
                             <td className={`bim-d-zt-sub bim-d-zt-nowrap${row.role ? '' : ' bim-d-zt-blank'}`}>
                                 {row.role ? convert(row.role) : <span className="bim-d-zt-empty">—</span>}
@@ -261,6 +359,9 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                                 {!row.loaded ? '' : row.versionCount
                                     ? convert(`${row.versionCount} 種`)
                                     : <span className="bim-d-zt-empty">{convert('未著錄')}</span>}
+                            </td>
+                            <td className={row.hasImage ? undefined : 'bim-d-zt-blank'} style={{ textAlign: 'right' }}>
+                                {row.hasImage && <span className="bim-d-flag bim-d-ui">{convert('有影印')}</span>}
                             </td>
                         </tr>
                     ))}
@@ -275,5 +376,16 @@ export const EntityPage: React.FC<EntityPageProps> = ({
         </Sec>
     );
 
-    return <DetailGrid railTop={railTop} back={back} nav={nav} railLinks={railLinks} main={main} card={card} />;
+    const side = extLinks.length > 0 ? (
+        <SideList
+            id="external"
+            title="站外資料"
+            items={extLinks.map(l => (
+                <a href={l.href} target="_blank" rel="noopener noreferrer">{l.label} <span aria-hidden="true">↗</span></a>
+            ))}
+            metas={extLinks.map(l => [l.id, l.note ? convert(l.note) : ''].filter(Boolean).join(' · '))}
+        />
+    ) : null;
+
+    return <DetailGrid railTop={railTop} back={back} nav={nav} railLinks={railLinks} main={main} card={card} side={side} />;
 };

@@ -84,6 +84,11 @@ export interface ReadLinkContext {
     kind: 'collated' | 'fulltext' | null;
     /** Work 全文的首选那份（kind 为 fulltext 且是 Work 时） */
     fullTextKey?: string;
+    /**
+     * 直接打开某一回／章：全文章节文件名去掉扩展名（「001.md」→「001」）。
+     * 版本页回目网格的每一回都用它取链接（B1）；不认这个字段的宿主返回同一个地址也无妨。
+     */
+    juan?: string;
 }
 
 export interface SourceLinkContext {
@@ -245,6 +250,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     const [collatedLoading, setCollatedLoading] = useState(false);
     const [bookFullTextIndex, setBookFullTextIndex] = useState<BookFullTextIndex | null>(null);
     const [bookFullTextLoading, setBookFullTextLoading] = useState(false);
+    /** 本条目的全文目录已经取过（取到或没取到）；取之前按 has_full_text 先占位 */
+    const [bookFullTextTried, setBookFullTextTried] = useState<string | null>(null);
     /* Work 全文：候选清单（首项 primary）＋当前选中哪一份 */
     const [workFullTexts, setWorkFullTexts] = useState<WorkFullTextEntry[]>([]);
     const [workFullTextLoading, setWorkFullTextLoading] = useState(false);
@@ -303,6 +310,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             setBookFullTextIndex(null);
         } finally {
             setBookFullTextLoading(false);
+            setBookFullTextTried(bookId);
         }
     }, [transport]);
 
@@ -642,7 +650,15 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         : detail.type === 'work'
             ? ((collatedIndex?.juan_files?.length ?? 0) > 0 ? 'collated' : workFullTexts.length > 0 ? 'fulltext' : null)
             : detail.type === 'book'
-                ? ((bookFullTextIndex?.chapters.length ?? 0) > 0 ? 'fulltext' : null)
+                /*
+                 * 版本页：数据里带 has_full_text 的先按有全文出按钮，不等目录取回——
+                 * 按钮在提要卡里，手机上卡在最上面，晚到会把整页往下顶（B1 实测 CLS 0.2）。
+                 * 目录取回后确实为空（极少：打包漏文件）就收回按钮。
+                 */
+                ? ((bookFullTextIndex?.chapters.length ?? 0) > 0
+                    || ((detail as { has_full_text?: boolean }).has_full_text && !!transport.getBookFullTextIndex
+                        && bookFullTextTried !== detail.id)
+                    ? 'fulltext' : null)
                 : null;
     const primaryFullText = workFullTexts.find(v => v.primary) ?? workFullTexts[0];
     const openReader = () => {
@@ -666,6 +682,22 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     } else if (readKind) {
         readAction = <ReadButton onClick={openReader} />;
     }
+
+    /** 版本页回目网格：某一回的链接。宿主给了 readLink 走阅读页，否则切到本组件的全文 tab */
+    const chapterLink = (file: string) => {
+        if (!detail) return null;
+        const juan = file.replace(/\.[^.]+$/, '');
+        if (readLink) {
+            const href = readLink({ detail, kind: 'fulltext', juan });
+            return href ? { href } : null;
+        }
+        return {
+            onClick: () => {
+                setActiveJuan(juan);
+                onTabChange('fulltext');
+            },
+        };
+    };
 
     /*
      * 概览页不再有次级 tab 行，但丛编目录（可能不止一份）和宿主注入的 extraTabs
@@ -700,6 +732,10 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     onNavigate={onNavigate}
                     renderLink={renderLink}
                     readAction={readAction}
+                    fullText={bookFullTextIndex}
+                    fullTextPending={!!(detail as { has_full_text?: boolean }).has_full_text
+                        && !!transport.getBookFullTextIndex && bookFullTextTried !== detail.id}
+                    chapterLink={chapterLink}
                     railTop={railTop}
                     railLinks={railLinks}
                 />
