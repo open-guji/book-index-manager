@@ -87,9 +87,26 @@ export function stripBlockComments(text: string): string {
     return text.replace(/<!--[\s\S]*?-->/g, m => (m.includes('\n') ? '' : m));
 }
 
-/** 标题层级 → 标签：md 的 # 是卷名，在阅读器里已经是 h1 之下 */
-function headingTag(level: number): 'h2' | 'h3' | 'h4' {
-    return level <= 1 ? 'h2' : level === 2 ? 'h3' : 'h4';
+/** 标题层级 → 外观层级：md 的 # 是卷名，在阅读器里已经是 h1 之下 */
+function headingLevel(level: number): 2 | 3 | 4 {
+    return level <= 1 ? 2 : level === 2 ? 3 : 4;
+}
+
+type HeadingTag = 'h2' | 'h3' | 'h4';
+
+/**
+ * 标题标签不跳级（INT Q5 heading-order）：阅读器的 h1 是卷名，正文第一个标题最多 h2，
+ * 之后每个最多比上一个深一级；外观仍按 md 原层级，走 `bim-rd-hl{2,3,4}`。
+ * 如全文章节去掉 `##` 卷名后直接是 `###` 小节、整理本整行粗体条目，原来都是 h1 下直接 h3。
+ */
+function headingLeveler(): (mdLevel: number) => { Tag: HeadingTag; className: string } {
+    let prev = 1;
+    return (mdLevel: number) => {
+        const look = headingLevel(mdLevel);
+        const lv = Math.min(look, prev + 1) as 2 | 3 | 4;
+        prev = lv;
+        return { Tag: `h${lv}` as HeadingTag, className: `bim-rd-hl${look}` };
+    };
 }
 
 /** 「自然段」对这段文字是否有意义（体裁判得清才有），用来决定工具条上显不显示开关 */
@@ -112,6 +129,8 @@ export function ReaderMdBlocks({ text, mode, inline, dropTitle }: {
     const dropped = (level: number, t: string, index: number) =>
         !!dropTitle && index <= 1 && level <= 2 && t.trim() === dropTitle.trim();
 
+    const level = headingLeveler();
+
     if (mode === 'paragraph' && detectGenre(clean) !== 'unknown') {
         const blocks = buildParagraphBlocks(clean);
         return (
@@ -119,8 +138,8 @@ export function ReaderMdBlocks({ text, mode, inline, dropTitle }: {
                 {blocks.map((b, i) => {
                     if (b.kind === 'heading') {
                         if (dropped(b.level ?? 1, b.text, i)) return null;
-                        const Tag = headingTag(b.level ?? 1);
-                        return <Tag key={i}>{inline(b.text)}</Tag>;
+                        const { Tag, className } = level(b.level ?? 1);
+                        return <Tag key={i} className={className}>{inline(b.text)}</Tag>;
                     }
                     return <p key={i}>{renderBold(b.text, inline, i)}</p>;
                 })}
@@ -137,8 +156,8 @@ export function ReaderMdBlocks({ text, mode, inline, dropTitle }: {
                 if (m) {
                     const idx = seenContent++;
                     if (dropped(m[1].length, m[2], idx)) return null;
-                    const Tag = headingTag(m[1].length);
-                    return <Tag key={i}>{inline(m[2])}</Tag>;
+                    const { Tag, className } = level(m[1].length);
+                    return <Tag key={i} className={className}>{inline(m[2])}</Tag>;
                 }
                 if (!line.trim()) {
                     /*
@@ -154,8 +173,8 @@ export function ReaderMdBlocks({ text, mode, inline, dropTitle }: {
                 const bold = /^\*\*[^*]+\*\*\s*$/.test(line.trim());
                 if (bold) {
                     // 整行粗体是条目标题；与 paragraphize 的判法一致（level 3）
-                    const Tag = headingTag(3);
-                    return <Tag key={i}>{inline(line.trim().slice(2, -2))}</Tag>;
+                    const { Tag, className } = level(3);
+                    return <Tag key={i} className={className}>{inline(line.trim().slice(2, -2))}</Tag>;
                 }
                 return <p key={i}>{renderBold(line, inline, i)}</p>;
             })}

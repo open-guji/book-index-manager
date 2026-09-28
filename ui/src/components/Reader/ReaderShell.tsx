@@ -1,14 +1,17 @@
 /**
  * 阅读器外壳：整理本与全文共用。
  *
- *   ┌ 工具条（吸顶）：书名 · 副题 ……… 目录  书影 │ 繁简 │ A− A+ │ 自然段 专名线 ┐
+ *   ┌ 工具条（吸顶）：书名 · 副题 ……… 版本▾ │ 目录  书影 │ 繁简 │ A− A+ │ 自然段 专名线 ┐
  *   ├ 目录（侧栏/抽屉）┬ 书影 ┬ 正文 ─────────────────────────────────────────┤
  *
  * - 书影在正文左边（阅读习惯，2026-09-28 定）；没有影像时默认收起，工具条上仍可点开看占位；
  * - 目录：宽屏（≥1100px）是可收起的侧栏，默认展开；更窄时是抽屉，默认收起，选卷后自动合上；
  * - 窄屏（≤719px）书影区不显示，只留正文；
  * - 工具条只用文字与图标，不画按钮外框；
- * - 第一个可聚焦元素是「跳到正文」，目录内部用游走 tabindex（只有当前卷进 Tab 序列）。
+ * - 第一个可聚焦元素是「跳到正文」，目录内部用游走 tabindex（只有当前卷进 Tab 序列）；
+ * - 同一 owner 有多份全文时，工具条最前面是「版本」下拉框（overview#235）：默认选 primary，
+ *   正文末尾的出处与授权跟着所选版本变；切换后回到新版本的第一卷。组件不改 URL，由宿主处理；
+ * - 窄屏与触屏上工具条按钮的点击区用伪元素扩到 44×44，外观不变（INT Q4）。
  *
  * 正文内容（卷名、元数据行、宋体正文）由调用方作为 children 传入，
  * 偏好（字号、自然段、专名线）由调用方用 `useReaderPrefs` 持有后传进来——调用方渲染正文要用。
@@ -20,7 +23,8 @@ import { ReaderToc } from './ReaderToc';
 import { ImagePanel } from './ImagePanel';
 import { FONT_SIZE_STEPS, DEFAULT_FONT_SIZE, stepFontSize } from './prefs';
 import type { ReaderPrefs } from './prefs';
-import type { ReaderImageOverlay, ReaderPageImage, ReaderTocItem } from './types';
+import { pickReaderVersion, readerVersionOptionLabel } from './versions';
+import type { ReaderImageOverlay, ReaderPageImage, ReaderTocItem, ReaderVersion } from './types';
 
 export type PanelState = 'auto' | 'open' | 'closed';
 
@@ -56,6 +60,21 @@ export interface ReaderShellProps {
 
     /** 正文底部「上一卷 / 下一卷」；默认按目录顺序自动给出 */
     pager?: boolean;
+
+    /**
+     * 同一 owner 的各份全文（overview#235）。两份以上时工具条出「版本」下拉框，
+     * 只有一份时不显示下拉框；有值时正文末尾显示所选版本的出处与授权。
+     */
+    versions?: ReaderVersion[];
+    /** 当前版本 key；不给或无效时选 primary（再没有就第一份） */
+    currentVersionKey?: string | null;
+    /**
+     * 下拉框切换时回调。组件不改 URL，由宿主换 toc / 正文。
+     * 宿主换上新版本的目录（toc 换了一份）后，组件自动选中新目录的第一卷，不保留卷号。
+     */
+    onVersionChange?: (key: string) => void;
+    /** 正文末尾的「出处 · 授权」一行；默认有 versions 时显示，宿主自己画出处时可关掉 */
+    versionSource?: boolean;
 
     children: React.ReactNode;
     className?: string;
@@ -147,6 +166,7 @@ export function ReaderShell({
     images, imagesLoading, renderImageOverlay, imagePanel = 'auto',
     prefs, onPrefsChange, paragraphToggle, properNameToggle = true, allowVertical,
     pager = true,
+    versions, currentVersionKey, onVersionChange, versionSource = true,
     children, className, style,
 }: ReaderShellProps) {
     const uid = useId().replace(/:/g, '');
@@ -195,6 +215,38 @@ export function ReaderShell({
     }, [onSelect, drawer, closeDrawer]);
 
     const flat = useMemo(() => flattenToc(toc), [toc]);
+
+    // ── 版本（overview#235）──
+    const [internalVersion, setInternalVersion] = useState<string | null>(null);
+    const version = pickReaderVersion(versions, currentVersionKey !== undefined ? currentVersionKey : internalVersion);
+    const versionKey = version?.key ?? null;
+    /*
+     * 切版本后回到新目录的第一卷。宿主换目录可能是异步的，toc 也未必 memo，
+     * 所以按卷 key 序列（而不是数组引用）判断新目录到没到：
+     * - key 序列变了 → 新目录到了，选第一卷，完事；
+     * - key 序列没变 → 可能两份目录本就一样，也可能新目录还在路上：先选第一卷，
+     *   但继续等——之后 key 序列若再变（新目录到了），再选一次新目录的第一卷。
+     */
+    const tocSig = useMemo(() => flat.map(it => it.key).join('\n'), [flat]);
+    const pendingVersion = useRef<{ key: string; sig: string; done: boolean } | null>(null);
+    const changeVersion = (key: string) => {
+        if (key === versionKey) return;
+        pendingVersion.current = { key, sig: tocSig, done: false };
+        if (currentVersionKey === undefined) setInternalVersion(key);
+        onVersionChange?.(key);
+    };
+    useEffect(() => {
+        const p = pendingVersion.current;
+        if (!p || p.key !== versionKey) return;
+        const first = flat.find(it => !it.disabled);
+        if (!first) return; // 新目录还没到（空目录占位）
+        const arrived = tocSig !== p.sig;
+        if (!arrived && p.done) return;
+        if (arrived) pendingVersion.current = null;
+        else p.done = true;
+        if (first.key !== activeKey) handleSelect(first.key);
+    }, [versionKey, tocSig, flat, activeKey, handleSelect]);
+
     const pos = flat.findIndex(it => it.key === activeKey);
     const prev = pos > 0 ? flat.slice(0, pos).reverse().find(it => !it.disabled) : undefined;
     const next = pos >= 0 ? flat.slice(pos + 1).find(it => !it.disabled) : undefined;
@@ -227,6 +279,25 @@ export function ReaderShell({
                     </p>
                 )}
                 <div className="bim-rd-tools" role="group" aria-label="阅读设置">
+                    {versions && versions.length > 1 && (
+                        <>
+                            <label className="bim-rd-ver" title={version ? readerVersionOptionLabel(version) : undefined}>
+                                <span className="bim-rd-tlabel">版本</span>
+                                {/* 窄屏工具条放不下版本全名：只露「版本▾」，原生下拉透明地盖在上面 */}
+                                <span className="bim-rd-ver-short" aria-hidden="true">版本▾</span>
+                                <select
+                                    aria-label="版本"
+                                    value={versionKey ?? ''}
+                                    onChange={e => changeVersion(e.target.value)}
+                                >
+                                    {versions.map(v => (
+                                        <option key={v.key} value={v.key}>{readerVersionOptionLabel(v)}</option>
+                                    ))}
+                                </select>
+                            </label>
+                            <span className="bim-rd-sep" aria-hidden="true" />
+                        </>
+                    )}
                     <button
                         ref={tocBtnRef}
                         type="button"
@@ -250,14 +321,14 @@ export function ReaderShell({
                     <span className="bim-rd-sep" aria-hidden="true" />
                     <button
                         type="button"
-                        className="bim-rd-t"
+                        className="bim-rd-t bim-rd-fs"
                         aria-label="缩小字号"
                         disabled={fs <= FONT_SIZE_STEPS[0]}
                         onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, -1) })}
                     >A−</button>
                     <button
                         type="button"
-                        className="bim-rd-t"
+                        className="bim-rd-t bim-rd-fs"
                         aria-label="放大字号"
                         disabled={fs >= FONT_SIZE_STEPS[FONT_SIZE_STEPS.length - 1]}
                         onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, 1) })}
@@ -328,6 +399,20 @@ export function ReaderShell({
                 <div className="bim-rd-text" id={textId} ref={textRef} tabIndex={-1}>
                     <div className="bim-rd-col">
                         {children}
+                        {versionSource && version && (version.sourceName || version.license) && (
+                            <p className="bim-rd-src" data-version={version.key}>
+                                {version.sourceName && (
+                                    <>
+                                        出处{' '}
+                                        {version.sourceUrl
+                                            ? <a className="bim-rd-link" href={version.sourceUrl} target="_blank" rel="noreferrer">{version.sourceName}</a>
+                                            : version.sourceName}
+                                    </>
+                                )}
+                                {version.sourceName && version.license && <span className="bim-rd-dot" />}
+                                {version.license && <>授权 {version.license}</>}
+                            </p>
+                        )}
                         {pager && (prev || next) && (
                             <nav className="bim-rd-pager" aria-label="翻卷">
                                 <span>{prev && (

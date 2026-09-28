@@ -74,3 +74,24 @@ export interface ReaderTocItem {
 
 /** 横排 / 竖排。竖排先预留，见 ReaderShell 的 `allowVertical` */
 export type ReaderWritingMode = 'horizontal' | 'vertical';
+
+/**
+ * 同一 owner 的一份全文（「版本」下拉框的一项，overview#235）。
+ *
+ * 数据来自 book-text `index/full_text/<shard>.json[owner_id]`，宿主可用
+ * `readerVersionsFromFullText` 从 `WorkFullTextEntry[]` 转换。
+ */
+export interface ReaderVersion {
+    /** 该份全文的 key，如 `wikisource-01`、`kanripo-01`；切换时原样回传 */
+    key: string;
+    /** 版本说明（`version_label`），如「詩序（Kanripo WYG 本）」 */
+    label: string;
+    /** 来源名（`source_name`），如「維基文庫」「Kanripo」 */
+    sourceName?: string;
+    /** 授权（`license`），如「CC BY-SA 4.0」；按份计，切到哪份显示哪份 */
+    license?: string;
+    /** 来源页（`source_url`） */
+    sourceUrl?: string;
+    /** 首选的一份（恰一份为 true）；宿主没给 currentVersionKey 时默认选它 */
+    primary?: boolean;
+}
