@@ -193,6 +193,30 @@ describe('IndexBrowser initialQuery + 搜索结果展示', () => {
     });
 });
 
+describe('IndexBrowser 搜索页布局跳动（overview#268 P2-6）', () => {
+    it('带 q 首次渲染不闪「无结果」区块，只有占位', () => {
+        const searchAll = vi.fn(() => new Promise<never>(() => {}));
+        render(<IndexBrowser transport={makeTransport({ searchAll })} initialQuery="朱熹" />);
+        expect(screen.queryByRole('heading', { level: 2 })).toBeNull();
+        expect(screen.queryByText(/朱熹/, { selector: 'h2' })).toBeNull();
+    });
+
+    it('仅空白的 initialQuery 直接显示初始视图，不卡在占位', () => {
+        render(<IndexBrowser transport={makeTransport()} initialQuery="   " />);
+        expect(screen.getByRole('heading', { level: 2 })).toBeTruthy();
+    });
+
+    it('无结果标题是 h2，不从 h1 直接跳到 h3', async () => {
+        const searchAll = vi.fn().mockResolvedValue({
+            works: [], books: [], collections: [], entities: [],
+            totalWorks: 0, totalBooks: 0, totalCollections: 0, totalEntities: 0,
+        });
+        render(<IndexBrowser transport={makeTransport({ searchAll })} initialQuery="朱熹" />);
+        await waitFor(() => expect(screen.getByRole('heading', { level: 2 })).toBeTruthy());
+        expect(screen.queryByRole('heading', { level: 3 })).toBeNull();
+    });
+});
+
 describe('IndexBrowser 错误显示', () => {
     it('searchAll throw 时不留空结果，显示 errorMessage', async () => {
         const searchAll = vi.fn().mockRejectedValue(new Error('网络错误'));

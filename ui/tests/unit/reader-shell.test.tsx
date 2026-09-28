@@ -147,6 +147,16 @@ describe('目录可收起', () => {
     });
 });
 
+describe('翻卷导航不撑宽页面（overview#268 P1-1）', () => {
+    it('长回目标题带省略号截断类，两侧各占不超过一半', () => {
+        render(<Harness toc={FEW} initial="002" />);
+        const pager = screen.getByRole('navigation', { name: '翻卷' });
+        expect(pager.querySelectorAll('.bim-rd-pglabel').length).toBe(2);
+        expect(READER_CSS).toMatch(/\.bim-rd-pglabel \{[^}]*overflow: hidden;[^}]*text-overflow: ellipsis/);
+        expect(READER_CSS).toMatch(/\.bim-rd-pager > span \{[^}]*max-width: calc\(50% - 8px\)/);
+    });
+});
+
 describe('工具条：只用文字和图标，状态用 aria-pressed', () => {
     it('字号、自然段、专名线', () => {
         const { container } = render(<LocaleProvider locale="zh-Hant"><Harness toc={FEW} /></LocaleProvider>);

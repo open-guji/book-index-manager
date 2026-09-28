@@ -417,6 +417,8 @@ describe('Q3 条目页 CLS：次级区块先占高', () => {
     it('CSS：朝代页签行、版本表行先占高；手机上载入中的版本行按两行占高', () => {
         expect(LAYOUT_CSS).toMatch(/\.bim-d-filters \{ min-height: 26px;/);
         expect(LAYOUT_CSS).toMatch(/\.bim-d-zt-ver tbody tr \{ height: 42px; \}/);
+        // 桌面：解析前的版本行按「名 + 一行卷帙小字」占高（overview#268 P2-8）
+        expect(LAYOUT_CSS).toMatch(/\.bim-d-zt-ver tbody tr\[data-loading\] \{ height: 62px; \}/);
         const narrow = mediaBlock(LAYOUT_CSS, '(max-width: 719px)');
         expect(ruleFor(narrow, '.bim-d-zt-ver tbody tr')).toMatch(/height: auto/);
         expect(ruleFor(narrow, '.bim-d-zt-ver tbody tr[data-loading]')).toMatch(/min-height: 64px/);
