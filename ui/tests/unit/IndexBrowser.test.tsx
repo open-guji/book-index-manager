@@ -236,3 +236,14 @@ describe('IndexBrowser searchAll 不存在时回退到 search', () => {
         expect(calledTypes).toEqual(['book', 'collection', 'entity', 'work']);
     });
 });
+
+describe('最近浏览的 localStorage 键', () => {
+    it('包入口导出 RECENT_IDS_STORAGE_KEY，组件按它读最近浏览', async () => {
+        const { RECENT_IDS_STORAGE_KEY } = await import('../../src/index');
+        expect(RECENT_IDS_STORAGE_KEY).toBe('bim-recent-ids');
+        window.localStorage.setItem(RECENT_IDS_STORAGE_KEY, JSON.stringify(['WID1']));
+        const getItem = vi.fn(async () => null);
+        render(<IndexBrowser transport={makeTransport({ getItem })} />);
+        await waitFor(() => expect(getItem).toHaveBeenCalledWith('WID1'));
+    });
+});

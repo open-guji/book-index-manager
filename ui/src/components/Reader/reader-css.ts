@@ -28,15 +28,20 @@ export const READER_CSS = `
 }
 .bim-rd *, .bim-rd *::before, .bim-rd *::after { box-sizing: border-box; }
 
-/* 跳到正文：平时藏在屏外，键盘聚焦时出现在左上角 */
+/* 跳到正文：平时按标准 visually-hidden 收成 1px 并裁掉（任何宽度都不外露），
+   获得焦点时才还原成左上角的按钮 */
 .bim-rd-skip {
-  position: absolute; left: 8px; top: 8px; z-index: 60;
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+.bim-rd-skip:focus {
+  left: 8px; top: 8px; z-index: 60;
+  width: auto; height: auto; margin: 0; overflow: visible; clip: auto; clip-path: none;
   padding: 8px 14px; border-radius: 6px;
   background: ${bim('ink')}; color: ${bim('page-bg')} !important;
   font-size: 14px; text-decoration: none !important;
-  transform: translateY(-200%);
+  outline: 2px solid ${bim('accent')}; outline-offset: 2px;
 }
-.bim-rd-skip:focus { transform: none; outline: 2px solid ${bim('accent')}; outline-offset: 2px; }
 
 .bim-rd-sr {
   position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
