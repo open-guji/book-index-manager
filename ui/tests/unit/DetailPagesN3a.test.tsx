@@ -95,6 +95,12 @@ describe('WorkPage（三栏）', () => {
         expect(document.querySelector('.bim-d-card-foot')?.textContent ?? '').toBe('');
     });
 
+    it('review.status 是原始英文状态字（draft）时卡底不露出，草稿显示中文', () => {
+        const raw = { ...WORK, review: { status: 'draft' }, revision: undefined } as unknown as IndexDetailData;
+        render(<BookDetailLayout {...props(raw)} />);
+        expect(document.body.textContent).not.toMatch(/\bdraft\b/);
+    });
+
     it('「阅读全文」是整页唯一的主按钮，链到宿主给的 readLink', () => {
         const readLink = vi.fn(() => '/read/w1');
         render(<BookDetailLayout {...props(WORK, { readLink })} />);

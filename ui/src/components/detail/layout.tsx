@@ -101,6 +101,9 @@ export const LAYOUT_CSS = `
 .bim-d-zt .bim-d-zt-empty { color: ${bim('aux-fg')}; }
 /* 版本表：行高先按「有影印」色块那一行的高度占好，解析到的年代、馆藏、色块进来时行不再长高（INT Q3） */
 .bim-d-zt-ver tbody tr { height: 42px; }
+/* 版本行的卷帙小字（measure_info）随次级数据晚到，会把行撑高、把「展开」按钮整体下推（P2-8，CLS 0.11）：
+   解析前就按「版本名 + 一行小字」占高 */
+.bim-d-zt-ver tbody tr[data-loading] { height: 62px; }
 
 .bim-d-flag {
   display: inline-block; padding: 1px 8px; border-radius: 4px;
@@ -270,6 +273,12 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
   .bim-d-flag::after, .bim-d-top a::after, .bim-d-top button::after, .bim-d-tab::after {
     content: ""; position: absolute; left: 50%; top: 50%;
     width: max(calc(100% + 8px), 44px); height: max(100%, 44px); transform: translate(-50%, -50%);
+  }
+  /* 影印「鏡像」链接：一行里并排几个，只上下外扩到 44，左右各扩 6px（间距 14px，不叠） */
+  .bim-d-rg-mir a { position: relative; }
+  .bim-d-rg-mir a::after {
+    content: ""; position: absolute; left: -6px; right: -6px; top: 50%;
+    height: 44px; transform: translateY(-50%);
   }
   /*
    * 相邻热区不能叠：两字页签（26px）两边各扩 9px，间距 18px 正好贴边，放宽到 20px；
@@ -708,6 +717,7 @@ const REVIEW_LABEL: Record<string, string> = {
     reviewed: '已審核',
     disputed: '有爭議',
     unreviewed: '未審核',
+    draft: '草稿',
 };
 
 /**
@@ -722,8 +732,10 @@ export function CardFoot({ revision, revisedAt, review, todo }: {
     todo?: { what: string; by?: string; date?: string }[];
 }) {
     const { convert } = useConvert();
-    const reviewText = review && review.status !== 'unreviewed'
-        ? [REVIEW_LABEL[review.status] ?? review.status, review.by, review.date].filter(Boolean).join(' ')
+    // 只认已知状态：数据少的条目 review.status 可能是原始英文（draft 等），直接露出会显得像 bug
+    const reviewLabel = review ? REVIEW_LABEL[review.status] : undefined;
+    const reviewText = review && review.status !== 'unreviewed' && reviewLabel
+        ? [reviewLabel, review.by, review.date].filter(Boolean).join(' ')
         : '';
     const line = [
         revision != null && revision !== '' ? `${convert('數據版本')} ${revision}` : '',

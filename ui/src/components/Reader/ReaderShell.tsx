@@ -416,10 +416,10 @@ export function ReaderShell({
                         {pager && (prev || next) && (
                             <nav className="bim-rd-pager" aria-label="翻卷">
                                 <span>{prev && (
-                                    <button type="button" className="bim-rd-t" onClick={() => handleSelect(prev.key)}>‹ {prev.label}</button>
+                                    <button type="button" className="bim-rd-t" onClick={() => handleSelect(prev.key)}><span aria-hidden="true">‹</span><span className="bim-rd-pglabel">{prev.label}</span></button>
                                 )}</span>
                                 <span>{next && (
-                                    <button type="button" className="bim-rd-t" onClick={() => handleSelect(next.key)}>{next.label} ›</button>
+                                    <button type="button" className="bim-rd-t" onClick={() => handleSelect(next.key)}><span className="bim-rd-pglabel">{next.label}</span><span aria-hidden="true">›</span></button>
                                 )}</span>
                             </nav>
                         )}

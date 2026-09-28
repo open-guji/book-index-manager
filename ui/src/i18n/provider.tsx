@@ -4,6 +4,7 @@ import type { Locale } from './types';
 import { zhHant } from './locales/zh-Hant';
 import { zhHans } from './locales/zh-Hans';
 import type { LocaleMessages } from './types';
+import { withProtectedTerms } from './protected-terms';
 
 const MESSAGES: Record<Locale, LocaleMessages> = {
     'zh-Hant': zhHant,
@@ -59,7 +60,7 @@ export const LocaleProvider: React.FC<LocaleProviderProps> = ({
         if (locale === 'zh-Hans') {
             import('opencc-js/t2cn').then((mod) => {
                 const conv = mod.Converter({ from: 'tw', to: 'cn' });
-                setConverter(() => conv);
+                setConverter(() => withProtectedTerms(conv));
             }).catch(() => {
                 // opencc-js 不可用时，原样返回
                 setConverter(() => (text: string) => text);

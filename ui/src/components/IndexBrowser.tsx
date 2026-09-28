@@ -122,7 +122,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     const [isLoading, setIsLoading] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState('');
-    const [showingRecent, setShowingRecent] = useState(!initialQuery);
+    const [showingRecent, setShowingRecent] = useState(!initialQuery?.trim());
     const [recentIds, setRecentIds] = useState<string[]>(loadRecentIds);
     const [recentEntries, setRecentEntries] = useState<(IndexEntry & { notFound?: boolean })[]>([]);
     const [recentLoading, setRecentLoading] = useState(false);
@@ -324,6 +324,9 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     };
 
     const getConfig = (type: IndexType) => TYPE_CONFIG.find(c => c.type === type)!;
+    // 带 ?q= 首次渲染时搜索 effect 还没跑：searchResults 为空、isLoading 也还是 false，
+    // 不加这一档会先闪出约 238px 高的「无结果」区块，结果到达后又整块移除（CLS 0.26）。
+    const searchPending = !showingRecent && !searchResults && !errorMessage;
     const hasAnyResults = searchResults &&
         (searchResults.works.length > 0 || searchResults.books.length > 0 || searchResults.collections.length > 0);
 
@@ -439,8 +442,8 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
 
             {/* Content */}
             <div style={{ padding: '0 20px 20px', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
-                {isLoading ? (
-                    <div style={{ textAlign: 'center', padding: '40px', color: bim('desc-fg') }}>
+                {isLoading || searchPending ? (
+                    <div style={{ textAlign: 'center', padding: '40px', color: bim('desc-fg'), minHeight: SEARCH_PLACEHOLDER_MIN_HEIGHT, boxSizing: 'border-box' }}>
                         {t.search.searching}
                     </div>
                 ) : errorMessage ? (
@@ -516,7 +519,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                         ) : (
                             <div style={{ textAlign: 'center', padding: '40px' }}>
                                 <div style={{ fontSize: '32px', marginBottom: '8px' }}>📚</div>
-                                <h3 style={{ margin: '0 0 8px', color: bim('fg') }}>{t.search.searchTitle}</h3>
+                                <h2 style={{ margin: '0 0 8px', fontSize: '1.17em', color: bim('fg') }}>{t.search.searchTitle}</h2>
                                 <p style={{ color: bim('desc-fg'), fontSize: '13px' }}>{t.search.searchSubtitle}</p>
                             </div>
                         )}
@@ -599,9 +602,9 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                 ) : (
                     <div style={{ textAlign: 'center', padding: '40px' }}>
                         <div style={{ fontSize: '32px', marginBottom: '8px' }}>📚</div>
-                        <h3 style={{ margin: '0 0 8px', color: bim('fg') }}>
+                        <h2 style={{ margin: '0 0 8px', fontSize: '1.17em', color: bim('fg') }}>
                             {formatTemplate(t.search.noResultsFor, { query: searchQuery })}
-                        </h3>
+                        </h2>
                         <p style={{ color: bim('desc-fg'), fontSize: '13px' }}>
                             {t.search.tryOther}
                         </p>
@@ -611,6 +614,9 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         </div>
     );
 };
+
+/** 搜索中 / 待搜索占位的最小高度，与「无结果」区块等高，避免结果到达时页面跳动 */
+const SEARCH_PLACEHOLDER_MIN_HEIGHT = 240;
 
 // ── Entry Card ──
 
