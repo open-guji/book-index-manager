@@ -364,7 +364,7 @@ function layoutGraph(
 
     const rfNodes = graph.nodes.map((n) => {
         const pos = g.node(n.id);
-        const isSelected = selectedNodeId && n.id === selectedNodeId;
+        const isSelected = selectedNodeId ? n.id === selectedNodeId : undefined;
         const data: NodeData = {
             kind: n.kind,
             label: convert(n.label),

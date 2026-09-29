@@ -252,8 +252,8 @@ const SmallBtn: React.FC<{ onClick: () => void; primary?: boolean; children: Rea
     </button>
 );
 
-function getTypeIcon(type: IndexType): string {
-    switch (type) { case 'work': return '📜'; case 'book': return '📖'; case 'collection': return '📚'; }
+function getTypeIcon(type: IndexType): string | undefined {
+    switch (type) { case 'work': return '📜'; case 'book': return '📖'; case 'collection': return '📚'; default: return undefined; }
 }
 
 const saveBtnStyle: React.CSSProperties = {
