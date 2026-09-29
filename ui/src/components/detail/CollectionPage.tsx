@@ -8,23 +8,31 @@
  * 右栏：提要卡（「叢編」小字，长说明截 6 行可展开，不放主按钮）→ 包含作品；
  * 左栏：检索 →「上級叢編」→ 本页导航。
  *
- * 用户 09-28 在样张上定：长说明留在提要卡里截断；主按钮不放；四部分类先不放
- * （子目表不出部类页签、部类列）。
+ * 用户 09-28 在样张上定：长说明留在提要卡里截断；主按钮不放。
+ * 2026-09-29 设计稿 v3（overview#286）：四部分类页签、册次前的部类色点、提要卡数字格
+ * （子目／卷／册）与「全帙册次分布」条、检索框挪到页签行右侧；提要卡去掉「應收」「年代」两行
+ * （数字格已含，年代已在「刊印」里）。部类来自各子目自己的分类，须逐条解析：子目不超过
+ * RESOLVE_ALL_TITLES 条时后台分批解析全部，解析完页签与分布条才出，不按部分行估算。
  */
 import React, { useState, useEffect, useMemo } from 'react';
+import { bim } from '../../styles/tokens';
 import type { AuthorInfo, CollectionDetailData, VolumeBookMapping } from '../../types';
 import type { IndexStorage } from '../../storage/types';
 import { useT, useConvert } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, type RenderLink } from './primitives';
 import {
-    DetailGrid, Sec, MetaLine, MoreLink, SummaryCard, SideList, CardFoot, RailUp, descNeedsClamp,
+    DetailGrid, Sec, MetaLine, MoreLink, TabFilter, SummaryCard, SideList, CardFoot, RailUp, descNeedsClamp,
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import { buildCollectionTable, formatVolumeRange, measureText } from '../../core/detail-model';
-import { AuthorByline, ResourceGroupList, ResourceRow, splitResources } from './shared';
+import { AuthorByline, ResourceGroupList, ResourceRow, SECTIONS, sectionKey, splitResources } from './shared';
 
 const CAP_TITLES = 16;
+/** 子目不超过此数时后台解析全部（为部类页签与册次分布条）；更多的只解析可见行 */
+const RESOLVE_ALL_TITLES = 200;
+/** 后台解析一批多少条 */
+const RESOLVE_BATCH = 16;
 
 export interface CollectionPageProps {
     data: CollectionDetailData;
@@ -52,6 +60,8 @@ interface RowInfo {
     authors?: AuthorInfo[];
     measure?: string;
     versionCount?: number;
+    /** 四部一级：classification.l1 */
+    l1?: string;
 }
 
 export const CollectionPage: React.FC<CollectionPageProps> = ({
@@ -63,38 +73,48 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     const [query, setQuery] = useState('');
     const [showAllTitles, setShowAllTitles] = useState(false);
     const [parent, setParent] = useState<{ id: string; title?: string } | null>(null);
+    /** 部类页签：'' = 全部 */
+    const [sec, setSec] = useState('');
 
     const table = useMemo(() => buildCollectionTable(data, catalog), [data, catalog]);
 
     /* 子目行补取：书名（只有 ID 的）、撰人、卷数、版本数。只取可见行 */
     const [info, setInfo] = useState<Map<string, RowInfo>>(new Map());
 
+    const resolveAll = !!transport && table.rows.length > 0 && table.rows.length <= RESOLVE_ALL_TITLES;
+    const allResolved = resolveAll && table.rows.every(r => !r.id || info.has(r.id));
+    const rowSection = (id?: string) => sectionKey(id ? info.get(id)?.l1 : undefined);
+
     const filtered = useMemo(() => {
         const q = query.trim();
-        if (!q) return table.rows;
         // 繁简都能搜：比对两边都转成当前显示字形
-        const needle = convert(q);
+        const needle = q ? convert(q) : '';
         return table.rows.filter(r => {
+            if (sec && sectionKey(r.id ? info.get(r.id)?.l1 : undefined) !== sec) return false;
+            if (!needle) return true;
             const title = (r.id && info.get(r.id)?.title) || r.title;
             return convert(title).includes(needle) || (r.subItems || []).some(s => convert(s).includes(needle));
         });
-    }, [table.rows, query, info, convert]);
+    }, [table.rows, query, sec, info, convert]);
     const visibleTitles = showAllTitles ? filtered : filtered.slice(0, CAP_TITLES);
 
     const idsToResolve = useMemo(
-        () => visibleTitles.filter(r => r.id && !info.has(r.id)).map(r => r.id!),
-        [visibleTitles, info],
+        () => (resolveAll ? table.rows : visibleTitles).filter(r => r.id && !info.has(r.id)).map(r => r.id!),
+        [resolveAll, table.rows, visibleTitles, info],
     );
     useEffect(() => {
         if (!transport || idsToResolve.length === 0) return;
         let cancelled = false;
-        Promise.all(idsToResolve.map(id =>
+        // 分批：一次 144 个请求同时飞出去会顶满连接；批内并发、批间顺序
+        const batch = idsToResolve.slice(0, RESOLVE_BATCH);
+        Promise.all(batch.map(id =>
             transport.getItem(id)
                 .then(raw => {
                     const d = (raw ?? {}) as {
                         title?: string; edition?: string; authors?: AuthorInfo[]; measure_info?: string;
                         juan_count?: { number?: number; description?: string };
                         _edition_count?: number; books?: string[];
+                        classification?: { l1?: string };
                     };
                     const v: RowInfo = {
                         title: d.title,
@@ -102,6 +122,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                         authors: d.authors,
                         measure: raw ? measureText(raw as never, t.unit.juan) : undefined,
                         versionCount: d._edition_count ?? d.books?.length,
+                        l1: d.classification?.l1 || undefined,
                     };
                     return [id, v] as const;
                 })
@@ -148,41 +169,77 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
 
     // ── 提要卡 ──
     const members = data._member_count || data.books?.length || works.length;
+    const measure = measureText(data, t.unit.juan);
+    const cnt = data.count;
+    const numOf = (v: number | null | undefined) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
+    /* 数字格：子目 / 卷 / 册。卷取「應收」的 juan，缺则用卷帙里的数；册取「應收」的 ce，缺则用目录算出的总册数 */
+    const juanNum = numOf(cnt?.juan) ?? numOf(data.juan_count?.number);
+    const ceNum = numOf(cnt?.ce) ?? (table.totalVolumes || null);
+    const stats = [
+        { value: table.rows.length, label: '子目' },
+        { value: juanNum ?? 0, label: t.unit.juan },
+        { value: ceNum ?? 0, label: t.unit.volume },
+    ];
     const facts: CardFact[] = useMemo(() => {
         const out: CardFact[] = [];
-        if (table.rows.length) {
-            out.push({ label: '子目', value: `${table.rows.length} ${convert(t.unit.items)}` });
-        }
+        if (data.publication_info?.details) out.push({ label: '刊印', value: convert(data.publication_info.details) });
         if (members && members !== table.rows.length) {
             const memberLabel = data._member_type === 'Book' ? '所收版本'
                 : data._member_type === 'Work' ? '所收作品' : '成員';
             out.push({ label: convert(memberLabel), value: `${members} ${convert(t.unit.bu)}`, title: convert('子目與其各版本合計') });
         }
-        const measure = measureText(data, t.unit.juan);
-        // 應收總數：count 各項互不隱含、可為 null；已有「卷帙」時不重複出卷
-        const cnt = data.count;
-        if (cnt) {
-            const num = (v: number | null | undefined) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
-            const parts = [
-                num(cnt.zhong) != null ? `${cnt.zhong} 種` : '',
-                num(cnt.ce) != null ? `${cnt.ce} ${t.unit.volume}` : '',
-                num(cnt.han) != null ? `${cnt.han} 函` : '',
-                !measure && num(cnt.juan) != null ? `${cnt.juan} ${t.unit.juan}` : '',
-            ].filter(Boolean);
-            if (parts.length) out.push({ label: '應收', value: convert(parts.join('　')) });
-        }
-        const volumes = table.totalVolumes ? `${table.totalVolumes} ${convert(t.unit.volume)}` : '';
-        if (measure || volumes) {
+        // 「應收」只留数字格没有的两项：種、函（卷、冊已在数字格里）；都没有就不出这一行
+        const zhongHan = [
+            numOf(cnt?.zhong) != null ? `${cnt!.zhong} 種` : '',
+            numOf(cnt?.han) != null ? `${cnt!.han} 函` : '',
+        ].filter(Boolean);
+        if (zhongHan.length) out.push({ label: '應收', value: convert(zhongHan.join('　')) });
+        // 卷数没进数字格（缺数字）时，卷帙文字仍留在事实表里
+        if (juanNum == null && measure) {
             out.push({
-                label: '卷帙',
-                value: [measure ? convert(measure) : '', volumes].filter(Boolean).join('　'),
+                label: '卷帙', value: convert(measure),
                 title: data.juan_count?.description ? convert(data.juan_count.description) : undefined,
             });
         }
-        if (data.publication_info?.details) out.push({ label: '刊印', value: convert(data.publication_info.details) });
-        if (data.publication_info?.year) out.push({ label: '年代', value: convert(data.publication_info.year) });
+        // 「年代」不再出：已在「刊印」与副题里
         return out;
-    }, [data, members, table.rows.length, table.totalVolumes, convert, t]);
+    }, [data, members, table.rows.length, juanNum, measure, cnt, convert, t]);
+
+    // ── 部类页签与册次分布（须全部子目解析完） ──
+    const secTabs = useMemo(() => {
+        if (!allResolved) return [];
+        const n = new Map<string, number>();
+        for (const r of table.rows) {
+            const k = rowSection(r.id);
+            if (k) n.set(k, (n.get(k) ?? 0) + 1);
+        }
+        const present = SECTIONS.filter(x => (n.get(x.key) ?? 0) > 0);
+        if (present.length < 2) return [];
+        return [
+            { key: '', label: `${t.catalog.all} ${table.rows.length}` },
+            ...present.map(x => ({ key: x.key, label: `${x.label} ${n.get(x.key)}` })),
+        ];
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [allResolved, table.rows, info, t]);
+
+    /** 册次分布条：每个子目占其册次区间（最小到最大）那么宽，按部类上色；相邻同色合并 */
+    const distribution = useMemo(() => {
+        if (!allResolved || !table.rows.some(r => r.volumes.length > 0)) return null;
+        const segs: { key: string; from: number; to: number; n: number }[] = [];
+        const ordered = table.rows
+            .filter(r => r.volumes.length > 0)
+            .map(r => ({ k: rowSection(r.id) ?? '', from: Math.min(...r.volumes), to: Math.max(...r.volumes) }))
+            .sort((a, b) => a.from - b.from);
+        for (const r of ordered) {
+            const n = r.to - r.from + 1;
+            const last = segs[segs.length - 1];
+            if (last && last.key === r.k) { last.to = Math.max(last.to, r.to); last.n += n; }
+            else segs.push({ key: r.k, from: r.from, to: r.to, n });
+        }
+        const last = ordered.reduce((m, r) => Math.max(m, r.to), 0);
+        return segs.length > 1 && segs.some(s => s.key) ? { segs, last } : null;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [allResolved, table.rows, info]);
 
     const descText = data.description?.text;
     const card = (
@@ -205,9 +262,39 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                 </>
             ) : undefined}
             clampDescription={descNeedsClamp(descText) || (data.history?.length ?? 0) > 2 ? 6 : undefined}
+            stats={stats}
             facts={facts}
             foot={<CardFoot revision={data.revision} revisedAt={data.revised_at} review={data.review} todo={data.todo} />}
-        />
+        >
+            {distribution && (
+                <div className="bim-d-dist bim-d-ui">
+                    <div className="bim-d-dist-head"><span>{convert('全帙冊次分佈')}</span></div>
+                    <div className="bim-d-dist-bar" role="group" aria-label={convert('全帙冊次分佈')}>
+                        {distribution.segs.map((g, i) => {
+                            const def = SECTIONS.find(x => x.key === g.key);
+                            return (
+                                <button
+                                    key={i}
+                                    type="button"
+                                    className="bim-d-dist-seg"
+                                    disabled={!def}
+                                    title={def ? convert(`${def.label}　第 ${g.from}–${g.to} 冊`) : undefined}
+                                    aria-label={def ? convert(`只看${def.label}`) : convert('未分類')}
+                                    aria-pressed={!!def && sec === g.key}
+                                    style={{ flexGrow: g.n, background: def ? bim(def.token) : bim('rule') }}
+                                    onClick={() => { if (def) { setSec(sec === g.key ? '' : g.key); setShowAllTitles(false); } }}
+                                />
+                            );
+                        })}
+                    </div>
+                    <div className="bim-d-life-lab">
+                        <span>{convert(`第 1 ${t.unit.volume}`)}</span>
+                        <span>{convert('點色段篩選部類')}</span>
+                        <span>{convert(`第 ${distribution.last} ${t.unit.volume}`)}</span>
+                    </div>
+                </div>
+            )}
+        </SummaryCard>
     );
 
     const nav: RailNavItem[] = [];
@@ -228,16 +315,20 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                     ]} />}
                     action={catalogAction}
                 >
-                    {table.rows.length > CAP_TITLES && (
+                    {(table.rows.length > CAP_TITLES || secTabs.length > 0) && (
                         <div className="bim-d-filters bim-d-ui">
-                            <input
+                            {secTabs.length > 0 && (
+                                <TabFilter items={secTabs} value={sec} onChange={k => { setSec(k); setShowAllTitles(false); }} />
+                            )}
+                            <span className="bim-d-spacer" />
+                            {table.rows.length > CAP_TITLES && <input
                                 type="search"
                                 className="bim-d-find"
                                 value={query}
                                 placeholder={convert('在本叢編中檢索')}
                                 aria-label={convert('在本叢編中檢索')}
                                 onChange={e => { setQuery(e.target.value); setShowAllTitles(false); }}
-                            />
+                            />}
                         </div>
                     )}
                     <table className="bim-d-zt">
@@ -259,6 +350,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                                     row.subItems?.length ? row.subItems.map(s => convert(s)).join('、') : '',
                                     (got?.edition || row.edition) && !uniformEdition ? convert(got?.edition || row.edition || '') : '',
                                 ].filter(Boolean);
+                                const rowSec = SECTIONS.find(x => x.key === rowSection(row.id));
                                 const vol = row.volumes.length > 0
                                     ? convert(`第 ${formatVolumeRange(row.volumes, t.unit.volume)} ${t.unit.volume}`)
                                     : row.expected != null
@@ -268,6 +360,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                                     <tr key={`${row.id ?? row.title}-${i}`}>
                                         {hasVolumeColumn && (
                                             <td className={`bim-d-zt-sub bim-d-zt-nowrap${vol ? '' : ' bim-d-zt-blank'}`}>
+                                                {rowSec && <i className="bim-d-sq" aria-hidden="true" style={{ background: bim(rowSec.token) }} />}
                                                 {vol || <span className="bim-d-zt-empty">—</span>}
                                             </td>
                                         )}

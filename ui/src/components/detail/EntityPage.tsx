@@ -24,11 +24,12 @@ import type { IndexStorage } from '../../storage/types';
 import { useT, useConvert } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, type RenderLink } from './primitives';
+import { SECTIONS, sectionKey } from './shared';
 import {
     DetailGrid, Sec, MetaLine, TabFilter, MoreLink, SummaryCard, CardFoot, SideList, descNeedsClamp,
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
-import { bim, type BimTokenName } from '../../styles/tokens';
+import { bim } from '../../styles/tokens';
 import { measureText, normalizeRole, roleFacets, type RoleClass } from '../../core/detail-model';
 
 /** 桌面 cap，与作品页版本表同一量级 */
@@ -110,21 +111,6 @@ const DYNASTY_SPAN: Record<string, [number, number]> = {
     '遼': [916, 1125], '辽': [916, 1125], '金': [1115, 1234], '元': [1271, 1368],
     '明': [1368, 1644], '清': [1636, 1912],
 };
-
-/** 四部分布条的顺序与色（色取 --bim-sect-*） */
-const SECTIONS: { key: string; label: string; token: BimTokenName }[] = [
-    { key: '經部', label: '經部', token: 'sect-jing' },
-    { key: '史部', label: '史部', token: 'sect-shi' },
-    { key: '子部', label: '子部', token: 'sect-zi' },
-    { key: '集部', label: '集部', token: 'sect-ji' },
-];
-
-/** 分类里的「经部」「经」等简繁统一到 SECTIONS.key */
-function sectionKey(l1?: string): string | undefined {
-    if (!l1) return undefined;
-    const t = l1.replace(/经/g, '經').replace(/史/g, '史').replace(/集/g, '集');
-    return SECTIONS.find(x => t.startsWith(x.key[0]))?.key;
-}
 
 export const EntityPage: React.FC<EntityPageProps> = ({
     data, transport, onNavigate, renderLink, railTop, back, railLinks,

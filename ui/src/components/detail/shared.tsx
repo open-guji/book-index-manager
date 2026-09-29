@@ -8,6 +8,7 @@ import {
     displayAuthorRole, bucketResources, resourceNote, resourceDisambiguator,
 } from '../../core/detail-model';
 import { getDisplayNameFromUrl, resourceHref, volumeStats } from '../../core/resources';
+import type { BimTokenName } from '../../styles/tokens';
 import { BidLink, VolumeLinks, type RenderLink } from './primitives';
 
 /** related_works.relation → 小一号的浅色文字 */
@@ -214,4 +215,21 @@ export function ResourceGroupList({ groups, listedVolumeCounts }: {
             ))}
         </>
     );
+}
+
+// ══════════════════════════════════════════════════════════════
+
+/** 四部分布条的顺序与色（色取 --bim-sect-*） */
+export const SECTIONS: { key: string; label: string; token: BimTokenName }[] = [
+    { key: '經部', label: '經部', token: 'sect-jing' },
+    { key: '史部', label: '史部', token: 'sect-shi' },
+    { key: '子部', label: '子部', token: 'sect-zi' },
+    { key: '集部', label: '集部', token: 'sect-ji' },
+];
+
+/** 分类里的「经部」「经」等简繁统一到 SECTIONS.key */
+export function sectionKey(l1?: string): string | undefined {
+    if (!l1) return undefined;
+    const t = l1.replace(/经/g, '經').replace(/史/g, '史').replace(/集/g, '集');
+    return SECTIONS.find(x => t.startsWith(x.key[0]))?.key;
 }

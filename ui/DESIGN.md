@@ -27,7 +27,7 @@ book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、�
 |---|---|
 | `WorkPage` | （2026-09-29 v3：著录改朝代时间轴＋单卡翻页；提要卡数字格「版本／有影印／家著錄」，年代页签带计数，相關書目标题下有关系分类计数）header → intro（简介 / 别名 / 附录）→ **整理本入口**（由 layout 注入）→ 相關版本 → 在線數字資源 → 歷代書目收錄 ‖ 歷代考證 → 續書與評註 → 相關作品 |
 | `BookPage` | header → intro（多数只剩 facts）→ 收入叢編 → 所屬作品 ‖ 影印與全文 → 同作品其他版本 |
-| `CollectionPage` | header → intro → 收錄書籍（目录档 → `contained_works` → `books[]` 三来源降序）→ 影印與全文 ‖ 包含作品 |
+| `CollectionPage` | （2026-09-29 v3：提要卡数字格与「全帙册次分佈」条、子目部類页签与色点，均须全部子目解析完才出）header → intro → 收錄書籍（目录档 → `contained_works` → `books[]` 三来源降序）→ 影印與全文 ‖ 包含作品 |
 | `EntityPage` | 著作舉要（独立区块）→ 著作表（含部類列）；提要卡有生卒条、著作四部分布条（全部作品解析完才出）；旁栏站外資料 |
 | `primitives.tsx` | `PageFrame` `TopStrip` `Breadcrumb` `DetailHeader` `IntroGrid` `FactList` `SectionHead` `DataTable` `TableRow` `ExpandRow` `Chip` `ChipWall` `ResourceGroup` `ResourceRow` `VolumeLinks` `TagRows` … 以及全部样式 `DETAIL_CSS`。所有承载文字的原语内部调用 `useConvert()` 做繁简 |
 
