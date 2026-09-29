@@ -9,7 +9,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { BIM_TOKENS, bim, bimRootValue, bimTokensCss } from '../../src/styles/tokens';
+import { BIM_THEMES, BIM_TOKENS, bim, bimRootValue, bimTokensCss } from '../../src/styles/tokens';
 
 // jsdom 环境下 import.meta.url 不是 file: 协议，用 __dirname
 const SRC = resolve(__dirname, '../../src');
@@ -57,7 +57,7 @@ describe('tokens', () => {
     });
 
     it('生成的 :root 覆盖全部变量（root:false 的除外）且无重复', () => {
-        const css = bimTokensCss();
+        const css = bimTokensCss().split('/* ==== 主题：')[0];
         const declared = [...css.matchAll(/^\s*--bim-([a-z0-9-]+):/gm)].map(m => m[1]);
         expect(new Set(declared).size).toBe(declared.length);
         const expected = Object.entries(BIM_TOKENS).filter(([, t]) => t.root !== false).map(([k]) => k);
@@ -94,4 +94,37 @@ describe('守门：颜色只在 tokens.ts 定义', () => {
         const unknown = [...names].filter(n => !(n in BIM_TOKENS));
         expect(unknown).toEqual([]); // 注释里的 --bim-type-* 通配写法不计
     });
+});
+
+describe('主题（朱砂默认 / 靛蓝）', () => {
+    const hex = (h: string) => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
+    const lum = (h: string) => {
+        const [r, g, b] = hex(h).map(c => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const contrast = (a: string, b: string) => {
+        const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
+        return (x + 0.05) / (y + 0.05);
+    };
+    const val = (name: keyof typeof BIM_TOKENS, theme?: keyof typeof BIM_THEMES): string =>
+        ((theme && (BIM_THEMES[theme] as Record<string, string>)[name]) || BIM_TOKENS[name].value);
+
+    it('生成 :root[data-theme="indigo"]，且只覆盖已定义的变量', () => {
+        const css = bimTokensCss();
+        expect(css).toContain(':root[data-theme="indigo"] {');
+        for (const name of Object.keys(BIM_THEMES.indigo)) expect(BIM_TOKENS).toHaveProperty(name);
+    });
+
+    for (const theme of [undefined, 'indigo'] as const) {
+        it(`${theme ?? 'vermilion'}：强调色在各底色上文字对比度 ≥ 4.5（AA），白字主按钮同`, () => {
+            for (const bg of ['page-bg', 'zebra-bg', 'card-bg', 'tint-bg'] as const) {
+                expect(contrast(val('accent', theme), val(bg))).toBeGreaterThanOrEqual(4.5);
+                expect(contrast(val('accent-deep', theme), val(bg))).toBeGreaterThanOrEqual(4.5);
+            }
+            expect(contrast(val('accent', theme), val('on-color-fg'))).toBeGreaterThanOrEqual(4.5);
+            // 「有影印」块：强调色字在 flag-bg 之上（靛蓝是实色 #e3eaec；朱砂是 8% 朱色叠在纸上，取与纸色的近似）
+            const flag = theme === 'indigo' ? val('flag-bg', theme) : val('page-bg');
+            expect(contrast(val('accent', theme), flag)).toBeGreaterThanOrEqual(4.5);
+        });
+    }
 });
