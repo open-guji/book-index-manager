@@ -232,6 +232,15 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 .bim-d-dist-key i { display: inline-block; width: 8px; height: 8px; margin-right: 4px; border-radius: 2px; }
 .bim-d-side-note { margin: 8px 0 0; font-size: 12px; color: ${bim('aux-fg')}; }
 
+/* 提要卡：数字格（版本 / 有影印 / 家著录） */
+.bim-d-stats { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; margin: 18px 0 0; padding: 14px 0 2px;
+  border-top: 1px solid ${bim('rule')}; }
+.bim-d-stats > div + div { padding-left: 14px; border-left: 1px solid ${bim('rule')}; }
+.bim-d-stats b { display: block; font-size: 24px; font-weight: 700; line-height: 1.1; color: ${bim('ink')}; }
+.bim-d-stats span { display: block; margin-top: 4px; font-size: 12px; color: ${bim('aux-fg')}; }
+.bim-d-side-sub { margin: -2px 0 6px; font-size: 12px; color: ${bim('aux-fg')}; }
+.bim-d-side li .bim-d-kind { padding: 0 6px; border-radius: 3px; background: ${bim('zebra-bg')}; line-height: 18px; }
+
 /* 本页内检索（丛编子目） */
 .bim-d-find { height: 30px; min-width: 190px; padding: 0 12px; border: 0; border-radius: 6px; box-sizing: border-box;
   background: ${bim('tint-bg')}; color: ${bim('ink')}; font: inherit; font-size: 13px; }
@@ -578,7 +587,7 @@ export interface CardFact {
  * 整页唯一的主按钮就在这里（readAction）。
  */
 export function SummaryCard({
-    kind, title, subtitle, byline, meta, description, clampDescription, facts, readAction, secondaryAction, children, foot,
+    kind, title, subtitle, byline, meta, description, clampDescription, facts, stats, readAction, secondaryAction, children, foot,
 }: {
     /** 标题上方的类型小字（版本 / 叢編 / 人物） */
     kind?: string;
@@ -593,6 +602,8 @@ export function SummaryCard({
      */
     clampDescription?: number;
     facts?: CardFact[];
+    /** 事实表之前的数字格（版本 / 有影印 / 家著录）；value 为 0 或空的项不出 */
+    stats?: { value: React.ReactNode; label: string }[];
     /** 「阅读全文」主按钮（ReadButton） */
     readAction?: React.ReactNode;
     /** 主按钮下方的次要入口：只许文字链接（「看原書影印」） */
@@ -604,6 +615,7 @@ export function SummaryCard({
 }) {
     const { convert } = useConvert();
     const shownFacts = (facts || []).filter(f => f.value != null && f.value !== '');
+    const shownStats = (stats || []).filter(x => x.value != null && x.value !== '' && x.value !== 0);
     const [descOpen, setDescOpen] = useState(false);
     const clamped = !!clampDescription && !descOpen;
     return (
@@ -627,6 +639,11 @@ export function SummaryCard({
                     onClick={() => setDescOpen(v => !v)}>
                     {convert(descOpen ? '收起' : '展開')}
                 </button>
+            )}
+            {shownStats.length > 0 && (
+                <div className="bim-d-stats bim-d-ui">
+                    {shownStats.map((x, i) => <div key={i}><b>{x.value}</b><span>{convert(x.label)}</span></div>)}
+                </div>
             )}
             {shownFacts.length > 0 && (
                 <dl className="bim-d-ui">
@@ -686,7 +703,7 @@ export function ReadButton({ href, onClick, label = '閱讀全文' }: {
 // ══════════════════════════════════════════════════════════════
 
 /** 旁栏清单：小标题 + 若干行（行内容由调用方给）+ 「显示更多（n）」 */
-export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8, moreLabel, foot }: {
+export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8, moreLabel, foot, sub }: {
     id?: string;
     title: string;
     meta?: React.ReactNode;
@@ -700,6 +717,8 @@ export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8,
     moreLabel?: (rest: number) => string;
     /** 清单底部的小字说明 */
     foot?: React.ReactNode;
+    /** 标题下的一行小字（分类计数等） */
+    sub?: React.ReactNode;
 }) {
     const { convert } = useConvert();
     const [all, setAll] = useState(false);
@@ -712,6 +731,7 @@ export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8,
                 {convert(title)}
                 {meta != null && meta !== '' && <span className="bim-d-meta">{meta}</span>}
             </h2>
+            {sub && <p className="bim-d-side-sub bim-d-ui">{sub}</p>}
             <ul>
                 {shown.map((it, i) => (
                     <li key={i} className={i === currentIndex ? 'bim-d-side-cur' : undefined}

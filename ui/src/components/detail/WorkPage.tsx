@@ -171,15 +171,6 @@ export const WorkPage: React.FC<WorkPageProps> = ({
         }
         if (data.loss_status) out.push({ label: '存佚', value: convert(lossStatusLabel(data.loss_status)) });
 
-        const editions = data._edition_count ?? versionIds.length;
-        if (editions) {
-            out.push({
-                label: '版本',
-                value: <>{editions} {convert('種')}{allResolved && imageCount
-                    ? <span className="bim-d-meta">　{convert(`${imageCount} 種有影印`)}</span> : null}</>,
-            });
-        }
-
         const dated = table.allRows.filter(r => r.sortYear != null);
         const earliest = dated.length > 0
             ? dated.reduce((a, b) => (a.sortYear! <= b.sortYear! ? a : b))
@@ -197,15 +188,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
             });
         }
 
-        if (indexed.length || emendated.length) {
-            out.push({
-                label: '著錄',
-                value: <>
-                    {indexed.length ? `${indexed.length} ${convert('家')}` : '—'}
-                    {emendated.length ? <span className="bim-d-meta">　{convert(`考證 ${emendated.length} 條`)}</span> : null}
-                </>,
-            });
-        }
+        if (emendated.length) out.push({ label: '考證', value: `${emendated.length} ${convert('條')}` });
 
         const aliases = flatten(data.additional_titles);
         if (aliases.length) out.push({ label: '又名', value: aliases.map(convert).join('、') });
@@ -215,7 +198,15 @@ export const WorkPage: React.FC<WorkPageProps> = ({
             convert(w.book_title) + (w.n_juan != null ? ` ${w.n_juan}${convert(t.unit.juan)}` : ''));
         if (appendixWorks.length) out.push({ label: '附錄', value: appendixWorks.join('、') });
         return out;
-    }, [data, convert, t, versionIds.length, allResolved, resolving, imageCount, table.allRows, indexed.length, emendated.length]);
+    }, [data, convert, t, resolving, table.allRows, emendated.length]);
+
+    const editions = data._edition_count ?? versionIds.length;
+    const stats = [
+        { value: editions, label: '版本' },
+        // 有影印数要版本全部解析完才准，先不出，免得数字跳动
+        { value: allResolved ? imageCount : 0, label: '有影印' },
+        { value: indexed.length, label: '家著錄' },
+    ];
 
     const cls = data.classification;
     const clsItems = cls
@@ -248,6 +239,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                     ) : null}
                 </>
             ) : undefined}
+            stats={stats}
             facts={facts}
             readAction={readAction}
             foot={<CardFoot revision={data.revision} revisedAt={data.revised_at} review={data.review} todo={data.todo} />}
@@ -265,7 +257,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
 
     // ── 中栏 ──
     const eraTabs = table.eras.length >= 2
-        ? [{ key: '', label: t.catalog.all }, ...table.eras.map(e => ({ key: e, label: e }))]
+        ? [{ key: '', label: t.catalog.all }, ...table.eras.map(e => ({ key: e, label: `${e} ${table.allRows.filter(r => r.era.era === e).length}` }))]
         : [];
 
     const nav: RailNavItem[] = [];
@@ -370,6 +362,17 @@ export const WorkPage: React.FC<WorkPageProps> = ({
     const link = (id: string, label: string) => (
         <BidLink id={id} label={convert(label)} onNavigate={onNavigate} renderLink={renderLink} dense />
     );
+    /** 相关书目按关系归类的计数，多的在前，至多四类：「研究 52 · 前承 3 …」 */
+    const relationSummary = useMemo(() => {
+        const n = new Map<string, number>();
+        for (const r of otherRelated) {
+            const k = relationLabel(r.relation);
+            n.set(k, (n.get(k) ?? 0) + 1);
+        }
+        return n.size > 1
+            ? [...n.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([k, c]) => `${convert(k)} ${c}`).join(' · ')
+            : undefined;
+    }, [otherRelated, convert]);
     const side = (
         <>
             <SideList
@@ -381,6 +384,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                 id="related"
                 title="相關書目"
                 meta={convert(`${otherRelated.length} 部`)}
+                sub={relationSummary}
                 items={otherRelated.map(r => (
                     <>
                         {link(r.id, r.title)}
@@ -402,7 +406,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                             {href
                                 ? <a href={href} target="_blank" rel="noopener noreferrer">{name} <span aria-hidden="true">↗</span></a>
                                 : <span>{name}</span>}
-                            {kind && <span className="bim-d-meta">{kind}</span>}
+                            {kind && <span className="bim-d-meta bim-d-kind">{kind}</span>}
                         </>
                     );
                 })}
