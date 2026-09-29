@@ -4,7 +4,7 @@ import type { Locale } from './types';
 import { zhHant } from './locales/zh-Hant';
 import { zhHans } from './locales/zh-Hans';
 import type { LocaleMessages } from './types';
-import { withProtectedTerms } from './protected-terms';
+import { getSimplifiedConverter } from './simplified-converter';
 
 const MESSAGES: Record<Locale, LocaleMessages> = {
     'zh-Hant': zhHant,
@@ -30,6 +30,11 @@ export interface LocaleProviderProps {
     locale?: Locale;
     /** locale 变化回调 */
     onLocaleChange?: (locale: Locale) => void;
+    /**
+     * 可选：注入自己的同步繁→简转换函数（替换内置的 opencc-js t2cn + 保护表）。
+     * 不传就用内置的。
+     */
+    converter?: (text: string) => string;
     children: React.ReactNode;
 }
 
@@ -38,6 +43,7 @@ const DEFAULT_LOCALE: Locale = 'zh-Hans';
 export const LocaleProvider: React.FC<LocaleProviderProps> = ({
     locale: controlledLocale,
     onLocaleChange,
+    converter: converterProp,
     children,
 }) => {
     // SSR 安全：初始渲染始终用默认值，mount 后再从 localStorage 读取
@@ -53,22 +59,16 @@ export const LocaleProvider: React.FC<LocaleProviderProps> = ({
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // 延迟加载 opencc-js converter
-    const [converter, setConverter] = useState<((text: string) => string) | null>(null);
-
-    useEffect(() => {
-        if (locale === 'zh-Hans') {
-            import('opencc-js/t2cn').then((mod) => {
-                const conv = mod.Converter({ from: 'tw', to: 'cn' });
-                setConverter(() => withProtectedTerms(conv));
-            }).catch(() => {
-                // opencc-js 不可用时，原样返回
-                setConverter(() => (text: string) => text);
-            });
-        } else {
-            setConverter(null);
-        }
-    }, [locale]);
+    /*
+     * 繁→简转换函数：**同步**给出，不再在 effect 里动态 import。
+     * 原先服务端渲染和客户端首帧的 converter 都是 null，数据文字（出处名等）首屏是繁体，
+     * 模块到了才转成简体，而界面文案（messages）首屏就是简体——同页繁简混杂（overview#268）。
+     * 现在服务端和客户端首帧用同一个同步 converter，HTML 一致、水合不报不一致。
+     */
+    const converter = useMemo(
+        () => (locale === 'zh-Hans' ? (converterProp ?? getSimplifiedConverter()) : null),
+        [locale, converterProp],
+    );
 
     const setLocale = useCallback((newLocale: Locale) => {
         setInternalLocale(newLocale);
