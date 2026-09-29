@@ -154,9 +154,23 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
             out.push({ label: '子目', value: `${table.rows.length} ${convert(t.unit.items)}` });
         }
         if (members && members !== table.rows.length) {
-            out.push({ label: '成員', value: `${members} ${convert(t.unit.bu)}`, title: convert('子目與其各版本合計') });
+            const memberLabel = data._member_type === 'Book' ? '所收版本'
+                : data._member_type === 'Work' ? '所收作品' : '成員';
+            out.push({ label: convert(memberLabel), value: `${members} ${convert(t.unit.bu)}`, title: convert('子目與其各版本合計') });
         }
         const measure = measureText(data, t.unit.juan);
+        // 應收總數：count 各項互不隱含、可為 null；已有「卷帙」時不重複出卷
+        const cnt = data.count;
+        if (cnt) {
+            const num = (v: number | null | undefined) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
+            const parts = [
+                num(cnt.zhong) != null ? `${cnt.zhong} 種` : '',
+                num(cnt.ce) != null ? `${cnt.ce} ${t.unit.volume}` : '',
+                num(cnt.han) != null ? `${cnt.han} 函` : '',
+                !measure && num(cnt.juan) != null ? `${cnt.juan} ${t.unit.juan}` : '',
+            ].filter(Boolean);
+            if (parts.length) out.push({ label: '應收', value: convert(parts.join('　')) });
+        }
         const volumes = table.totalVolumes ? `${table.totalVolumes} ${convert(t.unit.volume)}` : '';
         if (measure || volumes) {
             out.push({
