@@ -1550,7 +1550,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
             {((workData?.books?.length || 0) + (workData?.collections?.length || 0)) > 0 && (
                 <BookVersionList
                     ids={[...(workData?.books || []), ...(workData?.collections || [])]}
-                    workData={workData}
+                    workData={workData ?? undefined}
                     transport={transport}
                     onNavigate={onNavigate}
                     renderLink={renderLink}
