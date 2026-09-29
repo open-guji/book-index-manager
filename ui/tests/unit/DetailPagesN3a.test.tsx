@@ -179,18 +179,31 @@ describe('WorkPage（三栏）', () => {
         expect(screen.getByText('目錄一卷。').closest('.bim-d-quote')).toBeTruthy();
     });
 
-    it('著录时间轴：上一家／下一家翻页，页码「n / N」；两端禁用', () => {
+    it('著录时间轴：上一家／下一家翻页，页码「n / N」；首／末家不渲染空按钮', () => {
         render(<BookDetailLayout {...props(WORK)} />);
         const pager = document.querySelector('.bim-d-lu-pager') as HTMLElement;
         expect(pager.textContent).toContain('1 / 2');
-        const [prev, next] = [...pager.querySelectorAll('button')] as HTMLButtonElement[];
-        expect(prev.disabled).toBe(true);
-        expect(next.textContent).toBe('隋書經籍志 →');
+        // 首家：没有「上一家」按钮，只有「下一家」，且带可访问名称
+        expect(within(pager).queryByRole('button', { name: /^上一家/ })).toBeNull();
+        const next = within(pager).getByRole('button', { name: '下一家：隋書經籍志' });
         fireEvent.click(next);
         expect(screen.getByText('目錄一卷。')).toBeTruthy();
         expect(pager.textContent).toContain('2 / 2');
-        expect(next.disabled).toBe(true);
-        expect(prev.textContent).toBe('← 漢書藝文志');
+        // 末家：没有「下一家」按钮
+        expect(within(pager).queryByRole('button', { name: /^下一家/ })).toBeNull();
+        fireEvent.click(within(pager).getByRole('button', { name: '上一家：漢書藝文志' }));
+        expect(pager.textContent).toContain('1 / 2');
+    });
+
+    it('著录时间轴：分页里每个按钮都有可访问名称（axe name-role-value），节点也是', () => {
+        render(<BookDetailLayout {...props(WORK)} />);
+        const unnamed = (root: Element) => [...root.querySelectorAll('button')].filter(b =>
+            !(b.getAttribute('aria-label') || b.textContent || '').trim());
+        const lu = document.querySelector('#catalogs') as HTMLElement;
+        expect(unnamed(lu)).toEqual([]);
+        // 翻到末家再查一遍（另一端的按钮消失，不能留下空壳）
+        fireEvent.click(within(lu).getByRole('tab', { name: '隋書經籍志' }));
+        expect(unnamed(lu)).toEqual([]);
     });
 
     it('旁栏：收入丛编与相关书目（关系类型是浅色小字）', () => {
