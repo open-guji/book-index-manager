@@ -48,6 +48,8 @@ export interface EraInferable {
     edition?: string;
     lineage?: BookDetailData['lineage'];
     publication_info?: BookDetailData['publication_info'];
+    /** 目录侧已考定的版本类型（受控词表）；有则优先于现推 */
+    edition_type?: string;
     /**
      * 结构化年代（方案 §3）。给了就直接用，不再从题名现推。
      *
@@ -1635,6 +1637,7 @@ export function measureText(detail: Partial<IndexDetailData>, juanUnit = '卷'):
  * lineage.category 只有 1% 有，其余从题名尾缀猜。
  */
 export function deriveEditionType(book: EraInferable): string {
+    if (book.edition_type) return book.edition_type;
     if (book.lineage?.category) return book.lineage.category;
     const text = book.edition || book.title || '';
     const patterns: [RegExp, string][] = [
