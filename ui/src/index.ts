@@ -266,6 +266,13 @@ export { FormInput } from './components/common/FormInput';
 export { FormTextArea } from './components/common/FormTextArea';
 export { Badge } from './components/common/Badge';
 export { LocaleToggle } from './components/LocaleToggle';
+export { ThemeToggle } from './components/ThemeToggle';
+export type { ThemeToggleProps } from './components/ThemeToggle';
+export {
+    THEMES, DEFAULT_THEME, THEME_STORAGE_KEY, THEME_INIT_SCRIPT,
+    isThemeName, normalizeTheme, readStoredTheme, storeTheme, applyTheme, currentTheme,
+} from './theme';
+export type { ThemeName } from './theme';
 export type { LocaleToggleProps } from './components/LocaleToggle';
 export { RepoSourceLink } from './components/common/RepoSourceLink';
 export type { RepoSourceLinkProps } from './components/common/RepoSourceLink';
