@@ -257,6 +257,60 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 .bim-d-side-sub { margin: -2px 0 6px; font-size: 12px; color: ${bim('aux-fg')}; }
 .bim-d-side li .bim-d-kind { padding: 0 6px; border-radius: 3px; background: ${bim('zebra-bg')}; line-height: 18px; }
 
+/* 提要卡：版本类型／年代／卷帙 三个标签 */
+.bim-d-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.bim-d-tag { padding: 1px 8px; border-radius: 3px; font-size: 12px; line-height: 20px; color: ${bim('quiet-fg')};
+  background: ${bim('zebra-bg')}; }
+.bim-d-tag-0 { background: ${bim('flag-bg')}; color: ${bim('accent')}; }
+.bim-d-tag-2 { background: none; box-shadow: inset 0 0 0 1px ${bim('rule')}; }
+
+/* 分段切换（卡片／关系图） */
+.bim-d-seg { display: inline-flex; border-radius: 6px; box-shadow: inset 0 0 0 1px ${bim('rule')}; overflow: hidden; }
+.bim-d-seg button { min-height: 28px; padding: 0 12px; border: 0; background: none; cursor: pointer; font: inherit;
+  font-size: 13px; color: ${bim('quiet-fg')}; }
+.bim-d-seg button[aria-pressed="true"] { background: ${bim('flag-bg')}; color: ${bim('accent')}; font-weight: 700; }
+
+/* 版本源流·卡片流 */
+.bim-d-lf-list { list-style: none; margin: 0; padding: 0 0 0 22px; position: relative; }
+.bim-d-lf-list::before { content: ""; position: absolute; left: 4px; top: 12px; bottom: 12px; width: 1px; background: ${bim('rule')}; }
+.bim-d-lf-node { position: relative; padding: 6px 0; }
+.bim-d-lf-node::before { content: ""; position: absolute; left: -22px; top: 22px; width: 9px; height: 9px; border-radius: 50%;
+  box-sizing: border-box; background: ${bim('page-bg')}; border: 1px solid ${bim('aux-fg')}; }
+.bim-d-lf-cur::before { background: ${bim('accent')}; border-color: ${bim('accent')}; }
+.bim-d-lf-out::before { top: 16px; }
+.bim-d-lf-card, .bim-d-lf-dash { padding: 12px 16px; border-radius: 8px; min-width: 0; }
+.bim-d-lf-card { background: ${bim('card-bg')}; box-shadow: inset 0 0 0 1px ${bim('rule')}; }
+.bim-d-lf-dash { box-shadow: inset 0 0 0 1px ${bim('rule-dashed')}; }
+.bim-d-lf-tag { display: inline-block; margin-right: 10px; padding: 0 7px; border-radius: 3px; font-size: 12px; line-height: 20px;
+  background: ${bim('zebra-bg')}; color: ${bim('quiet-fg')}; }
+.bim-d-lf-name { font-weight: 700; color: ${bim('ink')}; }
+.bim-d-lf-ev { margin: 6px 0 0; font-size: 13px; line-height: 1.8; color: ${bim('quiet-fg')}; }
+.bim-d-lf-cur { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+.bim-d-lf-here { padding: 12px 16px; border-radius: 8px; background: ${bim('accent')}; color: ${bim('on-color-fg')}; min-width: 0; }
+.bim-d-lf-here .bim-d-lf-name { color: ${bim('on-color-fg')}; }
+.bim-d-lf-here .bim-d-lf-tag { background: color-mix(in srgb, ${bim('on-color-fg')} 18%, transparent); color: ${bim('on-color-fg')}; }
+.bim-d-lf-yr { display: block; margin-top: 4px; font-size: 13px; opacity: .9; }
+.bim-d-lf-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.bim-d-lf-out { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.bim-d-lf-out-h { font-size: 12px; letter-spacing: .1em; color: ${bim('aux-fg')}; }
+.bim-d-lf-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.bim-d-lf-chip { display: inline-flex; align-items: baseline; gap: 6px; padding: 3px 10px; border-radius: 6px;
+  box-shadow: inset 0 0 0 1px ${bim('rule')}; font-size: 14px; }
+.bim-d-lf-app { margin-top: 10px; font-size: 14px; }
+.bim-d-lf-app summary { cursor: pointer; min-height: 28px; display: inline-flex; align-items: center; gap: 6px; color: ${bim('accent')}; }
+
+/* 影印分组：一组一张卡 */
+.bim-d-rg { padding: 14px 16px 10px; border-radius: 10px; background: ${bim('card-bg')}; box-shadow: inset 0 0 0 1px ${bim('rule')}; }
+.bim-d-rg .bim-d-zt tbody tr:nth-child(odd) td { background: none; }
+
+/* 旁栏：时间轴点（同作品版本） */
+.bim-d-side-tl ul { position: relative; padding-left: 16px; }
+.bim-d-side-tl ul::before { content: ""; position: absolute; left: 3px; top: 12px; bottom: 12px; width: 1px; background: ${bim('rule')}; }
+.bim-d-side-tl li { position: relative; }
+.bim-d-side-tl li::before { content: ""; position: absolute; left: -16px; top: 14px; width: 7px; height: 7px; border-radius: 50%;
+  box-sizing: border-box; background: ${bim('page-bg')}; border: 1px solid ${bim('aux-fg')}; }
+.bim-d-side-tl li.bim-d-side-cur::before { background: ${bim('accent')}; border-color: ${bim('accent')}; }
+
 /* 本页内检索（丛编子目） */
 .bim-d-find { height: 30px; min-width: 190px; padding: 0 12px; border: 0; border-radius: 6px; box-sizing: border-box;
   background: ${bim('tint-bg')}; color: ${bim('ink')}; font: inherit; font-size: 13px; }
@@ -284,8 +338,9 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
   text-decoration: none !important;
 }
 .bim-d-btn:hover { background: ${bim('accent-deep')}; }
-.bim-d-card-alt { display: flex; align-items: center; justify-content: center; min-height: 32px; margin-top: 8px;
-  font-size: 13px; color: ${bim('accent')} !important; }
+.bim-d-card-alt { display: flex; align-items: center; justify-content: center; min-height: 40px; margin-top: 8px;
+  border-radius: 6px; background: ${bim('flag-bg')}; font-size: 14px; color: ${bim('accent')} !important; }
+.bim-d-card-alt:hover { text-decoration: none !important; background: ${bim('tint-bg')}; }
 
 /* 旁栏清单：小标题是 h2（提要卡 h1 之下不跳级，INT Q5），外观仍是 15px 小标题 */
 .bim-d-side h3, .bim-d-side .bim-d-side-h { margin: 0 0 6px; font-size: 15px; font-weight: 700; color: ${bim('ink')};
@@ -381,6 +436,8 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
   .bim-d-up { display: inline-flex; gap: 8px; align-items: baseline; margin-top: 10px; padding: 6px 12px; }
   .bim-d-up a { font-size: 14px; }
   .bim-d-ft { grid-template-columns: minmax(0, 1fr); }
+  .bim-d-lf-cur { grid-template-columns: minmax(0, 1fr); }
+  .bim-d-seg button { min-height: 44px; }
   .bim-d-ft-go { grid-column: 1; grid-row: auto; margin-top: 6px; }
   .bim-d-chap { grid-template-columns: 1fr 1fr; }
   .bim-d-chap-pending { height: 270px; }
@@ -717,7 +774,7 @@ export function ReadButton({ href, onClick, label = '閱讀全文' }: {
 // ══════════════════════════════════════════════════════════════
 
 /** 旁栏清单：小标题 + 若干行（行内容由调用方给）+ 「显示更多（n）」 */
-export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8, moreLabel, foot, sub }: {
+export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8, moreLabel, foot, sub, timeline }: {
     id?: string;
     title: string;
     meta?: React.ReactNode;
@@ -733,6 +790,8 @@ export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8,
     foot?: React.ReactNode;
     /** 标题下的一行小字（分类计数等） */
     sub?: React.ReactNode;
+    /** 行首画时间轴点（同作品版本） */
+    timeline?: boolean;
 }) {
     const { convert } = useConvert();
     const [all, setAll] = useState(false);
@@ -740,7 +799,7 @@ export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8,
     const shown = all ? items : items.slice(0, cap);
     const rest = items.length - shown.length;
     return (
-        <div id={id} className="bim-d-side" style={{ scrollMarginTop: 16 }}>
+        <div id={id} className={timeline ? 'bim-d-side bim-d-side-tl' : 'bim-d-side'} style={{ scrollMarginTop: 16 }}>
             <h2 className="bim-d-ui bim-d-side-h">
                 {convert(title)}
                 {meta != null && meta !== '' && <span className="bim-d-meta">{meta}</span>}

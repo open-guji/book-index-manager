@@ -237,12 +237,12 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                             : d.renderLink(d.bookId!, d.label)}
                     </div>
                     {d.description && (
-                        <div style={{ fontSize: 10, color: bim('muted'), lineHeight: 1.25, marginTop: 1 }}>
+                        <div style={{ fontSize: 10, color: bim('aux-fg'), lineHeight: 1.25, marginTop: 1 }}>
                             {d.description}
                         </div>
                     )}
                     {d.yearText && (
-                        <div style={{ fontSize: 10, color: bim('muted'), lineHeight: 1.2 }}>
+                        <div style={{ fontSize: 10, color: bim('aux-fg'), lineHeight: 1.2 }}>
                             {formatLineageYear(d.yearText, undefined, d.uncertain)}
                         </div>
                     )}
