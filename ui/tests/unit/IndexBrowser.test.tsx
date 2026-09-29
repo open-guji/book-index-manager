@@ -206,6 +206,20 @@ describe('IndexBrowser 搜索页布局跳动（overview#268 P2-6）', () => {
         expect(screen.getByRole('heading', { level: 2 })).toBeTruthy();
     });
 
+    it('默认不设 minHeight；reserveViewportHeight=true 才占满一屏', () => {
+        const { container, rerender } = render(<IndexBrowser transport={makeTransport()} />);
+        expect((container.querySelector('.bim-browser-container') as HTMLElement).style.minHeight).toBe('');
+        rerender(<IndexBrowser transport={makeTransport()} reserveViewportHeight />);
+        expect((container.querySelector('.bim-browser-container') as HTMLElement).style.minHeight).toBe('100svh');
+        rerender(<IndexBrowser transport={makeTransport()} reserveViewportHeight={false} />);
+        expect((container.querySelector('.bim-browser-container') as HTMLElement).style.minHeight).toBe('');
+    });
+
+    it('统计摘要行先占位（getCounts 晚到不下推内容）', () => {
+        const { container } = render(<IndexBrowser transport={makeTransport({ getCounts: () => new Promise<never>(() => {}) })} />);
+        expect(container.querySelector('.bim-ib-stats')).toBeTruthy();
+    });
+
     it('无结果标题是 h2，不从 h1 直接跳到 h3', async () => {
         const searchAll = vi.fn().mockResolvedValue({
             works: [], books: [], collections: [], entities: [],

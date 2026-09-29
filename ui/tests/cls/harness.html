@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CLS harness</title>
+<style>
+  body { margin: 0; font-family: system-ui, sans-serif; }
+  #hdr { height: 64px; background: #eee; display: flex; align-items: center; padding: 0 20px; }
+  #ftr { height: 420px; background: #ddd; padding: 20px; }
+</style>
+</head>
+<body>
+<div id="hdr">站点页头</div>
+<div id="root"></div>
+<div id="ftr">站点页脚</div>
+<script type="module" src="./harness.tsx"></script>
+</body>
+</html>

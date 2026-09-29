@@ -317,7 +317,9 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                         <tbody>
                             {visibleRows.map(row => (
                                 <VersionRowView
-                                    key={row.id}
+                                    // 解析前后换 key：解析到达时按年代/影印重排，同一节点换位置会被记成布局位移；
+                                    // 换 key 让重排后的行是新节点（新节点不计位移），表格总高度本身已固定（CLS）
+                                    key={`${row.id}:${resolved.has(row.id) ? 'r' : 'p'}`}
                                     row={row}
                                     measure={resolved.get(row.id)?.measure_info}
                                     loaded={resolved.has(row.id)}
@@ -450,7 +452,10 @@ function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
                     renderLink={renderLink}
                     dense
                 />
-                {measure && <span className="bim-d-meta">{convert(measure)}</span>}
+                {/* 卷帙小字随次级数据晚到；没有也留一个空行，所有版本行等高，加载前后表格高度不变（CLS） */}
+                {measure
+                    ? <span className="bim-d-meta">{convert(measure)}</span>
+                    : <span className="bim-d-meta" aria-hidden="true">&nbsp;</span>}
             </td>
             <td
                 className={`bim-d-zt-sub bim-d-zt-nowrap${eraLabel ? '' : ' bim-d-zt-blank'}`}

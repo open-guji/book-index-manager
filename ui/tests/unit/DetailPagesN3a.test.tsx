@@ -114,6 +114,13 @@ describe('WorkPage（三栏）', () => {
         await waitFor(() => expect((p.transport as never as { getCollatedEditionIndex: ReturnType<typeof vi.fn> }).getCollatedEditionIndex).toHaveBeenCalledWith('w1'));
     });
 
+    it('footerExtra 传原始状态字 draft 时页脚显示「草稿」', () => {
+        render(<BookDetailLayout {...props(WORK, { footerExtra: 'draft' })} />);
+        const foot = document.querySelector('footer')!;
+        expect(foot.textContent).toContain('草稿');
+        expect(foot.textContent).not.toMatch(/\bdraft\b/);
+    });
+
     it('「阅读全文」是整页唯一的主按钮，链到宿主给的 readLink', () => {
         const readLink = vi.fn(() => '/read/w1');
         render(<BookDetailLayout {...props(WORK, { readLink })} />);

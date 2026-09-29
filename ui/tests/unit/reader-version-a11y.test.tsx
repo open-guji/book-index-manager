@@ -404,24 +404,26 @@ describe('Q3 条目页 CLS：次级区块先占高', () => {
         expect(placeholder.textContent).toBe('…');
         expect(container.querySelector('.bim-d-filters')!.hasAttribute('data-pending')).toBe(true);
         expect(container.querySelectorAll('.bim-d-zt-ver tbody tr[data-loading]').length).toBe(3);
+        // 每行都带一个卷帙小字位（没有内容也留空行），行高加载前后一致（overview#268 P2-8）
+        expect(container.querySelectorAll('.bim-d-zt-ver tbody tr .bim-d-zt-main .bim-d-meta').length).toBe(3);
 
         release();
         await waitFor(() => expect(container.querySelectorAll('.bim-d-zt-ver tbody tr[data-loading]').length).toBe(0));
         const earliest = [...container.querySelectorAll('.bim-d-card dt')].find(d => d.textContent === '最早存世')!.nextElementSibling!;
         expect(earliest.textContent).toBe('宋');
         expect(container.querySelector('.bim-d-filters')!.hasAttribute('data-pending')).toBe(false);
+        expect(container.querySelectorAll('.bim-d-zt-ver tbody tr .bim-d-zt-main .bim-d-meta').length).toBe(3);
         // 行数不变：先占位的那一行被真值替换，不是再插一行
         expect(dt().filter(x => x === '最早存世')).toHaveLength(1);
     });
 
     it('CSS：朝代页签行、版本表行先占高；手机上载入中的版本行按两行占高', () => {
         expect(LAYOUT_CSS).toMatch(/\.bim-d-filters \{ min-height: 26px;/);
-        expect(LAYOUT_CSS).toMatch(/\.bim-d-zt-ver tbody tr \{ height: 42px; \}/);
-        // 桌面：解析前的版本行按「名 + 一行卷帙小字」占高（overview#268 P2-8）
-        expect(LAYOUT_CSS).toMatch(/\.bim-d-zt-ver tbody tr\[data-loading\] \{ height: 62px; \}/);
+        expect(LAYOUT_CSS).toMatch(/\.bim-d-zt-ver tbody tr \{ height: 58px; \}/);
+        // 桌面：版本行一律「名 + 一行卷帙小字」等高，加载前后表格高度不变（overview#268 P2-8）
         const narrow = mediaBlock(LAYOUT_CSS, '(max-width: 719px)');
         expect(ruleFor(narrow, '.bim-d-zt-ver tbody tr')).toMatch(/height: auto/);
-        expect(ruleFor(narrow, '.bim-d-zt-ver tbody tr[data-loading]')).toMatch(/min-height: 64px/);
-        expect(ruleFor(narrow, '.bim-d-filters[data-pending]')).toMatch(/min-height: 92px/);
+        expect(ruleFor(narrow, '.bim-d-zt-ver tbody tr[data-loading]')).toMatch(/min-height: 84px/);
+        expect(ruleFor(narrow, '.bim-d-filters[data-pending]')).toMatch(/min-height: 66px/);
     });
 });

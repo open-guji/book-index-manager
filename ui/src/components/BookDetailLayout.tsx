@@ -947,12 +947,16 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     /* 阅读 tab 放宽版心，容下左侧的卷/章导航（见 ReaderLayout） */
     const isReaderTab = activeTab === 'collated' || activeTab === 'fulltext';
 
+    // 宿主常把条目状态原样塞进来（'draft' / 'official'）：翻成中文，别把英文状态字露在页脚
+    const footerExtraNode = typeof footerExtra === 'string'
+        ? ((t.status as Record<string, string>)[footerExtra.trim()] ?? footerExtra)
+        : footerExtra;
     const footer = (
         <DetailFooter
             left={
                 <>
-                    {footerExtra}
-                    {footerExtra ? ' · ' : ''}
+                    {footerExtraNode}
+                    {footerExtraNode ? ' · ' : ''}
                     <IdWithCopy id={detail.id} label={t.label.id} copied={t.action.copied} copyLabel={t.action.copy} />
                 </>
             }
