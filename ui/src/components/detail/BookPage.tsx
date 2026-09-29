@@ -220,7 +220,7 @@ export const BookPage: React.FC<BookPageProps> = ({
             out.push({
                 label: '版本類型',
                 value: convert(editionType),
-                title: data.lineage?.category ? undefined : convert('據版本題名推斷'),
+                title: (data.edition_type || data.lineage?.category) ? undefined : convert('據版本題名推斷'),
             });
         }
         if (data.publication_info?.details) {
@@ -249,11 +249,46 @@ export const BookPage: React.FC<BookPageProps> = ({
                 value: <BidLink id={base.ref} label={convert(refName(base.ref))} onNavigate={onNavigate} renderLink={renderLink} dense />,
             });
         }
+        // base_edition[]：lineage 已给出底本时跳过 role=底本，避免重复；配補／參校 逐 role 一行
+        const baseEditions = (data.base_edition || []).filter(b => b && b.name);
+        for (const role of ['底本', '配補', '參校']) {
+            if (role === '底本' && base && refName(base.ref)) continue;
+            const items = baseEditions.filter(b => b.role === role);
+            if (!items.length) continue;
+            out.push({
+                label: role,
+                value: items.map((b, i) => (
+                    <React.Fragment key={i}>
+                        {i > 0 && '、'}
+                        {b.book_id
+                            ? <BidLink id={b.book_id} label={convert(b.name as string)} onNavigate={onNavigate} renderLink={renderLink} dense />
+                            : convert(b.name as string)}
+                    </React.Fragment>
+                )),
+            });
+        }
 
-        // 存藏：physical 资源优先于 current_location
+        // 存藏：provenance（机构＋索书號）优先，其次 physical 资源，最后 current_location
+        const prov = (data.provenance || []).filter(p => p && p.institution);
         const physical = (data.resources || []).filter(r =>
             (r.types || (r.type ? [r.type] : [])).includes('physical'));
-        if (physical.length) {
+        if (prov.length) {
+            out.push({
+                label: '存藏',
+                value: prov.slice(0, 2).map(p => convert(p.institution)).join('、')
+                    + (prov.length > 2 ? convert(` 等 ${prov.length} 處`) : ''),
+            });
+            const calls = prov.filter(p => p.call_number).slice(0, 2)
+                .map(p => `${convert(p.institution)} ${p.call_number}`);
+            if (calls.length) {
+                out.push({
+                    label: '索書號',
+                    value: calls.join('；') + (prov.filter(p => p.call_number).length > 2 ? '…' : ''),
+                });
+            }
+            const seals = prov.flatMap(p => p.seals || []).filter(Boolean);
+            if (seals.length) out.push({ label: '藏印', value: convert(seals.join('、')) });
+        } else if (physical.length) {
             out.push({
                 label: '存藏',
                 value: physical.slice(0, 2).map(r => convert(r.name)).join('、')
@@ -261,6 +296,16 @@ export const BookPage: React.FC<BookPageProps> = ({
             });
         } else if (data.current_location?.name) {
             out.push({ label: '存藏', value: convert(data.current_location.name) });
+        }
+        // 行款／裝幀／尺寸／品相：空串不显示
+        const pd = data.physical_description;
+        if (pd) {
+            const rows: [string, string | undefined][] = [
+                ['行款', pd.leaf_style], ['裝幀', pd.binding], ['尺寸', pd.dimensions], ['品相', pd.condition],
+            ];
+            for (const [label, v] of rows) {
+                if (v && v.trim()) out.push({ label, value: convert(v) });
+            }
         }
         if (data.page_count?.description) {
             out.push({ label: t.label.pageCount, value: convert(data.page_count.description) });
