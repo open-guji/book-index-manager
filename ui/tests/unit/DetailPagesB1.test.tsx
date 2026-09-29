@@ -359,3 +359,93 @@ describe('CollectionPage（v3）', () => {
     });
 });
 
+// ── Book：v3（源流卡片流、标签、影印分组卡，overview#286）──
+
+describe('BookPage（v3）', () => {
+    const lineageOf = (container: HTMLElement) => container.querySelector('#lineage') as HTMLElement;
+
+    it('版本源流·卡片流：底本卡 → 本版深色条；没有的不画（无擬構祖本、无翻刻行）', async () => {
+        const { container } = render(<BookDetailLayout {...props(BOOK, BOOK_EXTRA)} />);
+        await waitFor(() => expect(lineageOf(container).querySelector('.bim-d-lf-card')).toBeTruthy());
+        const sec = lineageOf(container);
+        expect(sec.querySelector('.bim-d-lf-card')!.textContent).toContain('底本');
+        expect(sec.querySelector('.bim-d-lf-card')!.textContent).toContain('文字簡約');
+        expect(sec.querySelector('.bim-d-lf-here')!.textContent).toContain('本版');
+        expect(sec.querySelector('.bim-d-lf-here')!.textContent).toContain('清乾隆五十六年（1791）');
+        expect(sec.querySelector('.bim-d-lf-dash')).toBeNull();
+        expect(sec.querySelector('.bim-d-lf-out')).toBeNull();
+        // 附记收成一行可展开
+        expect(within(sec).getByText('清代程甲系翻刻本一覽')).toBeTruthy();
+    });
+
+    it('參校等其他关系画成虚线卡，在本版右侧；related_to 出「翻刻 · 衍生」标签行', async () => {
+        const data = {
+            ...BOOK,
+            lineage: {
+                ...(BOOK as unknown as { lineage: object }).lineage,
+                derived_from: [
+                    { ref: 'b0', ref_type: 'book', relation: '底本', confidence: 'consensus', evidence: '文字簡約' },
+                    { ref: 'b2', ref_type: 'book', relation: '參校', confidence: 'probable', evidence: '後四十回接近' },
+                    { ref: 'x', ref_type: 'reconstructed', relation: '祖本' },
+                ],
+                related_to: [{ book_id: 'b2', relation: '翻刻', evidence: '依程甲本翻刻' }],
+            },
+        } as unknown as IndexDetailData;
+        const { container } = render(<BookDetailLayout {...props(data, BOOK_EXTRA)} />);
+        await waitFor(() => expect(lineageOf(container).querySelector('.bim-d-lf-out')).toBeTruthy());
+        const sec = lineageOf(container);
+        expect(sec.querySelector('.bim-d-lf-cur .bim-d-lf-side .bim-d-lf-dash')!.textContent).toContain('參校');
+        expect(sec.querySelector('.bim-d-lf-out')!.textContent).toContain('翻刻');
+        // 祖本：非 book 引用只写「擬構祖本」，不造名字
+        expect(sec.textContent).toContain('擬構祖本');
+    });
+
+    it('「卡片／關係圖」切换：只有作品有版本图才出，没有就没有切换', async () => {
+        const a = render(<BookDetailLayout {...props(BOOK, BOOK_EXTRA)} />);
+        await waitFor(() => expect(lineageOf(a.container).querySelector('.bim-d-lf-card')).toBeTruthy());
+        expect(lineageOf(a.container).querySelector('.bim-d-seg')).toBeNull();
+        a.unmount();
+
+        const base = props(BOOK, BOOK_EXTRA);
+        const graph = { nodes: [{ id: 'b0', kind: 'book', label: '夢覺本' }, { id: 'b1', kind: 'book', label: '程甲本' }], edges: [] };
+        const withGraph = { ...base, transport: { ...(base.transport as object), getLineageGraph: async () => graph } } as never;
+        const b = render(<BookDetailLayout {...(withGraph as BookDetailLayoutProps)} />);
+        const seg = await waitFor(() => {
+            const el = lineageOf(b.container).querySelector('.bim-d-seg');
+            expect(el).toBeTruthy();
+            return el as HTMLElement;
+        });
+        expect(within(seg).getByRole('button', { name: '卡片' }).getAttribute('aria-pressed')).toBe('true');
+        fireEvent.click(within(seg).getByRole('button', { name: '關係圖' }));
+        expect(lineageOf(b.container).querySelector('.bim-d-lf')).toBeNull();
+        fireEvent.click(within(seg).getByRole('button', { name: '卡片' }));
+        expect(lineageOf(b.container).querySelector('.bim-d-lf')).toBeTruthy();
+    });
+
+    it('提要卡：版本类型／年代／卷帙是三个标签；同作品版本带时间轴点', async () => {
+        const { container } = render(<BookDetailLayout {...props(BOOK, BOOK_EXTRA)} />);
+        await waitFor(() => expect(container.querySelectorAll('.bim-d-card .bim-d-tag').length).toBeGreaterThanOrEqual(2));
+        expect(container.querySelector('.bim-d-card .bim-d-tag-0')).toBeTruthy();
+        await waitFor(() => expect(container.querySelector('#siblings')).toBeTruthy());
+        expect(container.querySelector('#siblings')!.className).toContain('bim-d-side-tl');
+    });
+
+    it('影印行：只有结构化标记才出标签（metadata.fragment、color_mode），说明文字里写的不拆', async () => {
+        const data = {
+            ...BOOK,
+            resources: [
+                { id: 'a', name: '書格', url: 'https://x/a', types: ['image'], group: 'g1', group_role: 'origin', metadata: { fragment: true }, color_mode: 'color' },
+                { id: 'b', name: '國圖', url: 'https://x/b', types: ['image'], group: 'g1', group_role: 'origin', details: '黑白掃描，有水印' },
+            ],
+        } as unknown as IndexDetailData;
+        const { container } = render(<BookDetailLayout {...props(data, BOOK_EXTRA)} />);
+        await waitFor(() => expect(container.querySelector('#images')).toBeTruthy());
+        const rows = container.querySelectorAll('#images .bim-d-zt tbody tr');
+        expect(rows).toHaveLength(2);
+        expect(rows[0].querySelectorAll('.bim-d-tag')).toHaveLength(2);
+        expect(rows[0].textContent).toContain('殘片');
+        expect(rows[0].textContent).toContain('彩色');
+        expect(rows[1].querySelector('.bim-d-tag')).toBeNull();
+    });
+});
+

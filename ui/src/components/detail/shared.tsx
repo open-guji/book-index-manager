@@ -156,9 +156,18 @@ export function ResourceRow({ item, siblings, listedVolumeCounts }: {
     return (
         <tr>
             <td className="bim-d-zt-main">
-                {href
-                    ? <a href={href} target="_blank" rel="noopener noreferrer">{name} <span aria-hidden="true">↗</span></a>
-                    : <span className="bim-d-zt-name">{name}</span>}
+                {/* 结构化标记才出标签：metadata.fragment（殘片）、color_mode（彩色／黑白）；说明文字里写的不拆。标签放在名称同一行内 */}
+                {(() => {
+                    const tags = (item.metadata?.fragment || item.color_mode) ? (
+                        <span className="bim-d-tags bim-d-ui" style={{ display: 'inline-flex', margin: '0 0 0 8px', verticalAlign: 'middle' }}>
+                            {item.metadata?.fragment && <span className="bim-d-tag">{convert('殘片')}</span>}
+                            {item.color_mode && <span className="bim-d-tag">{convert(item.color_mode === 'color' ? '彩色' : '黑白')}</span>}
+                        </span>
+                    ) : null;
+                    return href
+                        ? <a href={href} target="_blank" rel="noopener noreferrer">{name} <span aria-hidden="true">↗</span>{tags}</a>
+                        : <span className="bim-d-zt-name">{name}{tags}</span>;
+                })()}
                 {note && <span className="bim-d-meta">{convert(note)}</span>}
                 {hasVolumes && open && (
                     <div style={{ padding: '0 12px 10px' }}><VolumeLinks item={item} /></div>

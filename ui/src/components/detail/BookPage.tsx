@@ -30,6 +30,8 @@ import {
     normalizeVolumeIndex, formatVolumeRange, measureText,
 } from '../../core/detail-model';
 import { AuthorByline, ResourceGroupList, ResourceRow, splitResources } from './shared';
+import { VersionLineageView } from '../VersionLineageView';
+import type { LineageGraph } from '../../core/lineage-graph';
 
 /** 同作品版本：全部解析后按年代排的上限（再多就只取前几条，不排） */
 const SIBLINGS_SORT_MAX = 40;
@@ -100,6 +102,9 @@ export const BookPage: React.FC<BookPageProps> = ({
     const [siblings, setSiblings] = useState<ResolvedRef[]>([]);
     const [lineageRefs, setLineageRefs] = useState<Map<string, ResolvedRef>>(new Map());
     const [showAllChapters, setShowAllChapters] = useState(false);
+    /** 版本源流：'flow' = 设计稿卡片流，'graph' = 现有关系图（整部作品的版本图，本版高亮） */
+    const [lineageMode, setLineageMode] = useState<'flow' | 'graph'>('flow');
+    const [workGraph, setWorkGraph] = useState<LineageGraph | null>(null);
 
     // ── 所属作品 ──
     useEffect(() => {
@@ -112,6 +117,16 @@ export const BookPage: React.FC<BookPageProps> = ({
                 }
             })
             .catch(() => { /* 作品拉不到不影响本页其余部分 */ });
+        return () => { cancelled = true; };
+    }, [transport, data.work_id]);
+
+    // ── 作品的版本图（有才给「关系图」切换；取不到就只有卡片流） ──
+    useEffect(() => {
+        if (!transport?.getLineageGraph || !data.work_id) { setWorkGraph(null); return; }
+        let cancelled = false;
+        transport.getLineageGraph(data.work_id)
+            .then(g => { if (!cancelled) setWorkGraph(g && g.nodes.length > 1 ? g : null); })
+            .catch(() => { if (!cancelled) setWorkGraph(null); });
         return () => { cancelled = true; };
     }, [transport, data.work_id]);
 
@@ -327,11 +342,18 @@ export const BookPage: React.FC<BookPageProps> = ({
             title={heading}
             subtitle={subtitle}
             byline={<AuthorByline authors={data.authors ?? work?.authors} onNavigate={onNavigate} renderLink={renderLink} />}
-            meta={<MetaLine items={[
-                editionType ? convert(editionType) : '',
-                era.era ? convert([era.era, era.reign].filter(Boolean).join('')) : '',
-                measure ? convert(measure) : '',
-            ]} />}
+            meta={(() => {
+                const tags = [
+                    editionType ? convert(editionType) : '',
+                    era.era ? convert([era.era, era.reign].filter(Boolean).join('')) : '',
+                    measure ? convert(measure) : '',
+                ].filter(Boolean);
+                return tags.length ? (
+                    <span className="bim-d-tags">
+                        {tags.map((x, i) => <span key={i} className={`bim-d-tag bim-d-tag-${Math.min(i, 2)}`}>{x}</span>)}
+                    </span>
+                ) : null;
+            })()}
             description={data.description?.text
                 ? <MarkdownText text={data.description.text} style={{ fontSize: 15, lineHeight: 1.85 }} />
                 : undefined}
@@ -466,54 +488,36 @@ export const BookPage: React.FC<BookPageProps> = ({
             )}
 
             {hasLineage && (
-                <Sec id="lineage" title="版本源流" meta={lineage?.derived_from?.length ? convert('據版本傳承著錄') : undefined}>
-                    <ul className="bim-d-tl">
-                        {(lineage?.derived_from || []).map((d, i) => {
-                            const name = d.ref_type === 'book' ? refName(d.ref) : '';
-                            return (
-                                <li key={`d-${i}`}>
-                                    <span className="bim-d-tl-rel bim-d-ui">{convert(d.relation)}</span>
-                                    {d.ref_type === 'book'
-                                        ? <span className="bim-d-tl-t"><BidLink id={d.ref} label={convert(name || d.ref)} onNavigate={onNavigate} renderLink={renderLink} dense /></span>
-                                        : <span className="bim-d-tl-t">{convert('擬構祖本')}</span>}
-                                    {(d.evidence || d.confidence) && (
-                                        <span className="bim-d-tl-ev">
-                                            {d.evidence ? convert(d.evidence) : ''}
-                                            {d.confidence && CONFIDENCE_LABEL[d.confidence] ? convert(`（${CONFIDENCE_LABEL[d.confidence]}）`) : ''}
-                                        </span>
-                                    )}
-                                </li>
-                            );
-                        })}
-                        {(lineage?.derived_from?.length || lineage?.related_to?.length) ? (
-                            <li className="bim-d-tl-cur">
-                                <span className="bim-d-tl-rel bim-d-ui">{convert('本版')}</span>
-                                <span className="bim-d-tl-t">{subtitle || heading}</span>
-                                {yearText && <span className="bim-d-meta"><span className="bim-d-dot" />{convert(yearText)}</span>}
-                            </li>
-                        ) : null}
-                        {(lineage?.related_to || []).map((r, i) => (
-                            <li key={`r-${i}`}>
-                                <span className="bim-d-tl-rel bim-d-ui">{convert(r.relation)}</span>
-                                <span className="bim-d-tl-t">
-                                    <BidLink id={r.book_id} label={convert(refName(r.book_id) || r.book_id)} onNavigate={onNavigate} renderLink={renderLink} dense />
-                                </span>
-                                {r.evidence && <span className="bim-d-tl-ev">{convert(r.evidence)}</span>}
-                            </li>
-                        ))}
-                        {data.appendix?.map((entry, i) => (
-                            <li key={`a-${i}`}>
-                                <span className="bim-d-tl-rel bim-d-ui">{convert('附記')}</span>
-                                <span className="bim-d-tl-t">{convert(entry.title)}</span>
-                                <details>
-                                    <summary className="bim-d-ui">{convert('展開')}</summary>
-                                    <MarkdownText text={entry.text} plainStrong style={{ marginTop: 6, fontSize: 14, lineHeight: 1.9 }} />
-                                </details>
-                            </li>
-                        ))}
-                    </ul>
-                    {lineage?.note && (
-                        <p className="bim-d-meta" style={{ margin: '10px 0 0', maxWidth: '46em' }}>{convert(lineage.note)}</p>
+                <Sec
+                    id="lineage"
+                    title="版本源流"
+                    meta={lineage?.derived_from?.length ? convert('據版本傳承著錄') : undefined}
+                    action={workGraph ? (
+                        <span className="bim-d-seg bim-d-ui" role="group" aria-label={convert('源流視圖')}>
+                            <button type="button" aria-pressed={lineageMode === 'flow'} onClick={() => setLineageMode('flow')}>{convert('卡片')}</button>
+                            <button type="button" aria-pressed={lineageMode === 'graph'} onClick={() => setLineageMode('graph')}>{convert('關係圖')}</button>
+                        </span>
+                    ) : undefined}
+                >
+                    {lineageMode === 'graph' && workGraph ? (
+                        <VersionLineageView
+                            graph={workGraph}
+                            defaultMode="graph"
+                            selectedNodeId={data.id}
+                            graphHeight={480}
+                            renderLink={(id, label) => (
+                                <BidLink id={id} label={convert(label)} onNavigate={onNavigate} renderLink={renderLink} dense />
+                            )}
+                        />
+                    ) : (
+                        <LineageFlow
+                            data={data}
+                            heading={subtitle || heading}
+                            yearText={yearText}
+                            refName={refName}
+                            onNavigate={onNavigate}
+                            renderLink={renderLink}
+                        />
                     )}
                 </Sec>
             )}
@@ -614,6 +618,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                 <div>
                     <SideList
                         id="siblings"
+                        timeline
                         title={sortable ? '同作品版本' : t.relation.siblingVersions}
                         meta={sortable ? convert('按年代') : convert(`${otherCount} 種`)}
                         cap={windowed.length}
@@ -659,5 +664,102 @@ function VolumeList({ volumes, unit }: { volumes: number[]; unit: string }) {
             {convert(`第 ${formatVolumeRange(volumes, unit)} ${unit}`)}
             {volumes.length > 1 && <><span className="bim-d-dot" />{convert(`${volumes.length} ${unit}`)}</>}
         </span>
+    );
+}
+
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * 版本源流·卡片流（设计稿 v3）：一条竖线穿起——
+ * 擬構祖本（虚线框）→ 底本（卡片）→ 本版（深色条）＋ 參校等（虚线卡，在本版右侧）→ 翻刻／衍生（一行标签）→ 附记 → 说明。
+ * 只画数据里有的：没有底本就没有底本卡，没有 related_to 就没有翻刻行；不造年代、不造「祖本」。
+ */
+function LineageFlow({ data, heading, yearText, refName, onNavigate, renderLink }: {
+    data: BookDetailData;
+    heading: string;
+    yearText: string;
+    refName: (id: string) => string;
+    onNavigate?: (id: string) => void;
+    renderLink?: RenderLink;
+}) {
+    const { convert } = useConvert();
+    const lineage = data.lineage;
+    const derived = lineage?.derived_from || [];
+    const ancestors = derived.filter(d => d.ref_type !== 'book');
+    const bases = derived.filter(d => d.ref_type === 'book' && d.relation === '底本');
+    const others = derived.filter(d => d.ref_type === 'book' && d.relation !== '底本');
+    const related = lineage?.related_to || [];
+    const hasFlow = derived.length > 0 || related.length > 0;
+
+    const conf = (c?: LineageConfidence) => (c && CONFIDENCE_LABEL[c] ? convert(`（${CONFIDENCE_LABEL[c]}）`) : '');
+    const link = (id: string, label: string) => (
+        <BidLink id={id} label={convert(label || id)} onNavigate={onNavigate} renderLink={renderLink} dense />
+    );
+
+    return (
+        <div className="bim-d-lf">
+            {hasFlow && (
+                <ol className="bim-d-lf-list">
+                    {ancestors.map((d, i) => (
+                        <li key={`a-${i}`} className="bim-d-lf-node">
+                            <div className="bim-d-lf-dash">
+                                <span className="bim-d-lf-tag bim-d-ui">{convert(d.relation || '祖本')}</span>
+                                <span className="bim-d-lf-name">{convert('擬構祖本')}</span>
+                                {d.evidence && <span className="bim-d-meta">{convert(d.evidence)}{conf(d.confidence)}</span>}
+                            </div>
+                        </li>
+                    ))}
+                    {bases.map((d, i) => (
+                        <li key={`b-${i}`} className="bim-d-lf-node">
+                            <div className="bim-d-lf-card">
+                                <span className="bim-d-lf-tag bim-d-ui">{convert(d.relation)}</span>
+                                <span className="bim-d-lf-name">{link(d.ref, refName(d.ref))}</span>
+                                {d.evidence && <p className="bim-d-lf-ev">{convert(d.evidence)}{conf(d.confidence)}</p>}
+                            </div>
+                        </li>
+                    ))}
+                    <li className="bim-d-lf-node bim-d-lf-cur">
+                        <div className="bim-d-lf-here">
+                            <span className="bim-d-lf-tag bim-d-ui">{convert('本版')}</span>
+                            <span className="bim-d-lf-name">{heading}</span>
+                            {yearText && <span className="bim-d-lf-yr">{convert(yearText)}</span>}
+                        </div>
+                        {others.length > 0 && (
+                            <div className="bim-d-lf-side">
+                                {others.map((d, i) => (
+                                    <div key={i} className="bim-d-lf-dash">
+                                        <span className="bim-d-lf-tag bim-d-ui">{convert(d.relation)}</span>
+                                        <span className="bim-d-lf-name">{link(d.ref, refName(d.ref))}</span>
+                                        {d.evidence && <p className="bim-d-lf-ev">{convert(d.evidence)}{conf(d.confidence)}</p>}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </li>
+                    {related.length > 0 && (
+                        <li className="bim-d-lf-node bim-d-lf-out">
+                            <span className="bim-d-lf-out-h bim-d-ui">{convert('翻刻 · 衍生')}</span>
+                            <span className="bim-d-lf-chips">
+                                {related.map((r, i) => (
+                                    <span key={i} className="bim-d-lf-chip" title={r.evidence ? convert(r.evidence) : undefined}>
+                                        {link(r.book_id, refName(r.book_id))}
+                                        <span className="bim-d-meta">{convert(r.relation)}</span>
+                                    </span>
+                                ))}
+                            </span>
+                        </li>
+                    )}
+                </ol>
+            )}
+            {data.appendix?.map((entry, i) => (
+                <details key={`x-${i}`} className="bim-d-lf-app">
+                    <summary className="bim-d-ui"><span className="bim-d-meta">{convert('附記')}</span> {convert(entry.title)}</summary>
+                    <MarkdownText text={entry.text} plainStrong style={{ marginTop: 6, fontSize: 14, lineHeight: 1.9 }} />
+                </details>
+            ))}
+            {lineage?.note && (
+                <p className="bim-d-meta" style={{ margin: '12px 0 0', maxWidth: '46em' }}>{convert(lineage.note)}</p>
+            )}
+        </div>
     );
 }
