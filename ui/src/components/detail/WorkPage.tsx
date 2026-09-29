@@ -567,13 +567,22 @@ function CatalogSection({ items, transport, onNavigate, renderLink }: {
                     )}
                     {items.length > 1 && (
                         <div className="bim-d-lu-pager bim-d-ui">
-                            <button type="button" disabled={cur === 0} onClick={() => setSel(cur - 1)}>
-                                {cur > 0 ? `← ${convert(items[cur - 1].source)}` : ''}
-                            </button>
+                            {/* 首／末家不渲染空按钮（无文字、无名称，axe name-role-value 不过）：换成占位，保持两端对齐 */}
+                            {cur > 0
+                                ? (
+                                    <button type="button" aria-label={convert(`上一家：${items[cur - 1].source}`)} onClick={() => setSel(cur - 1)}>
+                                        <span aria-hidden="true">← {convert(items[cur - 1].source)}</span>
+                                    </button>
+                                )
+                                : <span aria-hidden="true" />}
                             <span className="bim-d-meta">{cur + 1} / {items.length}</span>
-                            <button type="button" disabled={cur === items.length - 1} onClick={() => setSel(cur + 1)}>
-                                {cur < items.length - 1 ? `${convert(items[cur + 1].source)} →` : ''}
-                            </button>
+                            {cur < items.length - 1
+                                ? (
+                                    <button type="button" aria-label={convert(`下一家：${items[cur + 1].source}`)} onClick={() => setSel(cur + 1)}>
+                                        <span aria-hidden="true">{convert(items[cur + 1].source)} →</span>
+                                    </button>
+                                )
+                                : <span aria-hidden="true" />}
                         </div>
                     )}
                 </div>
