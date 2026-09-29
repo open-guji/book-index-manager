@@ -474,6 +474,42 @@ export interface BookDetailData extends BaseDetailData {
     related_books?: string[];
     /** 版本传承信息（用于版本图） */
     lineage?: BookLineage;
+    /** 行款／装帧／尺寸／品相（2026-09-28 S2b）；四内容子段全为空串时目录侧不写本对象 */
+    physical_description?: PhysicalDescription;
+    /** 版本类型（受控词表：刻本／抄本／稿本／活字本／石印本／鉛印本／影印本／套印本／拓本／印刷本／其他）；未考则无此字段 */
+    edition_type?: string;
+    /** 馆藏（2026-09-28 S2）：一书多藏本各一项 */
+    provenance?: ProvenanceEntry[];
+    /** 底本／配补／参校（2026-09-28 S2c） */
+    base_edition?: BaseEditionEntry[];
+}
+
+/** Book.physical_description：子段全为字符串，空串＝未知；source 仅内部 */
+export interface PhysicalDescription {
+    leaf_style?: string;
+    binding?: string;
+    dimensions?: string;
+    condition?: string;
+    source?: string;
+}
+
+/** Book.provenance[]：机构＋索书号＋藏印；source 仅内部 */
+export interface ProvenanceEntry {
+    institution: string;
+    call_number?: string;
+    seals?: string[];
+    notes?: string;
+    source?: string;
+}
+
+/** Book.base_edition[]：role 取 底本／配補／參校；有 book_id 的可跳转 */
+export interface BaseEditionEntry {
+    role: string;
+    name?: string;
+    book_id?: string;
+    work_id?: string;
+    note?: string;
+    source?: string;
 }
 
 /** Collection 详情 */
