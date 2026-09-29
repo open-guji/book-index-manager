@@ -27,6 +27,8 @@ export const PAGE_MAX_WIDTH = 1000;
 
 /** 全文阅读页左侧卷/章导航的宽度 */
 export const READER_ASIDE_WIDTH = 208;
+/** 阅读页（整理本 / 全文）版心：与三栏概览同为 1440px，目录栏 + 加宽后的正文列都放得下 */
+export const READER_WIDE_MAX_WIDTH = 1440;
 
 /** 窄屏断点。用 CSS media query 而非 window.innerWidth，保证 SSR/hydrate 一致 */
 export const NARROW_QUERY = '(max-width: 719px)';
@@ -57,7 +59,7 @@ export const DETAIL_CSS = `
  * PAGE_MAX_WIDTH，读者的行宽体验不变。
  */
 .bim-d-main.bim-d-main-wide {
-  max-width: ${READER_ASIDE_WIDTH + PAGE_MAX_WIDTH + 32}px;
+  max-width: ${READER_WIDE_MAX_WIDTH}px;
 }
 .bim-d-ui { font-family: var(--bim-font-ui, system-ui, sans-serif); }
 
