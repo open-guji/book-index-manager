@@ -75,6 +75,8 @@ const app = (
             <IndexBrowser
                 transport={searchTransport}
                 resultVariant="card"
+                // 与网站一致：只在有检索词时预留一屏（默认 false）
+                reserveViewportHeight={scenario === 'search'}
                 initialQuery={scenario === 'search' ? '朱熹' : ''}
             />
         )}

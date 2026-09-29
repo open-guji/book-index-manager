@@ -206,8 +206,10 @@ describe('IndexBrowser 搜索页布局跳动（overview#268 P2-6）', () => {
         expect(screen.getByRole('heading', { level: 2 })).toBeTruthy();
     });
 
-    it('容器占满一屏，reserveViewportHeight=false 时不占', () => {
+    it('默认不设 minHeight；reserveViewportHeight=true 才占满一屏', () => {
         const { container, rerender } = render(<IndexBrowser transport={makeTransport()} />);
+        expect((container.querySelector('.bim-browser-container') as HTMLElement).style.minHeight).toBe('');
+        rerender(<IndexBrowser transport={makeTransport()} reserveViewportHeight />);
         expect((container.querySelector('.bim-browser-container') as HTMLElement).style.minHeight).toBe('100svh');
         rerender(<IndexBrowser transport={makeTransport()} reserveViewportHeight={false} />);
         expect((container.querySelector('.bim-browser-container') as HTMLElement).style.minHeight).toBe('');

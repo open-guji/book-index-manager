@@ -73,9 +73,10 @@ export interface IndexBrowserProps {
     /** 标题栏右侧自定义内容 */
     headerRight?: React.ReactNode;
     /**
-     * 容器最小高度占满一屏（默认 true）：搜索占位 → 结果、最近浏览加载等会改变内容高度，
+     * 容器最小高度占满一屏（默认 false，由宿主按需打开）：搜索占位 → 结果等会改变内容高度，
      * 占满一屏后紧跟其后的宿主页脚始终在首屏之外，不会被顶动（CLS）。
-     * 嵌在自带滚动区、高度固定的宿主（如插件侧栏）里可传 false。
+     * 宿主一般只在有检索词、结果区会变高时才传 true；不带检索词时下面若还有别的内容
+     * （如网站首页的推荐/目录页签），占满一屏会把它们推出首屏。
      */
     reserveViewportHeight?: boolean;
     /**
@@ -112,7 +113,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     initialQuery,
     onQueryChange,
     headerRight,
-    reserveViewportHeight = true,
+    reserveViewportHeight = false,
 }) => {
     const t = useT();
 
