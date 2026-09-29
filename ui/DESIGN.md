@@ -111,3 +111,10 @@ book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、�
 - [ ] `IndexBrowser` 没有排序控件；`sort_year` 已进索引，可加「按年代」排序
 - [ ] Entity 的 `native_place`（2026-09 新增字段）尚未展示
 - [ ] guji-platform 迁到 `BookDetailLayout` 后，移除 `IndexDetail` / `IndexView`
+
+## 主题（2026-09-29，overview#286）
+
+默认「朱砂」= `tokens.ts` 各变量的 `value`。可切换主题在 `tokens.ts` 的 `BIM_THEMES` 里只列与默认不同的变量，`npm run gen:tokens`
+生成 `:root[data-theme="<名>"] { … }` 追加在 `variables.css` 末尾；宿主在 `<html>` 上设 `data-theme` 即切换，未设或不认识 = 朱砂。
+现有一套 `indigo`（靛蓝）：只换强调色一族（`accent` `accent-deep` `flag-bg` `selection-bg` `rule-accent-soft`）。
+两套主题的强调色在页底／斑马／卡底／悬停底上的文字对比度 ≥ 4.5，`tests/unit/tokens.test.ts` 卡着。

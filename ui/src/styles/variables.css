@@ -209,3 +209,12 @@
     /* 阅读器正文（整理本 / 全文）；默认接 font-serif，只需覆盖那一个就同时换掉 */
     --bim-font-reading: var(--bim-font-serif);
 }
+
+/* ==== 主题：indigo（<html data-theme="indigo">）==== */
+:root[data-theme="indigo"] {
+    --bim-accent: #2e5266;
+    --bim-accent-deep: #23414f;
+    --bim-flag-bg: rgba(46, 82, 102, 0.1);
+    --bim-selection-bg: #dfe6e3;
+    --bim-rule-accent-soft: #cfd9dc;
+}
