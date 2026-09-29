@@ -487,6 +487,19 @@ export interface CollectionDetailData extends BaseDetailData {
     contained_works?: { id: string; title: string; volume_index?: number }[];
     /** 派生：成員數（books ∪ contained_works ∪ 反掛 contained_in，去重）；=0 不寫 */
     _member_count?: number;
+    /** 成员型别（派生，2026-09-28）：成员是 Book／Work／两者兼有；缺则无从推断 */
+    _member_type?: 'Book' | 'Work' | 'Collection' | 'mixed' | string;
+    /** 应收总数（卷／册／种／函分列，各自可 null）；source 仅内部 */
+    count?: CollectionCount;
+}
+
+/** Collection.count：整数或 null，null＝未知（不是 0） */
+export interface CollectionCount {
+    juan?: number | null;
+    ce?: number | null;
+    zhong?: number | null;
+    han?: number | null;
+    source?: string;
 }
 
 /** Work 详情 */
