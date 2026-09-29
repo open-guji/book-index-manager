@@ -61,6 +61,10 @@ export const CATALOG_CSS = `
 .bim-ct-crumb { font-size: 13px; color: ${bim('aux-fg')}; }
 .bim-ct-stat { font-size: 13px; color: ${bim('aux-fg')}; }
 .bim-ct-search { margin: 0 0 16px; }
+.bim-ct-view { margin-left: auto; display: inline-flex; border-radius: 6px; box-shadow: inset 0 0 0 1px ${bim('rule')}; overflow: hidden; }
+.bim-ct-view button { min-height: 28px; padding: 0 12px; border: 0; background: none; cursor: pointer; font: inherit; font-size: 13px; color: ${bim('quiet-fg')}; }
+.bim-ct-view button[aria-pressed="true"] { background: ${bim('flag-bg')}; color: ${bim('accent')}; font-weight: 700; }
+.bim-ct-view button:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: -2px; }
 
 /* ── 卡片网格 ── */
 .bim-ct-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
@@ -86,6 +90,20 @@ export const CATALOG_CSS = `
 .bim-ct-cls { margin-top: auto; padding-top: 2px; font-size: 12px; color: ${bim('aux-fg')}; }
 .bim-ct-empty { padding: 48px 0; text-align: center; font-size: 14px; color: ${bim('aux-fg')}; }
 
+/* ── 列表视图 ── */
+.bim-ct-list { list-style: none; margin: 0; padding: 0; }
+.bim-ct-lrow:nth-child(odd) { background: ${bim('zebra-bg')}; border-radius: 6px; }
+.bim-ct-lrow > a {
+  display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr) minmax(0, 2fr); gap: 4px 20px; align-items: baseline;
+  min-height: 44px; padding: 10px 14px; color: inherit; text-decoration: none; border-radius: 6px;
+}
+.bim-ct-lrow > a:hover { background: ${bim('tint-bg')}; }
+.bim-ct-lrow > a:hover .bim-ct-lt { color: ${bim('accent')}; }
+.bim-ct-lrow > a:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: -2px; }
+.bim-ct-lt { font-size: 16px; font-weight: 700; color: ${bim('ink')}; overflow-wrap: anywhere; }
+.bim-ct-lt .bim-ct-juan { margin-left: 8px; font-weight: 400; }
+.bim-ct-lrow .bim-ct-cls { margin: 0; padding: 0; }
+
 /* ── 分页 ── */
 .bim-ct-pager { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; margin: 24px 0 0; font-size: 14px; }
 .bim-ct-pager ol { display: contents; list-style: none; }
@@ -108,6 +126,8 @@ export const CATALOG_CSS = `
 @media ${CATALOG_NARROW_QUERY} {
   .bim-ct { display: block; padding: 12px 16px 40px; }
   .bim-ct-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .bim-ct-lrow > a { grid-template-columns: minmax(0, 1fr); }
+  .bim-ct-view button { min-height: 44px; }
   .bim-ct-side { position: static; max-height: none; overflow: visible; margin: 0 0 12px; }
   .bim-ct-side-h { display: none; }
   .bim-ct-drawer-btn {

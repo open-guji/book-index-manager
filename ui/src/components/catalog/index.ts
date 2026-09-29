@@ -3,7 +3,7 @@ export { CatalogPage } from './CatalogPage';
 export type { CatalogPageProps } from './CatalogPage';
 export { CatalogTree } from './CatalogTree';
 export type { CatalogTreeProps } from './CatalogTree';
-export { WorkCardGrid, WorkCard, CatalogPager, defaultWorkLink } from './WorkCardGrid';
+export { WorkCardGrid, WorkCard, WorkRow, CatalogPager, defaultWorkLink } from './WorkCardGrid';
 export type { WorkCardGridProps, CatalogPagerProps } from './WorkCardGrid';
 export { CATALOG_CSS, CATALOG_NARROW_QUERY } from './catalog-css';
 export {

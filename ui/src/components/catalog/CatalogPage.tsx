@@ -37,6 +37,9 @@ export interface CatalogPageProps {
     allTitle?: string;
     /** 每页条数（只用于标题里的「每页 N 条」），默认 20 */
     pageSize?: number;
+    /** 呈现（受控）：不给则组件自己记，默认卡片 */
+    view?: 'card' | 'list';
+    onViewChange?: (view: 'card' | 'list') => void;
     className?: string;
 }
 
@@ -49,12 +52,16 @@ const Caret = () => (
 export function CatalogPage({
     tree, selectedId, page, pageCount, works, onSelect, onPage,
     searchSlot, workLink, pageHref,
-    allLabel = '全部', allTitle = '全部典籍', pageSize = CATALOG_PAGE_SIZE, className,
+    allLabel = '全部', allTitle = '全部典籍', pageSize = CATALOG_PAGE_SIZE, className, view: viewProp, onViewChange,
 }: CatalogPageProps) {
     const { convert } = useConvert();
     const uid = useId();
     const drawerId = `bim-ct-drawer-${uid.replace(/:/g, '')}`;
     const [drawerOpen, setDrawerOpen] = useState(false);
+    // 呈现切换：首帧一律卡片（与 SSR 一致），只在用户点了之后变
+    const [viewState, setViewState] = useState<'card' | 'list'>('card');
+    const view = viewProp ?? viewState;
+    const chooseView = (v: 'card' | 'list') => { setViewState(v); onViewChange?.(v); };
 
     const path = findCatalogPath(tree, selectedId && selectedId !== CATALOG_ALL_ID ? selectedId : null);
     const node = path.length ? path[path.length - 1] : null;
@@ -96,10 +103,15 @@ export function CatalogPage({
                         {convert(`共 ${total.toLocaleString('en-US')} 種 · 每頁 ${pageSize} 條`)}
                         {pageCount > 1 && convert(` · 第 ${page} / ${pageCount} 頁`)}
                     </span>
+                    <span className="bim-ct-view" role="group" aria-label={convert('呈現方式')}>
+                        <button type="button" aria-pressed={view === 'card'} onClick={() => chooseView('card')}>{convert('卡片')}</button>
+                        <button type="button" aria-pressed={view === 'list'} onClick={() => chooseView('list')}>{convert('列表')}</button>
+                    </span>
                 </header>
                 {searchSlot && <div className="bim-ct-search">{searchSlot}</div>}
                 <WorkCardGrid
                     works={works}
+                    view={view}
                     workLink={workLink}
                     page={page}
                     pageCount={pageCount}
