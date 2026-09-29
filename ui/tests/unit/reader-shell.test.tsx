@@ -157,6 +157,13 @@ describe('翻卷导航不撑宽页面（overview#268 P1-1）', () => {
     });
 });
 
+describe('阅读页正文区加宽、目录栏紧贴正文（overview#268）', () => {
+    it('正文列靠左紧贴目录栏（不再居中留空隙），最大宽 50em', () => {
+        expect(READER_CSS).toMatch(/\.bim-rd-col \{ max-width: 50em; margin: 0 auto 0 0;/);
+        expect(READER_CSS).toMatch(/\.bim-rd-text \{[^}]*padding: 32px 48px 96px 40px/);
+    });
+});
+
 describe('工具条：只用文字和图标，状态用 aria-pressed', () => {
     it('字号、自然段、专名线', () => {
         const { container } = render(<LocaleProvider locale="zh-Hant"><Harness toc={FEW} /></LocaleProvider>);

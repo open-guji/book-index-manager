@@ -8,6 +8,10 @@ import { hydrateRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { LocaleProvider } from '../../src/i18n/provider';
 import { IndexBrowser } from '../../src/components/IndexBrowser';
+import { PageFrame } from '../../src/components/detail/primitives';
+import { ReaderShell } from '../../src/components/Reader/ReaderShell';
+import { DEFAULT_READER_PREFS } from '../../src/components/Reader/prefs';
+import type { ReaderPrefs } from '../../src/components/Reader/prefs';
 import { BookDetailLayout } from '../../src/components/BookDetailLayout';
 import type { IndexEntry, IndexType } from '../../src/types';
 import shiji from '../unit/fixtures/shiji-work.json';
@@ -61,9 +65,31 @@ const workTransport = {
     getBookFullTextIndex: async () => null,
 } as never;
 
+// 阅读页：整理本 / 全文都走 ReaderShell，外面是 PageFrame wide（与 BookDetailLayout 的阅读 tab 一致）
+const READ_TOC = Array.from({ length: 22 }, (_, i) => ({ key: String(i + 1).padStart(3, '0'), label: `卷${i + 1}` }));
+const PARA = '太祖啟運立極，肇造區夏，混一海宇，以兵定天下，而治之以文。其興也勃焉，其亡也忽焉，考其始終之際，蓋可觀矣。';
+function ReadDemo() {
+    const [active, setActive] = React.useState('001');
+    const [prefs, setPrefs] = React.useState<ReaderPrefs>(DEFAULT_READER_PREFS);
+    return (
+        <PageFrame wide>
+            <ReaderShell
+                title="宋史" subtitle="全文"
+                toc={READ_TOC} activeKey={active} onSelect={setActive}
+                prefs={prefs} onPrefsChange={p => setPrefs(prev => ({ ...prev, ...p }))}
+            >
+                <h1 className="bim-rd-h1">卷{active}</h1>
+                <article className="bim-rd-prose">{Array.from({ length: 24 }, (_, i) => <p key={i}>{PARA.repeat(3)}</p>)}</article>
+            </ReaderShell>
+        </PageFrame>
+    );
+}
+
 const app = (
     <LocaleProvider locale="zh-Hant">
-        {scenario === 'work' ? (
+        {scenario === 'read' ? (
+            <ReadDemo />
+        ) : scenario === 'work' ? (
             <BookDetailLayout
                 id={(shiji as { id: string }).id}
                 transport={workTransport}
