@@ -141,6 +141,8 @@ export const zhHant: LocaleMessages = {
         itemNotFound: '無法找到，可能已刪除',
         removeFromRecent: '移除',
         searchTitle: '搜索古籍索引',
+        allTab: '全部',
+        resultTabs: '結果分類',
         searchSubtitle: '輸入關鍵詞搜索作品、書籍或叢編',
         searchBookName: '搜索書名...',
         alias: '別名',

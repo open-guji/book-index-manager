@@ -285,3 +285,50 @@ describe('最近浏览的 localStorage 键', () => {
         await waitFor(() => expect(getItem).toHaveBeenCalledWith('WID1'));
     });
 });
+
+describe('IndexBrowser 结果页签与去 emoji（overview#286 v3）', () => {
+    const entry = (id: string, type: 'work' | 'book' | 'collection' | 'entity', title: string) =>
+        ({ id, type, title }) as never;
+    const RESULTS = {
+        works: [entry('w1', 'work', '史記')], books: [entry('b1', 'book', '史記·宋刻本')],
+        collections: [entry('c1', 'collection', '二十四史')], entities: [entry('e1', 'entity', '司馬遷')],
+        totalWorks: 1000, totalBooks: 36, totalCollections: 1, totalEntities: 2,
+    };
+
+    it('页签：全部＋各类带条数，顺序作品／叢編／書籍／人物', async () => {
+        render(<IndexBrowser transport={makeTransport({ searchAll: async () => RESULTS })} initialQuery="史記" />);
+        await waitFor(() => expect(screen.getByRole('button', { name: /^全部/ })).toBeTruthy());
+        const tabs = [...screen.getByRole('group', { name: '結果分類' }).querySelectorAll('button')].map(b => b.textContent);
+        expect(tabs).toEqual(['全部 1,039', '作品 1,000', '叢編 1', '書籍 36', '人物 2']);
+    });
+
+    it('点某一类页签：只列该类，「查看全部」按钮不再出；总数大于已载入时触发展开重搜', async () => {
+        const searchAll = vi.fn(async () => RESULTS);
+        render(<IndexBrowser transport={makeTransport({ searchAll })} initialQuery="史記" />);
+        await waitFor(() => expect(screen.getByRole('button', { name: /^作品/ })).toBeTruthy());
+        const before = searchAll.mock.calls.length;
+        fireEvent.click(screen.getByRole('button', { name: /^人物/ }));
+        // 人物 total(2) > 已载入(1)：触发一次带更大 limit 的重搜（重搜期间内容区先换成「搜索中」，完了页签回来）
+        await waitFor(() => expect(searchAll.mock.calls.length).toBe(before + 1));
+        await waitFor(() => expect(screen.getByRole('button', { name: /^人物/ }).getAttribute('aria-pressed')).toBe('true'));
+        expect(screen.queryByText('史記·宋刻本')).toBeNull();          // 書籍不列
+        expect(screen.queryByRole('button', { name: '查看全部 →' })).toBeNull();
+        fireEvent.click(screen.getByRole('button', { name: /^全部/ }));
+        expect(screen.getByRole('button', { name: /^全部/ }).getAttribute('aria-pressed')).toBe('true');
+        expect(screen.getByText('史記·宋刻本')).toBeTruthy();
+    });
+
+    it('类型标记用小方块（--bim-type-*），不再出 emoji', async () => {
+        const { container } = render(<IndexBrowser transport={makeTransport({ searchAll: async () => RESULTS })} initialQuery="史記" hideModeIndicator />);
+        await waitFor(() => expect(screen.getByText('史記')).toBeTruthy());
+        expect(container.textContent).not.toMatch(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF]/u);
+        expect(container.querySelectorAll('span[aria-hidden="true"][style*="--bim-type-"]').length).toBeGreaterThanOrEqual(4);
+    });
+
+    it('无搜索词的落地态、无结果态都没有 emoji', async () => {
+        const a = render(<IndexBrowser transport={makeTransport()} hideModeIndicator />);
+        await waitFor(() => expect(screen.getByText('搜索古籍索引')).toBeTruthy());
+        expect(a.container.textContent).not.toMatch(/[\u{1F300}-\u{1FAFF}]/u);
+    });
+});
+
