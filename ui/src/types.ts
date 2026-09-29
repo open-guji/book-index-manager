@@ -156,6 +156,10 @@ export interface ExternalIds {
     cbdb_id?: number;
     cbdb_match?: string;
     cbdb_source?: string;
+    /** 形如 Q123456 */
+    wikidata_id?: string;
+    /** 纯数字字符串 */
+    viaf_id?: string;
 }
 
 /** 索引状态 */
@@ -526,6 +530,8 @@ export interface EntityDetailData extends BaseDetailData {
     birth_year?: number;
     /** 卒年（公历） */
     death_year?: number;
+    /** 生卒／活动年（2026-09-28 S4）；birth_year／death_year 缺时作回退。basis 仅内部 */
+    dates?: EntityDates;
     /** 籍贯（「建州」），人物页提要卡写成「建州人」 */
     native_place?: string;
     /** 关联作品反查 */
@@ -534,6 +540,14 @@ export interface EntityDetailData extends BaseDetailData {
     external_ids?: ExternalIds;
     /** 是否草稿 */
     isDraft?: boolean;
+}
+
+/** Entity.dates：整数（负数为公元前）或 null；floruit=[起,止]，仅生卒皆缺时才有 */
+export interface EntityDates {
+    birth?: number | null;
+    death?: number | null;
+    floruit?: [number, number] | number[] | null;
+    basis?: string;
 }
 
 /** 统一详情数据类型 */

@@ -182,9 +182,15 @@ export const EntityPage: React.FC<EntityPageProps> = ({
             .map(([k, names]) => ({ label: k, names }));
     }, [data.alt_names, t]);
 
-    const life = (data.birth_year != null || data.death_year != null)
-        ? `${yr(data.birth_year) || '?'}—${yr(data.death_year) || '?'}`
-        : '';
+    // 生卒：birth_year／death_year 优先，缺时回退 dates.birth／death；都缺才用 dates.floruit
+    const birth = data.birth_year ?? data.dates?.birth ?? undefined;
+    const death = data.death_year ?? data.dates?.death ?? undefined;
+    const fl = data.dates?.floruit;
+    const life = (birth != null || death != null)
+        ? `${yr(birth) || '?'}—${yr(death) || '?'}`
+        : (Array.isArray(fl) && fl.length === 2 && fl.every(n => Number.isFinite(n)))
+            ? `活躍於 ${yr(fl[0])}—${yr(fl[1])}`
+            : '';
 
     /** 提要卡常露的只有字、號；其余（諡號、小字、小名、別名…）收进「更多別名」 */
     const MAIN_NAME_TYPES = new Set(['本名', '字', '號', '号']);
@@ -216,7 +222,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
             subtitle={subtitle ? convert(subtitle) : undefined}
             meta={<MetaLine items={[
                 data.dynasty ? convert(data.dynasty) : '',
-                life,
+                life ? convert(life) : '',
                 nativePlace ? convert(`${nativePlace}人`) : '',
             ]} />}
             description={data.description?.text
@@ -265,9 +271,9 @@ export const EntityPage: React.FC<EntityPageProps> = ({
             note: ext.cbdb_match === 'auto' ? '自動匹配' : undefined,
         });
     }
-    const wikidata = (ext as { wikidata_id?: string }).wikidata_id;
+    const wikidata = ext.wikidata_id;
     if (wikidata) extLinks.push({ label: 'Wikidata', id: wikidata, href: `https://www.wikidata.org/wiki/${wikidata}` });
-    const viaf = (ext as { viaf_id?: string }).viaf_id;
+    const viaf = ext.viaf_id;
     if (viaf) extLinks.push({ label: 'VIAF', id: viaf, href: `https://viaf.org/viaf/${viaf}` });
 
     const roleTabs = facets.map(f => ({ key: f.cls as RoleClass | '全部', label: `${f.label} ${f.count}` }));
