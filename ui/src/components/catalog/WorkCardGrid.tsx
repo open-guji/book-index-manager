@@ -23,6 +23,8 @@ export interface CatalogPagerProps {
 
 export interface WorkCardGridProps extends CatalogPagerProps {
     works: CatalogWorkCard[];
+    /** 呈现：卡片网格（默认）或单列列表 */
+    view?: 'card' | 'list';
     /** 作品链接；默认 `/item/<id>`（网站条目页） */
     workLink?: (id: string) => string;
     /** 列表为空时的提示 */
@@ -71,6 +73,34 @@ export function WorkCard({ work, href }: { work: CatalogWorkCard; href: string }
     );
 }
 
+/** 列表视图的一行：书名（＋卷数）｜撰人｜分类；摘要不出（列表求密度） */
+export function WorkRow({ work, href }: { work: CatalogWorkCard; href: string }) {
+    const { convert } = useConvert();
+    const juan = juanText(work.juan);
+    const authors = work.authors?.filter(a => a.name) ?? [];
+    const cls = work.classification?.filter(Boolean) ?? [];
+    return (
+        <li className="bim-ct-lrow">
+            <a href={href}>
+                <span className="bim-ct-lt">
+                    {convert(work.title)}
+                    {juan && <span className="bim-ct-juan">{convert(juan)}</span>}
+                </span>
+                <span className="bim-ct-by">
+                    {authors.map((a, i) => (
+                        <React.Fragment key={i}>
+                            {i > 0 && '、'}
+                            {a.dynasty && <span className="bim-ct-dy">〔{convert(a.dynasty)}〕</span>}
+                            {convert(a.name)}
+                        </React.Fragment>
+                    ))}
+                </span>
+                <span className="bim-ct-cls">{cls.map(c => convert(c)).join(' · ')}</span>
+            </a>
+        </li>
+    );
+}
+
 export function CatalogPager({ page, pageCount, onPage, pageHref, label = '分頁' }: CatalogPagerProps) {
     const { convert } = useConvert();
     if (pageCount <= 1) return null;
@@ -112,7 +142,7 @@ export function CatalogPager({ page, pageCount, onPage, pageHref, label = '分�
 }
 
 export function WorkCardGrid({
-    works, workLink = defaultWorkLink, emptyText = '此類暫無作品', ...pager
+    works, workLink = defaultWorkLink, emptyText = '此類暫無作品', view = 'card', ...pager
 }: WorkCardGridProps) {
     const { convert } = useConvert();
     return (
@@ -120,9 +150,17 @@ export function WorkCardGrid({
             {works.length === 0 ? (
                 <p className="bim-ct-empty">{typeof emptyText === 'string' ? convert(emptyText) : emptyText}</p>
             ) : (
-                <ul className="bim-ct-grid">
-                    {works.map(w => <WorkCard key={w.id} work={w} href={workLink(w.id)} />)}
-                </ul>
+                view === 'list'
+                    ? (
+                        <ul className="bim-ct-list">
+                            {works.map(w => <WorkRow key={w.id} work={w} href={workLink(w.id)} />)}
+                        </ul>
+                    )
+                    : (
+                        <ul className="bim-ct-grid">
+                            {works.map(w => <WorkCard key={w.id} work={w} href={workLink(w.id)} />)}
+                        </ul>
+                    )
             )}
             <CatalogPager {...pager} />
         </div>

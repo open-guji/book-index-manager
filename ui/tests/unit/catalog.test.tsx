@@ -249,6 +249,27 @@ describe('CatalogPage', () => {
         onPage: () => {},
     };
 
+    it('卡片／列表切换：默认卡片；列表是单列行（书名·撰人·分类），切回还原；可受控', () => {
+        const onViewChange = vi.fn();
+        const { container } = render(<CatalogPage {...baseProps} onViewChange={onViewChange} />);
+        expect(container.querySelector('.bim-ct-grid')).toBeTruthy();
+        expect(screen.getByRole('button', { name: '卡片' }).getAttribute('aria-pressed')).toBe('true');
+        fireEvent.click(screen.getByRole('button', { name: '列表' }));
+        expect(container.querySelector('.bim-ct-grid')).toBeNull();
+        expect(container.querySelectorAll('.bim-ct-list .bim-ct-lrow')).toHaveLength(2);
+        expect(container.querySelector('.bim-ct-lrow a')!.getAttribute('href')).toBe('/item/w1');
+        expect(onViewChange).toHaveBeenLastCalledWith('list');
+        fireEvent.click(screen.getByRole('button', { name: '卡片' }));
+        expect(container.querySelector('.bim-ct-grid')).toBeTruthy();
+    });
+
+    it('view 受控时以 prop 为准', () => {
+        const { container } = render(<CatalogPage {...baseProps} view="list" />);
+        expect(container.querySelector('.bim-ct-list')).toBeTruthy();
+        fireEvent.click(screen.getByRole('button', { name: '卡片' }));
+        expect(container.querySelector('.bim-ct-list')).toBeTruthy();
+    });
+
     it('标题取当前节点，显示计数与上级路径；搜索插槽在网格上方', () => {
         const { container } = render(<CatalogPage {...baseProps} searchSlot={<input aria-label="總目內檢索" />} />);
         expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('正史類');
