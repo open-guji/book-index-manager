@@ -179,6 +179,20 @@ describe('WorkPage（三栏）', () => {
         expect(screen.getByText('目錄一卷。').closest('.bim-d-quote')).toBeTruthy();
     });
 
+    it('著录时间轴：上一家／下一家翻页，页码「n / N」；两端禁用', () => {
+        render(<BookDetailLayout {...props(WORK)} />);
+        const pager = document.querySelector('.bim-d-lu-pager') as HTMLElement;
+        expect(pager.textContent).toContain('1 / 2');
+        const [prev, next] = [...pager.querySelectorAll('button')] as HTMLButtonElement[];
+        expect(prev.disabled).toBe(true);
+        expect(next.textContent).toBe('隋書經籍志 →');
+        fireEvent.click(next);
+        expect(screen.getByText('目錄一卷。')).toBeTruthy();
+        expect(pager.textContent).toContain('2 / 2');
+        expect(next.disabled).toBe(true);
+        expect(prev.textContent).toBe('← 漢書藝文志');
+    });
+
     it('旁栏：收入丛编与相关书目（关系类型是浅色小字）', () => {
         render(<BookDetailLayout {...props(WORK)} />);
         const collected = document.getElementById('collected')!;

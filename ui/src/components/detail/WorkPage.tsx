@@ -341,7 +341,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
             )}
 
             {indexed.length > 0 && (
-                <CatalogSection items={indexed} onNavigate={onNavigate} renderLink={renderLink} />
+                <CatalogSection items={indexed} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
             )}
 
             {/*
@@ -482,29 +482,54 @@ function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
 }
 
 /** 著录分栏：左列书目名，右列选中那家的著录原文（宋体） */
-function CatalogSection({ items, onNavigate, renderLink }: {
+function CatalogSection({ items, transport, onNavigate, renderLink }: {
     items: IndexedByEntry[];
+    transport?: IndexStorage;
     onNavigate?: (id: string) => void;
     renderLink?: RenderLink;
 }) {
     const t = useT();
     const { convert } = useConvert();
     const [sel, setSel] = useState(0);
-    const e = items[Math.min(sel, items.length - 1)];
+    const cur = Math.min(sel, items.length - 1);
+    const e = items[cur];
+
+    // 时间轴节点上的朝代：取该书目（志书）作者的朝代。数据里著录条目本身没有朝代字段，
+    // 查不到（无 source_bid、条目缺作者）就不标，不猜。
+    const [dyn, setDyn] = useState<Map<string, string>>(new Map());
+    useEffect(() => {
+        if (!transport) return;
+        const ids = [...new Set(items.map(x => x.source_bid).filter((x): x is string => !!x))];
+        if (ids.length === 0) return;
+        let cancelled = false;
+        Promise.all(ids.map(id => transport.getItem(id)
+            .then(raw => [id, (raw as { authors?: { dynasty?: string }[] } | null)?.authors?.[0]?.dynasty ?? ''] as const)
+            .catch(() => [id, ''] as const),
+        )).then(entries => {
+            if (!cancelled) setDyn(new Map(entries.filter(([, d]) => d)));
+        });
+        return () => { cancelled = true; };
+    }, [transport, items]);
 
     return (
-        <Sec id="catalogs" title="著錄" meta={convert(`歷代書目 ${items.length} 家`)}>
+        <Sec id="catalogs" title="著錄" meta={<MetaLine items={[convert(`歷代書目 ${items.length} 家`), convert('按著錄順序')]} />}>
             <div className="bim-d-lu">
-                <ul className="bim-d-lu-list bim-d-ui" role="tablist" aria-label={convert('著錄書目')}>
+                <ul className="bim-d-tl2 bim-d-ui" role="tablist" aria-label={convert('著錄書目')}>
                     {items.map((x, i) => (
                         <li key={i} role="presentation">
                             <button
                                 type="button"
                                 role="tab"
-                                aria-selected={i === sel}
+                                aria-selected={i === cur}
+                                aria-label={convert(x.source)}
                                 onClick={() => setSel(i)}
                             >
-                                {convert(x.source)}
+                                <span className="bim-d-tl2-dyn">{dyn.get(x.source_bid ?? '') ? convert(dyn.get(x.source_bid ?? '')!) : '\u00a0'}</span>
+                                <i className="bim-d-tl2-dot" aria-hidden="true" />
+                                {/* 逐字堆叠而不用 writing-mode：竖排度量依赖字体（缺竖排度量时字会叠在一起），堆叠在任何字体下结果一致 */}
+                                <span className="bim-d-tl2-name" aria-hidden="true">
+                                    {[...convert(x.source)].slice(0, 9).map((ch, k) => <span key={k}>{ch}</span>)}
+                                </span>
                             </button>
                         </li>
                     ))}
@@ -539,6 +564,17 @@ function CatalogSection({ items, onNavigate, renderLink }: {
                     )}
                     {!e.summary && !e.comment && !e.additional_comment && !e.title_info && (
                         <p className="bim-d-meta bim-d-ui" style={{ marginTop: 12 }}>{convert('僅著錄書名，無提要。')}</p>
+                    )}
+                    {items.length > 1 && (
+                        <div className="bim-d-lu-pager bim-d-ui">
+                            <button type="button" disabled={cur === 0} onClick={() => setSel(cur - 1)}>
+                                {cur > 0 ? `← ${convert(items[cur - 1].source)}` : ''}
+                            </button>
+                            <span className="bim-d-meta">{cur + 1} / {items.length}</span>
+                            <button type="button" disabled={cur === items.length - 1} onClick={() => setSel(cur + 1)}>
+                                {cur < items.length - 1 ? `${convert(items[cur + 1].source)} →` : ''}
+                            </button>
+                        </div>
                     )}
                 </div>
             </div>
