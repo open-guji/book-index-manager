@@ -118,16 +118,27 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 }
 .bim-d-more:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-/* 著录分栏 */
-.bim-d-lu { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 24px; align-items: start; }
-.bim-d-lu-list { list-style: none; margin: 0; padding: 0; }
-.bim-d-lu-list button {
-  display: block; width: 100%; text-align: left; background: none; border: 0; cursor: pointer;
-  padding: 7px 12px; border-radius: 6px; font: inherit; font-size: 15px; color: ${bim('quiet-fg')};
-}
-.bim-d-lu-list button:hover { background: ${bim('zebra-bg')}; }
-.bim-d-lu-list button[aria-selected="true"] { background: ${bim('flag-bg')}; color: ${bim('accent')}; font-weight: 500; }
-.bim-d-lu-body { padding: 4px 0; min-width: 0; }
+/* 著录：朝代时间轴 + 单卡翻页 */
+.bim-d-lu { display: block; }
+.bim-d-tl2 { list-style: none; margin: 0 0 18px; padding: 0; display: flex; overflow-x: auto; }
+.bim-d-tl2 li { flex: 1 0 64px; min-width: 64px; }
+.bim-d-tl2 button { height: auto; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; background: none;
+  border: 0; cursor: pointer; padding: 4px 2px 8px; font: inherit; color: ${bim('quiet-fg')}; position: relative; }
+.bim-d-tl2 button::before { content: ""; position: absolute; left: 0; right: 0; top: 30px; height: 1px; background: ${bim('rule')}; }
+.bim-d-tl2-dyn { font-size: 12px; color: ${bim('aux-fg')}; min-height: 18px; }
+.bim-d-tl2-dot { position: relative; width: 9px; height: 9px; border-radius: 50%; box-sizing: border-box;
+  background: ${bim('page-bg')}; border: 1px solid ${bim('aux-fg')}; }
+.bim-d-tl2-name { display: flex; flex-direction: column; align-items: center; font-size: 15px; line-height: 1.25;
+  font-family: ${bim('font-serif')}; }; }
+.bim-d-tl2 button:hover .bim-d-tl2-name { color: ${bim('accent')}; }
+.bim-d-tl2 button[aria-selected="true"] .bim-d-tl2-dot { background: ${bim('accent')}; border-color: ${bim('accent')}; }
+.bim-d-tl2 button[aria-selected="true"] .bim-d-tl2-name { color: ${bim('ink')}; font-weight: 700; }
+.bim-d-lu-pager { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 18px;
+  padding-top: 12px; border-top: 1px solid ${bim('rule')}; font-size: 13px; }
+.bim-d-lu-pager button { background: none; border: 0; padding: 4px 0; cursor: pointer; font: inherit; color: ${bim('accent')}; }
+.bim-d-lu-pager button:disabled { cursor: default; }
+.bim-d-lu-pager button:not(:disabled):hover { text-decoration: underline; text-underline-offset: 3px; }
+.bim-d-lu-body { padding: 18px 22px 14px; min-width: 0; border-radius: 10px; background: ${bim('card-bg')}; }
 .bim-d-lu-title { font-size: 17px; font-weight: 700; color: ${bim('ink')}; }
 .bim-d-quote { margin: 14px 0 0; font-family: ${bim('font-serif')}; font-size: 17px; line-height: 2;
   color: ${bim('ink')}; text-align: justify; }
@@ -289,7 +300,7 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
   .bim-d-chap a { align-items: center; }
   .bim-d-side li { padding: 0; }
   .bim-d-side a { display: inline-flex; align-items: center; min-height: 44px; }
-  .bim-d-lu-list button { min-height: 44px; }
+  .bim-d-tl2 button, .bim-d-lu-pager button { min-height: 44px; }
   .bim-d-hit { min-width: 44px !important; min-height: 44px !important; display: inline-flex !important;
     align-items: center; justify-content: center; }
   .bim-d-zt td.bim-d-zt-main > a, .bim-d-zt td.bim-d-zt-main > span.bim-d-zt-name {
@@ -360,9 +371,7 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
   /* 朝代页签晚到、在手机上自成一行：解析中先占两行（页签一行 + 复选框一行，实测共 66px） */
   .bim-d-filters[data-pending] { min-height: 66px; align-content: flex-end; }
   .bim-d-zt-ver tbody tr[data-loading] { min-height: 84px; }
-  .bim-d-lu { grid-template-columns: 1fr; gap: 12px; }
-  .bim-d-lu-list { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px; }
-  .bim-d-lu-list button { white-space: nowrap; padding: 6px 12px; }
+  .bim-d-lu-body { padding: 14px 16px 10px; }
   .bim-d-card .bim-d-card-desc.bim-d-clamp { -webkit-line-clamp: 4; }
   .bim-d-up { display: inline-flex; gap: 8px; align-items: baseline; margin-top: 10px; padding: 6px 12px; }
   .bim-d-up a { font-size: 14px; }
