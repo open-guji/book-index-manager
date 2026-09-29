@@ -28,7 +28,7 @@ book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、�
 | `WorkPage` | header → intro（简介 / 别名 / 附录）→ **整理本入口**（由 layout 注入）→ 相關版本 → 在線數字資源 → 歷代書目收錄 ‖ 歷代考證 → 續書與評註 → 相關作品 |
 | `BookPage` | header → intro（多数只剩 facts）→ 收入叢編 → 所屬作品 ‖ 影印與全文 → 同作品其他版本 |
 | `CollectionPage` | header → intro → 收錄書籍（目录档 → `contained_works` → `books[]` 三来源降序）→ 影印與全文 ‖ 包含作品 |
-| `EntityPage` | header → intro（别名 + 简介 + facts）→ 相關作品 |
+| `EntityPage` | 著作舉要（独立区块）→ 著作表（含部類列）；提要卡有生卒条、著作四部分布条（全部作品解析完才出）；旁栏站外資料 |
 | `primitives.tsx` | `PageFrame` `TopStrip` `Breadcrumb` `DetailHeader` `IntroGrid` `FactList` `SectionHead` `DataTable` `TableRow` `ExpandRow` `Chip` `ChipWall` `ResourceGroup` `ResourceRow` `VolumeLinks` `TagRows` … 以及全部样式 `DETAIL_CSS`。所有承载文字的原语内部调用 `useConvert()` 做繁简 |
 
 **数据派生层**在 `src/core/detail-model.ts`（无 React，可单测）：刊刻年代 `deriveEra` / `deriveYear` / `deriveDating` / `sortYear`（先读落盘的 `Book.dating`，读不到才回退到题名推断）、角色归一 `normalizeRole` / `roleFacets`、版本表 `buildVersionTable`、资源分桶 `bucketResources`、关联作品分组 `groupRelatedWorks`、丛编表 `buildCollectionTable`。资源纯函数在 `src/core/resources.ts`，传承图合成在 `src/core/lineage-graph.ts`。
