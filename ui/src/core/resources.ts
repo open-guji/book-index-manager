@@ -19,6 +19,11 @@ export const DOMAIN_NAME_MAP: Record<string, string> = {
     'www.shidianguji.com': '識典古籍',
     'shidianguji.com': '識典古籍',
     'archive.org': 'Internet Archive',
+    // 数据里这两家的名字是简体（书格、百度网盘），繁体模式下会原样露出简体；
+    // 按域名给繁体显示名，简体模式再由 convert 转回（overview#268）
+    'www.shuge.org': '書格',
+    'shuge.org': '書格',
+    'pan.baidu.com': '百度網盤',
 };
 
 /** 从 URL 提取域名并映射为显示名称 */

@@ -73,6 +73,12 @@ export interface IndexBrowserProps {
     /** 标题栏右侧自定义内容 */
     headerRight?: React.ReactNode;
     /**
+     * 容器最小高度占满一屏（默认 true）：搜索占位 → 结果、最近浏览加载等会改变内容高度，
+     * 占满一屏后紧跟其后的宿主页脚始终在首屏之外，不会被顶动（CLS）。
+     * 嵌在自带滚动区、高度固定的宿主（如插件侧栏）里可传 false。
+     */
+    reserveViewportHeight?: boolean;
+    /**
      * 结果条目的展示形态。
      * - 'compact'（默认）：紧凑单行列表，适合插件侧栏等窄容器
      * - 'card'：书目卡片（竖排书名「封面」+ 信息区），适合宽屏站点
@@ -106,6 +112,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     initialQuery,
     onQueryChange,
     headerRight,
+    reserveViewportHeight = true,
 }) => {
     const t = useT();
 
@@ -331,7 +338,13 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         (searchResults.works.length > 0 || searchResults.books.length > 0 || searchResults.collections.length > 0);
 
     return (
-        <div className="bim-browser-container">
+        <div
+            className="bim-browser-container"
+            // 内容（搜索占位 → 结果，或最近浏览）高度会在数据到达时变，下面紧跟宿主页脚：
+            // 容器先占满一屏，页脚始终在首屏之外，就不会被结果撑高而整块下推（overview#268，CLS）
+            style={reserveViewportHeight ? { minHeight: '100svh' } : undefined}
+        >
+            <style>{STATS_CSS}</style>
             <header style={{ padding: '12px 20px', borderBottom: `1px solid ${bim('widget-border')}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h1 style={{ margin: 0, fontSize: '18px', color: bim('fg') }}>{t.browser.title}</h1>
@@ -380,8 +393,8 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
             </div>
 
             {/* 统计摘要 */}
-            {stats && showingRecent && (
-                <div style={{
+            {showingRecent && (
+                <div className="bim-ib-stats" style={{
                     padding: '0 20px 8px',
                     fontSize: '12px',
                     color: bim('desc-fg'),
@@ -390,6 +403,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     flexWrap: 'wrap',
                     gap: '4px',
                 }}>
+                    {stats && (<>
                     <span>
                         {subtypeStats ? (
                             <>
@@ -437,6 +451,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                             {t.resourceType.text} <strong style={{ color: bim('fg') }}>{stats.hasText.toLocaleString()}</strong>
                         </span>
                     )}
+                    </>)}
                 </div>
             )}
 
@@ -635,6 +650,15 @@ function isPlainLeftClick(e: React.MouseEvent): boolean {
 }
 
 /** 「查看全部 →」触屏 / 窄屏：外观不变，伪元素把热区扩到至少 44×44（INT Q4，做法同 detail/layout.tsx） */
+/**
+ * 统计摘要行的占位高度：getCounts 晚到，行原先在数据到达时才插入，把下面的内容整体下推。
+ * 现在数据到达前先占位：宽屏一行，窄屏两行（左右两段各自换行）。
+ */
+export const STATS_CSS = `
+.bim-ib-stats { min-height: 25px; box-sizing: content-box; }
+@media (max-width: 719px) { .bim-ib-stats { min-height: 46px; } }
+`;
+
 export const VIEW_ALL_CSS = `
 @media (max-width: 719px), (pointer: coarse) {
   .bim-ib-viewall { position: relative; }

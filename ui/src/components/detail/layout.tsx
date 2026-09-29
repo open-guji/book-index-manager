@@ -100,10 +100,9 @@ export const LAYOUT_CSS = `
 .bim-d-zt .bim-d-zt-nowrap { white-space: nowrap; }
 .bim-d-zt .bim-d-zt-empty { color: ${bim('aux-fg')}; }
 /* 版本表：行高先按「有影印」色块那一行的高度占好，解析到的年代、馆藏、色块进来时行不再长高（INT Q3） */
-.bim-d-zt-ver tbody tr { height: 42px; }
-/* 版本行的卷帙小字（measure_info）随次级数据晚到，会把行撑高、把「展开」按钮整体下推（P2-8，CLS 0.11）：
-   解析前就按「版本名 + 一行小字」占高 */
-.bim-d-zt-ver tbody tr[data-loading] { height: 62px; }
+.bim-d-zt-ver tbody tr { height: 58px; }
+/* 版本行一律「版本名 + 一行卷帙小字」（小字晚到，没有时也留空行）：行高固定，
+   加载前后表格高度不变，下面的「展开」按钮不会下移（P2-8） */
 
 .bim-d-flag {
   display: inline-block; padding: 1px 8px; border-radius: 4px;
@@ -326,11 +325,11 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
     color: ${bim('aux-fg')}; }
   .bim-d-zt td.bim-d-zt-blank { display: none; }
   .bim-d-zt td.bim-d-zt-main .bim-d-meta { padding-bottom: 2px; }
-  /* 手机上版本行是块：解析前只有版本名一行，先按「名 + 一行年代馆藏」占高 */
+  /* 手机上版本行是块：解析前先按「名 + 卷帙小字 + 一行年代馆藏」占高（实测解析后 81–87px） */
   .bim-d-zt-ver tbody tr { height: auto; }
-  /* 朝代页签晚到、在手机上自成一行：解析中先占两行（页签一行 + 复选框一行） */
-  .bim-d-filters[data-pending] { min-height: 92px; align-content: flex-end; }
-  .bim-d-zt-ver tbody tr[data-loading] { min-height: 64px; }
+  /* 朝代页签晚到、在手机上自成一行：解析中先占两行（页签一行 + 复选框一行，实测共 66px） */
+  .bim-d-filters[data-pending] { min-height: 66px; align-content: flex-end; }
+  .bim-d-zt-ver tbody tr[data-loading] { min-height: 84px; }
   .bim-d-lu { grid-template-columns: 1fr; gap: 12px; }
   .bim-d-lu-list { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px; }
   .bim-d-lu-list button { white-space: nowrap; padding: 6px 12px; }
