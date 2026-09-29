@@ -21,11 +21,11 @@ function mount(data: Record<string, unknown>) {
 const card = (c: HTMLElement) => c.querySelector('.bim-d-card')?.textContent ?? '';
 
 describe('Collection 新字段', () => {
-    it('count：非空项拼成「應收」，null 项跳过，source 不出现', async () => {
+    it('count：卷／冊进数字格，種、函拼成「應收」，null 项跳过，source 不出现', async () => {
         const { container } = mount({ count: { juan: null, ce: 500, zhong: 463, han: null, source: 'INTERNAL-SRC' } });
         await waitFor(() => expect(card(container)).toContain('應收'));
         expect(card(container)).toContain('463 種');
-        expect(card(container)).toContain('500 冊');
+        expect(card(container)).toContain('500冊');   // 数字格：数字 + 单位
         expect(card(container)).not.toContain('函');
         expect(container.textContent).not.toContain('INTERNAL-SRC');
     });

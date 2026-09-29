@@ -230,6 +230,11 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 .bim-d-dist-bar > i { display: block; }
 .bim-d-dist-key { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 8px; font-size: 12px; color: ${bim('quiet-fg')}; }
 .bim-d-dist-key i { display: inline-block; width: 8px; height: 8px; margin-right: 4px; border-radius: 2px; }
+.bim-d-dist-seg { display: block; flex-basis: 0; min-width: 2px; height: 100%; padding: 0; border: 0; cursor: pointer; }
+.bim-d-dist-seg:disabled { cursor: default; }
+.bim-d-dist-seg[aria-pressed="true"] { outline: 2px solid ${bim('ink')}; outline-offset: -2px; }
+.bim-d-dist-bar:has(.bim-d-dist-seg[aria-pressed="true"]) .bim-d-dist-seg:not([aria-pressed="true"]) { opacity: .35; }
+.bim-d-sq { display: inline-block; width: 7px; height: 7px; margin-right: 8px; border-radius: 1px; vertical-align: middle; }
 .bim-d-side-note { margin: 8px 0 0; font-size: 12px; color: ${bim('aux-fg')}; }
 
 /* 提要卡：数字格（版本 / 有影印 / 家著录） */

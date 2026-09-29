@@ -293,3 +293,69 @@ describe('EntityPage（B1）', () => {
         expect(container.querySelector('.bim-d-side-note')?.textContent).toBe('CBDB 為自動匹配，未經人工核對');
     });
 });
+
+// ── Collection：v3（部类页签、数字格、册次分布，overview#286）──
+
+const CLS_COLL = {
+    id: 'cc', type: 'collection', title: '某叢書', subtype: 'book_collection',
+    count: { juan: 30, ce: 12, zhong: 4, han: null },
+    juan_count: { number: 30 },
+    publication_info: { year: '1773-1803', details: '清武英殿木活字排印' },
+    contained_works: [
+        { id: 'k1', title: '易甲', volume_index: [1, 2, 3] }, { id: 'k2', title: '易乙', volume_index: [4, 5] },
+        { id: 'k3', title: '史丙', volume_index: [6, 7, 8, 9] }, { id: 'k4', title: '子丁', volume_index: [10, 11, 12] },
+    ],
+} as unknown as IndexDetailData;
+const CLS_EXTRA = {
+    k1: { id: 'k1', type: 'work', title: '易甲', classification: { l1: '經部' } },
+    k2: { id: 'k2', type: 'work', title: '易乙', classification: { l1: '經部' } },
+    k3: { id: 'k3', type: 'work', title: '史丙', classification: { l1: '史部' } },
+    k4: { id: 'k4', type: 'work', title: '子丁', classification: { l1: '子部' } },
+};
+
+describe('CollectionPage（v3）', () => {
+    it('提要卡数字格：子目／卷／冊；不再出「年代」，「應收」只留種、函', async () => {
+        const { container } = render(<BookDetailLayout {...props(CLS_COLL, CLS_EXTRA)} />);
+        await waitFor(() => expect(container.querySelector('.bim-d-stats')).toBeTruthy());
+        expect([...container.querySelectorAll('.bim-d-stats > div')].map(d => d.textContent)).toEqual(['4子目', '30卷', '12冊']);
+        const card = container.querySelector('.bim-d-card')!.textContent!;
+        expect(card).toContain('清武英殿木活字排印');
+        expect(card).toContain('4 種');
+        expect(card).not.toContain('年代');
+        expect(card).not.toMatch(/種.{0,2}12 冊/);   // 冊已在数字格，不在「應收」里重复
+    });
+
+    it('部类页签：全部子目解析完才出，带计数；点页签过滤子目', async () => {
+        const { container } = render(<BookDetailLayout {...props(CLS_COLL, CLS_EXTRA)} />);
+        await waitFor(() => expect(screen.getByRole('button', { name: '經部 2' })).toBeTruthy());
+        expect(screen.getByRole('button', { name: '全部 4' })).toBeTruthy();
+        expect(screen.getByRole('button', { name: '史部 1' })).toBeTruthy();
+        expect(screen.queryByRole('button', { name: /集部/ })).toBeNull();
+        fireEvent.click(screen.getByRole('button', { name: '史部 1' }));
+        const rows = container.querySelectorAll('#titles table tbody tr');
+        expect(rows).toHaveLength(1);
+        expect(rows[0].textContent).toContain('史丙');
+    });
+
+    it('册次分布条：按部类上色，点色段过滤，再点还原', async () => {
+        const { container } = render(<BookDetailLayout {...props(CLS_COLL, CLS_EXTRA)} />);
+        await waitFor(() => expect(container.querySelector('.bim-d-dist-bar')).toBeTruthy());
+        expect(container.querySelector('.bim-d-dist-bar')!.textContent).toBe('');
+        const seg = screen.getByRole('button', { name: '只看子部' });
+        fireEvent.click(seg);
+        expect(container.querySelectorAll('#titles table tbody tr')).toHaveLength(1);
+        expect(seg.getAttribute('aria-pressed')).toBe('true');
+        fireEvent.click(seg);
+        expect(container.querySelectorAll('#titles table tbody tr')).toHaveLength(4);
+    });
+
+    it('子目没有部类信息（或只有一类）时不出页签与分布条', async () => {
+        const one = { ...CLS_EXTRA, k3: { ...CLS_EXTRA.k3, classification: { l1: '經部' } }, k4: { ...CLS_EXTRA.k4, classification: { l1: '經部' } } };
+        const { container } = render(<BookDetailLayout {...props(CLS_COLL, one)} />);
+        await waitFor(() => expect(container.querySelector('#titles table')).toBeTruthy());
+        await waitFor(() => expect(container.querySelectorAll('.bim-d-sq').length).toBe(4));
+        expect(container.querySelector('.bim-d-g-main .bim-d-tab')).toBeNull();
+        expect(container.querySelector('.bim-d-dist')).toBeNull();
+    });
+});
+
