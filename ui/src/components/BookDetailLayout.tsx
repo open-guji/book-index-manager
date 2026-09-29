@@ -385,7 +385,10 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             if (detailData.type === 'collection') {
                 loadCatalogs(id);
             } else if (detailData.type === 'work') {
-                if ((detailData as { has_collated?: boolean }).has_collated || transport.getCollatedEditionIndex) {
+                // 索引已带 has_collated（reindex 按 book-text 里有没有 collated_edition/ 目录写入，
+                // bundle 打包时注入到详情）：没标记就不去探测 collated_edition/index.json，
+                // 否则没有整理本的每部作品都白打一个 404（overview#268 P3）
+                if ((detailData as { has_collated?: boolean }).has_collated) {
                     loadCollated(id);
                 }
                 if ((detailData as WorkDetailData).version_graph || transport.getLineageGraph) {

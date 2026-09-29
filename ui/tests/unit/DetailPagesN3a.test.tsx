@@ -101,6 +101,19 @@ describe('WorkPage（三栏）', () => {
         expect(document.body.textContent).not.toMatch(/\bdraft\b/);
     });
 
+    it('没有 has_collated 标记就不探测整理本清单（避免必 404 的请求）', async () => {
+        const p = props(WORK);
+        render(<BookDetailLayout {...p} />);
+        await waitFor(() => expect((p.transport as never as { getWorkFullTextList: ReturnType<typeof vi.fn> }).getWorkFullTextList).toHaveBeenCalled());
+        expect((p.transport as never as { getCollatedEditionIndex: ReturnType<typeof vi.fn> }).getCollatedEditionIndex).not.toHaveBeenCalled();
+    });
+
+    it('has_collated 为真才取整理本清单', async () => {
+        const p = props({ ...WORK, has_collated: true } as unknown as IndexDetailData);
+        render(<BookDetailLayout {...p} />);
+        await waitFor(() => expect((p.transport as never as { getCollatedEditionIndex: ReturnType<typeof vi.fn> }).getCollatedEditionIndex).toHaveBeenCalledWith('w1'));
+    });
+
     it('「阅读全文」是整页唯一的主按钮，链到宿主给的 readLink', () => {
         const readLink = vi.fn(() => '/read/w1');
         render(<BookDetailLayout {...props(WORK, { readLink })} />);
