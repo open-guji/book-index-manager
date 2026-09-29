@@ -111,3 +111,16 @@ book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、�
 - [ ] `IndexBrowser` 没有排序控件；`sort_year` 已进索引，可加「按年代」排序
 - [ ] Entity 的 `native_place`（2026-09 新增字段）尚未展示
 - [ ] guji-platform 迁到 `BookDetailLayout` 后，移除 `IndexDetail` / `IndexView`
+
+## 主题（2026-09-29，overview#286）
+
+两套：**朱砂**（默认，= `tokens.ts` 各变量的 `value`）与**靛蓝**（设计稿 v3：`--ac #2E5266` `--ac-d #23414F` `--ac-t #E3EAEC`）。
+开关是 `<html data-theme="zhusha|indigo">`；未设、空或值不认识一律按朱砂（样式表里只有 `indigo` 有覆盖块）。
+
+- **变量**：`tokens.ts` 的 `BIM_THEMES` 只列与默认不同的变量，`npm run gen:tokens` 生成 `:root[data-theme="indigo"] { … }` 追加在 `variables.css` 末尾。
+  靛蓝只换强调色一族（`accent` `accent-deep` `flag-bg` `selection-bg` `rule-accent-soft`）；纸色、墨色、暖沙横幅、分类色、阅读器底色两套共用。
+- **API**（`src/theme.ts`，均从包入口导出）：`THEMES` `DEFAULT_THEME` `normalizeTheme` `readStoredTheme` `storeTheme` `applyTheme` `currentTheme`
+  与 `THEME_INIT_SCRIPT`。存储键 `bim-theme`，读写全包 try/catch，存储不可用时按默认朱砂、只在本页生效。
+- **首屏不闪**：宿主把 `THEME_INIT_SCRIPT`（自包含内联脚本）放进 `<head>`，首帧前按存储设属性；没存过就保持宿主 SSR 出的默认。
+- **控件**：`ThemeToggle`——两个色点、`radiogroup` 语义；首帧按默认渲染（与 SSR 一致），挂载后读 `<html>` 实际主题；`onChange` 供宿主同步 `<meta name="theme-color">`。
+- **对比度**：两套主题强调色在页底／斑马／卡底／悬停底、白字主按钮、「有影印」块上文字对比度 ≥ 4.5，`tests/unit/tokens.test.ts` 卡着。

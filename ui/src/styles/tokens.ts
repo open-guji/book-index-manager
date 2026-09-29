@@ -191,6 +191,8 @@ export const BIM_TOKEN_GROUPS = [
         'tint-bg': { value: '#f3eee6', note: '检索框、悬停' },
         'shadow-summary': { value: '0 10px 32px rgba(60, 50, 40, 0.07)', note: '提要卡投影' },
         'flag-bg': { value: 'rgba(158, 42, 43, 0.08)', note: '唯一的状态色块「有影印」' },
+        'theme-dot-zhusha': { value: '#9c3a2c', note: '主题切换控件的色点：朱砂（不随主题变，两套主题下都要认得出）' },
+        'theme-dot-indigo': { value: '#2e5266', note: '主题切换控件的色点：靛蓝' },
         'sect-jing': { value: '#2e5266', note: '四部分布条：經部（人物页提要卡；无别处使用）' },
         'sect-shi': { value: '#9a7a3b', note: '四部分布条：史部' },
         'sect-zi': { value: '#4f7a5c', note: '四部分布条：子部' },
@@ -252,6 +254,25 @@ export function bimRootValue(t: BimToken): string {
     return t.value;
 }
 
+/**
+ * 可切换主题（2026-09-29，overview#286）：默认「朱砂」= 上面各变量的 value，不需要列出；
+ * 这里只列与默认不同的变量，生成为 `:root[data-theme="<名>"] { … }`。
+ * 只换强调色一族（链接、主按钮、选中态、「有影印」块），
+ * 纸色、墨色、暖沙横幅与分类色不动。两套主题的对比度由 tokens.test.ts 卡（AA ≥ 4.5）。
+ * 切换靠宿主在 <html> 上设 data-theme；未设或值不认识 = 朱砂（`data-theme="zhusha"` 也是朱砂）。
+ */
+export const BIM_THEMES = {
+    indigo: {
+        'accent': '#2e5266',
+        'accent-deep': '#23414f',
+        'flag-bg': '#e3eaec',
+        'selection-bg': '#dfe6e3',
+        'rule-accent-soft': '#cfd9dc',
+    },
+} as const satisfies Record<string, Partial<Record<BimTokenName, string>>>;
+
+export type BimThemeName = 'zhusha' | keyof typeof BIM_THEMES;
+
 /** 生成 variables.css 的全文（`npm run gen:tokens` 调用） */
 export function bimTokensCss(): string {
     const out: string[] = [
@@ -272,6 +293,12 @@ export function bimTokensCss(): string {
             out.push(`    --bim-${name}: ${bimRootValue(t)};`);
         }
     });
-    out.push('}', '');
+    out.push('}');
+    for (const [theme, vars] of Object.entries(BIM_THEMES)) {
+        out.push('', `/* ==== 主题：${theme}（<html data-theme="${theme}">）==== */`, `:root[data-theme="${theme}"] {`);
+        for (const [name, v] of Object.entries(vars)) out.push(`    --bim-${name}: ${v};`);
+        out.push('}');
+    }
+    out.push('');
     return out.join('\n');
 }
