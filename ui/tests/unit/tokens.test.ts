@@ -122,6 +122,9 @@ describe('主题（朱砂默认 / 靛蓝）', () => {
                 expect(contrast(val('accent-deep', theme), val(bg))).toBeGreaterThanOrEqual(4.5);
             }
             expect(contrast(val('accent', theme), val('on-color-fg'))).toBeGreaterThanOrEqual(4.5);
+            // 「有影印」块：强调色字在 flag-bg 之上（靛蓝是实色 #e3eaec；朱砂是 8% 朱色叠在纸上，取与纸色的近似）
+            const flag = theme === 'indigo' ? val('flag-bg', theme) : val('page-bg');
+            expect(contrast(val('accent', theme), flag)).toBeGreaterThanOrEqual(4.5);
         });
     }
 });

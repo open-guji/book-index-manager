@@ -184,6 +184,10 @@
     --bim-shadow-summary: 0 10px 32px rgba(60, 50, 40, 0.07);
     /* 唯一的状态色块「有影印」 */
     --bim-flag-bg: rgba(158, 42, 43, 0.08);
+    /* 主题切换控件的色点：朱砂（不随主题变，两套主题下都要认得出） */
+    --bim-theme-dot-zhusha: #9c3a2c;
+    /* 主题切换控件的色点：靛蓝 */
+    --bim-theme-dot-indigo: #2e5266;
     /* 四部分布条：經部（人物页提要卡；无别处使用） */
     --bim-sect-jing: #2e5266;
     /* 四部分布条：史部 */
@@ -214,7 +218,7 @@
 :root[data-theme="indigo"] {
     --bim-accent: #2e5266;
     --bim-accent-deep: #23414f;
-    --bim-flag-bg: rgba(46, 82, 102, 0.1);
+    --bim-flag-bg: #e3eaec;
     --bim-selection-bg: #dfe6e3;
     --bim-rule-accent-soft: #cfd9dc;
 }
