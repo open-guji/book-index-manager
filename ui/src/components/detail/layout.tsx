@@ -77,6 +77,12 @@ export const LAYOUT_CSS = `
 }
 .bim-d-tab:hover { color: ${bim('ink')}; }
 .bim-d-tab[aria-pressed="true"] { color: ${bim('accent')}; font-weight: 700; box-shadow: inset 0 -2px 0 ${bim('accent')}; }
+.bim-d-groupbtn {
+  background: none; border: 1px dashed ${bim('rule-strong')}; border-radius: 3px; padding: 2px 8px; cursor: pointer;
+  font: inherit; color: ${bim('quiet-fg')};
+}
+.bim-d-groupbtn:hover:not(:disabled) { color: ${bim('accent')}; border-color: ${bim('accent')}; }
+.bim-d-groupbtn:disabled { cursor: progress; }
 .bim-d-filters .bim-d-spacer { flex: 1; }
 .bim-d-check { display: inline-flex; align-items: center; gap: 6px; color: ${bim('quiet-fg')}; cursor: pointer; }
 .bim-d-check input { accent-color: ${bim('accent')}; margin: 0; width: 15px; height: 15px; }
