@@ -573,6 +573,150 @@ class CLIHandler:
         print(f"\n[FAIL] {len(errors)} total issue(s){suffix}")
         sys.exit(1)
 
+    def handle_scan_fields(self):
+        """全量扫描 S1-S5 新字段，输出问题清单 CSV（id,type,field,error）。"""
+        import csv
+        from .schema_fields import (
+            build_vocab,
+            classification_ok,
+            edition_type_ok,
+            provenance_ok,
+            physical_description_ok,
+            base_edition_ok,
+            dates_ok,
+            external_ids_ok,
+            derive_member_type,
+            member_type_ok,
+        )
+
+        target = getattr(self.args, "target", "all")
+        roots = []
+        if target in ["draft", "all"]:
+            roots.append(self.manager.storage.draft_root)
+        if target in ["official", "all"]:
+            roots.append(self.manager.storage.official_root)
+
+        # 词表：{root}/book-index/classific.json → vocab 四元组
+        vocab = None
+        classific_path = self.manager.storage.official_root / "classific.json"
+        try:
+            with open(classific_path, "r", encoding="utf-8") as f:
+                vocab = build_vocab(json.load(f))
+        except FileNotFoundError:
+            print(f"Warning: classific.json not found at {classific_path}, "
+                  "skipping classification check", file=sys.stderr)
+        except Exception as e:
+            print(f"Warning: failed to read classific.json: {e}", file=sys.stderr)
+
+        # 全量收集四类条目
+        items = []
+        for root in roots:
+            for kind in ("Work", "Book", "Collection", "Entity"):
+                kind_dir = root / kind
+                if not kind_dir.exists():
+                    continue
+                for json_file in kind_dir.rglob("*.json"):
+                    try:
+                        with open(json_file, "r", encoding="utf-8") as f:
+                            data = json.load(f)
+                    except Exception:
+                        continue
+                    if not isinstance(data, dict):
+                        continue
+                    t = str(data.get("type") or "").lower()
+                    if t not in ("work", "book", "collection", "entity"):
+                        continue
+                    items.append(data)
+
+        book_ids = {d.get("id") for d in items
+                    if str(d.get("type")).lower() == "book" and d.get("id")}
+        work_ids = {d.get("id") for d in items
+                    if str(d.get("type")).lower() == "work" and d.get("id")}
+
+        # 反挂清单：Book/Work.contained_in[] 指向的 Collection id
+        reverse_has_book: set = set()
+        reverse_has_work: set = set()
+        for d in items:
+            t = str(d.get("type")).lower()
+            if t not in ("book", "work"):
+                continue
+            contained = d.get("contained_in") or []
+            if not isinstance(contained, list):
+                continue
+            bucket = reverse_has_book if t == "book" else reverse_has_work
+            for ref in contained:
+                if isinstance(ref, dict):
+                    rid = ref.get("id")
+                elif isinstance(ref, str):
+                    rid = ref
+                else:
+                    rid = None
+                if rid:
+                    bucket.add(rid)
+
+        rows = []
+        for d in items:
+            t = str(d.get("type")).lower()
+            item_id = d.get("id") or ""
+            if t == "work":
+                if "classification" in d and d.get("classification") is not None:
+                    c = d.get("classification")
+                    if vocab is not None and (
+                            not isinstance(c, dict) or not classification_ok(c, vocab)):
+                        rows.append((item_id, t, "classification",
+                                     f"classification 非法：{c!r}"))
+            elif t == "book":
+                if "edition_type" in d and d.get("edition_type") is not None:
+                    v = d.get("edition_type")
+                    if not edition_type_ok(v):
+                        rows.append((item_id, t, "edition_type",
+                                     f"edition_type 非法：{v!r}"))
+                if "provenance" in d and d.get("provenance") is not None:
+                    v = d.get("provenance")
+                    if not provenance_ok(v):
+                        rows.append((item_id, t, "provenance",
+                                     f"provenance 非法：{v!r}"))
+                if "physical_description" in d and d.get("physical_description") is not None:
+                    v = d.get("physical_description")
+                    if not physical_description_ok(v):
+                        rows.append((item_id, t, "physical_description",
+                                     f"physical_description 非法：{v!r}"))
+                if "base_edition" in d and d.get("base_edition") is not None:
+                    v = d.get("base_edition")
+                    if not base_edition_ok(v, item_id, book_ids, work_ids):
+                        rows.append((item_id, t, "base_edition",
+                                     f"base_edition 非法：{v!r}"))
+            elif t == "entity":
+                if "dates" in d and d.get("dates") is not None:
+                    msg = dates_ok(d)
+                    if msg is not None:
+                        rows.append((item_id, t, "dates", msg))
+                if "external_ids" in d and d.get("external_ids"):
+                    msg = external_ids_ok(d)
+                    if msg is not None:
+                        rows.append((item_id, t, "external_ids", msg))
+            elif t == "collection":
+                if "_member_type" in d and d.get("_member_type") is not None:
+                    rhb = item_id in reverse_has_book
+                    rhw = item_id in reverse_has_work
+                    if not member_type_ok(d, rhb, rhw):
+                        rows.append((item_id, t, "_member_type",
+                                     f"_member_type 非法：{d.get('_member_type')!r}，"
+                                     f"应为 {derive_member_type(d, rhb, rhw)!r}"))
+
+        output = getattr(self.args, "output", None)
+        if output:
+            with open(output, "w", encoding="utf-8", newline="") as f:
+                w = csv.writer(f)
+                w.writerow(["id", "type", "field", "error"])
+                w.writerows(rows)
+            print(f"scan-fields: {len(items)} item(s) scanned, "
+                  f"{len(rows)} issue(s) written to {output}")
+        else:
+            w = csv.writer(sys.stdout)
+            w.writerow(["id", "type", "field", "error"])
+            w.writerows(rows)
+
     def handle_migrate(self):
         from pathlib import Path
         target = self.args.target
@@ -747,6 +891,18 @@ def main():
                     "全仓无对已 promoted draft-id 的裸引用。")
     p.add_argument("--verbose", action="store_true", help="同时输出每个问题对应文件路径")
 
+    # scan-fields
+    p = subparsers.add_parser("scan-fields", parents=[parent_parser],
+                              help="全量扫描 S1-S5 新字段并输出问题清单 CSV",
+                              description="扫描 Work/Book/Collection/Entity 四类 JSON 的 "
+                                          "classification/edition_type/provenance/"
+                                          "physical_description/base_edition/dates/"
+                                          "external_ids/_member_type 字段，输出 id,type,field,error 四列 CSV。"
+                                          "classification 词表从 {root}/book-index/classific.json 读取。",
+                              epilog="示例：book-index scan-fields --root /path/to/workspace --output issues.csv")
+    p.add_argument("--target", choices=["official", "draft", "all"], default="all")
+    p.add_argument("--output", default=None, help="CSV 输出路径（缺省输出到 stdout）")
+
     # migrate
     p = subparsers.add_parser("migrate", parents=[parent_parser],
                               help="Migrate old text_resources/image_resources to unified resources")
@@ -776,6 +932,7 @@ def main():
             "check-index": handler.handle_check_index,
             "validate-lineage": handler.handle_validate_lineage,
             "migrate": handler.handle_migrate,
+            "scan-fields": handler.handle_scan_fields,
             "promote": handler.handle_promote,
             "validate-promotions": handler.handle_validate_promotions,
         }

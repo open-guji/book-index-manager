@@ -21,5 +21,25 @@ from .storage import BookIndexStorage, strip_nulls
 from .storage_base import IndexStorage, PageResult, LoadOptions
 from .storage_github import GithubStorage, GithubStorageConfig
 from .schema import ResourceEntry
+from .schema_fields import (
+    Vocab,
+    build_vocab,
+    classification_ok,
+    EDITION_TYPES,
+    edition_type_ok,
+    provenance_ok,
+    physical_description_ok,
+    BASE_EDITION_ROLES,
+    base_edition_ok,
+    dates_ok,
+    external_ids_ok,
+    MEMBER_TYPES,
+    derive_member_type,
+    member_type_ok,
+    validate_work_fields,
+    validate_book_fields,
+    validate_entity_fields,
+    validate_collection_fields,
+)
 from .bid_link import BidLink
 from .exceptions import BookIndexError, StorageError, IdGenerationError, ConfigError, MigrationError
