@@ -244,12 +244,52 @@ describe('EntityPage（B1）', () => {
         expect(picks).toEqual(['御批資治通鑑綱目', '詩集傳', '四書章句集注']);
     });
 
-    it('著作表：部类·卷数小字、「有影印」；旁栏站外资料', async () => {
+    it('著作表：部類独立一列、卷数小字、「有影印」；旁栏站外资料', async () => {
         render(<BookDetailLayout {...props(ENTITY, ENTITY_EXTRA)} />);
         const table = (await screen.findByText('作品')).closest('table')!;
         await waitFor(() => expect(within(table).getByText('經部 詩類')).toBeTruthy());
+        expect(within(table).getByRole('columnheader', { name: '部類' })).toBeTruthy();
+        expect(within(table).getByText('八卷')).toBeTruthy();
         expect(within(table).getByText('有影印')).toBeTruthy();
         expect(screen.getByRole('link', { name: /CBDB/ }).getAttribute('href')).toContain('id=3257');
         expect(screen.getByRole('link', { name: /Wikidata/ }).getAttribute('href')).toContain('Q9397');
+    });
+
+    it('著作舉要独立成区，副标「存世版本最多的三部」；版本数放大；左栏本页三项', async () => {
+        const { container } = render(<BookDetailLayout {...props(ENTITY, ENTITY_EXTRA)} />);
+        await waitFor(() => expect(container.querySelector('.bim-d-picks[aria-busy]')).toBeNull());
+        const featured = container.querySelector('section#featured') as HTMLElement;
+        expect(featured.querySelector('h2')?.textContent).toBe('著作舉要');
+        expect(within(featured).getByText('存世版本最多的三部')).toBeTruthy();
+        expect([...featured.querySelectorAll('.bim-d-pick-num')].map(n => n.textContent)).toEqual(['15', '7', '6']);
+        expect(container.querySelector('section#works')).toBeTruthy();
+        const nav = [...container.querySelectorAll('.bim-d-rail-nav a')].map(a => a.getAttribute('href'));
+        expect(nav).toEqual(['#featured', '#works', '#external']);
+    });
+
+    it('生卒条：朝代有起讫且生卒齐全才出；无生卒则整块不出', async () => {
+        const { container, unmount } = render(<BookDetailLayout {...props(ENTITY, ENTITY_EXTRA)} />);
+        await screen.findByText('字仲晦，號晦庵');
+        expect(container.querySelector('.bim-d-life-lab')?.textContent).toContain('一生 71 年');
+        unmount();
+        const noLife = { ...ENTITY, birth_year: undefined, death_year: undefined } as unknown as IndexDetailData;
+        const r2 = render(<BookDetailLayout {...props(noLife, ENTITY_EXTRA)} />);
+        await screen.findByText('字仲晦，號晦庵');
+        expect(r2.container.querySelector('.bim-d-life')).toBeNull();
+    });
+
+    it('著作四部分布：全部作品解析完才出，只列有数的部', async () => {
+        const { container } = render(<BookDetailLayout {...props(ENTITY, ENTITY_EXTRA)} />);
+        await waitFor(() => expect(container.querySelector('.bim-d-dist')).toBeTruthy());
+        const key = container.querySelector('.bim-d-dist-key')!.textContent;
+        expect(key).toContain('經部 1');
+        expect(key).toContain('史部 1');
+        expect(key).not.toContain('子部');
+    });
+
+    it('站外资料：CBDB 自动匹配时注明未经人工核对', async () => {
+        const { container } = render(<BookDetailLayout {...props(ENTITY, ENTITY_EXTRA)} />);
+        await screen.findByText('字仲晦，號晦庵');
+        expect(container.querySelector('.bim-d-side-note')?.textContent).toBe('CBDB 為自動匹配，未經人工核對');
     });
 });

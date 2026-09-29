@@ -211,6 +211,27 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 .bim-d-pick .bim-d-meta { display: block; margin-top: 4px; font-size: 12px; }
 .bim-d-pick-n { margin-top: 10px; font-size: 13px; color: ${bim('quiet-fg')}; display: flex; gap: 8px; align-items: center; }
 
+/* 著作举要：版本数放大 */
+.bim-d-pick-num { font-size: 26px; font-weight: 700; line-height: 1; color: ${bim('ink')}; letter-spacing: 0; }
+.bim-d-pick-num + span { font-size: 13px; }
+.bim-d-pick-n { align-items: baseline; }
+.bim-d-pick-n .bim-d-flag { margin-left: auto; }
+.bim-d-sec-sub { margin: -8px 0 16px; font-size: 13px; color: ${bim('aux-fg')}; }
+
+/* 提要卡：生卒条、著作四部分布条 */
+.bim-d-life { margin-top: 18px; }
+.bim-d-life-bar { position: relative; height: 6px; border-radius: 3px; background: ${bim('rule')}; }
+.bim-d-life-bar > i { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: ${bim('sect-jing')}; }
+.bim-d-life-lab { display: flex; justify-content: space-between; margin-top: 6px; font-size: 12px; color: ${bim('aux-fg')}; }
+.bim-d-dist { margin-top: 18px; }
+.bim-d-dist-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; color: ${bim('aux-fg')}; }
+.bim-d-dist-head b { font-size: 20px; color: ${bim('ink')}; margin-right: 3px; }
+.bim-d-dist-bar { display: flex; gap: 1px; height: 6px; margin-top: 8px; border-radius: 3px; overflow: hidden; }
+.bim-d-dist-bar > i { display: block; }
+.bim-d-dist-key { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 8px; font-size: 12px; color: ${bim('quiet-fg')}; }
+.bim-d-dist-key i { display: inline-block; width: 8px; height: 8px; margin-right: 4px; border-radius: 2px; }
+.bim-d-side-note { margin: 8px 0 0; font-size: 12px; color: ${bim('aux-fg')}; }
+
 /* 本页内检索（丛编子目） */
 .bim-d-find { height: 30px; min-width: 190px; padding: 0 12px; border: 0; border-radius: 6px; box-sizing: border-box;
   background: ${bim('tint-bg')}; color: ${bim('ink')}; font: inherit; font-size: 13px; }
@@ -665,7 +686,7 @@ export function ReadButton({ href, onClick, label = '閱讀全文' }: {
 // ══════════════════════════════════════════════════════════════
 
 /** 旁栏清单：小标题 + 若干行（行内容由调用方给）+ 「显示更多（n）」 */
-export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8, moreLabel }: {
+export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8, moreLabel, foot }: {
     id?: string;
     title: string;
     meta?: React.ReactNode;
@@ -677,6 +698,8 @@ export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8,
     cap?: number;
     /** 默认「顯示更多（n）」 */
     moreLabel?: (rest: number) => string;
+    /** 清单底部的小字说明 */
+    foot?: React.ReactNode;
 }) {
     const { convert } = useConvert();
     const [all, setAll] = useState(false);
@@ -704,6 +727,7 @@ export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8,
                     onClick={() => setAll(true)}
                 />
             )}
+            {foot && <p className="bim-d-side-note bim-d-ui">{foot}</p>}
         </div>
     );
 }
