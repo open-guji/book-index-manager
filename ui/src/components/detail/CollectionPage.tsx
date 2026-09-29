@@ -12,7 +12,9 @@
  * 2026-09-29 设计稿 v3（overview#286）：四部分类页签、册次前的部类色点、提要卡数字格
  * （子目／卷／册）与「全帙册次分布」条、检索框挪到页签行右侧；提要卡去掉「應收」「年代」两行
  * （数字格已含，年代已在「刊印」里）。部类来自各子目自己的分类，须逐条解析：子目不超过
- * RESOLVE_ALL_TITLES 条时后台分批解析全部，解析完页签与分布条才出，不按部分行估算。
+ * CAP_TITLES 条以内时后台自动解析全部（≤16 个请求）；更多的要用户点「按部類分組」才逐批解析
+ * （≤RESOLVE_ALL_TITLES 条），解析完页签与分布条才出，不按部分行估算。
+ * 不自动全取：大丛编（如 144 子目）进页面就飞 140+ 个请求，测试站 e2e「请求数 <20」因此红。
  */
 import React, { useState, useEffect, useMemo } from 'react';
 import { bim } from '../../styles/tokens';
@@ -75,13 +77,16 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     const [parent, setParent] = useState<{ id: string; title?: string } | null>(null);
     /** 部类页签：'' = 全部 */
     const [sec, setSec] = useState('');
+    /** 用户点了「按部類分組」：才对超过 CAP_TITLES 条的丛编解析全部子目 */
+    const [groupAll, setGroupAll] = useState(false);
 
     const table = useMemo(() => buildCollectionTable(data, catalog), [data, catalog]);
 
     /* 子目行补取：书名（只有 ID 的）、撰人、卷数、版本数。只取可见行 */
     const [info, setInfo] = useState<Map<string, RowInfo>>(new Map());
 
-    const resolveAll = !!transport && table.rows.length > 0 && table.rows.length <= RESOLVE_ALL_TITLES;
+    const canResolveAll = !!transport && table.rows.length > 0 && table.rows.length <= RESOLVE_ALL_TITLES;
+    const resolveAll = canResolveAll && (table.rows.length <= CAP_TITLES || groupAll);
     const allResolved = resolveAll && table.rows.every(r => !r.id || info.has(r.id));
     const rowSection = (id?: string) => sectionKey(id ? info.get(id)?.l1 : undefined);
 
@@ -319,6 +324,17 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                         <div className="bim-d-filters bim-d-ui">
                             {secTabs.length > 0 && (
                                 <TabFilter items={secTabs} value={sec} onChange={k => { setSec(k); setShowAllTitles(false); }} />
+                            )}
+                            {canResolveAll && table.rows.length > CAP_TITLES && !allResolved && (
+                                <button
+                                    type="button"
+                                    className="bim-d-groupbtn"
+                                    disabled={groupAll}
+                                    onClick={() => setGroupAll(true)}
+                                    title={convert(`將載入全部 ${table.rows.length} ${t.unit.items}`)}
+                                >
+                                    {convert(groupAll ? '正在按部類分組…' : '按部類分組')}
+                                </button>
                             )}
                             <span className="bim-d-spacer" />
                             {table.rows.length > CAP_TITLES && <input

@@ -349,6 +349,33 @@ describe('CollectionPage（v3）', () => {
         expect(container.querySelectorAll('#titles table tbody tr')).toHaveLength(4);
     });
 
+    it('大丛编（>16 子目）进页面不自动全取：只取可见 16 条，点「按部類分組」才解析其余', async () => {
+        const N = 40;
+        const ids = Array.from({ length: N }, (_, i) => `b${i}`);
+        const big = {
+            ...CLS_COLL, id: 'big',
+            contained_works: ids.map((id, i) => ({ id, title: `書${i}`, volume_index: [i + 1] })),
+        } as unknown as IndexDetailData;
+        const extra = Object.fromEntries(ids.map((id, i) => [id, {
+            id, type: 'work', title: `書${i}`, classification: { l1: i % 2 ? '史部' : '經部' },
+        }]));
+        const tr = transportFor(big, extra, null) as { getItem: (id: string) => Promise<unknown> };
+        const asked = new Set<string>();
+        const orig = tr.getItem.bind(tr);
+        tr.getItem = (id: string) => { asked.add(id); return orig(id); };
+        const { container } = render(<BookDetailLayout {...props(big, extra, { transport: tr as never })} />);
+        await waitFor(() => expect(container.querySelectorAll('#titles table tbody tr')).toHaveLength(16));
+        await new Promise(r => setTimeout(r, 50));
+        const initial = [...asked].filter(id => id.startsWith('b')).length;
+        expect(initial, `自动请求了 ${initial} 个子目，应只取可见的 16 个`).toBeLessThanOrEqual(16);
+        expect(container.querySelector('.bim-d-groupbtn')?.textContent).toBe('按部類分組');
+        expect(screen.queryByRole('button', { name: /^經部/ })).toBeNull();
+        fireEvent.click(screen.getByRole('button', { name: '按部類分組' }));
+        await waitFor(() => expect(screen.getByRole('button', { name: '經部 20' })).toBeTruthy());
+        expect([...asked].filter(id => id.startsWith('b')).length).toBe(N);
+        expect(screen.queryByRole('button', { name: '按部類分組' })).toBeNull();
+    });
+
     it('子目没有部类信息（或只有一类）时不出页签与分布条', async () => {
         const one = { ...CLS_EXTRA, k3: { ...CLS_EXTRA.k3, classification: { l1: '經部' } }, k4: { ...CLS_EXTRA.k4, classification: { l1: '經部' } } };
         const { container } = render(<BookDetailLayout {...props(CLS_COLL, one)} />);
