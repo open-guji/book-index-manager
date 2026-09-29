@@ -140,6 +140,9 @@ export interface LocaleMessages {
         itemNotFound: string;
         removeFromRecent: string;
         searchTitle: string;
+        /** 结果页签：「全部」与页签组的无障碍名称 */
+        allTab: string;
+        resultTabs: string;
         searchSubtitle: string;
         searchBookName: string;
         alias: string;

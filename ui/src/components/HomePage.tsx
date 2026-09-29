@@ -8,6 +8,7 @@ import { FeedbackList } from './FeedbackList';
 import type { FeedbackItem } from './FeedbackList';
 
 import { LoadingDots } from './common/LoadingDots';
+import { TypeMark } from './common/TypeMark';
 import { useBidUrl } from '../core/bid-url';
 import { bim } from '../styles/tokens';
 
@@ -221,15 +222,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         return () => { cancelled = true; };
     }, [feedbackApiUrl, activeTab]);
 
-    const getIcon = (type: IndexType): string => {
-        switch (type) {
-            case 'work': return '✍️';
-            case 'book': return '📖';
-            case 'collection': return '📚';
-            case 'entity': return '👤';
-            default: return '';
-        }
-    };
+    const getIcon = (type: IndexType): React.ReactNode => <TypeMark type={type} size={12} />;
 
     return (
         <div style={{
@@ -332,7 +325,7 @@ const RecommendContent: React.FC<{
     recommended: (IndexEntry & { group?: string; fallbackDescription?: string })[];
     loading?: boolean;
     onNavigate?: (id: string) => void;
-    getIcon: (type: IndexType) => string;
+    getIcon: (type: IndexType) => React.ReactNode;
     t: ReturnType<typeof useT>;
 }> = ({ recommended, loading, onNavigate, getIcon, t }) => {
     const buildUrl = useBidUrl();

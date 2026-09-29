@@ -6,6 +6,7 @@ import { SearchInput } from './SearchInput';
 import { useT, useConvert, formatTemplate } from '../i18n';
 import { splitHighlightSnippet } from '../core/highlight';
 import { bim } from '../styles/tokens';
+import { TypeMark } from './common/TypeMark';
 import { useBidUrl } from '../core/bid-url';
 
 /** 「最近浏览」存 localStorage 的键（值为 ID 数组，新的在前）；宿主要读写或清空时用它 */
@@ -85,7 +86,7 @@ export interface IndexBrowserProps {
      * - 'card'：书目卡片（竖排书名「封面」+ 信息区），适合宽屏站点
      * 默认值保持 'compact'，既有消费者观感不变。
      */
-    resultVariant?: 'compact' | 'card';
+    resultVariant?: 'compact' | 'card' | 'list';
     /** 完全自定义条目渲染，优先级高于 resultVariant */
     renderEntry?: (entry: IndexEntry) => React.ReactNode;
 }
@@ -117,16 +118,20 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
 }) => {
     const t = useT();
 
-    const TYPE_CONFIG: { type: IndexType; icon: string; name: string; key: keyof GroupedSearchResult }[] = [
-        { type: 'work', icon: '✍️', name: t.indexType.work, key: 'works' },
-        { type: 'book', icon: '📖', name: t.indexType.book, key: 'books' },
-        { type: 'collection', icon: '📚', name: t.indexType.collection, key: 'collections' },
-        { type: 'entity', icon: '👤', name: t.indexType.entity, key: 'entities' },
+    const TYPE_CONFIG: { type: IndexType; name: string; key: keyof GroupedSearchResult }[] = [
+        { type: 'work', name: t.indexType.work, key: 'works' },
+        { type: 'book', name: t.indexType.book, key: 'books' },
+        { type: 'collection', name: t.indexType.collection, key: 'collections' },
+        { type: 'entity', name: t.indexType.entity, key: 'entities' },
     ];
+    /** 结果页签的顺序（设计稿：作品／丛编／版本／人物） */
+    const TAB_ORDER: IndexType[] = ['work', 'collection', 'book', 'entity'];
 
     const [searchQuery, setSearchQuery] = useState(initialQuery ?? '');
     const [searchResults, setSearchResults] = useState<GroupedSearchResult | null>(null);
     const [expandedType, setExpandedType] = useState<IndexType | null>(null);
+    /** 结果页签：'all' 分组列出，某一类则只列该类（并展开全部） */
+    const [activeType, setActiveType] = useState<IndexType | 'all'>('all');
     const [isLoading, setIsLoading] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState('');
@@ -239,6 +244,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
             setShowingRecent(true);
             setSearchResults(null);
             setExpandedType(null);
+            setActiveType('all');
             return;
         }
         // debounce — 上抛 onQueryChange 也走同一个 timer，避免每个字符都 router.push
@@ -246,6 +252,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         if (debounceRef.current) clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => {
             setExpandedType(null);
+            setActiveType('all');
             onQueryChange?.(value);
             doSearch(value);
         }, DEBOUNCE_MS);
@@ -253,6 +260,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
 
     const handleSearchCommit = useCallback((query: string) => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
+        setActiveType('all');
         onQueryChange?.(query);
         doSearch(query);
     }, [doSearch, onQueryChange]);
@@ -464,7 +472,6 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     </div>
                 ) : errorMessage ? (
                     <div style={{ textAlign: 'center', padding: '40px' }}>
-                        <div style={{ fontSize: '24px', marginBottom: '8px' }}>⚠️</div>
                         <p style={{ color: bim('desc-fg') }}>{errorMessage}</p>
                     </div>
                 ) : showingRecent ? (
@@ -534,7 +541,6 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                             </>
                         ) : (
                             <div style={{ textAlign: 'center', padding: '40px' }}>
-                                <div style={{ fontSize: '32px', marginBottom: '8px' }}>📚</div>
                                 <h2 style={{ margin: '0 0 8px', fontSize: '1.17em', color: bim('fg') }}>{t.search.searchTitle}</h2>
                                 <p style={{ color: bim('desc-fg'), fontSize: '13px' }}>{t.search.searchSubtitle}</p>
                             </div>
@@ -544,14 +550,51 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     /* Grouped search results */
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         <style>{VIEW_ALL_CSS}</style>
-                        {TYPE_CONFIG.map(({ type, icon, name, key }) => {
+                        {/* 结果页签：全部 ＋ 各类（带条数）；选某一类就只列该类并展开全部 */}
+                        {(() => {
+                            const totalOf = (key: keyof GroupedSearchResult) =>
+                                (searchResults[TOTAL_KEYS[key]] as number | undefined) ?? 0;
+                            const tabs = TAB_ORDER
+                                .map(type => TYPE_CONFIG.find(c => c.type === type)!)
+                                .filter(c => totalOf(c.key) > 0);
+                            if (tabs.length < 2) return null;
+                            const sum = tabs.reduce((n, c) => n + totalOf(c.key), 0);
+                            const choose = (t: IndexType | 'all') => {
+                                setActiveType(t);
+                                if (t !== 'all' && expandedType !== t) {
+                                    const c = TYPE_CONFIG.find(x => x.type === t)!;
+                                    const loaded = ((searchResults[c.key] as IndexEntry[] | undefined) ?? []).length;
+                                    if (totalOf(c.key) > loaded) handleExpandType(t);
+                                }
+                            };
+                            const tabStyle = (on: boolean): React.CSSProperties => ({
+                                border: 'none', background: 'transparent', cursor: 'pointer', font: 'inherit', fontSize: '14px',
+                                padding: '8px 12px', minHeight: 44, color: on ? bim('fg') : bim('desc-fg'),
+                                fontWeight: on ? 700 : 400,
+                                boxShadow: on ? `inset 0 -2px 0 ${bim('primary')}` : 'none',
+                            });
+                            return (
+                                <div role="group" aria-label={t.search.resultTabs} style={{ display: 'flex', flexWrap: 'wrap', borderBottom: `1px solid ${bim('widget-border')}` }}>
+                                    <button type="button" aria-pressed={activeType === 'all'} style={tabStyle(activeType === 'all')} onClick={() => choose('all')}>
+                                        {t.search.allTab} <span style={{ fontSize: 12, fontWeight: 400 }}>{sum.toLocaleString()}</span>
+                                    </button>
+                                    {tabs.map(c => (
+                                        <button key={c.type} type="button" aria-pressed={activeType === c.type} style={tabStyle(activeType === c.type)} onClick={() => choose(c.type)}>
+                                            {c.name} <span style={{ fontSize: 12, fontWeight: 400 }}>{totalOf(c.key).toLocaleString()}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            );
+                        })()}
+                        {TYPE_CONFIG.map(({ type, name, key }) => {
                             const entries = (searchResults[key] as IndexEntry[] | undefined) ?? [];
                             const totalKey = TOTAL_KEYS[key];
                             const total = (searchResults[totalKey] as number | undefined) ?? 0;
                             if (entries.length === 0) return null;
+                            if (activeType !== 'all' && activeType !== type) return null;
 
                             const isExpanded = expandedType === type;
-                            const showExpandBtn = !isExpanded && total > SEARCH_LIMIT;
+                            const showExpandBtn = activeType === 'all' && !isExpanded && total > SEARCH_LIMIT;
 
                             return (
                                 <div key={type}>
@@ -564,7 +607,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                         marginBottom: '6px',
                                     }}>
                                         <span style={{ fontSize: '13px', fontWeight: 600, color: bim('fg') }}>
-                                            {icon} {name}
+                                            <TypeMark type={type} /> {name}
                                             <span style={{ fontWeight: 400, color: bim('desc-fg'), marginLeft: '6px' }}>
                                                 {total} {t.unit.items}
                                             </span>
@@ -585,7 +628,10 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                                             </button>
                                         )}
                                     </div>
-                                    <div style={resultVariant === 'card'
+                                    <div style={resultVariant === 'list'
+                                        // 列表形态：单列纵向，行与行靠宿主的 renderEntry 自己分隔
+                                        ? { display: 'flex', flexDirection: 'column', gap: 0 }
+                                        : resultVariant === 'card'
                                         // 卡片形态用自适应网格：容器窄时退化为单列，宽时自动多列。
                                         // 仅影响显式 opt-in 的 card 形态，compact 维持原有纵向列表。
                                         ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(340px, 100%), 1fr))', gap: '14px' }
@@ -617,7 +663,6 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     </div>
                 ) : (
                     <div style={{ textAlign: 'center', padding: '40px' }}>
-                        <div style={{ fontSize: '32px', marginBottom: '8px' }}>📚</div>
                         <h2 style={{ margin: '0 0 8px', fontSize: '1.17em', color: bim('fg') }}>
                             {formatTemplate(t.search.noResultsFor, { query: searchQuery })}
                         </h2>
@@ -640,7 +685,7 @@ interface EntryCardProps {
     entry: IndexEntry;
     selected: boolean;
     onClick: (entry: IndexEntry, e: React.MouseEvent<HTMLAnchorElement>) => void;
-    getConfig: (type: IndexType) => { icon: string; name: string };
+    getConfig: (type: IndexType) => { name: string };
     query?: string;
     onRemove?: (id: string) => void;
 }
@@ -846,21 +891,21 @@ const EntryBookCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, get
                         color: bim('desc-fg'),
                         border: `1px solid ${bim('widget-border')}`,
                     }}>
-                        {getConfig(entry.type).icon} {getConfig(entry.type).name}
+                        <TypeMark type={entry.type} size={8} /> {getConfig(entry.type).name}
                     </span>
                     {entry.has_text && (
                         <span style={{
                             fontSize: '11px', padding: '2px 8px', borderRadius: '999px',
                             color: bim('desc-fg'),
                             border: `1px solid ${bim('widget-border')}`,
-                        }}>📝 {t.misc.textResource}</span>
+                        }}>{t.misc.textResource}</span>
                     )}
                     {entry.has_image && (
                         <span style={{
                             fontSize: '11px', padding: '2px 8px', borderRadius: '999px',
                             color: bim('desc-fg'),
                             border: `1px solid ${bim('widget-border')}`,
-                        }}>🖼️ {t.misc.imageResource}</span>
+                        }}>{t.misc.imageResource}</span>
                     )}
                 </div>
             </div>
@@ -910,7 +955,7 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                 }}
             >
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', marginTop: '2px' }}>
-                    <span style={{ fontSize: '16px' }}>{getConfig(entry.type).icon}</span>
+                    <TypeMark type={entry.type} size={12} />
                     <span style={{ fontSize: '9px', color: bim('desc-fg'), lineHeight: 1 }}>{getConfig(entry.type).name}</span>
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -920,8 +965,8 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                         </span>
                         {/* 资源图标 */}
                         <span style={{ display: 'flex', gap: '2px', fontSize: '12px', opacity: 0.7 }}>
-                            {entry.has_text && <span title={t.misc.textResource}>📝</span>}
-                            {entry.has_image && <span title={t.misc.imageResource}>🖼️</span>}
+                            {entry.has_text && <span>{t.misc.textResource}</span>}
+                            {entry.has_image && <span>{t.misc.imageResource}</span>}
                         </span>
                         {/* 刊刻朝代 + 版本（era 是本子的朝代，非撰人 dynasty） */}
                         {(entry.era || entry.edition) && (
