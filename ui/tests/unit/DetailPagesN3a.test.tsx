@@ -77,13 +77,15 @@ describe('WorkPage（三栏）', () => {
         expect(screen.getByText('正史類')).toBeTruthy();
         expect(screen.getByText('據《欽定四庫全書總目》')).toBeTruthy();
         expect(screen.getByText('今存')).toBeTruthy();
-        expect(screen.getByText(/考證 1 條/)).toBeTruthy();
+        expect(screen.getByText('考證')).toBeTruthy();
+        expect(screen.getByText('1 條')).toBeTruthy();
         expect(screen.getByText(/已審核 甲 2026-09-28/)).toBeTruthy();
         expect(screen.getByText('待核 1 項')).toBeTruthy();
         expect(screen.getByText(/數據版本 1\.0\.3/)).toBeTruthy();
         // _edition_count 优先于 books 长度
-        const dl = document.querySelector('.bim-d-card dl')!;
-        expect(within(dl as HTMLElement).getByText(/^3/)).toBeTruthy();
+        const stats = [...document.querySelectorAll('.bim-d-stats > div')].map(d => d.textContent);
+        expect(stats[0]).toBe('3版本');
+        expect(stats.at(-1)).toMatch(/家著錄$/);
     });
 
     it('没有 classification / todo / review 就不显示', () => {
@@ -162,7 +164,7 @@ describe('WorkPage（三栏）', () => {
         expect(table.querySelectorAll('tbody tr')).toHaveLength(1);
         fireEvent.click(screen.getByRole('checkbox', { name: '只看有影印' }));
 
-        fireEvent.click(screen.getByRole('button', { name: '明' }));
+        fireEvent.click(screen.getByRole('button', { name: '明 1' }));
         expect(table.querySelectorAll('tbody tr')).toHaveLength(1);
         expect(table.textContent).toContain('汪諒');
     });
