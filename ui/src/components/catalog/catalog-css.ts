@@ -153,4 +153,9 @@ export const CATALOG_CSS = `
   .bim-ct-tw { width: 44px; }
   .bim-ct-pg { min-width: 44px; height: 44px; }
 }
+
+/* ── 版式「界栏」（v4）：<html data-layout="boxed"> 才生效；值走 --bim-fr-* 令牌 ── */
+:root[data-layout="boxed"] .bim-ct-side { border: ${bim('fr-bd')}; background: ${bim('fr-bg')}; padding: 14px 8px; }
+:root[data-layout="boxed"] .bim-ct-head { padding: ${bim('fr-hd-pad')}; border: ${bim('fr-bd')}; border-bottom: ${bim('fr-hd-bd')}; background: ${bim('fr-bg')}; margin: 0; }
+:root[data-layout="boxed"] .bim-ct-main > .bim-ct-search { margin-top: 14px; }
 `;
