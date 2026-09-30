@@ -11,7 +11,7 @@ export interface ThemeToggleProps {
     style?: React.CSSProperties;
 }
 
-const DOT: Record<ThemeName, BimTokenName> = { zhusha: 'theme-dot-zhusha', indigo: 'theme-dot-indigo' };
+const DOT: Record<ThemeName, BimTokenName> = { zhusha: 'theme-dot-zhusha', indigo: 'theme-dot-indigo', ink: 'theme-dot-ink' };
 
 /**
  * 主题切换：两个色点（朱砂、靛蓝），单选语义，当前项外圈描边。

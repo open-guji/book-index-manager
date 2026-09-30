@@ -271,8 +271,9 @@ export type { ThemeToggleProps } from './components/ThemeToggle';
 export {
     THEMES, DEFAULT_THEME, THEME_STORAGE_KEY, THEME_INIT_SCRIPT,
     isThemeName, normalizeTheme, readStoredTheme, storeTheme, applyTheme, currentTheme,
+    LAYOUTS, DEFAULT_LAYOUT, LAYOUT_STORAGE_KEY, isLayoutName, normalizeLayout, readStoredLayout, storeLayout, applyLayout, currentLayout,
 } from './theme';
-export type { ThemeName } from './theme';
+export type { ThemeName, LayoutName } from './theme';
 export type { LocaleToggleProps } from './components/LocaleToggle';
 export { RepoSourceLink } from './components/common/RepoSourceLink';
 export type { RepoSourceLinkProps } from './components/common/RepoSourceLink';

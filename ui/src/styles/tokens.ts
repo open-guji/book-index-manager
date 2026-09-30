@@ -192,13 +192,25 @@ export const BIM_TOKEN_GROUPS = [
         'shadow-summary': { value: '0 10px 32px rgba(60, 50, 40, 0.07)', note: '提要卡投影' },
         'flag-bg': { value: 'rgba(158, 42, 43, 0.08)', note: '唯一的状态色块「有影印」' },
         'theme-dot-zhusha': { value: '#9c3a2c', note: '主题切换控件的色点：朱砂（不随主题变，两套主题下都要认得出）' },
-        'theme-dot-indigo': { value: '#2e5266', note: '主题切换控件的色点：靛蓝' },
+        'theme-dot-indigo': { value: '#2e5266', note: '主题切换控件的色点：靛青' },
+        'theme-dot-ink': { value: '#222221', note: '主题切换控件的色点：墨' },
         'sect-jing': { value: '#2e5266', note: '四部分布条：經部（人物页提要卡；无别处使用）' },
         'sect-shi': { value: '#9a7a3b', note: '四部分布条：史部' },
         'sect-zi': { value: '#4f7a5c', note: '四部分布条：子部' },
         'sect-ji': { value: '#9fb3bc', note: '四部分布条：集部' },
         'table-border': { value: 'color-mix(in srgb, currentColor 28%, transparent)', root: false, note: '古籍表格（跟随当前文字色）' },
         'table-head-bg': { value: 'color-mix(in srgb, currentColor 8%, transparent)', root: false },
+    }),
+    group('版式（v4 外观系统，overview#291）：疏朗＝留白分区（默认，下列值即疏朗）；界栏＝框线分区（`<html data-layout="boxed">`）', {
+        'fr-bd': { value: '0 solid transparent', note: '区块外框（border 简写）。疏朗无框；界栏 1px 实线' },
+        'fr-bg': { value: 'transparent', note: '区块底。界栏＝卡面色' },
+        'fr-hd-pad': { value: '0', note: '区块标题栏内边距（界栏：标题栏与正文之间有分隔线）' },
+        'fr-hd-bd': { value: '0 solid transparent', note: '区块标题栏下沿线（border 简写）' },
+        'fr-bd-pad': { value: '0', note: '区块正文内边距' },
+        'fr-gap': { value: '56px', note: '区块之间的间距。界栏收紧到 24px（框线本身已分隔）' },
+        'fr-side-gap': { value: '34px', note: '侧栏各块之间的间距；界栏 20px' },
+        'fr-shadow': { value: '0 1px 0 var(--bim-rule), 0 12px 32px -18px rgba(40, 36, 31, 0.25)', note: '抬起的面（提要卡）的投影；界栏不用投影，靠框线' },
+        'fr-tab-bd': { value: 'transparent', note: '页签行下沿线颜色（疏朗不画，界栏画）' },
     }),
     group('阅读器（整理本 / 全文）', {
         'reader-top': {
@@ -269,9 +281,58 @@ export const BIM_THEMES = {
         'selection-bg': '#dfe6e3',
         'rule-accent-soft': '#cfd9dc',
     },
+    /*
+     * 墨（v4 设计稿「墨」：素白底 #f5f5f3、主色近黑 #222221，整套中性灰）。与朱砂／靛青不同：
+     * 纸色、墨色阶、线色、面色也换成一套中性灰，不只是强调色。强调色与正文色接近，
+     * 所以链接、悬停、选中态不能只靠颜色区分——组件里对 data-theme="ink" 另加了下划线／描边／字重。
+     * 色值取自设计稿 THEMES["墨"]；辅助字（label/aux/hint）在设计稿的 #9a9994 上只有 ~2.6，不达 AA，按 5:1 调深。
+     */
+    ink: {
+        'page-bg': '#f5f5f3',
+        'card-bg': '#fcfcfb',
+        'zebra-bg': '#eeeeeb',
+        'tint-bg': '#ecebe8',
+        'row-hover-bg': '#ecebe8',
+        'selection-bg': '#e2e1dc',
+        'band-bg': '#efeeea',
+        'band-bg-hover': '#e6e5e1',
+        'ink': '#1b1b1a',
+        'body-fg': '#3d3d3b',
+        'quiet-fg': '#4a4a47',
+        'meta-fg': '#5f5e5b',
+        'label-fg': '#63625e',
+        'aux-fg': '#63625e',
+        'hint-fg': '#63625e',
+        'accent': '#222221',
+        'accent-deep': '#000000',
+        'flag-bg': '#e8e7e4',
+        'rule-strong': '#1b1b1a',
+        'rule': '#dfdedb',
+        'rule-dashed': '#c7c6c1',
+        'rule-accent-soft': '#c7c6c1',
+        'shadow-summary': '0 10px 32px rgba(0, 0, 0, 0.06)',
+        'fr-shadow': '0 1px 0 var(--bim-rule), 0 12px 32px -18px rgba(0, 0, 0, 0.22)',
+    },
 } as const satisfies Record<string, Partial<Record<BimTokenName, string>>>;
 
 export type BimThemeName = 'zhusha' | keyof typeof BIM_THEMES;
+
+/** 版式覆盖（默认「疏朗」= BIM_TOKENS 的 value，不需要列出）。生成 `:root[data-layout="boxed"]`。 */
+export const BIM_LAYOUTS = {
+    boxed: {
+        'fr-bd': '1px solid var(--bim-rule)',
+        'fr-bg': 'var(--bim-card-bg)',
+        'fr-hd-pad': '12px 18px',
+        'fr-hd-bd': '1px solid var(--bim-rule)',
+        'fr-bd-pad': '14px 18px 18px',
+        'fr-gap': '24px',
+        'fr-side-gap': '20px',
+        'fr-shadow': 'none',
+        'fr-tab-bd': 'var(--bim-rule)',
+    },
+} as const satisfies Record<string, Partial<Record<BimTokenName, string>>>;
+
+export type BimLayoutName = 'airy' | keyof typeof BIM_LAYOUTS;
 
 /** 生成 variables.css 的全文（`npm run gen:tokens` 调用） */
 export function bimTokensCss(): string {
@@ -296,6 +357,11 @@ export function bimTokensCss(): string {
     out.push('}');
     for (const [theme, vars] of Object.entries(BIM_THEMES)) {
         out.push('', `/* ==== 主题：${theme}（<html data-theme="${theme}">）==== */`, `:root[data-theme="${theme}"] {`);
+        for (const [name, v] of Object.entries(vars)) out.push(`    --bim-${name}: ${v};`);
+        out.push('}');
+    }
+    for (const [layout, vars] of Object.entries(BIM_LAYOUTS)) {
+        out.push('', `/* ==== 版式：${layout}（<html data-layout="${layout}">）==== */`, `:root[data-layout="${layout}"] {`);
         for (const [name, v] of Object.entries(vars)) out.push(`    --bim-${name}: ${v};`);
         out.push('}');
     }
