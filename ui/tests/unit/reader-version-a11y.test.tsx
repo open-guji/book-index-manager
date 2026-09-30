@@ -268,18 +268,19 @@ describe('Q4 点击区 ≥44×44（390 宽 / 触屏；伪元素扩热区，外�
         const block = mediaBlock(READER_CSS, coarse);
         expect(ruleFor(block, '.bim-rd-tools .bim-rd-t')).toMatch(/position: relative/);
         expectHitArea44(ruleFor(block, '.bim-rd-tools .bim-rd-t::after'));
-        // A− A+ 挨着：各扩 ≈10px，中间至少再留 10px，热区不叠
-        expect(ruleFor(block, '.bim-rd-tools .bim-rd-fs + .bim-rd-fs')).toMatch(/margin-left: 1[0-9]px/);
+        // 字号「小／中／大」三个挨着：触屏上按钮本身撑到 44×44（不用会叠的伪元素）
+        expect(ruleFor(block, '.bim-rd-fsb')).toMatch(/min-width: 44px[^}]*min-height: 44px/);
         expect(ruleFor(block, '.bim-rd-ver select')).toMatch(/min-height: 44px/);
 
         render(<Shell properNameToggle versions={TWO} />);
         const tools = document.querySelector('.bim-rd-tools')!;
         const t = (name: string) => tools.querySelector(`[aria-label="${name}"]`) ?? [...tools.querySelectorAll('button')].find(b => b.textContent?.includes(name));
-        for (const name of ['目录', '缩小字号', '放大字号', '专名线']) {
+        for (const name of ['目录', '专名线']) {
             expect(t(name)?.classList.contains('bim-rd-t'), name).toBe(true);
         }
-        expect(tools.querySelector('[aria-label="缩小字号"]')!.classList.contains('bim-rd-fs')).toBe(true);
-        expect(tools.querySelector('[aria-label="放大字号"]')!.classList.contains('bim-rd-fs')).toBe(true);
+        for (const name of ['字号 小', '字号 中', '字号 大']) {
+            expect(tools.querySelector(`[aria-label="${name}"]`)!.classList.contains('bim-rd-fsb'), name).toBe(true);
+        }
     });
 
     it('阅读器：按钮本身的尺寸与留白在窄屏块里不变（只动伪元素）', () => {

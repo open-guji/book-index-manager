@@ -21,7 +21,7 @@ import { LocaleContext } from '../../i18n/context';
 import { READER_CSS, READER_WIDE_QUERY } from './reader-css';
 import { ReaderToc } from './ReaderToc';
 import { ImagePanel } from './ImagePanel';
-import { FONT_SIZE_STEPS, DEFAULT_FONT_SIZE, stepFontSize } from './prefs';
+import { DEFAULT_FONT_SIZE, FONT_SIZE_TIERS, nearestFontTier } from './prefs';
 import type { ReaderPrefs } from './prefs';
 import { pickReaderVersion, readerVersionOptionLabel } from './versions';
 import type { ReaderImageOverlay, ReaderPageImage, ReaderTocItem, ReaderVersion } from './types';
@@ -264,6 +264,7 @@ export function ReaderShell({
     const next = pos >= 0 ? flat.slice(pos + 1).find(it => !it.disabled) : undefined;
 
     const fs = prefs.fontSize ?? DEFAULT_FONT_SIZE;
+    const fsTier = nearestFontTier(prefs.fontSize);
     const rootStyle = {
         ...style,
         ...(prefs.fontSize ? { ['--bimrd-fs' as string]: `${prefs.fontSize}px` } : null),
@@ -333,20 +334,18 @@ export function ReaderShell({
                     <span className="bim-rd-sep" aria-hidden="true" />
                     <LocaleSwitch />
                     <span className="bim-rd-sep" aria-hidden="true" />
-                    <button
-                        type="button"
-                        className="bim-rd-t bim-rd-fs"
-                        aria-label="缩小字号"
-                        disabled={fs <= FONT_SIZE_STEPS[0]}
-                        onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, -1) })}
-                    >A−</button>
-                    <button
-                        type="button"
-                        className="bim-rd-t bim-rd-fs"
-                        aria-label="放大字号"
-                        disabled={fs >= FONT_SIZE_STEPS[FONT_SIZE_STEPS.length - 1]}
-                        onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, 1) })}
-                    >A+</button>
+                    <div className="bim-rd-fsseg" role="group" aria-label="字号">
+                        {FONT_SIZE_TIERS.map(t => (
+                            <button
+                                key={t.key}
+                                type="button"
+                                className="bim-rd-fsb"
+                                aria-label={`字号 ${t.label}`}
+                                aria-pressed={fsTier.key === t.key}
+                                onClick={() => onPrefsChange({ fontSize: t.key === 'm' ? null : t.px })}
+                            >{t.label}</button>
+                        ))}
+                    </div>
                     {(paragraphToggle || properNameToggle || allowVertical) && <span className="bim-rd-sep" aria-hidden="true" />}
                     {paragraphToggle && (
                         <button

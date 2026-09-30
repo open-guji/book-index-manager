@@ -4,7 +4,7 @@ export type { ReaderShellProps, PanelState } from './ReaderShell';
 export { ReaderToc } from './ReaderToc';
 export { ImagePanel } from './ImagePanel';
 export { ReaderMdText, renderReaderInline, renderProperNames, canParagraphize } from './ReaderText';
-export { useReaderPrefs, DEFAULT_READER_PREFS, FONT_SIZE_STEPS } from './prefs';
+export { useReaderPrefs, DEFAULT_READER_PREFS, FONT_SIZE_STEPS, FONT_SIZE_TIERS, nearestFontTier } from './prefs';
 export type { ReaderPrefs } from './prefs';
 export { READER_CSS } from './reader-css';
 export { readerVersionsFromFullText, readerVersionOptionLabel, pickReaderVersion } from './versions';

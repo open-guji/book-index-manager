@@ -8,7 +8,7 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 import { LocaleProvider } from '../../src/i18n';
 import { ReaderShell } from '../../src/components/Reader/ReaderShell';
 import { ImagePanel } from '../../src/components/Reader/ImagePanel';
-import { DEFAULT_READER_PREFS } from '../../src/components/Reader/prefs';
+import { DEFAULT_READER_PREFS, loadReaderPrefs } from '../../src/components/Reader/prefs';
 import type { ReaderPrefs } from '../../src/components/Reader/prefs';
 import type { ReaderPageImage, ReaderTocItem } from '../../src/components/Reader/types';
 import { READER_CSS } from '../../src/components/Reader/reader-css';
@@ -182,8 +182,17 @@ describe('工具条：只用文字和图标，状态用 aria-pressed', () => {
     it('字号、自然段、专名线', () => {
         const { container } = render(<LocaleProvider locale="zh-Hant"><Harness toc={FEW} /></LocaleProvider>);
         const root = container.querySelector<HTMLElement>('.bim-rd')!;
-        fireEvent.click(screen.getByRole('button', { name: '放大字号' }));
+        // v3：字号是「小／中／大」三档分段（aria-pressed），默认「中」＝18px（不写内联变量）
+        const grp = screen.getByRole('group', { name: '字号' });
+        expect(within(grp).getAllByRole('button').map(b => b.textContent)).toEqual(['小', '中', '大']);
+        expect(within(grp).getByRole('button', { name: '字号 中' })).toHaveAttribute('aria-pressed', 'true');
+        expect(root.style.getPropertyValue('--bimrd-fs')).toBe('');
+        fireEvent.click(within(grp).getByRole('button', { name: '字号 大' }));
         expect(root.style.getPropertyValue('--bimrd-fs')).toBe('20px');
+        expect(within(grp).getByRole('button', { name: '字号 大' })).toHaveAttribute('aria-pressed', 'true');
+        expect(within(grp).getByRole('button', { name: '字号 中' })).toHaveAttribute('aria-pressed', 'false');
+        fireEvent.click(within(grp).getByRole('button', { name: '字号 小' }));
+        expect(root.style.getPropertyValue('--bimrd-fs')).toBe('16px');
         const para = screen.getByRole('button', { name: '自然段' });
         expect(para).toHaveAttribute('aria-pressed', 'false');
         fireEvent.click(para);
@@ -198,7 +207,8 @@ describe('工具条：只用文字和图标，状态用 aria-pressed', () => {
     it('工具条按钮一律是无框的 .bim-rd-t', () => {
         const { container } = render(<Harness />);
         const bar = container.querySelector('.bim-rd-bar')!;
-        for (const b of bar.querySelectorAll('button')) expect(b.className).toContain('bim-rd-t');
+        // 唯一例外：v3 设计稿的字号「小／中／大」分段控件（有边框、选中淡色底），按钮是 .bim-rd-fsb
+        for (const b of bar.querySelectorAll('button:not(.bim-rd-fsb)')) expect(b.className).toContain('bim-rd-t');
         expect(READER_CSS).toMatch(/\.bim-rd-t \{[^}]*border: 0;/);
     });
 });
@@ -405,6 +415,18 @@ describe('CollatedEdition（整理本阅读页）', () => {
         expect(JSON.parse(localStorage.getItem('bim-reader-prefs') ?? '{}').workLinks).toBe(false);
         fireEvent.click(screen.getByRole('button', { name: '條目' }));
         expect(container.querySelector('.bim-rd-entries')!.textContent).not.toContain('→作品');
+    });
+
+    it('老字号偏好映射到最近一档：15/16/17→小或中、18→中、20/22/24→大；不认识的值用默认', () => {
+        const load = (px: unknown) => {
+            localStorage.setItem('bim-reader-prefs', JSON.stringify({ fontSize: px }));
+            return loadReaderPrefs().fontSize;
+        };
+        expect([15, 16].map(load)).toEqual([16, 16]);
+        expect(load(17)).toBeNull();          // 与小、中等距 → 中（存成 null＝默认）
+        expect(load(18)).toBeNull();
+        expect([20, 22, 24].map(load)).toEqual([20, 20, 20]);
+        expect(load(19)).toBeNull();          // 不在旧档位里：忽略，用默认
     });
 
     it('条目看法 v3：表格式行（序号、书名、作品 →／未关联），仍可展开；标出作品链接关掉就没有右列', async () => {

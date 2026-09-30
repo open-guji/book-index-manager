@@ -74,6 +74,10 @@ export const READER_CSS = `
   font-family: ${bim('font-ui')}; font-size: 11.5px; letter-spacing: 0.12em; color: ${bim('meta-fg')};
 }
 .bim-rd-entries .bim-rd-row:hover { background: ${bim('row-hover-bg')}; }
+.bim-rd-fsseg { display: inline-flex; align-items: center; gap: 2px; border: 1px solid ${bim('rule')}; background: ${bim('bg')}; }
+.bim-rd-fsb { margin: 0; padding: 3px 9px; border: 0; background: transparent; font: inherit; font-size: 12px; line-height: 1.4; color: ${bim('meta-fg')}; cursor: pointer; }
+.bim-rd-fsb:hover { color: ${bim('ink')}; }
+.bim-rd-fsb[aria-pressed="true"] { background: ${bim('flag-bg')}; color: ${bim('accent')}; font-weight: 700; }
 .bim-rd-wl {
   display: inline-block; margin-left: 12px; padding: 1px 8px; font-size: 11.5px; letter-spacing: 0; font-weight: 400; line-height: 1.7;
   background: ${bim('flag-bg')}; color: ${bim('accent')} !important; text-decoration: none !important; vertical-align: 2px; white-space: nowrap;
@@ -280,7 +284,7 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
     content: ""; position: absolute; left: 50%; top: 50%;
     width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%);
   }
-  .bim-rd-tools .bim-rd-fs + .bim-rd-fs { margin-left: 12px; }
+  .bim-rd-fsb { min-width: 44px; min-height: 44px; }
   .bim-rd-ver select { min-height: 44px; }
   .bim-rd-pager .bim-rd-pg { min-height: 44px; }
 }
