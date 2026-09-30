@@ -9,7 +9,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { BIM_THEMES, BIM_TOKENS, bim, bimRootValue, bimTokensCss } from '../../src/styles/tokens';
+import { BIM_LAYOUTS, BIM_THEMES, BIM_TOKENS, bim, bimRootValue, bimTokensCss } from '../../src/styles/tokens';
 
 // jsdom 环境下 import.meta.url 不是 file: 协议，用 __dirname
 const SRC = resolve(__dirname, '../../src');
@@ -115,7 +115,7 @@ describe('主题（朱砂默认 / 靛蓝）', () => {
         for (const name of Object.keys(BIM_THEMES.indigo)) expect(BIM_TOKENS).toHaveProperty(name);
     });
 
-    for (const theme of [undefined, 'indigo'] as const) {
+    for (const theme of [undefined, 'indigo', 'ink'] as const) {
         it(`${theme ?? 'vermilion'}：强调色在各底色上文字对比度 ≥ 4.5（AA），白字主按钮同`, () => {
             for (const bg of ['page-bg', 'zebra-bg', 'card-bg', 'tint-bg'] as const) {
                 expect(contrast(val('accent', theme), val(bg))).toBeGreaterThanOrEqual(4.5);
@@ -123,8 +123,38 @@ describe('主题（朱砂默认 / 靛蓝）', () => {
             }
             expect(contrast(val('accent', theme), val('on-color-fg'))).toBeGreaterThanOrEqual(4.5);
             // 「有影印」块：强调色字在 flag-bg 之上（靛蓝是实色 #e3eaec；朱砂是 8% 朱色叠在纸上，取与纸色的近似）
-            const flag = theme === 'indigo' ? val('flag-bg', theme) : val('page-bg');
+            const flag = theme ? val('flag-bg', theme) : val('page-bg');
             expect(contrast(val('accent', theme), flag)).toBeGreaterThanOrEqual(4.5);
         });
     }
+
+    // v4：墨换了一整套中性灰，各层文字在各层底上都要 ≥4.5，不能只查强调色
+    for (const theme of [undefined, 'indigo', 'ink'] as const) {
+        it(`${theme ?? 'vermilion'}：正文／次要／元数据／标签各层文字在各底色上对比度 ≥ 4.5`, () => {
+            for (const fg of ['ink', 'body-fg', 'quiet-fg', 'meta-fg', 'label-fg', 'aux-fg', 'hint-fg'] as const) {
+                for (const bg of ['page-bg', 'zebra-bg', 'card-bg', 'tint-bg', 'row-hover-bg'] as const) {
+                    expect(contrast(val(fg, theme), val(bg, theme)), `${fg} on ${bg}`).toBeGreaterThanOrEqual(4.5);
+                }
+            }
+        });
+    }
+
+    it('墨：强调色与正文色接近（都是近黑）——所以不能靠颜色区分链接（组件里另加下划线）', () => {
+        expect(contrast(val('accent', 'ink'), val('ink', 'ink'))).toBeLessThan(1.5);
+    });
+
+    it('生成 :root[data-theme="ink"] 与 :root[data-layout="boxed"]，且只覆盖已定义的变量', () => {
+        const css = bimTokensCss();
+        expect(css).toContain(':root[data-theme="ink"] {');
+        expect(css).toContain(':root[data-layout="boxed"] {');
+        for (const name of Object.keys(BIM_THEMES.ink)) expect(BIM_TOKENS).toHaveProperty(name);
+        for (const name of Object.keys(BIM_LAYOUTS.boxed)) expect(BIM_TOKENS).toHaveProperty(name);
+    });
+
+    it('疏朗（默认）不画框：默认值即无框无内边距；界栏才有 1px 框线与卡面底', () => {
+        expect(BIM_TOKENS['fr-bd'].value).toMatch(/^0 /);
+        expect(BIM_TOKENS['fr-bd-pad'].value).toBe('0');
+        expect(BIM_LAYOUTS.boxed['fr-bd']).toContain('1px solid');
+        expect(BIM_LAYOUTS.boxed['fr-bg']).toContain('--bim-card-bg');
+    });
 });
