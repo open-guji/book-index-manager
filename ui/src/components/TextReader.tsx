@@ -17,7 +17,7 @@ import type { IndexStorage } from '../storage/types';
 import { hasGujiTableNotation } from '../core/guji-table';
 import { hasGujiMarkdownV02 } from '../core/guji-inline';
 import { createTextApi } from '../core/text-api';
-import type { TextChapterContent, TextChapter, TextIndex, TextManifest, TextVersion } from '../core/text-model';
+import type { TextChapterContent, TextChapter, TextIndex, TextManifest, TextUpstream, TextVersion } from '../core/text-model';
 import { matchChapterAcrossVersions, pickTextVersion, textVersionLabel } from '../core/text-model';
 import { useBidUrl } from '../core/bid-url';
 import { bim } from '../styles/tokens';
@@ -76,6 +76,23 @@ export interface TextReaderProps {
 const MUTED: React.CSSProperties = { padding: 24, color: bim('desc-fg'), fontSize: 14 };
 
 /** 整理本目录在 JuanReading 里要的形状（类型、质量、考证对象），由 TextIndex 换出来 */
+const HTTP_URL = /^https?:\/\//i;
+/** 上游说明：只认 http(s) 链接（数据来自文本仓，仍不把任意 scheme 放进 href）；名字、授权、说明全空则不显示 */
+function safeUpstream(u: TextUpstream | undefined): TextUpstream | null {
+    if (!u || typeof u !== 'object') return null;
+    const str = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : undefined);
+    const url = str(u.url);
+    const licenseUrl = str(u.license_url);
+    const out: TextUpstream = {
+        name: str(u.name),
+        url: url && HTTP_URL.test(url) ? url : undefined,
+        license: str(u.license),
+        license_url: licenseUrl && HTTP_URL.test(licenseUrl) ? licenseUrl : undefined,
+        note: str(u.note),
+    };
+    return out.name || out.license || out.note ? out : null;
+}
+
 function asCollatedIndex(id: string, idx: TextIndex): CollatedEditionIndex {
     return {
         work_id: idx.work_id ?? id,
@@ -322,6 +339,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
         primary: v.key === defaultKey,
     }));
 
+    const upstream = safeUpstream(index.source?.upstream);
     const titleText = title ?? (index.title ? convert(index.title) : entryTitle ? convert(entryTitle) : undefined);
     const titleNode = titleText ? (
         <a
@@ -425,6 +443,17 @@ export const TextReader: React.FC<TextReaderProps> = ({
                                 )}
                                 {version.source_name && version.license && <span className="bim-rd-dot" />}
                                 {version.license}
+                            </p>
+                        )}
+                        {upstream && (
+                            <p className="bim-rd-meta" data-bim-upstream="">
+                                上游 {upstream.url
+                                    ? <a className="bim-rd-link" href={upstream.url} target="_blank" rel="noreferrer">{convert(upstream.name ?? upstream.url)}</a>
+                                    : convert(upstream.name ?? '')}
+                                {upstream.license && <><span className="bim-rd-dot" />{upstream.license_url
+                                    ? <a className="bim-rd-link" href={upstream.license_url} target="_blank" rel="noreferrer">{upstream.license}</a>
+                                    : upstream.license}</>}
+                                {upstream.note && <><span className="bim-rd-dot" />{convert(upstream.note)}</>}
                             </p>
                         )}
                     </header>

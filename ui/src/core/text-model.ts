@@ -48,6 +48,15 @@ export interface TextChapter {
     page_title?: string;
 }
 
+/** 文本的上游来源与授权说明（index.json 的 source.upstream） */
+export interface TextUpstream {
+    name?: string;
+    url?: string;
+    license?: string;
+    license_url?: string;
+    note?: string;
+}
+
 /** 版本目录 `<key>/index.json`：章目录＋该版本特有的元数据（整理本的分组、参考文献、质量；全文的表格写法等） */
 export interface TextIndex {
     chapters: TextChapter[];
@@ -66,7 +75,13 @@ export interface TextIndex {
     table_notation?: string;
     guji_markdown?: string;
     /** 全文：来源页 */
-    source?: { name: string; url: string; license?: string; note?: string };
+    source?: {
+        name: string; url: string; license?: string; note?: string;
+        /** 底本版本，如 Kanripo 的 WYG／SBCK、CBETA 的 T */
+        base_edition?: string;
+        /** 上游来源及其授权说明（如 Kanripo 此仓转自 CBETA，CBETA 限非营利使用）：版权栏要显示 */
+        upstream?: TextUpstream;
+    };
     version_label?: string;
     /** 整理本才有：关联的作品 id（书名链接用） */
     work_id?: string;
