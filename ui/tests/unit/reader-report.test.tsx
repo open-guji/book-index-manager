@@ -136,3 +136,33 @@ describe('阅读器页脚', () => {
         expect(screen.queryByText(/最近校订/)).toBeNull();
     });
 });
+
+describe('整理本卷头小标题「卷 · 分组」（overview#299）', () => {
+    const juan = { title: '正史類', sections: [{ title: '《史記》', type: 'book', content: '漢太史令撰。' }] };
+    const transport = { getCollatedJuan: async () => juan, getCollatedJuanText: async () => null } as never;
+    const mount = (extra: object) => render(
+        <LocaleProvider locale="zh-Hant">
+            <CollatedEdition
+                index={{ work_id: 'w1', type: 'catalog', title: '直齋書錄解題', juan_files: ['juan/001.json', 'juan/002.json'], ...extra } as never}
+                workId="w1" transport={transport} activeJuan="juan/002.json"
+            />
+        </LocaleProvider>,
+    );
+
+    it('有分组名：卷序 · 分组名，且卷序不再重复出现在信息行', async () => {
+        mount({ juan_groups: [{ label: '經錄', files: ['juan/001.json'], children: [{ label: '史部', files: ['juan/002.json'] }] }] });
+        await waitFor(() => expect(document.querySelector('.bim-rd-kicker')).toBeTruthy());
+        const k = document.querySelector('.bim-rd-kicker')!;
+        expect(k.textContent).toContain('史部'); // 取最深一层
+        expect(k.textContent).toContain('卷2');
+        expect(k.nextElementSibling?.tagName).toBe('H1');
+        expect(document.querySelector('.bim-rd-meta')?.textContent ?? '').not.toContain('卷2');
+    });
+
+    it('没有分组名：只出卷序', async () => {
+        mount({});
+        await waitFor(() => expect(document.querySelector('.bim-rd-kicker')).toBeTruthy());
+        expect(document.querySelector('.bim-rd-kicker')!.textContent).toBe('卷2');
+        expect(document.querySelector('.bim-rd-kicker .bim-rd-dot')).toBeNull();
+    });
+});
