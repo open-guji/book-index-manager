@@ -18,6 +18,8 @@ export interface ReaderPrefs {
     properNames: boolean;
     /** 横排／竖排（竖排预留） */
     writingMode: ReaderWritingMode;
+    /** 条目标题旁标出「作品 →」链接（阅读页 v3「标出作品链接」，默认开） */
+    workLinks: boolean;
 }
 
 export const DEFAULT_READER_PREFS: ReaderPrefs = {
@@ -25,6 +27,7 @@ export const DEFAULT_READER_PREFS: ReaderPrefs = {
     readingMode: 'line',
     properNames: false,
     writingMode: 'horizontal',
+    workLinks: true,
 };
 
 /** 可选字号档位；默认 18 在中间偏下 */
@@ -45,6 +48,7 @@ export function loadReaderPrefs(): ReaderPrefs {
         if (mode === 'paragraph') out.readingMode = 'paragraph';
         if (p.properNames === true) out.properNames = true;
         if (p.writingMode === 'vertical') out.writingMode = 'vertical';
+        if (p.workLinks === false) out.workLinks = false;
     } catch { /* 存储不可用：用默认值 */ }
     return out;
 }

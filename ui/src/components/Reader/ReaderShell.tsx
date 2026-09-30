@@ -33,6 +33,12 @@ export interface ReaderShellProps {
     title?: React.ReactNode;
     /** 工具条左侧：书名后的小字（作者、「整理本」等） */
     subtitle?: React.ReactNode;
+    /** 工具条左侧：书名后的作者行（「〔南宋〕陈振孙 撰」）；数据里没有就不传 */
+    byline?: React.ReactNode;
+    /** 工具条左侧：当前卷（「卷1　易类」），前面自动加分隔点 */
+    current?: React.ReactNode;
+    /** 显示「标出作品链接」勾选（当前卷里有可链到作品的条目时才有意义） */
+    workLinkToggle?: boolean;
 
     toc: ReaderTocItem[];
     activeKey: string | null;
@@ -165,6 +171,7 @@ export function ReaderShell({
     toc, activeKey, onSelect, tocHeader, tocCaption,
     images, imagesLoading, renderImageOverlay, imagePanel = 'auto',
     prefs, onPrefsChange, paragraphToggle, properNameToggle = true, allowVertical,
+    byline, current, workLinkToggle,
     pager = true,
     versions, currentVersionKey, onVersionChange, versionSource = true,
     children, className, style,
@@ -272,9 +279,11 @@ export function ReaderShell({
             }}>跳到正文</a>
 
             <div className="bim-rd-bar" ref={barRef}>
-                {(title || subtitle) && (
+                {(title || subtitle || byline || current) && (
                     <p className="bim-rd-ttl" style={{ margin: 0 }}>
                         {title && <b>{title}</b>}
+                        {byline && <span className="bim-rd-by">{byline}</span>}
+                        {current && <><span className="bim-rd-dot" aria-hidden="true" /><span className="bim-rd-cur">{current}</span></>}
                         {subtitle && <span>{subtitle}</span>}
                     </p>
                 )}
@@ -342,6 +351,16 @@ export function ReaderShell({
                             title="条目分行 ↔ 自然段"
                             onClick={() => onPrefsChange({ readingMode: prefs.readingMode === 'paragraph' ? 'line' : 'paragraph' })}
                         >自然段</button>
+                    )}
+                    {workLinkToggle && (
+                        <label className="bim-rd-t bim-rd-chk">
+                            <input
+                                type="checkbox"
+                                checked={prefs.workLinks}
+                                onChange={e => onPrefsChange({ workLinks: e.target.checked })}
+                            />
+                            <span>标出作品链接</span>
+                        </label>
                     )}
                     {properNameToggle && (
                         <button
