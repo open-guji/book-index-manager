@@ -452,6 +452,42 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
   .bim-d-pick-n { margin: 0; grid-column: 2; grid-row: 1 / span 2; }
   .bim-d-find { flex-basis: 100%; min-height: 40px; }
 }
+
+/*
+ * ── 版式「界栏」（v4，overview#291）：框线分区。<html data-layout="boxed"> 才生效，疏朗（默认）零变化。
+ * 值全走 --bim-fr-* 令牌（框线、底、标题栏、内边距、间距），这里不写死颜色与尺寸。
+ * 区块＝外框＋标题栏（下沿分隔线）＋正文内边距；提要卡去投影靠框线；侧栏各块同样框起来；页签行下沿画线。
+ */
+:root[data-layout="boxed"] .bim-d-sec { border: ${bim('fr-bd')}; background: ${bim('fr-bg')}; }
+:root[data-layout="boxed"] .bim-d-sec + .bim-d-sec { margin-top: ${bim('fr-gap')}; }
+:root[data-layout="boxed"] .bim-d-sec-head { padding: ${bim('fr-hd-pad')}; border-bottom: ${bim('fr-hd-bd')}; margin-bottom: 0; }
+:root[data-layout="boxed"] .bim-d-sec-head h2 { font-size: 18px; }
+:root[data-layout="boxed"] .bim-d-sec-body { padding: ${bim('fr-bd-pad')}; }
+:root[data-layout="boxed"] .bim-d-card { border: ${bim('fr-bd')}; background: ${bim('fr-bg')}; border-radius: 0; box-shadow: none; }
+:root[data-layout="boxed"] .bim-d-g-side { gap: ${bim('fr-side-gap')}; }
+:root[data-layout="boxed"] .bim-d-side { border: ${bim('fr-bd')}; background: ${bim('fr-bg')}; }
+:root[data-layout="boxed"] .bim-d-side .bim-d-side-h { margin: 0; padding: 11px 16px; border-bottom: ${bim('fr-hd-bd')}; }
+:root[data-layout="boxed"] .bim-d-side > :not(.bim-d-side-h) { margin-left: 16px; margin-right: 16px; }
+:root[data-layout="boxed"] .bim-d-side > .bim-d-side-h + * { margin-top: 10px; }
+:root[data-layout="boxed"] .bim-d-side > :last-child { margin-bottom: 14px; }
+:root[data-layout="boxed"] .bim-d-g-rail { border: ${bim('fr-bd')}; background: ${bim('fr-bg')}; padding: 14px 8px; }
+:root[data-layout="boxed"] .bim-d-filters { border-bottom: 1px solid ${bim('fr-tab-bd')}; }
+:root[data-layout="boxed"] .bim-d-filters .bim-d-tab { margin-bottom: -1px; }
+@media ${NARROW_QUERY} {
+  :root[data-layout="boxed"] .bim-d-card { padding: 16px; }
+  :root[data-layout="boxed"] .bim-d-g-rail { border: 0; background: transparent; padding: 0; }
+}
+
+/*
+ * ── 配色「墨」：强调色≈正文色，行内链接不能只靠颜色认——表格、旁栏清单、提要文字里的链接加下划线，
+ * 悬停加粗线。选中／当前态本来就带字重与下沿线（页签、目录当前行），不另处理。
+ */
+:root[data-theme="ink"] :is(.bim-d-zt, .bim-d-side li, .bim-d-card-desc, .bim-d-desc, .bim-d-lf-card) a {
+  text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); text-underline-offset: 3px;
+}
+:root[data-theme="ink"] :is(.bim-d-zt, .bim-d-side li, .bim-d-card-desc, .bim-d-desc, .bim-d-lf-card) a:hover {
+  text-decoration-color: currentColor; text-decoration-thickness: 2px;
+}
 `;
 
 // ══════════════════════════════════════════════════════════════
@@ -575,7 +611,7 @@ export function Sec({ id, title, meta, action, children }: {
                 {meta != null && meta !== '' && <span className="bim-d-meta">{meta}</span>}
                 {action && <span className="bim-d-sec-act">{action}</span>}
             </div>
-            {children}
+            <div className="bim-d-sec-body">{children}</div>
         </section>
     );
 }

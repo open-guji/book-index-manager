@@ -316,4 +316,16 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
   .bim-rd-h1 { font-size: 20px; letter-spacing: 0.06em; }
   .bim-rd-prose { margin-top: 20px; }
 }
+
+/* ── 版式「界栏」（v4）：正文列框起来，目录栏与侧栏加分隔线。<html data-layout="boxed"> 才生效 ── */
+:root[data-layout="boxed"] .bim-rd-col { border: ${bim('fr-bd')}; background: ${bim('fr-bg')}; padding: 28px clamp(20px, 3vw, 40px) 36px; }
+:root[data-layout="boxed"] .bim-rd-toc { border-right: ${bim('fr-bd')}; }
+:root[data-layout="boxed"] .bim-rd-views { border-bottom: 1px solid ${bim('fr-tab-bd')}; padding-bottom: 0; }
+:root[data-layout="boxed"] .bim-rd-rail-card { background: ${bim('fr-bg')}; }
+:root[data-layout="boxed"] .bim-rd-pg { background: ${bim('fr-bg')}; }
+
+/* ── 配色「墨」：强调色≈正文色，行内链接加下划线（条目名、参考文献、来源） ── */
+:root[data-theme="ink"] :is(.bim-rd-entry-h a, .bim-rd-link, .bim-rd-prose a, .bim-rd-meta a) {
+  text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); text-underline-offset: 3px;
+}
 `;
