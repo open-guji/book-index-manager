@@ -2,20 +2,21 @@
  * 搜索页 v4（overview#298）：筛选状态与 URL／Meili filter 往返、左栏、翻页、结果区（表格／卡片／页签／清除）。
  */
 import React from 'react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor, within, cleanup } from '@testing-library/react';
 import { IndexBrowser } from '../../src/components/IndexBrowser';
 import { SearchFiltersPanel } from '../../src/components/search/SearchFiltersPanel';
 import { pageWindow } from '../../src/components/search/ResultPager';
 import { SEARCH_V4_CSS } from '../../src/components/search/search-css';
 import {
     EMPTY_FILTERS, buildMeiliFilter, countActiveFilters, filtersFromParams, filtersToParams, sameFilters, typeSupportsFilters,
-    DYNASTY_GROUPS, type SearchFilters,
+    DYNASTY_GROUPS, sortFor, type SearchFilters,
 } from '../../src/core/search-filters';
 import type { IndexStorage } from '../../src/storage/types';
 import type { IndexEntry } from '../../src/types';
 
 beforeEach(() => { try { window.localStorage.clear(); } catch { /* ignore */ } });
+afterEach(() => { cleanup(); });
 
 const F = (p: Partial<SearchFilters>): SearchFilters => ({ ...EMPTY_FILTERS, ...p });
 
@@ -53,6 +54,53 @@ describe('筛选状态：Meili filter 串', () => {
 
     it('值里没有引号、反斜杠等会被代理拒绝的字符', () => {
         for (const g of DYNASTY_GROUPS) for (const v of g.values) expect(v).not.toMatch(/["\\\u0000-\u001f]/);
+    });
+});
+
+describe('排序', () => {
+    it('sort 进 URL 往返；不认识的键丢掉；不算「筛选」（不计数）', () => {
+        const p = filtersToParams(F({ sort: 'era:desc' }));
+        expect(p.get('sort')).toBe('era:desc');
+        expect(filtersFromParams(p).sort).toBe('era:desc');
+        expect(filtersFromParams(new URLSearchParams('sort=completeness:desc')).sort).toBe('');
+        expect(countActiveFilters(F({ sort: 'title:asc' }))).toBe(0);
+        expect(sameFilters(F({ sort: 'era:asc' }), F({ sort: 'era:desc' }))).toBe(false);
+    });
+
+    it('sortFor：丛编没有年代与拼音字段，不带 sort；其余类带', () => {
+        expect(sortFor('work', F({ sort: 'era:asc' }))).toBe('era:asc');
+        expect(sortFor('entity', F({ sort: 'title:desc' }))).toBe('title:desc');
+        expect(sortFor('collection', F({ sort: 'era:asc' }))).toBeUndefined();
+        expect(sortFor('work', EMPTY_FILTERS)).toBeUndefined();
+    });
+});
+
+describe('排序控件（结果区）', () => {
+    it('相关度／年代／书名；再点当前项翻转方向；点另一项从升序开始；只换排序留在当前页签', async () => {
+        const onFiltersChange = vi.fn();
+        const { rerender } = mount({ filters: EMPTY_FILTERS, onFiltersChange });
+        await waitFor(() => expect(screen.getByRole('table')).toBeTruthy());
+        const group = screen.getByRole('group', { name: '排序' });
+        expect(within(group).getByRole('button', { name: '相關度' }).getAttribute('aria-pressed')).toBe('true');
+        fireEvent.click(within(group).getByRole('button', { name: '年代' }));
+        expect(onFiltersChange).toHaveBeenLastCalledWith(F({ sort: 'era:asc' }));
+        rerender(<IndexBrowser transport={transportWith()} hideModeIndicator initialQuery="史記" filtersEnabled filters={F({ sort: 'era:asc' })} onFiltersChange={onFiltersChange} />);
+        const era = await within(screen.getByRole('group', { name: '排序' })).findByRole('button', { name: /年代/ });
+        expect(era.getAttribute('aria-pressed')).toBe('true');
+        expect(era.textContent).toContain('↑');
+        fireEvent.click(era);
+        expect(onFiltersChange).toHaveBeenLastCalledWith(F({ sort: 'era:desc' }));
+        fireEvent.click(within(screen.getByRole('group', { name: '排序' })).getByRole('button', { name: /書名/ }));
+        expect(onFiltersChange).toHaveBeenLastCalledWith(F({ sort: 'title:asc' }));
+        fireEvent.click(within(screen.getByRole('group', { name: '排序' })).getByRole('button', { name: '相關度' }));
+        expect(onFiltersChange).toHaveBeenLastCalledWith(F({ sort: '' }));
+    });
+
+    it('「清除全部筛选」不动排序', () => {
+        const onChange = vi.fn();
+        render(<SearchFiltersPanel filters={F({ dynasty: ['漢'], sort: 'title:asc' })} onChange={onChange} />);
+        fireEvent.click(screen.getByText('清除全部篩選'));
+        expect(onChange).toHaveBeenLastCalledWith(F({ sort: 'title:asc' }));
     });
 });
 
@@ -106,7 +154,9 @@ describe('左栏筛选面板', () => {
 
     it('手机「筛选」按钮：有名字、带已选个数、aria-expanded 随开合', () => {
         render(<SearchFiltersPanel filters={F({ dynasty: ['漢', '唐'], hasText: true })} onChange={() => {}} />);
-        const btn = screen.getByRole('button', { name: /^篩選/ });
+        // 宽屏下这个按钮被样式隐藏（只在窄屏出现，jsdom 里其它用例注入过的样式会让它没有可访问名称），按类名取
+        const btn = document.querySelector('.bim-sr-fbtn') as HTMLButtonElement;
+        expect(btn.textContent).toMatch(/^篩選/);
         expect(btn.textContent).toContain('3 項已選');
         expect(btn.getAttribute('aria-expanded')).toBe('false');
         const panel = document.getElementById(btn.getAttribute('aria-controls')!)!;

@@ -14,6 +14,9 @@ import type { IndexType } from '../types';
 
 export type LossStatusKey = 'extant' | 'partially_extant' | 'lost';
 
+/** 排序键（代理认的 sort 参数）：'' ＝ 按相关度（默认）；年代由早到晚／由晚到早；书名按拼音 */
+export type SearchSort = '' | 'era:asc' | 'era:desc' | 'title:asc' | 'title:desc';
+
 export interface SearchFilters {
     /** 朝代分组（DYNASTY_GROUPS 的 key），多选，组内各朝代取并集 */
     dynasty: string[];
@@ -24,11 +27,26 @@ export interface SearchFilters {
     hasCollated: boolean;
     /** 存佚，单选；'' ＝ 不限 */
     loss: '' | LossStatusKey;
+    /** 排序（不算「筛选」：不计入已选个数，「清除全部筛选」也不动它） */
+    sort: SearchSort;
 }
 
 export const EMPTY_FILTERS: SearchFilters = {
-    dynasty: [], classification: [], hasImage: false, hasText: false, hasCollated: false, loss: '',
+    dynasty: [], classification: [], hasImage: false, hasText: false, hasCollated: false, loss: '', sort: '',
 };
+
+/** 哪些类型的索引可排序（丛编没有年代与拼音字段）；与代理 SORT_INDEXES 一致 */
+export const SORTABLE_TYPES: ReadonlySet<IndexType> = new Set<IndexType>(['work', 'book', 'entity']);
+
+/** 有没有需要交给存储层的搜索选项（筛选或排序） */
+export function hasSearchOptions(f: SearchFilters): boolean {
+    return hasActiveFilters(f) || !!f.sort;
+}
+
+/** 这类索引该带的 sort 参数（不可排序的类返回 undefined） */
+export function sortFor(type: IndexType, f: SearchFilters): SearchSort | undefined {
+    return f.sort && SORTABLE_TYPES.has(type) ? f.sort : undefined;
+}
 
 /**
  * 朝代分组（设计稿「搜索页 v2」的 7 项）。key 是显示名（繁体）；values 是索引里 `dynasty` 的实际取值。
@@ -127,7 +145,7 @@ export function buildMeiliFilter(f: SearchFilters, type: IndexType): string | nu
 
 // ── URL 往返（键名短而稳定，便于分享）：dy=漢,唐  cls=史部,   img=1  txt=1  col=1  loss=lost ──
 
-const KEYS = { dynasty: 'dy', classification: 'cls', hasImage: 'img', hasText: 'txt', hasCollated: 'col', loss: 'loss' } as const;
+const KEYS = { dynasty: 'dy', classification: 'cls', hasImage: 'img', hasText: 'txt', hasCollated: 'col', loss: 'loss', sort: 'sort' } as const;
 /** URL 里代表「未分類」的值（空串在 URL 里容易丢，用一个占位词） */
 const UNCLASSIFIED = '_';
 
@@ -139,6 +157,7 @@ export function filtersToParams(f: SearchFilters, params: URLSearchParams = new 
     if (f.hasText) params.set(KEYS.hasText, '1');
     if (f.hasCollated) params.set(KEYS.hasCollated, '1');
     if (f.loss) params.set(KEYS.loss, f.loss);
+    if (f.sort) params.set(KEYS.sort, f.sort);
     return params;
 }
 
@@ -155,11 +174,12 @@ export function filtersFromParams(params: { get(name: string): string | null }):
         hasText: params.get(KEYS.hasText) === '1',
         hasCollated: params.get(KEYS.hasCollated) === '1',
         loss: loss === 'extant' || loss === 'partially_extant' || loss === 'lost' ? loss : '',
+        sort: (['era:asc', 'era:desc', 'title:asc', 'title:desc'] as const).find(k => k === params.get(KEYS.sort)) ?? '',
     };
 }
 
 /** 两组筛选是否相同（用来判断要不要重新搜索） */
 export function sameFilters(a: SearchFilters, b: SearchFilters): boolean {
-    return JSON.stringify([a.dynasty.slice().sort(), a.classification.slice().sort(), a.hasImage, a.hasText, a.hasCollated, a.loss])
-        === JSON.stringify([b.dynasty.slice().sort(), b.classification.slice().sort(), b.hasImage, b.hasText, b.hasCollated, b.loss]);
+    return JSON.stringify([a.dynasty.slice().sort(), a.classification.slice().sort(), a.hasImage, a.hasText, a.hasCollated, a.loss, a.sort])
+        === JSON.stringify([b.dynasty.slice().sort(), b.classification.slice().sort(), b.hasImage, b.hasText, b.hasCollated, b.loss, b.sort]);
 }

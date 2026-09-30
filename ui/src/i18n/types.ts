@@ -184,6 +184,14 @@ export interface LocaleMessages {
         nextPage: string;
         emptyFiltered: string;
         limitedNote: string;
+        sortLabel: string;
+        sortRelevance: string;
+        sortEra: string;
+        sortTitle: string;
+        sortEraAsc: string;
+        sortEraDesc: string;
+        sortTitleAsc: string;
+        sortTitleDesc: string;
         onlyWorksNote: string;
     };
     home: {

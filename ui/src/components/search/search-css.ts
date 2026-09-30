@@ -38,6 +38,10 @@ export const SEARCH_V4_CSS = `
 .bim-sr-tag-x { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border: 0; background: ${bim('flag-bg')}; color: ${bim('accent')}; cursor: pointer; font: inherit; font-size: 12px; }
 .bim-sr-tag-x span { font-size: 13px; opacity: .7; }
 .bim-sr-tools { display: flex; justify-content: flex-end; align-items: center; gap: 14px; margin: 10px 0 0; font-size: 12.5px; }
+.bim-sr-sorts { display: flex; align-items: center; gap: 14px; }
+.bim-sr-sorts button { padding: 0; border: 0; background: none; cursor: pointer; font: inherit; font-size: 12.5px; color: ${bim('meta-fg')}; }
+.bim-sr-sorts button[aria-pressed="true"] { color: ${bim('ink')}; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.bim-sr-vsep { width: 1px; height: 14px; background: ${bim('rule')}; }
 .bim-sr-view { display: inline-flex; border: 1px solid ${bim('rule')}; }
 .bim-sr-view button { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border: 0; background: transparent; color: ${bim('meta-fg')}; cursor: pointer; font: inherit; font-size: 12px; }
 .bim-sr-view button + button { border-left: 1px solid ${bim('rule')}; }
@@ -99,6 +103,7 @@ export const SEARCH_V4_CSS = `
   .bim-sr-opt { min-height: 44px; }
   .bim-sr-seg button { min-height: 44px; }
   .bim-sr-view button { min-height: 44px; }
+  .bim-sr-sorts button { min-height: 44px; padding: 0 4px; }
   .bim-sr-pager button { min-height: 44px; min-width: 44px; }
   .bim-sr-clear, .bim-sr-tag-x { min-height: 44px; }
 }

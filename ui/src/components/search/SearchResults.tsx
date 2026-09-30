@@ -78,15 +78,19 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
     const filtersKey = filtersToParams(filters).toString();
     const active = countActiveFilters(filters) > 0;
 
-    // 检索词／筛选变了：回「全部」第 1 页（筛选后原来的页签可能已经没有结果）
-    const seen = useRef({ query, filtersKey });
+    // 检索词／筛选变了：回「全部」第 1 页（筛选后原来的页签可能已经没有结果）；只换排序：留在当前页签、回第 1 页
+    const filterOnlyKey = filtersToParams({ ...filters, sort: '' }).toString();
+    const seen = useRef({ query, filterOnlyKey, sort: filters.sort });
     useEffect(() => {
-        if (seen.current.query !== query || seen.current.filtersKey !== filtersKey) {
-            seen.current = { query, filtersKey };
+        const prev = seen.current;
+        if (prev.query !== query || prev.filterOnlyKey !== filterOnlyKey) {
             setActiveType('all');
             setPage(1);
+        } else if (prev.sort !== filters.sort) {
+            setPage(1);
         }
-    }, [query, filtersKey]);
+        seen.current = { query, filterOnlyKey, sort: filters.sort };
+    }, [query, filterOnlyKey, filters.sort]);
 
     // 「全部」：各类前几条＋各类总数（页签条数的来源）
     useEffect(() => {
@@ -184,6 +188,25 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
                 )}
 
                 <div className="bim-sr-tools">
+                    <div className="bim-sr-sorts" role="group" aria-label={convert(v.sortLabel)}>
+                        <button type="button" aria-pressed={!filters.sort} onClick={() => onFiltersChange({ ...filters, sort: '' })}>{convert(v.sortRelevance)}</button>
+                        {(['era', 'title'] as const).map(k => {
+                            const cur = filters.sort.startsWith(`${k}:`) ? (filters.sort.endsWith('desc') ? 'desc' : 'asc') : null;
+                            const label = k === 'era' ? v.sortEra : v.sortTitle;
+                            const hint = k === 'era' ? (cur === 'desc' ? v.sortEraDesc : v.sortEraAsc) : (cur === 'desc' ? v.sortTitleDesc : v.sortTitleAsc);
+                            return (
+                                <button
+                                    key={k}
+                                    type="button"
+                                    aria-pressed={cur !== null}
+                                    title={convert(hint)}
+                                    // 再点一次当前项＝翻转方向；点另一项从升序开始
+                                    onClick={() => onFiltersChange({ ...filters, sort: `${k}:${cur === 'asc' ? 'desc' : 'asc'}` as SearchFilters['sort'] })}
+                                >{convert(label)}{cur ? <span aria-hidden="true"> {cur === 'asc' ? '↑' : '↓'}</span> : null}</button>
+                            );
+                        })}
+                    </div>
+                    <span className="bim-sr-vsep" aria-hidden="true" />
                     <div className="bim-sr-view" role="group" aria-label={convert(v.viewLabel)}>
                         <button type="button" aria-pressed={view === 'table'} onClick={() => setView('table')}>{convert(v.viewTable)}</button>
                         <button type="button" aria-pressed={view === 'card'} onClick={() => setView('card')}>{convert(v.viewCard)}</button>
