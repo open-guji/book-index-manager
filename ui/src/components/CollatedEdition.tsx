@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import type { CollatedEditionIndex, CollatedJuan, CollatedSection, JuanGroup, TextQualityGrade } from '../types';
+import type { AuthorInfo, CollatedEditionIndex, CollatedJuan, CollatedSection, JuanGroup, TextQualityGrade } from '../types';
 import { TEXT_QUALITY_LABELS, TEXT_QUALITY_CRITERIA } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { useConvert } from '../i18n';
@@ -1066,10 +1066,12 @@ export function entryHeadingLeveler(): (kind: '类' | '条目') => 'h2' | 'h3' {
  *
  * 只跳过真页眉（书口题名）；长 page_header 其实是正文，见 isPageHeaderContent。
  */
-function CollatedEntries({ sections, onNavigate, inline }: {
+function CollatedEntries({ sections, onNavigate, inline, workLinks = true }: {
     sections: CollatedSection[];
     onNavigate?: (id: string) => void;
     inline: (s: string) => React.ReactNode;
+    /** 标出作品链接（默认开）：开＝书名可点＋标题旁「作品 →」；关＝书名是纯文字 */
+    workLinks?: boolean;
 }) {
     const buildUrl = useBidUrl();
     const { convert } = useConvert();
@@ -1094,12 +1096,20 @@ function CollatedEntries({ sections, onNavigate, inline }: {
                     const title = inline(convert(head));
                     return (
                         <section key={i} className="bim-rd-entry">
-                            {React.createElement(tagOf('条目'), { className: 'bim-rd-entry-h' }, s.work_id && onNavigate ? (
-                                    <a
-                                        href={buildUrl(s.work_id)}
-                                        onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(s.work_id!); }}
-                                        title="查看作品"
-                                    >{title}</a>
+                            {React.createElement(tagOf('条目'), { className: 'bim-rd-entry-h' }, s.work_id && onNavigate && workLinks ? (
+                                    <>
+                                        <a
+                                            href={buildUrl(s.work_id)}
+                                            onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(s.work_id!); }}
+                                            title="查看作品"
+                                        >{title}</a>
+                                        <a
+                                            className="bim-rd-wl"
+                                            href={buildUrl(s.work_id)}
+                                            onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(s.work_id!); }}
+                                            aria-label={`查看作品：${head}`}
+                                        >作品 →</a>
+                                    </>
                                 ) : title)}
                             {s.author_info && <p className="bim-rd-sub">{inline(convert(s.author_info))}</p>}
                             {s.content && s.content.split(/\n+/).map((para, j) => <p key={j}>{inline(convert(para))}</p>)}
@@ -1229,7 +1239,7 @@ export function JuanReading({
                 <article className="bim-rd-prose">
                     {useMd
                         ? <ReaderMdText text={rawText!} mode={prefs.readingMode} properNames={prefs.properNames} renderText={renderText} dropTitle={juan.title} />
-                        : <CollatedEntries sections={juan.sections} onNavigate={onNavigate} inline={inline} />}
+                        : <CollatedEntries sections={juan.sections} onNavigate={onNavigate} inline={inline} workLinks={prefs.workLinks} />}
                 </article>
             )}
 
@@ -1250,7 +1260,7 @@ export function JuanReading({
                                 // 考证条目（如「史記一百三十卷目錄一卷」）title 与 content 各自独立，
                                 // 与「书」同样需要标题+正文一并展示，走 OtherSection 会丢标题。
                                 if (t === '书' || t === '诗' || t === '考证') {
-                                    return <BookSection key={i} section={section} onNavigate={onNavigate} highlightQuery={q} />;
+                                    return <BookSection key={i} section={section} onNavigate={prefs.workLinks ? onNavigate : undefined} highlightQuery={q} />;
                                 }
                                 if (t === '类') {
                                     return <CategoryHeader key={i} section={section} highlightQuery={q} />;
@@ -1396,6 +1406,25 @@ function useCrossJuanSearch(opts: {
     }, [query, workId, transport, files.join(','), computeMatch, normalizer, noteTitle]);
 
     return { matchStates, titles };
+}
+
+/** 取作品的作者（含朝代），只给阅读页工具条的作者行用；取不到返回空数组 */
+function useWorkAuthors(workId?: string, transport?: IndexStorage): AuthorInfo[] {
+    const [authors, setAuthors] = useState<AuthorInfo[]>([]);
+    useEffect(() => {
+        setAuthors([]);
+        if (!workId || typeof transport?.getItem !== 'function') return;
+        let cancelled = false;
+        Promise.resolve(transport.getItem(workId))
+            .then(item => {
+                if (cancelled || !item) return;
+                const list = (item.authors as AuthorInfo[] | undefined) ?? [];
+                setAuthors(list.filter(a => a && a.name));
+            })
+            .catch(() => { /* 没有作者行也能读 */ });
+        return () => { cancelled = true; };
+    }, [workId, transport]);
+    return authors;
 }
 
 // ── 主组件 ──
@@ -1695,12 +1724,30 @@ const CollatedEditionInner: React.FC<{
     const unit = isKaozhen ? '章' : index.juan_metadata && Object.values(index.juan_metadata).some(m => m.vol_label) ? '冊' : '卷';
     const position = activeFile ? juanLabel(activeFile, index, titles, convert).position : undefined;
 
+    /* 工具条：书名链到作品页；作者行取作品数据（缺就不显示，不编造） */
+    const buildUrl = useBidUrl();
+    const titleText = reader.title ?? (index.title ? convert(index.title) : undefined);
+    const titleNode = titleText && effectiveWorkId && onNavigate ? (
+        <a
+            href={buildUrl(effectiveWorkId)}
+            onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(effectiveWorkId); }}
+            title="查看作品"
+        >{titleText}</a>
+    ) : titleText;
+    const authors = useWorkAuthors(effectiveWorkId, transport);
+    const byline = authors.length > 0
+        ? convert(authors.slice(0, 2).map(a => `${a.dynasty ? `〔${a.dynasty}〕` : ''}${a.name}${a.role ? ` ${a.role}` : ' 撰'}`).join('、'))
+        : undefined;
+
     return (
         <ReaderShell
             className={className}
             style={style}
-            title={reader.title ?? (index.title ? convert(index.title) : undefined)}
+            title={titleNode}
             subtitle={reader.subtitle ?? convert(isKaozhen ? '考證' : '整理本')}
+            byline={byline}
+            current={activeFile ? juanLabel(activeFile, index, titles, convert).label : undefined}
+            workLinkToggle={!isKaozhen && !!onNavigate && !!juanData?.sections.some(x => x.work_id)}
             toc={toc}
             tocCaption={`目录 · ${allFiles.length} ${convert(unit)}`}
             tocHeader={tocHeader}
