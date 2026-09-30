@@ -138,7 +138,14 @@ export type { SearchInputProps } from './components/SearchInput';
 export { ModeIndicator } from './components/ModeIndicator';
 export { CollectionCatalog } from './components/CollectionCatalog';
 export type { CollectionCatalogProps } from './components/CollectionCatalog';
+export { SearchResults, SEARCH_VIEW_STORAGE_KEY } from './components/search/SearchResults';
 export { CollatedEdition } from './components/CollatedEdition';
+export {
+    EMPTY_FILTERS, DYNASTY_GROUPS, CLASSIFICATIONS, LOSS_OPTIONS, FILTER_SUPPORT,
+    countActiveFilters, hasActiveFilters, typeSupportsFilters, buildMeiliFilter,
+    filtersToParams, filtersFromParams, sameFilters,
+} from './core/search-filters';
+export type { SearchFilters, LossStatusKey } from './core/search-filters';
 export { BookFullText } from './components/BookFullText';
 export type { BookFullTextProps } from './components/BookFullText';
 // 阅读器（整理本 / 全文共用的外壳、目录、书影、正文排版）

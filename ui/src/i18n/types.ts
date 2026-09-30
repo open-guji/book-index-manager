@@ -147,6 +147,45 @@ export interface LocaleMessages {
         searchBookName: string;
         alias: string;
     };
+    /** 搜索页 v4：左栏筛选、表格／卡片视图（overview#298） */
+    searchV4: {
+        filterTitle: string;
+        dynasty: string;
+        classification: string;
+        resources: string;
+        extant: string;
+        clearAllFilters: string;
+        hasImage: string;
+        hasText: string;
+        hasCollated: string;
+        /** 「筛选」按钮（手机）与已选个数 */
+        filterButton: string;
+        filterSelected: string;
+        expand: string;
+        collapse: string;
+        filteredCount: string;
+        removeFilter: string;
+        viewLabel: string;
+        viewTable: string;
+        viewCard: string;
+        colTitle: string;
+        colType: string;
+        colAuthor: string;
+        colEra: string;
+        colClass: string;
+        colResource: string;
+        tagImage: string;
+        tagText: string;
+        tagCollated: string;
+        tagLost: string;
+        pageInfo: string;
+        pagerLabel: string;
+        prevPage: string;
+        nextPage: string;
+        emptyFiltered: string;
+        limitedNote: string;
+        onlyWorksNote: string;
+    };
     home: {
         title: string;
         subtitle: string;

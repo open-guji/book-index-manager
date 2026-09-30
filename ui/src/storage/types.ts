@@ -13,7 +13,7 @@ export interface IndexStorage {
     search(query: string, type: IndexType, options: LoadOptions): Promise<PageResult<IndexEntry>>;
 
     /** 统一搜索（同时搜索所有类型，返回分组结果） */
-    searchAll?(query: string, limit?: number): Promise<GroupedSearchResult>;
+    searchAll?(query: string, limit?: number, filters?: import('../core/search-filters').SearchFilters): Promise<GroupedSearchResult>;
 
     /** 获取单条元数据 */
     getItem(id: string): Promise<Record<string, unknown> | null>;
