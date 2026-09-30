@@ -364,7 +364,9 @@ function extractAnnotation(content?: string): string | null {
     return null;
 }
 
-function BookSection({ section, onNavigate, highlightQuery = '', no, showUnlinked = false }: {
+function BookSection({ section, onNavigate, highlightQuery = '', no, showUnlinked = false, domId }: {
+    /** 右栏锚点跳转用的 id */
+    domId?: string;
     section: CollatedSection;
     onNavigate?: (id: string) => void;
     highlightQuery?: string;
@@ -395,7 +397,7 @@ function BookSection({ section, onNavigate, highlightQuery = '', no, showUnlinke
     const preview = !expanded && hasLongContent ? truncateOutsideJiazhu(section.content!.replace(/\n/g, ' '), 80) + '…' : null;
 
     return (
-        <div className="bim-rd-row" style={{
+        <div className="bim-rd-row" id={domId} style={{
             borderBottom: `1px solid ${bim('rule')}`,
             overflow: 'hidden',
         }}>
@@ -1107,7 +1109,7 @@ function CollatedEntries({ sections, onNavigate, inline, workLinks = true }: {
                         : s.title;
                     const title = inline(convert(head));
                     return (
-                        <section key={i} className="bim-rd-entry">
+                        <section key={i} className="bim-rd-entry" id={`rd-e-${i}`}>
                             {React.createElement(tagOf('条目'), { className: 'bim-rd-entry-h' }, s.work_id && onNavigate && workLinks ? (
                                     <>
                                         <a
@@ -1148,7 +1150,7 @@ function hasSectionText(sections: CollatedSection[]): boolean {
     });
 }
 
-type JuanView = 'text' | 'entries';
+export type JuanView = 'text' | 'entries';
 
 /**
  * 一卷的阅读区：卷名 h1、元数据一行（不用 badge）、「正文 / 条目」两种看法。
@@ -1168,7 +1170,12 @@ export function JuanReading({
     transport,
     workLabelCache,
     prefs,
+    view: viewProp,
+    onViewChange,
 }: {
+    /** 「正文／条目」看法；不传就自己管（右栏要跳到另一种看法里的条目时由外层持有） */
+    view?: JuanView;
+    onViewChange?: (v: JuanView) => void;
     juan: CollatedJuan;
     rawText?: string | null;
     /** 「卷11」「49冊」等 */
@@ -1182,7 +1189,9 @@ export function JuanReading({
 }) {
     const { convert } = useConvert();
     const normalizer = useSearchNormalizer();
-    const [view, setView] = useState<JuanView>('text');
+    const [viewOwn, setViewOwn] = useState<JuanView>('text');
+    const view = viewProp ?? viewOwn;
+    const setView = (v: JuanView) => { setViewOwn(v); onViewChange?.(v); };
     const q = searchQuery.trim();
     const isKaozhen = index?.type === 'kaozhen';
 
@@ -1281,7 +1290,7 @@ export function JuanReading({
                                 // 与「书」同样需要标题+正文一并展示，走 OtherSection 会丢标题。
                                 if (t === '书' || t === '诗' || t === '考证') {
                                     rowNo += 1;
-                                    return <BookSection key={i} section={section} onNavigate={prefs.workLinks ? onNavigate : undefined} highlightQuery={q} no={rowNo} showUnlinked={prefs.workLinks && !!onNavigate} />;
+                                    return <BookSection key={i} domId={`rd-e-${juan.sections.indexOf(section)}`} section={section} onNavigate={prefs.workLinks ? onNavigate : undefined} highlightQuery={q} no={rowNo} showUnlinked={prefs.workLinks && !!onNavigate} />;
                                 }
                                 if (t === '类') {
                                     return <CategoryHeader key={i} section={section} highlightQuery={q} />;
@@ -1427,6 +1436,58 @@ function useCrossJuanSearch(opts: {
     }, [query, workId, transport, files.join(','), computeMatch, normalizer, noteTitle]);
 
     return { matchStates, titles };
+}
+
+/**
+ * 右栏（v3）：「本卷」计数卡（N 部书、已关联 M、进度条）＋「条目」锚点列表。
+ * 只在有书目条目的目录体卷里出；条目名点一下滚到正文（或条目页签）里对应那条。
+ */
+function JuanRail({ juan, view, onView, textHasEntries }: {
+    juan: CollatedJuan;
+    view: JuanView;
+    onView: (v: JuanView) => void;
+    /** 正文看法里有没有逐条书目（自然段模式下没有，锚点无处可跳） */
+    textHasEntries: boolean;
+}) {
+    const { convert } = useConvert();
+    const items = juan.sections
+        .map((s, i) => ({ s, i, t: normSectionType(s.type) }))
+        .filter(x => x.t === '书' || x.t === '诗');
+    if (items.length === 0) return null;
+    const linked = items.filter(x => !!x.s.work_id).length;
+    const unit = items.every(x => x.t === '诗') ? '首' : '部书';
+    const jump = (i: number) => {
+        const go = () => document.getElementById(`rd-e-${i}`)?.scrollIntoView?.({ block: 'start', behavior: 'smooth' });
+        if (view === 'text' && !textHasEntries) onView('entries');
+        if (view === 'text' && !textHasEntries) setTimeout(go, 0); else go();
+    };
+    return (
+        <>
+            <div className="bim-rd-rail-card">
+                <div className="bim-rd-rail-cap">本卷</div>
+                <div className="bim-rd-rail-n">
+                    <b>{items.length}</b><span>{convert(unit)}</span>
+                    <span className="bim-rd-rail-linked">已关联 {linked}</span>
+                </div>
+                <div className="bim-rd-rail-bar" role="img" aria-label={`已关联 ${linked} / ${items.length}`}>
+                    <span style={{ width: `${Math.round((linked / items.length) * 100)}%` }} />
+                </div>
+            </div>
+            <nav aria-label="本卷条目">
+                <div className="bim-rd-rail-cap" style={{ margin: '20px 0 6px 12px' }}>{convert('條目')}</div>
+                <ul className="bim-rd-rail-list">
+                    {items.map(({ s, i }) => (
+                        <li key={i}>
+                            <a href={`#rd-e-${i}`} onClick={e => { e.preventDefault(); jump(i); }}>
+                                <span className={`bim-rd-rail-dot${s.work_id ? ' on' : ''}`} aria-hidden="true" />
+                                <span>{convert(s.book_title || s.title)}</span>
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
+        </>
+    );
 }
 
 /** 取作品的作者（含朝代），只给阅读页工具条的作者行用；取不到返回空数组 */
@@ -1710,6 +1771,8 @@ const CollatedEditionInner: React.FC<{
 }) => {
     const { convert } = useConvert();
     const [prefs, setPrefs] = useReaderPrefs();
+    const [juanView, setJuanView] = useState<JuanView>('text');
+    useEffect(() => { setJuanView('text'); }, [activeFile]);
     const { matchStates, titles } = useCrossJuanSearch({
         workId: effectiveWorkId,
         transport,
@@ -1755,6 +1818,11 @@ const CollatedEditionInner: React.FC<{
             title="查看作品"
         >{titleText}</a>
     ) : titleText;
+    const sectionText = !!juanData && !isKaozhen && hasSectionText(juanData.sections);
+    const textHasEntries = sectionText && !(juanRawText && prefs.readingMode === 'paragraph' && canParagraphize(juanRawText));
+    const rail = juanData && !isKaozhen && sectionText
+        ? <JuanRail juan={juanData} view={juanView} onView={setJuanView} textHasEntries={textHasEntries} />
+        : undefined;
     const authors = useWorkAuthors(effectiveWorkId, transport);
     const byline = authors.length > 0
         ? convert(authors.slice(0, 2).map(a => `${a.dynasty ? `〔${a.dynasty}〕` : ''}${a.name}${a.role ? ` ${a.role}` : ' 撰'}`).join('、'))
@@ -1768,6 +1836,7 @@ const CollatedEditionInner: React.FC<{
             subtitle={reader.subtitle ?? convert(isKaozhen ? '考證' : '整理本')}
             byline={byline}
             pagerUnit={unit}
+            rail={rail}
             current={activeFile ? juanLabel(activeFile, index, titles, convert).label : undefined}
             workLinkToggle={!isKaozhen && !!onNavigate && !!juanData?.sections.some(x => x.work_id)}
             toc={toc}
@@ -1798,6 +1867,8 @@ const CollatedEditionInner: React.FC<{
                     transport={transport}
                     workLabelCache={workLabelCacheRef}
                     prefs={prefs}
+                    view={juanView}
+                    onViewChange={setJuanView}
                 />
             ) : activeFile ? (
                 <div className="bim-rd-state">无法加载这一卷</div>

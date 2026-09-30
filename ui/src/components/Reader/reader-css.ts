@@ -172,6 +172,28 @@ export const READER_CSS = `
 }
 .bim-rd-img-pager { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 13px; color: ${bim('quiet-fg')}; }
 
+/* 右栏（v3）：正文列右侧 220px，≥860px 才显示，吸顶 */
+.bim-rd-rail { display: none; }
+@media (min-width: 860px) {
+  .bim-rd-text[data-rail] { display: grid; grid-template-columns: minmax(0, 50em) 220px; gap: 40px; align-items: start; justify-content: start; }
+  .bim-rd-text[data-rail] .bim-rd-col { margin: 0; max-width: none; }
+  .bim-rd-rail { display: block; position: sticky; top: calc(var(--bimrd-bar-h) + 16px); max-height: calc(100vh - var(--bimrd-bar-h) - 32px); overflow-y: auto; font-family: ${bim('font-ui')}; }
+}
+.bim-rd-rail-card { padding: 12px 14px; background: ${bim('bg')}; border: 1px solid ${bim('rule')}; }
+.bim-rd-rail-cap { font-size: 11.5px; letter-spacing: 0.16em; color: ${bim('label-fg')}; }
+.bim-rd-rail-n { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
+.bim-rd-rail-n b { font-size: 22px; font-weight: 600; color: ${bim('ink')}; }
+.bim-rd-rail-n span { font-size: 12px; color: ${bim('meta-fg')}; }
+.bim-rd-rail-n .bim-rd-rail-linked { margin-left: auto; color: ${bim('accent')}; white-space: nowrap; }
+.bim-rd-rail-bar { display: flex; height: 5px; margin-top: 8px; background: ${bim('rule')}; }
+.bim-rd-rail-bar span { background: ${bim('accent')}; }
+.bim-rd-rail-list { list-style: none; margin: 0; padding: 0; }
+.bim-rd-rail-list a { display: flex; align-items: baseline; gap: 8px; padding: 5px 12px; border-left: 2px solid ${bim('rule')}; font-size: 13px; color: ${bim('quiet-fg')}; text-decoration: none; }
+.bim-rd-rail-list a > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bim-rd-rail-list a:hover { border-left-color: ${bim('accent')}; color: ${bim('ink')}; }
+.bim-rd-rail-dot { flex: none; align-self: center; width: 5px; height: 5px; background: ${bim('rule')}; }
+.bim-rd-rail-dot.on { background: ${bim('accent')}; }
+
 /* 正文 */
 .bim-rd-text { grid-column: 3; min-width: 0; padding: 32px 48px 96px 40px; outline: none; }
 /* 正文列靠左紧贴目录栏（原来居中，两边各留 ~150px 空隙），并加宽 38em → 50em */
