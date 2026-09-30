@@ -188,12 +188,17 @@ function currentAnchor(root: HTMLElement | null, barBottom: number): string | un
     return found;
 }
 
-/** 读者在正文里选中的文字（不在正文里的选区不算） */
+/** 读者在正文里选中的文字：只认正文列里的选区，右栏、出处页脚、翻卷器里的不算 */
 function selectedInText(root: HTMLElement | null): string | undefined {
     if (typeof window === 'undefined' || !root) return undefined;
     const sel = window.getSelection?.();
     if (!sel || sel.isCollapsed || sel.rangeCount === 0) return undefined;
-    if (!root.contains(sel.anchorNode) || !root.contains(sel.focusNode)) return undefined;
+    const col = root.querySelector<HTMLElement>('.bim-rd-col');
+    const inBody = (node: Node | null) => {
+        const el = node?.nodeType === 1 ? node as Element : node?.parentElement;
+        return !!node && !!col?.contains(node) && !el?.closest('.bim-rd-src, .bim-rd-pager');
+    };
+    if (!inBody(sel.anchorNode) || !inBody(sel.focusNode)) return undefined;
     const t = sel.toString().replace(/\s+/g, ' ').trim();
     return t ? t.slice(0, 500) : undefined;
 }
@@ -461,7 +466,7 @@ export function ReaderShell({
                 <div className="bim-rd-text" id={textId} ref={textRef} tabIndex={-1} data-rail={rail || onReportError ? 'true' : undefined}>
                     <div className="bim-rd-col">
                         {children}
-                        {versionSource && version && (version.sourceName || version.license || revisedAt) && (
+                        {versionSource && version && (version.sourceName || version.license) && (
                             <p className="bim-rd-src" data-version={version.key}>
                                 {version.sourceName && (
                                     <>
@@ -473,10 +478,10 @@ export function ReaderShell({
                                 )}
                                 {version.sourceName && version.license && <span className="bim-rd-dot" />}
                                 {version.license && <>授权 {version.license}</>}
-                                {revisedAt && (version.sourceName || version.license) && <span className="bim-rd-dot" />}
-                                {revisedAt && <>最近校订 {revisedAt}</>}
                             </p>
                         )}
+                        {/* 校订日期独立于版本元数据：整理本不传 version、全文关掉 versionSource，也要能显示 */}
+                        {revisedAt && <p className="bim-rd-src bim-rd-rev">最近校订 {revisedAt}</p>}
                         {pager && (prev || next) && (
                             <nav className="bim-rd-pager" aria-label="翻卷">
                                 {prev ? (

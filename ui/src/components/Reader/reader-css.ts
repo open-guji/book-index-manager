@@ -259,6 +259,7 @@ export const READER_CSS = `
 
 .bim-rd-src { margin: 48px 0 0; font-size: 12px; line-height: 1.8; color: ${bim('meta-fg')}; font-family: ${bim('font-ui')}; }
 .bim-rd-src .bim-rd-dot::before { content: "·"; margin: 0 0.5em; }
+.bim-rd-src + .bim-rd-rev { margin-top: 4px; }
 .bim-rd-pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 48px; font-size: 14px; font-family: ${bim('font-ui')}; }
 .bim-rd-pg {
   display: block; min-width: 0; margin: 0; padding: 14px 16px; text-align: left; font: inherit;
