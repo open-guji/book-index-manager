@@ -152,7 +152,7 @@ export type { TextReaderProps, TextLocation, TextLocationCause } from './compone
 export { createTextApi } from './core/text-api';
 export type { TextApi } from './core/text-api';
 export {
-    isTextKey, isChapterSegment, chapterKeyOf, sourceOfKey, versionKeyFromOld, synthesizeManifest, matchChapterAcrossVersions, pickTextVersion, textVersionLabel,
+    isTextKey, isChapterSegment, matchChapterAcrossVersions, pickTextVersion, textVersionLabel,
 } from './core/text-model';
 export type { TextKind, TextVersion, TextManifest, TextChapter, TextIndex, TextChapterContent } from './core/text-model';
 export type { BookFullTextProps } from './components/BookFullText';

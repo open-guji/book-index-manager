@@ -1,7 +1,7 @@
 /**
  * 统一阅读器（overview#307 C 块）：整理本与全文合一。
  *
- * 取数走 core/text-api：新结构（items/<id>/manifest.json）原样走新接口，旧结构由旧取数方法合成等价数据。
+ * 取数走 core/text-api，只认新结构（items/<id>/manifest.json，用户 09-30 定）；没有 manifest 显示「暂无文本」。
  * 一个条目下有 manifest 列出的若干份版本（整理本、維基文庫、Kanripo…），工具条一个「版本」下拉框按 manifest 顺序
  * 列全部（default 在最前）；只有一份时不出下拉，只在书名后标来源名。每份版本的出处与授权在正文末尾随版本显示。
  *
@@ -305,7 +305,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
     // ── 渲染 ──
     if (manifestState === 'loading') return <div className={className} style={{ ...style, ...MUTED }}>加载中…</div>;
     if (manifestState === 'missing' || !manifest || !version) {
-        return <div className={className} style={{ ...style, ...MUTED }}>没有可阅读的文本</div>;
+        return <div className={className} style={{ ...style, ...MUTED }}>暂无文本</div>;
     }
     if (indexState === 'failed') return <div className={className} style={{ ...style, ...MUTED }}>无法加载目录</div>;
     if (!index) return <div className={className} style={{ ...style, ...MUTED }}>加载目录…</div>;

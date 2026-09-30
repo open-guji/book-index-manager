@@ -121,8 +121,8 @@ export interface IndexStorage {
     // ── 阅读文本（新结构，可选；overview#307） ──
     //
     // 整理本与全文合一：一个条目下有 manifest.json 列出的若干份版本（key），每份是按章分的一组 md，
-    // 整理本的章另有同名 json。实现了这三个方法且条目有 manifest 时，阅读器（TextReader）走这里；
-    // 没有 manifest（旧结构）或没实现，由 core/text-api 用上面旧的取数方法合成等价数据。
+    // 整理本的章另有同名 json。阅读器（TextReader）只认这一套（用户 09-30 定）：没有 manifest 就显示「暂无文本」，
+    // 不从上面旧的取数方法合成。
 
     /** 条目的文本版本清单（`items/<id>/manifest.json`）；旧结构、取不到返回 null */
     getTextManifest?(id: string): Promise<TextManifest | null>;

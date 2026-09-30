@@ -1,6 +1,6 @@
 /**
  * TextReader（overview#307 C 块）：整理本与全文合一的统一阅读器。
- * 新结构（manifest＋<key>/index.json）与旧结构（旧取数方法）走同一套界面。
+ * 只认新结构（manifest＋<key>/index.json）；没有 manifest 显示「暂无文本」。
  */
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -8,7 +8,7 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import { TextReader } from '../../src/components/TextReader';
 import type { TextLocation, TextLocationCause } from '../../src/components/TextReader';
 import type { IndexStorage } from '../../src/storage/types';
-import type { CollatedEditionIndex, CollatedJuan, WorkFullTextEntry, WorkFullTextIndex } from '../../src/types';
+import type { CollatedJuan } from '../../src/types';
 
 const WORK = 'd59f2htm01du';
 
@@ -42,27 +42,6 @@ function nativeTransport(over: Partial<IndexStorage> = {}, manifest: unknown = M
             json: key === 'default' ? JUAN[ch] ?? null : null,
         }),
         ...over,
-    } as unknown as IndexStorage;
-}
-
-// ── 旧结构 ──
-const COLLATED: CollatedEditionIndex = { work_id: WORK, title: '書錄', juan_files: ['juan/001.json', 'juan/002.json'] };
-const FULLS: WorkFullTextEntry[] = [
-    { key: 'wikisource-01', owner_type: 'Work', path: 'p', source_name: '維基文庫', source_url: 'https://zh.wikisource.org/wiki/x', version_label: 'W', license: 'CC BY-SA 4.0', total_chapters: 2, primary: true },
-];
-const ftIndex: WorkFullTextIndex = {
-    work_id: WORK, version_label: 'W', source: { name: '維基文庫', url: 'u' }, total_chapters: 2,
-    chapters: [{ n: 1, title: '卷一', file: '001.md' }, { n: 2, title: '卷二', file: '002.md' }],
-};
-function legacyTransport(): IndexStorage {
-    return {
-        getItem: async () => ({ title: '直齋書錄解題' }),
-        getCollatedEditionIndex: async () => COLLATED,
-        getCollatedJuan: async (_id: string, f: string) => JUAN[f.replace(/^juan\//, '').replace('.json', '')] ?? null,
-        getCollatedJuanText: async () => null,
-        getWorkFullTextList: async () => FULLS,
-        getWorkFullTextIndex: async () => ftIndex,
-        getWorkFullTextChapter: async (_id: string, _k: string, f: string) => `# 旧全文\n${f} 正文。`,
     } as unknown as IndexStorage;
 }
 
@@ -197,7 +176,7 @@ describe('TextReader · 新结构', () => {
 
     it('没有文本：提示而不是空白', async () => {
         setup(nativeTransport({ getTextManifest: async () => null }), {});
-        await screen.findByText('没有可阅读的文本');
+        await screen.findByText('暂无文本');
     });
 
     it('目录取不到：提示无法加载', async () => {
@@ -206,31 +185,21 @@ describe('TextReader · 新结构', () => {
     });
 });
 
-describe('TextReader · 旧结构（旧取数方法合成）', () => {
-    it('整理本 + 维基：下拉同样列全部，default 是整理本；整理本走旧接口取卷 json', async () => {
-        setup(legacyTransport());
-        await screen.findByRole('heading', { level: 1, name: '經錄' });
-        expect(optionTexts()).toEqual(['整理本', '維基文庫']);
-        expect(screen.getAllByText('周易').length).toBeGreaterThan(0);
+describe('TextReader · 只认新结构（没有 manifest 显示「暂无文本」）', () => {
+    it('条目只有旧的整理本／全文、没有 manifest：不合成，显示暂无文本', async () => {
+        const old = {
+            getItem: async () => ({ title: '直齋書錄解題' }),
+            getCollatedEditionIndex: vi.fn(async () => ({ work_id: WORK, juan_files: ['juan/001.json'] }) as never),
+            getWorkFullTextList: vi.fn(async () => []),
+        };
+        setup({ ...nativeTransport({ getTextManifest: async () => null }), ...old } as unknown as IndexStorage);
+        await screen.findByText('暂无文本');
+        expect(old.getCollatedEditionIndex).not.toHaveBeenCalled();
     });
 
-    it('切到维基：同章号 002，md 来自旧的 Work 全文接口，授权照旧显示', async () => {
-        const { log } = setup(legacyTransport());
-        await screen.findByRole('heading', { level: 1, name: '經錄' });
-        fireEvent.click(screen.getAllByRole('button', { name: /下一卷/ })[0]);
-        await screen.findByRole('heading', { level: 1, name: '史錄' });
-        fireEvent.change(versionSelect(), { target: { value: 'wikisource' } });
-        await screen.findByRole('heading', { level: 1, name: '卷二' });
-        expect(log.at(-1)).toEqual([{ key: 'wikisource', chapter: '002', isDefault: false }, 'version']);
-        expect(screen.getByText(/002\.md 正文/)).toBeTruthy();
-        expect(document.querySelector('.bim-rd-src[data-version]')?.textContent).toContain('CC BY-SA 4.0');
-    });
-
-    it('只有 Work 全文一份：不出下拉，default 就是维基', async () => {
-        const t = { ...legacyTransport(), getCollatedEditionIndex: async () => null } as unknown as IndexStorage;
-        setup(t);
-        await screen.findByRole('heading', { level: 1, name: '卷一' });
-        expect(screen.queryByRole('combobox', { name: '版本' })).toBeNull();
+    it('transport 没有新接口：同样暂无文本', async () => {
+        setup({ getItem: async () => null } as unknown as IndexStorage);
+        await screen.findByText('暂无文本');
     });
 });
 
