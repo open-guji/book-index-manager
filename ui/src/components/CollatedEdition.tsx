@@ -364,7 +364,15 @@ function extractAnnotation(content?: string): string | null {
     return null;
 }
 
-function BookSection({ section, onNavigate, highlightQuery = '' }: { section: CollatedSection; onNavigate?: (id: string) => void; highlightQuery?: string }) {
+function BookSection({ section, onNavigate, highlightQuery = '', no, showUnlinked = false }: {
+    section: CollatedSection;
+    onNavigate?: (id: string) => void;
+    highlightQuery?: string;
+    /** 序号（v3 条目表格第一列）；不传就不画这一列 */
+    no?: number;
+    /** 没有 work_id 的条目在右列写「未关联」（v3；「标出作品链接」关掉时不写） */
+    showUnlinked?: boolean;
+}) {
     const { convert } = useConvert();
     const buildUrl = useBidUrl();
     const normalizer = useSearchNormalizer();
@@ -387,24 +395,24 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
     const preview = !expanded && hasLongContent ? truncateOutsideJiazhu(section.content!.replace(/\n/g, ' '), 80) + '…' : null;
 
     return (
-        <div style={{
-            border: `1px solid ${bim('widget-border')}`,
-            borderRadius: '6px',
+        <div className="bim-rd-row" style={{
+            borderBottom: `1px solid ${bim('rule')}`,
             overflow: 'hidden',
-            marginBottom: '6px',
         }}>
             <div
                 onClick={() => hasContent && setExpanded(!expanded)}
                 style={{
-                    padding: '8px 12px',
+                    padding: '10px 10px',
                     display: 'flex',
                     alignItems: 'baseline',
                     gap: '8px',
                     cursor: hasContent ? 'pointer' : 'default',
                     userSelect: 'none',
-                    background: bim('input-bg'),
                 }}
             >
+                {no != null && (
+                    <span className="bim-rd-no" style={{ flex: 'none', width: 28, fontSize: 12, color: bim('label-fg') }}>{no}</span>
+                )}
                 <ToggleArea
                     enabled={hasContent}
                     expanded={expanded}
@@ -491,9 +499,13 @@ function BookSection({ section, onNavigate, highlightQuery = '' }: { section: Co
                             flexShrink: 0,
                         }}
                         title="查看作品"
+                        aria-label={`查看作品：${section.book_title || section.title}`}
                     >
-                        →作品
+                        作品 →
                     </a>
+                )}
+                {showUnlinked && !section.work_id && (
+                    <span style={{ fontSize: '11px', color: bim('label-fg'), flexShrink: 0 }}>未关联</span>
                 )}
             </div>
 
@@ -1217,6 +1229,7 @@ export function JuanReading({
     const useMd = !!rawText && (!sectionText || (prefs.readingMode === 'paragraph' && canParagraphize(rawText)));
     const hasText = !isKaozhen && (sectionText || !!rawText);
     const effectiveView: JuanView = isKaozhen || !hasText ? 'entries' : view;
+    let rowNo = 0;
 
     return (
         <>
@@ -1257,12 +1270,18 @@ export function JuanReading({
                         />
                     ) : (
                         <>
+                            {catalogSections.some(x => ['书', '诗', '考证'].includes(normSectionType(x.type))) && (
+                                <div className="bim-rd-rowhead" aria-hidden="true">
+                                    <span style={{ width: 28 }}>序</span><span style={{ flex: 1 }}>书名</span><span>作品</span>
+                                </div>
+                            )}
                             {catalogSections.map((section, i) => {
                                 const t = normSectionType(section.type);
                                 // 考证条目（如「史記一百三十卷目錄一卷」）title 与 content 各自独立，
                                 // 与「书」同样需要标题+正文一并展示，走 OtherSection 会丢标题。
                                 if (t === '书' || t === '诗' || t === '考证') {
-                                    return <BookSection key={i} section={section} onNavigate={prefs.workLinks ? onNavigate : undefined} highlightQuery={q} />;
+                                    rowNo += 1;
+                                    return <BookSection key={i} section={section} onNavigate={prefs.workLinks ? onNavigate : undefined} highlightQuery={q} no={rowNo} showUnlinked={prefs.workLinks && !!onNavigate} />;
                                 }
                                 if (t === '类') {
                                     return <CategoryHeader key={i} section={section} highlightQuery={q} />;
@@ -1748,6 +1767,7 @@ const CollatedEditionInner: React.FC<{
             title={titleNode}
             subtitle={reader.subtitle ?? convert(isKaozhen ? '考證' : '整理本')}
             byline={byline}
+            pagerUnit={unit}
             current={activeFile ? juanLabel(activeFile, index, titles, convert).label : undefined}
             workLinkToggle={!isKaozhen && !!onNavigate && !!juanData?.sections.some(x => x.work_id)}
             toc={toc}

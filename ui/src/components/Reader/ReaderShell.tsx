@@ -66,6 +66,8 @@ export interface ReaderShellProps {
 
     /** 正文底部「上一卷 / 下一卷」；默认按目录顺序自动给出 */
     pager?: boolean;
+    /** 翻页卡片上的单位字：「上一卷」「下一冊」「下一章」；默认「卷」 */
+    pagerUnit?: string;
 
     /**
      * 同一 owner 的各份全文（overview#235）。两份以上时工具条出「版本」下拉框，
@@ -173,6 +175,7 @@ export function ReaderShell({
     prefs, onPrefsChange, paragraphToggle, properNameToggle = true, allowVertical,
     byline, current, workLinkToggle,
     pager = true,
+    pagerUnit = '卷',
     versions, currentVersionKey, onVersionChange, versionSource = true,
     children, className, style,
 }: ReaderShellProps) {
@@ -434,12 +437,22 @@ export function ReaderShell({
                         )}
                         {pager && (prev || next) && (
                             <nav className="bim-rd-pager" aria-label="翻卷">
-                                <span>{prev && (
-                                    <button type="button" className="bim-rd-t" onClick={() => handleSelect(prev.key)}><span aria-hidden="true">‹</span><span className="bim-rd-pglabel">{prev.label}</span></button>
-                                )}</span>
-                                <span>{next && (
-                                    <button type="button" className="bim-rd-t" onClick={() => handleSelect(next.key)}><span className="bim-rd-pglabel">{next.label}</span><span aria-hidden="true">›</span></button>
-                                )}</span>
+                                {prev ? (
+                                    <button type="button" className="bim-rd-pg" onClick={() => handleSelect(prev.key)}>
+                                        <span className="bim-rd-pgcap"><span aria-hidden="true">← </span>上一{pagerUnit}</span>
+                                        <span className="bim-rd-pglabel">{prev.label}</span>
+                                    </button>
+                                ) : (
+                                    <span className="bim-rd-pg bim-rd-pg-end" aria-hidden="true">← 已是第一{pagerUnit}</span>
+                                )}
+                                {next ? (
+                                    <button type="button" className="bim-rd-pg bim-rd-pg-next" onClick={() => handleSelect(next.key)}>
+                                        <span className="bim-rd-pgcap">下一{pagerUnit}<span aria-hidden="true"> →</span></span>
+                                        <span className="bim-rd-pglabel">{next.label}</span>
+                                    </button>
+                                ) : (
+                                    <span className="bim-rd-pg bim-rd-pg-next bim-rd-pg-end" aria-hidden="true">已是最后一{pagerUnit} →</span>
+                                )}
                             </nav>
                         )}
                     </div>
