@@ -185,6 +185,40 @@ describe('TextReader · 新结构', () => {
     });
 });
 
+describe('TextReader · 上游授权（source.upstream，如 CBETA）', () => {
+    const CBETA = {
+        name: 'CBETA 電子佛典集成', url: 'https://www.cbeta.org/', license: 'CC BY-NC-SA 4.0',
+        license_url: 'https://www.cbeta.org/copyright', note: 'Kanripo 此仓转自 CBETA；限非营利使用',
+    };
+    const manifest = { id: WORK, versions: [{ key: 'default', kind: 'transcription', label: 'Kanripo', source: 'kanripo', source_name: 'Kanripo', license: 'CC BY-NC-SA 4.0' }] };
+    const withUpstream = (upstream: unknown) => nativeTransport({
+        getTextIndex: async () => ({ chapters: [{ n: 1, file: '001', title: '卷一' }], source: { name: 'Kanripo', url: 'https://github.com/kanripo/KR6r0060', upstream } }) as never,
+    }, manifest);
+
+    it('版权栏多一行「上游」：名字链到上游、授权链到版权说明、带说明文字', async () => {
+        setup(withUpstream(CBETA));
+        await screen.findByRole('heading', { level: 1, name: '卷一' });
+        const line = document.querySelector('[data-bim-upstream]') as HTMLElement;
+        expect(line.textContent).toContain('上游');
+        expect(line.textContent).toContain('CBETA');
+        expect(line.textContent).toContain('限非营利使用');
+        const links = Array.from(line.querySelectorAll('a')).map(a => a.getAttribute('href'));
+        expect(links).toEqual(['https://www.cbeta.org/', 'https://www.cbeta.org/copyright']);
+    });
+
+    it('没有上游就不出这一行；非 http(s) 的链接不放进 href', async () => {
+        const { unmount } = setup(withUpstream(undefined));
+        await screen.findByRole('heading', { level: 1, name: '卷一' });
+        expect(document.querySelector('[data-bim-upstream]')).toBeNull();
+        unmount();
+        setup(withUpstream({ ...CBETA, url: 'javascript:alert(1)', license_url: 'data:text/html,x' }));
+        await screen.findByRole('heading', { level: 1, name: '卷一' });
+        const line = document.querySelector('[data-bim-upstream]') as HTMLElement;
+        expect(line.querySelectorAll('a').length).toBe(0);
+        expect(line.textContent).toContain('CBETA');
+    });
+});
+
 describe('TextReader · 只认新结构（没有 manifest 显示「暂无文本」）', () => {
     it('条目只有旧的整理本／全文、没有 manifest：不合成，显示暂无文本', async () => {
         const old = {
