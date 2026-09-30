@@ -322,7 +322,7 @@ describe('CollatedEdition（整理本阅读页）', () => {
         const { container } = mountCE(onNavigate);
         await waitFor(() => expect(container.querySelector('h1')?.textContent).toBe('正史類'));
         const meta = container.querySelector('.bim-rd-meta')!;
-        expect(meta.textContent).toBe('卷1·2 部書·底本 維基文庫（粗校）'.replace(/·/g, ''));
+        expect(meta.textContent).toBe('卷1·2 部書·底本 維基文庫粗校'.replace(/·/g, ''));
         expect(meta.querySelectorAll('.bim-rd-dot')).toHaveLength(2);
         const h3 = container.querySelectorAll('article.bim-rd-prose .bim-rd-entry-h');
         expect(h3).toHaveLength(2);
@@ -334,6 +334,18 @@ describe('CollatedEdition（整理本阅读页）', () => {
         expect(container.querySelector('.bim-rd-ttl b')?.textContent).toBe('直齋書錄解題');
         // 读过的卷在目录里补上卷名
         await waitFor(() => expect(container.querySelector('.bim-rd-toc [aria-current="true"]')?.textContent).toBe('卷1　正史類'));
+    });
+
+    it('卷头 v3：品质等级是徽标（.bim-rd-grade），不再是括号里的字；没有 license 数据就不出许可证', async () => {
+        const { container } = mountCE();
+        await waitFor(() => expect(container.querySelector('h1')).toBeTruthy());
+        const g = container.querySelector('.bim-rd-meta .bim-rd-grade');
+        expect(g?.textContent).toBe('粗校');
+        expect(container.querySelector('.bim-rd-meta')!.textContent).not.toMatch(/CC BY|授權|授权|（粗校）/);
+    });
+
+    it('目录选中行：左侧色条（aria-current 行带 inset 阴影）', () => {
+        expect(READER_CSS).toMatch(/\.bim-rd-ti\[aria-current="true"\] \{[^}]*box-shadow: inset 2px 0 0/);
     });
 
     it('条目看法：「▶ 展开」是 <button aria-expanded>（Q5）', async () => {
@@ -404,6 +416,6 @@ describe('审查修订（#24 网站总管）', () => {
             </LocaleProvider>,
         );
         await waitFor(() => expect(container.querySelector('.bim-rd-meta')?.textContent).toContain('2 部书'), { timeout: 8000 });
-        expect(container.querySelector('.bim-rd-meta')?.textContent).toContain('底本 维基文库（粗校）');
+        expect(container.querySelector('.bim-rd-meta')?.textContent).toContain('底本 维基文库粗校');
     }, 10000);
 });

@@ -1193,7 +1193,9 @@ export function JuanReading({
     if (grade) {
         meta.push(
             <span title={TEXT_QUALITY_CRITERIA[grade]}>
-                {index?.text_quality?.source_note ? <>底本 {convert(index.text_quality.source_note)}（{convert(TEXT_QUALITY_LABELS[grade])}）</> : <>{convert('文本質量')} {convert(TEXT_QUALITY_LABELS[grade])}</>}
+                {index?.text_quality?.source_note
+                    ? <>底本 {convert(index.text_quality.source_note)}<span className="bim-rd-grade">{convert(TEXT_QUALITY_LABELS[grade])}</span></>
+                    : <>{convert('文本質量')}<span className="bim-rd-grade">{convert(TEXT_QUALITY_LABELS[grade])}</span></>}
             </span>,
         );
     }

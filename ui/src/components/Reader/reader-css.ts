@@ -123,7 +123,7 @@ export const READER_CSS = `
   color: ${bim('quiet-fg')}; cursor: pointer;
 }
 .bim-rd-ti:hover { background: ${bim('row-hover-bg')}; color: ${bim('ink')}; }
-.bim-rd-ti[aria-current="true"] { background: ${bim('bg')}; color: ${bim('accent')}; font-weight: 700; }
+.bim-rd-ti[aria-current="true"] { background: ${bim('bg')}; color: ${bim('accent')}; font-weight: 700; box-shadow: inset 2px 0 0 ${bim('accent')}; }
 .bim-rd-ti:disabled { opacity: 0.45; cursor: default; background: none; }
 .bim-rd-ti .bim-rd-hint { margin-left: auto; font-size: 12px; font-weight: 400; color: ${bim('meta-fg')}; flex: none; }
 .bim-rd-ti-group { font-weight: 600; color: ${bim('ink')}; }
@@ -162,6 +162,7 @@ export const READER_CSS = `
 .bim-rd-h1 { font-family: ${bim('font-ui')}; font-size: 28px; font-weight: 700; letter-spacing: 0.12em; margin: 0; color: ${bim('ink')}; line-height: 1.4; }
 .bim-rd-meta { margin: 6px 0 0; font-size: 13px; line-height: 1.8; color: ${bim('meta-fg')}; font-family: ${bim('font-ui')}; }
 .bim-rd-meta .bim-rd-dot::before { content: "·"; margin: 0 0.5em; }
+.bim-rd-grade { display: inline-block; margin-left: 6px; padding: 0 6px; font-size: 11.5px; line-height: 1.7; background: ${bim('band-bg')}; color: ${bim('quiet-fg')}; }
 .bim-rd-meta select { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .bim-rd a.bim-rd-link { color: ${bim('quiet-fg')}; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 .bim-rd a.bim-rd-link:hover { color: ${bim('accent')}; }
