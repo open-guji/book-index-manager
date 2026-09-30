@@ -15,6 +15,13 @@ export interface IndexStorage {
     /** 统一搜索（同时搜索所有类型，返回分组结果） */
     searchAll?(query: string, limit?: number, filters?: import('../core/search-filters').SearchFilters): Promise<GroupedSearchResult>;
 
+    /**
+     * 声明本实现真正应用了 `search`／`searchAll` 收到的 `filters`（含 sort）。
+     * 搜索页 v4（IndexBrowser 的 filtersEnabled）只在它为 true 时才显示筛选栏与排序控件——
+     * 包内自带的 DevApi／Bundle／Github／Local 实现不认筛选，不声明就不会显示「筛了但没筛」的结果。
+     */
+    readonly supportsSearchFilters?: boolean;
+
     /** 获取单条元数据 */
     getItem(id: string): Promise<Record<string, unknown> | null>;
 

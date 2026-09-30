@@ -9,7 +9,7 @@ import {
 import { SearchFiltersPanel } from './SearchFiltersPanel';
 import { SearchResultsTable } from './SearchResultsTable';
 import { SearchCardGrid } from './SearchCardGrid';
-import { ResultPager } from './ResultPager';
+import { ResultPager, clampPage } from './ResultPager';
 import { SEARCH_V4_CSS } from './search-css';
 import { TypeMark } from '../common/TypeMark';
 import { bim } from '../../styles/tokens';
@@ -59,10 +59,14 @@ const entriesOf = (r: GroupedSearchResult | null, type: IndexType) => ((r?.[KEY_
  * 筛选状态由宿主持有（进 URL）；视图选择存 localStorage（per-viewer 便利，读写包 try/catch）。
  * 换了检索词／筛选就回第 1 页；旧结果在新结果到达前保留（aria-busy），页面不跳。
  */
-export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, filters, onFiltersChange, onEntryLinkClick, typeName }) => {
+export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, filters: filtersProp, onFiltersChange, onEntryLinkClick, typeName }) => {
     const t = useT();
     const v = t.searchV4;
     const { convert } = useConvert();
+
+    /** 存储层没声明认筛选：不显示筛选栏与排序，也不把 filters 交给它 */
+    const supported = !!transport.supportsSearchFilters;
+    const filters = useMemo(() => (supported ? filtersProp : EMPTY_FILTERS), [supported, filtersProp]);
 
     const [view, setViewState] = useState<SearchView>('table');
     useEffect(() => { setViewState(readStoredView()); }, []);
@@ -140,6 +144,14 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [transport, query, filtersKey, activeType, page]);
 
+    // 页码越界（重新筛选后总数变少、或手输的旧链接）：按这一类自己的总数钳回最后一页
+    useEffect(() => {
+        if (activeType === 'all' || !typed || busy) return;
+        const capped = Math.min(typed.total, MAX_HITS);
+        const target = clampPage(page, capped, RESULT_PAGE_SIZE);
+        if (typed.entries.length === 0 && capped > 0 && target !== page) setPage(target);
+    }, [activeType, typed, busy, page]);
+
     const tabs = useMemo(() => TAB_ORDER.filter(ty => totals(all, ty) > 0), [all]);
     const sum = tabs.reduce((n, ty) => n + totals(all, ty), 0);
     const empty = !busy && !error && all !== null && sum === 0;
@@ -169,9 +181,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
     const allTabEntries = TAB_ORDER.flatMap(ty => entriesOf(all, ty));
 
     return (
-        <div className="bim-sr-layout">
+        <div className="bim-sr-layout" data-nofilters={supported ? undefined : 'true'}>
             <style>{SEARCH_V4_CSS}</style>
-            <SearchFiltersPanel filters={filters} onChange={onFiltersChange} />
+            {supported && <SearchFiltersPanel filters={filters} onChange={onFiltersChange} />}
             <div className="bim-sr-main" aria-busy={busy}>
                 {/* 结果页签：全部 ＋ 各类（带条数） */}
                 {tabs.length > 0 && (
@@ -188,6 +200,8 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
                 )}
 
                 <div className="bim-sr-tools">
+                    {supported && (
+                    <>
                     <div className="bim-sr-sorts" role="group" aria-label={convert(v.sortLabel)}>
                         <button type="button" aria-pressed={!filters.sort} onClick={() => onFiltersChange({ ...filters, sort: '' })}>{convert(v.sortRelevance)}</button>
                         {(['era', 'title'] as const).map(k => {
@@ -207,6 +221,8 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
                         })}
                     </div>
                     <span className="bim-sr-vsep" aria-hidden="true" />
+                    </>
+                    )}
                     <div className="bim-sr-view" role="group" aria-label={convert(v.viewLabel)}>
                         <button type="button" aria-pressed={view === 'table'} onClick={() => setView('table')}>{convert(v.viewTable)}</button>
                         <button type="button" aria-pressed={view === 'card'} onClick={() => setView('card')}>{convert(v.viewCard)}</button>
@@ -262,6 +278,13 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
                         {renderList(typed.entries)}
                         <ResultPager page={page} pageSize={RESULT_PAGE_SIZE} total={Math.min(typed.total, MAX_HITS)} onPage={setPage} />
                     </>
+                )}
+                {/* 这一类这一页没有条目（页码过期／越界、或与「全部」的总数对不上）：给空状态，不留白 */}
+                {!error && activeType !== 'all' && typed && typed.entries.length === 0 && !busy && (
+                    <div className="bim-sr-empty">
+                        {convert(active ? v.emptyFiltered : formatTemplate(t.search.noResultsFor, { query }))}
+                        <div><button type="button" className="bim-sr-clear" onClick={() => choose('all')}>{t.search.allTab}</button></div>
+                    </div>
                 )}
             </div>
         </div>

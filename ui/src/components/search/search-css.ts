@@ -11,6 +11,7 @@ const COARSE = `${SEARCH_NARROW_QUERY}, (pointer: coarse)`;
 
 export const SEARCH_V4_CSS = `
 .bim-sr-layout { display: grid; grid-template-columns: 208px minmax(0, 1fr); column-gap: 40px; align-items: start; padding: 0 20px; }
+.bim-sr-layout[data-nofilters] { grid-template-columns: minmax(0, 1fr); }
 .bim-sr-aside { position: sticky; top: calc(${bim('reader-top')} + 16px); padding-top: 2px; }
 .bim-sr-main { min-width: 0; }
 .bim-sr-fbtn { display: none; }

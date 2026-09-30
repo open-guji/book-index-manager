@@ -13,6 +13,12 @@ export function pageWindow(page: number, pages: number): (number | 'gap')[] {
     return out;
 }
 
+/** 页码钳到 [1, 最后一页]（总数为 0 时是 1） */
+export function clampPage(page: number, total: number, pageSize: number): number {
+    const last = Math.max(1, Math.ceil(total / pageSize));
+    return Math.min(Math.max(1, page), last);
+}
+
 export interface ResultPagerProps {
     page: number;
     pageSize: number;

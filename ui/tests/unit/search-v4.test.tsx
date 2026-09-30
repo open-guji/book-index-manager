@@ -6,7 +6,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, within, cleanup } from '@testing-library/react';
 import { IndexBrowser } from '../../src/components/IndexBrowser';
 import { SearchFiltersPanel } from '../../src/components/search/SearchFiltersPanel';
-import { pageWindow } from '../../src/components/search/ResultPager';
+import { pageWindow, clampPage } from '../../src/components/search/ResultPager';
 import { SEARCH_V4_CSS } from '../../src/components/search/search-css';
 import {
     EMPTY_FILTERS, buildMeiliFilter, countActiveFilters, filtersFromParams, filtersToParams, sameFilters, typeSupportsFilters,
@@ -208,6 +208,7 @@ function transportWith(spy?: { all?: ReturnType<typeof vi.fn>; search?: ReturnTy
     };
     return {
         ...base,
+        supportsSearchFilters: true,
         searchAll: async (q: string, limit?: number, filters?: SearchFilters) => {
             spy?.all?.(q, limit, filters);
             return { works: WORKS, books: BOOKS, collections: [], entities: PEOPLE, totalWorks: 120, totalBooks: 1, totalCollections: 0, totalEntities: 1 };
@@ -336,5 +337,41 @@ describe('筛选的本地镜像', () => {
         rerender(<IndexBrowser transport={transportWith()} hideModeIndicator initialQuery="史記" filtersEnabled filters={F({ hasText: true })} onFiltersChange={onFiltersChange} />);
         await waitFor(() => expect((screen.getByRole('checkbox', { name: '有全文' }) as HTMLInputElement).checked).toBe(true));
         expect((screen.getByRole('checkbox', { name: '史部' }) as HTMLInputElement).checked).toBe(false);
+    });
+});
+
+describe('存储层不认筛选（没声明 supportsSearchFilters）', () => {
+    it('不显示筛选栏与排序控件，也不把 filters 交给它（免得显示「筛了但没筛」的结果）；表格／卡片视图照常', async () => {
+        const all = vi.fn();
+        const t = transportWith({ all });
+        (t as unknown as { supportsSearchFilters?: boolean }).supportsSearchFilters = undefined;
+        render(<IndexBrowser transport={t} hideModeIndicator initialQuery="史記" filtersEnabled filters={F({ dynasty: ['漢'], sort: 'era:asc' })} />);
+        await waitFor(() => expect(screen.getByRole('table')).toBeTruthy());
+        expect(document.querySelector('.bim-sr-aside')).toBeNull();
+        expect(screen.queryByRole('group', { name: '排序' })).toBeNull();
+        expect(screen.queryByText('清除全部篩選')).toBeNull();
+        expect(all.mock.calls[0][2]).toEqual(EMPTY_FILTERS);
+        expect(screen.getByRole('button', { name: '卡片' })).toBeTruthy();
+    });
+});
+
+describe('类型页签当页没有条目', () => {
+    it('这一类的分页请求返回 0 条而「全部」总数为正：给空状态并可回到「全部」，不留白', async () => {
+        const t = transportWith();
+        (t as unknown as { search: unknown }).search = async (_q: string, _ty: string, o: { page?: number }) => ({ entries: [], total: 0, page: o.page ?? 1, pageSize: 50 });
+        render(<IndexBrowser transport={t} hideModeIndicator initialQuery="史記" filtersEnabled />);
+        await waitFor(() => expect(screen.getByRole('table')).toBeTruthy());
+        fireEvent.click(within(screen.getByRole('group', { name: /結果分類|结果分类/ })).getByRole('button', { name: /作品/ }));
+        expect(await screen.findByText(/未找到與「史記」相關的結果/)).toBeTruthy();
+        fireEvent.click(document.querySelector('.bim-sr-empty .bim-sr-clear') as HTMLElement);
+        await waitFor(() => expect(screen.getByRole('table')).toBeTruthy());
+    });
+
+    it('clampPage：越界的页码钳到 [1, 最后一页]，总数 0 时是 1', () => {
+        expect(clampPage(9, 120, 50)).toBe(3);
+        expect(clampPage(0, 120, 50)).toBe(1);
+        expect(clampPage(2, 120, 50)).toBe(2);
+        expect(clampPage(5, 0, 50)).toBe(1);
+        expect(clampPage(2, 50, 50)).toBe(1);
     });
 });
