@@ -23,7 +23,7 @@ export const SEARCH_V4_CSS = `
 }
 .bim-sr-chip:hover { border-color: ${bim('rule-dashed')}; color: ${bim('ink')}; }
 .bim-sr-chip[aria-pressed="true"] { background: ${bim('accent')}; border-color: ${bim('accent')}; color: ${bim('page-bg')}; font-weight: 600; }
-.bim-sr-chip[aria-pressed="true"]::before { content: "✓ "; font-size: 10px; }
+.bim-sr-chip[aria-pressed="true"]::before { content: "✓ " / ""; font-size: 10px; }
 .bim-sr-opt { display: flex; align-items: center; gap: 8px; padding: 5px 2px; font-size: 13.5px; color: ${bim('quiet-fg')}; cursor: pointer; }
 .bim-sr-opt input { margin: 0; width: 14px; height: 14px; accent-color: ${bim('accent')}; cursor: pointer; }
 .bim-sr-opt:has(input:checked) { color: ${bim('ink')}; font-weight: 600; }

@@ -9,7 +9,7 @@ import { bim } from '../styles/tokens';
 import { TypeMark } from './common/TypeMark';
 import { useBidUrl } from '../core/bid-url';
 import { SearchResults } from './search/SearchResults';
-import { EMPTY_FILTERS, type SearchFilters } from '../core/search-filters';
+import { EMPTY_FILTERS, filtersToParams, type SearchFilters } from '../core/search-filters';
 
 /** 「最近浏览」存 localStorage 的键（值为 ID 数组，新的在前）；宿主要读写或清空时用它 */
 export const RECENT_IDS_STORAGE_KEY = 'bim-recent-ids';
@@ -144,6 +144,15 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     const [searchResults, setSearchResults] = useState<GroupedSearchResult | null>(null);
     /** v4 结果区用的检索词（防抖后提交的那一个） */
     const [committedQuery, setCommittedQuery] = useState(initialQuery ?? '');
+    /*
+     * 筛选的本地镜像：点一下立刻反映在界面上（宿主把它写进 URL 是异步的，路由跳转有延迟，
+     * 等 URL 回来才亮会让人以为没点上）；宿主传来的值变了（后退、改链接）再以宿主为准。
+     */
+    const filtersKey = filtersToParams(filters).toString();
+    const [liveFilters, setLiveFilters] = useState<SearchFilters>(filters);
+    useEffect(() => { setLiveFilters(filters); // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filtersKey]);
+    const changeFilters = (next: SearchFilters) => { setLiveFilters(next); onFiltersChange?.(next); };
     const [expandedType, setExpandedType] = useState<IndexType | null>(null);
     /** 结果页签：'all' 分组列出，某一类则只列该类（并展开全部） */
     const [activeType, setActiveType] = useState<IndexType | 'all'>('all');
@@ -489,8 +498,8 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                 <SearchResults
                     transport={transport}
                     query={committedQuery}
-                    filters={filters}
-                    onFiltersChange={f => onFiltersChange?.(f)}
+                    filters={liveFilters}
+                    onFiltersChange={changeFilters}
                     onEntryLinkClick={handleEntryLinkClick}
                     typeName={ty => getConfig(ty).name}
                 />

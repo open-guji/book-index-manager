@@ -116,6 +116,10 @@ describe('左栏筛选面板', () => {
         expect(panel.hasAttribute('data-collapsed')).toBe(false);
     });
 
+    it('选中朝代的对勾是装饰：CSS 生成内容带空替代文本，不混进按钮的可访问名称', () => {
+        expect(SEARCH_V4_CSS).toMatch(/\.bim-sr-chip\[aria-pressed="true"\]::before \{ content: "✓ " \/ "";/);
+    });
+
     it('窄屏样式：收成按钮、表格退成两行、不横向溢出', () => {
         expect(SEARCH_V4_CSS).toMatch(/@media \(max-width: 719px\)[\s\S]*\.bim-sr-fbtn \{[^}]*display: flex/);
         expect(SEARCH_V4_CSS).toMatch(/\.bim-sr-filters\[data-collapsed\] \{ display: none; \}/);
@@ -267,5 +271,20 @@ describe('IndexBrowser（filtersEnabled）结果区', () => {
         await waitFor(() => expect(document.body.textContent).toContain('史記'));
         expect(document.querySelector('.bim-sr-layout')).toBeNull();
         expect(screen.queryByRole('table')).toBeNull();
+    });
+});
+
+describe('筛选的本地镜像', () => {
+    it('点一下立刻亮（不等宿主把它写进 URL）；宿主传来的值变了再以宿主为准', async () => {
+        const onFiltersChange = vi.fn();   // 宿主没回传新值（模拟 URL 还没更新）
+        const { rerender } = mount({ filters: EMPTY_FILTERS, onFiltersChange });
+        await waitFor(() => expect(screen.getByRole('table')).toBeTruthy());
+        fireEvent.click(screen.getByRole('checkbox', { name: '史部' }));
+        expect((screen.getByRole('checkbox', { name: '史部' }) as HTMLInputElement).checked).toBe(true);
+        expect(onFiltersChange).toHaveBeenCalledWith(F({ classification: ['史部'] }));
+        // 后退：宿主传回无筛选 → 界面跟着还原
+        rerender(<IndexBrowser transport={transportWith()} hideModeIndicator initialQuery="史記" filtersEnabled filters={F({ hasText: true })} onFiltersChange={onFiltersChange} />);
+        await waitFor(() => expect((screen.getByRole('checkbox', { name: '有全文' }) as HTMLInputElement).checked).toBe(true));
+        expect((screen.getByRole('checkbox', { name: '史部' }) as HTMLInputElement).checked).toBe(false);
     });
 });
