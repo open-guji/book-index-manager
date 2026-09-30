@@ -95,3 +95,22 @@ export interface ReaderVersion {
     /** 首选的一份（恰一份为 true）；宿主没给 currentVersionKey 时默认选它 */
     primary?: boolean;
 }
+
+/**
+ * 「报告错字」回调收到的上下文。宿主（网站）据此打开现有的反馈入口并预填；
+ * 本包不做反馈后端，也不发请求。
+ */
+export interface ReaderReportContext {
+    /** 书名（工具条上的书名；取不到为空） */
+    bookTitle?: string;
+    /** 条目 id（作品 / 版本 id）；取不到为空 */
+    entryId?: string;
+    /** 当前卷 / 章的 key（目录 key） */
+    chapterKey: string | null;
+    /** 当前卷 / 章的显示名，如「卷1　易类」 */
+    chapterLabel?: string;
+    /** 当前位置锚点：视口顶端所在条目的元素 id（如 `rd-e-3`）；正文里没有锚点时为空 */
+    anchor?: string;
+    /** 读者选中的正文文字（无选中为空；最长 500 字） */
+    selectedText?: string;
+}
