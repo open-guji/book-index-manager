@@ -13,7 +13,7 @@ import { ReaderMdText, canParagraphize, renderReaderInline } from './Reader/Read
 import { useReaderPrefs } from './Reader/prefs';
 import type { ReaderPrefs } from './Reader/prefs';
 import { useChapterImages } from './Reader/useChapterImages';
-import type { ReaderImageOverlay, ReaderImageResolver, ReaderTocItem } from './Reader/types';
+import type { ReaderImageOverlay, ReaderImageResolver, ReaderReportContext, ReaderTocItem } from './Reader/types';
 
 export interface CollatedEditionProps {
     /** 直接传入卷列表索引 */
@@ -42,9 +42,13 @@ export interface CollatedEditionProps {
     imagePanel?: PanelState;
     /** 竖排开关（预留） */
     allowVertical?: boolean;
+    /** 右栏「报告错字」：回传书名、条目 id、当前卷、位置锚点与选中文字，宿主据此打开现有反馈入口（不传则不显示） */
+    onReportError?: (ctx: ReaderReportContext) => void;
+    /** 页脚「最近校订」日期；数据里没有就不传 */
+    revisedAt?: string;
 }
 
-type ReaderOptions = Pick<CollatedEditionProps, 'title' | 'subtitle' | 'resolveImages' | 'renderImageOverlay' | 'imagePanel' | 'allowVertical'>;
+type ReaderOptions = Pick<CollatedEditionProps, 'title' | 'subtitle' | 'resolveImages' | 'renderImageOverlay' | 'imagePanel' | 'allowVertical' | 'onReportError' | 'revisedAt'>;
 
 // ── 工具函数 ──
 
@@ -1526,6 +1530,8 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
     renderImageOverlay,
     imagePanel,
     allowVertical,
+    onReportError,
+    revisedAt,
 }) => {
     const [indexData, setIndexData] = useState<CollatedEditionIndex | null>(null);
     const [loading, setLoading] = useState(false);
@@ -1685,7 +1691,7 @@ export const CollatedEdition: React.FC<CollatedEditionProps> = ({
         setSearchQuery={setSearchQuery}
         onNavigate={onNavigate}
         workLabelCacheRef={workLabelCacheRef}
-        reader={{ title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical }}
+        reader={{ title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical, onReportError, revisedAt }}
     />;
 };
 
@@ -1837,6 +1843,12 @@ const CollatedEditionInner: React.FC<{
             byline={byline}
             pagerUnit={unit}
             rail={rail}
+            revisedAt={reader.revisedAt}
+            onReportError={reader.onReportError ? ctx => reader.onReportError!({
+                ...ctx,
+                bookTitle: index.title ?? (typeof reader.title === 'string' ? reader.title : undefined),
+                entryId: effectiveWorkId,
+            }) : undefined}
             current={activeFile ? juanLabel(activeFile, index, titles, convert).label : undefined}
             workLinkToggle={!isKaozhen && !!onNavigate && !!juanData?.sections.some(x => x.work_id)}
             toc={toc}

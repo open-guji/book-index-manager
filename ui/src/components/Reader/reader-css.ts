@@ -191,6 +191,9 @@ export const READER_CSS = `
 .bim-rd-rail-list a { display: flex; align-items: baseline; gap: 8px; padding: 5px 12px; border-left: 2px solid ${bim('rule')}; font-size: 13px; color: ${bim('quiet-fg')}; text-decoration: none; }
 .bim-rd-rail-list a > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bim-rd-rail-list a:hover { border-left-color: ${bim('accent')}; color: ${bim('ink')}; }
+.bim-rd-rail-acts { margin-top: 18px; padding-top: 14px; border-top: 1px solid ${bim('rule')}; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-size: 12.5px; }
+.bim-rd-rail-report { padding: 0; border: none; background: none; font: inherit; color: ${bim('accent')}; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.bim-rd-rail-report:hover { color: ${bim('ink')}; }
 .bim-rd-rail-dot { flex: none; align-self: center; width: 5px; height: 5px; background: ${bim('rule')}; }
 .bim-rd-rail-dot.on { background: ${bim('accent')}; }
 
@@ -327,5 +330,9 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 /* ── 配色「墨」：强调色≈正文色，行内链接加下划线（条目名、参考文献、来源） ── */
 :root[data-theme="ink"] :is(.bim-rd-entry-h a, .bim-rd-link, .bim-rd-prose a, .bim-rd-meta a) {
   text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); text-underline-offset: 3px;
+}
+/* 墨下「已开启」的工具条按钮（自然段、专名线、书影、当前语言）不能只靠颜色：加下划线 */
+:root[data-theme="ink"] .bim-rd-t[aria-pressed="true"], :root[data-theme="ink"] .bim-rd-t[aria-current="true"] {
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px;
 }
 `;

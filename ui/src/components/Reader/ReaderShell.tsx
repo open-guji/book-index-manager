@@ -24,7 +24,7 @@ import { ImagePanel } from './ImagePanel';
 import { FONT_SIZE_STEPS, DEFAULT_FONT_SIZE, stepFontSize } from './prefs';
 import type { ReaderPrefs } from './prefs';
 import { pickReaderVersion, readerVersionOptionLabel } from './versions';
-import type { ReaderImageOverlay, ReaderPageImage, ReaderTocItem, ReaderVersion } from './types';
+import type { ReaderImageOverlay, ReaderPageImage, ReaderReportContext, ReaderTocItem, ReaderVersion } from './types';
 
 export type PanelState = 'auto' | 'open' | 'closed';
 
@@ -41,6 +41,13 @@ export interface ReaderShellProps {
     workLinkToggle?: boolean;
     /** 正文右侧的栏（≥860px 才显示；窄了就藏起来）：宿主给内容，壳负责定位与吸顶 */
     rail?: React.ReactNode;
+    /**
+     * 右栏底部「报告错字」。给了才显示；点击时回传当前卷、位置锚点与选中文字，
+     * 宿主据此打开现有的反馈入口（壳不发请求）。宿主要补书名、条目 id 自己加。
+     */
+    onReportError?: (ctx: ReaderReportContext) => void;
+    /** 正文末尾页脚里的「最近校订」日期（如 `2026-09-12`）；数据里没有就不传，不显示 */
+    revisedAt?: string;
 
     toc: ReaderTocItem[];
     activeKey: string | null;
@@ -170,12 +177,33 @@ function LocaleSwitch() {
     );
 }
 
+/** 视口顶端所在条目的锚点 id：正文里 `id="rd-e-N"` 的元素中，最后一个顶边已滚过工具条下沿的 */
+function currentAnchor(root: HTMLElement | null, barBottom: number): string | undefined {
+    if (!root) return undefined;
+    let found: string | undefined;
+    for (const el of Array.from(root.querySelectorAll<HTMLElement>('[id^="rd-e-"]'))) {
+        if (el.getBoundingClientRect().top <= barBottom + 8) found = el.id;
+        else break;
+    }
+    return found;
+}
+
+/** 读者在正文里选中的文字（不在正文里的选区不算） */
+function selectedInText(root: HTMLElement | null): string | undefined {
+    if (typeof window === 'undefined' || !root) return undefined;
+    const sel = window.getSelection?.();
+    if (!sel || sel.isCollapsed || sel.rangeCount === 0) return undefined;
+    if (!root.contains(sel.anchorNode) || !root.contains(sel.focusNode)) return undefined;
+    const t = sel.toString().replace(/\s+/g, ' ').trim();
+    return t ? t.slice(0, 500) : undefined;
+}
+
 export function ReaderShell({
     title, subtitle,
     toc, activeKey, onSelect, tocHeader, tocCaption,
     images, imagesLoading, renderImageOverlay, imagePanel = 'auto',
     prefs, onPrefsChange, paragraphToggle, properNameToggle = true, allowVertical,
-    byline, current, workLinkToggle, rail,
+    byline, current, workLinkToggle, rail, onReportError, revisedAt,
     pager = true,
     pagerUnit = '卷',
     versions, currentVersionKey, onVersionChange, versionSource = true,
@@ -258,6 +286,16 @@ export function ReaderShell({
         else p.done = true;
         if (first.key !== activeKey) handleSelect(first.key);
     }, [versionKey, tocSig, flat, activeKey, handleSelect]);
+
+    const activeItem = flat.find(it => it.key === activeKey);
+    const reportError = () => {
+        onReportError?.({
+            chapterKey: activeKey,
+            chapterLabel: typeof activeItem?.label === 'string' ? activeItem.label : undefined,
+            anchor: currentAnchor(textRef.current, barRef.current?.getBoundingClientRect().bottom ?? 0),
+            selectedText: selectedInText(textRef.current),
+        });
+    };
 
     const pos = flat.findIndex(it => it.key === activeKey);
     const prev = pos > 0 ? flat.slice(0, pos).reverse().find(it => !it.disabled) : undefined;
@@ -420,10 +458,10 @@ export function ReaderShell({
                     )}
                 </aside>
 
-                <div className="bim-rd-text" id={textId} ref={textRef} tabIndex={-1} data-rail={rail ? 'true' : undefined}>
+                <div className="bim-rd-text" id={textId} ref={textRef} tabIndex={-1} data-rail={rail || onReportError ? 'true' : undefined}>
                     <div className="bim-rd-col">
                         {children}
-                        {versionSource && version && (version.sourceName || version.license) && (
+                        {versionSource && version && (version.sourceName || version.license || revisedAt) && (
                             <p className="bim-rd-src" data-version={version.key}>
                                 {version.sourceName && (
                                     <>
@@ -435,6 +473,8 @@ export function ReaderShell({
                                 )}
                                 {version.sourceName && version.license && <span className="bim-rd-dot" />}
                                 {version.license && <>授权 {version.license}</>}
+                                {revisedAt && (version.sourceName || version.license) && <span className="bim-rd-dot" />}
+                                {revisedAt && <>最近校订 {revisedAt}</>}
                             </p>
                         )}
                         {pager && (prev || next) && (
@@ -458,7 +498,17 @@ export function ReaderShell({
                             </nav>
                         )}
                     </div>
-                    {rail && <aside className="bim-rd-rail" aria-label="本卷">{rail}</aside>}
+                    {(rail || onReportError) && (
+                        <aside className="bim-rd-rail" aria-label="本卷">
+                            {rail}
+                            {onReportError && (
+                                <div className="bim-rd-rail-acts">
+                                    {/* 按下时不抢走正文里的选区 */}
+                                    <button type="button" className="bim-rd-rail-report" onMouseDown={e => e.preventDefault()} onClick={reportError}>报告错字</button>
+                                </div>
+                            )}
+                        </aside>
+                    )}
                 </div>
             </div>
         </div>

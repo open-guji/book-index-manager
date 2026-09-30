@@ -41,4 +41,8 @@ describe('墨：行内链接加下划线（强调色≈正文色）', () => {
         expect(LAYOUT_CSS).toMatch(/:root\[data-theme="ink"\][^{]*a \{[^}]*text-decoration: underline/);
         expect(READER_CSS).toMatch(/:root\[data-theme="ink"\][^{]*\{[^}]*text-decoration: underline/);
     });
+
+    it('阅读器工具条「已开启」按钮在墨下不只靠颜色', () => {
+        expect(READER_CSS).toMatch(/:root\[data-theme="ink"\] \.bim-rd-t\[aria-pressed="true"\][^{]*\{[^}]*text-decoration: underline/);
+    });
 });
