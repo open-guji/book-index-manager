@@ -199,6 +199,10 @@ export interface IndexEntry {
     has_image?: boolean;
     /** 是否有整理本 */
     has_collated?: boolean;
+    /** 部类一级（經部／史部／子部／集部；只有 Work 有，搜索页表格的「部类」列） */
+    classification?: string;
+    /** 存佚：extant／partially_extant／lost（只有 Work 有；空＝没判定） */
+    loss_status?: string;
     /** 作品子类型：poem / article / book（默认）；对 entity 表示 EntitySubtype */
     subtype?: string;
     /** Entity 主名（type='entity' 时使用） */
@@ -254,6 +258,8 @@ export interface GroupedSearchResult {
 export interface LoadOptions {
     page?: number;
     pageSize?: number;
+    /** 搜索筛选（v4 搜索页：朝代／部类／资源／存佚）；storage 不支持就忽略 */
+    filters?: import('./core/search-filters').SearchFilters;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
 }

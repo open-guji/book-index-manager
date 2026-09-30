@@ -8,6 +8,8 @@ import { splitHighlightSnippet } from '../core/highlight';
 import { bim } from '../styles/tokens';
 import { TypeMark } from './common/TypeMark';
 import { useBidUrl } from '../core/bid-url';
+import { SearchResults } from './search/SearchResults';
+import { EMPTY_FILTERS, filtersToParams, type SearchFilters } from '../core/search-filters';
 
 /** 「最近浏览」存 localStorage 的键（值为 ID 数组，新的在前）；宿主要读写或清空时用它 */
 export const RECENT_IDS_STORAGE_KEY = 'bim-recent-ids';
@@ -89,6 +91,14 @@ export interface IndexBrowserProps {
     resultVariant?: 'compact' | 'card' | 'list';
     /** 完全自定义条目渲染，优先级高于 resultVariant */
     renderEntry?: (entry: IndexEntry) => React.ReactNode;
+    /**
+     * 搜索页 v4（overview#298）：开启后结果区换成「左栏筛选＋类型页签＋表格／卡片视图＋翻页」，
+     * 此时 resultVariant／renderEntry 不再用于结果区（视图由组件自己出）。默认关，既有消费者观感不变。
+     */
+    filtersEnabled?: boolean;
+    /** 当前筛选（受控，宿主把它放进 URL）；不传视为无筛选 */
+    filters?: SearchFilters;
+    onFiltersChange?: (filters: SearchFilters) => void;
 }
 
 const TOTAL_KEYS: Record<string, keyof GroupedSearchResult> = {
@@ -115,6 +125,9 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     onQueryChange,
     headerRight,
     reserveViewportHeight = false,
+    filtersEnabled = false,
+    filters = EMPTY_FILTERS,
+    onFiltersChange,
 }) => {
     const t = useT();
 
@@ -129,6 +142,17 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
 
     const [searchQuery, setSearchQuery] = useState(initialQuery ?? '');
     const [searchResults, setSearchResults] = useState<GroupedSearchResult | null>(null);
+    /** v4 结果区用的检索词（防抖后提交的那一个） */
+    const [committedQuery, setCommittedQuery] = useState(initialQuery ?? '');
+    /*
+     * 筛选的本地镜像：点一下立刻反映在界面上（宿主把它写进 URL 是异步的，路由跳转有延迟，
+     * 等 URL 回来才亮会让人以为没点上）；宿主传来的值变了（后退、改链接）再以宿主为准。
+     */
+    const filtersKey = filtersToParams(filters).toString();
+    const [liveFilters, setLiveFilters] = useState<SearchFilters>(filters);
+    useEffect(() => { setLiveFilters(filters); // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filtersKey]);
+    const changeFilters = (next: SearchFilters) => { setLiveFilters(next); onFiltersChange?.(next); };
     const [expandedType, setExpandedType] = useState<IndexType | null>(null);
     /** 结果页签：'all' 分组列出，某一类则只列该类（并展开全部） */
     const [activeType, setActiveType] = useState<IndexType | 'all'>('all');
@@ -153,6 +177,11 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
             return;
         }
         setShowingRecent(false);
+        if (filtersEnabled) {
+            // v4：请求由 SearchResults 自己发（带筛选、翻页），这里只提交检索词
+            setCommittedQuery(query);
+            return;
+        }
         setIsLoading(true);
         setErrorMessage('');
         try {
@@ -182,7 +211,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         } finally {
             setIsLoading(false);
         }
-    }, [transport]);
+    }, [transport, filtersEnabled]);
 
     // 加载总数统计：优先读 transport.getCounts()（一个 < 1 KB 的 meta.json）。
     // 在 BundleStorage 下避免触发 7 次并发的 /data/index.json 下载。
@@ -464,7 +493,20 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                 </div>
             )}
 
+            {/* v4 结果区：自带布局（左栏筛选＋主区） */}
+            {filtersEnabled && !showingRecent && (
+                <SearchResults
+                    transport={transport}
+                    query={committedQuery}
+                    filters={liveFilters}
+                    onFiltersChange={changeFilters}
+                    onEntryLinkClick={handleEntryLinkClick}
+                    typeName={ty => getConfig(ty).name}
+                />
+            )}
+
             {/* Content */}
+            {!(filtersEnabled && !showingRecent) && (
             <div style={{ padding: '0 20px 20px', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
                 {isLoading || searchPending ? (
                     <div style={{ textAlign: 'center', padding: '40px', color: bim('desc-fg'), minHeight: SEARCH_PLACEHOLDER_MIN_HEIGHT, boxSizing: 'border-box' }}>
@@ -672,6 +714,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     </div>
                 )}
             </div>
+            )}
         </div>
     );
 };
