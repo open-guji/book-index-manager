@@ -62,6 +62,18 @@ export const READER_CSS = `
 .bim-rd-ttl { min-width: 0; display: flex; align-items: baseline; gap: 10px; overflow: hidden; white-space: nowrap; }
 .bim-rd-ttl b { font-size: 15px; font-weight: 700; letter-spacing: 0.06em; color: ${bim('ink')}; overflow: hidden; text-overflow: ellipsis; }
 .bim-rd-ttl span { font-size: 13px; color: ${bim('meta-fg')}; overflow: hidden; text-overflow: ellipsis; }
+.bim-rd-ttl b a { color: inherit; text-decoration: none; }
+.bim-rd-ttl b a:hover { color: ${bim('accent')}; text-decoration: underline; text-underline-offset: 4px; }
+.bim-rd-ttl .bim-rd-dot { flex: none; }
+.bim-rd-ttl .bim-rd-dot::before { content: "·"; }
+.bim-rd-ttl .bim-rd-cur { color: ${bim('ink')}; flex: none; }
+.bim-rd-chk { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.bim-rd-chk input { margin: 0; accent-color: ${bim('accent')}; cursor: pointer; }
+.bim-rd-wl {
+  display: inline-block; margin-left: 12px; padding: 1px 8px; font-size: 11.5px; letter-spacing: 0; font-weight: 400; line-height: 1.7;
+  background: ${bim('flag-bg')}; color: ${bim('accent')} !important; text-decoration: none !important; vertical-align: 2px; white-space: nowrap;
+}
+.bim-rd-wl:hover { background: ${bim('accent')}; color: ${bim('page-bg')} !important; }
 .bim-rd-tools { margin-left: auto; display: flex; align-items: center; gap: 14px; font-size: 13px; color: ${bim('quiet-fg')}; flex: none; }
 .bim-rd-tools .bim-rd-sep { width: 1px; height: 14px; background: ${bim('rule')}; }
 .bim-rd-t {

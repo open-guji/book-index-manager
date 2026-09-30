@@ -3,7 +3,7 @@
  * 以及整理本 / 全文两个组件接上外壳后的表现。
  */
 import React, { useState } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { LocaleProvider } from '../../src/i18n';
 import { ReaderShell } from '../../src/components/Reader/ReaderShell';
@@ -288,6 +288,8 @@ describe('BookFullText（全文阅读页）', () => {
     }, 10000);
 });
 
+afterEach(() => { try { localStorage.clear(); } catch { /* ignore */ } });
+
 const CE_INDEX: CollatedEditionIndex = {
     work_id: 'w1',
     type: 'catalog',
@@ -328,7 +330,7 @@ describe('CollatedEdition（整理本阅读页）', () => {
         expect(h3).toHaveLength(2);
         // 没有「类」小标题：h1 下条目都是 h2，不跳级、同级同标签
         expect([...h3].map(h => h.tagName)).toEqual(['H2', 'H2']);
-        fireEvent.click(within(h3[0] as HTMLElement).getByRole('link'));
+        fireEvent.click(within(h3[0] as HTMLElement).getByRole('link', { name: /^《史記》/ }));
         expect(onNavigate).toHaveBeenCalledWith('wsj');
         // 工具条书名取自索引
         expect(container.querySelector('.bim-rd-ttl b')?.textContent).toBe('直齋書錄解題');
@@ -346,6 +348,47 @@ describe('CollatedEdition（整理本阅读页）', () => {
 
     it('目录选中行：左侧色条（aria-current 行带 inset 阴影）', () => {
         expect(READER_CSS).toMatch(/\.bim-rd-ti\[aria-current="true"\] \{[^}]*box-shadow: inset 2px 0 0/);
+    it('工具条 v3：书名链作品页、作者行取作品数据、当前卷；作者缺就不出', async () => {
+        const onNavigate = vi.fn();
+        const transport = {
+            getCollatedJuan: vi.fn(async () => JUAN),
+            getCollatedJuanText: vi.fn(async () => null),
+            getItem: vi.fn(async () => ({ id: 'w1', title: '直齋書錄解題', authors: [{ name: '陳振孫', dynasty: '南宋' }] })),
+        } as never;
+        const { container } = render(
+            <LocaleProvider locale="zh-Hant">
+                <CollatedEdition index={CE_INDEX} workId="w1" transport={transport} onNavigate={onNavigate} />
+            </LocaleProvider>,
+        );
+        await waitFor(() => expect(container.querySelector('.bim-rd-by')?.textContent).toBe('〔南宋〕陳振孫 撰'));
+        const bar = container.querySelector('.bim-rd-ttl')!;
+        fireEvent.click(within(bar as HTMLElement).getByRole('link', { name: '直齋書錄解題' }));
+        expect(onNavigate).toHaveBeenCalledWith('w1');
+        await waitFor(() => expect(bar.querySelector('.bim-rd-cur')?.textContent).toMatch(/^卷1/));
+        // 没有作者数据：不出作者行，不编造
+        const { container: c2 } = mountCE();
+        await waitFor(() => expect(c2.querySelector('h1')).toBeTruthy());
+        expect(c2.querySelector('.bim-rd-by')).toBeNull();
+    });
+
+    it('「标出作品链接」：默认开、有 work_id 的条目标题旁出「作品 →」；关掉后无链接；有名字可访问', async () => {
+        const onNavigate = vi.fn();
+        const { container } = mountCE(onNavigate);
+        await waitFor(() => expect(container.querySelector('h1')).toBeTruthy());
+        const box = screen.getByRole('checkbox', { name: '标出作品链接' });
+        expect(box).toBeChecked();
+        const chips = container.querySelectorAll('.bim-rd-wl');
+        expect(chips).toHaveLength(1);   // 只有第一条有 work_id；版本数没数据，不写「N 种版本」
+        expect(chips[0].textContent).toBe('作品 →');
+        expect(chips[0].getAttribute('aria-label')).toBe('查看作品：《史記》一百三十卷');
+        fireEvent.click(chips[0]);
+        expect(onNavigate).toHaveBeenCalledWith('wsj');
+        fireEvent.click(box);
+        expect(container.querySelectorAll('.bim-rd-wl')).toHaveLength(0);
+        expect(container.querySelectorAll('article .bim-rd-entry-h a')).toHaveLength(0);
+        expect(JSON.parse(localStorage.getItem('bim-reader-prefs') ?? '{}').workLinks).toBe(false);
+        fireEvent.click(screen.getByRole('button', { name: '條目' }));
+        expect(container.querySelector('.bim-rd-entries')!.textContent).not.toContain('→作品');
     });
 
     it('条目看法：「▶ 展开」是 <button aria-expanded>（Q5）', async () => {
