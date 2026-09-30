@@ -338,8 +338,10 @@ describe('CollatedEdition（整理本阅读页）', () => {
         const { container } = mountCE(onNavigate);
         await waitFor(() => expect(container.querySelector('h1')?.textContent).toBe('正史類'));
         const meta = container.querySelector('.bim-rd-meta')!;
-        expect(meta.textContent).toBe('卷1·2 部書·底本 維基文庫粗校'.replace(/·/g, ''));
-        expect(meta.querySelectorAll('.bim-rd-dot')).toHaveLength(2);
+        // 卷序移到卷头小标题（h1 上方），信息行只留部数与底本
+        expect(container.querySelector('.bim-rd-kicker')?.textContent).toBe('卷1');
+        expect(meta.textContent).toBe('2 部書底本 維基文庫粗校');
+        expect(meta.querySelectorAll('.bim-rd-dot')).toHaveLength(1);
         const h3 = container.querySelectorAll('article.bim-rd-prose .bim-rd-entry-h');
         expect(h3).toHaveLength(2);
         // 没有「类」小标题：h1 下条目都是 h2，不跳级、同级同标签

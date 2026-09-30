@@ -1168,6 +1168,7 @@ export function JuanReading({
     juan,
     rawText,
     positionLabel,
+    groupLabel,
     index,
     searchQuery,
     onNavigate,
@@ -1184,6 +1185,8 @@ export function JuanReading({
     rawText?: string | null;
     /** 「卷11」「49冊」等 */
     positionLabel?: string;
+    /** 卷所在分组名（「經錄」）；与 positionLabel 一起组成卷头小标题「卷一 · 經錄」 */
+    groupLabel?: string;
     index?: CollatedEditionIndex;
     searchQuery: string;
     onNavigate?: (id: string) => void;
@@ -1222,7 +1225,6 @@ export function JuanReading({
 
     const grade = index?.text_quality ? normalizeTextQualityGrade(index.text_quality.grade) : null;
     const meta: React.ReactNode[] = [];
-    if (positionLabel) meta.push(positionLabel);
     if (countText) meta.push(countText);
     if (isKaozhen && index?.target_source) meta.push(<>{convert('考證對象')} {convert(index.target_source)}</>);
     if (grade) {
@@ -1247,6 +1249,13 @@ export function JuanReading({
     return (
         <>
             <header>
+                {(positionLabel || groupLabel) && (
+                    <p className="bim-rd-kicker">
+                        {positionLabel}
+                        {positionLabel && groupLabel && <span className="bim-rd-dot" />}
+                        {groupLabel && convert(groupLabel)}
+                    </p>
+                )}
                 <h1 className="bim-rd-h1">{convert(juan.title)}</h1>
                 {meta.length > 0 && (
                     <p className="bim-rd-meta">
@@ -1714,6 +1723,20 @@ function juanLabel(file: string, index: CollatedEditionIndex, titles: Record<str
     return { position, label: position === t || position === ct ? ct : `${position}　${ct}` };
 }
 
+/** 卷所在的分组名（最深一层含该卷的 juan_groups 标签），卷头小标题「卷一 · 經錄」用；没有分组就返回空 */
+function groupLabelOf(index: CollatedEditionIndex | undefined, file: string | null | undefined): string | undefined {
+    if (!file) return undefined;
+    const find = (groups: JuanGroup[] | undefined): string | undefined => {
+        for (const g of groups ?? []) {
+            const deeper = find(g.children);
+            if (deeper) return deeper;
+            if (g.files?.includes(file)) return g.label;
+        }
+        return undefined;
+    };
+    return find(index?.juan_groups);
+}
+
 /** 索引 → 目录树（分组 / 平铺） */
 function buildJuanToc(
     index: CollatedEditionIndex,
@@ -1873,6 +1896,7 @@ const CollatedEditionInner: React.FC<{
                     juan={juanData}
                     rawText={juanRawText}
                     positionLabel={position}
+                    groupLabel={groupLabelOf(index, activeFile)}
                     index={index}
                     searchQuery={searchQuery}
                     onNavigate={onNavigate}

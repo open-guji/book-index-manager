@@ -201,6 +201,8 @@ export const READER_CSS = `
 .bim-rd-text { grid-column: 3; min-width: 0; padding: 32px 48px 96px 40px; outline: none; }
 /* 正文列靠左紧贴目录栏（原来居中，两边各留 ~150px 空隙），并加宽 38em → 50em */
 .bim-rd-col { max-width: 50em; margin: 0 auto 0 0; font-size: var(--bimrd-fs, 18px); }
+.bim-rd-kicker { margin: 0 0 8px; font-size: 12px; letter-spacing: 0.2em; color: ${bim('label-fg')}; font-family: ${bim('font-ui')}; }
+.bim-rd-kicker .bim-rd-dot::before { content: "·"; margin: 0 0.6em; }
 .bim-rd-h1 { font-family: ${bim('font-ui')}; font-size: 28px; font-weight: 700; letter-spacing: 0.12em; margin: 0; color: ${bim('ink')}; line-height: 1.4; }
 .bim-rd-meta { margin: 6px 0 0; font-size: 13px; line-height: 1.8; color: ${bim('meta-fg')}; font-family: ${bim('font-ui')}; }
 .bim-rd-meta .bim-rd-dot::before { content: "·"; margin: 0 0.5em; }
