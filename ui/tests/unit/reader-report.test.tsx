@@ -39,7 +39,7 @@ describe('阅读器「报告错字」', () => {
         range.selectNodeContents(p);
         window.getSelection()!.removeAllRanges();
         window.getSelection()!.addRange(range);
-        fireEvent.click(screen.getByRole('button', { name: '报告错字', hidden: true }));
+        fireEvent.click(screen.getAllByRole('button', { name: '报告错字', hidden: true })[0]);
         expect(onReportError).toHaveBeenCalledTimes(1);
         const ctx = onReportError.mock.calls[0][0];
         expect(ctx.chapterKey).toBe('001');
@@ -61,7 +61,7 @@ describe('阅读器「报告错字」', () => {
             onReportError, pager: true, rail: <p id="rail-txt">本卷 2 部书</p>,
             versions: [{ key: 'a', label: 'A 本', sourceName: '維基文庫', license: 'CC BY-SA 4.0', primary: true }],
         });
-        const btn = () => screen.getByRole('button', { name: '报告错字', hidden: true });
+        const btn = () => screen.getAllByRole('button', { name: '报告错字', hidden: true })[0];
         selectNode(document.getElementById('rail-txt')!);
         fireEvent.click(btn());
         selectNode(document.querySelector('.bim-rd-src')!);
@@ -80,7 +80,7 @@ describe('阅读器「报告错字」', () => {
         range.setEnd(document.getElementById('rail-txt')!.firstChild!, 2);
         window.getSelection()!.removeAllRanges();
         window.getSelection()!.addRange(range);
-        fireEvent.click(screen.getByRole('button', { name: '报告错字', hidden: true }));
+        fireEvent.click(screen.getAllByRole('button', { name: '报告错字', hidden: true })[0]);
         expect(onReportError.mock.calls[0][0].selectedText).toBeUndefined();
     });
 
@@ -88,7 +88,7 @@ describe('阅读器「报告错字」', () => {
         const onReportError = vi.fn();
         shell({ onReportError });
         window.getSelection()!.removeAllRanges();
-        fireEvent.click(screen.getByRole('button', { name: '报告错字', hidden: true }));
+        fireEvent.click(screen.getAllByRole('button', { name: '报告错字', hidden: true })[0]);
         expect(onReportError.mock.calls[0][0].selectedText).toBeUndefined();
     });
 });

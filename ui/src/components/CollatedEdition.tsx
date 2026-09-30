@@ -272,16 +272,16 @@ export function juanDisplayName(f: string): string {
 }
 
 /** 每卷搜索状态：number = match 数；'loading' = 正在加载；undefined = 未触发搜索 */
-type JuanMatchState = number | 'loading' | undefined;
+export type JuanMatchState = number | 'loading' | undefined;
 
-function groupFileCount(group: JuanGroup): number {
+export function groupFileCount(group: JuanGroup): number {
     const own = group.files.length;
     const childCount = group.children?.reduce((sum, c) => sum + groupFileCount(c), 0) || 0;
     return own + childCount;
 }
 
 /** 计算分组内匹配总数，所有子文件都已加载完毕才返回 number；任一在 loading 返回 'loading'；query 为空返回 undefined */
-function groupMatchState(group: JuanGroup, matchStates: Record<string, JuanMatchState>): JuanMatchState {
+export function groupMatchState(group: JuanGroup, matchStates: Record<string, JuanMatchState>): JuanMatchState {
     const all: string[] = [];
     const collect = (g: JuanGroup) => {
         all.push(...g.files);
@@ -749,7 +749,7 @@ export function OtherSection({ section, highlightQuery = '' }: { section: Collat
 
 /** 作品标签缓存：{ title, author } */
 type WorkLabel = { title: string; author?: string };
-type WorkLabelCache = Map<string, WorkLabel | null>;
+export type WorkLabelCache = Map<string, WorkLabel | null>;
 
 /** Hook：批量获取作品标签（懒加载+缓存） */
 function useWorkLabels(
@@ -1145,7 +1145,7 @@ function CollatedEntries({ sections, onNavigate, inline, workLinks = true }: {
 }
 
 /** 这一卷有没有可按 sections 排的正文（书目条目、序、结语、长页眉……） */
-function hasSectionText(sections: CollatedSection[]): boolean {
+export function hasSectionText(sections: CollatedSection[]): boolean {
     return sections.some(s => {
         const t = normSectionType(s.type);
         return t === '书' || t === '诗' || t === '考证' || t === '注释' || t === '类'
@@ -1338,15 +1338,19 @@ function getFirstFile(idx: import('../types').CollatedEditionIndex): string | nu
 
 // ── 跨册搜索 hook ──
 
-interface JuanCacheEntry {
+export interface JuanCacheEntry {
     juan: CollatedJuan | null;
     rawText: string | null;
 }
 
-/** 输入 query 时懒加载所有册并计算每册的 matchCount */
-function useCrossJuanSearch(opts: {
-    workId: string | undefined;
-    transport: IndexStorage | undefined;
+/**
+ * 输入 query 时懒加载所有册并计算每册的 matchCount。
+ * load：按「卷／章 key」取一卷的内容（旧接口与新接口各自提供）；null 表示取不了，不搜索。
+ * resetKey：条目（或版本）换了就清空缓存与已读卷名。
+ */
+export function useCrossJuanSearch(opts: {
+    resetKey: string | undefined;
+    load: ((file: string) => Promise<JuanCacheEntry>) | null;
     files: string[];
     activeFile: string | null;
     activeJuan: CollatedJuan | null;
@@ -1354,7 +1358,7 @@ function useCrossJuanSearch(opts: {
     query: string;
     isKaozhen: boolean;
 }) {
-    const { workId, transport, files, activeFile, activeJuan, activeRawText, query, isKaozhen } = opts;
+    const { resetKey, load, files, activeFile, activeJuan, activeRawText, query, isKaozhen } = opts;
     const normalizer = useSearchNormalizer();
     const cacheRef = useRef<Map<string, JuanCacheEntry>>(new Map());
     const [matchStates, setMatchStates] = useState<Record<string, JuanMatchState>>({});
@@ -1376,12 +1380,12 @@ function useCrossJuanSearch(opts: {
         }
     }, [activeFile, activeJuan, activeRawText, noteTitle]);
 
-    // workId 切换 → 清空缓存与状态
+    // 条目（或版本）切换 → 清空缓存与状态
     useEffect(() => {
         cacheRef.current.clear();
         setMatchStates({});
         setTitles({});
-    }, [workId]);
+    }, [resetKey]);
 
     // 计算单册 matchCount
     const computeMatch = useCallback((entry: JuanCacheEntry, q: string): number => {
@@ -1402,7 +1406,7 @@ function useCrossJuanSearch(opts: {
             setMatchStates({});
             return;
         }
-        if (!workId || !transport?.getCollatedJuan || files.length === 0) return;
+        if (!load || files.length === 0) return;
 
         let cancelled = false;
         const initial: Record<string, JuanMatchState> = {};
@@ -1427,11 +1431,8 @@ function useCrossJuanSearch(opts: {
                 const i = cursor++;
                 const f = toFetch[i];
                 try {
-                    const [juan, rawText] = await Promise.all([
-                        transport.getCollatedJuan!(workId, f),
-                        transport.getCollatedJuanText?.(workId, f) ?? Promise.resolve(null),
-                    ]);
-                    const entry: JuanCacheEntry = { juan, rawText };
+                    const entry: JuanCacheEntry = await load(f);
+                    const juan = entry.juan;
                     cacheRef.current.set(f, entry);
                     noteTitle(f, juan);
                     if (cancelled) return;
@@ -1446,7 +1447,7 @@ function useCrossJuanSearch(opts: {
         Promise.all(workers);
 
         return () => { cancelled = true; };
-    }, [query, workId, transport, files.join(','), computeMatch, normalizer, noteTitle]);
+    }, [query, resetKey, load, files.join(','), computeMatch, normalizer, noteTitle]);
 
     return { matchStates, titles };
 }
@@ -1455,7 +1456,7 @@ function useCrossJuanSearch(opts: {
  * 右栏（v3）：「本卷」计数卡（N 部书、已关联 M、进度条）＋「条目」锚点列表。
  * 只在有书目条目的目录体卷里出；条目名点一下滚到正文（或条目页签）里对应那条。
  */
-function JuanRail({ juan, view, onView, textHasEntries }: {
+export function JuanRail({ juan, view, onView, textHasEntries }: {
     juan: CollatedJuan;
     view: JuanView;
     onView: (v: JuanView) => void;
@@ -1504,7 +1505,7 @@ function JuanRail({ juan, view, onView, textHasEntries }: {
 }
 
 /** 取作品的作者（含朝代），只给阅读页工具条的作者行用；取不到返回空数组 */
-function useWorkAuthors(workId?: string, transport?: IndexStorage): AuthorInfo[] {
+export function useWorkAuthors(workId?: string, transport?: IndexStorage): AuthorInfo[] {
     const [authors, setAuthors] = useState<AuthorInfo[]>([]);
     useEffect(() => {
         setAuthors([]);
@@ -1802,9 +1803,21 @@ const CollatedEditionInner: React.FC<{
     const [prefs, setPrefs] = useReaderPrefs();
     const [juanView, setJuanView] = useState<JuanView>('text');
     useEffect(() => { setJuanView('text'); }, [activeFile]);
+    const loadJuanEntry = useMemo(
+        () => (effectiveWorkId && transport?.getCollatedJuan
+            ? async (f: string): Promise<JuanCacheEntry> => {
+                const [juan, rawText] = await Promise.all([
+                    transport.getCollatedJuan!(effectiveWorkId, f),
+                    transport.getCollatedJuanText?.(effectiveWorkId, f) ?? Promise.resolve(null),
+                ]);
+                return { juan, rawText };
+            }
+            : null),
+        [effectiveWorkId, transport],
+    );
     const { matchStates, titles } = useCrossJuanSearch({
-        workId: effectiveWorkId,
-        transport,
+        resetKey: effectiveWorkId,
+        load: loadJuanEntry,
         files: allFiles,
         activeFile,
         activeJuan: juanData,

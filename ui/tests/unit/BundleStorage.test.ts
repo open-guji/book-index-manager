@@ -215,3 +215,59 @@ describe('BundleStorage.fetchJson — version.json 拼 ?v= 一次（不重复）
         }
     });
 });
+
+describe('BundleStorage — 阅读文本新结构（overview#307）', () => {
+    const ID = 'd59f2htm01du';
+
+    it('getTextManifest：读 items/<id>/manifest.json；404（旧结构）返回 null', async () => {
+        const { calls, restore } = setupFetch(url => (url.includes(`/items/${ID}/manifest.json`)
+            ? { ok: true, body: { id: ID, versions: [{ key: 'default', kind: 'collated', label: '整理本' }] } }
+            : { ok: false }));
+        try {
+            const s = new BundleStorage({ basePath: '/data', version: 'v1' });
+            const m = await s.getTextManifest(ID);
+            expect(m?.versions[0].key).toBe('default');
+            expect(calls[0].url).toBe(`/data/items/${ID}/manifest.json?v=v1`);
+            expect(await s.getTextManifest('d59f2zzzzzzz')).toBeNull();
+        } finally { restore(); }
+    });
+
+    it('getTextManifest：versions 不是数组也当没有', async () => {
+        const { restore } = setupFetch(() => ({ ok: true, body: { id: ID } }));
+        try {
+            expect(await new BundleStorage({ basePath: '/data' }).getTextManifest(ID)).toBeNull();
+        } finally { restore(); }
+    });
+
+    it('getTextIndex：读 items/<id>/<key>/index.json；key 不合法不发请求', async () => {
+        const { calls, restore } = setupFetch(() => ({ ok: true, body: { chapters: [{ n: 1, file: '001', title: '一' }] } }));
+        try {
+            const s = new BundleStorage({ basePath: '/data', version: 'v1' });
+            expect((await s.getTextIndex(ID, 'wikisource-2'))?.chapters).toHaveLength(1);
+            expect(calls[0].url).toBe(`/data/items/${ID}/wikisource-2/index.json?v=v1`);
+            const n = calls.length;
+            for (const k of ['../x', 'a/b', 'Manifest', 'manifest', '001', '']) expect(await s.getTextIndex(ID, k)).toBeNull();
+            expect(calls.length).toBe(n);
+        } finally { restore(); }
+    });
+
+    it('getChapter：md 读 <key>/<章>.txt；opts.json 时另取 <章>.json；都没有返回 null', async () => {
+        const { calls, restore } = setupFetch(url => {
+            if (url.includes('/default/001.txt')) return { ok: true, body: '正文' };
+            if (url.includes('/default/001.json')) return { ok: true, body: { title: '卷一', sections: [] } };
+            return { ok: false };
+        });
+        try {
+            const s = new BundleStorage({ basePath: '/data', version: 'v1' });
+            const r = await s.getChapter(ID, 'default', '001', { json: true });
+            expect(r?.json?.title).toBe('卷一');
+            expect(typeof r?.md).toBe('string');
+            expect(calls.map(c => c.url).sort()).toEqual([`/data/items/${ID}/default/001.json?v=v1`, `/data/items/${ID}/default/001.txt?v=v1`]);
+            const only = await s.getChapter(ID, 'default', '001');
+            expect(only?.json).toBeNull();
+            expect(await s.getChapter(ID, 'default', '002', { json: true })).toBeNull();
+            expect(await s.getChapter(ID, '../x', '001')).toBeNull();
+            expect(await s.getChapter(ID, 'default', '../001')).toBeNull();
+        } finally { restore(); }
+    });
+});
