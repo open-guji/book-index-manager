@@ -81,6 +81,7 @@ export const READER_CSS = `
 .bim-rd-wl:hover { background: ${bim('accent')}; color: ${bim('page-bg')} !important; }
 .bim-rd-tools { margin-left: auto; display: flex; align-items: center; gap: 14px; font-size: 13px; color: ${bim('quiet-fg')}; flex: none; }
 .bim-rd-tools .bim-rd-sep { width: 1px; height: 14px; background: ${bim('rule')}; }
+.bim-rd-nav { display: inline-flex; align-items: center; gap: 4px; }
 .bim-rd-t {
   background: none; border: 0; margin: 0; padding: 6px 2px;
   font: inherit; color: inherit; cursor: pointer; line-height: 1;
@@ -175,7 +176,7 @@ export const READER_CSS = `
 /* 右栏（v3）：正文列右侧 220px，≥860px 才显示，吸顶 */
 .bim-rd-rail { display: none; }
 @media (min-width: 860px) {
-  .bim-rd-text[data-rail] { display: grid; grid-template-columns: minmax(0, 50em) 220px; gap: 40px; align-items: start; justify-content: start; }
+  .bim-rd-text[data-rail] { display: grid; grid-template-columns: minmax(0, 50em) 220px; gap: 40px; align-items: start; justify-content: center; }
   .bim-rd-text[data-rail] .bim-rd-col { margin: 0; max-width: none; }
   .bim-rd-rail { display: block; position: sticky; top: calc(var(--bimrd-bar-h) + 16px); max-height: calc(100vh - var(--bimrd-bar-h) - 32px); overflow-y: auto; font-family: ${bim('font-ui')}; }
 }
@@ -194,13 +195,16 @@ export const READER_CSS = `
 .bim-rd-rail-acts { margin-top: 18px; padding-top: 14px; border-top: 1px solid ${bim('rule')}; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-size: 12.5px; }
 .bim-rd-rail-report { padding: 0; border: none; background: none; font: inherit; color: ${bim('accent')}; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .bim-rd-rail-report:hover { color: ${bim('ink')}; }
+/* 窄屏（右栏藏起来）时正文末尾的「报告错字」；≥860px 右栏里已有，这里隐去 */
+.bim-rd-report-foot { margin-top: 12px; }
+@media (min-width: 860px) { .bim-rd-report-foot { display: none; } }
 .bim-rd-rail-dot { flex: none; align-self: center; width: 5px; height: 5px; background: ${bim('rule')}; }
 .bim-rd-rail-dot.on { background: ${bim('accent')}; }
 
 /* 正文 */
 .bim-rd-text { grid-column: 3; min-width: 0; padding: 32px 48px 96px 40px; outline: none; }
-/* 正文列靠左紧贴目录栏（原来居中，两边各留 ~150px 空隙），并加宽 38em → 50em */
-.bim-rd-col { max-width: 50em; margin: 0 auto 0 0; font-size: var(--bimrd-fs, 18px); }
+/* 正文列居中（收起目录／书影后不再留右侧大片空白，overview#308），宽 50em */
+.bim-rd-col { max-width: 50em; margin: 0 auto; font-size: var(--bimrd-fs, 18px); }
 .bim-rd-kicker { margin: 0 0 8px; font-size: 12px; letter-spacing: 0.2em; color: ${bim('label-fg')}; font-family: ${bim('font-ui')}; }
 .bim-rd-kicker .bim-rd-dot::before { content: "·"; margin: 0 0.6em; }
 .bim-rd-h1 { font-family: ${bim('font-ui')}; font-size: 28px; font-weight: 700; letter-spacing: 0.12em; margin: 0; color: ${bim('ink')}; line-height: 1.4; }
@@ -289,6 +293,7 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
   .bim-rd-tools .bim-rd-fs + .bim-rd-fs { margin-left: 12px; }
   .bim-rd-ver select { min-height: 44px; }
   .bim-rd-pager .bim-rd-pg { min-height: 44px; }
+  .bim-rd-report-foot .bim-rd-rail-report { min-height: 44px; min-width: 44px; padding: 0 8px; }
 }
 
 /* ── 中屏以下：目录改抽屉 ── */
@@ -309,8 +314,10 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 @media ${READER_NARROW_QUERY} {
   .bim-rd-bar { padding: 0 12px; gap: 10px; }
   .bim-rd-ttl span, .bim-rd-hide-narrow { display: none !important; }
-  .bim-rd-ttl { flex: 1 1 auto; }
-  .bim-rd-tools { gap: 10px; }
+  /* 工具条放不下时（版本、自然段、标出作品链接都在）在条内左右滑，不撑宽页面 */
+  .bim-rd-tools { gap: 10px; flex: 0 1 auto; min-width: 0; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .bim-rd-tools::-webkit-scrollbar { display: none; }
+  .bim-rd-ttl { flex: 1 1 72px; min-width: 72px; }
   .bim-rd-ver { min-width: 44px; min-height: 44px; justify-content: center; }
   .bim-rd-ver-short { display: inline; white-space: nowrap; }
   .bim-rd-ver select { position: absolute; inset: 0; width: 100%; max-width: none; opacity: 0; }

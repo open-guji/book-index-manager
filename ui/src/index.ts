@@ -147,6 +147,14 @@ export {
 } from './core/search-filters';
 export type { SearchFilters, SearchSort, LossStatusKey } from './core/search-filters';
 export { BookFullText } from './components/BookFullText';
+export { TextReader } from './components/TextReader';
+export type { TextReaderProps, TextLocation, TextLocationCause } from './components/TextReader';
+export { createTextApi } from './core/text-api';
+export type { TextApi } from './core/text-api';
+export {
+    isTextKey, isChapterSegment, chapterKeyOf, sourceOfKey, versionKeyFromOld, synthesizeManifest, matchChapterAcrossVersions, pickTextVersion, textVersionLabel,
+} from './core/text-model';
+export type { TextKind, TextVersion, TextManifest, TextChapter, TextIndex, TextChapterContent } from './core/text-model';
 export type { BookFullTextProps } from './components/BookFullText';
 // 阅读器（整理本 / 全文共用的外壳、目录、书影、正文排版）
 export * from './components/Reader';

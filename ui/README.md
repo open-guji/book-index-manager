@@ -33,7 +33,8 @@ import 'book-index-ui/styles'                // CSS（用到组件时引入）
 | `BookFullText` / `WorkCatalog` | 全文阅读页（Book / Work 全文，走 `ReaderShell`）/ 作品目录 |
 | `IndexEditor` | 详情编辑器（写入需 storage 实现 saveItem） |
 | `HomePage` | 首页：推荐丛编 + 经典作品（kaiyuanguji-web 用） |
-| `CollatedEdition` | 整理本阅读页（走 `ReaderShell`）+ 跨卷搜索；「條目」看法保留原卡片视图 |
+| `TextReader` | **统一阅读器**（overview#307）：整理本与全文合一，版本下拉含全部版本，取数走 `core/text-api`（新旧结构通用），见下「统一阅读器」 |
+| `CollatedEdition` | 整理本阅读页（走 `ReaderShell`）+ 跨卷搜索；「條目」看法保留原卡片视图（旧结构，`TextReader` 取代它之前仍被 `BookDetailLayout` 使用） |
 | `ReaderShell` / `ReaderToc` / `ImagePanel` / `ReaderMdText` | 阅读器（整理本与全文共用），见下「阅读器」 |
 | `CollectionCatalog` | 丛编目录（按册/卷分组） |
 | `EmendatedBySection` | "校勘自" 引用列表 |
@@ -41,6 +42,23 @@ import 'book-index-ui/styles'                // CSS（用到组件时引入）
 | `FeedbackButton` / `FeedbackList` / `FeedbackForm` | 反馈组件 |
 | `LocaleProvider` / `LocaleToggle` | 繁简切换 |
 | `useT` / `useConvert` | 繁简 hook |
+
+### 统一阅读器（`TextReader`，overview#307）
+
+```tsx
+<TextReader
+  id={workOrBookId} transport={storage}
+  versionKey={key}  chapter={chapterKey}          // 受控（可不传，自己管）
+  onLocationChange={(loc, cause) => router.push(urlFor(loc))}  // loc: { key, chapter, isDefault }；cause: 'auto' | 'chapter' | 'version'
+  onNavigate={id => router.push(entryUrl(id))}
+/>
+```
+
+- 数据模型（规格 overview `项目进展/古籍索引网站/设计/阅读文本.md`）：`items/<id>/manifest.json` 列全部版本（`versions[0]` 是 `default`），`<key>/index.json` 是章目录（`chapters[{ n, file:'001', title, has_json }]`），章正文 `<key>/001.txt`，整理本的章另有 `001.json`。`IndexStorage` 新增可选 `getTextManifest / getTextIndex / getChapter`，`BundleStorage` 已实现。
+- 旧结构（`collated_edition/`、`full_text/…`）：transport 没有新接口、或条目没有 manifest，`core/text-api` 用旧取数方法（`getCollatedEditionIndex / getCollatedJuan / getWorkFullText* / getBookFullText*`）合成等价的 manifest 与目录——`default` 按来源优先级排出（整理本 → 維基文庫 → Kanripo → 識典），旧 key `wikisource-01`→`wikisource`、`-02`→`wikisource-2`。
+- 界面：工具条一个「版本」下拉按 manifest 顺序列全部版本（含整理本），只有一份时只在书名后标来源名；正文末尾显示所选版本的出处与授权；章有 json 用结构化渲染（条目、作品链接、跨章搜索），否则按 md；切版本尽量停在同一章号，对不上回第一章。
+- 组件不改 URL：宿主在 `onLocationChange` 里改地址（新 URL：`/read/<id>[/<key>][/<章>]`，主版本不写 key）。`versionKey／chapter` 传了就受控；传了无效值时组件回落并以 `auto` 通知。
+- 工具条另有上一章／下一章（窄屏隐去，翻卷交给正文底部的翻页卡片）、书名链接回条目页；窄屏（右栏藏起来）时正文末尾有「报告错字」入口。
 
 ### 阅读器（`components/Reader/`，2026-09 N5a）
 

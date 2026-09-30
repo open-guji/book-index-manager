@@ -19,6 +19,7 @@ import { normalizeCatalog } from '../core/normalize-catalog';
 import { extractType } from '../id';
 import { buildPromotionMap } from './promotions';
 import { shardOf } from '../core/storage';
+import { isSafeSegment, isTextKey } from '../core/text-model';
 
 export interface BundleStorageConfig {
     /** chunk 文件的基础路径，默认 '/data' */
@@ -505,6 +506,46 @@ export class BundleStorage implements IndexStorage {
         } catch {
             return null;
         }
+    }
+
+    // ─── 阅读文本（新结构，overview#307） ───
+    //
+    // items/<id>/manifest.json、items/<id>/<key>/index.json、<key>/NNN.txt（打包时 md 改 txt）、<key>/NNN.json。
+    // 旧结构的条目没有 manifest.json，getTextManifest 返回 null，阅读器再走旧接口（core/text-api 的适配）。
+
+    async getTextManifest(id: string): Promise<import('../core/text-model').TextManifest | null> {
+        if (!isSafeSegment(id)) return null;
+        try {
+            const m = await this.fetchJson<import('../core/text-model').TextManifest>(`${this.basePath}/items/${id}/manifest.json`);
+            return m && Array.isArray(m.versions) ? m : null;
+        } catch {
+            return null;
+        }
+    }
+
+    async getTextIndex(id: string, key: string): Promise<import('../core/text-model').TextIndex | null> {
+        if (!isSafeSegment(id) || !isTextKey(key)) return null;
+        try {
+            const idx = await this.fetchJson<import('../core/text-model').TextIndex>(`${this.basePath}/items/${id}/${key}/index.json`);
+            return idx && Array.isArray(idx.chapters) ? idx : null;
+        } catch {
+            return null;
+        }
+    }
+
+    async getChapter(id: string, key: string, chapter: string, opts?: { json?: boolean }): Promise<import('../core/text-model').TextChapterContent | null> {
+        if (!isSafeSegment(id) || !isTextKey(key) || !isSafeSegment(chapter)) return null;
+        const base = `${this.basePath}/items/${id}/${key}/${chapter}`;
+        const version = await this.ensureVersion();
+        const mdUrl = version ? `${base}.txt?v=${version}` : `${base}.txt`;
+        const md = fetch(mdUrl, { cache: 'no-cache', signal: AbortSignal.timeout(this.timeout) })
+            .then(r => (r.ok ? r.text() : null))
+            .catch(() => null);
+        const json = opts?.json
+            ? this.fetchJson<import('../types').CollatedJuan>(`${base}.json`).catch(() => null)
+            : Promise.resolve(null);
+        const [mdText, juan] = await Promise.all([md, json]);
+        return mdText != null || juan ? { md: mdText, json: juan } : null;
     }
 
     // ─── Work 全文 ───

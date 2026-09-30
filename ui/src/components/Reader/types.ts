@@ -92,6 +92,8 @@ export interface ReaderVersion {
     license?: string;
     /** 来源页（`source_url`） */
     sourceUrl?: string;
+    /** 下拉框里的选项文字；给了就原样用，不再拼「版本说明 · 来源名」（新结构的版本名只写来源，overview#307） */
+    optionLabel?: string;
     /** 首选的一份（恰一份为 true）；宿主没给 currentVersionKey 时默认选它 */
     primary?: boolean;
 }

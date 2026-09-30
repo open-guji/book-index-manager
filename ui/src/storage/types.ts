@@ -1,5 +1,6 @@
 import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, BookFullTextIndex, WorkFullTextEntry, WorkFullTextIndex, ResourceProgress, RecommendedData } from '../types';
 import type { LineageGraph } from '../core/lineage-graph';
+import type { TextChapterContent, TextIndex, TextManifest } from '../core/text-model';
 
 /**
  * 索引数据存储接口
@@ -116,6 +117,24 @@ export interface IndexStorage {
 
     /** 获取 Work 指定一份全文的单章 markdown */
     getWorkFullTextChapter?(workId: string, key: string, file: string): Promise<string | null>;
+
+    // ── 阅读文本（新结构，可选；overview#307） ──
+    //
+    // 整理本与全文合一：一个条目下有 manifest.json 列出的若干份版本（key），每份是按章分的一组 md，
+    // 整理本的章另有同名 json。实现了这三个方法且条目有 manifest 时，阅读器（TextReader）走这里；
+    // 没有 manifest（旧结构）或没实现，由 core/text-api 用上面旧的取数方法合成等价数据。
+
+    /** 条目的文本版本清单（`items/<id>/manifest.json`）；旧结构、取不到返回 null */
+    getTextManifest?(id: string): Promise<TextManifest | null>;
+
+    /** 一份版本的章目录（`items/<id>/<key>/index.json`） */
+    getTextIndex?(id: string, key: string): Promise<TextIndex | null>;
+
+    /**
+     * 一章的内容：md 正文（`<key>/<chapter>.txt`）；`opts.json` 为真时另取同名章 json。
+     * chapter 是章 key（三位编号，如 `001`）。md、json 都取不到返回 null。
+     */
+    getChapter?(id: string, key: string, chapter: string, opts?: { json?: boolean }): Promise<TextChapterContent | null>;
 
     // ── 版本传承（可选） ──
 

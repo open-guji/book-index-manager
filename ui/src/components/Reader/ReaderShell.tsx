@@ -92,6 +92,11 @@ export interface ReaderShellProps {
     onVersionChange?: (key: string) => void;
     /** 正文末尾的「出处 · 授权」一行；默认有 versions 时显示，宿主自己画出处时可关掉 */
     versionSource?: boolean;
+    /**
+     * 切版本后不自动回到新目录第一卷（默认会）。宿主自己决定切版本后停在哪一章
+     * （如尽量停在同一章号，见 `matchChapterAcrossVersions`）时设为 true。
+     */
+    keepChapterOnVersionChange?: boolean;
 
     children: React.ReactNode;
     className?: string;
@@ -114,6 +119,16 @@ export function flattenToc(items: ReaderTocItem[]): ReaderTocItem[] {
 const IconToc = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
         <path d="M4 6h16M4 12h10M4 18h16" />
+    </svg>
+);
+const IconPrev = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M15 5l-7 7 7 7" />
+    </svg>
+);
+const IconNext = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M9 5l7 7-7 7" />
     </svg>
 );
 const IconImage = () => (
@@ -211,7 +226,7 @@ export function ReaderShell({
     byline, current, workLinkToggle, rail, onReportError, revisedAt,
     pager = true,
     pagerUnit = '卷',
-    versions, currentVersionKey, onVersionChange, versionSource = true,
+    versions, currentVersionKey, onVersionChange, versionSource = true, keepChapterOnVersionChange = false,
     children, className, style,
 }: ReaderShellProps) {
     const uid = useId().replace(/:/g, '');
@@ -276,7 +291,7 @@ export function ReaderShell({
     const pendingVersion = useRef<{ key: string; sig: string; done: boolean } | null>(null);
     const changeVersion = (key: string) => {
         if (key === versionKey) return;
-        pendingVersion.current = { key, sig: tocSig, done: false };
+        if (!keepChapterOnVersionChange) pendingVersion.current = { key, sig: tocSig, done: false };
         if (currentVersionKey === undefined) setInternalVersion(key);
         onVersionChange?.(key);
     };
@@ -355,6 +370,28 @@ export function ReaderShell({
                             <span className="bim-rd-sep" aria-hidden="true" />
                         </>
                     )}
+                    {pager && (prev || next) && (
+                        /* 上一章／下一章（overview#308）：窄屏上工具条放不下，翻卷交给正文底部的翻页卡片 */
+                        <span className="bim-rd-nav bim-rd-hide-narrow" role="group" aria-label={`翻${pagerUnit}`}>
+                            <button
+                                type="button"
+                                className="bim-rd-t"
+                                aria-label={`上一${pagerUnit}`}
+                                title={prev ? `上一${pagerUnit}：${typeof prev.label === 'string' ? prev.label : ''}`.replace(/：$/, '') : `已是第一${pagerUnit}`}
+                                disabled={!prev}
+                                onClick={() => prev && handleSelect(prev.key)}
+                            ><IconPrev /></button>
+                            <button
+                                type="button"
+                                className="bim-rd-t"
+                                aria-label={`下一${pagerUnit}`}
+                                title={next ? `下一${pagerUnit}：${typeof next.label === 'string' ? next.label : ''}`.replace(/：$/, '') : `已是最后一${pagerUnit}`}
+                                disabled={!next}
+                                onClick={() => next && handleSelect(next.key)}
+                            ><IconNext /></button>
+                        </span>
+                    )}
+                    {pager && (prev || next) && <span className="bim-rd-sep bim-rd-hide-narrow" aria-hidden="true" />}
                     <button
                         ref={tocBtnRef}
                         type="button"
@@ -482,6 +519,12 @@ export function ReaderShell({
                         )}
                         {/* 校订日期独立于版本元数据：整理本不传 version、全文关掉 versionSource，也要能显示 */}
                         {revisedAt && <p className="bim-rd-src bim-rd-rev">最近校订 {revisedAt}</p>}
+                        {/* 右栏在 <860px 时藏起来，「报告错字」跟着没了（overview#308）：窄屏在正文末尾补一个入口，宽屏由 CSS 隐去 */}
+                        {onReportError && (
+                            <p className="bim-rd-src bim-rd-report-foot">
+                                <button type="button" className="bim-rd-rail-report" onMouseDown={e => e.preventDefault()} onClick={reportError}>报告错字</button>
+                            </p>
+                        )}
                         {pager && (prev || next) && (
                             <nav className="bim-rd-pager" aria-label="翻卷">
                                 {prev ? (

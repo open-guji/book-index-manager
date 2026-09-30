@@ -18,6 +18,7 @@ export function readerVersionsFromFullText(entries: readonly WorkFullTextEntry[]
 
 /** 选项文字：`version_label · source_name`；版本说明里已含来源名时不重复 */
 export function readerVersionOptionLabel(v: ReaderVersion): string {
+    if (v.optionLabel) return v.optionLabel;
     const label = v.label || v.key;
     if (!v.sourceName || label.includes(v.sourceName)) return label;
     return `${label} · ${v.sourceName}`;
