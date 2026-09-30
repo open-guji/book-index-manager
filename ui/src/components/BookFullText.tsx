@@ -11,7 +11,7 @@ import { readerVersionsFromFullText } from './Reader/versions';
 import { ReaderMdText, canParagraphize } from './Reader/ReaderText';
 import { useReaderPrefs } from './Reader/prefs';
 import { useChapterImages } from './Reader/useChapterImages';
-import type { ReaderImageOverlay, ReaderImageResolver, ReaderTocItem } from './Reader/types';
+import type { ReaderImageOverlay, ReaderImageResolver, ReaderReportContext, ReaderTocItem } from './Reader/types';
 
 export interface BookFullTextProps {
     /** 全文目录（外部可注入，避免重复请求） */
@@ -42,6 +42,10 @@ export interface BookFullTextProps {
     imagePanel?: PanelState;
     /** 竖排开关（预留） */
     allowVertical?: boolean;
+    /** 右栏「报告错字」：回传书名、条目 id、当前章、位置锚点与选中文字，宿主据此打开现有反馈入口（不传则不显示） */
+    onReportError?: (ctx: ReaderReportContext) => void;
+    /** 页脚「最近校订」日期；数据里没有就不传 */
+    revisedAt?: string;
     className?: string;
     style?: React.CSSProperties;
 }
@@ -96,6 +100,8 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
     renderImageOverlay,
     imagePanel,
     allowVertical,
+    onReportError,
+    revisedAt,
     className,
     style,
 }) => {
@@ -256,6 +262,12 @@ export const BookFullText: React.FC<BookFullTextProps> = ({
             versionSource={false}
             paragraphToggle={canParagraphize(body)}
             allowVertical={allowVertical}
+            revisedAt={revisedAt}
+            onReportError={onReportError ? ctx => onReportError({
+                ...ctx,
+                bookTitle: title === undefined ? convert(index.version_label) : typeof title === 'string' ? title : undefined,
+                entryId: bookId,
+            }) : undefined}
             className={className}
             style={style}
         >

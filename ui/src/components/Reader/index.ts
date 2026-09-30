@@ -16,4 +16,5 @@ export type {
     ReaderTocItem,
     ReaderWritingMode,
     ReaderVersion,
+    ReaderReportContext,
 } from './types';
