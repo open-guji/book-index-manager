@@ -153,7 +153,21 @@ describe('翻卷导航不撑宽页面（overview#268 P1-1）', () => {
         const pager = screen.getByRole('navigation', { name: '翻卷' });
         expect(pager.querySelectorAll('.bim-rd-pglabel').length).toBe(2);
         expect(READER_CSS).toMatch(/\.bim-rd-pglabel \{[^}]*overflow: hidden;[^}]*text-overflow: ellipsis/);
-        expect(READER_CSS).toMatch(/\.bim-rd-pager > span \{[^}]*max-width: calc\(50% - 8px\)/);
+        // v3 卡片：两列等宽 1fr 1fr（＝各占一半），卡片 min-width: 0 才能让长标题被截断而不撑宽页面
+        expect(READER_CSS).toMatch(/\.bim-rd-pager \{[^}]*grid-template-columns: 1fr 1fr/);
+        expect(READER_CSS).toMatch(/\.bim-rd-pg \{[^}]*min-width: 0/);
+    });
+
+    it('翻卷卡片 v3：上一卷／下一卷带说明字，两端占位「已是第一卷」不可点', () => {
+        const { unmount } = render(<Harness toc={FEW} initial="001" />);
+        const nav = screen.getByRole('navigation', { name: '翻卷' });
+        expect(within(nav).queryByRole('button', { name: /上一卷/ })).toBeNull();
+        expect(nav.textContent).toContain('已是第一卷');
+        expect(within(nav).getByRole('button', { name: /下一卷/ })).toBeTruthy();
+        unmount();
+        render(<Harness toc={FEW} initial="002" />);
+        const nav2 = screen.getByRole('navigation', { name: '翻卷' });
+        expect(within(nav2).getByRole('button', { name: /上一卷/ })).toBeTruthy();
     });
 });
 
@@ -391,6 +405,21 @@ describe('CollatedEdition（整理本阅读页）', () => {
         expect(JSON.parse(localStorage.getItem('bim-reader-prefs') ?? '{}').workLinks).toBe(false);
         fireEvent.click(screen.getByRole('button', { name: '條目' }));
         expect(container.querySelector('.bim-rd-entries')!.textContent).not.toContain('→作品');
+    });
+
+    it('条目看法 v3：表格式行（序号、书名、作品 →／未关联），仍可展开；标出作品链接关掉就没有右列', async () => {
+        const { container } = mountCE();
+        await waitFor(() => expect(container.querySelector('h1')).toBeTruthy());
+        fireEvent.click(screen.getByRole('button', { name: '條目' }));
+        const rows = container.querySelectorAll('.bim-rd-entries .bim-rd-row');
+        expect(rows).toHaveLength(2);
+        expect([...rows].map(r => r.querySelector('.bim-rd-no')?.textContent)).toEqual(['1', '2']);
+        expect(container.querySelector('.bim-rd-rowhead')?.getAttribute('aria-hidden')).toBe('true');
+        // 第一条有 work_id：「作品 →」；第二条没有：「未关联」
+        expect(within(rows[0] as HTMLElement).getByRole('link', { name: /查看作品：/ }).textContent).toBe('作品 →');
+        expect(rows[1].textContent).toContain('未关联');
+        fireEvent.click(screen.getByRole('checkbox', { name: '标出作品链接' }));
+        expect(container.querySelector('.bim-rd-entries')!.textContent).not.toMatch(/作品 →|未关联/);
     });
 
     it('条目看法：「▶ 展开」是 <button aria-expanded>（Q5）', async () => {

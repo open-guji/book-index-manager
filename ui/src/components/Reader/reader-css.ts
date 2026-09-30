@@ -69,6 +69,11 @@ export const READER_CSS = `
 .bim-rd-ttl .bim-rd-cur { color: ${bim('ink')}; flex: none; }
 .bim-rd-chk { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
 .bim-rd-chk input { margin: 0; accent-color: ${bim('accent')}; cursor: pointer; }
+.bim-rd-rowhead {
+  display: flex; gap: 8px; padding: 8px 10px; border-bottom: 1px solid ${bim('ink')};
+  font-family: ${bim('font-ui')}; font-size: 11.5px; letter-spacing: 0.12em; color: ${bim('meta-fg')};
+}
+.bim-rd-entries .bim-rd-row:hover { background: ${bim('row-hover-bg')}; }
 .bim-rd-wl {
   display: inline-block; margin-left: 12px; padding: 1px 8px; font-size: 11.5px; letter-spacing: 0; font-weight: 400; line-height: 1.7;
   background: ${bim('flag-bg')}; color: ${bim('accent')} !important; text-decoration: none !important; vertical-align: 2px; white-space: nowrap;
@@ -229,11 +234,17 @@ export const READER_CSS = `
 
 .bim-rd-src { margin: 48px 0 0; font-size: 12px; line-height: 1.8; color: ${bim('meta-fg')}; font-family: ${bim('font-ui')}; }
 .bim-rd-src .bim-rd-dot::before { content: "·"; margin: 0 0.5em; }
-.bim-rd-pager { display: flex; justify-content: space-between; gap: 16px; margin-top: 56px; font-size: 14px; font-family: ${bim('font-ui')}; }
-.bim-rd-pager .bim-rd-t { color: ${bim('quiet-fg')}; max-width: 100%; min-width: 0; }
+.bim-rd-pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 48px; font-size: 14px; font-family: ${bim('font-ui')}; }
+.bim-rd-pg {
+  display: block; min-width: 0; margin: 0; padding: 14px 16px; text-align: left; font: inherit;
+  border: 1px solid ${bim('rule')}; background: ${bim('bg')}; color: ${bim('ink')}; cursor: pointer;
+}
+button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
+.bim-rd-pg-next { text-align: right; }
+.bim-rd-pg-end { cursor: default; font-size: 13px; color: ${bim('label-fg')}; background: none; border-style: dashed; }
+.bim-rd-pgcap { display: block; font-size: 11.5px; color: ${bim('label-fg')}; }
+.bim-rd-pg .bim-rd-pglabel { display: block; margin-top: 3px; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* 长回目不能撑宽页面：两侧各占不超过一半，标题省略号截断（390 宽 scrollWidth 曾到 648） */
-.bim-rd-pager > span { display: flex; min-width: 0; max-width: calc(50% - 8px); }
-.bim-rd-pager > span:last-child { margin-left: auto; justify-content: flex-end; }
 .bim-rd-pglabel { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bim-rd-refs { margin-top: 48px; font-size: 12px; line-height: 1.8; color: ${bim('meta-fg')}; font-family: ${bim('font-ui')}; }
 .bim-rd-refs h2 { font-size: 12px; font-weight: 600; letter-spacing: 0.2em; margin: 0 0 6px; color: ${bim('meta-fg')}; }
@@ -249,7 +260,7 @@ export const READER_CSS = `
   }
   .bim-rd-tools .bim-rd-fs + .bim-rd-fs { margin-left: 12px; }
   .bim-rd-ver select { min-height: 44px; }
-  .bim-rd-pager .bim-rd-t { min-height: 44px; }
+  .bim-rd-pager .bim-rd-pg { min-height: 44px; }
 }
 
 /* ── 中屏以下：目录改抽屉 ── */
