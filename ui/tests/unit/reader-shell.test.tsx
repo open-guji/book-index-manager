@@ -422,6 +422,35 @@ describe('CollatedEdition（整理本阅读页）', () => {
         expect(container.querySelector('.bim-rd-entries')!.textContent).not.toMatch(/作品 →|未关联/);
     });
 
+    it('右栏 v3：本卷计数（部书／已关联）＋条目锚点；点锚点滚到对应条目；有 work_id 的点亮', async () => {
+        const scroll = vi.fn();
+        (Element.prototype as unknown as { scrollIntoView: unknown }).scrollIntoView = scroll;
+        const { container } = mountCE();
+        await waitFor(() => expect(container.querySelector('.bim-rd-rail')).toBeTruthy());
+        const rail = container.querySelector('.bim-rd-rail') as HTMLElement;
+        expect(rail.querySelector('.bim-rd-rail-n b')?.textContent).toBe('2');
+        expect(rail.querySelector('.bim-rd-rail-linked')?.textContent).toBe('已关联 1');
+        expect(rail.querySelector('[role="img"]')?.getAttribute('aria-label')).toBe('已关联 1 / 2');
+        const links = [...rail.querySelectorAll('a')];  // jsdom 里 <860px 规则把栏藏了，不走 role 查询
+        expect(links).toHaveLength(2);
+        expect(links[0].querySelector('.bim-rd-rail-dot')?.className).toContain('on');
+        expect(links[1].querySelector('.bim-rd-rail-dot')?.className).not.toContain('on');
+        fireEvent.click(links[1]);
+        expect(scroll).toHaveBeenCalled();
+        expect(document.getElementById('rd-e-1')).toBeTruthy();
+        // 有名字的地标
+        expect(rail.tagName).toBe('ASIDE');
+        expect(rail.getAttribute('aria-label')).toBe('本卷');
+    });
+
+    it('右栏：切到「条目」看法后锚点仍指向存在的条目 id', async () => {
+        const { container } = mountCE();
+        await waitFor(() => expect(container.querySelector('.bim-rd-rail')).toBeTruthy());
+        fireEvent.click(screen.getByRole('button', { name: '條目' }));
+        expect(container.querySelector('.bim-rd-entries #rd-e-0')).toBeTruthy();
+        expect(container.querySelector('.bim-rd-rail')).toBeTruthy();
+    });
+
     it('条目看法：「▶ 展开」是 <button aria-expanded>（Q5）', async () => {
         const { container } = mountCE();
         await waitFor(() => expect(container.querySelector('h1')).toBeTruthy());

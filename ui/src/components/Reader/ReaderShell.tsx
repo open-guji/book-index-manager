@@ -39,6 +39,8 @@ export interface ReaderShellProps {
     current?: React.ReactNode;
     /** 显示「标出作品链接」勾选（当前卷里有可链到作品的条目时才有意义） */
     workLinkToggle?: boolean;
+    /** 正文右侧的栏（≥860px 才显示；窄了就藏起来）：宿主给内容，壳负责定位与吸顶 */
+    rail?: React.ReactNode;
 
     toc: ReaderTocItem[];
     activeKey: string | null;
@@ -173,7 +175,7 @@ export function ReaderShell({
     toc, activeKey, onSelect, tocHeader, tocCaption,
     images, imagesLoading, renderImageOverlay, imagePanel = 'auto',
     prefs, onPrefsChange, paragraphToggle, properNameToggle = true, allowVertical,
-    byline, current, workLinkToggle,
+    byline, current, workLinkToggle, rail,
     pager = true,
     pagerUnit = '卷',
     versions, currentVersionKey, onVersionChange, versionSource = true,
@@ -418,7 +420,7 @@ export function ReaderShell({
                     )}
                 </aside>
 
-                <div className="bim-rd-text" id={textId} ref={textRef} tabIndex={-1}>
+                <div className="bim-rd-text" id={textId} ref={textRef} tabIndex={-1} data-rail={rail ? 'true' : undefined}>
                     <div className="bim-rd-col">
                         {children}
                         {versionSource && version && (version.sourceName || version.license) && (
@@ -456,6 +458,7 @@ export function ReaderShell({
                             </nav>
                         )}
                     </div>
+                    {rail && <aside className="bim-rd-rail" aria-label="本卷">{rail}</aside>}
                 </div>
             </div>
         </div>
