@@ -348,6 +348,8 @@ describe('CollatedEdition（整理本阅读页）', () => {
 
     it('目录选中行：左侧色条（aria-current 行带 inset 阴影）', () => {
         expect(READER_CSS).toMatch(/\.bim-rd-ti\[aria-current="true"\] \{[^}]*box-shadow: inset 2px 0 0/);
+    });
+
     it('工具条 v3：书名链作品页、作者行取作品数据、当前卷；作者缺就不出', async () => {
         const onNavigate = vi.fn();
         const transport = {
