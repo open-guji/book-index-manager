@@ -99,10 +99,14 @@ export function createTextApi(transport: IndexStorage): TextApi {
         },
 
         async getChapter(id, key, chapter, opts) {
-            if (!isSafeSegment(key) || !isSafeSegment(chapter)) return null;
+            if (!isSafeSegment(key)) return null;
             const s = await state(id);
             if (!s) return null;
-            if (s.mode === 'native') return settle(transport.getChapter!(id, key, chapter, opts));
+            if (s.mode === 'native') {
+                // 新结构章 key 直接拼进 URL，必须是安全单段；旧结构的章 key 只用来在目录里查旧文件名，不拼 URL
+                if (!isSafeSegment(chapter)) return null;
+                return settle(transport.getChapter!(id, key, chapter, opts));
+            }
             const src = s.legacy[key];
             if (!src) return null;
             const idx = await legacyIndex(id, s, key);

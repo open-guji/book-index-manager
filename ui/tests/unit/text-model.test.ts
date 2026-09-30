@@ -28,6 +28,10 @@ describe('版本 key 与章号', () => {
     it('路径安全的单段', () => {
         expect(isSafeSegment('001')).toBe(true);
         for (const s of ['', '..', 'a/b', 'a\\b', '../x']) expect(isSafeSegment(s), s).toBe(false);
+        // URL 分隔符、百分号转义、空白、控制字符都不行（章 key 会拼进 fetch 的 URL）
+        for (const s of ['001?x=1', '001#frag', '%2e%2e', 'a b', 'a\nb', 'a\u0000b']) expect(isSafeSegment(s), JSON.stringify(s)).toBe(false);
+        // 汉字等正常文件名放行
+        for (const s of ['第001', '卷01', 'wikisource-2', 'd59f2htm01du']) expect(isSafeSegment(s), s).toBe(true);
     });
 });
 

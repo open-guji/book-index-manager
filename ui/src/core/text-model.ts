@@ -102,9 +102,12 @@ export function chapterKeyOf(file: string): string {
     return file.replace(/^.*[\\/]/, '').replace(/\.(json|md|txt)$/, '');
 }
 
-/** 章 key 是路径安全的单段（取数前校验） */
+/**
+ * 路径安全的单段（取数前校验，条目 id、版本 key、章 key 拼进 URL 前都要过）：
+ * 不含 `..`、路径分隔符、URL 分隔符（`?` `#` `%`）、空白与控制字符。汉字等正常文件名字符放行（旧章名如「第001」）。
+ */
 export function isSafeSegment(s: string): boolean {
-    return s.length > 0 && !s.includes('..') && !/[\\/]/.test(s);
+    return s.length > 0 && !s.includes('..') && !/[\\/?#%\s\u0000-\u001f\u007f]/.test(s);
 }
 
 // ── 来源与优先级 ──

@@ -117,13 +117,17 @@ describe('旧结构：用旧取数方法合成等价数据', () => {
 });
 
 describe('参数校验', () => {
-    it('key、章含路径分隔符或 .. 一律返回 null，不发请求', async () => {
+    it('key、章含路径分隔符、URL 分隔符或 .. 一律返回 null，不发取章／取目录请求', async () => {
         const n = nativeStore({ [WORK]: MANIFEST });
         const api = createTextApi(store(n));
         expect(await api.getIndex(WORK, '../x')).toBeNull();
         expect(await api.getChapter(WORK, 'default', '../001')).toBeNull();
         expect(await api.getChapter(WORK, 'a/b', '001')).toBeNull();
-        expect(n.getTextManifest).not.toHaveBeenCalled();
+        expect(await api.getChapter(WORK, 'default', '001?x=1')).toBeNull();
+        expect(await api.getChapter(WORK, 'default', '001#f')).toBeNull();
+        // 取章与取目录的请求一个都不发（条目的 manifest 可能为判断新旧结构已经取过）
+        expect(n.getChapter).not.toHaveBeenCalled();
+        expect(n.getTextIndex).not.toHaveBeenCalled();
     });
 
     it('未知的版本 key／章：旧结构返回 null', async () => {

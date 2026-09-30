@@ -153,6 +153,12 @@ describe('TextReader · 新结构', () => {
         expect(log[0]).toEqual([{ key: 'wikisource', chapter: '001', isDefault: false }, 'auto']);
     });
 
+    it('受控：chapter 无效时也照常渲染第一章，不空白等宿主回写', async () => {
+        setup(nativeTransport(), { versionKey: 'wikisource', chapter: '999' });
+        await screen.findByRole('heading', { level: 1, name: '卷一' });
+        expect(screen.getByText(/wikisource的第001章正文/)).toBeTruthy();
+    });
+
     it('受控：versionKey 不在 manifest 里，回落 default 并以 auto 通知（宿主据此纠正地址）', async () => {
         const { log } = setup(nativeTransport(), { versionKey: 'nonesuch', chapter: '001' });
         await screen.findByRole('heading', { level: 1, name: '經錄' });

@@ -223,9 +223,13 @@ export const TextReader: React.FC<TextReaderProps> = ({
         notify(versionKey, first, 'auto');
     }, [index, versionKey, activeChapter, chapterControlled, notify]);
 
+    /* 受控的 chapter 缺失或无效时，渲染用第一章（同时以 auto 通知宿主纠正），不能空白等宿主回写 */
+    const effectiveChapter = index
+        ? (activeChapter != null && index.chapters.some(c => c.file === activeChapter) ? activeChapter : index.chapters[0].file)
+        : activeChapter;
     const chapterMeta = useMemo(
-        () => (index && activeChapter ? index.chapters.find(c => c.file === activeChapter) ?? null : null),
-        [index, activeChapter],
+        () => (index && effectiveChapter ? index.chapters.find(c => c.file === effectiveChapter) ?? null : null),
+        [index, effectiveChapter],
     );
 
     // ── 切换 ──
@@ -235,12 +239,12 @@ export const TextReader: React.FC<TextReaderProps> = ({
         const seq = ++versionSeq.current;
         const target = await loadIndex(newKey);
         if (seq !== versionSeq.current) return;
-        const prev = chapterMeta ?? (activeChapter ? { file: activeChapter } : null);
+        const prev = chapterMeta ?? (effectiveChapter ? { file: effectiveChapter } : null);
         const chapter = matchChapterAcrossVersions(prev, target);
         if (!versionControlled) setOwnVersion(newKey);
         if (!chapterControlled) setOwnChapter(chapter);
         notify(newKey, chapter, 'version');
-    }, [manifest, versionKey, loadIndex, chapterMeta, activeChapter, versionControlled, chapterControlled, notify]);
+    }, [manifest, versionKey, loadIndex, chapterMeta, effectiveChapter, versionControlled, chapterControlled, notify]);
 
     const handleSelectChapter = useCallback((ck: string) => {
         if (!versionKey) return;
@@ -282,7 +286,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
         resetKey: `${id}\n${versionKey ?? ''}`,
         load: loadEntry,
         files: chapterKeys,
-        activeFile: activeChapter ?? null,
+        activeFile: effectiveChapter ?? null,
         activeJuan: content?.json ?? null,
         activeRawText: content?.md ?? null,
         query: searchQuery,
@@ -291,12 +295,12 @@ export const TextReader: React.FC<TextReaderProps> = ({
     const workLabelCacheRef = useRef<WorkLabelCache>(new Map());
     useEffect(() => { workLabelCacheRef.current.clear(); }, [id]);
 
-    const images = useChapterImages(resolveImages, activeChapter ?? null);
+    const images = useChapterImages(resolveImages, effectiveChapter ?? null);
     const { entryTitle, authors } = useEntryInfo(id, transport, title === undefined);
 
     // 「正文／条目」看法：换章回到正文
     const [juanView, setJuanView] = useState<JuanView>('text');
-    useEffect(() => { setJuanView('text'); }, [activeChapter, versionKey]);
+    useEffect(() => { setJuanView('text'); }, [effectiveChapter, versionKey]);
 
     // ── 渲染 ──
     if (manifestState === 'loading') return <div className={className} style={{ ...style, ...MUTED }}>加载中…</div>;
@@ -372,7 +376,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                     onChange={e => setSearchQuery(e.target.value)}
                 />
             ) : undefined}
-            activeKey={activeChapter ?? null}
+            activeKey={effectiveChapter ?? null}
             onSelect={handleSelectChapter}
             images={images.images}
             imagesLoading={images.loading}
@@ -392,11 +396,11 @@ export const TextReader: React.FC<TextReaderProps> = ({
 
             {!contentLoading && structured && juan && (
                 <JuanReading
-                    key={`${versionKey}/${activeChapter}`}
+                    key={`${versionKey}/${effectiveChapter}`}
                     juan={juan}
                     rawText={md}
                     positionLabel={unitPosition(chapterMeta, index, unit, convert)}
-                    groupLabel={groupLabelOfIndex(index, activeChapter)}
+                    groupLabel={groupLabelOfIndex(index, effectiveChapter ?? null)}
                     index={asCollatedIndex(id, index)}
                     searchQuery={searchQuery}
                     onNavigate={onNavigate}
