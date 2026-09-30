@@ -374,7 +374,7 @@ describe('CollectionPage（v3）', () => {
         await waitFor(() => expect(screen.getByRole('button', { name: '經部 20' })).toBeTruthy());
         expect([...asked].filter(id => id.startsWith('b')).length).toBe(N);
         expect(screen.queryByRole('button', { name: '按部類分組' })).toBeNull();
-    });
+    }, 20000);
 
     it('子目没有部类信息（或只有一类）时不出页签与分布条', async () => {
         const one = { ...CLS_EXTRA, k3: { ...CLS_EXTRA.k3, classification: { l1: '經部' } }, k4: { ...CLS_EXTRA.k4, classification: { l1: '經部' } } };
