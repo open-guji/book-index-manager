@@ -220,6 +220,8 @@
     --bim-fr-tab-bd: transparent;
     /* 分区标题字号。界栏标题在框顶标题栏里，小一档 19px */
     --bim-fr-hd-size: 24px;
+    /* 分区标题栏底色（淡染主色）。疏朗混进页面底，界栏 6% 混进卡面底。主色取 accent（primary 是 VS Code 按钮蓝，不随配色） */
+    --bim-fr-hd-bg: color-mix(in srgb, var(--bim-accent) 7%, var(--bim-page-bg));
     /* 卡片边框。疏朗不画（靠卡面底与淡投影）；界栏 1px */
     --bim-fr-card-bd: 1px solid transparent;
     /* 卡片底 */
@@ -325,6 +327,7 @@
     --bim-fr-shadow: none;
     --bim-fr-tab-bd: var(--bim-rule);
     --bim-fr-hd-size: 19px;
+    --bim-fr-hd-bg: color-mix(in srgb, var(--bim-accent) 6%, var(--bim-card-bg));
     --bim-fr-card-bd: 1px solid var(--bim-rule);
     --bim-fr-row-bd: 1px solid var(--bim-rule);
     --bim-fr-row-pad: 7px 2px;
