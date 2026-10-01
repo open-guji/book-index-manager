@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 import type { ReaderImageOverlay, ReaderPageImage } from './types';
 import { bim } from '../../styles/tokens';
+import { useI18n } from '../../i18n/use-i18n';
 
 function CharBoxes({ page }: { page: ReaderPageImage }) {
     if (!page.boxes?.length || !page.width || !page.height) return null;
@@ -37,6 +38,7 @@ export function ImagePanel({ pages, loading, page: pageProp, onPageChange, rende
     onPageChange?: (page: number) => void;
     renderOverlay?: ReaderImageOverlay;
 }) {
+    const { t } = useI18n();
     const [inner, setInner] = useState(0);
     const page = pageProp ?? inner;
     const setPage = (p: number) => { if (onPageChange) onPageChange(p); else setInner(p); };
@@ -44,15 +46,15 @@ export function ImagePanel({ pages, loading, page: pageProp, onPageChange, rende
     useEffect(() => { if (pageProp === undefined) setInner(0); }, [pages, pageProp]);
 
     if (loading) {
-        return <div className="bim-rd-img-box"><div className="bim-rd-img-empty">加载书影…</div></div>;
+        return <div className="bim-rd-img-box"><div className="bim-rd-img-empty">{t('reader.imagesLoading')}</div></div>;
     }
     if (!pages || pages.length === 0) {
         return (
             <div className="bim-rd-img-box">
                 <div className="bim-rd-img-empty">
                     <div className="bim-rd-img-frame" aria-hidden="true" />
-                    <b>暂无书影</b>
-                    <span>这一卷还没有配上影像；接入后在此与正文逐页对看</span>
+                    <b>{t('reader.noImages')}</b>
+                    <span>{t('reader.noImagesHint')}</span>
                 </div>
             </div>
         );
@@ -66,7 +68,7 @@ export function ImagePanel({ pages, loading, page: pageProp, onPageChange, rende
                 <figure className="bim-rd-img-fig">
                     <img
                         src={cur.url}
-                        alt={cur.alt ?? `书影 第 ${label} 页`}
+                        alt={cur.alt ?? t('reader.imageAlt', { label })}
                         width={cur.width}
                         height={cur.height}
                         loading="lazy"
@@ -78,9 +80,9 @@ export function ImagePanel({ pages, loading, page: pageProp, onPageChange, rende
             </div>
             {pages.length > 1 && (
                 <div className="bim-rd-img-pager">
-                    <button type="button" className="bim-rd-t" aria-label="上一页书影" disabled={i === 0} onClick={() => setPage(i - 1)}>‹</button>
+                    <button type="button" className="bim-rd-t" aria-label={t('reader.prevImage')} disabled={i === 0} onClick={() => setPage(i - 1)}>‹</button>
                     <span aria-live="polite">{cur.label ?? `${i + 1} / ${pages.length}`}</span>
-                    <button type="button" className="bim-rd-t" aria-label="下一页书影" disabled={i === pages.length - 1} onClick={() => setPage(i + 1)}>›</button>
+                    <button type="button" className="bim-rd-t" aria-label={t('reader.nextImage')} disabled={i === pages.length - 1} onClick={() => setPage(i + 1)}>›</button>
                 </div>
             )}
         </>

@@ -5,7 +5,7 @@ import type {
     LineageGraphNode,
 } from '../core/lineage-graph';
 import { formatLineageYear } from '../core/lineage-graph';
-import { useConvert } from '../i18n';
+import { useI18n } from '../i18n';
 import { bim } from '../styles/tokens';
 
 export interface VersionLineageGraphProps {
@@ -27,6 +27,7 @@ export interface VersionLineageGraphProps {
  * 若依赖缺失，组件会渲染提示并指向列表 fallback。
  */
 export const VersionLineageGraph: React.FC<VersionLineageGraphProps> = ({ selectedNodeId, ...props }) => {
+    const { t } = useI18n();
     const [loadState, setLoadState] = useState<'loading' | 'ready' | 'missing'>('loading');
     const [modules, setModules] = useState<LoadedModules | null>(null);
 
@@ -45,20 +46,28 @@ export const VersionLineageGraph: React.FC<VersionLineageGraphProps> = ({ select
     }, []);
 
     if (loadState === 'loading') {
-        return <div style={placeholderStyle}>加载图组件中…</div>;
+        return <div style={placeholderStyle}>{t('lineage.graphLoading')}</div>;
     }
     if (loadState === 'missing' || !modules) {
         return (
             <div style={placeholderStyle}>
-                <div>图组件未安装。请安装 <code>@xyflow/react</code> 与 <code>@dagrejs/dagre</code>。</div>
+                <div>{withNodes(t('lineage.graphMissing'), { xyflow: <code>@xyflow/react</code>, dagre: <code>@dagrejs/dagre</code> })}</div>
                 <div style={{ fontSize: '12px', marginTop: '4px' }}>
-                    或使用 <code>VersionLineageList</code> 列表视图。
+                    {withNodes(t('lineage.graphMissingHint'), { list: <code>VersionLineageList</code> })}
                 </div>
             </div>
         );
     }
     return <Inner modules={modules} selectedNodeId={selectedNodeId} {...props} />;
 };
+
+/** 把字典文字里的 {name} 换成 React 节点（t() 只能插字符串） */
+function withNodes(text: string, nodes: Record<string, React.ReactNode>): React.ReactNode[] {
+    return text.split(/(\{\w+\})/).map((part, i) => {
+        const m = /^\{(\w+)\}$/.exec(part);
+        return <React.Fragment key={i}>{m && m[1] in nodes ? nodes[m[1]] : part}</React.Fragment>;
+    });
+}
 
 // ── 动态加载 ──
 
@@ -203,6 +212,8 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
     // 节点类型 —— 用闭包传 Handle/Position
     const nodeTypes = useMemo(() => {
         const VersionNode = (p: { data: NodeData }) => {
+            // ReactFlow 把节点渲染在本树内，取得到 LocaleContext
+            const { t } = useI18n();
             const d = p.data;
             const isHypo = d.kind === 'hypothetical';
             const isLost = d.status === 'lost';
@@ -228,7 +239,7 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                             ? bim('shadow-node-selected')
                             : (isHypo || isBridge) ? 'none' : bim('shadow-node'),
                     }}
-                    title={isBridge ? '桥接节点：本身不在核心集，为保持派生链完整而显示' : undefined}
+                    title={isBridge ? t('lineage.bridgeTitle') : undefined}
                 >
                     <Handle type="target" position={Position.Left} style={{ visibility: 'hidden' }} />
                     <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 1, lineHeight: 1.3 }}>
@@ -247,7 +258,7 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
                         </div>
                     )}
                     {isLost && (
-                        <div style={{ fontSize: 9, color: bim('lost-fg'), marginTop: 1 }}>已佚</div>
+                        <div style={{ fontSize: 9, color: bim('lost-fg'), marginTop: 1 }}>{t('lineage.lost')}</div>
                     )}
                     <Handle type="source" position={Position.Right} style={{ visibility: 'hidden' }} />
                 </div>
@@ -256,7 +267,7 @@ const Inner: React.FC<InnerProps> = ({ graph, renderLink, height = 600, classNam
         return { version: VersionNode };
     }, [Handle, Position]);
 
-    const { convert } = useConvert();
+    const { convert } = useI18n();
 
     // 计算 layout（dagre）
     const { rfNodes, rfEdges } = useMemo(

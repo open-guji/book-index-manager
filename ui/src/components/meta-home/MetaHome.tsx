@@ -5,10 +5,11 @@
  * 和阅读首页同一套外壳与判准（分区、书架、四部、行列表直接用 read-home 的组件与 bim-rh-* 样式）；
  * 阅读首页偏普通读者，这里偏学术：四部计全部作品，书架点进作品页并标著录条目数。
  * 组件只收 props、不取数（数据见 ./model 的 MetaHomeSections）；「最近浏览」例外：读本浏览器 localStorage，经 transport 取条目。
- * 文案按繁体写、经 useConvert() 转。没有数据的分区整块不出（策展文件没交时丛编、人物、谱系为空）。
+ * 界面文字走 t('metaHome.*')（字典 i18n/messages/meta-home.ts），sections.json 来的书目名、分组名、人名等数据走 convert。没有数据的分区整块不出（策展文件没交时丛编、人物、谱系为空）。
  */
 import React, { useCallback, useEffect, useState } from 'react';
-import { useConvert } from '../../i18n';
+import { useI18n } from '../../i18n';
+import type { MessageKey, TFunction } from '../../i18n';
 import type { IndexType } from '../../types';
 import type { IndexStorage } from '../../storage/types';
 import { clearAllRecentIds, loadRecentIds, resolveRecentEntry, type RecentEntry } from '../../core/recent';
@@ -27,23 +28,21 @@ function readLinks(l: Links): Partial<ReadHomeLinks> {
     return { read: l.item, work: l.item, node: l.node };
 }
 
-const TYPE_SHORT: Record<IndexType, string> = { work: '作', book: '版', collection: '叢', entity: '人' };
-const TYPE_LABEL: Record<IndexType, string> = { work: '作品', book: '版本', collection: '叢編', entity: '人物' };
 
 /** 页首类型签：全部／作品／版本／丛编／人物（带条目数）；宿主没给 links.type 就不出 */
 export function MetaTypeChips({ counts, links }: { counts: MetaHomeSections['counts']; links?: Partial<MetaHomeLinks> }) {
-    const { convert } = useConvert();
+    const { t } = useI18n();
     const href = links?.type;
     if (!href) return null;
     const rows: ['all' | IndexType, string, number | null][] = [
-        ['all', '全部', null], ['work', '作品', counts.works], ['book', '版本', counts.books],
-        ['collection', '叢編', counts.collections], ['entity', '人物', counts.entities],
+        ['all', t('metaHome.typeAll'), null], ['work', t('metaHome.typeLabel.work'), counts.works], ['book', t('metaHome.typeLabel.book'), counts.books],
+        ['collection', t('metaHome.typeLabel.collection'), counts.collections], ['entity', t('metaHome.typeLabel.entity'), counts.entities],
     ];
     return (
-        <ul className="bim-mh-types bim-rh-num" aria-label={convert('按類型檢索')}>
-            {rows.map(([k, t, n]) => (
+        <ul className="bim-mh-types bim-rh-num" aria-label={t('metaHome.typeChipsLabel')}>
+            {rows.map(([k, label, n]) => (
                 <li key={k}>
-                    <a href={href(k)}><b>{convert(t)}</b>{n != null && n > 0 && <small>{fmtCount(n)}</small>}</a>
+                    <a href={href(k)}><b>{label}</b>{n != null && n > 0 && <small>{fmtCount(n)}</small>}</a>
                 </li>
             ))}
         </ul>
@@ -69,11 +68,14 @@ export function useRecentEntries(transport: Pick<IndexStorage, 'getItem' | 'getE
     return { entries, clear };
 }
 
-function recentSub(e: RecentEntry): string {
-    if (e.type === 'book') return e.edition || e.era || '版本';
-    if (e.type === 'entity') return e.dynasty || '人物';
-    if (e.type === 'collection') return '叢編';
-    return e.dynasty || '作品';
+/** 副信息：有数据（版本名、年代、朝代）用数据并 convert，没有就写类型名 */
+function recentSub(e: RecentEntry, t: TFunction, convert: (s: string) => string): string {
+    const data = e.type === 'book' ? e.edition || e.era : e.type === 'collection' ? '' : e.dynasty;
+    return data ? convert(data) : typeLabel(e.type, t);
+}
+
+function typeLabel(type: IndexType, t: TFunction): string {
+    return t(`metaHome.typeLabel.${type}` as MessageKey);
 }
 
 /** 最近浏览栏（页首右侧）：类型标、题名、副信息；可清除；没有记录显示空状态 */
@@ -83,54 +85,59 @@ export function MetaRecentPanel({ entries, onClear, links }: {
     onClear?: () => void;
     links?: Partial<MetaHomeLinks>;
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const l = withMetaLinks(links);
     return (
         <aside className="bim-mh-recent" aria-labelledby="bim-mh-recent-h">
             <div className="bim-mh-recent-h">
-                <h2 id="bim-mh-recent-h">{convert('最近瀏覽')}</h2>
+                <h2 id="bim-mh-recent-h">{t('metaHome.recentTitle')}</h2>
                 {entries && entries.length > 0 && onClear && (
-                    <button type="button" onClick={onClear}>{convert('清除')}</button>
+                    <button type="button" onClick={onClear}>{t('metaHome.recentClear')}</button>
                 )}
             </div>
             {entries && entries.length > 0 && (
                 <ol>
                     {entries.map((e) => (
                         <li key={e.id}>
-                            <a href={l.item(e.id)} aria-label={convert(`${TYPE_LABEL[e.type] ?? ''} ${e.title}`)}>
-                                <i className="bim-mh-ty" aria-hidden="true">{convert(TYPE_SHORT[e.type] ?? '')}</i>
+                            <a href={l.item(e.id)} aria-label={t('metaHome.recentItemLabel', { type: e.type ? typeLabel(e.type, t) : '', title: convert(e.title) })}>
+                                <i className="bim-mh-ty" aria-hidden="true">{e.type ? t(`metaHome.typeShort.${e.type}` as MessageKey) : ''}</i>
                                 <span>{convert(e.title)}</span>
-                                <small aria-hidden="true">{convert(recentSub(e))}</small>
+                                <small aria-hidden="true">{recentSub(e, t, convert)}</small>
                             </a>
                         </li>
                     ))}
                 </ol>
             )}
             {entries && entries.length === 0 && (
-                <p className="bim-mh-recent-empty">{convert('還沒有瀏覽記錄。打開任一條目後會出現在這裏。')}</p>
+                <p className="bim-mh-recent-empty">{t('metaHome.recentEmpty')}</p>
             )}
         </aside>
     );
 }
 
-const STATUS_LABEL: Record<string, string> = { done: '已完成', in_progress: '進行中', todo: '計劃中' };
+/** 进度状态 → 字典里的标签；字典没有的状态原样（经 convert）显示 */
+function statusLabel(status: string, t: TFunction, convert: (s: string) => string, site = false): string {
+    if (site && (status === 'done' || status === 'in_progress')) return t(`metaHome.siteStatus.${status}`);
+    if (status === 'done' || status === 'in_progress' || status === 'todo') return t(`metaHome.status.${status}`);
+    return convert(status);
+}
 
 /** 书目著录进度表：书目｜著录条目｜已对上作品｜进度｜状态。书目名只在对得上条目时才是链接 */
 export function MetaCatalogTable({ rows, links }: { rows: MetaCatalogProgress[]; links?: Partial<MetaHomeLinks> }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const l = withMetaLinks(links);
     if (!rows.length) return null;
     return (
-        <div className="bim-mh-tbl-wrap" tabIndex={0} role="region" aria-label={convert('書目著錄進度')}>
+        <div className="bim-mh-tbl-wrap" tabIndex={0} role="region" aria-label={t('metaHome.catalogTitle')}>
             <table className="bim-mh-tbl">
-                <caption>{convert('書目著錄進度')}<small>{convert('每條著錄對到作品條目')}</small></caption>
+                <caption>{t('metaHome.catalogTitle')}<small>{t('metaHome.catalogNote')}</small></caption>
                 <thead>
                     <tr>
-                        <th scope="col">{convert('書目')}</th>
-                        <th scope="col" className="bim-mh-r">{convert('著錄條目')}</th>
-                        <th scope="col" className="bim-mh-r">{convert('已對上作品')}</th>
-                        <th scope="col">{convert('進度')}</th>
-                        <th scope="col">{convert('狀態')}</th>
+                        <th scope="col">{t('metaHome.colCatalog')}</th>
+                        <th scope="col" className="bim-mh-r">{t('metaHome.colRecords')}</th>
+                        <th scope="col" className="bim-mh-r">{t('metaHome.colMatched')}</th>
+                        <th scope="col">{t('metaHome.colProgress')}</th>
+                        <th scope="col">{t('metaHome.colStatus')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -151,7 +158,7 @@ export function MetaCatalogTable({ rows, links }: { rows: MetaCatalogProgress[];
                                         <small>{p}%</small>
                                     </span>
                                 </td>
-                                <td>{r.status && <span className="bim-mh-st" data-st={r.status}>{convert(STATUS_LABEL[r.status] ?? r.status)}</span>}</td>
+                                <td>{r.status && <span className="bim-mh-st" data-st={r.status}>{statusLabel(r.status, t, convert)}</span>}</td>
                             </tr>
                         );
                     })}
@@ -163,7 +170,7 @@ export function MetaCatalogTable({ rows, links }: { rows: MetaCatalogProgress[];
 
 /** 作品行列表（同类书目、丛编分组共用）：题名＋右侧小字 */
 function Rows({ items, links, label }: { items: { id: string; title: string; sub?: string }[]; links: Links; label?: string }) {
-    const { convert } = useConvert();
+    const { convert } = useI18n();
     return (
         <ul className="bim-rh-rows" aria-label={label ? convert(label) : undefined}>
             {items.map((x) => (
@@ -180,17 +187,17 @@ function Rows({ items, links, label }: { items: { id: string; title: string; sub
 
 /** 同类书目与考证（不在书架上的）。手机端同丛编分组，只露前 4 条，「全部 N 部」展开（overview#325） */
 export function MetaRelatedCatalogs({ works, links }: { works: MetaWorkRef[]; links?: Partial<MetaHomeLinks> }) {
-    const { convert } = useConvert();
+    const { t } = useI18n();
     const [open, setOpen] = useState(false);
     if (!works.length) return null;
     const capped = groupCapped(works.length);
     return (
         <div className="bim-rh-grp" data-cap={capped ? '' : undefined} data-open={open ? '' : undefined}>
-            <h3 className="bim-rh-gt">{convert('同類書目與考證')}<small>{convert('不在書架上的')}</small></h3>
+            <h3 className="bim-rh-gt">{t('metaHome.relatedTitle')}<small>{t('metaHome.relatedNote')}</small></h3>
             <Rows items={works.map((w) => ({ id: w.id, title: w.title, sub: authorsLine(w) || undefined }))} links={withMetaLinks(links)} />
             {capped && (
                 <button type="button" className="bim-rh-expand" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-                    {convert(open ? '收起' : `全部 ${works.length} 部`)}
+                    {open ? t('action.collapse') : t('metaHome.allNWorks', { n: works.length })}
                 </button>
             )}
         </div>
@@ -202,15 +209,15 @@ export const SEVEN_PAVILIONS_KEY = 'siku_qige';
 
 /** 丛编的一组：手机端和阅读首页专题一样只露前 4 条（GROUP_NARROW_CAP），「全部 N 種」展开（overview#325） */
 function CollectionGroup({ group, links }: { group: MetaHomeSections['collection_groups'][number]; links: Links }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const [open, setOpen] = useState(false);
     return (
         <div className="bim-rh-grp" data-cap={groupCapped(group.items.length) ? '' : undefined} data-open={open ? '' : undefined}>
-            <h3 className="bim-rh-gt">{convert(group.label)}<small className="bim-rh-num">{convert(`${group.items.length} 種`)}</small></h3>
+            <h3 className="bim-rh-gt">{convert(group.label)}<small className="bim-rh-num">{t('metaHome.nKinds', { n: group.items.length })}</small></h3>
             <Rows items={group.items} links={links} label={group.label} />
             {groupCapped(group.items.length) && (
                 <button type="button" className="bim-rh-expand" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-                    {convert(open ? '收起' : `全部 ${group.items.length} 種`)}
+                    {open ? t('action.collapse') : t('metaHome.allNKinds', { n: group.items.length })}
                 </button>
             )}
         </div>
@@ -219,13 +226,13 @@ function CollectionGroup({ group, links }: { group: MetaHomeSections['collection
 
 /** 丛编：「四库七阁」一排方格，其余各组分栏列表 */
 export function MetaCollectionGroups({ groups, links }: { groups: MetaHomeSections['collection_groups']; links?: Partial<MetaHomeLinks> }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const l = withMetaLinks(links);
     if (!groups.length) return null;
     const ge = groups.find((g) => g.key === SEVEN_PAVILIONS_KEY);
     const rest = groups.filter((g) => g !== ge);
     // 七阁格上只写阁名一字头（文淵閣本 → 文淵）；取不到就写全名
-    const short = (t: string) => t.match(/(文[^\s·・閣阁]+)[閣阁]/)?.[1] ?? t;
+    const short = (title: string) => title.match(/(文[^\s·・閣阁]+)[閣阁]/)?.[1] ?? title;
     return (
         <>
             {ge && (
@@ -236,7 +243,7 @@ export function MetaCollectionGroups({ groups, links }: { groups: MetaHomeSectio
                             <li key={x.id}>
                                 <a href={l.item(x.id)} aria-label={convert(x.title)} title={convert(x.title)}>
                                     <span aria-hidden="true">{convert(short(x.title))}</span>
-                                    {short(x.title) !== x.title && <small aria-hidden="true">{convert('閣')}</small>}
+                                    {short(x.title) !== x.title && <small aria-hidden="true">{t('metaHome.pavilion')}</small>}
                                 </a>
                             </li>
                         ))}
@@ -256,9 +263,9 @@ const LANE_H = 34;
 /** 一人名字大约占轴宽的百分比（排车道用，防重叠） */
 const LABEL_SHARE = 13;
 
-function lifeText(p: MetaBibliographer): string {
+function lifeText(p: MetaBibliographer, t: TFunction): string {
     if (p.birth_year == null && p.death_year == null) return '';
-    return `${p.birth_year != null ? yearText(p.birth_year) : '?'}–${p.death_year != null ? yearText(p.death_year) : '?'}`;
+    return `${p.birth_year != null ? yearText(p.birth_year, t) : '?'}–${p.death_year != null ? yearText(p.death_year, t) : '?'}`;
 }
 
 /** 轴上的刻度：取整到 100／300 年 */
@@ -272,7 +279,7 @@ function axisTicks(min: number, max: number): number[] {
 
 /** 人物：按生卒年成比例排在一条时间轴上；生卒年都没录的不上轴，在轴下注明。手机改列表 */
 export function MetaPeopleTimeline({ people, links }: { people: MetaBibliographer[]; links?: Partial<MetaHomeLinks> }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const l = withMetaLinks(links);
     if (!people.length) return null;
     const { min, max, placed, missing } = timelineLayout(people);
@@ -300,13 +307,13 @@ export function MetaPeopleTimeline({ people, links }: { people: MetaBibliographe
                                 style={{ left: `${b.left}%`, top: b.lane * LANE_H + 4, width: `${Math.max(b.width, 0.5)}%` }}
                             >
                                 <i aria-hidden="true" style={{ width: '100%' }} />
-                                <a href={l.item(b.p.id)}>{convert(b.p.name)}<small className="bim-rh-num">{lifeText(b.p)}</small></a>
+                                <a href={l.item(b.p.id)}>{convert(b.p.name)}<small className="bim-rh-num">{lifeText(b.p, t)}</small></a>
                             </li>
                         ))}
                     </ul>
                     <div className="bim-mh-tl-axis" aria-hidden="true">
                         {axisTicks(min, max).map((y) => (
-                            <span key={y} style={{ left: `${((y - min) / range) * 100}%` }}>{convert(yearText(y))}</span>
+                            <span key={y} style={{ left: `${((y - min) / range) * 100}%` }}>{yearText(y, t)}</span>
                         ))}
                     </div>
                 </div>
@@ -317,13 +324,13 @@ export function MetaPeopleTimeline({ people, links }: { people: MetaBibliographe
                     <li key={p.id}>
                         <a href={l.item(p.id)}>
                             <span>{convert(p.name)}</span>
-                            <small className="bim-rh-num">{convert([p.dynasty, lifeText(p)].filter(Boolean).join('　'))}</small>
+                            <small className="bim-rh-num">{[p.dynasty ? convert(p.dynasty) : '', lifeText(p, t)].filter(Boolean).join('　')}</small>
                         </a>
                     </li>
                 ))}
             </ul>
             {missing.length > 0 && bars.length > 0 && (
-                <p className="bim-mh-tl-foot">{convert(`生卒年未錄、未上軸：${missing.map((p) => p.name).join('、')}`)}</p>
+                <p className="bim-mh-tl-foot">{t('metaHome.missingLife', { names: convert(missing.map((p) => p.name).join('、')) })}</p>
             )}
         </>
     );
@@ -338,7 +345,7 @@ const TREE_ICON = (
 
 /** 版本谱系：有谱系的作品，一部一张卡，点进作品页 */
 export function MetaLineageCards({ works, links }: { works: MetaWorkRef[]; links?: Partial<MetaHomeLinks> }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const l = withMetaLinks(links);
     if (!works.length) return null;
     return (
@@ -351,7 +358,7 @@ export function MetaLineageCards({ works, links }: { works: MetaWorkRef[]; links
                             {TREE_ICON}
                             <b>{convert(w.title)}</b>
                             {by && <small>{convert(by)}</small>}
-                            <span>{convert('看版本譜系 →')}</span>
+                            <span>{t('metaHome.viewLineage')}</span>
                         </a>
                     </li>
                 );
@@ -362,11 +369,10 @@ export function MetaLineageCards({ works, links }: { works: MetaWorkRef[]; links
 
 /** 在线资源：已对接与进行中的画比例条；计划中的列一行 */
 export function MetaOnlineSites({ sites }: { sites: MetaSite[] }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const live = sites.filter((s) => s.status !== 'todo' && s.total > 0);
     const todo = sites.filter((s) => !live.includes(s));
     if (!sites.length) return null;
-    const label = (s: MetaSite) => (s.status === 'done' ? '已對接' : s.status === 'in_progress' ? '進行中' : STATUS_LABEL[s.status] ?? s.status);
     return (
         <>
             {live.length > 0 && (
@@ -379,24 +385,20 @@ export function MetaOnlineSites({ sites }: { sites: MetaSite[] }) {
                                 <span className="bim-mh-bar" aria-hidden="true" style={{ ['--bimmh-w' as string]: `${p}%` }} />
                                 <small>
                                     {`${fmtCount(s.imported)} / ${fmtCount(s.total)}　${p}%　`}
-                                    {s.status && <span className="bim-mh-st" data-st={s.status}>{convert(label(s))}</span>}
+                                    {s.status && <span className="bim-mh-st" data-st={s.status}>{statusLabel(s.status, t, convert, true)}</span>}
                                 </small>
                             </li>
                         );
                     })}
                 </ul>
             )}
-            {todo.length > 0 && <p className="bim-mh-todo">{convert(`計劃接入：${todo.map((s) => s.name).join('、')}`)}</p>}
+            {todo.length > 0 && <p className="bim-mh-todo">{t('metaHome.plannedSites', { names: convert(todo.map((s) => s.name).join('、')) })}</p>}
         </>
     );
 }
 
-const LOSS: { key: 'extant' | 'partially_extant' | 'lost' | 'unknown'; label: string; note: string }[] = [
-    { key: 'extant', label: '存', note: '今有傳本' },
-    { key: 'partially_extant', label: '殘', note: '部分存世' },
-    { key: 'lost', label: '佚', note: '僅見著錄' },
-    { key: 'unknown', label: '未詳', note: '尚未判定' },
-];
+/** 存佚四档（标签与说明在字典 metaHome.loss／lossNote） */
+const LOSS_KEYS = ['extant', 'partially_extant', 'lost', 'unknown'] as const;
 
 /** 数据与授权：数据规模 8 项、按存佚检索 4 个入口、CC0 授权与数据版本 */
 export function MetaDataLicense({ stats, links, version, repoUrl, downloadHref }: {
@@ -409,34 +411,34 @@ export function MetaDataLicense({ stats, links, version, repoUrl, downloadHref }
     /** 引用方式与数据下载；不给不出 */
     downloadHref?: string;
 }) {
-    const { convert } = useConvert();
-    const nums: [number, string][] = ([
-        [stats.works, '作品'], [stats.books, '版本'], [stats.collections, '叢編'], [stats.entities, '人物'],
-        [stats.has_image, '有影印'], [stats.has_text, '有文本'], [stats.article, '單篇文'], [stats.poem, '單篇詩'],
-    ] as [number, string][]).filter(([n]) => n > 0);
+    const { t } = useI18n();
+    const nums = (['works', 'books', 'collections', 'entities', 'has_image', 'has_text', 'article', 'poem'] as const)
+        .map((k) => [stats[k], t(`metaHome.stat.${k}`)] as [number, string])
+        .filter(([n]) => n > 0);
     const lossHref = links?.loss;
-    const hasLossCounts = LOSS.some((x) => (stats.loss?.[x.key] ?? 0) > 0);
+    const hasLossCounts = LOSS_KEYS.some((k) => (stats.loss?.[k] ?? 0) > 0);
     return (
         <div className="bim-mh-data">
             {nums.length > 0 && (
                 <div>
-                    <h3 className="bim-rh-gt">{convert('數據規模')}</h3>
+                    <h3 className="bim-rh-gt">{t('metaHome.dataScale')}</h3>
                     <ul className="bim-mh-nums">
-                        {nums.map(([n, t]) => <li key={t}><b className="bim-rh-num">{fmtCount(n)}</b><span>{convert(t)}</span></li>)}
+                        {nums.map(([n, label]) => <li key={label}><b className="bim-rh-num">{fmtCount(n)}</b><span>{label}</span></li>)}
                     </ul>
                 </div>
             )}
             {lossHref && (
                 <div>
-                    <h3 className="bim-rh-gt">{convert('按存佚檢索')}</h3>
+                    <h3 className="bim-rh-gt">{t('metaHome.byLoss')}</h3>
                     <ul className="bim-mh-loss">
-                        {LOSS.map((x) => {
-                            const n = stats.loss?.[x.key] ?? 0;
+                        {LOSS_KEYS.map((k) => {
+                            const n = stats.loss?.[k] ?? 0;
+                            const note = t(`metaHome.lossNote.${k}`);
                             return (
-                                <li key={x.key}>
-                                    <a href={lossHref(x.key)}>
-                                        {convert(x.label)}
-                                        <small className="bim-rh-num">{convert(hasLossCounts && n > 0 ? `${fmtCount(n)} 部 · ${x.note}` : x.note)}</small>
+                                <li key={k}>
+                                    <a href={lossHref(k)}>
+                                        {t(`metaHome.loss.${k}`)}
+                                        <small className="bim-rh-num">{hasLossCounts && n > 0 ? t('metaHome.lossCount', { n: fmtCount(n), note }) : note}</small>
                                     </a>
                                 </li>
                             );
@@ -445,10 +447,10 @@ export function MetaDataLicense({ stats, links, version, repoUrl, downloadHref }
                 </div>
             )}
             <div className="bim-mh-lic">
-                <p><span className="bim-mh-cc0">CC0</span>{convert('古籍元數據以 CC0 公有領域發布，可自由複製、改編、再發布。')}</p>
-                <p>{convert('數據倉庫：')}{repoUrl ? <a href={repoUrl}><code>book-index</code></a> : <code>book-index</code>}{convert('（GitHub，CC0）')}</p>
-                {version && <p>{convert('當前數據版本：')}<code>{version}</code></p>}
-                {downloadHref && <p><a href={downloadHref}>{convert('引用方式與數據下載 →')}</a></p>}
+                <p><span className="bim-mh-cc0">CC0</span>{t('metaHome.license')}</p>
+                <p>{t('metaHome.repo')}{repoUrl ? <a href={repoUrl}><code>book-index</code></a> : <code>book-index</code>}{t('metaHome.repoNote')}</p>
+                {version && <p>{t('metaHome.version')}<code>{version}</code></p>}
+                {downloadHref && <p><a href={downloadHref}>{t('metaHome.download')}</a></p>}
             </div>
         </div>
     );
@@ -486,7 +488,7 @@ export const META_HOME_SECTION_IDS = {
 export function MetaHomeView({
     sections, links, head, transport, catalogHref, collectionsHref, entitiesHref, version, repoUrl, downloadHref, className,
 }: MetaHomeViewProps) {
-    const { convert } = useConvert();
+    const { t } = useI18n();
     const s = sections;
     const l = withMetaLinks(links);
     const rl = readLinks(l);
@@ -501,10 +503,9 @@ export function MetaHomeView({
         sites: s.sites.length > 0,
         data: true,
     };
-    const nav = ([
-        ['zhi', '歷代史志'], ['sibu', '四部'], ['cong', '叢編'], ['people', '人物'], ['lineage', '版本譜系'], ['sites', '在線資源'], ['data', '數據與授權'],
-    ] as [keyof typeof ids, string][]).filter(([k]) => has[k]);
-    const more = (href: string | undefined, text: string) => (href ? <a className="bim-rh-more" href={href}>{convert(text)}</a> : undefined);
+    const nav = (Object.keys(ids) as (keyof typeof ids)[]).filter((k) => has[k]);
+    const navText = (k: keyof typeof ids) => t(`metaHome.nav.${k}`);
+    const more = (href: string | undefined, text: string) => (href ? <a className="bim-rh-more" href={href}>{text}</a> : undefined);
     const sitesDen = s.sites.find((x) => x.total > 0)?.total;
     const sameDen = sitesDen != null && s.sites.every((x) => x.total === 0 || x.total === sitesDen);
     return (
@@ -518,20 +519,20 @@ export function MetaHomeView({
                 {transport && <MetaRecentPanel entries={recent.entries} onClear={recent.clear} links={links} />}
             </div>
             {nav.length > 1 && (
-                <nav className="bim-rh-secnav" aria-label={convert('元數據首頁分區')}>
-                    <ul>{nav.map(([k, t]) => <li key={k}><a href={`#${ids[k]}`}>{convert(t)}</a></li>)}</ul>
+                <nav className="bim-rh-secnav" aria-label={t('metaHome.navLabel')}>
+                    <ul>{nav.map((k) => <li key={k}><a href={`#${ids[k]}`}>{navText(k)}</a></li>)}</ul>
                 </nav>
             )}
             <div className="bim-rh-main">
                 {has.zhi && (
-                    <ReadSection id={ids.zhi} title="歷代史志" sub={convert('正史藝文志、經籍志與後人補志，按所志朝代排列；每部志的著錄逐條對到作品')}>
+                    <ReadSection id={ids.zhi} title={navText('zhi')} sub={t('metaHome.zhiSub')}>
                         {s.shelf && s.shelf.items.length > 0 && (
                             <ReadShelf
                                 topic={{ key: 'shelf', label: s.shelf.label, shelf: true, items: s.shelf.items }}
                                 links={rl}
                                 showTitle={false}
-                                legendCount={s.shelf.items.some((x) => x.records) ? '脊下數字＝著錄條目' : null}
-                                legendExtra={['點書脊進作品頁']}
+                                legendCount={s.shelf.items.some((x) => x.records) ? t('metaHome.shelfLegendCount') : null}
+                                legendExtra={[t('metaHome.shelfLegendClick')]}
                             />
                         )}
                         {(s.catalog_progress.length > 0 || s.related_catalogs.length > 0) && (
@@ -543,16 +544,16 @@ export function MetaHomeView({
                     </ReadSection>
                 )}
                 {has.sibu && (
-                    <ReadSection id={ids.sibu} title="四部" sub={convert('全部作品按經史子集分類；與「目錄」頁同一棵分類樹')} more={more(catalogHref, '進入目錄 →')}>
-                        <ReadSibu bu={s.bu} unclassified={s.unclassified} links={rl} unclassifiedNote="多為只見於史志著錄、尚未歸類的書" />
+                    <ReadSection id={ids.sibu} title={navText('sibu')} sub={t('metaHome.sibuSub')} more={more(catalogHref, t('metaHome.toCatalog'))}>
+                        <ReadSibu bu={s.bu} unclassified={s.unclassified} links={rl} unclassifiedNote={t('metaHome.unclassifiedNote')} />
                     </ReadSection>
                 )}
                 {has.cong && (
                     <ReadSection
                         id={ids.cong}
-                        title="叢編"
-                        sub={convert('大型叢書、影印彙編、出土文獻與館藏，逐種列到版本')}
-                        more={more(collectionsHref, `全部 ${fmtCount(s.counts.collections)} 種 →`)}
+                        title={navText('cong')}
+                        sub={t('metaHome.congSub')}
+                        more={more(collectionsHref, t('metaHome.allNKindsMore', { n: fmtCount(s.counts.collections) }))}
                     >
                         <MetaCollectionGroups groups={s.collection_groups} links={links} />
                     </ReadSection>
@@ -560,28 +561,28 @@ export function MetaHomeView({
                 {has.people && (
                     <ReadSection
                         id={ids.people}
-                        title="人物"
-                        sub={convert('歷代目錄學家，按生卒年排在一條時間軸上')}
-                        more={more(entitiesHref, `全部 ${fmtCount(s.counts.entities)} 人 →`)}
+                        title={navText('people')}
+                        sub={t('metaHome.peopleSub')}
+                        more={more(entitiesHref, t('metaHome.allNPeopleMore', { n: fmtCount(s.counts.entities) }))}
                     >
                         <MetaPeopleTimeline people={s.bibliographers} links={links} />
                     </ReadSection>
                 )}
                 {has.lineage && (
-                    <ReadSection id={ids.lineage} title="版本譜系" sub={convert('版本多的作品，看各本的源流與異同')}>
+                    <ReadSection id={ids.lineage} title={navText('lineage')} sub={t('metaHome.lineageSub')}>
                         <MetaLineageCards works={s.lineage} links={links} />
                     </ReadSection>
                 )}
                 {has.sites && (
                     <ReadSection
                         id={ids.sites}
-                        title="在線資源"
-                        sub={convert(sameDen ? `外部數字圖書館與本站條目的對接，以 ${fmtCount(sitesDen!)} 種為分母` : '外部數字圖書館與本站條目的對接')}
+                        title={navText('sites')}
+                        sub={sameDen ? t('metaHome.sitesSubDen', { n: fmtCount(sitesDen!) }) : t('metaHome.sitesSub')}
                     >
                         <MetaOnlineSites sites={s.sites} />
                     </ReadSection>
                 )}
-                <ReadSection id={ids.data} title="數據與授權" sub={convert('規模、存佚、許可與版本')}>
+                <ReadSection id={ids.data} title={navText('data')} sub={t('metaHome.dataSub')}>
                     <MetaDataLicense stats={s.stats} links={links} version={version} repoUrl={repoUrl} downloadHref={downloadHref} />
                 </ReadSection>
             </div>

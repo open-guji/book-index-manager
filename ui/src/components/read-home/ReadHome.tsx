@@ -3,14 +3,15 @@
  * 以及把它们排在一起的 ReadHomeView。
  *
  * 组件只收 props、不取数（数据见 ./model 的 ReadSections）；链接地址由宿主经 `links` 给。
- * 文案按繁体写、经 useConvert() 转，跟总目组件一样。页面上不写「整理本」「全文」，一律只说「本」或不写（用户 10-01）。
+ * 界面文字走 t('readHome.*')（字典 i18n/messages/read-home.ts），sections.json 来的书名、分区名、年代名等数据走 convert。页面上不写「整理本」「全文」，一律只说「本」或不写（用户 10-01）。
  * 每块没有数据就整块不渲染（策展文件还没交时推荐、专题、名著三块为空）。
  */
 import React, { useState } from 'react';
-import { useConvert } from '../../i18n';
+import { useI18n } from '../../i18n';
+import type { TFunction } from '../../i18n';
 import { READ_HOME_CSS } from './read-home-css';
 import {
-    PERIOD_NARROW_SHARE, READ_PERIOD_LABELS, authorsLine, firstAuthorText, fmtCount, periodLevel, shelfColumns, spineHeight, withDefaultLinks,
+    PERIOD_NARROW_SHARE, authorsLine, firstAuthorText, fmtCount, periodLevel, shelfColumns, spineHeight, withDefaultLinks,
 } from './model';
 import type {
     ReadBu, ReadFamous, ReadHomeLinks, ReadPeriod, ReadPick, ReadPieceAuthor, ReadSections, ReadTopic, ReadTopicItem,
@@ -31,7 +32,8 @@ export function ReadSection({ id, title, sub, more, children }: {
     more?: React.ReactNode;
     children: React.ReactNode;
 }) {
-    const { convert } = useConvert();
+    // title 由调用方给（本包内传 t() 结果）；仍过一道 convert，兼容宿主直接传繁体字面量
+    const { convert } = useI18n();
     const hid = `${id}-h`;
     return (
         <section className="bim-rh-sec" id={id} aria-labelledby={hid}>
@@ -47,18 +49,18 @@ export function ReadSection({ id, title, sub, more, children }: {
 
 /** 页首统计：可读部数、单篇篇数 */
 export function ReadStats({ counts }: { counts: ReadSections['counts'] }) {
-    const { convert } = useConvert();
+    const { t } = useI18n();
     return (
         <p className="bim-rh-stats bim-rh-num">
-            <span><b>{fmtCount(counts.readable)}</b>{convert('部可讀')}</span>
-            {counts.pieces > 0 && <span><b>{fmtCount(counts.pieces)}</b>{convert('篇單篇詩文')}</span>}
+            <span><b>{fmtCount(counts.readable)}</b>{t('readHome.readable')}</span>
+            {counts.pieces > 0 && <span><b>{fmtCount(counts.pieces)}</b>{t('readHome.pieces')}</span>}
         </p>
     );
 }
 
 /** 推荐阅读：题签卡（手机上横滑） */
 export function ReadPicks({ picks, links }: { picks: ReadPick[]; links?: Partial<ReadHomeLinks> }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const l = withDefaultLinks(links);
     if (!picks.length) return null;
     return (
@@ -75,7 +77,7 @@ export function ReadPicks({ picks, links }: { picks: ReadPick[]; links?: Partial
                                 <h3>{convert(p.title)}</h3>
                                 {by && <span className="bim-rh-by">{convert(by)}</span>}
                                 {p.blurb && <p>{convert(p.blurb)}</p>}
-                                <span className="bim-rh-go" aria-hidden="true">{convert('開始閱讀 →')}</span>
+                                <span className="bim-rh-go" aria-hidden="true">{t('readHome.startReading')}</span>
                             </span>
                         </a>
                     </li>
@@ -86,54 +88,60 @@ export function ReadPicks({ picks, links }: { picks: ReadPick[]; links?: Partial
 }
 
 /** 「N本」：站内同一作品有几个本子（>1 才标） */
-function countLabel(n: number | undefined): string | null {
-    return n && n > 1 ? `${n}本` : null;
+function countLabel(n: number | undefined, t: TFunction): string | null {
+    return n && n > 1 ? t('readHome.nCopies', { n }) : null;
 }
 
 /** 史志书架：按所志朝代分栏，一脊一部；实色＝正史原志 */
-export function ReadShelf({ topic, links, hint, legendCount = '脊下「2本」＝站內有幾個本子', showTitle = true, legendExtra }: {
+export function ReadShelf({ topic, links, hint, legendCount, showTitle = true, legendExtra }: {
     topic: ReadTopic;
     /** 书脊的链接走 links.read（元数据首页传作品页地址） */
     links?: Partial<ReadHomeLinks>;
     /** 标题旁的小字，默认「按所志朝代排列，一脊一部」 */
     hint?: string;
-    /** 图例里解释书脊下数字的一句；传 null 不出 */
+    /** 图例里解释书脊下数字的一句，默认 t('readHome.shelfLegendCount')；传 null 不出 */
     legendCount?: string | null;
     /** 出不出组标题（元数据首页的书架就是整个分区，不再重复标题） */
     showTitle?: boolean;
     /** 图例末尾再加的几句 */
     legendExtra?: string[];
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const l = withDefaultLinks(links);
     if (!topic.items.length) return null;
-    const cols = shelfColumns(topic.items);
+    const legend = legendCount === undefined ? t('readHome.shelfLegendCount') : legendCount;
+    const cols = shelfColumns(topic.items, t('readHome.shelfOther'));
     const spine = (b: ReadTopicItem) => {
         // 元数据首页的书架标著录条目数；阅读首页标站内本数
-        const n = b.records ? fmtCount(b.records) : countLabel(b.text_count);
+        const n = b.records ? fmtCount(b.records) : countLabel(b.text_count, t);
         const by = firstAuthorText(b);
-        const name = [b.title, b.orig ? '正史原志' : '', by ? `${by} 撰` : '', b.records ? `著錄 ${n} 條` : n ? `站內 ${n}` : ''].filter(Boolean).join('，');
+        const name = [
+            convert(b.title),
+            b.orig ? t('readHome.origZhi') : '',
+            by ? t('readHome.spineBy', { name: convert(by) }) : '',
+            b.records ? t('readHome.spineRecords', { n: n! }) : n ? t('readHome.spineOnSite', { n }) : '',
+        ].filter(Boolean).join('，');
         return (
             <li key={b.id}>
                 <a
                     className="bim-rh-spine"
                     href={l.read(b.id)}
                     data-orig={b.orig ? '' : undefined}
-                    aria-label={convert(name)}
-                    title={convert(name)}
+                    aria-label={name}
+                    title={name}
                     style={{ height: spineHeight(b.title) }}
                 >
                     <Vertical text={convert(b.title)} />
-                    {n && <span className="bim-rh-n bim-rh-num" data-records={b.records ? '' : undefined}>{convert(n)}</span>}
+                    {n && <span className="bim-rh-n bim-rh-num" data-records={b.records ? '' : undefined}>{n}</span>}
                 </a>
             </li>
         );
     };
     return (
         <div className="bim-rh-shelf-box">
-            {showTitle && <h3 className="bim-rh-gt">{convert(topic.label)}<small>{convert(hint ?? '按所志朝代排列，一脊一部')}</small></h3>}
+            {showTitle && <h3 className="bim-rh-gt">{convert(topic.label)}<small>{hint ? convert(hint) : t('readHome.shelfHint')}</small></h3>}
             {/* 窄屏可横向滚动：容器可聚焦，键盘也能滚（axe scrollable-region-focusable） */}
-            <div className="bim-rh-shelf-wrap" tabIndex={0} role="region" aria-label={convert(`${topic.label}書架，可橫向滾動`)}>
+            <div className="bim-rh-shelf-wrap" tabIndex={0} role="region" aria-label={t('readHome.shelfRegion', { label: convert(topic.label) })}>
                 <ul className="bim-rh-shelf">
                     {cols.map((c) => (
                         <li className="bim-rh-era" key={c.label}>
@@ -144,9 +152,9 @@ export function ReadShelf({ topic, links, hint, legendCount = '脊下「2本」�
                 </ul>
             </div>
             <p className="bim-rh-legend">
-                <span><i data-orig="" aria-hidden="true" />{convert('正史原志')}</span>
-                <span><i aria-hidden="true" />{convert('後人補撰、續補')}</span>
-                {legendCount && <span>{convert(legendCount)}</span>}
+                <span><i data-orig="" aria-hidden="true" />{t('readHome.origZhi')}</span>
+                <span><i aria-hidden="true" />{t('readHome.laterZhi')}</span>
+                {legend && <span>{convert(legend)}</span>}
                 {legendExtra?.map((t) => <span key={t}>{convert(t)}</span>)}
             </p>
         </div>
@@ -160,23 +168,23 @@ export const groupCapped = (n: number) => n > GROUP_NARROW_CAP + 1;
 
 /** 专题的一组：书名＋作者，手机上只露前 GROUP_NARROW_CAP 条，可展开 */
 export function ReadTopicGroup({ topic, links }: { topic: ReadTopic; links?: Partial<ReadHomeLinks> }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const l = withDefaultLinks(links);
     const [open, setOpen] = useState(false);
     if (!topic.items.length) return null;
     const hid = `bim-rh-g-${topic.key}`;
     return (
         <div className="bim-rh-grp" data-cap={groupCapped(topic.items.length) ? '' : undefined} data-open={open ? '' : undefined}>
-            <h3 className="bim-rh-gt" id={hid}>{convert(topic.label)}<small className="bim-rh-num">{convert(`${fmtCount(topic.items.length)} 部`)}</small></h3>
+            <h3 className="bim-rh-gt" id={hid}>{convert(topic.label)}<small className="bim-rh-num">{t('readHome.nWorks', { n: fmtCount(topic.items.length) })}</small></h3>
             <ul className="bim-rh-rows" aria-labelledby={hid}>
                 {topic.items.map((b) => {
-                    const n = countLabel(b.text_count);
+                    const n = countLabel(b.text_count, t);
                     const by = firstAuthorText(b);
                     return (
                         <li key={b.id}>
                             <a href={l.read(b.id)}>
                                 <span className="bim-rh-t">{convert(b.title)}</span>
-                                {n && <em className="bim-rh-cnt bim-rh-num">{convert(n)}</em>}
+                                {n && <em className="bim-rh-cnt bim-rh-num">{n}</em>}
                                 {by && <small>{convert(by)}</small>}
                             </a>
                         </li>
@@ -185,7 +193,7 @@ export function ReadTopicGroup({ topic, links }: { topic: ReadTopic; links?: Par
             </ul>
             {groupCapped(topic.items.length) && (
                 <button type="button" className="bim-rh-expand" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-                    {convert(open ? '收起' : `全部 ${topic.items.length} 部`)}
+                    {open ? t('action.collapse') : t('readHome.allNWorks', { n: topic.items.length })}
                 </button>
             )}
         </div>
@@ -211,7 +219,7 @@ export function ReadTopics({ topics, links }: { topics: ReadTopic[]; links?: Par
 
 /** 名著与版本：一部作品一张卡，版本按系统分行 */
 export function ReadFamousWorks({ famous, links }: { famous: ReadFamous[]; links?: Partial<ReadHomeLinks> }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const l = withDefaultLinks(links);
     if (!famous.length) return null;
     return (
@@ -222,7 +230,7 @@ export function ReadFamousWorks({ famous, links }: { famous: ReadFamous[]; links
                         <div className="bim-rh-wk-h">
                             <h3>{convert(w.title)}</h3>
                             {w.authors && <span className="bim-rh-by">{convert(w.authors)}</span>}
-                            <span className="bim-rh-c bim-rh-num">{convert(`${w.text_count} 個本子`)}</span>
+                            <span className="bim-rh-c bim-rh-num">{t('readHome.nCopiesCard', { n: w.text_count })}</span>
                         </div>
                         {w.systems.map((s, i) => (
                             <div className="bim-rh-lin" key={i} role="group" aria-label={s.label ? convert(s.label) : undefined}>
@@ -238,7 +246,7 @@ export function ReadFamousWorks({ famous, links }: { famous: ReadFamous[]; links
                             </div>
                         ))}
                         {w.work_id && (
-                            <div className="bim-rh-wk-f"><a href={l.work(w.work_id)}>{convert(`作品頁：${w.title}的源流與全部版本 →`)}</a></div>
+                            <div className="bim-rh-wk-f"><a href={l.work(w.work_id)}>{t('readHome.workPageLink', { title: convert(w.title) })}</a></div>
                         )}
                     </article>
                 </li>
@@ -248,14 +256,14 @@ export function ReadFamousWorks({ famous, links }: { famous: ReadFamous[]; links
 }
 
 /** 四部方块：每部总数、前几个子类（比例条），未分類单列弱化 */
-export function ReadSibu({ bu, unclassified, links, unclassifiedNote = '書目分類還沒補齊，其中多數是單篇詩文，已單列在下方。' }: {
+export function ReadSibu({ bu, unclassified, links, unclassifiedNote }: {
     bu: ReadBu[];
     unclassified?: number;
     links?: Partial<ReadHomeLinks>;
-    /** 「未分類」一行的说明（元数据首页另写） */
+    /** 「未分類」一行的说明（元数据首页另写），默认 t('readHome.sibuUnclassifiedNote') */
     unclassifiedNote?: string;
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const l = withDefaultLinks(links);
     if (!bu.length && !unclassified) return null;
     return (
@@ -267,10 +275,10 @@ export function ReadSibu({ bu, unclassified, links, unclassifiedNote = '書目�
                         <li className="bim-rh-bu-c" key={b.id}>
                             <a className="bim-rh-bu-h" href={l.node(b.id)}>
                                 <b>{convert(b.label)}</b>
-                                <span className="bim-rh-num">{convert(`${fmtCount(b.count)} 部`)}</span>
+                                <span className="bim-rh-num">{t('readHome.nWorks', { n: fmtCount(b.count) })}</span>
                             </a>
                             {b.top.length > 0 && (
-                                <ul className="bim-rh-bu-l" aria-label={convert(`${b.label}子類`)}>
+                                <ul className="bim-rh-bu-l" aria-label={t('readHome.subClasses', { label: convert(b.label) })}>
                                     {b.top.map((k) => (
                                         <li key={k.id}>
                                             <a href={l.node(k.id)}>
@@ -283,7 +291,7 @@ export function ReadSibu({ bu, unclassified, links, unclassifiedNote = '書目�
                                 </ul>
                             )}
                             {b.children_total > b.top.length && (
-                                <a className="bim-rh-bu-more" href={l.node(b.id)}>{convert(`${b.label}全部 ${b.children_total} 類 →`)}</a>
+                                <a className="bim-rh-bu-more" href={l.node(b.id)}>{t('readHome.allNClasses', { label: convert(b.label), n: b.children_total })}</a>
                             )}
                         </li>
                     );
@@ -291,10 +299,10 @@ export function ReadSibu({ bu, unclassified, links, unclassifiedNote = '書目�
             </ul>
             {!!unclassified && (
                 <p className="bim-rh-uncl bim-rh-num">
-                    <b>{convert('未分類')}</b>
-                    <span>{convert(`${fmtCount(unclassified)} 部`)}</span>
-                    <span>{convert(unclassifiedNote)}</span>
-                    <a href={l.node('unclassified')}>{convert('查看未分類 →')}</a>
+                    <b>{t('readHome.unclassified')}</b>
+                    <span>{t('readHome.nWorks', { n: fmtCount(unclassified) })}</span>
+                    <span>{unclassifiedNote ? convert(unclassifiedNote) : t('readHome.sibuUnclassifiedNote')}</span>
+                    <a href={l.node('unclassified')}>{t('readHome.viewUnclassified')}</a>
                 </p>
             )}
         </>
@@ -303,7 +311,8 @@ export function ReadSibu({ bu, unclassified, links, unclassifiedNote = '書目�
 
 /** 按年代：9 段比例横带，段宽与部数成比例、深浅按部数分档；手机改 3 列格子 */
 export function ReadPeriodBand({ periods, unknown, links }: { periods: ReadPeriod[]; unknown?: number; links?: Partial<ReadHomeLinks> }) {
-    const { convert } = useConvert();
+    const { t, convert, messages } = useI18n();
+    const periodLabels: Record<string, string> = messages.readHome.period;
     const l = withDefaultLinks(links);
     const shown = periods.filter((p) => p.count > 0);
     if (!shown.length) return null;
@@ -313,9 +322,10 @@ export function ReadPeriodBand({ periods, unknown, links }: { periods: ReadPerio
         <>
             <ul className="bim-rh-band">
                 {shown.map((p) => {
-                    const label = convert(p.label || READ_PERIOD_LABELS[p.key] || p.key);
+                    // sections.json 给了 label 就用（数据），没给按 key 取字典
+                    const label = p.label ? convert(p.label) : periodLabels[p.key] ?? convert(p.key);
                     const share = p.count / total;
-                    const name = `${label}，${fmtCount(p.count)} ${convert('部')}`;
+                    const name = t('readHome.periodItem', { label, n: fmtCount(p.count) });
                     return (
                         <li key={p.key} style={{ flex: `0 0 ${(share * 100).toFixed(3)}%` }}>
                             <a
@@ -334,8 +344,8 @@ export function ReadPeriodBand({ periods, unknown, links }: { periods: ReadPerio
                 })}
             </ul>
             <p className="bim-rh-pfoot bim-rh-num">
-                {!!unknown && <span>{convert(`另有 ${fmtCount(unknown)} 部作者無朝代，在「四部」和搜索裏能找到`)}</span>}
-                <span className="bim-rh-hover-hint">{convert('窄段懸停看全名')}</span>
+                {!!unknown && <span>{t('readHome.periodUnknown', { n: fmtCount(unknown) })}</span>}
+                <span className="bim-rh-hover-hint">{t('readHome.hoverHint')}</span>
             </p>
         </>
     );
@@ -343,7 +353,7 @@ export function ReadPeriodBand({ periods, unknown, links }: { periods: ReadPerio
 
 /** 单篇诗文：按作者分组 */
 export function ReadPieces({ authors, links }: { authors: ReadPieceAuthor[]; links?: Partial<ReadHomeLinks> }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const l = withDefaultLinks(links);
     if (!authors.length) return null;
     return (
@@ -353,14 +363,14 @@ export function ReadPieces({ authors, links }: { authors: ReadPieceAuthor[]; lin
                     <h3 className="bim-rh-au-h">
                         {convert(a.name)}
                         {a.dynasty && <span>{convert(a.dynasty)}</span>}
-                        <small className="bim-rh-num">{convert(`${fmtCount(a.count)} 篇`)}</small>
+                        <small className="bim-rh-num">{t('readHome.nPieces', { n: fmtCount(a.count) })}</small>
                     </h3>
                     <ul>
                         {a.items.map((p) => (
                             <li key={p.id}><a href={l.read(p.id)}>{convert(p.title)}</a></li>
                         ))}
                     </ul>
-                    {l.author && <a className="bim-rh-more" href={l.author(a.name)}>{convert(`${a.name}全部 ${a.count} 篇 →`)}</a>}
+                    {l.author && <a className="bim-rh-more" href={l.author(a.name)}>{t('readHome.authorAll', { name: convert(a.name), n: a.count })}</a>}
                 </li>
             ))}
         </ul>
@@ -388,7 +398,7 @@ export const READ_HOME_SECTION_IDS = {
  * 史志书架（shelf 组）不在阅读首页出，挪到元数据页（用户 10-01，overview#322）；那边直接用 ReadShelf。
  */
 export function ReadHomeView({ sections, links, head, piecesMoreHref, className }: ReadHomeViewProps) {
-    const { convert } = useConvert();
+    const { t } = useI18n();
     const s = sections;
     const ids = READ_HOME_SECTION_IDS;
     const topics = s.topics.filter((t) => !t.shelf);
@@ -400,9 +410,8 @@ export function ReadHomeView({ sections, links, head, piecesMoreHref, className 
         period: s.periods.some((p) => p.count > 0),
         pieces: s.pieces.authors.length > 0,
     };
-    const nav: [keyof typeof ids, string][] = ([
-        ['picks', '推薦閱讀'], ['topics', '專題'], ['famous', '名著與版本'], ['sibu', '四部'], ['period', '按年代'], ['pieces', '單篇詩文'],
-    ] as [keyof typeof ids, string][]).filter(([k]) => has[k]);
+    const nav = (Object.keys(ids) as (keyof typeof ids)[]).filter((k) => has[k]);
+    const navText = (k: keyof typeof ids) => t(`readHome.nav.${k}`);
     return (
         <div className={className ? `bim-rh ${className}` : 'bim-rh'}>
             <style>{READ_HOME_CSS}</style>
@@ -411,42 +420,42 @@ export function ReadHomeView({ sections, links, head, piecesMoreHref, className 
                 <ReadStats counts={s.counts} />
             </div>
             {nav.length > 1 && (
-                <nav className="bim-rh-secnav" aria-label={convert('閱讀首頁分區')}>
-                    <ul>{nav.map(([k, t]) => <li key={k}><a href={`#${ids[k]}`}>{convert(t)}</a></li>)}</ul>
+                <nav className="bim-rh-secnav" aria-label={t('readHome.navLabel')}>
+                    <ul>{nav.map((k) => <li key={k}><a href={`#${ids[k]}`}>{navText(k)}</a></li>)}</ul>
                 </nav>
             )}
             <div className="bim-rh-main">
                 {has.picks && (
-                    <ReadSection id={ids.picks} title="推薦閱讀" sub={convert('編輯挑選，定期輪換')}>
+                    <ReadSection id={ids.picks} title={navText('picks')} sub={t('readHome.picksSub')}>
                         <ReadPicks picks={s.picks} links={links} />
                     </ReadSection>
                 )}
                 {has.topics && (
-                    <ReadSection id={ids.topics} title="專題" sub={convert('按作品類型歸組；小說見下方「名著與版本」')}>
+                    <ReadSection id={ids.topics} title={navText('topics')} sub={t('readHome.topicsSub')}>
                         <ReadTopics topics={topics} links={links} />
                     </ReadSection>
                 )}
                 {has.famous && (
-                    <ReadSection id={ids.famous} title="名著與版本" sub={convert('一部作品一張卡，卡上列出站內能讀的各個本子')}>
+                    <ReadSection id={ids.famous} title={navText('famous')} sub={t('readHome.famousSub')}>
                         <ReadFamousWorks famous={s.famous} links={links} />
                     </ReadSection>
                 )}
                 {has.sibu && (
-                    <ReadSection id={ids.sibu} title="四部" sub={convert('按古籍總目的分類樹，只計站內可讀的作品')}>
+                    <ReadSection id={ids.sibu} title={navText('sibu')} sub={t('readHome.sibuSub')}>
                         <ReadSibu bu={s.bu} unclassified={s.unclassified} links={links} />
                     </ReadSection>
                 )}
                 {has.period && (
-                    <ReadSection id={ids.period} title="按年代" sub={convert('按作者朝代歸段，寬度與部數成比例')}>
+                    <ReadSection id={ids.period} title={navText('period')} sub={t('readHome.periodSub')}>
                         <ReadPeriodBand periods={s.periods} unknown={s.period_unknown} links={links} />
                     </ReadSection>
                 )}
                 {has.pieces && (
                     <ReadSection
                         id={ids.pieces}
-                        title="單篇詩文"
-                        sub={convert('單篇的詩、文、賦、表，按作者歸組')}
-                        more={piecesMoreHref ? <a className="bim-rh-more" href={piecesMoreHref}>{convert('按作者瀏覽全部 →')}</a> : undefined}
+                        title={navText('pieces')}
+                        sub={t('readHome.piecesSub')}
+                        more={piecesMoreHref ? <a className="bim-rh-more" href={piecesMoreHref}>{t('readHome.piecesMore')}</a> : undefined}
                     >
                         <ReadPieces authors={s.pieces.authors} links={links} />
                     </ReadSection>

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { FeedbackType, FeedbackData } from './FeedbackDialog';
 import { bim } from '../styles/tokens';
+import { useI18n } from '../i18n';
 
 export interface FeedbackFormProps {
     onSubmit: (data: FeedbackData) => Promise<void>;
@@ -8,14 +9,16 @@ export interface FeedbackFormProps {
 
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
-const TYPE_OPTIONS: { value: FeedbackType; label: string; icon: string; placeholder: string }[] = [
-    { value: 'bug', label: '反馈错误', icon: '🐛', placeholder: '请描述您发现的错误，包括页面位置和具体内容' },
-    { value: 'resource', label: '添加资源', icon: '📚', placeholder: '请提供完整资源链接和简要版本说明' },
-    { value: 'suggestion', label: '功能建议', icon: '💡', placeholder: '您希望网站增加或改进什么？' },
-    { value: 'contact', label: '想参与', icon: '🤝', placeholder: '想参与整理、校对或合作？简单介绍一下您自己，并留下联系方式（此类留言不公开）' },
+/** 文字（标签、占位提示）取字典 feedback.submitType / feedback.placeholder */
+const TYPE_OPTIONS: { value: FeedbackType; icon: string }[] = [
+    { value: 'bug', icon: '🐛' },
+    { value: 'resource', icon: '📚' },
+    { value: 'suggestion', icon: '💡' },
+    { value: 'contact', icon: '🤝' },
 ];
 
 export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit }) => {
+    const { t } = useI18n();
     const [type, setType] = useState<FeedbackType>('bug');
     const [content, setContent] = useState('');
     const [contact, setContact] = useState('');
@@ -39,19 +42,18 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit }) => {
             setType('bug');
         } catch (e) {
             setState('error');
-            setErrorMsg(e instanceof Error ? e.message : '提交失败，请稍后重试');
+            setErrorMsg(e instanceof Error ? e.message : t('feedback.submitFailedRetry'));
         }
     };
 
     const canSubmit = type && content.trim() && state !== 'submitting';
-    const selectedOption = TYPE_OPTIONS.find(o => o.value === type);
 
     if (state === 'success') {
         return (
             <div style={wrapperStyle}>
                 <div style={successStyle}>
-                    <span>✓ 感谢您的反馈！</span>
-                    <button onClick={() => setState('idle')} style={linkBtnStyle}>继续提交</button>
+                    <span>✓ {t('feedback.thanks')}</span>
+                    <button onClick={() => setState('idle')} style={linkBtnStyle}>{t('feedback.continueSubmit')}</button>
                 </div>
             </div>
         );
@@ -70,7 +72,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit }) => {
                             ...(type === opt.value ? typeBtnActiveStyle : {}),
                         }}
                     >
-                        <span>{opt.icon}</span> {opt.label}
+                        <span>{opt.icon}</span> {t(`feedback.submitType.${opt.value}`)}
                     </button>
                 ))}
             </div>
@@ -80,7 +82,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit }) => {
                 ref={textareaRef}
                 value={content}
                 onChange={e => setContent(e.target.value)}
-                placeholder={selectedOption?.placeholder || '请先选择反馈类型'}
+                placeholder={type ? t(`feedback.placeholder.${type}`) : t('feedback.chooseTypeFirst')}
                 maxLength={2000}
                 disabled={state === 'submitting'}
                 style={{
@@ -93,10 +95,10 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit }) => {
                 type="text"
                 value={contact}
                 onChange={e => setContact(e.target.value)}
-                placeholder="邮箱（选填，仅站方可见，方便我们回复您）"
+                placeholder={t('feedback.contactPlaceholder')}
                 maxLength={200}
                 disabled={state === 'submitting'}
-                aria-label="联系方式（选填）"
+                aria-label={t('feedback.contactLabel')}
                 style={contactInputStyle}
             />
 
@@ -114,7 +116,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit }) => {
                         cursor: canSubmit ? 'pointer' : 'not-allowed',
                     }}
                 >
-                    {state === 'submitting' ? '提交中...' : '提交'}
+                    {state === 'submitting' ? t('feedback.submitting') : t('feedback.submit')}
                 </button>
             </div>
 

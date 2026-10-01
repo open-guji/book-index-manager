@@ -1,8 +1,16 @@
-/** 支持的语言变体 */
+import type { NamespaceMessages } from './messages';
+
+/**
+ * 支持的语言变体。
+ * 加英文：这里加 'en'，locales/ 下补 en.ts，各 messages/*.ts 的 en 栏填上（缺的键回落到繁体）。
+ */
 export type Locale = 'zh-Hant' | 'zh-Hans';
 
-/** UI 翻译消息结构 */
-export interface LocaleMessages {
+/** 将来要加的语言（字典结构已为它留位置，见 messages/define.ts） */
+export type FutureLocale = Locale | 'en';
+
+/** 早期的整块字典（locales/zh-Hant.ts、zh-Hans.ts）；新文字请放进 messages/ 下按区域分的字典 */
+export interface CoreMessages {
     indexType: { work: string; book: string; collection: string; entity: string };
     resourceType: { text: string; image: string; textImage: string; physical: string };
     resourceTypeShort: { text: string; image: string; textImage: string; physical: string };
@@ -324,3 +332,6 @@ export interface LocaleMessages {
         imageResource: string;
     };
 }
+
+/** 全部界面文字：早期整块字典 + messages/ 下按区域分的字典 */
+export type LocaleMessages = CoreMessages & NamespaceMessages;

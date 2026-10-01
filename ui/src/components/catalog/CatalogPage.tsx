@@ -8,7 +8,7 @@
  */
 import React, { useCallback, useId, useState } from 'react';
 import type { CatalogNode, CatalogWorkCard } from '../../types';
-import { useConvert } from '../../i18n';
+import { useI18n } from '../../i18n';
 import { CATALOG_CSS } from './catalog-css';
 import { CatalogTree } from './CatalogTree';
 import { WorkCardGrid } from './WorkCardGrid';
@@ -52,9 +52,12 @@ const Caret = () => (
 export function CatalogPage({
     tree, selectedId, page, pageCount, works, onSelect, onPage,
     searchSlot, workLink, pageHref,
-    allLabel = '全部', allTitle = '全部典籍', pageSize = CATALOG_PAGE_SIZE, className, view: viewProp, onViewChange,
+    allLabel: allLabelProp, allTitle: allTitleProp, pageSize = CATALOG_PAGE_SIZE, className, view: viewProp, onViewChange,
 }: CatalogPageProps) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
+    // 默认文字从字典取；宿主显式传 null 表示不显示「全部」行
+    const allLabel = allLabelProp === undefined ? t('catalogPage.all') : allLabelProp;
+    const allTitle = allTitleProp ?? t('catalogPage.allTitle');
     const uid = useId();
     const drawerId = `bim-ct-drawer-${uid.replace(/:/g, '')}`;
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -76,7 +79,7 @@ export function CatalogPage({
     return (
         <div className={className ? `bim-ct ${className}` : 'bim-ct'} data-drawer={drawerOpen ? 'open' : 'closed'}>
             <style>{CATALOG_CSS}</style>
-            <aside className="bim-ct-side" aria-label={convert('分類導航')}>
+            <aside className="bim-ct-side" aria-label={t('catalogPage.sideNav')}>
                 <button
                     type="button"
                     className="bim-ct-drawer-btn"
@@ -84,11 +87,11 @@ export function CatalogPage({
                     aria-controls={drawerId}
                     onClick={() => setDrawerOpen(o => !o)}
                 >
-                    <span>{convert('分類')}：{convert(path.length ? path.map(n => n.label).join(' › ') : (allLabel ?? allTitle))}</span>
+                    <span>{t('catalogPage.drawerLabel', { path: convert(path.length ? path.map(n => n.label).join(' › ') : (allLabel ?? allTitle)) })}</span>
                     <Caret />
                 </button>
                 <div className="bim-ct-drawer" id={drawerId}>
-                    <h2 className="bim-ct-side-h">{convert('分類')}</h2>
+                    <h2 className="bim-ct-side-h">{t('catalogPage.classification')}</h2>
                     <CatalogTree tree={tree} selectedId={selectedId} onSelect={handleSelect} allLabel={allLabel} />
                 </div>
             </aside>
@@ -100,12 +103,12 @@ export function CatalogPage({
                         <span className="bim-ct-crumb">{convert(path.slice(0, -1).map(n => n.label).join(' › '))}</span>
                     )}
                     <span className="bim-ct-stat">
-                        {convert(`共 ${total.toLocaleString('en-US')} 種 · 每頁 ${pageSize} 條`)}
-                        {pageCount > 1 && convert(` · 第 ${page} / ${pageCount} 頁`)}
+                        {t('catalogPage.stat', { total: total.toLocaleString('en-US'), size: pageSize })}
+                        {pageCount > 1 && t('catalogPage.statPage', { page, pages: pageCount })}
                     </span>
-                    <span className="bim-ct-view" role="group" aria-label={convert('呈現方式')}>
-                        <button type="button" aria-pressed={view === 'card'} onClick={() => chooseView('card')}>{convert('卡片')}</button>
-                        <button type="button" aria-pressed={view === 'list'} onClick={() => chooseView('list')}>{convert('列表')}</button>
+                    <span className="bim-ct-view" role="group" aria-label={t('catalogPage.viewLabel')}>
+                        <button type="button" aria-pressed={view === 'card'} onClick={() => chooseView('card')}>{t('catalogPage.viewCard')}</button>
+                        <button type="button" aria-pressed={view === 'list'} onClick={() => chooseView('list')}>{t('catalogPage.viewList')}</button>
                     </span>
                 </header>
                 {searchSlot && <div className="bim-ct-search">{searchSlot}</div>}

@@ -32,7 +32,7 @@ import type { LineageGraph } from '../core/lineage-graph';
 import { FeedbackTab } from './FeedbackTab';
 import { LocaleToggle } from './LocaleToggle';
 import { RepoSourceLink } from '../components/common/RepoSourceLink';
-import { useT, useConvert } from '../i18n';
+import { useT, useI18n } from '../i18n';
 import { extractStatus } from '../id';
 import {
     PageFrame, TopStrip, Breadcrumb, DetailHeader, DetailFooter,
@@ -233,7 +233,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     style,
 }) => {
     const t = useT();
-    const { convert } = useConvert();
+    /** tr：字典键取词（界面文字）；t 是旧的整本字典对象 */
+    const { t: tr, convert } = useI18n();
 
     /*
      * 首屏种子：有 initialDetail 就在初始 state 里直接放好 entry/detail，
@@ -565,7 +566,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         if (detail.type === 'entity') {
             const e = detail as EntityDetailData;
             // 生卒：负数是公元前
-            const yr = (n?: number) => n == null ? '' : (n < 0 ? `前${-n}` : String(n));
+            const yr = (n?: number) => n == null ? '' : (n < 0 ? tr('detail.bce', { n: -n }) : String(n));
             const life = (e.birth_year != null || e.death_year != null)
                 ? `${yr(e.birth_year) || '?'}—${yr(e.death_year) || '?'}`
                 : '';
@@ -593,7 +594,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             ].filter(Boolean).join(' · ') || undefined,
             secondLine: undefined,
         };
-    }, [detail, convert, t]);
+    }, [detail, convert, t, tr]);
 
     // ── 内容 ──
 
@@ -734,7 +735,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             if (!lineageGraph) {
                 return (
                     <div style={{ color: bim('label-fg'), padding: '24px 0' }}>
-                        {lineageLoading ? '加載中…' : '暫無版本圖數據'}
+                        {lineageLoading ? tr('detail.loading') : tr('detail.noLineageGraph')}
                     </div>
                 );
             }
@@ -806,7 +807,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     padding: '64px 0', textAlign: 'center',
                     color: bim('label-fg'), fontSize: 14,
                 }}>
-                    找不到該條目，可能已被刪除或 ID 不正確
+                    {tr('detail.notFound')}
                 </div>
             </PageFrame>
         );
@@ -949,7 +950,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                                 borderBottom: `1px solid ${bim('rule')}`,
                             }}
                         >
-                            {convert('作品信息')} →
+                            {tr('detail.workInfo')} →
                         </button>
                     ) : headerProps.aside}
                 />

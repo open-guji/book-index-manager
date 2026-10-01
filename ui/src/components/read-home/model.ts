@@ -4,6 +4,7 @@
  * 数据由网站构建期生成（kaiyuanguji-web `nextjs/scripts/build-read-index.mjs` → `current/read/sections.json`），
  * 组件只收 props、不取数。字段要改先在 overview#308 上通知网站一侧。
  */
+import { readHome } from '../../i18n/messages/read-home';
 
 /** 阅读首页的一张卡（Work 或 Book） */
 export interface ReadCard {
@@ -104,18 +105,11 @@ export interface ReadSections {
     pieces: { count: number; authors: ReadPieceAuthor[] };
 }
 
-/** 年代段 key → 显示名（与网站 build-read-index 的 READ_PERIODS 同序） */
-export const READ_PERIOD_LABELS: Record<string, string> = {
-    xianqin: '先秦',
-    qinhan: '秦漢',
-    weijin: '魏晉南北朝',
-    suitang: '隋唐五代',
-    song: '宋',
-    liaojinyuan: '遼金元',
-    ming: '明',
-    qing: '清',
-    modern: '近現代',
-};
+/**
+ * 年代段 key → 显示名（繁体；与网站 build-read-index 的 READ_PERIODS 同序）。
+ * 文字在字典 readHome.period 里，组件按当前语言取；这里只为旧调用方保留繁体一份。
+ */
+export const READ_PERIOD_LABELS: Record<string, string> = readHome['zh-Hant'].period;
 
 /** 首页各处链接的地址，宿主定（组件不管路由） */
 export interface ReadHomeLinks {
@@ -158,11 +152,15 @@ export function authorsLine(c: Pick<ReadCard, 'authors'>): string {
 /**
  * 书架分栏：按 period_of 出现的先后分组（策展文件里已按所志朝代排好），没写 period_of 的归到「其他」。
  */
-export function shelfColumns(items: ReadTopicItem[]): { label: string; items: ReadTopicItem[] }[] {
+export function shelfColumns(
+    items: ReadTopicItem[],
+    /** 「其他」栏的名字（界面文字，组件传 t('readHome.shelfOther')） */
+    otherLabel: string = readHome['zh-Hant'].shelfOther,
+): { label: string; items: ReadTopicItem[] }[] {
     const cols: { label: string; items: ReadTopicItem[] }[] = [];
     const byLabel = new Map<string, { label: string; items: ReadTopicItem[] }>();
     for (const it of items) {
-        const label = it.period_of?.trim() || '其他';
+        const label = it.period_of?.trim() || otherLabel;
         let col = byLabel.get(label);
         if (!col) {
             col = { label, items: [] };

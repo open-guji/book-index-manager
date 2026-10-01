@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { ResourceEntry, ResourceGroupInfo, ResourceType, ResourceTypeAtom, ResourceVolume } from '../types';
 import { getResourceTypes } from '../types';
-import { useT, useConvert } from '../i18n';
+import { useT, useConvert, formatTemplate } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
 import type { LocaleMessages } from '../i18n/types';
 // 纯函数统一放 core/resources，与详情页新组件共用同一套语义
@@ -301,7 +301,7 @@ const ResourceChip: React.FC<{
                 {hasVolumes && (
                     <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
                         {uniqueFound}/{expectedTotal}{t.unit.volume}
-                        {uniqueMissing > 0 && <span style={{ color: bim('missing-fg'), marginLeft: '3px' }}>缺{uniqueMissing}</span>}
+                        {uniqueMissing > 0 && <span style={{ color: bim('missing-fg'), marginLeft: '3px' }}>{formatTemplate(t.common.volumesMissing, { n: uniqueMissing })}</span>}
                     </span>
                 )}
                 {item.url && (
@@ -456,7 +456,7 @@ const ResourceCard: React.FC<{
                         color: bim('desc-fg'),
                     }}>
                         {uniqueFound}/{expectedTotal}{t.unit.volume}
-                        {uniqueMissing > 0 && <span style={{ color: bim('missing-fg'), marginLeft: '4px' }}>缺{uniqueMissing}</span>}
+                        {uniqueMissing > 0 && <span style={{ color: bim('missing-fg'), marginLeft: '4px' }}>{formatTemplate(t.common.volumesMissing, { n: uniqueMissing })}</span>}
                     </span>
                 )}
 
@@ -479,7 +479,7 @@ const ResourceCard: React.FC<{
                 {hasVolumes && (
                     <button
                         onClick={() => setExpanded(!expanded)}
-                        title={expanded ? '收起分册' : '展开分册'}
+                        title={expanded ? t.common.collapseVolumes : t.common.expandVolumes}
                         style={{
                             marginLeft: 'auto',
                             padding: '1px 10px',
@@ -492,7 +492,7 @@ const ResourceCard: React.FC<{
                             lineHeight: 1.4,
                         }}
                     >
-                        {expanded ? '收起 ▲' : '展开 ▼'}
+                        {expanded ? t.common.collapseArrow : t.common.expandArrow}
                     </button>
                 )}
             </div>

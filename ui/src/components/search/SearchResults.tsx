@@ -3,7 +3,7 @@ import type { GroupedSearchResult, IndexEntry, IndexType } from '../../types';
 import type { IndexStorage } from '../../storage/types';
 import { useConvert, useT, formatTemplate } from '../../i18n';
 import {
-    countActiveFilters, CLASSIFICATIONS, DYNASTY_GROUPS, LOSS_OPTIONS, EMPTY_FILTERS, filtersToParams,
+    countActiveFilters, CLASSIFICATIONS, DYNASTY_GROUPS, EMPTY_FILTERS, filtersToParams,
     type SearchFilters,
 } from '../../core/search-filters';
 import { SearchFiltersPanel } from './SearchFiltersPanel';
@@ -163,15 +163,15 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
         const out: { name: string; remove: () => void }[] = [];
         filters.dynasty.forEach(k => out.push({ name: k, remove: () => onFiltersChange({ ...filters, dynasty: filters.dynasty.filter(x => x !== k) }) }));
         filters.classification.forEach(c => out.push({
-            name: CLASSIFICATIONS.find(x => x.value === c)?.label ?? c,
+            name: c ? (CLASSIFICATIONS.find(x => x.value === c)?.label ?? c) : t.searchPage.unclassified,
             remove: () => onFiltersChange({ ...filters, classification: filters.classification.filter(x => x !== c) }),
         }));
         if (filters.hasImage) out.push({ name: v.hasImage, remove: () => onFiltersChange({ ...filters, hasImage: false }) });
         if (filters.hasText) out.push({ name: v.hasText, remove: () => onFiltersChange({ ...filters, hasText: false }) });
         if (filters.hasCollated) out.push({ name: v.hasCollated, remove: () => onFiltersChange({ ...filters, hasCollated: false }) });
-        if (filters.loss) out.push({ name: `${v.extant}：${LOSS_OPTIONS.find(o => o.value === filters.loss)?.label ?? ''}`, remove: () => onFiltersChange({ ...filters, loss: '' }) });
+        if (filters.loss) out.push({ name: `${v.extant}：${t.searchPage.loss[filters.loss]}`, remove: () => onFiltersChange({ ...filters, loss: '' }) });
         return out;
-    }, [filters, onFiltersChange, v]);
+    }, [filters, onFiltersChange, v, t]);
 
     const commonProps = { query, onEntryLinkClick, typeName };
     const renderList = (entries: IndexEntry[]) => view === 'table'

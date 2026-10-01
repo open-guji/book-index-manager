@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import type { AuthorInfo, CollatedEditionIndex, CollatedJuan, CollatedSection, JuanGroup, TextQualityGrade } from '../types';
-import { TEXT_QUALITY_LABELS, TEXT_QUALITY_CRITERIA } from '../types';
+import { TEXT_QUALITY_LABELS } from '../types';
 import type { IndexStorage } from '../storage/types';
-import { useConvert } from '../i18n';
+import { useI18n } from '../i18n/use-i18n';
+import type { LocaleMessages } from '../i18n/types';
 import { useBidUrl } from '../core/bid-url';
 import { renderInterlinear, truncateOutsideJiazhu } from './detail/primitives';
 import { bim } from '../styles/tokens';
@@ -206,6 +207,11 @@ const KAOZHEN_TYPE_COLORS: Record<string, string> = {
     '考证': bim('section-kaozhen'),
 };
 
+/** 归一后的条目类型 → 徽章文字；字典里没有的（未知类型）按数据文字转换 */
+function sectionTypeLabel(messages: LocaleMessages, normType: string, convert: (s: string) => string): string {
+    return (messages.collated.sectionType as Record<string, string>)[normType] ?? convert(normType);
+}
+
 // ── 子组件 ──
 
 /** 将文件名转为显示名 */
@@ -297,6 +303,7 @@ function SectionTypeBadge({ type }: { type: string }) {
      * 英文 `category`，颜色也全部落到灰色兜底。
      * 漢書藝文志卷一（9 个 category 段）即是。
      */
+    const { convert, messages } = useI18n();
     const label = normSectionType(type);
     const color = SECTION_TYPE_COLORS[label] || bim('desc-fg');
     return (
@@ -311,7 +318,7 @@ function SectionTypeBadge({ type }: { type: string }) {
             background: `${color}08`,
             flexShrink: 0,
         }}>
-            {label}
+            {sectionTypeLabel(messages, label, convert)}
         </span>
     );
 }
@@ -327,13 +334,13 @@ function BookSection({ section, onNavigate, highlightQuery = '', no, showUnlinke
     /** 没有 work_id 的条目在右列写「未关联」（v3；「标出作品链接」关掉时不写） */
     showUnlinked?: boolean;
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const buildUrl = useBidUrl();
     const normalizer = useSearchNormalizer();
     const hl = (s: string | undefined | null): React.ReactNode => {
         if (!s) return '';
         return renderInterlinear(convert(s), (seg) =>
-            highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
+            highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg, { t });
     };
     const [expanded, setExpanded] = useState(false);
     const hasSummary = !!section.summary;
@@ -396,7 +403,7 @@ function BookSection({ section, onNavigate, highlightQuery = '', no, showUnlinke
                                     color: bim('desc-fg'),
                                     marginLeft: '6px',
                                 }}>
-                                    {toChineseNumeral(section.n_juan)}卷
+                                    {t('collated.nJuan', { n: convert(toChineseNumeral(section.n_juan)) })}
                                 </span>
                             )}
                             {(section.author_info || section.author) && (
@@ -452,14 +459,14 @@ function BookSection({ section, onNavigate, highlightQuery = '', no, showUnlinke
                             textDecoration: 'none',
                             flexShrink: 0,
                         }}
-                        title="查看作品"
-                        aria-label={`查看作品：${section.book_title || section.title}`}
+                        title={t('collated.viewWork')}
+                        aria-label={t('collated.viewWorkOf', { title: convert(section.book_title || section.title) })}
                     >
-                        作品 →
+                        {t('collated.workArrow')}
                     </a>
                 )}
                 {showUnlinked && !section.work_id && (
-                    <span style={{ fontSize: '11px', color: bim('label-fg'), flexShrink: 0 }}>未关联</span>
+                    <span style={{ fontSize: '11px', color: bim('label-fg'), flexShrink: 0 }}>{t('collated.unlinked')}</span>
                 )}
             </div>
 
@@ -492,7 +499,7 @@ function BookSection({ section, onNavigate, highlightQuery = '', no, showUnlinke
                                 color: bim('desc-fg'),
                                 marginBottom: '4px',
                                 letterSpacing: '1px',
-                            }}>提要</div>
+                            }}>{t('collated.summary')}</div>
                             <p style={{
                                 fontSize: '13px',
                                 color: bim('fg'),
@@ -515,7 +522,7 @@ function BookSection({ section, onNavigate, highlightQuery = '', no, showUnlinke
                                 color: bim('desc-fg'),
                                 marginBottom: '4px',
                                 letterSpacing: '1px',
-                            }}>按語</div>
+                            }}>{t('collated.comment')}</div>
                             <p style={{
                                 fontSize: '13px',
                                 color: bim('fg'),
@@ -537,7 +544,7 @@ function BookSection({ section, onNavigate, highlightQuery = '', no, showUnlinke
                                 color: bim('desc-fg'),
                                 marginBottom: '4px',
                                 letterSpacing: '1px',
-                            }}>附按</div>
+                            }}>{t('collated.additionalComment')}</div>
                             <p style={{
                                 fontSize: '13px',
                                 color: bim('fg'),
@@ -564,12 +571,12 @@ function BookSection({ section, onNavigate, highlightQuery = '', no, showUnlinke
 }
 
 function CategoryHeader({ section, highlightQuery = '' }: { section: CollatedSection; highlightQuery?: string }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const normalizer = useSearchNormalizer();
     const hl = (s: string | undefined | null): React.ReactNode => {
         if (!s) return '';
         return renderInterlinear(convert(s), (seg) =>
-            highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
+            highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg, { t });
     };
     const [expanded, setExpanded] = useState(false);
     const hasContent = !!section.content;
@@ -648,7 +655,7 @@ export function isPageHeaderContent(section: { type?: string; content?: string }
 }
 
 export function OtherSection({ section, highlightQuery = '' }: { section: CollatedSection; highlightQuery?: string }) {
-    const { convert } = useConvert();
+    const { t, convert, messages } = useI18n();
     const normalizer = useSearchNormalizer();
     // 短 page_header 是每页重复的书口题名，丢弃；长的其实是正文，照常渲染
     if (normSectionType(section.type) === 'page_header' && !isPageHeaderContent(section)) return null;
@@ -656,7 +663,7 @@ export function OtherSection({ section, highlightQuery = '' }: { section: Collat
     const rawText = convert((section.content || section.title || '').replace(/\n{2,}/g, '\n'));
     // 序／結語等塊原先直出 rawText，夾注兩種記法都沒渲染（2026-09-26 E-03：漢志卷首總序整段 `<師古曰…>` 直出）
     const text: React.ReactNode = renderInterlinear(rawText, (seg) =>
-        highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
+        highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg, { t });
     const normType = normSectionType(section.type);
     const typeColor = SECTION_TYPE_COLORS[normType] || bim('desc-fg');
     // 序/结语/注释：带左边框、类型标签，与"书"条目区分
@@ -687,7 +694,7 @@ export function OtherSection({ section, highlightQuery = '' }: { section: Collat
                     background: `${typeColor}08`,
                     verticalAlign: 'middle',
                 }}>
-                    {normType}
+                    {sectionTypeLabel(messages, normType, convert)}
                 </span>
             )}
             {text}
@@ -768,13 +775,13 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
     workLabelCache?: React.RefObject<WorkLabelCache>;
     highlightQuery?: string;
 }) {
-    const { convert } = useConvert();
+    const { t, convert, messages } = useI18n();
     const buildUrl = useBidUrl();
     const normalizer = useSearchNormalizer();
     const hl = (s: string | undefined | null): React.ReactNode => {
         if (!s) return '';
         return renderInterlinear(convert(s), (seg) =>
-            highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg);
+            highlightQuery ? renderHighlighted(seg, highlightQuery, normalizer) : seg, { t });
     };
     const [expanded, setExpanded] = useState(false);
     useEffect(() => {
@@ -866,9 +873,9 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
                                 textDecoration: 'none',
                                 flexShrink: 0,
                             }}
-                            title="查看作品"
+                            title={t('collated.viewWork')}
                         >
-                            →作品
+                            {t('collated.arrowWork')}
                         </a>
                     )}
                     {/* 多作品：标题行只显示数量提示 */}
@@ -878,7 +885,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
                             color: bim('link-fg'),
                             flexShrink: 0,
                         }}>
-                            {workIds.length}部作品
+                            {t('collated.nWorks', { n: workIds.length })}
                         </span>
                     )}
                     <span style={{
@@ -891,7 +898,7 @@ function KaozhenSection({ section, onNavigate, transport, workLabelCache, highli
                         borderRadius: '2px',
                         background: `${typeColor}08`,
                     }}>
-                        {typeKey}
+                        {sectionTypeLabel(messages, typeKey, convert)}
                     </span>
                 </div>
             </div>
@@ -982,6 +989,7 @@ function KaozhenContent({
     transport?: IndexStorage;
     workLabelCache?: React.RefObject<WorkLabelCache>;
 }) {
+    const { t } = useI18n();
     const normalizer = useSearchNormalizer();
     const q = searchQuery.trim();
 
@@ -1007,7 +1015,7 @@ function KaozhenContent({
                     color: bim('desc-fg'),
                     fontSize: '13px',
                 }}>
-                    无匹配结果
+                    {t('collated.noMatch')}
                 </div>
             )}
         </div>
@@ -1040,14 +1048,14 @@ function CollatedEntries({ sections, onNavigate, inline, workLinks = true }: {
     workLinks?: boolean;
 }) {
     const buildUrl = useBidUrl();
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const tagOf = entryHeadingLeveler();
     return (
         <>
             {sections.map((s, i) => {
-                const t = normSectionType(s.type);
-                if (t === 'page_header' && !isPageHeaderContent(s)) return null;
-                if (t === '类') {
+                const ty = normSectionType(s.type);
+                if (ty === 'page_header' && !isPageHeaderContent(s)) return null;
+                if (ty === '类') {
                     return (
                         <React.Fragment key={i}>
                             {React.createElement(tagOf('类'), null, inline(convert(s.title)))}
@@ -1055,9 +1063,9 @@ function CollatedEntries({ sections, onNavigate, inline, workLinks = true }: {
                         </React.Fragment>
                     );
                 }
-                if (t === '书' || t === '诗' || t === '考证' || t === '注释') {
+                if (ty === '书' || ty === '诗' || ty === '考证' || ty === '注释') {
                     const head = s.book_title
-                        ? `《${s.book_title}》${s.n_juan != null ? toChineseNumeral(s.n_juan) + '卷' : ''}`
+                        ? `《${s.book_title}》${s.n_juan != null ? t('collated.nJuan', { n: toChineseNumeral(s.n_juan) }) : ''}`
                         : s.title;
                     const title = inline(convert(head));
                     return (
@@ -1067,21 +1075,21 @@ function CollatedEntries({ sections, onNavigate, inline, workLinks = true }: {
                                         <a
                                             href={buildUrl(s.work_id)}
                                             onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(s.work_id!); }}
-                                            title="查看作品"
+                                            title={t('collated.viewWork')}
                                         >{title}</a>
                                         <a
                                             className="bim-rd-wl"
                                             href={buildUrl(s.work_id)}
                                             onClick={e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(s.work_id!); }}
-                                            aria-label={`查看作品：${head}`}
-                                        >作品 →</a>
+                                            aria-label={t('collated.viewWorkOf', { title: convert(head) })}
+                                        >{t('collated.workArrow')}</a>
                                     </>
                                 ) : title)}
                             {s.author_info && <p className="bim-rd-sub">{inline(convert(s.author_info))}</p>}
                             {s.content && s.content.split(/\n+/).map((para, j) => <p key={j}>{inline(convert(para))}</p>)}
-                            {s.summary && <p><span className="bim-rd-lbl">提要</span>{inline(convert(s.summary))}</p>}
-                            {s.comment && <p><span className="bim-rd-lbl">按語</span>{inline(convert(s.comment))}</p>}
-                            {s.additional_comment && <p><span className="bim-rd-lbl">附按</span>{inline(convert(s.additional_comment))}</p>}
+                            {s.summary && <p><span className="bim-rd-lbl">{t('collated.summary')}</span>{inline(convert(s.summary))}</p>}
+                            {s.comment && <p><span className="bim-rd-lbl">{t('collated.comment')}</span>{inline(convert(s.comment))}</p>}
+                            {s.additional_comment && <p><span className="bim-rd-lbl">{t('collated.additionalComment')}</span>{inline(convert(s.additional_comment))}</p>}
                         </section>
                     );
                 }
@@ -1142,7 +1150,7 @@ export function JuanReading({
     workLabelCache?: React.RefObject<WorkLabelCache>;
     prefs: ReaderPrefs;
 }) {
-    const { convert } = useConvert();
+    const { t, convert, messages } = useI18n();
     const normalizer = useSearchNormalizer();
     const [viewOwn, setViewOwn] = useState<JuanView>('text');
     const view = viewProp ?? viewOwn;
@@ -1151,7 +1159,7 @@ export function JuanReading({
     const isKaozhen = index?.type === 'kaozhen';
 
     const renderText = useCallback((seg: string) => (q ? renderHighlighted(seg, q, normalizer) : seg), [q, normalizer]);
-    const inline = (s: string) => renderReaderInline(s, { renderText, properNames: prefs.properNames });
+    const inline = (s: string) => renderReaderInline(s, { renderText, properNames: prefs.properNames, t });
 
     const catalogSections = useMemo(() => {
         if (!q) return juan.sections;
@@ -1167,25 +1175,25 @@ export function JuanReading({
      * 那是拿目录式的口径去量纯正文，读者会以为内容没加载出来。
      */
     let countText = '';
-    if (isKaozhen) countText = q ? `${count('考证', catalogSections)} / ${kaozhenCount} ${convert('條')}` : `${kaozhenCount} ${convert('條')}`;
-    else if (poemCount > 0) countText = q ? `${count('诗', catalogSections)} / ${poemCount} 首` : `${poemCount} 首`;
-    else if (bookCount > 0) countText = q ? `${count('书', catalogSections)} / ${bookCount} ${convert('部書')}` : `${bookCount} ${convert('部書')}`;
+    if (isKaozhen) countText = q ? t('collated.countTiaoOf', { m: count('考证', catalogSections), n: kaozhenCount }) : t('collated.countTiao', { n: kaozhenCount });
+    else if (poemCount > 0) countText = q ? t('collated.countPoemsOf', { m: count('诗', catalogSections), n: poemCount }) : t('collated.countPoems', { n: poemCount });
+    else if (bookCount > 0) countText = q ? t('collated.countBooksOf', { m: count('书', catalogSections), n: bookCount }) : t('collated.countBooks', { n: bookCount });
 
     const grade = index?.text_quality ? normalizeTextQualityGrade(index.text_quality.grade) : null;
     const meta: React.ReactNode[] = [];
     if (countText) meta.push(countText);
-    if (isKaozhen && index?.target_source) meta.push(<>{convert('考證對象')} {convert(index.target_source)}</>);
+    if (isKaozhen && index?.target_source) meta.push(<>{t('collated.kaozhenTarget', { target: convert(index.target_source) })}</>);
     if (grade) {
         meta.push(
-            <span title={TEXT_QUALITY_CRITERIA[grade]}>
+            <span title={messages.collated.qualityCriteria[grade]}>
                 {index?.text_quality?.source_note
-                    ? <>底本 {convert(index.text_quality.source_note)}<span className="bim-rd-grade">{convert(TEXT_QUALITY_LABELS[grade])}</span></>
-                    : <>{convert('文本質量')}<span className="bim-rd-grade">{convert(TEXT_QUALITY_LABELS[grade])}</span></>}
+                    ? <>{t('collated.baseText', { note: convert(index.text_quality.source_note) })}<span className="bim-rd-grade">{messages.collated.qualityLabel[grade]}</span></>
+                    : <>{t('collated.textQuality')}<span className="bim-rd-grade">{messages.collated.qualityLabel[grade]}</span></>}
             </span>,
         );
     }
     if (juan.source_url) {
-        meta.push(<a className="bim-rd-link" href={juan.source_url} target="_blank" rel="noopener noreferrer">{convert('原文來源')}</a>);
+        meta.push(<a className="bim-rd-link" href={juan.source_url} target="_blank" rel="noopener noreferrer">{t('collated.originalSource')}</a>);
     }
 
     const sectionText = !isKaozhen && hasSectionText(juan.sections);
@@ -1213,9 +1221,9 @@ export function JuanReading({
                     </p>
                 )}
                 {hasText && juan.sections.length > 0 && (
-                    <div className="bim-rd-views" role="group" aria-label="看法">
-                        <button type="button" className="bim-rd-t" aria-pressed={effectiveView === 'text'} onClick={() => setView('text')}>正文</button>
-                        <button type="button" className="bim-rd-t" aria-pressed={effectiveView === 'entries'} onClick={() => setView('entries')}>{convert('條目')}</button>
+                    <div className="bim-rd-views" role="group" aria-label={t('collated.viewsGroup')}>
+                        <button type="button" className="bim-rd-t" aria-pressed={effectiveView === 'text'} onClick={() => setView('text')}>{t('collated.viewText')}</button>
+                        <button type="button" className="bim-rd-t" aria-pressed={effectiveView === 'entries'} onClick={() => setView('entries')}>{t('collated.viewEntries')}</button>
                     </div>
                 )}
             </header>
@@ -1242,7 +1250,7 @@ export function JuanReading({
                         <>
                             {catalogSections.some(x => ['书', '诗', '考证'].includes(normSectionType(x.type))) && (
                                 <div className="bim-rd-rowhead" aria-hidden="true">
-                                    <span style={{ width: 28 }}>序</span><span style={{ flex: 1 }}>书名</span><span>作品</span>
+                                    <span style={{ width: 28 }}>{t('collated.rowHeadNo')}</span><span style={{ flex: 1 }}>{t('collated.rowHeadTitle')}</span><span>{t('collated.rowHeadWork')}</span>
                                 </div>
                             )}
                             {catalogSections.map((section, i) => {
@@ -1259,7 +1267,7 @@ export function JuanReading({
                                 return <OtherSection key={i} section={section} highlightQuery={q} />;
                             })}
                             {catalogSections.length === 0 && (
-                                <div className="bim-rd-state" style={{ textAlign: 'center' }}>无匹配结果</div>
+                                <div className="bim-rd-state" style={{ textAlign: 'center' }}>{t('collated.noMatch')}</div>
                             )}
                         </>
                     )}
@@ -1396,13 +1404,13 @@ export function JuanRail({ juan, view, onView, textHasEntries }: {
     /** 正文看法里有没有逐条书目（自然段模式下没有，锚点无处可跳） */
     textHasEntries: boolean;
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const items = juan.sections
         .map((s, i) => ({ s, i, t: normSectionType(s.type) }))
         .filter(x => x.t === '书' || x.t === '诗');
     if (items.length === 0) return null;
     const linked = items.filter(x => !!x.s.work_id).length;
-    const unit = items.every(x => x.t === '诗') ? '首' : '部书';
+    const unit = items.every(x => x.t === '诗') ? t('collated.railUnitPoems') : t('collated.railUnitBooks');
     const jump = (i: number) => {
         const go = () => document.getElementById(`rd-e-${i}`)?.scrollIntoView?.({ block: 'start', behavior: 'smooth' });
         if (view === 'text' && !textHasEntries) onView('entries');
@@ -1411,17 +1419,17 @@ export function JuanRail({ juan, view, onView, textHasEntries }: {
     return (
         <>
             <div className="bim-rd-rail-card">
-                <div className="bim-rd-rail-cap">本卷</div>
+                <div className="bim-rd-rail-cap">{t('collated.railCap')}</div>
                 <div className="bim-rd-rail-n">
-                    <b>{items.length}</b><span>{convert(unit)}</span>
-                    <span className="bim-rd-rail-linked">已关联 {linked}</span>
+                    <b>{items.length}</b><span>{unit}</span>
+                    <span className="bim-rd-rail-linked">{t('collated.linkedN', { n: linked })}</span>
                 </div>
-                <div className="bim-rd-rail-bar" role="img" aria-label={`已关联 ${linked} / ${items.length}`}>
+                <div className="bim-rd-rail-bar" role="img" aria-label={t('collated.linkedOf', { n: linked, total: items.length })}>
                     <span style={{ width: `${Math.round((linked / items.length) * 100)}%` }} />
                 </div>
             </div>
-            <nav aria-label="本卷条目">
-                <div className="bim-rd-rail-cap" style={{ margin: '20px 0 6px 12px' }}>{convert('條目')}</div>
+            <nav aria-label={t('collated.railEntriesNav')}>
+                <div className="bim-rd-rail-cap" style={{ margin: '20px 0 6px 12px' }}>{t('collated.viewEntries')}</div>
                 <ul className="bim-rd-rail-list">
                     {items.map(({ s, i }) => (
                         <li key={i}>

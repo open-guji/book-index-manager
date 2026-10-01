@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FeedbackDialog } from './FeedbackDialog';
 import type { FeedbackData } from './FeedbackDialog';
 import { bim } from '../styles/tokens';
+import { useI18n } from '../i18n';
 
 /**
  * 浮钮挂载期间写到 <html> 上的 CSS 变量：浮钮占掉的底部高度（bottom + 按钮高 + 间隙）。
@@ -36,6 +37,7 @@ export const FeedbackButton: React.FC<FeedbackButtonProps> = ({
     hidden = false,
     zIndex,
 }) => {
+    const { t } = useI18n();
     const [open, setOpen] = useState(false);
     const bottom = position.bottom ?? 24;
 
@@ -59,8 +61,8 @@ export const FeedbackButton: React.FC<FeedbackButtonProps> = ({
                         bottom: `calc(${bottom}px + env(safe-area-inset-bottom, 0px))`,
                         right: position.right,
                     }}
-                    aria-label="反馈"
-                    title="反馈"
+                    aria-label={t('feedback.title')}
+                    title={t('feedback.title')}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />

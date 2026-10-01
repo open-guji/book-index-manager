@@ -17,6 +17,8 @@ import { GujiTable } from '../detail/GujiTable';
 import { splitFullTextTables } from '../../core/guji-table';
 import { buildParagraphBlocks, detectGenre, type ReadingMode } from '../../core/paragraphize';
 import { useConvert } from '../../i18n';
+import { useI18n } from '../../i18n/use-i18n';
+import type { TFunction } from '../../i18n/translate';
 
 /** 纯文本片段 → 节点（高亮等由调用方注入） */
 export type TextRenderer = (s: string) => React.ReactNode;
@@ -55,13 +57,15 @@ export interface InlineOptions {
     properNames?: boolean;
     /** guji-markdown 0.2.0 行内写法 */
     gujiMarkdown?: boolean;
+    /** 闕文／組字提示用的字典（组件里传 useI18n().t）；不传按繁体 */
+    t?: TFunction;
 }
 
 /** 一段行内文字：夹注 → 专名线 → 高亮，由外到内 */
 export function renderReaderInline(text: string, opts: InlineOptions = {}): React.ReactNode {
     const base = opts.renderText ?? identity;
     const leaf: TextRenderer = opts.properNames ? s => renderProperNames(s, base) : base;
-    const io: InterlinearOptions | undefined = opts.gujiMarkdown ? { gujiMarkdown: true } : undefined;
+    const io: InterlinearOptions | undefined = opts.gujiMarkdown ? { gujiMarkdown: true, t: opts.t } : undefined;
     return renderInterlinear(text, leaf, io);
 }
 
@@ -204,9 +208,9 @@ export function ReaderMdText({ text, mode, tables = false, gujiMarkdown = false,
     dropTitle?: string;
 }) {
     const converted = useConvertedText(text);
-    const { convert } = useConvert();
-    const inline = (s: string) => renderReaderInline(s, { renderText, properNames, gujiMarkdown });
-    const io: InterlinearOptions | undefined = gujiMarkdown ? { gujiMarkdown: true } : undefined;
+    const { t, convert } = useI18n();
+    const inline = (s: string) => renderReaderInline(s, { renderText, properNames, gujiMarkdown, t });
+    const io: InterlinearOptions | undefined = gujiMarkdown ? { gujiMarkdown: true, t } : undefined;
     const title = dropTitle ? convert(dropTitle) : undefined;
 
     if (!tables || converted.indexOf(':::') < 0) {

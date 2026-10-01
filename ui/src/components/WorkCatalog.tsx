@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useT, useConvert } from '../i18n';
+import { useI18n } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
 import { bim } from '../styles/tokens';
 
@@ -49,8 +49,7 @@ export const WorkCatalog: React.FC<WorkCatalogProps> = ({
     className,
     style,
 }) => {
-    const t = useT();
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const [expandedDiv, setExpandedDiv] = useState<string | null>(data.divisions[0]?.name ?? null);
     const [expandedCat, setExpandedCat] = useState<string | null>(null);
 
@@ -63,10 +62,10 @@ export const WorkCatalog: React.FC<WorkCatalogProps> = ({
                 </h2>
                 {data.stats && (
                     <div style={{ fontSize: '13px', color: bim('desc-fg'), display: 'flex', gap: '16px' }}>
-                        {data.total_volumes != null && <span>{t.catalog.totalVolumes} <strong>{data.total_volumes}</strong> {t.unit.juan}</span>}
-                        {data.stats.zhulu != null && <span>著錄 <strong>{data.stats.zhulu}</strong> {t.unit.bu}</span>}
-                        {data.stats.cunmu != null && <span>存目 <strong>{data.stats.cunmu}</strong> {t.unit.bu}</span>}
-                        {data.stats.categories != null && <span>{data.stats.categories} 類</span>}
+                        {data.total_volumes != null && <span>{t('catalog.totalVolumes')} <strong>{data.total_volumes}</strong> {t('unit.juan')}</span>}
+                        {data.stats.zhulu != null && <span>{t('catalogPage.zhulu')} <strong>{data.stats.zhulu}</strong> {t('unit.bu')}</span>}
+                        {data.stats.cunmu != null && <span>{t('catalogPage.cunmu')} <strong>{data.stats.cunmu}</strong> {t('unit.bu')}</span>}
+                        {data.stats.categories != null && <span>{t('catalogPage.categoriesN', { n: data.stats.categories })}</span>}
                     </div>
                 )}
             </div>
@@ -97,7 +96,7 @@ const DivisionSection: React.FC<{
     onCatToggle: (cat: string) => void;
     onNavigate?: (id: string) => void;
 }> = ({ division, expanded, onToggle, expandedCat, onCatToggle, onNavigate }) => {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const totalBooks = division.categories.reduce((sum, c) => {
         const s = c.stats || { zhulu: 0, cunmu: 0 };
         return sum + (s.zhulu || 0) + (s.cunmu || 0);
@@ -128,7 +127,7 @@ const DivisionSection: React.FC<{
             >
                 <span>{convert(division.name)}</span>
                 <span style={{ fontSize: '12px', fontWeight: 400, color: bim('desc-fg') }}>
-                    {division.categories.length} 類 · {totalBooks} 部
+                    {t('catalogPage.divisionStat', { cats: division.categories.length, books: totalBooks })}
                     <span style={{ marginLeft: '8px' }}>{expanded ? '▲' : '▼'}</span>
                 </span>
             </button>
@@ -158,7 +157,7 @@ const CategorySection: React.FC<{
     onToggle: () => void;
     onNavigate?: (id: string) => void;
 }> = ({ category, expanded, onToggle, onNavigate }) => {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const zhulu = category.books?.zhulu || [];
     const cunmu = category.books?.cunmu || [];
     const total = (category.stats?.zhulu || zhulu.length) + (category.stats?.cunmu || cunmu.length);
@@ -185,21 +184,21 @@ const CategorySection: React.FC<{
                     {convert(category.name)}
                     {category.volumes && (
                         <span style={{ fontSize: '11px', color: bim('desc-fg'), marginLeft: '8px', fontWeight: 400 }}>
-                            卷{category.volumes}
+                            {t('catalogPage.categoryJuan', { n: convert(category.volumes) })}
                         </span>
                     )}
                 </span>
                 <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
-                    {total} 部 {expanded ? '▲' : '▼'}
+                    {t('catalogPage.booksN', { n: total })} {expanded ? '▲' : '▼'}
                 </span>
             </button>
             {expanded && (zhulu.length > 0 || cunmu.length > 0) && (
                 <div style={{ padding: '4px 14px 8px 42px' }}>
                     {zhulu.length > 0 && (
-                        <BookList label="著錄" books={zhulu} onNavigate={onNavigate} />
+                        <BookList label={t('catalogPage.zhulu')} books={zhulu} onNavigate={onNavigate} />
                     )}
                     {cunmu.length > 0 && (
-                        <BookList label="存目" books={cunmu} onNavigate={onNavigate} />
+                        <BookList label={t('catalogPage.cunmu')} books={cunmu} onNavigate={onNavigate} />
                     )}
                 </div>
             )}
@@ -212,7 +211,7 @@ const BookList: React.FC<{
     books: CatalogBook[];
     onNavigate?: (id: string) => void;
 }> = ({ label, books, onNavigate }) => {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const buildUrl = useBidUrl();
     const [showAll, setShowAll] = useState(books.length <= 20);
     const displayed = showAll ? books : books.slice(0, 10);
@@ -259,7 +258,7 @@ const BookList: React.FC<{
                         cursor: 'pointer',
                     }}
                 >
-                    展開全部 {books.length} 條
+                    {t('catalogPage.expandAllN', { n: books.length })}
                 </button>
             )}
         </div>

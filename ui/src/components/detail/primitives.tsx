@@ -11,7 +11,8 @@
 import React, { useState } from 'react';
 import type { ResourceEntry } from '../../types';
 import { useBidUrl } from '../../core/bid-url';
-import { useConvert } from '../../i18n';
+import { useConvert, useI18n, getT } from '../../i18n';
+import type { TFunction } from '../../i18n';
 import { getDisplayNameFromUrl, resourceHref, volumeStats } from '../../core/resources';
 import { resourceNote, resourceDisambiguator } from '../../core/detail-model';
 import { parseGujiInline, mayHaveGujiInline } from '../../core/guji-inline';
@@ -569,11 +570,14 @@ export function ChipWall({ children }: { children: React.ReactNode }) {
 }
 
 /** 册次方块（版本页「收入叢編」的 321…343） */
-export function VolumeChips({ volumes, unit = '冊', max = 60 }: {
+export function VolumeChips({ volumes, unit: unitProp, max = 60 }: {
     volumes: number[];
+    /** 默认「冊」（字典 unit.volume） */
     unit?: string;
     max?: number;
 }) {
+    const { t } = useI18n();
+    const unit = unitProp ?? t('unit.volume');
     const [all, setAll] = useState(false);
     if (!volumes.length) return null;
     const shown = all ? volumes : volumes.slice(0, max);
@@ -860,12 +864,15 @@ export interface InterlinearOptions {
      * `guji_markdown: "0.2.0"` 的書開（見 `core/guji-inline.ts`）；不開時與改前逐字一致。
      */
     gujiMarkdown?: boolean;
+    /** 闕文／組字提示（title）用的字典；不传按繁体。组件里传 useI18n().t */
+    t?: TFunction;
 }
 
 function renderGujiNodes(
     nodes: GujiInlineNode[],
     renderText: (s: string) => React.ReactNode,
     depth: number,
+    t: TFunction,
 ): React.ReactNode[] {
     return nodes.map((n, k) => {
         switch (n.type) {
@@ -875,19 +882,19 @@ function renderGujiNodes(
                 // 注中注不再二次縮小
                 return (
                     <span key={k} className="bim-jiazhu" style={depth === 0 ? JIAZHU_STYLE : undefined}>
-                        {renderGujiNodes(n.children, renderText, depth + 1)}
+                        {renderGujiNodes(n.children, renderText, depth + 1, t)}
                     </span>
                 );
             case 'qw':
                 return (
-                    <span key={k} className="bim-qw guji-qw" title={n.label ? `闕文：${n.label}` : '闕文'}>□</span>
+                    <span key={k} className="bim-qw guji-qw" title={n.label ? t('detail.lacunaWith', { label: n.label }) : t('detail.lacuna')}>□</span>
                 );
             case 'qz':
                 // 本組件無校對模式開關：只顯示 □，猜測字僅留在 data 屬性（spec §14）
                 return <span key={k} className="bim-qz guji-qz" data-guji-guess={n.guess}>□</span>;
             case 'zi':
                 return (
-                    <span key={k} className="bim-zi guji-zi" title={`組字：${n.label}`} style={ZI_STYLE}>
+                    <span key={k} className="bim-zi guji-zi" title={t('detail.composedChar', { label: n.label })} style={ZI_STYLE}>
                         {n.label}
                     </span>
                 );
@@ -903,7 +910,7 @@ export function renderInterlinear(
     if (!text) return '';
     if (opts?.gujiMarkdown) {
         if (!mayHaveGujiInline(text)) return renderText(text);
-        return renderGujiNodes(parseGujiInline(text), renderText, 0);
+        return renderGujiNodes(parseGujiInline(text), renderText, 0, opts.t ?? getT('zh-Hant'));
     }
     if (text.indexOf('\u27e8') < 0 && text.indexOf('<') < 0) return renderText(text);
     const out: React.ReactNode[] = [];
@@ -1045,7 +1052,7 @@ export function ResourceLine({
     /** note 为空时的兜底（丛编页用 details 补） */
     fallbackNote?: string;
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const [open, setOpen] = useState(false);
 
     const stats = volumeStats(item);
@@ -1058,7 +1065,7 @@ export function ResourceLine({
     return (
         <ResourceRow
             name={name}
-            note={resourceNote(item) || fallbackNote}
+            note={resourceNote(item, t) || fallbackNote}
             href={resourceHref(item)}
             extra={hasVolumes ? (
                 <>
@@ -1073,7 +1080,7 @@ export function ResourceLine({
                             borderBottom: `1px solid ${bim('rule')}`,
                         }}
                     >
-                        {open ? '收起分冊' : `展開 ${stats!.expected} 冊`}
+                        {open ? t('detail.collapseVolumes') : t('detail.expandVolumes', { n: stats!.expected })}
                     </button>
                     {open && <VolumeLinks item={item} />}
                 </>

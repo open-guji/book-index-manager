@@ -15,7 +15,7 @@ import type {
     ResourceEntry,
 } from '../../types';
 import type { IndexStorage } from '../../storage/types';
-import { useT, useConvert } from '../../i18n';
+import { useI18n } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, renderInterlinear, type RenderLink } from './primitives';
 import {
@@ -58,8 +58,7 @@ type Resolved = ResolvedVersion & { measure_info?: string };
 export const WorkPage: React.FC<WorkPageProps> = ({
     data, transport, onNavigate, renderLink, readAction, railTop, back, railLinks,
 }) => {
-    const t = useT();
-    const { convert } = useConvert();
+    const { t, convert, messages: m } = useI18n();
 
     // ── 版本解析 ──
     const versionIds = useMemo(
@@ -147,9 +146,9 @@ export const WorkPage: React.FC<WorkPageProps> = ({
         const b = bucketResources(data.resources, data.resource_groups);
         return [
             ...b.mirrors.flatMap(g => g.items.map(r => ({ r, kind: convert(g.label) }))),
-            ...b.buckets.flatMap(k => k.items.map(r => ({ r, kind: convert(resourceKindLabel(k.key)) }))),
+            ...b.buckets.flatMap(k => k.items.map(r => ({ r, kind: convert(resourceKindLabel(k.key, t)) }))),
         ];
-    }, [data.resources, data.resource_groups, convert]);
+    }, [data.resources, data.resource_groups, convert, t]);
 
     const indexed = data.indexed_by || [];
     const emendated = data.emendated_by || [];
@@ -158,18 +157,18 @@ export const WorkPage: React.FC<WorkPageProps> = ({
     const facts: CardFact[] = useMemo(() => {
         const out: CardFact[] = [];
         const dynasty = data.authors?.[0]?.dynasty;
-        if (dynasty) out.push({ label: '成書', value: convert(dynasty) });
+        if (dynasty) out.push({ label: t('workPage.fact.written'), value: convert(dynasty) });
 
-        const measure = measureText(data, t.unit.juan);
+        const measure = measureText(data, m.unit.juan);
         if (measure) {
             const desc = data.juan_count?.description;
             out.push({
-                label: '卷帙',
+                label: t('workPage.fact.measure'),
                 value: <>{convert(measure)}{desc && desc !== measure
                     ? <span className="bim-d-meta">（{convert(desc)}）</span> : null}</>,
             });
         }
-        if (data.loss_status) out.push({ label: '存佚', value: convert(lossStatusLabel(data.loss_status)) });
+        if (data.loss_status) out.push({ label: t('workPage.fact.loss'), value: convert(lossStatusLabel(data.loss_status, t)) });
 
         const dated = table.allRows.filter(r => r.sortYear != null);
         const earliest = dated.length > 0
@@ -177,35 +176,35 @@ export const WorkPage: React.FC<WorkPageProps> = ({
             : null;
         if (earliest?.era.era) {
             out.push({
-                label: '最早存世',
+                label: t('workPage.fact.earliest'),
                 value: convert([earliest.era.era, earliest.era.reign].filter(Boolean).join(' ')),
-                title: earliest.era.source === 'edition' ? convert('據版本題名推斷') : undefined,
+                title: earliest.era.source === 'edition' ? t('workPage.inferredFromEdition') : undefined,
             });
         } else if (resolving) {
             out.push({
-                label: '最早存世',
-                value: <span className="bim-d-meta" aria-label={convert('載入中')}>…</span>,
+                label: t('workPage.fact.earliest'),
+                value: <span className="bim-d-meta" aria-label={t('workPage.loading')}>…</span>,
             });
         }
 
-        if (emendated.length) out.push({ label: '考證', value: `${emendated.length} ${convert('條')}` });
+        if (emendated.length) out.push({ label: t('workPage.fact.emendation'), value: t('workPage.emendationCount', { n: emendated.length }) });
 
         const aliases = flatten(data.additional_titles);
-        if (aliases.length) out.push({ label: '又名', value: aliases.map(convert).join('、') });
+        if (aliases.length) out.push({ label: t('workPage.fact.alias'), value: aliases.map(convert).join('、') });
         const attached = flatten(data.attached_texts);
-        if (attached.length) out.push({ label: '附載', value: attached.map(convert).join('、') });
+        if (attached.length) out.push({ label: t('workPage.fact.attached'), value: attached.map(convert).join('、') });
         const appendixWorks = (data.additional_works || []).map(w =>
-            convert(w.book_title) + (w.n_juan != null ? ` ${w.n_juan}${convert(t.unit.juan)}` : ''));
-        if (appendixWorks.length) out.push({ label: '附錄', value: appendixWorks.join('、') });
+            convert(w.book_title) + (w.n_juan != null ? ` ${w.n_juan}${m.unit.juan}` : ''));
+        if (appendixWorks.length) out.push({ label: t('workPage.fact.appendix'), value: appendixWorks.join('、') });
         return out;
-    }, [data, convert, t, resolving, table.allRows, emendated.length]);
+    }, [data, convert, t, m, resolving, table.allRows, emendated.length]);
 
     const editions = data._edition_count ?? versionIds.length;
     const stats = [
-        { value: editions, label: '版本' },
+        { value: editions, label: t('workPage.stat.editions') },
         // 有影印数要版本全部解析完才准，先不出，免得数字跳动
-        { value: allResolved ? imageCount : 0, label: '有影印' },
-        { value: indexed.length, label: '家著錄' },
+        { value: allResolved ? imageCount : 0, label: t('workPage.stat.hasImage') },
+        { value: indexed.length, label: t('workPage.stat.catalogs') },
     ];
 
     const cls = data.classification;
@@ -213,7 +212,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
         ? [cls.l1, cls.l2, cls.l3, cls.l4].filter(Boolean).map(s => convert(s!))
         : [];
     const subtypeLabel = data.subtype
-        ? convert((t.workSubtype as Record<string, string>)[data.subtype] ?? data.subtype)
+        ? (m.workSubtype as Record<string, string>)[data.subtype] ?? convert(data.subtype)
         : '';
 
     const card = (
@@ -224,7 +223,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                 <MetaLine
                     items={[
                         ...clsItems,
-                        cls?.source ? convert(`據《${cls.source.split('/')[0]}》`) : '',
+                        cls?.source ? t('workPage.classifiedBy', { source: convert(cls.source.split('/')[0]) }) : '',
                         subtypeLabel,
                     ]}
                 />
@@ -257,15 +256,15 @@ export const WorkPage: React.FC<WorkPageProps> = ({
 
     // ── 中栏 ──
     const eraTabs = table.eras.length >= 2
-        ? [{ key: '', label: t.catalog.all }, ...table.eras.map(e => ({ key: e, label: `${e} ${table.allRows.filter(r => r.era.era === e).length}` }))]
+        ? [{ key: '', label: t('catalog.all') }, ...table.eras.map(e => ({ key: e, label: `${e} ${table.allRows.filter(r => r.era.era === e).length}` }))]
         : [];
 
     const nav: RailNavItem[] = [];
-    if (versionIds.length) nav.push({ id: 'versions', label: '版本', count: versionIds.length });
-    if (indexed.length) nav.push({ id: 'catalogs', label: '著錄', count: indexed.length });
-    if (collectedIn.length) nav.push({ id: 'collected', label: '收入叢編', count: collectedIn.length });
-    if (otherRelated.length) nav.push({ id: 'related', label: '相關書目', count: otherRelated.length });
-    if (resources.length) nav.push({ id: 'resources', label: '在線資源', count: resources.length });
+    if (versionIds.length) nav.push({ id: 'versions', label: t('workPage.sec.versions'), count: versionIds.length });
+    if (indexed.length) nav.push({ id: 'catalogs', label: t('workPage.sec.catalogs'), count: indexed.length });
+    if (collectedIn.length) nav.push({ id: 'collected', label: t('workPage.sec.collected'), count: collectedIn.length });
+    if (otherRelated.length) nav.push({ id: 'related', label: t('workPage.sec.related'), count: otherRelated.length });
+    if (resources.length) nav.push({ id: 'resources', label: t('workPage.sec.resources'), count: resources.length });
 
     const isEmpty = versionIds.length === 0 && indexed.length === 0;
 
@@ -274,11 +273,11 @@ export const WorkPage: React.FC<WorkPageProps> = ({
             {versionIds.length > 0 && (
                 <Sec
                     id="versions"
-                    title="版本"
+                    title={t('workPage.sec.versions')}
                     meta={<MetaLine items={[
-                        convert(`共 ${versionIds.length} 種`),
-                        allResolved && imageCount ? convert(`${imageCount} 種有影印`) : '',
-                        table.rows.length !== table.allRows.length ? convert(`當前 ${table.rows.length} 種`) : '',
+                        t('workPage.versionsTotal', { n: versionIds.length }),
+                        allResolved && imageCount ? t('workPage.versionsWithImage', { n: imageCount }) : '',
+                        table.rows.length !== table.allRows.length ? t('workPage.versionsCurrent', { n: table.rows.length }) : '',
                     ]} />}
                 >
                     <div className="bim-d-filters bim-d-ui" data-pending={resolving && eraTabs.length === 0 && versionIds.length > 1 ? '' : undefined}>
@@ -291,19 +290,19 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                         )}
                         <span className="bim-d-spacer" />
                         <CheckFilter
-                            label="只看有影印"
+                            label={t('workPage.scanOnly')}
                             checked={scanOnly}
                             onChange={v => { setScanOnly(v); setShowAll(false); }}
                         />
-                        <span className="bim-d-meta">{convert(byYear ? '按年代排列' : '按著錄順序')}</span>
+                        <span className="bim-d-meta">{byYear ? t('workPage.sortByYear') : t('workPage.sortByCatalog')}</span>
                     </div>
                     <table className="bim-d-zt bim-d-zt-ver" data-ncap={!showAll && narrowCapped(table.rows.length) ? '' : undefined}>
                         <thead className="bim-d-ui">
                             <tr>
-                                <th>{convert('版本')}</th>
-                                <th>{convert('年代')}</th>
-                                <th>{convert('館藏')}</th>
-                                <th><span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>{convert('影印')}</span></th>
+                                <th>{t('workPage.col.edition')}</th>
+                                <th>{t('workPage.col.era')}</th>
+                                <th>{t('workPage.col.holder')}</th>
+                                <th><span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>{t('workPage.col.image')}</span></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -323,15 +322,15 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                     </table>
                     {visibleRows.length === 0 && (
                         <p className="bim-d-meta bim-d-ui" style={{ margin: '12px 12px 0' }}>
-                            {convert(era || scanOnly ? '當前篩選下沒有版本' : '暫無版本著錄')}
+                            {era || scanOnly ? t('workPage.noVersionsFiltered') : t('workPage.noVersions')}
                         </p>
                     )}
                     {!showAll && (
-                        <CapMore total={table.rows.length} shown={visibleRows.length} unit="種版本" onClick={() => setShowAll(true)} />
+                        <CapMore total={table.rows.length} shown={visibleRows.length} unit={t('workPage.moreUnit')} onClick={() => setShowAll(true)} />
                     )}
                     {table.hasInferredEra && (
                         <p className="bim-d-meta bim-d-ui" style={{ margin: '8px 0 0', fontSize: 12 }}>
-                            {convert('部分年代據版本題名推斷，非著錄原文')}
+                            {t('workPage.inferredEraNote')}
                         </p>
                     )}
                 </Sec>
@@ -346,9 +345,9 @@ export const WorkPage: React.FC<WorkPageProps> = ({
               * 中栏只剩空白，读者不知道是没数据还是页面坏了。给一句说明。
               */}
             {isEmpty && (
-                <Sec title="版本">
+                <Sec title={t('workPage.sec.versions')}>
                     <p className="bim-d-meta bim-d-ui" style={{ margin: 0 }}>
-                        {convert('尚未著錄該作品的版本與書目收錄。')}
+                        {t('workPage.empty')}
                     </p>
                 </Sec>
             )}
@@ -363,37 +362,37 @@ export const WorkPage: React.FC<WorkPageProps> = ({
     const relationSummary = useMemo(() => {
         const n = new Map<string, number>();
         for (const r of otherRelated) {
-            const k = relationLabel(r.relation);
+            const k = relationLabel(r.relation, t);
             n.set(k, (n.get(k) ?? 0) + 1);
         }
         return n.size > 1
             ? [...n.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([k, c]) => `${convert(k)} ${c}`).join(' · ')
             : undefined;
-    }, [otherRelated, convert]);
+    }, [otherRelated, convert, t]);
     const side = (
         <>
             <SideList
                 id="collected"
-                title="收入叢編"
+                title={t('workPage.sec.collected')}
                 items={collectedIn.map(r => link(r.id, r.title))}
             />
             <SideList
                 id="related"
-                title="相關書目"
-                meta={convert(`${otherRelated.length} 部`)}
+                title={t('workPage.sec.related')}
+                meta={t('workPage.relatedCount', { n: otherRelated.length })}
                 sub={relationSummary}
                 items={otherRelated.map(r => (
                     <>
                         {link(r.id, r.title)}
                         <span className="bim-d-meta" title={r.note ? convert(r.note) : undefined}>
-                            {convert(relationLabel(r.relation))}
+                            {convert(relationLabel(r.relation, t))}
                         </span>
                     </>
                 ))}
             />
             <SideList
                 id="resources"
-                title="在線資源"
+                title={t('workPage.sec.resources')}
                 cap={6}
                 items={resources.map(({ r, kind }) => {
                     const name = convert((r.url ? getDisplayNameFromUrl(r.url) : undefined) || r.name);
@@ -434,7 +433,7 @@ function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
     onNavigate?: (id: string) => void;
     renderLink?: RenderLink;
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const eraLabel = [row.era.era, row.era.reign].filter(Boolean).join(' ');
     const inferred = row.era.source === 'edition';
     const holder = row.holders[0];
@@ -460,7 +459,7 @@ function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
             </td>
             <td
                 className={`bim-d-zt-sub bim-d-zt-nowrap${eraLabel ? '' : ' bim-d-zt-blank'}`}
-                title={inferred ? convert('據版本題名推斷') : undefined}
+                title={inferred ? t('workPage.inferredFromEdition') : undefined}
             >
                 {eraLabel ? convert(eraLabel) : (loaded ? <span className="bim-d-zt-empty">—</span> : null)}
             </td>
@@ -471,8 +470,8 @@ function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
             </td>
             <td className={row.hasImage ? undefined : 'bim-d-zt-blank'} style={{ textAlign: 'right' }}>
                 {row.hasImage && (imageHref
-                    ? <a className="bim-d-flag" href={imageHref} target="_blank" rel="noopener noreferrer" title={imageTitle}>{convert('有影印')}</a>
-                    : <span className="bim-d-flag" title={imageTitle}>{convert('有影印')}</span>)}
+                    ? <a className="bim-d-flag" href={imageHref} target="_blank" rel="noopener noreferrer" title={imageTitle}>{t('workPage.hasImage')}</a>
+                    : <span className="bim-d-flag" title={imageTitle}>{t('workPage.hasImage')}</span>)}
             </td>
         </tr>
     );
@@ -485,8 +484,7 @@ function CatalogSection({ items, transport, onNavigate, renderLink }: {
     onNavigate?: (id: string) => void;
     renderLink?: RenderLink;
 }) {
-    const t = useT();
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const [sel, setSel] = useState(0);
     const cur = Math.min(sel, items.length - 1);
     const e = items[cur];
@@ -509,9 +507,9 @@ function CatalogSection({ items, transport, onNavigate, renderLink }: {
     }, [transport, items]);
 
     return (
-        <Sec id="catalogs" title="著錄" meta={<MetaLine items={[convert(`歷代書目 ${items.length} 家`), convert('按著錄順序')]} />}>
+        <Sec id="catalogs" title={t('workPage.sec.catalogs')} meta={<MetaLine items={[t('workPage.catalog.meta', { n: items.length }), t('workPage.sortByCatalog')]} />}>
             <div className="bim-d-lu">
-                <ul className="bim-d-tl2 bim-d-ui" role="tablist" aria-label={convert('著錄書目')}>
+                <ul className="bim-d-tl2 bim-d-ui" role="tablist" aria-label={t('workPage.catalog.tablist')}>
                     {items.map((x, i) => (
                         <li key={i} role="presentation">
                             <button
@@ -541,33 +539,33 @@ function CatalogSection({ items, transport, onNavigate, renderLink }: {
                                 ? <BidLink id={e.source_bid} label={convert(e.source)} onNavigate={onNavigate} renderLink={renderLink} dense />
                                 : convert(e.source),
                             e.section ? convert(e.section) : '',
-                            e.author_info ? `${convert(t.label.authorInfo)} ${convert(e.author_info)}` : '',
-                            e.edition ? `${convert(t.label.edition)} ${convert(e.edition)}` : '',
+                            e.author_info ? `${t('label.authorInfo')} ${convert(e.author_info)}` : '',
+                            e.edition ? `${t('label.edition')} ${convert(e.edition)}` : '',
                             e.page ?? '',
                         ]}
                     />
-                    {e.summary && <p className="bim-d-quote">{renderInterlinear(convert(e.summary))}</p>}
+                    {e.summary && <p className="bim-d-quote">{renderInterlinear(convert(e.summary), undefined, { t })}</p>}
                     {e.comment && (
                         <>
-                            <div className="bim-d-quote-label bim-d-ui">{convert(t.section.comment)}</div>
-                            <p className="bim-d-quote">{renderInterlinear(convert(e.comment))}</p>
+                            <div className="bim-d-quote-label bim-d-ui">{t('section.comment')}</div>
+                            <p className="bim-d-quote">{renderInterlinear(convert(e.comment), undefined, { t })}</p>
                         </>
                     )}
                     {e.additional_comment && (
                         <>
-                            <div className="bim-d-quote-label bim-d-ui">{convert(t.section.additionalComment)}</div>
-                            <p className="bim-d-quote">{renderInterlinear(convert(e.additional_comment))}</p>
+                            <div className="bim-d-quote-label bim-d-ui">{t('section.additionalComment')}</div>
+                            <p className="bim-d-quote">{renderInterlinear(convert(e.additional_comment), undefined, { t })}</p>
                         </>
                     )}
                     {!e.summary && !e.comment && !e.additional_comment && !e.title_info && (
-                        <p className="bim-d-meta bim-d-ui" style={{ marginTop: 12 }}>{convert('僅著錄書名，無提要。')}</p>
+                        <p className="bim-d-meta bim-d-ui" style={{ marginTop: 12 }}>{t('workPage.catalog.titleOnly')}</p>
                     )}
                     {items.length > 1 && (
                         <div className="bim-d-lu-pager bim-d-ui">
                             {/* 首／末家不渲染空按钮（无文字、无名称，axe name-role-value 不过）：换成占位，保持两端对齐 */}
                             {cur > 0
                                 ? (
-                                    <button type="button" aria-label={convert(`上一家：${items[cur - 1].source}`)} onClick={() => setSel(cur - 1)}>
+                                    <button type="button" aria-label={t('workPage.catalog.prev', { name: convert(items[cur - 1].source) })} onClick={() => setSel(cur - 1)}>
                                         <span aria-hidden="true">← {convert(items[cur - 1].source)}</span>
                                     </button>
                                 )
@@ -575,7 +573,7 @@ function CatalogSection({ items, transport, onNavigate, renderLink }: {
                             <span className="bim-d-meta">{cur + 1} / {items.length}</span>
                             {cur < items.length - 1
                                 ? (
-                                    <button type="button" aria-label={convert(`下一家：${items[cur + 1].source}`)} onClick={() => setSel(cur + 1)}>
+                                    <button type="button" aria-label={t('workPage.catalog.next', { name: convert(items[cur + 1].source) })} onClick={() => setSel(cur + 1)}>
                                         <span aria-hidden="true">{convert(items[cur + 1].source)} →</span>
                                     </button>
                                 )

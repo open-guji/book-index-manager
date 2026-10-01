@@ -3,7 +3,9 @@
  */
 import React, { useState } from 'react';
 import type { AuthorInfo, ResourceEntry, ResourceGroupInfo } from '../../types';
-import { useConvert } from '../../i18n';
+import { useI18n, getT } from '../../i18n';
+import type { MessageKey, TFunction } from '../../i18n';
+import { detail } from '../../i18n/messages/detail';
 import {
     displayAuthorRole, bucketResources, resourceNote, resourceDisambiguator,
 } from '../../core/detail-model';
@@ -11,48 +13,28 @@ import { getDisplayNameFromUrl, resourceHref, volumeStats } from '../../core/res
 import type { BimTokenName } from '../../styles/tokens';
 import { BidLink, VolumeLinks, type RenderLink } from './primitives';
 
-/** related_works.relation → 小一号的浅色文字 */
-const RELATION_LABEL: Record<string, string> = {
-    part_of: '所屬',
-    has_part: '包含',
-    contains_text_of: '收錄',
-    collected_in: '叢編',
-    text_carried_by: '載錄',
-    studied_by: '研究',
-    studies: '所考',
-    preceded_by: '前承',
-    followed_by: '後繼',
-    derived_from: '衍生',
-    has_adaptation: '改編',
-    related: '相關',
-};
+/*
+ * 关系名、存佚名、资源类别名的字面都在字典 detail.relation / detail.lossStatus / detail.resourceKind。
+ * t 不传时按繁体（与改前一致）；组件里请传 useI18n().t，简体模式才有简体字。
+ */
+const RELATION_KEYS = detail['zh-Hant'].relation;
+const LOSS_STATUS_KEYS = detail['zh-Hant'].lossStatus;
+const KIND_KEYS = detail['zh-Hant'].resourceKind;
+const hantT = getT('zh-Hant');
+const has = (o: object, k: string) => Object.prototype.hasOwnProperty.call(o, k);
 
-export function relationLabel(r?: string): string {
-    if (!r) return RELATION_LABEL.related;
-    return RELATION_LABEL[r] ?? r;
+/** related_works.relation → 小一号的浅色文字；未知值原样返回（数据原文，调用方 convert） */
+export function relationLabel(r?: string, t: TFunction = hantT): string {
+    if (!r) return t('detail.relation.related');
+    return has(RELATION_KEYS, r) ? t(`detail.relation.${r}` as MessageKey) : r;
 }
 
-const LOSS_STATUS: Record<string, string> = {
-    extant: '今存',
-    fragment: '殘存',
-    partial: '殘存',
-    lost: '已佚',
-    unknown: '未詳',
-};
-
-export function lossStatusLabel(s: string): string {
-    return LOSS_STATUS[s] ?? s;
+export function lossStatusLabel(s: string, t: TFunction = hantT): string {
+    return has(LOSS_STATUS_KEYS, s) ? t(`detail.lossStatus.${s}` as MessageKey) : s;
 }
 
-const KIND: Record<string, string> = {
-    text: '文本',
-    image: '影印',
-    textImage: '圖文',
-    physical: '館藏',
-};
-
-export function resourceKindLabel(k: string): string {
-    return KIND[k] ?? '';
+export function resourceKindLabel(k: string, t: TFunction = hantT): string {
+    return has(KIND_KEYS, k) ? t(`detail.resourceKind.${k}` as MessageKey) : '';
 }
 
 /**
@@ -64,7 +46,7 @@ export function AuthorByline({ authors, onNavigate, renderLink }: {
     onNavigate?: (id: string) => void;
     renderLink?: RenderLink;
 }) {
-    const { convert } = useConvert();
+    const { convert } = useI18n();
     const list = (authors || []).filter(a => a && a.name);
     if (!list.length) return null;
     return (
@@ -111,6 +93,8 @@ export interface ResourceGroupView {
 export function splitResources(
     items: ResourceEntry[] | undefined,
     groups?: Record<string, ResourceGroupInfo>,
+    /** 组名「其他影印」「館藏」的字典；不传按繁体 */
+    t: TFunction = hantT,
 ): { text: ResourceEntry[]; groups: ResourceGroupView[] } {
     const b = bucketResources(items, groups);
     const out: ResourceGroupView[] = b.mirrors.map(g => ({
@@ -124,10 +108,10 @@ export function splitResources(
         .filter(k => k.key === 'image' || k.key === 'textImage')
         .flatMap(k => k.items);
     if (loose.length) {
-        out.push({ key: '_images', label: out.length ? '其他影印' : undefined, rows: loose, mirrors: [] });
+        out.push({ key: '_images', label: out.length ? t('detail.otherImages') : undefined, rows: loose, mirrors: [] });
     }
     const physical = b.buckets.find(k => k.key === 'physical')?.items ?? [];
-    if (physical.length) out.push({ key: '_physical', label: '館藏', rows: physical, mirrors: [] });
+    if (physical.length) out.push({ key: '_physical', label: t('detail.resourceKind.physical'), rows: physical, mirrors: [] });
     const text = b.buckets.find(k => k.key === 'text')?.items ?? [];
     return { text, groups: out };
 }
@@ -146,13 +130,13 @@ export function ResourceRow({ item, siblings, listedVolumeCounts }: {
     /** 「收入叢編」已列出的册数；与本资源分册数相同时不再给展开（展开的是同一串册号） */
     listedVolumeCounts?: Set<number>;
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const [open, setOpen] = useState(false);
     const stats = volumeStats(item);
     const hasVolumes = !!stats && stats.expected > 0 && !listedVolumeCounts?.has(stats.expected);
     const name = convert(resourceName(item, siblings));
     const href = resourceHref(item);
-    const note = resourceNote(item) || item.details;
+    const note = resourceNote(item, t) || item.details;
     return (
         <tr>
             <td className="bim-d-zt-main">
@@ -160,8 +144,8 @@ export function ResourceRow({ item, siblings, listedVolumeCounts }: {
                 {(() => {
                     const tags = (item.metadata?.fragment || item.color_mode) ? (
                         <span className="bim-d-tags bim-d-ui" style={{ display: 'inline-flex', margin: '0 0 0 8px', verticalAlign: 'middle' }}>
-                            {item.metadata?.fragment && <span className="bim-d-tag">{convert('殘片')}</span>}
-                            {item.color_mode && <span className="bim-d-tag">{convert(item.color_mode === 'color' ? '彩色' : '黑白')}</span>}
+                            {item.metadata?.fragment && <span className="bim-d-tag">{t('detail.fragmentTag')}</span>}
+                            {item.color_mode && <span className="bim-d-tag">{item.color_mode === 'color' ? t('colorMode.color') : t('colorMode.bw')}</span>}
                         </span>
                     ) : null;
                     return href
@@ -177,7 +161,7 @@ export function ResourceRow({ item, siblings, listedVolumeCounts }: {
                 {hasVolumes && (
                     <button type="button" className="bim-d-more bim-d-ui" style={{ marginTop: 0 }}
                         aria-expanded={open} onClick={() => setOpen(v => !v)}>
-                        {convert(open ? '收起分冊' : `展開 ${stats!.expected} 冊`)}
+                        {open ? t('detail.collapseVolumes') : t('detail.expandVolumes', { n: stats!.expected })}
                     </button>
                 )}
             </td>
@@ -190,7 +174,7 @@ export function ResourceGroupList({ groups, listedVolumeCounts }: {
     groups: ResourceGroupView[];
     listedVolumeCounts?: Set<number>;
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     return (
         <>
             {groups.map(g => (
@@ -209,7 +193,7 @@ export function ResourceGroupList({ groups, listedVolumeCounts }: {
                     )}
                     {g.mirrors.length > 0 && (
                         <div className="bim-d-rg-mir bim-d-ui">
-                            {g.rows.length > 0 && <span className="bim-d-meta" style={{ marginRight: 10 }}>{convert('鏡像')}</span>}
+                            {g.rows.length > 0 && <span className="bim-d-meta" style={{ marginRight: 10 }}>{t('detail.mirror')}</span>}
                             {g.mirrors.map((m, i) => {
                                 const href = resourceHref(m);
                                 const name = convert(resourceName(m, g.mirrors));

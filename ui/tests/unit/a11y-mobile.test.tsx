@@ -147,17 +147,17 @@ describe('A1 搜索结果卡片是真链接', () => {
     });
 });
 
-describe('A2 反馈浮钮', () => {
+describe('A2 反饋浮钮', () => {
     it('默认层级低于抽屉 / 弹层（本包对话框为 1000）', () => {
         render(<FeedbackButton onSubmit={async () => {}} />);
-        const fab = screen.getByRole('button', { name: '反馈' });
+        const fab = screen.getByRole('button', { name: '反饋' });
         // jsdom 不认 var()，直接看 React 写进去的 style 声明
         expect(fab.getAttribute('style')).toMatch(/z-index:\s*var\(--bim-feedback-fab-z, 40\)/);
     });
 
     it('zIndex prop 可覆盖', () => {
         render(<FeedbackButton onSubmit={async () => {}} zIndex={5} />);
-        expect(screen.getByRole('button', { name: '反馈' }).style.zIndex).toBe('5');
+        expect(screen.getByRole('button', { name: '反饋' }).style.zIndex).toBe('5');
     });
 
     it('挂载期间在 <html> 上暴露留白变量，卸载后移除', () => {
@@ -172,10 +172,10 @@ describe('A2 反馈浮钮', () => {
     it('hidden 隐藏浮钮并撤掉留白变量；取消后恢复', () => {
         const root = document.documentElement;
         const { rerender } = render(<FeedbackButton onSubmit={async () => {}} hidden />);
-        expect(screen.queryByRole('button', { name: '反馈' })).toBeNull();
+        expect(screen.queryByRole('button', { name: '反饋' })).toBeNull();
         expect(root.style.getPropertyValue(FEEDBACK_FAB_OFFSET_VAR)).toBe('');
         rerender(<FeedbackButton onSubmit={async () => {}} hidden={false} />);
-        expect(screen.getByRole('button', { name: '反馈' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: '反饋' })).toBeInTheDocument();
         expect(root.style.getPropertyValue(FEEDBACK_FAB_OFFSET_VAR)).not.toBe('');
     });
 });
@@ -225,7 +225,7 @@ describe('B7 整理本「▶ 展开」是可键盘操作的 button', () => {
         expect(labels.some(l => l.includes('周易'))).toBe(true);
     });
 
-    it('考证整理本的条目开关也是 button', async () => {
+    it('考證整理本的条目开关也是 button', async () => {
         render(
             <TextReader
                 id="k0"

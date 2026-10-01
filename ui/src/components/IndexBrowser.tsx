@@ -387,24 +387,24 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                             <>
                                 {(subtypeStats['book'] ?? 0) > 0 && (
                                     <>
-                                        書 <strong style={{ color: bim('fg') }}>{subtypeStats['book'].toLocaleString()}</strong> 部
-                                        ，<strong style={{ color: bim('fg') }}>{stats.books.toLocaleString()}</strong> 本
+                                        {t.searchPage.statBook} <strong style={{ color: bim('fg') }}>{subtypeStats['book'].toLocaleString()}</strong> {t.unit.bu}
+                                        {t.searchPage.statComma}<strong style={{ color: bim('fg') }}>{stats.books.toLocaleString()}</strong> {t.searchPage.statBookCopies}
                                     </>
                                 )}
                                 {subtypeStats['article'] ? (
                                     <>
                                         <span style={{ margin: '0 6px' }}>·</span>
-                                        文章 <strong style={{ color: bim('fg') }}>{subtypeStats['article'].toLocaleString()}</strong> 篇
+                                        {t.searchPage.statArticle} <strong style={{ color: bim('fg') }}>{subtypeStats['article'].toLocaleString()}</strong> {t.searchPage.statArticleUnit}
                                     </>
                                 ) : null}
                                 {subtypeStats['poem'] ? (
                                     <>
                                         <span style={{ margin: '0 6px' }}>·</span>
-                                        詩詞 <strong style={{ color: bim('fg') }}>{subtypeStats['poem'].toLocaleString()}</strong> 首
+                                        {t.searchPage.statPoem} <strong style={{ color: bim('fg') }}>{subtypeStats['poem'].toLocaleString()}</strong> {t.searchPage.statPoemUnit}
                                     </>
                                 ) : null}
                                 <span style={{ margin: '0 6px' }}>·</span>
-                                叢編 <strong style={{ color: bim('fg') }}>{stats.collections.toLocaleString()}</strong>
+                                {t.searchPage.statCollection} <strong style={{ color: bim('fg') }}>{stats.collections.toLocaleString()}</strong>
                             </>
                         ) : (
                             <>

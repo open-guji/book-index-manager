@@ -31,6 +31,8 @@ import type {
 } from '../types';
 import { getResourceTypes } from '../types';
 import { getTypeGroupKey, mergeVolumeResources, volumeStats } from './resources';
+import { getT } from '../i18n/translate';
+import type { TFunction } from '../i18n/translate';
 
 // ══════════════════════════════════════════════════════════════
 // 朝代 / 年代推断
@@ -1084,8 +1086,9 @@ export function bucketResources(
 /**
  * 资源的一行说明文字（设计稿里名称下方的小字）。
  * 例：「原卷掃描 · 23 / 23 冊」「精校版 · 圖文對照」「文淵閣本 · v224」
+ * 「N / M 冊」是界面文字，走字典 detail.volumeStats*；t 不传按繁体。
  */
-export function resourceNote(item: ResourceEntry): string {
+export function resourceNote(item: ResourceEntry, t: TFunction = getT('zh-Hant')): string {
     const parts: string[] = [];
     const meta = item.metadata || {};
     if (meta.edition) parts.push(String(meta.edition));
@@ -1094,8 +1097,8 @@ export function resourceNote(item: ResourceEntry): string {
     const stats = volumeStats(item);
     if (stats && stats.expected > 0) {
         parts.push(stats.missing > 0
-            ? `${stats.found} / ${stats.expected} 冊 缺 ${stats.missing}`
-            : `${stats.found} / ${stats.expected} 冊`);
+            ? t('detail.volumeStatsMissing', { found: stats.found, expected: stats.expected, missing: stats.missing })
+            : t('detail.volumeStats', { found: stats.found, expected: stats.expected }));
     }
     if (meta.version) parts.push(String(meta.version));
     return parts.join(' · ');
@@ -1435,14 +1438,14 @@ export interface RoleFacet {
     count: number;
 }
 
-/** 統計各粗類條數，供篩選 chips 用；空類不出現 */
-export function roleFacets(roles: (string | null | undefined)[]): RoleFacet[] {
+/** 統計各粗類條數，供篩選 chips 用；空類不出現。allLabel：「全部」一項的顯示名（組件裡傳 t('detail.roleAll')） */
+export function roleFacets(roles: (string | null | undefined)[], allLabel = '全部'): RoleFacet[] {
     const counts = new Map<RoleClass, number>();
     for (const r of roles) {
         const c = normalizeRole(r);
         counts.set(c, (counts.get(c) ?? 0) + 1);
     }
-    const out: RoleFacet[] = [{ cls: '全部', label: '全部', count: roles.length }];
+    const out: RoleFacet[] = [{ cls: '全部', label: allLabel, count: roles.length }];
     for (const cls of ROLE_CLASS_ORDER) {
         const n = counts.get(cls);
         if (n) out.push({ cls, label: cls, count: n });

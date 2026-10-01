@@ -253,8 +253,11 @@ export type {
 // i18n
 export { LocaleProvider } from './i18n/provider';
 export type { LocaleProviderProps } from './i18n/provider';
-export { useT, useConvert, formatTemplate, LocaleContext } from './i18n';
-export type { Locale, LocaleMessages, LocaleContextValue } from './i18n';
+export {
+    useT, useConvert, useI18n, getT, getMessages, formatTemplate, LocaleContext,
+    findTraditionalChars, COMMON_TRADITIONAL_CHARS, TRADITIONAL_ALLOWLIST,
+} from './i18n';
+export type { Locale, FutureLocale, LocaleMessages, LocaleContextValue, I18n, MessageKey, TFunction, TraditionalHit } from './i18n';
 
 // Lineage graph
 export {

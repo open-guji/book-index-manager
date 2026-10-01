@@ -13,9 +13,9 @@ import { FeedbackForm } from '../../src/components/FeedbackForm';
 import { FeedbackDialog } from '../../src/components/FeedbackDialog';
 
 function fill(content: string, contact?: string, submitText = '提交') {
-    fireEvent.change(screen.getByPlaceholderText(/请描述您发现的错误/), { target: { value: content } });
+    fireEvent.change(screen.getByPlaceholderText(/請描述您發現的錯誤/), { target: { value: content } });
     if (contact !== undefined) {
-        fireEvent.change(screen.getByLabelText('联系方式（选填）'), { target: { value: contact } });
+        fireEvent.change(screen.getByLabelText('聯繫方式（選填）'), { target: { value: contact } });
     }
     fireEvent.click(screen.getByText(submitText));
 }
@@ -42,8 +42,8 @@ describe('FeedbackDialog 联系方式', () => {
     it('选类型、填邮箱后提交：带出 contact', async () => {
         const onSubmit = vi.fn().mockResolvedValue(undefined);
         render(<FeedbackDialog isOpen onClose={() => {}} onSubmit={onSubmit} />);
-        fireEvent.click(screen.getByText('反馈错误'));
-        fill('链接坏了', 'wx: reader01', '提交反馈');
+        fireEvent.click(screen.getByText('反饋錯誤'));
+        fill('链接坏了', 'wx: reader01', '提交反饋');
         await waitFor(() => expect(onSubmit).toHaveBeenCalled());
         expect(onSubmit).toHaveBeenCalledWith({ type: 'bug', content: '链接坏了', contact: 'wx: reader01' });
     });
@@ -54,8 +54,8 @@ describe('FeedbackDialog 联系方式', () => {
 // ---------------------------------------------------------------------------
 describe('提交端可选「功能建议」「想参与」', () => {
     it.each([
-        ['功能建议', 'suggestion', /您希望网站增加或改进什么/],
-        ['想参与', 'contact', /想参与整理、校对或合作/],
+        ['功能建議', 'suggestion', /您希望網站增加或改進什麼/],
+        ['想參與', 'contact', /想參與整理、校對或合作/],
     ])('FeedbackForm 选「%s」提交 type=%s', async (label, value, placeholder) => {
         const onSubmit = vi.fn().mockResolvedValue(undefined);
         render(<FeedbackForm onSubmit={onSubmit} />);
@@ -68,6 +68,6 @@ describe('提交端可选「功能建议」「想参与」', () => {
 
     it('FeedbackDialog 四类按钮都在', () => {
         render(<FeedbackDialog isOpen onClose={() => {}} onSubmit={vi.fn()} />);
-        for (const t of ['反馈错误', '添加资源', '功能建议', '想参与']) expect(screen.getByText(t)).toBeTruthy();
+        for (const t of ['反饋錯誤', '添加資源', '功能建議', '想參與']) expect(screen.getByText(t)).toBeTruthy();
     });
 });

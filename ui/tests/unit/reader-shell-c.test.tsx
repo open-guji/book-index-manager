@@ -29,7 +29,7 @@ function Shell(props: Partial<React.ComponentProps<typeof ReaderShell>>) {
 }
 
 describe('工具条上一章／下一章（overview#308）', () => {
-    it('中间章：两个按钮都可点，点了回传目录里相邻章的 key', () => {
+    it('中间章：两个按钮都可点，点了回传目錄里相邻章的 key', () => {
         const onSelect = vi.fn();
         render(<Shell onSelect={onSelect} />);
         const nav = screen.getByRole('group', { name: '翻卷' });
@@ -68,11 +68,11 @@ describe('工具条上一章／下一章（overview#308）', () => {
     });
 });
 
-describe('「报告错字」窄屏入口（overview#308）', () => {
+describe('「報告錯字」窄屏入口（overview#308）', () => {
     it('右栏在 <860px 藏起来：正文末尾另有入口，同样回传当前卷；宽屏由 CSS 隐去它', () => {
         const onReportError = vi.fn();
         render(<Shell onReportError={onReportError} />);
-        const buttons = screen.getAllByRole('button', { name: '报告错字', hidden: true });
+        const buttons = screen.getAllByRole('button', { name: '報告錯字', hidden: true });
         expect(buttons).toHaveLength(2);
         const foot = buttons.find(b => b.closest('.bim-rd-report-foot'))!;
         fireEvent.click(foot);
@@ -82,7 +82,7 @@ describe('「报告错字」窄屏入口（overview#308）', () => {
 
     it('没传 onReportError：不出入口', () => {
         render(<Shell />);
-        expect(screen.queryAllByRole('button', { name: '报告错字', hidden: true })).toHaveLength(0);
+        expect(screen.queryAllByRole('button', { name: '報告錯字', hidden: true })).toHaveLength(0);
         expect(document.querySelector('.bim-rd-report-foot')).toBeNull();
     });
 });
@@ -117,7 +117,7 @@ describe('切版本不自动回第一卷（keepChapterOnVersionChange）', () =>
     }
     const current = () => document.querySelector('.bim-rd-toc [aria-current="true"]')?.textContent ?? '';
 
-    it('默认（false）：切版本后选中新目录的第一卷', async () => {
+    it('默认（false）：切版本后选中新目錄的第一卷', async () => {
         render(<Host keep={false} />);
         expect(current()).toContain('a卷2');
         await act(async () => { fireEvent.change(screen.getByRole('combobox', { name: '版本' }), { target: { value: 'wikisource' } }); });

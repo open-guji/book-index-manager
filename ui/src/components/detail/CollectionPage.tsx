@@ -20,7 +20,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { bim } from '../../styles/tokens';
 import type { AuthorInfo, CollectionDetailData, VolumeBookMapping } from '../../types';
 import type { IndexStorage } from '../../storage/types';
-import { useT, useConvert } from '../../i18n';
+import { useI18n } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, type RenderLink } from './primitives';
 import {
@@ -69,8 +69,7 @@ interface RowInfo {
 export const CollectionPage: React.FC<CollectionPageProps> = ({
     data, catalog, transport, onNavigate, renderLink, catalogAction, railTop, back, railLinks,
 }) => {
-    const t = useT();
-    const { convert } = useConvert();
+    const { t, convert, messages: m } = useI18n();
 
     const [query, setQuery] = useState('');
     const [showAllTitles, setShowAllTitles] = useState(false);
@@ -125,7 +124,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                         title: d.title,
                         edition: d.edition,
                         authors: d.authors,
-                        measure: raw ? measureText(raw as never, t.unit.juan) : undefined,
+                        measure: raw ? measureText(raw as never, m.unit.juan) : undefined,
                         versionCount: d._edition_count ?? d.books?.length,
                         l1: d.classification?.l1 || undefined,
                     };
@@ -141,7 +140,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
             });
         });
         return () => { cancelled = true; };
-    }, [transport, idsToResolve, t.unit.juan]);
+    }, [transport, idsToResolve, m.unit.juan]);
 
     // ── 上级丛编 ──
     const parentId = (data.contained_in || [])[0];
@@ -156,7 +155,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
         return () => { cancelled = true; };
     }, [transport, parentId]);
 
-    const res = useMemo(() => splitResources(data.resources, data.resource_groups), [data.resources, data.resource_groups]);
+    const res = useMemo(() => splitResources(data.resources, data.resource_groups, t), [data.resources, data.resource_groups, t]);
     const resCount = res.text.length + res.groups.reduce((n, g) => n + g.rows.length + g.mirrors.length, 0);
 
     /* 「包含作品」：表格列的就是同一批条目时不再重复一遍 */
@@ -174,41 +173,41 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
 
     // ── 提要卡 ──
     const members = data._member_count || data.books?.length || works.length;
-    const measure = measureText(data, t.unit.juan);
+    const measure = measureText(data, m.unit.juan);
     const cnt = data.count;
     const numOf = (v: number | null | undefined) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
     /* 数字格：子目 / 卷 / 册。卷取「應收」的 juan，缺则用卷帙里的数；册取「應收」的 ce，缺则用目录算出的总册数 */
     const juanNum = numOf(cnt?.juan) ?? numOf(data.juan_count?.number);
     const ceNum = numOf(cnt?.ce) ?? (table.totalVolumes || null);
     const stats = [
-        { value: table.rows.length, label: '子目' },
-        { value: juanNum ?? 0, label: t.unit.juan },
-        { value: ceNum ?? 0, label: t.unit.volume },
+        { value: table.rows.length, label: t('collectionPage.stat.titles') },
+        { value: juanNum ?? 0, label: m.unit.juan },
+        { value: ceNum ?? 0, label: m.unit.volume },
     ];
     const facts: CardFact[] = useMemo(() => {
         const out: CardFact[] = [];
-        if (data.publication_info?.details) out.push({ label: '刊印', value: convert(data.publication_info.details) });
+        if (data.publication_info?.details) out.push({ label: t('collectionPage.fact.publication'), value: convert(data.publication_info.details) });
         if (members && members !== table.rows.length) {
-            const memberLabel = data._member_type === 'Book' ? '所收版本'
-                : data._member_type === 'Work' ? '所收作品' : '成員';
-            out.push({ label: convert(memberLabel), value: `${members} ${convert(t.unit.bu)}`, title: convert('子目與其各版本合計') });
+            const memberLabel = data._member_type === 'Book' ? t('collectionPage.member.Book')
+                : data._member_type === 'Work' ? t('collectionPage.member.Work') : t('collectionPage.member.other');
+            out.push({ label: memberLabel, value: `${members} ${m.unit.bu}`, title: t('collectionPage.memberNote') });
         }
         // 「應收」只留数字格没有的两项：種、函（卷、冊已在数字格里）；都没有就不出这一行
         const zhongHan = [
-            numOf(cnt?.zhong) != null ? `${cnt!.zhong} 種` : '',
-            numOf(cnt?.han) != null ? `${cnt!.han} 函` : '',
+            numOf(cnt?.zhong) != null ? t('collectionPage.nZhong', { n: cnt!.zhong! }) : '',
+            numOf(cnt?.han) != null ? t('collectionPage.nHan', { n: cnt!.han! }) : '',
         ].filter(Boolean);
-        if (zhongHan.length) out.push({ label: '應收', value: convert(zhongHan.join('　')) });
+        if (zhongHan.length) out.push({ label: t('collectionPage.fact.expected'), value: zhongHan.join('　') });
         // 卷数没进数字格（缺数字）时，卷帙文字仍留在事实表里
         if (juanNum == null && measure) {
             out.push({
-                label: '卷帙', value: convert(measure),
+                label: t('collectionPage.fact.measure'), value: convert(measure),
                 title: data.juan_count?.description ? convert(data.juan_count.description) : undefined,
             });
         }
         // 「年代」不再出：已在「刊印」与副题里
         return out;
-    }, [data, members, table.rows.length, juanNum, measure, cnt, convert, t]);
+    }, [data, members, table.rows.length, juanNum, measure, cnt, convert, t, m]);
 
     // ── 部类页签与册次分布（须全部子目解析完） ──
     const secTabs = useMemo(() => {
@@ -221,11 +220,11 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
         const present = SECTIONS.filter(x => (n.get(x.key) ?? 0) > 0);
         if (present.length < 2) return [];
         return [
-            { key: '', label: `${t.catalog.all} ${table.rows.length}` },
+            { key: '', label: `${m.catalog.all} ${table.rows.length}` },
             ...present.map(x => ({ key: x.key, label: `${x.label} ${n.get(x.key)}` })),
         ];
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allResolved, table.rows, info, t]);
+    }, [allResolved, table.rows, info, m]);
 
     /** 册次分布条：每个子目占其册次区间（最小到最大）那么宽，按部类上色；相邻同色合并 */
     const distribution = useMemo(() => {
@@ -249,11 +248,11 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     const descText = data.description?.text;
     const card = (
         <SummaryCard
-            kind="叢編"
+            kind={t('collectionPage.kind')}
             title={convert(data.title)}
             byline={<AuthorByline authors={data.authors} onNavigate={onNavigate} renderLink={renderLink} />}
             meta={<MetaLine items={[
-                data.subtype === 'work_collection' ? convert('作品集') : '',
+                data.subtype === 'work_collection' ? t('collectionPage.workCollection') : '',
                 data.publication_info?.year ? convert(data.publication_info.year) : '',
             ]} />}
             description={(descText || data.history?.length) ? (
@@ -273,8 +272,8 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
         >
             {distribution && (
                 <div className="bim-d-dist bim-d-ui">
-                    <div className="bim-d-dist-head"><span>{convert('全帙冊次分佈')}</span></div>
-                    <div className="bim-d-dist-bar" role="group" aria-label={convert('全帙冊次分佈')}>
+                    <div className="bim-d-dist-head"><span>{t('collectionPage.dist.head')}</span></div>
+                    <div className="bim-d-dist-bar" role="group" aria-label={t('collectionPage.dist.head')}>
                         {distribution.segs.map((g, i) => {
                             const def = SECTIONS.find(x => x.key === g.key);
                             return (
@@ -283,8 +282,8 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                                     type="button"
                                     className="bim-d-dist-seg"
                                     disabled={!def}
-                                    title={def ? convert(`${def.label}　第 ${g.from}–${g.to} 冊`) : undefined}
-                                    aria-label={def ? convert(`只看${def.label}`) : convert('未分類')}
+                                    title={def ? t('collectionPage.dist.segTitle', { section: convert(def.label), from: g.from, to: g.to }) : undefined}
+                                    aria-label={def ? t('collectionPage.dist.only', { section: convert(def.label) }) : t('collectionPage.dist.unclassified')}
                                     aria-pressed={!!def && sec === g.key}
                                     style={{ flexGrow: g.n, background: def ? bim(def.token) : bim('rule') }}
                                     onClick={() => { if (def) { setSec(sec === g.key ? '' : g.key); setShowAllTitles(false); } }}
@@ -293,9 +292,9 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                         })}
                     </div>
                     <div className="bim-d-life-lab">
-                        <span>{convert(`第 1 ${t.unit.volume}`)}</span>
-                        <span>{convert('點色段篩選部類')}</span>
-                        <span>{convert(`第 ${distribution.last} ${t.unit.volume}`)}</span>
+                        <span>{t('catalog.volume', { n: 1 })}</span>
+                        <span>{t('collectionPage.dist.hint')}</span>
+                        <span>{t('catalog.volume', { n: distribution.last })}</span>
                     </div>
                 </div>
             )}
@@ -303,20 +302,20 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     );
 
     const nav: RailNavItem[] = [];
-    if (table.rows.length) nav.push({ id: 'titles', label: '子目', count: table.rows.length });
-    if (resCount) nav.push({ id: 'resources', label: '影印與文本', count: resCount });
-    if (showWorks) nav.push({ id: 'works', label: t.section.containedWorks, count: works.length });
+    if (table.rows.length) nav.push({ id: 'titles', label: t('collectionPage.sec.titles'), count: table.rows.length });
+    if (resCount) nav.push({ id: 'resources', label: t('collectionPage.sec.resources'), count: resCount });
+    if (showWorks) nav.push({ id: 'works', label: m.section.containedWorks, count: works.length });
 
     const main = (
         <>
             {table.rows.length > 0 && (
                 <Sec
                     id="titles"
-                    title="子目"
+                    title={t('collectionPage.sec.titles')}
                     meta={<MetaLine items={[
-                        convert(`${table.rows.length} ${t.unit.items}`),
-                        table.totalVolumes ? convert(`全帙 ${table.totalVolumes} ${t.unit.volume}`) : '',
-                        filtered.length !== table.rows.length ? convert(`當前 ${filtered.length} ${t.unit.items}`) : '',
+                        `${table.rows.length} ${m.unit.items}`,
+                        table.totalVolumes ? t('collectionPage.totalVolumes', { n: table.totalVolumes, unit: m.unit.volume }) : '',
+                        filtered.length !== table.rows.length ? t('collectionPage.currentN', { n: filtered.length, unit: m.unit.items }) : '',
                     ]} />}
                     action={catalogAction}
                 >
@@ -331,9 +330,9 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                                     className="bim-d-groupbtn"
                                     disabled={groupAll}
                                     onClick={() => setGroupAll(true)}
-                                    title={convert(`將載入全部 ${table.rows.length} ${t.unit.items}`)}
+                                    title={t('collectionPage.loadAllTitle', { n: table.rows.length, unit: m.unit.items })}
                                 >
-                                    {convert(groupAll ? '正在按部類分組…' : '按部類分組')}
+                                    {groupAll ? t('collectionPage.grouping') : t('collectionPage.groupBySection')}
                                 </button>
                             )}
                             <span className="bim-d-spacer" />
@@ -341,8 +340,8 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                                 type="search"
                                 className="bim-d-find"
                                 value={query}
-                                placeholder={convert('在本叢編中檢索')}
-                                aria-label={convert('在本叢編中檢索')}
+                                placeholder={t('collectionPage.find')}
+                                aria-label={t('collectionPage.find')}
                                 onChange={e => { setQuery(e.target.value); setShowAllTitles(false); }}
                             />}
                         </div>
@@ -350,9 +349,9 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                     <table className="bim-d-zt" data-ncap={!showAllTitles && narrowCapped(filtered.length) ? '' : undefined}>
                         <thead className="bim-d-ui">
                             <tr>
-                                {hasVolumeColumn && <th style={{ width: '8.5em' }}>{convert('冊次')}</th>}
-                                <th>{convert('書名')}</th>
-                                <th style={{ textAlign: 'right' }}>{convert('版本')}</th>
+                                {hasVolumeColumn && <th style={{ width: '8.5em' }}>{t('collectionPage.col.volumes')}</th>}
+                                <th>{t('collectionPage.col.title')}</th>
+                                <th style={{ textAlign: 'right' }}>{t('collectionPage.col.versions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -368,9 +367,9 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                                 ].filter(Boolean);
                                 const rowSec = SECTIONS.find(x => x.key === rowSection(row.id));
                                 const vol = row.volumes.length > 0
-                                    ? convert(`第 ${formatVolumeRange(row.volumes, t.unit.volume)} ${t.unit.volume}`)
+                                    ? t('collectionPage.volumeRange', { range: formatVolumeRange(row.volumes, m.unit.volume), unit: m.unit.volume })
                                     : row.expected != null
-                                        ? convert(`${row.found ?? 0}/${row.expected} ${t.unit.volume}`)
+                                        ? `${row.found ?? 0}/${row.expected} ${m.unit.volume}`
                                         : '';
                                 return (
                                     <tr key={`${row.id ?? row.title}-${i}`}>
@@ -390,7 +389,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                                                 : row.id && !got && transport ? <span className="bim-d-meta" aria-hidden="true">&nbsp;</span> : null}
                                         </td>
                                         <td className={`bim-d-zt-sub bim-d-zt-nowrap${got?.versionCount ? '' : ' bim-d-zt-blank'}`} style={{ textAlign: 'right' }}>
-                                            {got?.versionCount ? convert(`${got.versionCount} 種`) : ''}
+                                            {got?.versionCount ? t('collectionPage.nZhong', { n: got.versionCount }) : ''}
                                         </td>
                                     </tr>
                                 );
@@ -398,19 +397,19 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                         </tbody>
                     </table>
                     {visibleTitles.length === 0 && (
-                        <p className="bim-d-meta bim-d-ui" style={{ margin: '12px 12px 0' }}>{convert(t.catalog.noMatch)}</p>
+                        <p className="bim-d-meta bim-d-ui" style={{ margin: '12px 12px 0' }}>{t('catalog.noMatch')}</p>
                     )}
                     {!showAllTitles && (
-                        <CapMore total={filtered.length} shown={visibleTitles.length} unit={t.unit.items} onClick={() => setShowAllTitles(true)} />
+                        <CapMore total={filtered.length} shown={visibleTitles.length} unit={m.unit.items} onClick={() => setShowAllTitles(true)} />
                     )}
                 </Sec>
             )}
 
             {resCount > 0 && (
-                <Sec id="resources" title="影印與文本" meta={convert(`${resCount} 處`)}>
+                <Sec id="resources" title={t('collectionPage.sec.resources')} meta={t('collectionPage.resourcesCount', { n: resCount })}>
                     {res.text.length > 0 && (
                         <div className="bim-d-rg">
-                            {res.groups.length > 0 && <h3 className="bim-d-rg-h bim-d-ui">{convert('文本')}</h3>}
+                            {res.groups.length > 0 && <h3 className="bim-d-rg-h bim-d-ui">{t('collectionPage.text')}</h3>}
                             <table className="bim-d-zt">
                                 <tbody>
                                     {res.text.map((r, i) => (
@@ -425,8 +424,8 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
             )}
 
             {table.rows.length === 0 && resCount === 0 && (
-                <Sec title="子目">
-                    <p className="bim-d-meta bim-d-ui" style={{ margin: 0 }}>{convert('尚未著錄該叢編的子目。')}</p>
+                <Sec title={t('collectionPage.sec.titles')}>
+                    <p className="bim-d-meta bim-d-ui" style={{ margin: 0 }}>{t('collectionPage.empty')}</p>
                 </Sec>
             )}
         </>
@@ -435,8 +434,8 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     const side = showWorks ? (
         <SideList
             id="works"
-            title={t.section.containedWorks}
-            meta={convert(`${works.length} 種`)}
+            title={m.section.containedWorks}
+            meta={t('collectionPage.nZhong', { n: works.length })}
             cap={12}
             items={works.map(w => (
                 <BidLink id={w.id} label={convert(w.title)} onNavigate={onNavigate} renderLink={renderLink} dense />
@@ -445,7 +444,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     ) : null;
 
     const up = parent ? (
-        <RailUp caption="上級叢編">
+        <RailUp caption={t('collectionPage.parent')}>
             <BidLink id={parent.id} label={convert(parent.title || parent.id)} onNavigate={onNavigate} renderLink={renderLink} dense />
         </RailUp>
     ) : undefined;

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { FeedbackList } from './FeedbackList';
 import type { FeedbackItem } from './FeedbackList';
 import { FeedbackForm } from './FeedbackForm';
+import { useI18n } from '../i18n';
 
 export interface FeedbackTabProps {
     /** 该资源的 ID（用于过滤反馈条目） */
@@ -27,6 +28,7 @@ function resolveApiUrl(apiUrl: FeedbackTabProps['apiUrl']): string {
  * 适合直接作为详情页的 tab 内容使用。
  */
 export const FeedbackTab: React.FC<FeedbackTabProps> = ({ resourceId, apiUrl }) => {
+    const { t } = useI18n();
     const [items, setItems] = useState<FeedbackItem[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -61,7 +63,7 @@ export const FeedbackTab: React.FC<FeedbackTabProps> = ({ resourceId, apiUrl }) 
         });
         if (!res.ok) {
             const err = await res.json().catch(() => null);
-            throw new Error(err?.error || '提交失败');
+            throw new Error(err?.error || t('feedback.submitFailed'));
         }
         setTimeout(() => loadFeedback(), 500);
     };

@@ -21,7 +21,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import type { EntityDetailData, AltName } from '../../types';
 import type { IndexStorage } from '../../storage/types';
-import { useT, useConvert } from '../../i18n';
+import { useI18n, type TFunction } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, type RenderLink } from './primitives';
 import { SECTIONS, sectionKey } from './shared';
@@ -92,13 +92,9 @@ function altNameRank(type?: string): number {
     return i === -1 ? ALT_NAME_ORDER.length : i;
 }
 
-const SUBTYPE_LABEL: Record<string, string> = {
-    people: '人物', place: '地名', dynasty: '朝代', anonymous: '佚名', collective: '群體',
-};
-
 /** 生卒：负数为公元前 */
-function yr(n?: number): string {
-    return n == null ? '' : (n < 0 ? `前${-n}` : String(n));
+function fmtYear(n: number | undefined, t: TFunction): string {
+    return n == null ? '' : (n < 0 ? t('entityPage.bce', { n: -n }) : String(n));
 }
 
 /** 朝代起讫（公元，负为前）：只收常用断代；查不到的人不画生卒条 */
@@ -115,8 +111,8 @@ const DYNASTY_SPAN: Record<string, [number, number]> = {
 export const EntityPage: React.FC<EntityPageProps> = ({
     data, transport, onNavigate, renderLink, railTop, back, railLinks,
 }) => {
-    const t = useT();
-    const { convert } = useConvert();
+    const { t, convert, messages: m } = useI18n();
+    const yr = (n?: number) => fmtYear(n, t);
 
     const [role, setRole] = useState<RoleClass | '全部'>('全部');
     const [showAll, setShowAll] = useState(false);
@@ -139,7 +135,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
         };
     }), [data.works, resolved]);
 
-    const facets = useMemo(() => roleFacets((data.works || []).map(w => w.role)), [data.works]);
+    const facets = useMemo(() => roleFacets((data.works || []).map(w => w.role), t('detail.roleAll')), [data.works, t]);
 
     const filtered = useMemo(() => {
         const rows = role === '全部' ? allRows : allRows.filter(r => r.cls === role);
@@ -175,7 +171,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                         id, title: w.title, versionCount: n, loaded: true,
                         cls: cls || undefined,
                         l1: w.classification?.l1 || undefined,
-                        measure: raw ? measureText(raw as never, t.unit.juan) || undefined : undefined,
+                        measure: raw ? measureText(raw as never, m.unit.juan) || undefined : undefined,
                         hasImage: !!(w.has_image ?? w._has_image),
                     }] as const;
                 })
@@ -189,20 +185,20 @@ export const EntityPage: React.FC<EntityPageProps> = ({
             });
         });
         return () => { cancelled = true; };
-    }, [transport, idsToResolve, t.unit.juan]);
+    }, [transport, idsToResolve, m.unit.juan]);
 
     // ── 别名（按类分组，正式名号在前） ──
     const nameGroups = useMemo(() => {
         const byType = new Map<string, string[]>();
         for (const a of (data.alt_names || []) as AltName[]) {
-            const k = a.type || t.section.aliases;
+            const k = a.type || m.section.aliases;
             if (!byType.has(k)) byType.set(k, []);
             byType.get(k)!.push(a.name);
         }
         return [...byType.entries()]
             .sort((a, b) => altNameRank(a[0]) - altNameRank(b[0]))
             .map(([k, names]) => ({ label: k, names }));
-    }, [data.alt_names, t]);
+    }, [data.alt_names, m]);
 
     // 生卒：birth_year／death_year 优先，缺时回退 dates.birth／death；都缺才用 dates.floruit
     const birth = data.birth_year ?? data.dates?.birth ?? undefined;
@@ -211,7 +207,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
     const life = (birth != null || death != null)
         ? `${yr(birth) || '?'}—${yr(death) || '?'}`
         : (Array.isArray(fl) && fl.length === 2 && fl.every(n => Number.isFinite(n)))
-            ? `活躍於 ${yr(fl[0])}—${yr(fl[1])}`
+            ? t('entityPage.floruit', { from: yr(fl[0]), to: yr(fl[1]) })
             : '';
 
     /** 提要卡常露的只有字、號；其余（諡號、小字、小名、別名…）收进「更多別名」 */
@@ -226,15 +222,15 @@ export const EntityPage: React.FC<EntityPageProps> = ({
             out.push({ label: g.label, value: g.names.map(n => convert(n)).join('、') });
         }
         const n = (data.works || []).length;
-        if (n) out.push({ label: '著作', value: `${n} ${convert('種')}` });
+        if (n) out.push({ label: t('entityPage.fact.works'), value: t('entityPage.nZhong', { n }) });
         return out;
-    }, [data.works, mainNames, convert]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [data.works, mainNames, convert, t]); // eslint-disable-line react-hooks/exhaustive-deps
 
     /** 副题「字元晦，號晦庵」：各取第一个 */
     const firstOf = (types: string[]) => nameGroups.find(g => types.includes(g.label))?.names[0];
     const zi = firstOf(['字']);
     const hao = firstOf(['號', '号']);
-    const subtitle = [zi ? `字${zi}` : '', hao ? `號${hao}` : ''].filter(Boolean).join('，');
+    const subtitle = [zi ? t('entityPage.zi', { name: convert(zi) }) : '', hao ? t('entityPage.hao', { name: convert(hao) }) : ''].filter(Boolean).join('，');
     const nativePlace = data.native_place;
 
     // 生卒条：须生卒都有、朝代有起讫，且与朝代区间有交集；否则整块不出
@@ -248,12 +244,12 @@ export const EntityPage: React.FC<EntityPageProps> = ({
         return (
             <div className="bim-d-life bim-d-ui">
                 <div className="bim-d-life-bar" role="img"
-                    aria-label={convert(`${yr(birth)}—${yr(death)}，一生 ${death - birth + 1} 年`)}>
+                    aria-label={t('entityPage.lifeAria', { birth: yr(birth), death: yr(death), years: death - birth + 1 })}>
                     <i style={{ left: `${((a - from) / total) * 100}%`, width: `${((b - a) / total) * 100}%` }} />
                 </div>
                 <div className="bim-d-life-lab">
-                    <span>{convert(`${yr(from)} ${data.dynasty}`)}</span>
-                    <span>{convert(`一生 ${death - birth + 1} 年`)}</span>
+                    <span>{`${yr(from)} ${convert(data.dynasty)}`}</span>
+                    <span>{t('entityPage.lifeYears', { years: death - birth + 1 })}</span>
                     <span>{yr(to)}</span>
                 </div>
             </div>
@@ -274,14 +270,14 @@ export const EntityPage: React.FC<EntityPageProps> = ({
 
     const card = (
         <SummaryCard
-            kind={SUBTYPE_LABEL[data.subtype] ?? '人物'}
+            kind={(m.entityPage.subtype as Record<string, string>)[data.subtype] ?? t('entityPage.subtype.people')}
             title={convert(data.primary_name || data.title)}
-            subtitle={subtitle ? convert(subtitle) : undefined}
+            subtitle={subtitle || undefined}
             meta={<>
                 <MetaLine items={[
                     data.dynasty ? convert(data.dynasty) : '',
-                    life ? convert(life) : '',
-                    nativePlace ? convert(`${nativePlace}人`) : '',
+                    life,
+                    nativePlace ? t('entityPage.nativePlace', { place: convert(nativePlace) }) : '',
                 ]} />
                 {lifeBar}
             </>}
@@ -294,7 +290,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
         >
             {moreCount > 0 && (
                 <details className="bim-d-more-names bim-d-ui">
-                    <summary>{convert(`更多別名（${moreCount}）`)}</summary>
+                    <summary>{t('entityPage.moreNames', { n: moreCount })}</summary>
                     <dl>
                         {moreNames.map(g => (
                             <React.Fragment key={g.label}>
@@ -307,7 +303,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
             )}
             {dist && (
                 <div className="bim-d-dist bim-d-ui">
-                    <div className="bim-d-dist-head"><span>{convert('著作分佈')}</span></div>
+                    <div className="bim-d-dist-head"><span>{t('entityPage.dist')}</span></div>
                     <div className="bim-d-dist-bar" aria-hidden="true">
                         {dist.map(x => (
                             <i key={x.key} style={{ flexGrow: x.n, background: bim(x.token) }} />
@@ -345,7 +341,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
         extLinks.push({
             label: 'CBDB', id: String(ext.cbdb_id),
             href: `https://cbdb.fas.harvard.edu/cbdbapi/person.php?id=${ext.cbdb_id}`,
-            note: ext.cbdb_match === 'auto' ? '自動匹配' : undefined,
+            note: ext.cbdb_match === 'auto' ? t('entityPage.autoMatch') : undefined,
         });
     }
     const wikidata = ext.wikidata_id;
@@ -356,14 +352,14 @@ export const EntityPage: React.FC<EntityPageProps> = ({
     const roleTabs = facets.map(f => ({ key: f.cls as RoleClass | '全部', label: `${f.label} ${f.count}` }));
 
     const nav: RailNavItem[] = [
-        ...(showPicks && !picksPending ? [{ id: 'featured', label: '著作舉要', count: picks.length }] : []),
-        ...(allRows.length ? [{ id: 'works', label: '全部著作', count: allRows.length }] : []),
-        ...(extLinks.length ? [{ id: 'external', label: '站外資料', count: extLinks.length }] : []),
+        ...(showPicks && !picksPending ? [{ id: 'featured', label: t('entityPage.sec.featured'), count: picks.length }] : []),
+        ...(allRows.length ? [{ id: 'works', label: t('entityPage.sec.allWorks'), count: allRows.length }] : []),
+        ...(extLinks.length ? [{ id: 'external', label: t('entityPage.sec.external'), count: extLinks.length }] : []),
     ];
 
     const picksSec = showPicks ? (
-        <Sec id="featured" title="著作舉要">
-            <p className="bim-d-sec-sub bim-d-ui">{convert('存世版本最多的三部')}</p>
+        <Sec id="featured" title={t('entityPage.sec.featured')}>
+            <p className="bim-d-sec-sub bim-d-ui">{t('entityPage.featuredSub')}</p>
             <div className="bim-d-picks" aria-busy={picksPending || undefined}>
                 {picksPending && [0, 1, 2].map(i => (
                     <div key={i} className="bim-d-pick" aria-hidden="true">
@@ -380,8 +376,8 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                         <MetaLine items={[p.section ? convert(p.section) : '', p.measure ? convert(p.measure) : '']} />
                         <div className="bim-d-pick-n bim-d-ui">
                             <span className="bim-d-pick-num">{p.versionCount}</span>
-                            <span>{convert('種版本')}</span>
-                            {p.hasImage && <span className="bim-d-flag">{convert('有影印')}</span>}
+                            <span>{t('entityPage.versionsUnit')}</span>
+                            {p.hasImage && <span className="bim-d-flag">{t('entityPage.hasImage')}</span>}
                         </div>
                     </div>
                 ))}
@@ -390,17 +386,17 @@ export const EntityPage: React.FC<EntityPageProps> = ({
     ) : null;
 
     const main = allRows.length === 0 ? (
-        <Sec title="著作">
-            <p className="bim-d-meta bim-d-ui" style={{ margin: 0 }}>{convert('尚未著錄該人物的關聯作品。')}</p>
+        <Sec title={t('entityPage.sec.works')}>
+            <p className="bim-d-meta bim-d-ui" style={{ margin: 0 }}>{t('entityPage.empty')}</p>
         </Sec>
     ) : (<>
         {picksSec}
         <Sec
             id="works"
-            title="著作"
+            title={t('entityPage.sec.works')}
             meta={<MetaLine items={[
-                convert(`共 ${allRows.length} 種`),
-                filtered.length !== allRows.length ? convert(`當前 ${filtered.length} 種`) : '',
+                t('entityPage.total', { n: allRows.length }),
+                filtered.length !== allRows.length ? t('entityPage.current', { n: filtered.length }) : '',
             ]} />}
         >
             <div className="bim-d-filters bim-d-ui">
@@ -419,17 +415,17 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                         setSort(s => (s === 'default' ? 'versions' : 'default'));
                     }}
                 >
-                    {convert(sort === 'default' ? '按版本數排列' : '按著錄順序')}
+                    {sort === 'default' ? t('entityPage.sortByVersions') : t('entityPage.sortByCatalog')}
                 </button>
             </div>
             <table className="bim-d-zt" data-ncap={!showAll && narrowCapped(filtered.length) ? '' : undefined}>
                 <thead className="bim-d-ui">
                     <tr>
-                        <th>{convert('作品')}</th>
-                        <th>{convert('部類')}</th>
-                        <th>{convert('職任')}</th>
-                        <th>{convert('存世版本')}</th>
-                        <th aria-label={convert('影印')} />
+                        <th>{t('entityPage.col.work')}</th>
+                        <th>{t('entityPage.col.section')}</th>
+                        <th>{t('entityPage.col.role')}</th>
+                        <th>{t('entityPage.col.versions')}</th>
+                        <th aria-label={t('entityPage.col.image')} />
                     </tr>
                 </thead>
                 <tbody>
@@ -449,21 +445,21 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                             </td>
                             <td className={`bim-d-zt-sub bim-d-zt-nowrap${row.loaded ? '' : ' bim-d-zt-blank'}`}>
                                 {!row.loaded ? '' : row.versionCount
-                                    ? convert(`${row.versionCount} 種`)
-                                    : <span className="bim-d-zt-empty">{convert('未著錄')}</span>}
+                                    ? t('entityPage.nZhong', { n: row.versionCount })
+                                    : <span className="bim-d-zt-empty">{t('entityPage.notRecorded')}</span>}
                             </td>
                             <td className={row.hasImage ? undefined : 'bim-d-zt-blank'} style={{ textAlign: 'right' }}>
-                                {row.hasImage && <span className="bim-d-flag bim-d-ui">{convert('有影印')}</span>}
+                                {row.hasImage && <span className="bim-d-flag bim-d-ui">{t('entityPage.hasImage')}</span>}
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
             {visible.length === 0 && (
-                <p className="bim-d-meta bim-d-ui" style={{ margin: '12px 12px 0' }}>{convert('該職任下的著作尚未著錄。')}</p>
+                <p className="bim-d-meta bim-d-ui" style={{ margin: '12px 12px 0' }}>{t('entityPage.emptyRole')}</p>
             )}
             {!showAll && (
-                <CapMore total={filtered.length} shown={visible.length} unit="種著作" onClick={() => setShowAll(true)} />
+                <CapMore total={filtered.length} shown={visible.length} unit={t('entityPage.moreUnit')} onClick={() => setShowAll(true)} />
             )}
         </Sec>
     </>);
@@ -471,12 +467,12 @@ export const EntityPage: React.FC<EntityPageProps> = ({
     const side = extLinks.length > 0 ? (
         <SideList
             id="external"
-            title="站外資料"
+            title={t('entityPage.sec.external')}
             items={extLinks.map(l => (
                 <a href={l.href} target="_blank" rel="noopener noreferrer">{l.label} <span aria-hidden="true">↗</span></a>
             ))}
             metas={extLinks.map(l => l.id)}
-            foot={ext.cbdb_id != null && ext.cbdb_match === 'auto' ? convert('CBDB 為自動匹配，未經人工核對') : undefined}
+            foot={ext.cbdb_id != null && ext.cbdb_match === 'auto' ? t('entityPage.cbdbAuto') : undefined}
         />
     ) : null;
 

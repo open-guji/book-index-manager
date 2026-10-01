@@ -40,7 +40,9 @@ import 'book-index-ui/styles'                // CSS（用到组件时引入）
 | `VersionLineageView` / `VersionLineageGraph` | 版本传承图（dagre + xyflow） |
 | `FeedbackButton` / `FeedbackList` / `FeedbackForm` | 反馈组件 |
 | `LocaleProvider` / `LocaleToggle` | 繁简切换 |
-| `useT` / `useConvert` | 繁简 hook |
+| `useI18n` / `getT` | **统一 i18n 入口**：界面文字 `t(key)`、数据文字 `convert`，见下「界面文字与繁简」 |
+| `useT` / `useConvert` | 旧 hook（整本字典 / 繁简转换），新代码用 `useI18n` |
+| `findTraditionalChars` | 简体模式残留繁体字检测（vitest 与网站 e2e 共用） |
 
 ### 统一阅读器（`TextReader`，overview#307）
 
@@ -97,6 +99,22 @@ import 'book-index-ui/styles'                // CSS（用到组件时引入）
 | `IndexStorage` | 接口（自实现自定义后端时实现它） |
 
 数据层还导出 `encodeId / decodeId / smartDecode / extractType / shardOf / scoreEntry / rankByRelevance / cleanName` 等纯函数工具。
+
+### 界面文字与繁简（overview#337）
+
+两类文字，两条路：
+
+| 类别 | 例 | 怎么写 |
+|---|---|---|
+| 界面固定文字 | 标题、按钮、aria-label、单位、「展開其餘 {n} 冊」 | `const { t } = useI18n(); t('detail.moreN', { n })` |
+| 数据文字 | 书名、作者、提要、分类名、版本名、sections.json 里的分区名 | `const { convert } = useI18n(); convert(data.title)` |
+
+- 字典按区域分文件：`src/i18n/messages/<区域>.ts`，`defineMessages(繁体栏, 简体栏, 英文栏?)`，繁简两栏键必须一一对应（tsc 检查）；早期的整块字典 `locales/zh-Hant.ts`／`zh-Hans.ts` 仍可用。
+- 键是带类型的点路径（`MessageKey`），写错 tsc 报错；当前语言缺键回落到繁体。
+- 没包 `LocaleProvider` 时按繁体。网站务必在最外层包 `LocaleProvider`（或网站的 `BimLocaleProvider`），否则组件一律显示繁体。
+- 组件外（Next.js `generateMetadata` 等服务端）：`getT(locale)('…')`，数据文字用同一个转换函数（`LocaleProvider` 的 `converter` 或内置 opencc）。
+- 加英文：`Locale` 加 `'en'`，各字典填英文栏（可部分，缺的回落繁体）；数据文字的英文另议。
+- 检测：`tests/unit/zh-hans-leak.test.tsx` 在简体模式下渲染各页，用 `findTraditionalChars`（常用繁体字表 + 专名白名单）断言正文无繁体残留；`tests/unit/i18n-dictionaries.test.ts` 检查字典繁简同形、简体栏无繁体。
 
 ### 类型
 

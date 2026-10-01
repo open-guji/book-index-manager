@@ -128,7 +128,7 @@ describe('阅读器页脚', () => {
 
     it('整理本章传 revisedAt 就显示', async () => {
         render(<LocaleProvider locale="zh-Hant"><TextReader id="w1" transport={ceTransport()} revisedAt="2026-09-12" /></LocaleProvider>);
-        await waitFor(() => expect(screen.getByText('最近校订 2026-09-12')).toBeTruthy());
+        await waitFor(() => expect(screen.getByText('最近校訂 2026-09-12')).toBeTruthy());
     });
     it('宿主没传 revisedAt 时都不显示', async () => {
         render(<LocaleProvider><TextReader id="b1" transport={ftTransport()} /></LocaleProvider>);

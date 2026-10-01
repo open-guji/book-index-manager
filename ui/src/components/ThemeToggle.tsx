@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useConvert } from '../i18n';
+import { useI18n } from '../i18n';
 import { bim, type BimTokenName } from '../styles/tokens';
 import {
     DEFAULT_THEME, THEMES, applyTheme, currentTheme, storeTheme, type ThemeName,
@@ -19,7 +19,7 @@ const DOT: Record<ThemeName, BimTokenName> = { zhusha: 'theme-dot-zhusha', indig
  * （宿主的首屏脚本在首帧前设好）。点选：写 <html>、写存储（失败则忽略）、通知宿主。
  */
 export const ThemeToggle: React.FC<ThemeToggleProps> = ({ onChange, style }) => {
-    const { convert } = useConvert();
+    const { t: tr } = useI18n();
     const [theme, setTheme] = useState<ThemeName>(DEFAULT_THEME);
 
     useEffect(() => { setTheme(currentTheme()); }, []);
@@ -31,7 +31,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ onChange, style }) => 
     };
 
     return (
-        <div role="radiogroup" aria-label={convert('主題')} style={{ display: 'inline-flex', alignItems: 'center', ...style }}>
+        <div role="radiogroup" aria-label={tr('common.themeLabel')} style={{ display: 'inline-flex', alignItems: 'center', ...style }}>
             {THEMES.map(t => {
                 const on = theme === t.name;
                 return (
@@ -40,8 +40,8 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ onChange, style }) => 
                         type="button"
                         role="radio"
                         aria-checked={on}
-                        aria-label={convert(t.label)}
-                        title={convert(t.label)}
+                        aria-label={tr(`common.theme.${t.name}`)}
+                        title={tr(`common.theme.${t.name}`)}
                         onClick={() => choose(t.name)}
                         style={{
                             width: 28, height: 44, padding: 0, border: 0, background: 'none', cursor: 'pointer',

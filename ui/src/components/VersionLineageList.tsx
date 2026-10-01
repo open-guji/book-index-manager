@@ -5,7 +5,7 @@ import type {
     LineageGraphNode,
 } from '../core/lineage-graph';
 import { formatLineageYear } from '../core/lineage-graph';
-import { useConvert } from '../i18n';
+import { useI18n } from '../i18n';
 import { bim } from '../styles/tokens';
 
 export interface VersionLineageListProps {
@@ -30,11 +30,11 @@ export const VersionLineageList: React.FC<VersionLineageListProps> = ({
     className,
     style,
 }) => {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     if (!graph.nodes.length) {
         return (
             <div style={{ ...placeholderStyle, ...style }} className={className}>
-                暂无版本图数据
+                {t('lineage.emptyGraph')}
             </div>
         );
     }
@@ -100,7 +100,7 @@ export const VersionLineageList: React.FC<VersionLineageListProps> = ({
 
             {ungrouped.length > 0 && (
                 <GroupSection
-                    label="其他"
+                    label={t('lineage.otherGroup')}
                     nodes={ungrouped}
                     incomingMap={incomingMap}
                     siblingMap={siblingMap}
@@ -131,7 +131,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({
     nodeMap,
     renderLink,
 }) => {
-    const { convert } = useConvert();
+    const { convert } = useI18n();
     return (
     <div style={groupStyle}>
         <div style={{ ...groupLabelStyle, borderLeftColor: color ?? bim('widget-border') }}>
@@ -162,7 +162,7 @@ interface NodeCardProps {
 const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, renderLink }) => {
     const isHypo = node.kind === 'hypothetical';
     const isBridge = node.bridge;
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     return (
         <div style={{
             ...cardStyle,
@@ -170,7 +170,7 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, 
             opacity: isBridge ? 0.55 : (node.status === 'lost' ? 0.7 : 1),
             background: isBridge ? bim('bg-subtle') : undefined,
         }}
-        title={isBridge ? '桥接节点：本身不在核心集，为保持派生链完整而显示' : undefined}>
+        title={isBridge ? t('lineage.bridgeTitle') : undefined}>
             <div style={cardHeaderStyle}>
                 <span style={cardTitleStyle}>
                     {isHypo || !renderLink ? convert(node.label) : renderLink(node.id, convert(node.label))}
@@ -184,14 +184,14 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, 
 
             <div style={cardMetaStyle}>
                 {node.category && <Tag>{convert(node.category)}</Tag>}
-                {node.status === 'lost' && <Tag tone="warn">已佚</Tag>}
-                {node.status === 'fragment' && <Tag tone="warn">残本</Tag>}
-                {isHypo && <Tag tone="info">假想祖本</Tag>}
-                {isBridge && <Tag tone="info">桥接</Tag>}
+                {node.status === 'lost' && <Tag tone="warn">{t('lineage.lost')}</Tag>}
+                {node.status === 'fragment' && <Tag tone="warn">{t('lineage.fragment')}</Tag>}
+                {isHypo && <Tag tone="info">{t('lineage.hypothetical')}</Tag>}
+                {isBridge && <Tag tone="info">{t('lineage.bridge')}</Tag>}
             </div>
 
             {node.extant_juan && (
-                <div style={cardLineStyle}>现存：{convert(node.extant_juan)}</div>
+                <div style={cardLineStyle}>{t('lineage.extant', { juan: convert(node.extant_juan) })}</div>
             )}
             {node.note && (
                 <div style={cardNoteStyle}>{convert(node.note)}</div>
@@ -199,7 +199,7 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, 
 
             {incoming.length > 0 && (
                 <div style={cardSectionStyle}>
-                    <div style={cardSectionLabelStyle}>来源：</div>
+                    <div style={cardSectionLabelStyle}>{t('lineage.sources')}</div>
                     {incoming.map((e) => {
                         const src = nodeMap.get(e.source);
                         return (
@@ -222,7 +222,7 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, incoming, siblings, nodeMap, 
 
             {siblings.length > 0 && (
                 <div style={cardSectionStyle}>
-                    <div style={cardSectionLabelStyle}>关联：</div>
+                    <div style={cardSectionLabelStyle}>{t('lineage.related')}</div>
                     {siblings.map((e) => {
                         const otherId = e.source === node.id ? e.target : e.source;
                         const other = nodeMap.get(otherId);
@@ -266,11 +266,12 @@ const Tag: React.FC<{ children: React.ReactNode; tone?: 'default' | 'warn' | 'in
 };
 
 const ConfidenceBadge: React.FC<{ level: string }> = ({ level }) => {
-    const map: Record<string, { label: string; color: string }> = {
-        certain:   { label: '确定',   color: bim('confidence-certain') },
-        consensus: { label: '共识',   color: bim('confidence-consensus') },
-        probable:  { label: '推测',   color: bim('confidence-probable') },
-        disputed:  { label: '有争议', color: bim('confidence-disputed') },
+    const { t } = useI18n();
+    const map: Record<string, { key: 'certain' | 'consensus' | 'probable' | 'disputed'; color: string }> = {
+        certain:   { key: 'certain',   color: bim('confidence-certain') },
+        consensus: { key: 'consensus', color: bim('confidence-consensus') },
+        probable:  { key: 'probable',  color: bim('confidence-probable') },
+        disputed:  { key: 'disputed',  color: bim('confidence-disputed') },
     };
     const e = map[level];
     if (!e) return null;
@@ -283,7 +284,7 @@ const ConfidenceBadge: React.FC<{ level: string }> = ({ level }) => {
             color: e.color,
             borderRadius: '8px',
             marginLeft: '4px',
-        }}>{e.label}</span>
+        }}>{t(`lineage.confidence.${e.key}`)}</span>
     );
 };
 

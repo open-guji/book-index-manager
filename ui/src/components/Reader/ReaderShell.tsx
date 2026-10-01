@@ -21,6 +21,7 @@
  */
 import React, { useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { LocaleContext } from '../../i18n/context';
+import { useI18n } from '../../i18n/use-i18n';
 import { READER_BOTTOM_BAR_QUERY, READER_CSS, READER_WIDE_QUERY } from './reader-css';
 import { ReaderToc } from './ReaderToc';
 import { ImagePanel } from './ImagePanel';
@@ -186,19 +187,20 @@ function useMediaQuery(query: string, ssrDefault: boolean): boolean {
 
 function LocaleSwitch() {
     const ctx = useContext(LocaleContext);
+    const { t } = useI18n();
     if (!ctx) return null;
     const isHant = ctx.locale === 'zh-Hant';
     return (
         <button
             type="button"
             className="bim-rd-t"
-            title={isHant ? '切换为简体' : '切換為繁體'}
-            aria-label={isHant ? '切换为简体' : '切換為繁體'}
+            title={isHant ? t('common.toHans') : t('common.toHant')}
+            aria-label={isHant ? t('common.toHans') : t('common.toHant')}
             onClick={() => ctx.setLocale(isHant ? 'zh-Hans' : 'zh-Hant')}
         >
-            <span className={isHant ? 'bim-rd-on' : 'bim-rd-off'}>繁</span>
+            <span className={isHant ? 'bim-rd-on' : 'bim-rd-off'}>{t('common.localeShortHant')}</span>
             <span className="bim-rd-off">｜</span>
-            <span className={isHant ? 'bim-rd-off' : 'bim-rd-on'}>简</span>
+            <span className={isHant ? 'bim-rd-off' : 'bim-rd-on'}>{t('common.localeShortHans')}</span>
         </button>
     );
 }
@@ -235,12 +237,16 @@ export function ReaderShell({
     images, imagesLoading, renderImageOverlay, imagePanel = 'auto',
     prefs, onPrefsChange, paragraphToggle, properNameToggle = true, allowVertical,
     byline, current, workLinkToggle, rail, onReportError, revisedAt,
-    backHref, backLabel = '阅读', bottomBar = true,
+    backHref, backLabel: backLabelProp, bottomBar = true,
     pager = true,
-    pagerUnit = '卷',
+    pagerUnit: pagerUnitProp,
     versions, currentVersionKey, onVersionChange, versionSource = true, keepChapterOnVersionChange = false,
     children, className, style,
 }: ReaderShellProps) {
+    const { t, convert } = useI18n();
+    const backLabel = backLabelProp ?? t('reader.back');
+    // 单位（卷／章／冊）由宿主给，跟着繁简走
+    const pagerUnit = convert(pagerUnitProp ?? t('reader.unitJuan'));
     const uid = useId().replace(/:/g, '');
     const tocId = `bim-rd-toc-${uid}`;
     const textId = `bim-rd-text-${uid}`;
@@ -371,11 +377,11 @@ export function ReaderShell({
                 e.preventDefault();
                 textRef.current?.focus();
                 textRef.current?.scrollIntoView?.({ block: 'start' });
-            }}>跳到正文</a>
+            }}>{t('reader.skipToText')}</a>
 
             <div className="bim-rd-bar" ref={barRef}>
                 {backHref && (
-                    <a className="bim-rd-back" href={backHref} aria-label={`返回${backLabel}首页`}>
+                    <a className="bim-rd-back" href={backHref} aria-label={t('reader.backAria', { label: backLabel })}>
                         <span aria-hidden="true">‹</span><span className="bim-rd-tlabel" aria-hidden="true">{backLabel}</span>
                     </a>
                 )}
@@ -387,20 +393,20 @@ export function ReaderShell({
                         {subtitle && <span>{subtitle}</span>}
                     </p>
                 )}
-                <div className="bim-rd-tools" role="group" aria-label="阅读设置">
+                <div className="bim-rd-tools" role="group" aria-label={t('reader.settings')}>
                     {versions && versions.length > 1 && (
                         <>
-                            <label className="bim-rd-ver" title={version ? readerVersionOptionLabel(version) : undefined}>
-                                <span className="bim-rd-tlabel">版本</span>
+                            <label className="bim-rd-ver" title={version ? convert(readerVersionOptionLabel(version)) : undefined}>
+                                <span className="bim-rd-tlabel">{t('reader.version')}</span>
                                 {/* 窄屏工具条放不下版本全名：只露「版本▾」，原生下拉透明地盖在上面 */}
-                                <span className="bim-rd-ver-short" aria-hidden="true">版本▾</span>
+                                <span className="bim-rd-ver-short" aria-hidden="true">{t('reader.versionShort')}</span>
                                 <select
-                                    aria-label="版本"
+                                    aria-label={t('reader.version')}
                                     value={versionKey ?? ''}
                                     onChange={e => changeVersion(e.target.value)}
                                 >
                                     {versions.map(v => (
-                                        <option key={v.key} value={v.key}>{readerVersionOptionLabel(v)}</option>
+                                        <option key={v.key} value={v.key}>{convert(readerVersionOptionLabel(v))}</option>
                                     ))}
                                 </select>
                             </label>
@@ -409,20 +415,24 @@ export function ReaderShell({
                     )}
                     {pager && (prev || next) && (
                         /* 上一章／下一章（overview#308）：窄屏上工具条放不下，翻卷交给正文底部的翻页卡片 */
-                        <span className="bim-rd-nav bim-rd-hide-narrow" role="group" aria-label={`翻${pagerUnit}`}>
+                        <span className="bim-rd-nav bim-rd-hide-narrow" role="group" aria-label={t('reader.pagerGroup', { unit: pagerUnit })}>
                             <button
                                 type="button"
                                 className="bim-rd-t"
-                                aria-label={`上一${pagerUnit}`}
-                                title={prev ? `上一${pagerUnit}：${typeof prev.label === 'string' ? prev.label : ''}`.replace(/：$/, '') : `已是第一${pagerUnit}`}
+                                aria-label={t('reader.prevUnit', { unit: pagerUnit })}
+                                title={prev
+                                    ? (typeof prev.label === 'string' && prev.label ? t('reader.prevUnitTitle', { unit: pagerUnit, label: prev.label }) : t('reader.prevUnit', { unit: pagerUnit }))
+                                    : t('reader.firstUnit', { unit: pagerUnit })}
                                 disabled={!prev}
                                 onClick={() => prev && handleSelect(prev.key)}
                             ><IconPrev /></button>
                             <button
                                 type="button"
                                 className="bim-rd-t"
-                                aria-label={`下一${pagerUnit}`}
-                                title={next ? `下一${pagerUnit}：${typeof next.label === 'string' ? next.label : ''}`.replace(/：$/, '') : `已是最后一${pagerUnit}`}
+                                aria-label={t('reader.nextUnit', { unit: pagerUnit })}
+                                title={next
+                                    ? (typeof next.label === 'string' && next.label ? t('reader.nextUnitTitle', { unit: pagerUnit, label: next.label }) : t('reader.nextUnit', { unit: pagerUnit }))
+                                    : t('reader.lastUnit', { unit: pagerUnit })}
                                 disabled={!next}
                                 onClick={() => next && handleSelect(next.key)}
                             ><IconNext /></button>
@@ -437,7 +447,7 @@ export function ReaderShell({
                         aria-controls={tocId}
                         onClick={toggleToc}
                     >
-                        <IconToc /><span className="bim-rd-tlabel">目录</span>
+                        <IconToc /><span className="bim-rd-tlabel">{t('reader.toc')}</span>
                     </button>
                     <button
                         type="button"
@@ -445,7 +455,7 @@ export function ReaderShell({
                         aria-pressed={imgOpen}
                         onClick={() => setImgState(imgOpen ? 'closed' : 'open')}
                     >
-                        <IconImage />书影
+                        <IconImage />{t('reader.images')}
                     </button>
                     <span className="bim-rd-sep" aria-hidden="true" />
                     <LocaleSwitch />
@@ -453,14 +463,14 @@ export function ReaderShell({
                     <button
                         type="button"
                         className="bim-rd-t bim-rd-fs bim-rd-bb-dup"
-                        aria-label="缩小字号"
+                        aria-label={t('reader.fontSmaller')}
                         disabled={fs <= FONT_SIZE_STEPS[0]}
                         onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, -1) })}
                     >A−</button>
                     <button
                         type="button"
                         className="bim-rd-t bim-rd-fs bim-rd-bb-dup"
-                        aria-label="放大字号"
+                        aria-label={t('reader.fontLarger')}
                         disabled={fs >= FONT_SIZE_STEPS[FONT_SIZE_STEPS.length - 1]}
                         onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, 1) })}
                     >A+</button>
@@ -470,9 +480,9 @@ export function ReaderShell({
                             type="button"
                             className="bim-rd-t"
                             aria-pressed={prefs.readingMode === 'paragraph'}
-                            title="条目分行 ↔ 自然段"
+                            title={t('reader.paragraphTitle')}
                             onClick={() => onPrefsChange({ readingMode: prefs.readingMode === 'paragraph' ? 'line' : 'paragraph' })}
-                        >自然段</button>
+                        >{t('reader.paragraph')}</button>
                     )}
                     {workLinkToggle && (
                         <label className="bim-rd-t bim-rd-chk">
@@ -481,7 +491,7 @@ export function ReaderShell({
                                 checked={prefs.workLinks}
                                 onChange={e => onPrefsChange({ workLinks: e.target.checked })}
                             />
-                            <span>标出作品链接</span>
+                            <span>{t('reader.workLinks')}</span>
                         </label>
                     )}
                     {properNameToggle && (
@@ -489,9 +499,9 @@ export function ReaderShell({
                             type="button"
                             className="bim-rd-t"
                             aria-pressed={prefs.properNames}
-                            title="书名加波浪线"
+                            title={t('reader.properNameTitle')}
                             onClick={() => onPrefsChange({ properNames: !prefs.properNames })}
-                        >专名线</button>
+                        >{t('reader.properName')}</button>
                     )}
                     {allowVertical && (
                         <button
@@ -499,7 +509,7 @@ export function ReaderShell({
                             className="bim-rd-t bim-rd-hide-narrow"
                             aria-pressed={prefs.writingMode === 'vertical'}
                             onClick={() => onPrefsChange({ writingMode: prefs.writingMode === 'vertical' ? 'horizontal' : 'vertical' })}
-                        >竖排</button>
+                        >{t('reader.vertical')}</button>
                     )}
                 </div>
             </div>
@@ -511,7 +521,7 @@ export function ReaderShell({
                     ref={tocRef}
                     role={drawer && tocOpen ? 'dialog' : undefined}
                     aria-modal={drawer && tocOpen ? true : undefined}
-                    aria-label={drawer && tocOpen ? '目录' : undefined}
+                    aria-label={drawer && tocOpen ? t('reader.toc') : undefined}
                     onKeyDown={e => {
                         if (!drawer || !tocOpen) return;
                         if (e.key === 'Escape') { e.stopPropagation(); closeDrawer(true); return; }
@@ -520,9 +530,9 @@ export function ReaderShell({
                 >
                     <div className="bim-rd-toc-top">
                         <div className="bim-rd-toc-head">
-                            <span>{tocCaption ?? '目录'}</span>
+                            <span>{tocCaption ?? t('reader.toc')}</span>
                             {drawer && (
-                                <button type="button" className="bim-rd-t" aria-label="收起目录" onClick={() => closeDrawer(true)}>✕</button>
+                                <button type="button" className="bim-rd-t" aria-label={t('reader.closeToc')} onClick={() => closeDrawer(true)}>✕</button>
                             )}
                         </div>
                         {tocHeader}
@@ -531,7 +541,7 @@ export function ReaderShell({
                 </div>
                 <div className="bim-rd-scrim" aria-hidden="true" onClick={() => closeDrawer(true)} />
 
-                <aside className="bim-rd-img" aria-label="书影">
+                <aside className="bim-rd-img" aria-label={t('reader.images')}>
                     {imgOpen && (
                         <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} />
                     )}
@@ -544,52 +554,52 @@ export function ReaderShell({
                             <p className="bim-rd-src" data-version={version.key}>
                                 {version.sourceName && (
                                     <>
-                                        出处{' '}
+                                        {t('reader.sourceLabel')}{' '}
                                         {version.sourceUrl
-                                            ? <a className="bim-rd-link" href={version.sourceUrl} target="_blank" rel="noreferrer">{version.sourceName}</a>
-                                            : version.sourceName}
+                                            ? <a className="bim-rd-link" href={version.sourceUrl} target="_blank" rel="noreferrer">{convert(version.sourceName)}</a>
+                                            : convert(version.sourceName)}
                                     </>
                                 )}
                                 {version.sourceName && version.license && <span className="bim-rd-dot" />}
-                                {version.license && <>授权 {version.license}</>}
+                                {version.license && <>{t('reader.licenseOf', { license: version.license })}</>}
                             </p>
                         )}
                         {/* 校订日期独立于版本元数据：整理本不传 version、全文关掉 versionSource，也要能显示 */}
-                        {revisedAt && <p className="bim-rd-src bim-rd-rev">最近校订 {revisedAt}</p>}
+                        {revisedAt && <p className="bim-rd-src bim-rd-rev">{t('reader.revisedAt', { date: revisedAt })}</p>}
                         {/* 右栏在 <860px 时藏起来，「报告错字」跟着没了（overview#308）：窄屏在正文末尾补一个入口，宽屏由 CSS 隐去 */}
                         {onReportError && (
                             <p className="bim-rd-src bim-rd-report-foot">
-                                <button type="button" className="bim-rd-rail-report" onMouseDown={e => e.preventDefault()} onClick={reportError}>报告错字</button>
+                                <button type="button" className="bim-rd-rail-report" onMouseDown={e => e.preventDefault()} onClick={reportError}>{t('reader.reportError')}</button>
                             </p>
                         )}
                         {pager && (prev || next) && (
-                            <nav className="bim-rd-pager" aria-label="翻卷">
+                            <nav className="bim-rd-pager" aria-label={t('reader.pagerNav')}>
                                 {prev ? (
                                     <button type="button" className="bim-rd-pg" onClick={() => handleSelect(prev.key)}>
-                                        <span className="bim-rd-pgcap"><span aria-hidden="true">← </span>上一{pagerUnit}</span>
+                                        <span className="bim-rd-pgcap"><span aria-hidden="true">← </span>{t('reader.prevUnit', { unit: pagerUnit })}</span>
                                         <span className="bim-rd-pglabel">{prev.label}</span>
                                     </button>
                                 ) : (
-                                    <span className="bim-rd-pg bim-rd-pg-end" aria-hidden="true">← 已是第一{pagerUnit}</span>
+                                    <span className="bim-rd-pg bim-rd-pg-end" aria-hidden="true">← {t('reader.firstUnit', { unit: pagerUnit })}</span>
                                 )}
                                 {next ? (
                                     <button type="button" className="bim-rd-pg bim-rd-pg-next" onClick={() => handleSelect(next.key)}>
-                                        <span className="bim-rd-pgcap">下一{pagerUnit}<span aria-hidden="true"> →</span></span>
+                                        <span className="bim-rd-pgcap">{t('reader.nextUnit', { unit: pagerUnit })}<span aria-hidden="true"> →</span></span>
                                         <span className="bim-rd-pglabel">{next.label}</span>
                                     </button>
                                 ) : (
-                                    <span className="bim-rd-pg bim-rd-pg-next bim-rd-pg-end" aria-hidden="true">已是最后一{pagerUnit} →</span>
+                                    <span className="bim-rd-pg bim-rd-pg-next bim-rd-pg-end" aria-hidden="true">{t('reader.lastUnit', { unit: pagerUnit })} →</span>
                                 )}
                             </nav>
                         )}
                     </div>
                     {(rail || onReportError) && (
-                        <aside className="bim-rd-rail" aria-label="本卷">
+                        <aside className="bim-rd-rail" aria-label={t('reader.rail')}>
                             {rail}
                             {onReportError && (
                                 <div className="bim-rd-rail-acts">
                                     {/* 按下时不抢走正文里的选区 */}
-                                    <button type="button" className="bim-rd-rail-report" onMouseDown={e => e.preventDefault()} onClick={reportError}>报告错字</button>
+                                    <button type="button" className="bim-rd-rail-report" onMouseDown={e => e.preventDefault()} onClick={reportError}>{t('reader.reportError')}</button>
                                 </div>
                             )}
                         </aside>
@@ -598,28 +608,28 @@ export function ReaderShell({
             </div>
 
             {showBottomBar && (
-                <nav className="bim-rd-bb" aria-label="阅读工具">
+                <nav className="bim-rd-bb" aria-label={t('reader.bottomBar')}>
                     <button
                         type="button"
                         aria-expanded={tocOpen}
                         aria-controls={tocId}
                         onClick={() => { setSheet(null); toggleToc(); }}
-                    ><IconToc /><span>卷目</span></button>
+                    ><IconToc /><span>{t('reader.tocShort')}</span></button>
                     <button
                         type="button"
                         aria-expanded={sheet === 'img'}
                         aria-haspopup="dialog"
                         onClick={e => openSheet('img', e.currentTarget)}
-                    ><IconImage /><span>书影</span></button>
+                    ><IconImage /><span>{t('reader.images')}</span></button>
                     <button
                         type="button"
                         aria-expanded={sheet === 'fs'}
                         aria-haspopup="dialog"
                         onClick={e => openSheet('fs', e.currentTarget)}
-                    ><span className="bim-rd-bb-ic" aria-hidden="true">A</span><span>字号</span></button>
+                    ><span className="bim-rd-bb-ic" aria-hidden="true">A</span><span>{t('reader.fontSize')}</span></button>
                     {onReportError && (
                         <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => { setSheet(null); reportError(); }}>
-                            <span className="bim-rd-bb-ic" aria-hidden="true">!</span><span>报告错字</span>
+                            <span className="bim-rd-bb-ic" aria-hidden="true">!</span><span>{t('reader.reportError')}</span>
                         </button>
                     )}
                 </nav>
@@ -632,15 +642,15 @@ export function ReaderShell({
                         ref={sheetRef}
                         role="dialog"
                         aria-modal="true"
-                        aria-label={sheet === 'img' ? '书影' : '字号'}
+                        aria-label={sheet === 'img' ? t('reader.images') : t('reader.fontSize')}
                         onKeyDown={e => {
                             if (e.key === 'Escape') { e.stopPropagation(); closeSheet(); return; }
                             if (e.key === 'Tab') trapFocus(e, sheetRef.current);
                         }}
                     >
                         <div className="bim-rd-sheet-head">
-                            <span>{sheet === 'img' ? '书影' : '字号'}</span>
-                            <button type="button" className="bim-rd-t" aria-label="关闭" onClick={closeSheet}>✕</button>
+                            <span>{sheet === 'img' ? t('reader.images') : t('reader.fontSize')}</span>
+                            <button type="button" className="bim-rd-t" aria-label={t('reader.close')} onClick={closeSheet}>✕</button>
                         </div>
                         {sheet === 'img' ? (
                             <div className="bim-rd-sheet-img">
@@ -651,7 +661,7 @@ export function ReaderShell({
                                 <button
                                     type="button"
                                     className="bim-rd-t"
-                                    aria-label="缩小字号"
+                                    aria-label={t('reader.fontSmaller')}
                                     disabled={fs <= FONT_SIZE_STEPS[0]}
                                     onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, -1) })}
                                 >A−</button>
@@ -659,7 +669,7 @@ export function ReaderShell({
                                 <button
                                     type="button"
                                     className="bim-rd-t"
-                                    aria-label="放大字号"
+                                    aria-label={t('reader.fontLarger')}
                                     disabled={fs >= FONT_SIZE_STEPS[FONT_SIZE_STEPS.length - 1]}
                                     onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, 1) })}
                                 >A+</button>

@@ -17,7 +17,8 @@ import type {
     LineageConfidence,
 } from '../../types';
 import type { IndexStorage } from '../../storage/types';
-import { useT, useConvert } from '../../i18n';
+import { useT, useI18n } from '../../i18n';
+import type { MessageKey } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, flattenTitles, type RenderLink } from './primitives';
 import {
@@ -81,12 +82,8 @@ interface ResolvedRef {
     year?: number;
 }
 
-const CONFIDENCE_LABEL: Record<LineageConfidence, string> = {
-    certain: '確證',
-    consensus: '通說',
-    probable: '可能',
-    disputed: '有爭議',
-};
+/** 源流可信度：字典 bookPage.confidence.* */
+const CONFIDENCE_KEYS: ReadonlySet<string> = new Set<LineageConfidence>(['certain', 'consensus', 'probable', 'disputed']);
 
 /** 章名「第一回　甄士隱夢幻識通靈　賈雨村風塵懷閨秀」→ ['第一回', '甄士隱夢幻識通靈'] */
 function splitChapterTitle(title: string | undefined): [string, string] {
@@ -100,7 +97,8 @@ export const BookPage: React.FC<BookPageProps> = ({
     data, transport, onNavigate, renderLink, readAction, fullText, fullTextPending, chapterLink, railTop, back, railLinks,
 }) => {
     const t = useT();
-    const { convert } = useConvert();
+    /** tr：字典键取词（界面文字）；t 是旧的整本字典对象 */
+    const { t: tr, convert } = useI18n();
 
     const [work, setWork] = useState<WorkDetailData | null>(null);
     const [collections, setCollections] = useState<Map<string, CollectionDetailData>>(new Map());
@@ -209,7 +207,7 @@ export const BookPage: React.FC<BookPageProps> = ({
     }, [transport, lineageBookIds]);
 
     // ── 资源 ──
-    const res = useMemo(() => splitResources(data.resources, data.resource_groups), [data.resources, data.resource_groups]);
+    const res = useMemo(() => splitResources(data.resources, data.resource_groups, tr), [data.resources, data.resource_groups, tr]);
     const imageCount = res.groups.reduce((n, g) => n + g.rows.length + g.mirrors.length, 0);
     const hasPhysicalOnly = res.groups.length > 0 && res.groups.every(g => g.key === '_physical');
 
@@ -238,34 +236,34 @@ export const BookPage: React.FC<BookPageProps> = ({
         const out: CardFact[] = [];
         if (editionType) {
             out.push({
-                label: '版本類型',
+                label: tr('bookPage.fact.editionType'),
                 value: convert(editionType),
-                title: (data.edition_type || data.lineage?.category) ? undefined : convert('據版本題名推斷'),
+                title: (data.edition_type || data.lineage?.category) ? undefined : tr('bookPage.inferredFromEdition'),
             });
         }
         if (data.publication_info?.details) {
-            out.push({ label: '刊印', value: convert(data.publication_info.details) });
+            out.push({ label: tr('bookPage.fact.publication'), value: convert(data.publication_info.details) });
         } else if (era.era || era.reign) {
             out.push({
-                label: '刊寫年代',
+                label: tr('bookPage.fact.era'),
                 value: convert([era.era, era.reign].filter(Boolean).join(' ')),
-                title: era.source === 'edition' ? convert('據版本題名推斷') : undefined,
+                title: era.source === 'edition' ? tr('bookPage.inferredFromEdition') : undefined,
             });
         }
-        if (measure) out.push({ label: '卷帙', value: convert(measure) });
+        if (measure) out.push({ label: tr('bookPage.fact.measure'), value: convert(measure) });
 
         const volumes = (data.contained_in || []).flatMap(e =>
             typeof e === 'string' ? [] : normalizeVolumeIndex(e.volume_index));
         if (volumes.length) {
             out.push({
-                label: '冊次',
-                value: convert(`第 ${formatVolumeRange(volumes, t.unit.volume)} ${t.unit.volume}（${volumes.length} ${t.unit.volume}）`),
+                label: tr('bookPage.fact.volumes'),
+                value: tr('bookPage.volumesValue', { range: formatVolumeRange(volumes, t.unit.volume), unit: t.unit.volume, n: volumes.length }),
             });
         }
         const base = (data.lineage?.derived_from || []).find(d => d.relation === '底本' && d.ref_type === 'book');
         if (base && refName(base.ref)) {
             out.push({
-                label: '底本',
+                label: tr('bookPage.fact.baseEdition'),
                 value: <BidLink id={base.ref} label={convert(refName(base.ref))} onNavigate={onNavigate} renderLink={renderLink} dense />,
             });
         }
@@ -276,7 +274,8 @@ export const BookPage: React.FC<BookPageProps> = ({
             const items = baseEditions.filter(b => b.role === role);
             if (!items.length) continue;
             out.push({
-                label: role,
+                // role 是数据里的取值（底本／配補／參校），按数据文字转换
+                label: convert(role),
                 value: items.map((b, i) => (
                     <React.Fragment key={i}>
                         {i > 0 && '、'}
@@ -294,34 +293,35 @@ export const BookPage: React.FC<BookPageProps> = ({
             (r.types || (r.type ? [r.type] : [])).includes('physical'));
         if (prov.length) {
             out.push({
-                label: '存藏',
+                label: tr('bookPage.fact.holdings'),
                 value: prov.slice(0, 2).map(p => convert(p.institution)).join('、')
-                    + (prov.length > 2 ? convert(` 等 ${prov.length} 處`) : ''),
+                    + (prov.length > 2 ? tr('bookPage.andMorePlaces', { n: prov.length }) : ''),
             });
             const calls = prov.filter(p => p.call_number).slice(0, 2)
                 .map(p => `${convert(p.institution)} ${p.call_number}`);
             if (calls.length) {
                 out.push({
-                    label: '索書號',
+                    label: tr('bookPage.fact.callNumber'),
                     value: calls.join('；') + (prov.filter(p => p.call_number).length > 2 ? '…' : ''),
                 });
             }
             const seals = prov.flatMap(p => p.seals || []).filter(Boolean);
-            if (seals.length) out.push({ label: '藏印', value: convert(seals.join('、')) });
+            if (seals.length) out.push({ label: tr('bookPage.fact.seals'), value: convert(seals.join('、')) });
         } else if (physical.length) {
             out.push({
-                label: '存藏',
+                label: tr('bookPage.fact.holdings'),
                 value: physical.slice(0, 2).map(r => convert(r.name)).join('、')
-                    + (physical.length > 2 ? convert(` 等 ${physical.length} 處`) : ''),
+                    + (physical.length > 2 ? tr('bookPage.andMorePlaces', { n: physical.length }) : ''),
             });
         } else if (data.current_location?.name) {
-            out.push({ label: '存藏', value: convert(data.current_location.name) });
+            out.push({ label: tr('bookPage.fact.holdings'), value: convert(data.current_location.name) });
         }
         // 行款／裝幀／尺寸／品相：空串不显示
         const pd = data.physical_description;
         if (pd) {
             const rows: [string, string | undefined][] = [
-                ['行款', pd.leaf_style], ['裝幀', pd.binding], ['尺寸', pd.dimensions], ['品相', pd.condition],
+                [tr('bookPage.fact.leafStyle'), pd.leaf_style], [tr('bookPage.fact.binding'), pd.binding],
+                [tr('bookPage.fact.dimensions'), pd.dimensions], [tr('bookPage.fact.condition'), pd.condition],
             ];
             for (const [label, v] of rows) {
                 if (v && v.trim()) out.push({ label, value: convert(v) });
@@ -331,10 +331,10 @@ export const BookPage: React.FC<BookPageProps> = ({
             out.push({ label: t.label.pageCount, value: convert(data.page_count.description) });
         }
         const aliases = [...flattenTitles(data.additional_titles), ...flattenTitles(data.attached_texts)];
-        if (aliases.length) out.push({ label: '又名', value: aliases.map(convert).join('、') });
+        if (aliases.length) out.push({ label: tr('bookPage.fact.aliases'), value: aliases.map(convert).join('、') });
         return out;
         // refName 读 lineageRefs
-    }, [data, convert, t, era, editionType, measure, lineageRefs, onNavigate, renderLink]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [data, convert, t, tr, era, editionType, measure, lineageRefs, onNavigate, renderLink]); // eslint-disable-line react-hooks/exhaustive-deps
 
     /* 标题：大标题是书名，版本名作副题（也免得长版本名撑成三行） */
     const heading = convert(data.title);
@@ -343,7 +343,7 @@ export const BookPage: React.FC<BookPageProps> = ({
 
     const card = (
         <SummaryCard
-            kind="版本"
+            kind={tr('bookPage.kind')}
             title={heading}
             subtitle={subtitle}
             byline={<AuthorByline authors={data.authors ?? work?.authors} onNavigate={onNavigate} renderLink={renderLink} />}
@@ -366,7 +366,7 @@ export const BookPage: React.FC<BookPageProps> = ({
             facts={facts}
             readAction={readAction}
             secondaryAction={readAction && imageCount > 0 && !hasPhysicalOnly
-                ? <a className="bim-d-card-alt bim-d-ui" href="#images">{convert('看原書影印')}</a>
+                ? <a className="bim-d-card-alt bim-d-ui" href="#images">{tr('bookPage.viewImages')}</a>
                 : undefined}
             foot={<CardFoot revision={data.revision} revisedAt={data.revised_at} review={data.review} todo={data.todo} />}
         />
@@ -375,15 +375,17 @@ export const BookPage: React.FC<BookPageProps> = ({
     const containedIn = data.contained_in || [];
     const chapters = fullText?.chapters || [];
     /** 章节单位：小说「回」，其余「章」「卷」——取第一章章名的末字 */
-    const chapUnit = (chapters[0] && splitChapterTitle(chapters[0].title)[0].slice(-1)) || '章';
+    const chapUnit = convert((chapters[0] && splitChapterTitle(chapters[0].title)[0].slice(-1)) || '') || tr('bookPage.chapterUnit');
+    const chapterCountText = tr('bookPage.chapterCount', { n: chapters.length, unit: chapUnit });
     const hasLineage = !!(lineage?.derived_from?.length || lineage?.related_to?.length || data.appendix?.length);
 
     const nav: RailNavItem[] = [];
-    if (chapters.length || res.text.length || fullTextPending) nav.push({ id: 'fulltext', label: '文本', count: chapters.length ? convert(`${chapters.length} ${chapUnit}`) : undefined });
-    if (res.groups.length) nav.push({ id: 'images', label: hasPhysicalOnly ? '館藏' : '影印', count: imageCount });
-    if (hasLineage) nav.push({ id: 'lineage', label: '版本源流' });
-    if (containedIn.length) nav.push({ id: 'collections', label: '收入叢編', count: containedIn.length });
-    if (data.location_history?.length) nav.push({ id: 'provenance', label: '流轉歷史' });
+    const imagesTitle = hasPhysicalOnly ? tr('bookPage.sec.physical') : tr('bookPage.sec.images');
+    if (chapters.length || res.text.length || fullTextPending) nav.push({ id: 'fulltext', label: tr('bookPage.sec.fulltext'), count: chapters.length ? chapterCountText : undefined });
+    if (res.groups.length) nav.push({ id: 'images', label: imagesTitle, count: imageCount });
+    if (hasLineage) nav.push({ id: 'lineage', label: tr('bookPage.sec.lineage') });
+    if (containedIn.length) nav.push({ id: 'collections', label: tr('section.containedIn'), count: containedIn.length });
+    if (data.location_history?.length) nav.push({ id: 'provenance', label: tr('section.locationHistory') });
 
     const openChapter = (file: string) => chapterLink?.(file) ?? null;
     const first = chapters[0];
@@ -413,12 +415,12 @@ export const BookPage: React.FC<BookPageProps> = ({
             {(chapters.length > 0 || res.text.length > 0 || fullTextPending) && (
                 <Sec
                     id="fulltext"
-                    title="文本"
+                    title={tr('bookPage.sec.fulltext')}
                     meta={chapters.length > 0 ? (
                         <MetaLine items={[
-                            convert(`${chapters.length} ${chapUnit}`),
+                            chapterCountText,
                             fullText?.source?.name
-                                ? convert(`據${fullText.source.name}${fullText.source.license ? ` ${fullText.source.license}` : ''}`)
+                                ? tr('bookPage.sourceBy', { src: convert(`${fullText.source.name}${fullText.source.license ? ` ${fullText.source.license}` : ''}`) })
                                 : '',
                         ]} />
                     ) : undefined}
@@ -435,10 +437,10 @@ export const BookPage: React.FC<BookPageProps> = ({
                     {first && (
                         <div className="bim-d-ft">
                             <h3 className="bim-d-ft-h">
-                                {convert(`從${splitChapterTitle(first.title)[0] || '第一章'}讀起`)}
+                                {tr('bookPage.readFrom', { ch: convert(splitChapterTitle(first.title)[0]) || tr('bookPage.firstChapter') })}
                             </h3>
                             <span className="bim-d-meta">{convert((first.title || '').replace(/^第.+?[回章卷篇節节][　 ]*/, ''))}</span>
-                            {renderChapterAnchor(firstLink, <>{convert('進入閱讀頁')} <span aria-hidden="true">→</span></>, 'bim-d-ft-go bim-d-ui')}
+                            {renderChapterAnchor(firstLink, <>{tr('bookPage.enterReader')} <span aria-hidden="true">→</span></>, 'bim-d-ft-go bim-d-ui')}
                         </div>
                     )}
                     {chapters.length > 1 && (
@@ -457,14 +459,14 @@ export const BookPage: React.FC<BookPageProps> = ({
                     )}
                     {chapters.length > visibleChapters.length && (
                         <MoreLink
-                            label={`展開其餘 ${chapters.length - visibleChapters.length} ${chapUnit}`}
+                            label={tr('detail.expandRest', { n: chapters.length - visibleChapters.length, unit: chapUnit })}
                             onClick={() => setShowAllChapters(true)}
                         />
                     )}
                     {res.text.length > 0 && (
                         <>
                             {(chapters.length > 0 || fullTextPending) && (
-                                <p className="bim-d-meta bim-d-ui" style={{ margin: '14px 0 4px' }}>{convert('站外文本')}</p>
+                                <p className="bim-d-meta bim-d-ui" style={{ margin: '14px 0 4px' }}>{tr('bookPage.externalText')}</p>
                             )}
                             <table className="bim-d-zt">
                                 <tbody>
@@ -482,10 +484,10 @@ export const BookPage: React.FC<BookPageProps> = ({
             {res.groups.length > 0 && (
                 <Sec
                     id="images"
-                    title={hasPhysicalOnly ? '館藏' : '影印'}
+                    title={imagesTitle}
                     meta={<MetaLine items={[
-                        res.groups.length > 1 ? convert(`${res.groups.length} 組`) : '',
-                        convert(`${imageCount} 處`),
+                        res.groups.length > 1 ? tr('bookPage.groupCount', { n: res.groups.length }) : '',
+                        tr('bookPage.placeCount', { n: imageCount }),
                     ]} />}
                 >
                     <ResourceGroupList groups={res.groups} listedVolumeCounts={listedVolumeCounts} />
@@ -495,12 +497,12 @@ export const BookPage: React.FC<BookPageProps> = ({
             {hasLineage && (
                 <Sec
                     id="lineage"
-                    title="版本源流"
-                    meta={lineage?.derived_from?.length ? convert('據版本傳承著錄') : undefined}
+                    title={tr('bookPage.sec.lineage')}
+                    meta={lineage?.derived_from?.length ? tr('bookPage.lineageMeta') : undefined}
                     action={workGraph ? (
-                        <span className="bim-d-seg bim-d-ui" role="group" aria-label={convert('源流視圖')}>
-                            <button type="button" aria-pressed={lineageMode === 'flow'} onClick={() => setLineageMode('flow')}>{convert('卡片')}</button>
-                            <button type="button" aria-pressed={lineageMode === 'graph'} onClick={() => setLineageMode('graph')}>{convert('關係圖')}</button>
+                        <span className="bim-d-seg bim-d-ui" role="group" aria-label={tr('bookPage.lineageView')}>
+                            <button type="button" aria-pressed={lineageMode === 'flow'} onClick={() => setLineageMode('flow')}>{tr('bookPage.viewCards')}</button>
+                            <button type="button" aria-pressed={lineageMode === 'graph'} onClick={() => setLineageMode('graph')}>{tr('bookPage.viewGraph')}</button>
                         </span>
                     ) : undefined}
                 >
@@ -528,7 +530,7 @@ export const BookPage: React.FC<BookPageProps> = ({
             )}
 
             {containedIn.length > 0 && (
-                <Sec id="collections" title="收入叢編">
+                <Sec id="collections" title={tr('section.containedIn')}>
                     <table className="bim-d-zt">
                         <tbody>
                             {containedIn.map((entry, i) => {
@@ -544,7 +546,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                                             {vols.length > 0 && <VolumeList volumes={vols} unit={t.unit.volume} />}
                                         </td>
                                         <td className={`bim-d-zt-sub bim-d-zt-nowrap${total ? '' : ' bim-d-zt-blank'}`} style={{ textAlign: 'right' }}>
-                                            {total > 0 && convert(`全 ${total} ${t.unit.bu}`)}
+                                            {total > 0 && tr('bookPage.totalOf', { n: total, unit: t.unit.bu })}
                                         </td>
                                     </tr>
                                 );
@@ -555,7 +557,7 @@ export const BookPage: React.FC<BookPageProps> = ({
             )}
 
             {data.location_history?.length ? (
-                <Sec id="provenance" title="流轉歷史">
+                <Sec id="provenance" title={tr('section.locationHistory')}>
                     <ul className="bim-d-tl">
                         {data.location_history.map((loc, i) => (
                             <li key={i}>
@@ -575,9 +577,9 @@ export const BookPage: React.FC<BookPageProps> = ({
             ) : null}
 
             {nav.length === 0 && (
-                <Sec title="影印與文本">
+                <Sec title={tr('bookPage.sec.empty')}>
                     <p className="bim-d-meta bim-d-ui" style={{ margin: 0 }}>
-                        {convert('尚未著錄該版本的影印、文本與收藏信息。')}
+                        {tr('bookPage.emptyText')}
                     </p>
                 </Sec>
             )}
@@ -606,7 +608,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                             ...(work.authors || []).slice(0, 2).map(a =>
                                 `${a.dynasty ? `〔${convert(a.dynasty)}〕` : ''}${convert(a.name)}`),
                             convert(measureText(work, t.unit.juan)),
-                            work._edition_count ? convert(`${work._edition_count} 種版本`) : '',
+                            work._edition_count ? tr('bookPage.editionCount', { n: work._edition_count }) : '',
                         ]}
                     />
                     {work.description?.text && (
@@ -624,8 +626,8 @@ export const BookPage: React.FC<BookPageProps> = ({
                     <SideList
                         id="siblings"
                         timeline
-                        title={sortable ? '同作品版本' : t.relation.siblingVersions}
-                        meta={sortable ? convert('按年代') : convert(`${otherCount} 種`)}
+                        title={sortable ? tr('bookPage.siblings') : t.relation.siblingVersions}
+                        meta={sortable ? tr('bookPage.byEra') : tr('bookPage.kindCount', { n: otherCount })}
                         cap={windowed.length}
                         items={windowed.map(s => (s.id === data.id
                             ? <span className="bim-d-side-cur-mark" data-current="true">{convert(s.edition || s.title || s.id)}</span>
@@ -633,14 +635,14 @@ export const BookPage: React.FC<BookPageProps> = ({
                                 onNavigate={onNavigate} renderLink={renderLink} dense />
                         ))}
                         metas={windowed.map(s => [
-                            s.year != null ? (s.year < 0 ? `前${-s.year}` : String(s.year)) : '',
-                            s.id === data.id ? convert('本頁') : '',
+                            s.year != null ? (s.year < 0 ? tr('detail.bce', { n: -s.year }) : String(s.year)) : '',
+                            s.id === data.id ? tr('detail.thisPage') : '',
                         ].filter(Boolean).join(' '))}
                         currentIndex={windowed.findIndex(s => s.id === data.id)}
                     />
                     {work && (
                         <div className="bim-d-ui bim-d-side-all" style={{ marginTop: 4, fontSize: 13 }}>
-                            <BidLink id={work.id} label={convert(`在作品頁看全部 ${siblingIds.length} 種 →`)}
+                            <BidLink id={work.id} label={tr('bookPage.viewAllInWork', { n: siblingIds.length })}
                                 onNavigate={onNavigate} renderLink={renderLink} dense />
                         </div>
                     )}
@@ -663,11 +665,11 @@ export const BookPage: React.FC<BookPageProps> = ({
 
 /** 册次：一行辅助字「第 243–244 冊 · 2 冊」，不再逐个画方框 */
 function VolumeList({ volumes, unit }: { volumes: number[]; unit: string }) {
-    const { convert } = useConvert();
+    const { t } = useI18n();
     return (
         <span className="bim-d-meta bim-d-ui">
-            {convert(`第 ${formatVolumeRange(volumes, unit)} ${unit}`)}
-            {volumes.length > 1 && <><span className="bim-d-dot" />{convert(`${volumes.length} ${unit}`)}</>}
+            {t('bookPage.volumeRange', { range: formatVolumeRange(volumes, unit), unit })}
+            {volumes.length > 1 && <><span className="bim-d-dot" />{t('bookPage.volumeCount', { n: volumes.length, unit })}</>}
         </span>
     );
 }
@@ -687,7 +689,7 @@ function LineageFlow({ data, heading, yearText, refName, onNavigate, renderLink 
     onNavigate?: (id: string) => void;
     renderLink?: RenderLink;
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const lineage = data.lineage;
     const derived = lineage?.derived_from || [];
     const ancestors = derived.filter(d => d.ref_type !== 'book');
@@ -696,7 +698,9 @@ function LineageFlow({ data, heading, yearText, refName, onNavigate, renderLink 
     const related = lineage?.related_to || [];
     const hasFlow = derived.length > 0 || related.length > 0;
 
-    const conf = (c?: LineageConfidence) => (c && CONFIDENCE_LABEL[c] ? convert(`（${CONFIDENCE_LABEL[c]}）`) : '');
+    const conf = (c?: LineageConfidence) => (c && CONFIDENCE_KEYS.has(c)
+        ? t('bookPage.confidenceNote', { c: t(`bookPage.confidence.${c}` as MessageKey) })
+        : '');
     const link = (id: string, label: string) => (
         <BidLink id={id} label={convert(label || id)} onNavigate={onNavigate} renderLink={renderLink} dense />
     );
@@ -708,8 +712,8 @@ function LineageFlow({ data, heading, yearText, refName, onNavigate, renderLink 
                     {ancestors.map((d, i) => (
                         <li key={`a-${i}`} className="bim-d-lf-node">
                             <div className="bim-d-lf-dash">
-                                <span className="bim-d-lf-tag bim-d-ui">{convert(d.relation || '祖本')}</span>
-                                <span className="bim-d-lf-name">{convert('擬構祖本')}</span>
+                                <span className="bim-d-lf-tag bim-d-ui">{d.relation ? convert(d.relation) : t('bookPage.lineage.ancestor')}</span>
+                                <span className="bim-d-lf-name">{t('bookPage.lineage.reconstructed')}</span>
                                 {d.evidence && <span className="bim-d-meta">{convert(d.evidence)}{conf(d.confidence)}</span>}
                             </div>
                         </li>
@@ -725,7 +729,7 @@ function LineageFlow({ data, heading, yearText, refName, onNavigate, renderLink 
                     ))}
                     <li className="bim-d-lf-node bim-d-lf-cur">
                         <div className="bim-d-lf-here">
-                            <span className="bim-d-lf-tag bim-d-ui">{convert('本版')}</span>
+                            <span className="bim-d-lf-tag bim-d-ui">{t('bookPage.lineage.thisEdition')}</span>
                             <span className="bim-d-lf-name">{heading}</span>
                             {yearText && <span className="bim-d-lf-yr">{convert(yearText)}</span>}
                         </div>
@@ -743,7 +747,7 @@ function LineageFlow({ data, heading, yearText, refName, onNavigate, renderLink 
                     </li>
                     {related.length > 0 && (
                         <li className="bim-d-lf-node bim-d-lf-out">
-                            <span className="bim-d-lf-out-h bim-d-ui">{convert('翻刻 · 衍生')}</span>
+                            <span className="bim-d-lf-out-h bim-d-ui">{t('bookPage.lineage.derivatives')}</span>
                             <span className="bim-d-lf-chips">
                                 {related.map((r, i) => (
                                     <span key={i} className="bim-d-lf-chip" title={r.evidence ? convert(r.evidence) : undefined}>
@@ -758,7 +762,7 @@ function LineageFlow({ data, heading, yearText, refName, onNavigate, renderLink 
             )}
             {data.appendix?.map((entry, i) => (
                 <details key={`x-${i}`} className="bim-d-lf-app">
-                    <summary className="bim-d-ui"><span className="bim-d-meta">{convert('附記')}</span> {convert(entry.title)}</summary>
+                    <summary className="bim-d-ui"><span className="bim-d-meta">{t('bookPage.lineage.appendix')}</span> {convert(entry.title)}</summary>
                     <MarkdownText text={entry.text} plainStrong style={{ marginTop: 6, fontSize: 14, lineHeight: 1.9 }} />
                 </details>
             ))}
