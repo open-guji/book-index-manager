@@ -312,12 +312,19 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 .bim-d-rg { padding: 14px 16px 10px; border-radius: 10px; background: ${bim('card-bg')}; box-shadow: inset 0 0 0 1px ${bim('rule')}; }
 .bim-d-rg .bim-d-zt tbody tr:nth-child(odd) td { background: none; }
 
-/* 旁栏：时间轴点（同作品版本） */
-.bim-d-side-tl ul { position: relative; padding-left: 16px; }
-.bim-d-side-tl ul::before { content: ""; position: absolute; left: 3px; top: 12px; bottom: 12px; width: 1px; background: ${bim('rule')}; }
+/* 旁栏：时间轴点（同作品版本）。
+   选择器写成 .bim-d-side.bim-d-side-tl：后面的通用规则 .bim-d-side ul { padding: 0 } 与单类选择器同权、又在后，
+   曾把这里的 padding-left 盖掉，竖线落在字下、圆点在左边 16px 外，两者错开（用户 10-01 反馈，overview#337 B7）。
+   竖线按行画：每行画满本行高度，首行从圆点中心起、末行到圆点中心止，行高不一（手机 44px 点击区、长书名折行）也连得上；
+   圆点、竖线都按行高垂直居中，水平中心同在 left -12.5px。 */
+.bim-d-side.bim-d-side-tl ul { padding-left: 16px; }
 .bim-d-side-tl li { position: relative; }
-.bim-d-side-tl li::before { content: ""; position: absolute; left: -16px; top: 14px; width: 7px; height: 7px; border-radius: 50%;
+.bim-d-side-tl li::before { content: ""; position: absolute; z-index: 1; left: -16px; top: 50%; margin-top: -3.5px; width: 7px; height: 7px; border-radius: 50%;
   box-sizing: border-box; background: ${bim('page-bg')}; border: 1px solid ${bim('aux-fg')}; }
+.bim-d-side-tl li::after { content: ""; position: absolute; left: -13px; top: 0; bottom: 0; width: 1px; background: ${bim('rule')}; }
+.bim-d-side-tl li:first-child::after { top: 50%; }
+.bim-d-side-tl li:last-child::after { bottom: 50%; }
+.bim-d-side-tl li:only-child::after { display: none; }
 .bim-d-side-tl li.bim-d-side-cur::before { background: ${bim('accent')}; border-color: ${bim('accent')}; }
 
 /* 本页内检索（丛编子目） */

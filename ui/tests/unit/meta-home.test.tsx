@@ -153,13 +153,14 @@ describe('分区组件', () => {
         expect(container.querySelector('.bim-mh-tl-rows')).toBeNull();
         expect(container.querySelector('.bim-mh-tl-list')!.hasAttribute('data-only')).toBe(true);
     });
-    it('在线资源：对接中的画比例条，计划中的列一行；分母相同写进副题', () => {
+    it('在线资源：对接中的画比例条，计划中的列一行；副题不写分母（overview#337 B3）', () => {
         render(<MetaOnlineSites sites={S.sites} />);
         expect(screen.getByRole('link', { name: 'CText 中國哲學書電子化計劃' }).getAttribute('href')).toBe('https://ctext.org');
         expect(screen.getByText(/5,700 \/ 11,381/)).toBeTruthy();
         expect(screen.getByText('計劃接入：國家圖書館·中華古籍資源庫')).toBeTruthy();
         render(<MetaHomeView sections={S} links={LINKS} />);
-        expect(screen.getByText('外部數字圖書館與本站條目的對接，以 11,381 種為分母')).toBeTruthy();
+        expect(screen.getByText('外部數字圖書館與本站條目的對接')).toBeTruthy();
+        expect(screen.queryByText(/為分母/)).toBeNull();
     });
     it('数据与授权：8 项规模；存佚没有计数时只写说明；版本给了才出', () => {
         const { rerender } = render(<MetaDataLicense stats={S.stats} links={LINKS} />);

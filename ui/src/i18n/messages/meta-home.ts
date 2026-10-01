@@ -98,7 +98,6 @@ export const metaHome = defineMessages({
     allNPeopleMore: '全部 {n} 人 →',
     lineageSub: '版本多的作品，看各本的源流與異同',
     sitesSub: '外部數字圖書館與本站條目的對接',
-    sitesSubDen: '外部數字圖書館與本站條目的對接，以 {n} 種為分母',
     dataSub: '規模、存佚、許可與版本',
 }, {
     typeShort: {
@@ -197,6 +196,5 @@ export const metaHome = defineMessages({
     allNPeopleMore: '全部 {n} 人 →',
     lineageSub: '版本多的作品，看各本的源流与异同',
     sitesSub: '外部数字图书馆与本站条目的对接',
-    sitesSubDen: '外部数字图书馆与本站条目的对接，以 {n} 种为分母',
     dataSub: '规模、存佚、许可与版本',
 });

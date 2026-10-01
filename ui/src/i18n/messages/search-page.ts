@@ -20,6 +20,8 @@ export const searchPage = defineMessages({
     statPoem: '詩詞',
     statPoemUnit: '首',
     statCollection: '叢編',
+    /** 网站搜索页检索框右边的按钮（overview#337 B4） */
+    submit: '搜索',
 }, {
     loss: {
         all: '全部',
@@ -36,4 +38,5 @@ export const searchPage = defineMessages({
     statPoem: '诗词',
     statPoemUnit: '首',
     statCollection: '丛编',
+    submit: '搜索',
 });

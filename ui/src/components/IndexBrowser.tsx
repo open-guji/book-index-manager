@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { IndexType, IndexEntry, IndexSource, SyncConfig, GroupedSearchResult } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { ModeIndicator } from './ModeIndicator';
-import { SearchInput } from './SearchInput';
+import { SearchInput, saveSearchTerm } from './SearchInput';
 import { useT, useConvert, formatTemplate } from '../i18n';
 import { splitHighlightSnippet } from '../core/highlight';
 import { bim } from '../styles/tokens';
@@ -315,6 +315,47 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     const hasAnyResults = searchResults &&
         (searchResults.works.length > 0 || searchResults.books.length > 0 || searchResults.collections.length > 0);
 
+    const searchBarItems = (
+        <>
+            <SearchInput
+                transport={transport}
+                value={searchQuery}
+                onChange={handleInputChange}
+                onSearch={handleSearchCommit}
+                onEntrySelect={handleEntryClick}
+            />
+            {filtersEnabled && (
+                <button
+                    type="button"
+                    className="bim-ib-submit"
+                    onClick={() => {
+                        const q = searchQuery.trim();
+                        if (q) saveSearchTerm(q);
+                        handleSearchCommit(searchQuery);
+                    }}
+                >
+                    {t.searchPage.submit}
+                </button>
+            )}
+            {onNewEntry && (
+                <button
+                    onClick={() => onNewEntry('work')}
+                    style={{
+                        padding: '8px 14px',
+                        border: `1px solid ${bim('primary')}`,
+                        borderRadius: '6px',
+                        background: 'transparent',
+                        color: bim('primary'),
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                    }}
+                >
+                    {t.action.newEntry}
+                </button>
+            )}
+        </>
+    );
+
     return (
         <div
             className="bim-browser-container"
@@ -322,10 +363,13 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
             // 容器先占满一屏，页脚始终在首屏之外，就不会被结果撑高而整块下推（overview#268，CLS）
             style={reserveViewportHeight ? { minHeight: '100svh' } : undefined}
         >
-            <style>{STATS_CSS}</style>
+            <style>{STATS_CSS + (filtersEnabled ? SEARCH_BAR_CSS : '')}</style>
+            {/* 网站搜索页（filtersEnabled）不出「古籍资源索引」标题，检索框顶到最上（overview#337 B4）；
+                宿主还要标题栏右侧内容或模式指示时，标题栏照出、只是不写标题 */}
+            {(!filtersEnabled || headerRight || !hideModeIndicator) && (
             <header style={{ padding: '12px 20px', borderBottom: `1px solid ${bim('widget-border')}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h1 style={{ margin: 0, fontSize: '18px', color: bim('fg') }}>{t.browser.title}</h1>
+                    {filtersEnabled ? <span /> : <h1 style={{ margin: 0, fontSize: '18px', color: bim('fg') }}>{t.browser.title}</h1>}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {headerRight}
                         {!hideModeIndicator && (
@@ -342,33 +386,20 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     </div>
                 </div>
             </header>
+            )}
 
-            {/* Search bar */}
-            <div style={{ display: 'flex', gap: '8px', padding: '12px 20px', alignItems: 'center' }}>
-                <SearchInput
-                    transport={transport}
-                    value={searchQuery}
-                    onChange={handleInputChange}
-                    onSearch={handleSearchCommit}
-                    onEntrySelect={handleEntryClick}
-                />
-                {onNewEntry && (
-                    <button
-                        onClick={() => onNewEntry('work')}
-                        style={{
-                            padding: '8px 14px',
-                            border: `1px solid ${bim('primary')}`,
-                            borderRadius: '6px',
-                            background: 'transparent',
-                            color: bim('primary'),
-                            cursor: 'pointer',
-                            fontSize: '13px',
-                        }}
-                    >
-                        {t.action.newEntry}
-                    </button>
-                )}
-            </div>
+            {/* Search bar。网站搜索页：与下方「左栏筛选＋结果」同一套栅格，检索框左缘对齐结果区左缘、
+                不撑满，右边一个「搜索」按钮（再搜一次不必回车）。 */}
+            {filtersEnabled ? (
+                <div className="bim-ib-bar" data-nofilters={transport.supportsSearchFilters ? undefined : 'true'}>
+                    <span aria-hidden="true" />
+                    <div className="bim-ib-bar-main">{searchBarItems}</div>
+                </div>
+            ) : (
+                <div style={{ display: 'flex', gap: '8px', padding: '12px 20px', alignItems: 'center' }}>
+                    {searchBarItems}
+                </div>
+            )}
 
             {/* 统计摘要 */}
             {showingRecent && (
@@ -686,6 +717,27 @@ function isPlainLeftClick(e: React.MouseEvent): boolean {
 export const STATS_CSS = `
 .bim-ib-stats { min-height: 25px; box-sizing: content-box; }
 @media (max-width: 719px) { .bim-ib-stats { min-height: 46px; } }
+`;
+
+/**
+ * 网站搜索页的检索框行（filtersEnabled，overview#337 B4）：栅格与 .bim-sr-layout 一致（208px 左栏 + 40px 间距），
+ * 检索框放在结果列、左缘对齐结果区，最宽 720px，右边「搜索」按钮；窄屏（≤719px）左栏收起，检索框占满一行。
+ */
+export const SEARCH_BAR_CSS = `
+.bim-ib-bar { display: grid; grid-template-columns: 208px minmax(0, 1fr); column-gap: 40px; padding: 0 20px 16px; }
+.bim-ib-bar[data-nofilters] { grid-template-columns: minmax(0, 1fr); }
+.bim-ib-bar[data-nofilters] > [aria-hidden] { display: none; }
+.bim-ib-bar-main { display: flex; gap: 8px; align-items: stretch; max-width: 720px; min-width: 0; }
+.bim-ib-submit { flex: none; min-height: 40px; padding: 0 20px; border: 0; border-radius: 6px; background: ${bim('accent')};
+  color: ${bim('on-color-fg')}; font: inherit; font-size: 14px; letter-spacing: .1em; cursor: pointer; }
+.bim-ib-submit:hover { filter: brightness(1.1); }
+.bim-ib-submit:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: 2px; }
+@media (max-width: 719px) {
+  .bim-ib-bar { grid-template-columns: minmax(0, 1fr); padding: 0 16px 12px; }
+  .bim-ib-bar > [aria-hidden] { display: none; }
+  .bim-ib-bar-main { max-width: none; }
+  .bim-ib-submit { min-height: 44px; padding: 0 16px; }
+}
 `;
 
 export const VIEW_ALL_CSS = `

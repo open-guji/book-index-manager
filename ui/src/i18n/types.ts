@@ -200,7 +200,6 @@ export interface CoreMessages {
         sortEraDesc: string;
         sortTitleAsc: string;
         sortTitleDesc: string;
-        onlyWorksNote: string;
     };
     home: {
         title: string;

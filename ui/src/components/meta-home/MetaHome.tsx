@@ -506,8 +506,6 @@ export function MetaHomeView({
     const nav = (Object.keys(ids) as (keyof typeof ids)[]).filter((k) => has[k]);
     const navText = (k: keyof typeof ids) => t(`metaHome.nav.${k}`);
     const more = (href: string | undefined, text: string) => (href ? <a className="bim-rh-more" href={href}>{text}</a> : undefined);
-    const sitesDen = s.sites.find((x) => x.total > 0)?.total;
-    const sameDen = sitesDen != null && s.sites.every((x) => x.total === 0 || x.total === sitesDen);
     return (
         <div className={className ? `bim-rh bim-mh ${className}` : 'bim-rh bim-mh'}>
             <style>{READ_HOME_CSS + META_HOME_CSS}</style>
@@ -574,11 +572,7 @@ export function MetaHomeView({
                     </ReadSection>
                 )}
                 {has.sites && (
-                    <ReadSection
-                        id={ids.sites}
-                        title={navText('sites')}
-                        sub={sameDen ? t('metaHome.sitesSubDen', { n: fmtCount(sitesDen!) }) : t('metaHome.sitesSub')}
-                    >
+                    <ReadSection id={ids.sites} title={navText('sites')} sub={t('metaHome.sitesSub')}>
                         <MetaOnlineSites sites={s.sites} />
                     </ReadSection>
                 )}

@@ -190,7 +190,6 @@ export const zhHant: CoreMessages = {
         sortEraDesc: '由晚到早',
         sortTitleAsc: '拼音 A→Z',
         sortTitleDesc: '拼音 Z→A',
-        onlyWorksNote: '部類、存佚只適用於作品；選了它們，版本、叢編、人物不參與。',
     },
     home: {
         title: '古籍索引',

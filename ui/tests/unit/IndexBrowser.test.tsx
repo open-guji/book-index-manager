@@ -332,3 +332,31 @@ describe('IndexBrowser 结果页签与去 emoji（overview#286 v3）', () => {
     });
 });
 
+
+describe('网站搜索页（filtersEnabled）检索框行（overview#337 B4）', () => {
+    it('不出「古籍资源索引」标题；检索框右边有「搜索」按钮，点了按当前词再搜一次', async () => {
+        const searchAll = vi.fn(async () => ({
+            works: [], books: [], collections: [], entities: [],
+            totalWorks: 0, totalBooks: 0, totalCollections: 0, totalEntities: 0,
+        }));
+        const onQueryChange = vi.fn();
+        const { container } = render(
+            <IndexBrowser transport={makeTransport({ searchAll })} filtersEnabled hideModeIndicator onQueryChange={onQueryChange} />,
+        );
+        expect(screen.queryByRole('heading', { name: /古籍資源索引|古籍资源索引/ })).toBeNull();
+        expect(container.querySelector('header')).toBeNull();
+        const bar = container.querySelector('.bim-ib-bar')!;
+        expect(bar).toBeTruthy();
+        fireEvent.change(screen.getByPlaceholderText(/搜索/), { target: { value: '史記' } });
+        fireEvent.click(screen.getByRole('button', { name: '搜索' }));
+        expect(onQueryChange).toHaveBeenLastCalledWith('史記');
+        await waitFor(() => expect(searchAll).toHaveBeenCalled());
+    });
+
+    it('不开 filtersEnabled 时照旧：有标题、没有「搜索」按钮', () => {
+        const { container } = render(<IndexBrowser transport={makeTransport()} hideModeIndicator />);
+        expect(container.querySelector('header h1')).toBeTruthy();
+        expect(screen.queryByRole('button', { name: '搜索' })).toBeNull();
+        expect(container.querySelector('.bim-ib-bar')).toBeNull();
+    });
+});
