@@ -123,6 +123,8 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
   color: ${bim('accent')};
 }
 .bim-d-more:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* CapMore：桌面只出桌面文案；只在手机端才有得展开的按钮桌面不出 */
+.bim-d-more-n, .bim-d-more.bim-d-more-ncap { display: none; }
 
 /* 著录：朝代时间轴 + 单卡翻页 */
 .bim-d-lu { display: block; }
@@ -459,6 +461,11 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
   .bim-d-pick { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; padding: 12px 14px; }
   .bim-d-pick-n { margin: 0; grid-column: 2; grid-row: 1 / span 2; }
   .bim-d-find { flex-basis: 100%; min-height: 40px; }
+  /* 长列表手机端首批只露 NARROW_CAP（6）条，其余等「展開其餘」（overview#325）；按钮换成手机文案 */
+  .bim-d-zt[data-ncap] tbody tr:nth-child(n+7) { display: none; }
+  .bim-d-more-w { display: none; }
+  .bim-d-more-n { display: inline; }
+  .bim-d-more.bim-d-more-ncap { display: inline-flex; }
 }
 
 /*
@@ -684,6 +691,31 @@ export function CheckFilter({ label, checked, onChange }: {
 }
 
 /** 「展开其余 N 种」「显示更多」：文字链接样式的按钮 */
+/** 手机端（窄屏）长列表首批只露这么多行，其余收进「展開其餘」（overview#325） */
+export const NARROW_CAP = 6;
+
+/** 手机端要不要收：只多一行就不收（为一行出个「展開其餘 1」不划算）。表格的 data-ncap 也按它给 */
+export const narrowCapped = (total: number) => total > NARROW_CAP + 1;
+
+/**
+ * 长列表的「展開其餘 N 種」：桌面按已渲染的 shown 条截，手机端再收到前 NARROW_CAP 条。
+ * 手机端的收起只靠样式（表格带 data-ncap，见窄屏段 .bim-d-zt[data-ncap]），不按视口改渲染条数——
+ * SSR 与水合一致，也不会加载后再跳；按钮里桌面、手机两套文案各算各的，用样式切换。
+ * 只在未展开时渲染（展开后由调用方去掉 data-ncap 并不再渲染本按钮）。
+ */
+export function CapMore({ total, shown, unit, onClick }: { total: number; shown: number; unit: string; onClick: () => void }) {
+    const { convert } = useConvert();
+    const wide = total - shown;
+    const narrow = narrowCapped(total) ? total - Math.min(shown, NARROW_CAP) : wide;
+    if (narrow <= 0) return null;
+    return (
+        <button type="button" className={`bim-d-more bim-d-ui${wide > 0 ? '' : ' bim-d-more-ncap'}`} onClick={onClick}>
+            {wide > 0 && <span className="bim-d-more-w">{convert(`展開其餘 ${wide} ${unit}`)}</span>}
+            <span className="bim-d-more-n">{convert(`展開其餘 ${narrow} ${unit}`)}</span>
+        </button>
+    );
+}
+
 export function MoreLink({ label, onClick }: { label: string; onClick: () => void }) {
     const { convert } = useConvert();
     return (

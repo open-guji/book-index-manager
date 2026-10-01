@@ -153,7 +153,12 @@ export function ReadShelf({ topic, links, hint, legendCount = '脊下「2本」�
     );
 }
 
-/** 专题的一组：书名＋作者，手机上只露前 6 条，可展开 */
+/** 手机端专题、丛编分组只露前几条（read-home-css 窄屏段的 nth-child 要跟着改） */
+export const GROUP_NARROW_CAP = 4;
+/** 只多一条就不收（为一条出个「全部 N 部」不划算）；收的组带 data-cap */
+export const groupCapped = (n: number) => n > GROUP_NARROW_CAP + 1;
+
+/** 专题的一组：书名＋作者，手机上只露前 GROUP_NARROW_CAP 条，可展开 */
 export function ReadTopicGroup({ topic, links }: { topic: ReadTopic; links?: Partial<ReadHomeLinks> }) {
     const { convert } = useConvert();
     const l = withDefaultLinks(links);
@@ -161,7 +166,7 @@ export function ReadTopicGroup({ topic, links }: { topic: ReadTopic; links?: Par
     if (!topic.items.length) return null;
     const hid = `bim-rh-g-${topic.key}`;
     return (
-        <div className="bim-rh-grp" data-open={open ? '' : undefined}>
+        <div className="bim-rh-grp" data-cap={groupCapped(topic.items.length) ? '' : undefined} data-open={open ? '' : undefined}>
             <h3 className="bim-rh-gt" id={hid}>{convert(topic.label)}<small className="bim-rh-num">{convert(`${fmtCount(topic.items.length)} 部`)}</small></h3>
             <ul className="bim-rh-rows" aria-labelledby={hid}>
                 {topic.items.map((b) => {
@@ -178,7 +183,7 @@ export function ReadTopicGroup({ topic, links }: { topic: ReadTopic; links?: Par
                     );
                 })}
             </ul>
-            {topic.items.length > 6 && (
+            {groupCapped(topic.items.length) && (
                 <button type="button" className="bim-rh-expand" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
                     {convert(open ? '收起' : `全部 ${topic.items.length} 部`)}
                 </button>
@@ -330,7 +335,7 @@ export function ReadPeriodBand({ periods, unknown, links }: { periods: ReadPerio
             </ul>
             <p className="bim-rh-pfoot bim-rh-num">
                 {!!unknown && <span>{convert(`另有 ${fmtCount(unknown)} 部作者無朝代，在「四部」和搜索裏能找到`)}</span>}
-                <span>{convert('窄段懸停看全名')}</span>
+                <span className="bim-rh-hover-hint">{convert('窄段懸停看全名')}</span>
             </p>
         </>
     );

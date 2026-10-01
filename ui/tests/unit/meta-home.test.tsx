@@ -113,6 +113,27 @@ describe('分区组件', () => {
         expect(cells[0].textContent).toBe('文淵閣');
         expect(screen.getByRole('list', { name: '四庫續補' })).toBeTruthy();
     });
+    it('丛编分组：超过 5 条（只多一条不收）出「全部 N 種」（手机端才显示），点了展开（overview#325）', () => {
+        const big = {
+            key: 'kebenyingyin', label: '刻本與影印',
+            items: [1, 2, 3, 4, 5, 6].map((i) => ({ id: `c${i}`, title: `叢編${i}` })),
+        } as unknown as MetaHomeSections['collection_groups'][number];
+        const { container } = render(<MetaCollectionGroups groups={[big]} links={LINKS} />);
+        const btn = screen.getByText(`全部 ${big.items.length} 種`);
+        expect(btn).toHaveAttribute('aria-expanded', 'false');
+        expect(container.querySelector('.bim-rh-grp')!.hasAttribute('data-cap')).toBe(true);
+        fireEvent.click(btn);
+        expect(container.querySelector('.bim-rh-grp')!.hasAttribute('data-open')).toBe(true);
+    });
+    it('丛编分组：5 条（只比 4 多一条）不收，也不出按钮', () => {
+        const five = {
+            key: 'g5', label: '五種',
+            items: [1, 2, 3, 4, 5].map((i) => ({ id: `d${i}`, title: `叢編${i}` })),
+        } as unknown as MetaHomeSections['collection_groups'][number];
+        const { container } = render(<MetaCollectionGroups groups={[five]} links={LINKS} />);
+        expect(container.querySelector('.bim-rh-grp')!.hasAttribute('data-cap')).toBe(false);
+        expect(container.querySelector('.bim-rh-expand')).toBeNull();
+    });
     it('人物：有年份的上轴，缺年份的轴下注明', () => {
         const { container } = render(<MetaPeopleTimeline people={S.bibliographers} links={LINKS} />);
         expect(container.querySelectorAll('.bim-mh-tl-bar')).toHaveLength(4);

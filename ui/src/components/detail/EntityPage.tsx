@@ -26,7 +26,7 @@ import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, type RenderLink } from './primitives';
 import { SECTIONS, sectionKey } from './shared';
 import {
-    DetailGrid, Sec, MetaLine, TabFilter, MoreLink, SummaryCard, CardFoot, SideList, descNeedsClamp,
+    DetailGrid, Sec, MetaLine, TabFilter, CapMore, narrowCapped, SummaryCard, CardFoot, SideList, descNeedsClamp,
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import { bim } from '../../styles/tokens';
@@ -422,7 +422,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                     {convert(sort === 'default' ? '按版本數排列' : '按著錄順序')}
                 </button>
             </div>
-            <table className="bim-d-zt">
+            <table className="bim-d-zt" data-ncap={!showAll && narrowCapped(filtered.length) ? '' : undefined}>
                 <thead className="bim-d-ui">
                     <tr>
                         <th>{convert('作品')}</th>
@@ -462,8 +462,8 @@ export const EntityPage: React.FC<EntityPageProps> = ({
             {visible.length === 0 && (
                 <p className="bim-d-meta bim-d-ui" style={{ margin: '12px 12px 0' }}>{convert('該職任下的著作尚未著錄。')}</p>
             )}
-            {filtered.length > visible.length && (
-                <MoreLink label={`展開其餘 ${filtered.length - visible.length} 種著作`} onClick={() => setShowAll(true)} />
+            {!showAll && (
+                <CapMore total={filtered.length} shown={visible.length} unit="種著作" onClick={() => setShowAll(true)} />
             )}
         </Sec>
     </>);
