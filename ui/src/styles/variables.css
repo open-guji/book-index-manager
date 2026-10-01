@@ -218,6 +218,46 @@
     --bim-fr-shadow: 0 1px 0 var(--bim-rule), 0 12px 32px -18px rgba(40, 36, 31, 0.25);
     /* 页签行下沿线颜色（疏朗不画，界栏画） */
     --bim-fr-tab-bd: transparent;
+    /* 分区标题字号。界栏标题在框顶标题栏里，小一档 19px */
+    --bim-fr-hd-size: 24px;
+    /* 卡片边框。疏朗不画（靠卡面底与淡投影）；界栏 1px */
+    --bim-fr-card-bd: 1px solid transparent;
+    /* 卡片底 */
+    --bim-fr-card-bg: var(--bim-card-bg);
+    /* 列表行线、块内小分割线。疏朗不画（靠行距）；界栏 1px */
+    --bim-fr-row-bd: 1px solid transparent;
+    /* 列表行内边距。界栏收紧 7px 2px */
+    --bim-fr-row-pad: 10px 2px;
+    /* 顶栏、分区导航（吸顶锚点条）的线 */
+    --bim-fr-chrome-bd: 1px solid transparent;
+    /* 标签、版本签、计数签、工具按钮的边框。疏朗浅底无框；界栏透明底加框 */
+    --bim-fr-tag-bd: 1px solid transparent;
+    /* 标签底 */
+    --bim-fr-tag-bg: var(--bim-tint-bg);
+    /* 表格格线。疏朗不画（靠斑马纹）；界栏全格线 */
+    --bim-fr-tbl-cell-bd: 0 solid transparent;
+    /* 表格斑马纹（只在疏朗下有） */
+    --bim-fr-tbl-zebra: var(--bim-tint-bg);
+    /* 侧栏里的块、提示块的边框 */
+    --bim-fr-rail-bd: 1px solid transparent;
+    /* 侧栏块底。疏朗浅底；界栏卡面底 */
+    --bim-fr-rail-bg: var(--bim-tint-bg);
+    /* 题签、书脊（竖排书名）的边框。界栏是强调色浅线 */
+    --bim-fr-spine-bd: 1px solid transparent;
+    /* 题签、书脊底。疏朗浅色实底；界栏卡面底（正史原志两种版式都是强调色实底） */
+    --bim-fr-spine-bg: var(--bim-flag-bg);
+    /* 书架架板（border 简写）。只在界栏下画 3px */
+    --bim-fr-plank: 0 solid transparent;
+    /* 时间轴轴线。界栏 1px */
+    --bim-fr-axis-bd: 0 solid transparent;
+    /* 时间轴底带高度。疏朗用 6px 浅色带代替轴线；界栏 0 */
+    --bim-fr-axis-band: 6px;
+    /* 时间轴刻度短线长度。界栏 5px */
+    --bim-fr-tick: 0;
+    /* 年代带各段之间的空隙。疏朗 3px；界栏紧贴 */
+    --bim-fr-band-gap: 3px;
+    /* 年代带外框与段间分隔。界栏 1px */
+    --bim-fr-band-bd: 0 solid transparent;
 
     /* ==== 阅读器（整理本 / 全文） ==== */
     /* 宿主吸顶导航的高度：阅读器工具条、目录与书影侧栏在它下面吸顶（如 60px） */
@@ -284,4 +324,23 @@
     --bim-fr-side-gap: 20px;
     --bim-fr-shadow: none;
     --bim-fr-tab-bd: var(--bim-rule);
+    --bim-fr-hd-size: 19px;
+    --bim-fr-card-bd: 1px solid var(--bim-rule);
+    --bim-fr-row-bd: 1px solid var(--bim-rule);
+    --bim-fr-row-pad: 7px 2px;
+    --bim-fr-chrome-bd: 1px solid var(--bim-rule);
+    --bim-fr-tag-bd: 1px solid var(--bim-rule-strong);
+    --bim-fr-tag-bg: transparent;
+    --bim-fr-tbl-cell-bd: 1px solid var(--bim-rule);
+    --bim-fr-tbl-zebra: transparent;
+    --bim-fr-rail-bd: 1px solid var(--bim-rule);
+    --bim-fr-rail-bg: var(--bim-card-bg);
+    --bim-fr-spine-bd: 1px solid var(--bim-rule-accent-soft);
+    --bim-fr-spine-bg: var(--bim-card-bg);
+    --bim-fr-plank: 3px solid var(--bim-rule-strong);
+    --bim-fr-axis-bd: 1px solid var(--bim-rule-strong);
+    --bim-fr-axis-band: 0;
+    --bim-fr-tick: 5px;
+    --bim-fr-band-gap: 0;
+    --bim-fr-band-bd: 1px solid var(--bim-rule-dashed);
 }

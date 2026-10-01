@@ -200,7 +200,17 @@ describe('各分区', () => {
 describe('样式：只走令牌', () => {
     it('界栏规则读 --bim-fr-*；有手机断点；墨下文字链接加下划线（写死颜色由 tokens.test 守门）', () => {
         expect(READ_HOME_CSS).toMatch(/\.bim-rh-sec \{[^}]*border: var\(--bim-fr-bd/);
-        expect(READ_HOME_CSS).toMatch(/:root\[data-layout="boxed"\] \.bim-rh-bu-c \{[^}]*var\(--bim-fr-bd/);
+        expect(READ_HOME_CSS).toMatch(/\.bim-rh-bu-c \{[^}]*border: var\(--bim-fr-card-bd/);
+        expect(READ_HOME_CSS).toMatch(/\.bim-rh-rows a \{[^}]*border-top: var\(--bim-fr-row-bd/);
+        expect(READ_HOME_CSS).toMatch(/\.bim-rh-shelf \{[^}]*border-bottom: var\(--bim-fr-plank/);
+    });
+
+    it('版式判准：边框一律走 --bim-fr-* 令牌，不写死；data-layout 选择器只用在悬停态与标题间距这几处例外', () => {
+        const decls = READ_HOME_CSS.match(/border(?:-(?:top|bottom|left|right|block))?:\s*[^;]+;/g) ?? [];
+        const hard = decls.filter((d) => !/var\(--bim-fr-|:\s*0;|transparent/.test(d));
+        expect(hard).toEqual([]);
+        const boxed = READ_HOME_CSS.split('\n').filter((l) => l.startsWith(':root[data-layout="boxed"]'));
+        expect(boxed.every((l) => /:hover|bim-rh-hd \{/.test(l))).toBe(true);
         expect(READ_HOME_CSS).toContain('@media (max-width: 719px)');
         expect(READ_HOME_CSS).toMatch(/:root\[data-theme="ink"\][^{]*\{[^}]*text-decoration: underline/);
     });
