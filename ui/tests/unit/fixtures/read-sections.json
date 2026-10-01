@@ -1,0 +1,1650 @@
+{
+ "counts": {
+  "readable": 6323,
+  "works": 6200,
+  "books": 123,
+  "pieces": 1580
+ },
+ "picks": [
+  {
+   "id": "96kzii6z28",
+   "title": "脂硯齋重評石頭記",
+   "authors": [
+    {
+     "name": "曹雪芹",
+     "dynasty": "清"
+    }
+   ],
+   "text_count": 1,
+   "blurb": "现存《红楼梦》最早的抄本系统，存十六回，脂批最密。想读脂批，从这一本起。",
+   "slip": "石頭記",
+   "type_label": "小说",
+   "edition": "甲戌本"
+  },
+  {
+   "id": "d59f2mpwwagw",
+   "title": "古文觀止",
+   "authors": [
+    {
+     "name": "吳楚材",
+     "dynasty": "清"
+    }
+   ],
+   "text_count": 1,
+   "blurb": "选先秦至明代文章二百二十二篇，三百年来最通行的古文读本。",
+   "slip": "古文觀止",
+   "type_label": "文章选本"
+  },
+  {
+   "id": "d59f2mpwl1xf",
+   "title": "唐詩三百首",
+   "authors": [
+    {
+     "name": "孫洙",
+     "dynasty": "清"
+    }
+   ],
+   "text_count": 1,
+   "blurb": "蘅塘退士按诗体编次的唐诗选本，五古、七律、绝句各成一卷。",
+   "slip": "唐詩三百首",
+   "type_label": "诗选"
+  },
+  {
+   "id": "d59f2870u874",
+   "title": "文選",
+   "authors": [
+    {
+     "name": "蕭統",
+     "dynasty": "南朝梁"
+    }
+   ],
+   "text_count": 1,
+   "blurb": "现存最早的诗文总集，收先秦至梁七百余篇，分体编次，唐宋人读书必备。",
+   "slip": "昭明文選",
+   "type_label": "诗文总集"
+  },
+  {
+   "id": "d59f23o7ygw2",
+   "title": "漢書·藝文志",
+   "authors": [
+    {
+     "name": "班固",
+     "dynasty": "東漢"
+    }
+   ],
+   "text_count": 1,
+   "blurb": "据刘歆《七略》删订的现存最早图书目录，六略三十八种，每条可跳到作品页。",
+   "slip": "漢書藝文志",
+   "type_label": "史志目录"
+  },
+  {
+   "id": "d59dh3vo9af4",
+   "title": "欽定四庫全書總目",
+   "authors": [
+    {
+     "name": "紀昀",
+     "dynasty": "清"
+    }
+   ],
+   "text_count": 1,
+   "blurb": "二百卷，著录与存目一万余种，一书一篇提要，是查考古书的总门径。",
+   "slip": "四庫總目",
+   "type_label": "书目提要"
+  }
+ ],
+ "topics": [
+  {
+   "key": "shizhi",
+   "label": "史志目錄",
+   "shelf": true,
+   "items": [
+    {
+     "id": "d59f23o7ygw2",
+     "title": "漢書藝文志",
+     "text_count": 3,
+     "period_of": "漢",
+     "orig": true
+    },
+    {
+     "id": "d59f2o2lm0ht",
+     "title": "補後漢書藝文志",
+     "text_count": 1,
+     "period_of": "後漢",
+     "authors": [
+      {
+       "name": "侯康",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2mp12329",
+     "title": "後漢藝文志",
+     "text_count": 1,
+     "period_of": "後漢",
+     "authors": [
+      {
+       "name": "姚振宗",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2mp1dblt",
+     "title": "三國藝文志",
+     "text_count": 1,
+     "period_of": "三國"
+    },
+    {
+     "id": "d59f2o2larya",
+     "title": "補晉書經籍志",
+     "text_count": 1,
+     "period_of": "晉",
+     "authors": [
+      {
+       "name": "吳士鑑",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2mp2xibm",
+     "title": "補晉書藝文志",
+     "text_count": 1,
+     "period_of": "晉",
+     "authors": [
+      {
+       "name": "丁國鈞",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2o2lx91d",
+     "title": "補晉書藝文志",
+     "text_count": 1,
+     "period_of": "晉",
+     "authors": [
+      {
+       "name": "黃逢元",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2o2m8hky",
+     "title": "補晉書藝文志",
+     "text_count": 1,
+     "period_of": "晉",
+     "authors": [
+      {
+       "name": "文廷式",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f5ilweo6h",
+     "title": "補晉書藝文志",
+     "text_count": 1,
+     "period_of": "晉",
+     "authors": [
+      {
+       "name": "秦榮光",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2o2muyo2",
+     "title": "補宋書藝文志",
+     "text_count": 1,
+     "period_of": "劉宋",
+     "authors": [
+      {
+       "name": "王仁俊",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2ofz9b0h",
+     "title": "補宋書藝文志",
+     "text_count": 1,
+     "period_of": "劉宋",
+     "authors": [
+      {
+       "name": "聶崇岐",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2ofu9i4i",
+     "title": "補南齊書經籍志",
+     "text_count": 1,
+     "period_of": "南齊"
+    },
+    {
+     "id": "d59f2ofr54ht",
+     "title": "補南齊書藝文志",
+     "text_count": 1,
+     "period_of": "南齊"
+    },
+    {
+     "id": "d59f2o2koav5",
+     "title": "補梁書藝文志",
+     "text_count": 1,
+     "period_of": "梁"
+    },
+    {
+     "id": "d59f2ofrgdfm",
+     "title": "補陳書藝文志",
+     "text_count": 1,
+     "period_of": "陳"
+    },
+    {
+     "id": "d59f2og3xv5t",
+     "title": "補魏書藝文志",
+     "text_count": 1,
+     "period_of": "魏"
+    },
+    {
+     "id": "d59f2og3xv5s",
+     "title": "補北齊書藝文志",
+     "text_count": 1,
+     "period_of": "北齊"
+    },
+    {
+     "id": "d59f2og98w75",
+     "title": "補周書藝文志",
+     "text_count": 1,
+     "period_of": "周"
+    },
+    {
+     "id": "d59f2ofyy29s",
+     "title": "補南北史藝文志",
+     "text_count": 1,
+     "period_of": "南北朝"
+    },
+    {
+     "id": "d59f28nmafwh",
+     "title": "隋書經籍志",
+     "text_count": 2,
+     "period_of": "隋",
+     "orig": true
+    },
+    {
+     "id": "d59f2gcburcx",
+     "title": "舊唐書經籍志",
+     "text_count": 2,
+     "period_of": "唐",
+     "orig": true
+    },
+    {
+     "id": "d59f2hl0cmio",
+     "title": "新唐書藝文志",
+     "text_count": 2,
+     "period_of": "唐",
+     "orig": true
+    },
+    {
+     "id": "d59f2gdp696q",
+     "title": "宋史藝文志",
+     "text_count": 2,
+     "period_of": "宋",
+     "orig": true
+    },
+    {
+     "id": "d59f2mp38qv4",
+     "title": "宋史藝文志補",
+     "text_count": 1,
+     "period_of": "宋"
+    },
+    {
+     "id": "d59f2mp1zsox",
+     "title": "補遼金元藝文志",
+     "text_count": 1,
+     "period_of": "遼金元"
+    },
+    {
+     "id": "d59f2mp1zsoz",
+     "title": "元史藝文志",
+     "text_count": 1,
+     "period_of": "元"
+    },
+    {
+     "id": "d59f2mox0000",
+     "title": "明史藝文志",
+     "text_count": 2,
+     "period_of": "明",
+     "orig": true
+    },
+    {
+     "id": "d59f2mp0flz4",
+     "title": "清史稿藝文志",
+     "text_count": 2,
+     "period_of": "清",
+     "orig": true
+    }
+   ]
+  },
+  {
+   "key": "bibliography",
+   "label": "書目與考證",
+   "items": [
+    {
+     "id": "d59f2hqc0c1t",
+     "title": "崇文總目",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "王堯臣",
+       "dynasty": "宋"
+      }
+     ]
+    },
+    {
+     "id": "az9irz0xim",
+     "title": "崇文總目輯釋",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "錢東垣",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2htm01du",
+     "title": "直齋書錄解題",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "陳振孫",
+       "dynasty": "南宋"
+      }
+     ]
+    },
+    {
+     "id": "d59f2nl40936",
+     "title": "國史經籍志",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "焦竑",
+       "dynasty": "明"
+      }
+     ]
+    },
+    {
+     "id": "d59f2mel8d1c",
+     "title": "千頃堂書目",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "黃虞稷",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2mel8d1d",
+     "title": "經義考",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "朱彝尊",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59dh3vo9af4",
+     "title": "欽定四庫全書總目",
+     "text_count": 4,
+     "authors": [
+      {
+       "name": "紀昀",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "4j2miiaic2",
+     "title": "四庫全書總目提要補正",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "胡玉縉"
+      }
+     ]
+    },
+    {
+     "id": "c359vh0hyr",
+     "title": "書目答問",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "張之洞",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "9q9og758p7",
+     "title": "校讎通義",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "章學誠",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2ofwg64g",
+     "title": "中國通俗小說書目",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "孫楷第"
+      }
+     ]
+    },
+    {
+     "id": "d59f2hr9pypt",
+     "title": "漢藝文志考證",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "王應麟",
+       "dynasty": "南宋"
+      }
+     ]
+    },
+    {
+     "id": "d59f2mp0quip",
+     "title": "漢書藝文志拾補",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "姚振宗",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2o2lx91e",
+     "title": "漢書藝文志疏證",
+     "text_count": 2,
+     "authors": [
+      {
+       "name": "沈欽韓",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2mp0flz6",
+     "title": "隋書經籍志考證",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "姚振宗",
+       "dynasty": "清"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "key": "congshu",
+   "label": "叢書",
+   "items": [
+    {
+     "id": "d59f2og4vke9",
+     "title": "四庫全書存目叢書",
+     "text_count": 1
+    },
+    {
+     "id": "d59f2og4vksh",
+     "title": "續修四庫全書",
+     "text_count": 1
+    }
+   ]
+  },
+  {
+   "key": "archives",
+   "label": "檔案",
+   "items": [
+    {
+     "id": "d59f2nfhf8cg",
+     "title": "武職選簿",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "兵部武選司"
+      }
+     ]
+    },
+    {
+     "id": "d59f2ng9il8j",
+     "title": "武職選簿續簿",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "兵部武選司"
+      }
+     ]
+    },
+    {
+     "id": "d59f2nh7uozl",
+     "title": "錦衣衛題本檔",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "錦衣衛"
+      }
+     ]
+    },
+    {
+     "id": "d59f2nfdoe0z",
+     "title": "兵部行移簿",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "兵部"
+      }
+     ]
+    },
+    {
+     "id": "d59f2neu0fsx",
+     "title": "禮部行文底冊",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "禮部"
+      }
+     ]
+    },
+    {
+     "id": "d59f2nf16w3o",
+     "title": "南京兵部車駕司職掌",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "俞汝為"
+      }
+     ]
+    },
+    {
+     "id": "d59f2ndl29s2",
+     "title": "掌銓題稿",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "高拱"
+      }
+     ]
+    },
+    {
+     "id": "d59f2ng20wlc",
+     "title": "楊鶴奏議",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "楊鶴"
+      }
+     ]
+    },
+    {
+     "id": "d59f2neqw26a",
+     "title": "鳳陽新書",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "袁又新"
+      }
+     ]
+    },
+    {
+     "id": "d59f2s1hhg5c",
+     "title": "勅稿底簿",
+     "text_count": 1
+    },
+    {
+     "id": "d59f2s1j1mv4",
+     "title": "崇禎存實疏鈔",
+     "text_count": 1
+    },
+    {
+     "id": "d59f2rzrzp4w",
+     "title": "淮陽雜錄",
+     "text_count": 1
+    },
+    {
+     "id": "d59f2rxyfv28",
+     "title": "明代檔冊",
+     "text_count": 1
+    },
+    {
+     "id": "d59f2ofmgkch",
+     "title": "內閣大庫明代散件檔案",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "一史館"
+      }
+     ]
+    },
+    {
+     "id": "d59f2og0708x",
+     "title": "遼寧省檔案館藏明代遼東檔案",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "遼寧省檔案館"
+      }
+     ]
+    },
+    {
+     "id": "d59f2rujgd1c",
+     "title": "朝鮮迎接天使都監都廳儀軌",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "朝鮮"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "key": "history",
+   "label": "史書與史料",
+   "items": [
+    {
+     "id": "988lpnv75x",
+     "title": "明實錄（紅格鈔本）",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "官修"
+      }
+     ]
+    },
+    {
+     "id": "kpbt9o3xd3",
+     "title": "遼史拾遺",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "厲鶚",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2ncf8cn5",
+     "title": "七家後漢書",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "汪文臺",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2mcdblz4",
+     "title": "後漢書補逸",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "姚之駰",
+       "dynasty": "清"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "key": "anthologies",
+   "label": "詩文集",
+   "items": [
+    {
+     "id": "98ji05um82",
+     "title": "楚辭",
+     "text_count": 1
+    },
+    {
+     "id": "d59f2870u874",
+     "title": "文選",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "蕭統",
+       "dynasty": "南朝梁"
+      }
+     ]
+    },
+    {
+     "id": "d59f2mpwl1xf",
+     "title": "唐詩三百首",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "孫洙",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2mpwwagw",
+     "title": "古文觀止",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "吳楚材",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2mpwwagx",
+     "title": "正續古文辭類纂",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "姚鼐",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "d59f2og5taf4",
+     "title": "續古文觀止",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "王文濡"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "key": "zishu",
+   "label": "子書與輯佚",
+   "items": [
+    {
+     "id": "98ji05um80",
+     "title": "司馬法",
+     "text_count": 2
+    },
+    {
+     "id": "d59f2mua7w8y",
+     "title": "玉函山房輯佚書",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "馬國翰",
+       "dynasty": "清"
+      }
+     ]
+    },
+    {
+     "id": "h6nlgrnoc6",
+     "title": "伊尹書",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "輯",
+       "dynasty": "馬國翰"
+      }
+     ]
+    },
+    {
+     "id": "u04zro04s0",
+     "title": "辛甲書",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "輯",
+       "dynasty": "馬國翰"
+      }
+     ]
+    },
+    {
+     "id": "zdiwtiilsg",
+     "title": "史佚書",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "輯",
+       "dynasty": "馬國翰"
+      }
+     ]
+    },
+    {
+     "id": "ui6x6usoho",
+     "title": "田駢子",
+     "text_count": 1,
+     "authors": [
+      {
+       "name": "輯",
+       "dynasty": "馬國翰"
+      }
+     ]
+    },
+    {
+     "id": "98ji05um84",
+     "title": "外經微言",
+     "text_count": 1
+    }
+   ]
+  }
+ ],
+ "famous": [
+  {
+   "title": "紅樓夢",
+   "authors": "曹雪芹",
+   "work_id": "w0",
+   "text_count": 5,
+   "systems": [
+    {
+     "label": "脂本",
+     "items": [
+      {
+       "id": "96kzii6z28",
+       "short": "甲戌本",
+       "title": "紅樓夢"
+      },
+      {
+       "id": "96kzirvbwg",
+       "short": "庚辰本",
+       "title": "紅樓夢"
+      },
+      {
+       "id": "96kzjb81kw",
+       "short": "戚正本",
+       "title": "紅樓夢"
+      }
+     ]
+    },
+    {
+     "label": "程本",
+     "items": [
+      {
+       "id": "96kzkdm8e8",
+       "short": "程甲本",
+       "title": "紅樓夢"
+      },
+      {
+       "id": "96kzkmzcow",
+       "short": "程乙本",
+       "title": "紅樓夢"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "水滸傳",
+   "authors": "施耐庵　羅貫中",
+   "work_id": "w1",
+   "text_count": 3,
+   "systems": [
+    {
+     "label": "百回本",
+     "items": [
+      {
+       "id": "988g9bwr9g",
+       "short": "容與堂本",
+       "title": "水滸傳"
+      }
+     ]
+    },
+    {
+     "label": "簡本",
+     "items": [
+      {
+       "id": "988g9bwr9n",
+       "short": "插增本",
+       "title": "水滸傳"
+      }
+     ]
+    },
+    {
+     "label": "七十回本",
+     "items": [
+      {
+       "id": "988g9blipt",
+       "short": "貫華堂本",
+       "title": "水滸傳"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "三國演義",
+   "authors": "羅貫中",
+   "work_id": "w2",
+   "text_count": 3,
+   "systems": [
+    {
+     "label": "嘉靖本",
+     "items": [
+      {
+       "id": "988g31lpfr",
+       "short": "嘉靖壬午本",
+       "title": "三國演義"
+      }
+     ]
+    },
+    {
+     "label": "毛評本",
+     "items": [
+      {
+       "id": "988g9ant3e",
+       "short": "醉耕堂本",
+       "title": "三國演義"
+      },
+      {
+       "id": "988g9ant3i",
+       "short": "第一才子書",
+       "title": "三國演義"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "欽定四庫全書總目",
+   "authors": "紀昀 等",
+   "text_count": 4,
+   "systems": [
+    {
+     "label": "",
+     "items": [
+      {
+       "id": "d59dh3vo9af4",
+       "short": "開源古籍",
+       "title": "欽定四庫全書總目"
+      }
+     ]
+    },
+    {
+     "label": "刻本",
+     "items": [
+      {
+       "id": "96mid1ogzk",
+       "short": "武英殿本",
+       "title": "欽定四庫全書總目"
+      },
+      {
+       "id": "96mmy9nfuo",
+       "short": "浙江本",
+       "title": "欽定四庫全書總目"
+      }
+     ]
+    },
+    {
+     "label": "排印",
+     "items": [
+      {
+       "id": "96mmyltp1c",
+       "short": "萬有文庫本",
+       "title": "欽定四庫全書總目"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "漢書·藝文志",
+   "authors": "班固",
+   "text_count": 3,
+   "systems": [
+    {
+     "label": "",
+     "items": [
+      {
+       "id": "d59f23o7ygw2",
+       "short": "開源古籍",
+       "title": "漢書·藝文志"
+      }
+     ]
+    },
+    {
+     "label": "刻本",
+     "items": [
+      {
+       "id": "988g239lop",
+       "short": "百衲本（景祐）",
+       "title": "漢書·藝文志"
+      },
+      {
+       "id": "988g7ywhzl",
+       "short": "文淵閣四庫本",
+       "title": "漢書·藝文志"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "司馬法",
+   "text_count": 2,
+   "systems": [
+    {
+     "label": "",
+     "items": [
+      {
+       "id": "98ji05um80",
+       "short": "四部叢刊本",
+       "title": "司馬法"
+      },
+      {
+       "id": "98ji05um81",
+       "short": "四庫全書本",
+       "title": "司馬法"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "bu": [
+  {
+   "id": "c3b9aca00",
+   "label": "經部",
+   "count": 1348,
+   "children_total": 10,
+   "top": [
+    {
+     "id": "c3b9aca01",
+     "label": "易類",
+     "count": 319
+    },
+    {
+     "id": "c3b9aca02",
+     "label": "春秋類",
+     "count": 183
+    },
+    {
+     "id": "c3b9aca03",
+     "label": "禮類",
+     "count": 180
+    },
+    {
+     "id": "c3b9aca04",
+     "label": "小學類",
+     "count": 171
+    },
+    {
+     "id": "c3b9aca05",
+     "label": "四書類",
+     "count": 121
+    },
+    {
+     "id": "c3b9aca06",
+     "label": "詩類",
+     "count": 115
+    }
+   ]
+  },
+  {
+   "id": "c3b9aca07",
+   "label": "史部",
+   "count": 1625,
+   "children_total": 13,
+   "top": [
+    {
+     "id": "c3b9aca08",
+     "label": "地理類",
+     "count": 431
+    },
+    {
+     "id": "c3b9aca09",
+     "label": "傳記類",
+     "count": 258
+    },
+    {
+     "id": "c3b9aca0a",
+     "label": "政書類",
+     "count": 147
+    },
+    {
+     "id": "c3b9aca0b",
+     "label": "雜史類",
+     "count": 132
+    },
+    {
+     "id": "c3b9aca0c",
+     "label": "史評類",
+     "count": 70
+    },
+    {
+     "id": "c3b9aca0d",
+     "label": "目錄類",
+     "count": 59
+    }
+   ]
+  },
+  {
+   "id": "c3b9aca0e",
+   "label": "子部",
+   "count": 2870,
+   "children_total": 14,
+   "top": [
+    {
+     "id": "c3b9aca0f",
+     "label": "雜家類",
+     "count": 593
+    },
+    {
+     "id": "c3b9aca10",
+     "label": "儒家類",
+     "count": 274
+    },
+    {
+     "id": "c3b9aca11",
+     "label": "醫家類",
+     "count": 260
+    },
+    {
+     "id": "c3b9aca12",
+     "label": "小說類",
+     "count": 247
+    },
+    {
+     "id": "c3b9aca13",
+     "label": "類書類",
+     "count": 177
+    },
+    {
+     "id": "c3b9aca14",
+     "label": "藝術類",
+     "count": 148
+    }
+   ]
+  },
+  {
+   "id": "c3b9aca15",
+   "label": "集部",
+   "count": 2235,
+   "children_total": 5,
+   "top": [
+    {
+     "id": "c3b9aca16",
+     "label": "別集類",
+     "count": 1549
+    },
+    {
+     "id": "c3b9aca17",
+     "label": "總集類",
+     "count": 348
+    },
+    {
+     "id": "c3b9aca18",
+     "label": "詩文評類",
+     "count": 111
+    },
+    {
+     "id": "c3b9aca19",
+     "label": "楚辭類",
+     "count": 16
+    }
+   ]
+  }
+ ],
+ "unclassified": 3805,
+ "periods": [
+  {
+   "key": "xianqin",
+   "label": "先秦",
+   "count": 159
+  },
+  {
+   "key": "qinhan",
+   "label": "秦漢",
+   "count": 377
+  },
+  {
+   "key": "weijin",
+   "label": "魏晉南北朝",
+   "count": 732
+  },
+  {
+   "key": "suitang",
+   "label": "隋唐五代",
+   "count": 1060
+  },
+  {
+   "key": "song",
+   "label": "宋",
+   "count": 2623
+  },
+  {
+   "key": "liaojinyuan",
+   "label": "遼金元",
+   "count": 590
+  },
+  {
+   "key": "ming",
+   "label": "明",
+   "count": 2757
+  },
+  {
+   "key": "qing",
+   "label": "清",
+   "count": 2302
+  },
+  {
+   "key": "modern",
+   "label": "近現代",
+   "count": 12
+  }
+ ],
+ "period_unknown": 1255,
+ "pieces": {
+  "count": 1580,
+  "authors": [
+   {
+    "name": "韓愈",
+    "dynasty": "唐",
+    "count": 145,
+    "items": [
+     {
+      "id": "d59f28nnummb",
+      "title": "師說",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "韓愈",
+        "dynasty": "唐"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f28np3ksg",
+      "title": "進學解",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "韓愈",
+        "dynasty": "唐"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f28no5v5v",
+      "title": "原道",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "韓愈",
+        "dynasty": "唐"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f28nj62h1",
+      "title": "祭十二郎文",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "韓愈",
+        "dynasty": "唐"
+       }
+      ],
+      "text_count": 1
+     }
+    ]
+   },
+   {
+    "name": "柳宗元",
+    "dynasty": "唐",
+    "count": 86,
+    "items": [
+     {
+      "id": "d59f28niutxe",
+      "title": "捕蛇者說",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "柳宗元",
+        "dynasty": "唐"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f28nj62h0",
+      "title": "始得西山宴遊記",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "柳宗元",
+        "dynasty": "唐"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f28nnje2r",
+      "title": "種樹郭橐駝傳",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "柳宗元",
+        "dynasty": "唐"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f28ni8cud",
+      "title": "封建論",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "柳宗元",
+        "dynasty": "唐"
+       }
+      ],
+      "text_count": 1
+     }
+    ]
+   },
+   {
+    "name": "歐陽修",
+    "dynasty": "北宋",
+    "count": 159,
+    "items": [
+     {
+      "id": "d59f2hnohptu",
+      "title": "醉翁亭記",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "歐陽修",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2hnyhb7l",
+      "title": "秋聲賦",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "歐陽修",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2hmv5erm",
+      "title": "朋黨論",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "歐陽修",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2ho35vcw",
+      "title": "五代史伶官傳序",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "歐陽修",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     }
+    ]
+   },
+   {
+    "name": "蘇軾",
+    "dynasty": "北宋",
+    "count": 120,
+    "items": [
+     {
+      "id": "d59f2hnzf0ua",
+      "title": "前赤壁賦",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "蘇軾",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2hou0a2o",
+      "title": "後赤壁賦",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "蘇軾",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2hoz02rn",
+      "title": "石鐘山記",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "蘇軾",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2hp5k268",
+      "title": "留侯論",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "蘇軾",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     }
+    ]
+   },
+   {
+    "name": "王安石",
+    "dynasty": "北宋",
+    "count": 152,
+    "items": [
+     {
+      "id": "d59f2hmkuku8",
+      "title": "遊褒禪山記",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "王安石",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2hoe36de",
+      "title": "答司馬諫議書",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "王安石",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2hnzf0u8",
+      "title": "讀孟嘗君傳",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "王安石",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2hp7fhfk",
+      "title": "傷仲永",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "王安石",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     }
+    ]
+   },
+   {
+    "name": "曾鞏",
+    "dynasty": "北宋",
+    "count": 75,
+    "items": [
+     {
+      "id": "d59f2hp3zvgh",
+      "title": "墨池記",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "曾鞏",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2hp2foqp",
+      "title": "寄歐陽舍人書",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "曾鞏",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2hmq5m2r",
+      "title": "戰國策目錄序",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "曾鞏",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     }
+    ]
+   },
+   {
+    "name": "蘇轍",
+    "dynasty": "北宋",
+    "count": 65,
+    "items": [
+     {
+      "id": "d59f2hp5vaps",
+      "title": "上樞密韓太尉書",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "蘇轍",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2ho1ag3k",
+      "title": "黃州快哉亭記",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "蘇轍",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2hnag1ds",
+      "title": "六國論",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "蘇轍",
+        "dynasty": "北宋"
+       }
+      ],
+      "text_count": 1
+     }
+    ]
+   },
+   {
+    "name": "歸有光",
+    "dynasty": "明",
+    "count": 27,
+    "items": [
+     {
+      "id": "d59f2o0crhtt",
+      "title": "滄浪亭記",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "歸有光",
+        "dynasty": "明"
+       }
+      ],
+      "text_count": 1
+     },
+     {
+      "id": "d59f2o0g73sz",
+      "title": "先妣事略",
+      "subtype": "article",
+      "authors": [
+       {
+        "name": "歸有光",
+        "dynasty": "明"
+       }
+      ],
+      "text_count": 1
+     }
+    ]
+   }
+  ]
+ }
+}
