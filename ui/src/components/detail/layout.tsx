@@ -434,11 +434,6 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
     color: ${bim('aux-fg')}; }
   .bim-d-zt td.bim-d-zt-blank { display: none; }
   .bim-d-zt td.bim-d-zt-main .bim-d-meta { padding-bottom: 2px; }
-  /* 长列表手机端首批只露 NARROW_CAP（6）条，其余等「展開其餘」（overview#325）；按钮换成手机文案 */
-  .bim-d-zt[data-ncap] tbody tr:nth-child(n+7) { display: none; }
-  .bim-d-more-w { display: none; }
-  .bim-d-more-n { display: inline; }
-  .bim-d-more.bim-d-more-ncap { display: inline-flex; }
   /* 手机上版本行是块：解析前先按「名 + 卷帙小字 + 一行年代馆藏」占高（实测解析后 81–87px） */
   .bim-d-zt-ver tbody tr { height: auto; }
   /* 朝代页签晚到、在手机上自成一行：解析中先占两行（页签一行 + 复选框一行，实测共 66px） */
@@ -458,6 +453,11 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
   .bim-d-pick { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; padding: 12px 14px; }
   .bim-d-pick-n { margin: 0; grid-column: 2; grid-row: 1 / span 2; }
   .bim-d-find { flex-basis: 100%; min-height: 40px; }
+  /* 长列表手机端首批只露 NARROW_CAP（6）条，其余等「展開其餘」（overview#325）；按钮换成手机文案 */
+  .bim-d-zt[data-ncap] tbody tr:nth-child(n+7) { display: none; }
+  .bim-d-more-w { display: none; }
+  .bim-d-more-n { display: inline; }
+  .bim-d-more.bim-d-more-ncap { display: inline-flex; }
 }
 
 /*
