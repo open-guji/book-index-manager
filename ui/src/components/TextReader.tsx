@@ -69,6 +69,10 @@ export interface TextReaderProps {
     onReportError?: (ctx: ReaderReportContext) => void;
     /** 页脚「最近校订」日期；数据里没有就不传 */
     revisedAt?: string;
+    /** 工具条最左「‹ 阅读」回阅读首页的地址（overview#308）；不给不出 */
+    backHref?: string;
+    /** 返回链接的文字，默认「阅读」 */
+    backLabel?: string;
     className?: string;
     style?: React.CSSProperties;
 }
@@ -160,7 +164,7 @@ function buildToc(idx: TextIndex, matchStates: Record<string, import('./Collated
 
 export const TextReader: React.FC<TextReaderProps> = ({
     id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate,
-    title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical, onReportError, revisedAt, className, style,
+    title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical, onReportError, revisedAt, backHref, backLabel, className, style,
 }) => {
     const { convert } = useConvert();
     const api = useMemo(() => createTextApi(transport), [transport]);
@@ -376,6 +380,8 @@ export const TextReader: React.FC<TextReaderProps> = ({
             pagerUnit={unit}
             rail={rail}
             revisedAt={revisedAt}
+            backHref={backHref}
+            backLabel={backLabel}
             onReportError={onReportError ? ctx => onReportError({
                 ...ctx,
                 bookTitle: typeof titleText === 'string' ? titleText : undefined,

@@ -11,14 +11,17 @@
  * - 第一个可聚焦元素是「跳到正文」，目录内部用游走 tabindex（只有当前卷进 Tab 序列）；
  * - 同一 owner 有多份全文时，工具条最前面是「版本」下拉框（overview#235）：默认选 primary，
  *   正文末尾的出处与授权跟着所选版本变；切换后回到新版本的第一卷。组件不改 URL，由宿主处理；
- * - 窄屏与触屏上工具条按钮的点击区用伪元素扩到 44×44，外观不变（INT Q4）。
+ * - 窄屏与触屏上工具条按钮的点击区用伪元素扩到 44×44，外观不变（INT Q4）；
+ * - 工具条最左可放「‹ 阅读」回阅读首页（`backHref`，overview#308）；
+ * - <860px（右栏藏起来以后）屏幕底部固定一条底栏：卷目／书影／字号／报告错字，书影与字号点开是底部抽屉
+ *   （overview#308）。底栏挂载后按视口宽度出，服务端不渲染（它是 fixed 定位，不影响版面）。
  *
  * 正文内容（卷名、元数据行、宋体正文）由调用方作为 children 传入，
  * 偏好（字号、自然段、专名线）由调用方用 `useReaderPrefs` 持有后传进来——调用方渲染正文要用。
  */
 import React, { useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { LocaleContext } from '../../i18n/context';
-import { READER_CSS, READER_WIDE_QUERY } from './reader-css';
+import { READER_BOTTOM_BAR_QUERY, READER_CSS, READER_WIDE_QUERY } from './reader-css';
 import { ReaderToc } from './ReaderToc';
 import { ImagePanel } from './ImagePanel';
 import { FONT_SIZE_STEPS, DEFAULT_FONT_SIZE, stepFontSize } from './prefs';
@@ -48,6 +51,12 @@ export interface ReaderShellProps {
     onReportError?: (ctx: ReaderReportContext) => void;
     /** 正文末尾页脚里的「最近校订」日期（如 `2026-09-12`）；数据里没有就不传，不显示 */
     revisedAt?: string;
+    /** 工具条最左「‹ 阅读」的地址（回阅读首页）；不给不出 */
+    backHref?: string;
+    /** 返回链接的文字，默认「阅读」 */
+    backLabel?: string;
+    /** <860px 时的手机底栏（卷目／书影／字号／报告错字），默认开 */
+    bottomBar?: boolean;
 
     toc: ReaderTocItem[];
     activeKey: string | null;
@@ -115,6 +124,8 @@ export function flattenToc(items: ReaderTocItem[]): ReaderTocItem[] {
     walk(items);
     return out;
 }
+
+type Sheet = 'img' | 'fs' | null;
 
 const IconToc = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -224,6 +235,7 @@ export function ReaderShell({
     images, imagesLoading, renderImageOverlay, imagePanel = 'auto',
     prefs, onPrefsChange, paragraphToggle, properNameToggle = true, allowVertical,
     byline, current, workLinkToggle, rail, onReportError, revisedAt,
+    backHref, backLabel = '阅读', bottomBar = true,
     pager = true,
     pagerUnit = '卷',
     versions, currentVersionKey, onVersionChange, versionSource = true, keepChapterOnVersionChange = false,
@@ -238,6 +250,25 @@ export function ReaderShell({
     const tocBtnRef = useRef<HTMLButtonElement>(null);
 
     const isWide = useMediaQuery(READER_WIDE_QUERY, true);
+    // 底栏：服务端与首帧按「宽屏」算（不出），挂载后窄了才出
+    const narrowForBar = useMediaQuery(READER_BOTTOM_BAR_QUERY, false);
+    const showBottomBar = bottomBar && narrowForBar;
+    const [sheet, setSheet] = useState<Sheet>(null);
+    const sheetRef = useRef<HTMLDivElement>(null);
+    const sheetOpener = useRef<HTMLButtonElement | null>(null);
+    const openSheet = (which: Exclude<Sheet, null>, opener: HTMLButtonElement) => {
+        sheetOpener.current = opener;
+        setSheet(cur => (cur === which ? null : which));
+    };
+    const closeSheet = useCallback(() => {
+        setSheet(null);
+        sheetOpener.current?.focus();
+    }, []);
+    useEffect(() => { if (!showBottomBar) setSheet(null); }, [showBottomBar]);
+    // 抽屉打开后把焦点移进去
+    useEffect(() => {
+        if (sheet) sheetRef.current?.querySelector<HTMLElement>('button:not([disabled])')?.focus();
+    }, [sheet]);
     const [tocState, setTocState] = useState<PanelState>('auto');
     const tocOpen = tocState === 'auto' ? isWide : tocState === 'open';
     const drawer = !isWide;
@@ -332,6 +363,7 @@ export function ReaderShell({
             className={['bim-rd', prefs.writingMode === 'vertical' && allowVertical ? 'bim-rd-vertical' : '', className].filter(Boolean).join(' ')}
             data-toc={tocState}
             data-img={imgOpen ? 'open' : 'closed'}
+            data-bb={showBottomBar ? '' : undefined}
             style={rootStyle}
         >
             <style>{READER_CSS}</style>
@@ -342,6 +374,11 @@ export function ReaderShell({
             }}>跳到正文</a>
 
             <div className="bim-rd-bar" ref={barRef}>
+                {backHref && (
+                    <a className="bim-rd-back" href={backHref} aria-label={`返回${backLabel}首页`}>
+                        <span aria-hidden="true">‹</span><span className="bim-rd-tlabel" aria-hidden="true">{backLabel}</span>
+                    </a>
+                )}
                 {(title || subtitle || byline || current) && (
                     <p className="bim-rd-ttl" style={{ margin: 0 }}>
                         {title && <b>{title}</b>}
@@ -395,7 +432,7 @@ export function ReaderShell({
                     <button
                         ref={tocBtnRef}
                         type="button"
-                        className="bim-rd-t"
+                        className="bim-rd-t bim-rd-bb-dup"
                         aria-expanded={tocOpen}
                         aria-controls={tocId}
                         onClick={toggleToc}
@@ -415,14 +452,14 @@ export function ReaderShell({
                     <span className="bim-rd-sep" aria-hidden="true" />
                     <button
                         type="button"
-                        className="bim-rd-t bim-rd-fs"
+                        className="bim-rd-t bim-rd-fs bim-rd-bb-dup"
                         aria-label="缩小字号"
                         disabled={fs <= FONT_SIZE_STEPS[0]}
                         onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, -1) })}
                     >A−</button>
                     <button
                         type="button"
-                        className="bim-rd-t bim-rd-fs"
+                        className="bim-rd-t bim-rd-fs bim-rd-bb-dup"
                         aria-label="放大字号"
                         disabled={fs >= FONT_SIZE_STEPS[FONT_SIZE_STEPS.length - 1]}
                         onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, 1) })}
@@ -559,6 +596,78 @@ export function ReaderShell({
                     )}
                 </div>
             </div>
+
+            {showBottomBar && (
+                <nav className="bim-rd-bb" aria-label="阅读工具">
+                    <button
+                        type="button"
+                        aria-expanded={tocOpen}
+                        aria-controls={tocId}
+                        onClick={() => { setSheet(null); toggleToc(); }}
+                    ><IconToc /><span>卷目</span></button>
+                    <button
+                        type="button"
+                        aria-expanded={sheet === 'img'}
+                        aria-haspopup="dialog"
+                        onClick={e => openSheet('img', e.currentTarget)}
+                    ><IconImage /><span>书影</span></button>
+                    <button
+                        type="button"
+                        aria-expanded={sheet === 'fs'}
+                        aria-haspopup="dialog"
+                        onClick={e => openSheet('fs', e.currentTarget)}
+                    ><span className="bim-rd-bb-ic" aria-hidden="true">A</span><span>字号</span></button>
+                    {onReportError && (
+                        <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => { setSheet(null); reportError(); }}>
+                            <span className="bim-rd-bb-ic" aria-hidden="true">!</span><span>报告错字</span>
+                        </button>
+                    )}
+                </nav>
+            )}
+            {showBottomBar && sheet && (
+                <>
+                    <div className="bim-rd-sheet-scrim" aria-hidden="true" onClick={closeSheet} />
+                    <div
+                        className="bim-rd-sheet"
+                        ref={sheetRef}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={sheet === 'img' ? '书影' : '字号'}
+                        onKeyDown={e => {
+                            if (e.key === 'Escape') { e.stopPropagation(); closeSheet(); return; }
+                            if (e.key === 'Tab') trapFocus(e, sheetRef.current);
+                        }}
+                    >
+                        <div className="bim-rd-sheet-head">
+                            <span>{sheet === 'img' ? '书影' : '字号'}</span>
+                            <button type="button" className="bim-rd-t" aria-label="关闭" onClick={closeSheet}>✕</button>
+                        </div>
+                        {sheet === 'img' ? (
+                            <div className="bim-rd-sheet-img">
+                                <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} />
+                            </div>
+                        ) : (
+                            <div className="bim-rd-sheet-fs">
+                                <button
+                                    type="button"
+                                    className="bim-rd-t"
+                                    aria-label="缩小字号"
+                                    disabled={fs <= FONT_SIZE_STEPS[0]}
+                                    onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, -1) })}
+                                >A−</button>
+                                <output aria-live="polite">{fs}px</output>
+                                <button
+                                    type="button"
+                                    className="bim-rd-t"
+                                    aria-label="放大字号"
+                                    disabled={fs >= FONT_SIZE_STEPS[FONT_SIZE_STEPS.length - 1]}
+                                    onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, 1) })}
+                                >A+</button>
+                            </div>
+                        )}
+                    </div>
+                </>
+            )}
         </div>
     );
 }

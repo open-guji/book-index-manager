@@ -14,6 +14,8 @@ import { bim } from '../../styles/tokens';
 
 export const READER_WIDE_QUERY = '(min-width: 1100px)';
 export const READER_NARROW_QUERY = '(max-width: 719px)';
+/** 手机底栏（overview#308）：右栏（≥860px）藏起来以后出 */
+export const READER_BOTTOM_BAR_QUERY = '(max-width: 859px)';
 /** 窄屏或触屏：工具条点击区扩到 44×44（INT Q4） */
 const READER_COARSE_QUERY = `${READER_NARROW_QUERY}, (pointer: coarse)`;
 
@@ -281,6 +283,48 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 .bim-rd-refs { margin-top: 48px; font-size: 12px; line-height: 1.8; color: ${bim('meta-fg')}; font-family: ${bim('font-ui')}; }
 .bim-rd-refs h2 { font-size: 12px; font-weight: 600; letter-spacing: 0.2em; margin: 0 0 6px; color: ${bim('meta-fg')}; }
 .bim-rd-refs ol { margin: 0; padding-left: 1.6em; }
+
+/* ── 返回阅读首页（overview#308） ── */
+.bim-rd-back {
+  flex: none; display: inline-flex; align-items: center; gap: 4px; min-height: 32px; padding: 0 2px;
+  font-size: 13px; color: ${bim('quiet-fg')}; text-decoration: none; white-space: nowrap;
+}
+.bim-rd-back > span:first-child { font-size: 18px; line-height: 1; }
+.bim-rd-back:hover { color: ${bim('accent')}; }
+
+/* ── 手机底栏与底部抽屉（<860px，overview#308）：卷目／书影／字号／报告错字 ── */
+.bim-rd-bb {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 35;
+  display: flex; padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: color-mix(in srgb, ${bim('page-bg')} 96%, transparent); backdrop-filter: blur(8px);
+  border-top: 1px solid ${bim('rule')};
+}
+.bim-rd-bb button {
+  flex: 1; min-height: 56px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  margin: 0; padding: 6px 4px; border: 0; background: none; cursor: pointer;
+  font: inherit; font-size: 12px; color: ${bim('quiet-fg')};
+}
+.bim-rd-bb button:hover, .bim-rd-bb button[aria-expanded="true"] { color: ${bim('accent')}; }
+.bim-rd-bb-ic { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; font-size: 14px; font-weight: 700; line-height: 1; }
+.bim-rd-sheet-scrim { position: fixed; inset: 0; z-index: 54; background: ${bim('backdrop')}; }
+.bim-rd-sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 55; max-height: 80vh; overflow-y: auto;
+  padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  background: ${bim('card-bg')}; border-top: 1px solid ${bim('rule')}; box-shadow: ${bim('shadow-dialog')};
+}
+.bim-rd-sheet-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px; letter-spacing: 0.15em; color: ${bim('meta-fg')}; }
+.bim-rd-sheet-head .bim-rd-t { margin-left: auto; min-width: 44px; min-height: 44px; justify-content: center; letter-spacing: 0; }
+.bim-rd-sheet-img { display: flex; flex-direction: column; gap: 8px; min-height: 40vh; }
+.bim-rd-sheet-img .bim-rd-img-fig img { max-height: 60vh; }
+.bim-rd-sheet-fs { display: flex; align-items: center; justify-content: center; gap: 24px; padding: 8px 0 12px; font-size: 15px; color: ${bim('ink')}; }
+.bim-rd-sheet-fs .bim-rd-t { min-width: 56px; min-height: 44px; justify-content: center; font-size: 17px; border: 1px solid ${bim('rule')}; }
+@media ${READER_BOTTOM_BAR_QUERY} {
+  .bim-rd[data-bb] .bim-rd-text { padding-bottom: calc(56px + 64px + env(safe-area-inset-bottom, 0px)); }
+  /* 底栏上已有的，工具条上不再重复（目录、字号） */
+  .bim-rd[data-bb] .bim-rd-bb-dup { display: none !important; }
+  .bim-rd[data-bb] .bim-rd-tools .bim-rd-sep { display: none; }
+}
+@media (min-width: 860px) { .bim-rd-bb, .bim-rd-sheet, .bim-rd-sheet-scrim { display: none; } }
 
 /* ── 点击区 ≥44×44（INT Q4）：伪元素向外扩，按钮外观与排布不变；
       A− A+ 挨着，两边各扩约 10px 会叠在一起，所以二者之间多留 12px ── */
