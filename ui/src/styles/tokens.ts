@@ -193,7 +193,7 @@ export const BIM_TOKEN_GROUPS = [
         'flag-bg': { value: 'rgba(158, 42, 43, 0.08)', note: '唯一的状态色块「有影印」' },
         'theme-dot-zhusha': { value: '#9c3a2c', note: '主题切换控件的色点：朱砂（不随主题变，两套主题下都要认得出）' },
         'theme-dot-indigo': { value: '#2e5266', note: '主题切换控件的色点：靛青' },
-        'theme-dot-ink': { value: '#222221', note: '主题切换控件的色点：墨' },
+        'theme-dot-ink': { value: '#3b4a58', note: '主题切换控件的色点：墨' },
         'sect-jing': { value: '#2e5266', note: '四部分布条：經部（人物页提要卡；无别处使用）' },
         'sect-shi': { value: '#9a7a3b', note: '四部分布条：史部' },
         'sect-zi': { value: '#4f7a5c', note: '四部分布条：子部' },
@@ -305,36 +305,38 @@ export const BIM_THEMES = {
         'rule-accent-soft': '#cfd9dc',
     },
     /*
-     * 墨（v4 设计稿「墨」：素白底 #f5f5f3、主色近黑 #222221，整套中性灰）。与朱砂／靛青不同：
-     * 纸色、墨色阶、线色、面色也换成一套中性灰，不只是强调色。强调色与正文色接近，
-     * 所以链接、悬停、选中态不能只靠颜色区分——组件里对 data-theme="ink" 另加了下划线／描边／字重。
-     * 色值取自设计稿 THEMES["墨"]；辅助字（label/aux/hint）在设计稿的 #9a9994 上只有 ~2.6，不达 AA，按 5:1 调深。
+     * 墨（设计稿 10-01「墨」，overview#340：纯白底 #ffffff、冷灰中性色、主色石板蓝灰 #3b4a58）。与朱砂／靛青不同：
+     * 纸色、墨色阶、线色、面色也换成一套中性灰，不只是强调色。主色与正文 #1d2024 色相相近、对比只有 ~1.8（不到 3:1），
+     * 所以链接、悬停、选中态仍不能只靠颜色区分——组件里对 data-theme="ink" 另加了下划线／描边／字重。
+     * 色值取自设计稿 THEMES["墨"]：page=bg card=sf tint=ln2 zebra／hover=hv selection=ln rule=ln rule-dashed=ln3
+     * ink=ink body=ink2 quiet=ink3 accent=ac accent-deep=ac-d flag=ac-t。与开源古籍站 globals.css 的 ink 块同一套。
+     * 辅助字（meta/label/aux/hint）：设计稿 mut #6b7178 白底 4.93，但在 tint #eceef0 上只有 4.24，按 AA 调深到 #5f656c（各底 ≥4.6）。
      */
     ink: {
-        'page-bg': '#f5f5f3',
-        'card-bg': '#fcfcfb',
-        'zebra-bg': '#eeeeeb',
-        'tint-bg': '#ecebe8',
-        'row-hover-bg': '#ecebe8',
-        'selection-bg': '#e2e1dc',
-        'band-bg': '#efeeea',
-        'band-bg-hover': '#e6e5e1',
-        'ink': '#1b1b1a',
-        'body-fg': '#3d3d3b',
-        'quiet-fg': '#4a4a47',
-        'meta-fg': '#5f5e5b',
-        'label-fg': '#63625e',
-        'aux-fg': '#63625e',
-        'hint-fg': '#63625e',
-        'accent': '#222221',
-        'accent-deep': '#000000',
-        'flag-bg': '#e8e7e4',
-        'rule-strong': '#1b1b1a',
-        'rule': '#dfdedb',
-        'rule-dashed': '#c7c6c1',
-        'rule-accent-soft': '#c7c6c1',
-        'shadow-summary': '0 10px 32px rgba(0, 0, 0, 0.06)',
-        'fr-shadow': '0 1px 0 var(--bim-rule), 0 12px 32px -18px rgba(0, 0, 0, 0.22)',
+        'page-bg': '#ffffff',
+        'card-bg': '#f6f7f8',
+        'zebra-bg': '#eef0f2',
+        'tint-bg': '#eceef0',
+        'row-hover-bg': '#eef0f2',
+        'selection-bg': '#e3e5e8',
+        'band-bg': '#eef0f2',
+        'band-bg-hover': '#e3e5e8',
+        'ink': '#1d2024',
+        'body-fg': '#3b4046',
+        'quiet-fg': '#565c63',
+        'meta-fg': '#5f656c',
+        'label-fg': '#5f656c',
+        'aux-fg': '#5f656c',
+        'hint-fg': '#5f656c',
+        'accent': '#3b4a58',
+        'accent-deep': '#2e3a46',
+        'flag-bg': '#e8ecf0',
+        'rule-strong': '#1d2024',
+        'rule': '#e3e5e8',
+        'rule-dashed': '#cdd1d6',
+        'rule-accent-soft': '#cdd1d6',
+        'shadow-summary': '0 10px 32px rgba(29, 32, 36, 0.06)',
+        'fr-shadow': '0 1px 0 var(--bim-rule), 0 12px 32px -18px rgba(29, 32, 36, 0.22)',
     },
 } as const satisfies Record<string, Partial<Record<BimTokenName, string>>>;
 

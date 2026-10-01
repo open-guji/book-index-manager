@@ -381,7 +381,7 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 :root[data-layout="boxed"] .bim-rd-rail-card { background: ${bim('fr-bg')}; }
 :root[data-layout="boxed"] .bim-rd-pg { background: ${bim('fr-bg')}; }
 
-/* ── 配色「墨」：强调色≈正文色，行内链接加下划线（条目名、参考文献、来源） ── */
+/* ── 配色「墨」：主色与正文对比不到 3:1，行内链接加下划线（条目名、参考文献、来源） ── */
 :root[data-theme="ink"] :is(.bim-rd-entry-h a, .bim-rd-link, .bim-rd-prose a, .bim-rd-meta a) {
   text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); text-underline-offset: 3px;
 }
