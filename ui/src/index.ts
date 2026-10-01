@@ -51,10 +51,6 @@ export type {
     CollatedSection,
     CollatedJuan,
     CollatedEditionIndex,
-    BookFullTextIndex,
-    BookFullTextChapter,
-    WorkFullTextEntry,
-    WorkFullTextIndex,
     ResourceCatalog,
     ResourceImportStatus,
     ResourceImportType,
@@ -139,14 +135,12 @@ export { ModeIndicator } from './components/ModeIndicator';
 export { CollectionCatalog } from './components/CollectionCatalog';
 export type { CollectionCatalogProps } from './components/CollectionCatalog';
 export { SearchResults, SEARCH_VIEW_STORAGE_KEY } from './components/search/SearchResults';
-export { CollatedEdition } from './components/CollatedEdition';
 export {
     EMPTY_FILTERS, DYNASTY_GROUPS, CLASSIFICATIONS, LOSS_OPTIONS, FILTER_SUPPORT,
     countActiveFilters, hasActiveFilters, hasSearchOptions, sortFor, SORTABLE_TYPES, typeSupportsFilters, buildMeiliFilter,
     filtersToParams, filtersFromParams, sameFilters,
 } from './core/search-filters';
 export type { SearchFilters, SearchSort, LossStatusKey } from './core/search-filters';
-export { BookFullText } from './components/BookFullText';
 export { TextReader } from './components/TextReader';
 export type { TextReaderProps, TextLocation, TextLocationCause } from './components/TextReader';
 export { createTextApi } from './core/text-api';
@@ -155,14 +149,12 @@ export {
     isTextKey, isChapterSegment, matchChapterAcrossVersions, pickTextVersion, textVersionLabel,
 } from './core/text-model';
 export type { TextKind, TextVersion, TextManifest, TextChapter, TextIndex, TextChapterContent } from './core/text-model';
-export type { BookFullTextProps } from './components/BookFullText';
 // 阅读器（整理本 / 全文共用的外壳、目录、书影、正文排版）
 export * from './components/Reader';
 export { buildParagraphBlocks, detectGenre } from './core/paragraphize';
 export type { ReadingMode, ReadingGenre, ParagraphBlock } from './core/paragraphize';
 export { WorkCatalog } from './components/WorkCatalog';
 export type { WorkCatalogProps } from './components/WorkCatalog';
-export type { CollatedEditionProps } from './components/CollatedEdition';
 
 // Components - Unified View
 export { IndexView, detailToEditor, editorToDetail } from './components/IndexView';

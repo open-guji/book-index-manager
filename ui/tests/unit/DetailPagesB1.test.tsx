@@ -18,10 +18,10 @@ function transportFor(main: IndexDetailData, extra: Record<string, unknown> = {}
     return {
         getItem: vi.fn(async (id: string) => (all[id] ?? null) as Record<string, unknown> | null),
         getEntry: vi.fn(async () => null),
-        getCollatedEditionIndex: vi.fn(async () => null),
         getLineageGraph: vi.fn(async () => null),
-        getWorkFullTextList: vi.fn(async () => []),
-        getBookFullTextIndex: vi.fn(async () => fullText),
+        // 新结构：manifest＋默认版本的 index.json；没有给 fullText 就是没有 manifest
+        getTextManifest: vi.fn(async () => (fullText ? { id: main.id, versions: [{ key: 'default', kind: 'transcription', label: '全文' }] } : null) as never),
+        getTextIndex: vi.fn(async () => (fullText ?? null) as never),
     };
 }
 
@@ -45,7 +45,7 @@ function props(
 
 const BOOK: IndexDetailData = {
     id: 'b1', type: 'book', title: '新鐫全部繡像紅樓夢', edition: '程甲本', work_id: 'w1',
-    has_full_text: true,
+    text_count: 1,
     authors: [{ name: '曹霑', role: '撰', dynasty: '清' }],
     publication_info: { year: '1791', details: '清乾隆五十六年辛亥萃文書屋木活字本' },
     resources: [
@@ -70,10 +70,10 @@ const BOOK_EXTRA = {
 };
 
 const FULL_TEXT = {
-    book_id: 'b1', version_label: '程甲本', total_chapters: 12,
+    version_label: '程甲本',
     source: { name: '維基文庫', url: 'https://zh.wikisource.org/wiki/x', license: 'CC BY-SA 4.0' },
     chapters: Array.from({ length: 12 }, (_, i) => ({
-        n: i + 1, file: `${String(i + 1).padStart(3, '0')}.md`,
+        n: i + 1, file: String(i + 1).padStart(3, '0'),
         title: `第${'一二三四五六七八九十'[i % 10]}回　回目${i + 1}上句　回目${i + 1}下句`,
     })),
 };
@@ -86,14 +86,23 @@ describe('BookPage（B1）', () => {
         expect(screen.getByRole('link', { name: '看原書影印' }).getAttribute('href')).toBe('#images');
     });
 
-    it('has_full_text 先出主按钮占位；目录取回为空就收回，全文区块只剩站外全文', async () => {
+    it('text_count 出主按钮（同步、不等目录）；目录取回为空则不出回目网格，站外全文照旧', async () => {
         const readLink = (ctx: { kind: string | null }) => (ctx.kind ? '/read/b1' : null);
         const { container } = render(<BookDetailLayout {...props(BOOK, BOOK_EXTRA, { readLink }, null)} />);
         // 首帧就有按钮（不等目录，免得提要卡晚到长高）
         expect(container.querySelector('.bim-d-btn')).toBeTruthy();
-        await waitFor(() => expect(container.querySelector('.bim-d-btn')).toBeNull());
-        expect(container.querySelector('.bim-d-ft')).toBeNull();
+        await waitFor(() => expect(container.querySelector('.bim-d-ft')).toBeNull());
         expect(screen.getByRole('link', { name: /維基文庫/ })).toBeTruthy();
+    });
+
+    it('条目没有 text_count 就没有主按钮，也不去取 manifest', async () => {
+        const noText = { ...BOOK, text_count: undefined } as unknown as IndexDetailData;
+        const p = props(noText, BOOK_EXTRA, { readLink: (ctx) => (ctx.kind ? '/read/b1' : null) }, FULL_TEXT);
+        const { container } = render(<BookDetailLayout {...p} />);
+        await waitFor(() => expect(container.querySelector('.bim-d-card')).toBeTruthy());
+        await new Promise(r => setTimeout(r, 30));
+        expect(container.querySelector('.bim-d-btn')).toBeNull();
+        expect((p.transport as never as { getTextManifest: ReturnType<typeof vi.fn> }).getTextManifest).not.toHaveBeenCalled();
     });
 
     it('正文顺序：全文 → 影印 → 版本源流', async () => {

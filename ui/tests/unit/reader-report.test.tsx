@@ -4,8 +4,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { LocaleProvider } from '../../src/i18n';
 import { ReaderShell } from '../../src/components/Reader/ReaderShell';
-import { BookFullText } from '../../src/components/BookFullText';
-import { CollatedEdition } from '../../src/components/CollatedEdition';
+import { TextReader } from '../../src/components/TextReader';
+import { fakeTextTransport } from './helpers/text-transport';
 import { DEFAULT_READER_PREFS } from '../../src/components/Reader/prefs';
 
 const TOC = [{ key: '001', label: '卷1　易类' }, { key: '002', label: '卷2' }];
@@ -109,29 +109,29 @@ describe('阅读器页脚', () => {
         expect(document.querySelector('.bim-rd-src [data-version]')).toBeNull();
     });
 
-    it('BookFullText 传 revisedAt 就显示（它固定 versionSource=false）', async () => {
-        const index = {
-            book_id: 'b1', version_label: '宋史', source: { name: '維基文庫', url: 'https://zh.wikisource.org/', license: 'CC BY-SA 4.0' }, total_chapters: 1,
-            chapters: [{ n: 1, title: '卷一', file: '001.md' }],
-        } as never;
-        const transport = { getBookFullTextChapter: async () => '太祖。' } as never;
-        render(<LocaleProvider><BookFullText index={index} bookId="b1" transport={transport} revisedAt="2026-09-12" /></LocaleProvider>);
+    const ftTransport = () => fakeTextTransport('b1', {
+        chapters: [{ n: 1, title: '卷一', file: '001' }],
+        version: { label: '宋史', source_name: '維基文庫', source_url: 'https://zh.wikisource.org/', license: 'CC BY-SA 4.0' },
+        md: '太祖。',
+    });
+    const ceTransport = () => fakeTextTransport('w1', {
+        kind: 'collated',
+        chapters: [{ n: 1, file: '001', title: '卷1', has_json: true }],
+        index: { type: 'catalog', title: '直齋書錄解題' },
+        json: { title: '正史類', sections: [{ title: '《史記》', type: 'book', content: '漢太史令撰。' }] },
+    });
+
+    it('全文章传 revisedAt 就显示', async () => {
+        render(<LocaleProvider><TextReader id="b1" transport={ftTransport()} revisedAt="2026-09-12" /></LocaleProvider>);
         await waitFor(() => expect(screen.getByText('最近校订 2026-09-12')).toBeTruthy());
     });
 
-    it('CollatedEdition 传 revisedAt 就显示（它不给壳传 version）', async () => {
-        const index = { work_id: 'w1', type: 'catalog', title: '直齋書錄解題', juan_files: ['juan/001.json'] } as never;
-        const transport = {
-            getCollatedJuan: async () => ({ title: '正史類', sections: [{ title: '《史記》', type: 'book', content: '漢太史令撰。' }] }),
-            getCollatedJuanText: async () => null,
-        } as never;
-        render(<LocaleProvider locale="zh-Hant"><CollatedEdition index={index} workId="w1" transport={transport} revisedAt="2026-09-12" /></LocaleProvider>);
+    it('整理本章传 revisedAt 就显示', async () => {
+        render(<LocaleProvider locale="zh-Hant"><TextReader id="w1" transport={ceTransport()} revisedAt="2026-09-12" /></LocaleProvider>);
         await waitFor(() => expect(screen.getByText('最近校订 2026-09-12')).toBeTruthy());
     });
-    it('宿主没传 revisedAt 时两个组件都不显示', async () => {
-        const index = { book_id: 'b1', version_label: '宋史', source: { name: '維基文庫', url: 'https://zh.wikisource.org/', license: 'CC BY-SA 4.0' }, total_chapters: 1, chapters: [{ n: 1, title: '卷一', file: '001.md' }] } as never;
-        const transport = { getBookFullTextChapter: async () => '太祖。' } as never;
-        render(<LocaleProvider><BookFullText index={index} bookId="b1" transport={transport} /></LocaleProvider>);
+    it('宿主没传 revisedAt 时都不显示', async () => {
+        render(<LocaleProvider><TextReader id="b1" transport={ftTransport()} /></LocaleProvider>);
         await waitFor(() => expect(document.querySelector('article')?.textContent).toContain('太祖'));
         expect(screen.queryByText(/最近校订/)).toBeNull();
     });
@@ -139,18 +139,21 @@ describe('阅读器页脚', () => {
 
 describe('整理本卷头小标题「卷 · 分组」（overview#299）', () => {
     const juan = { title: '正史類', sections: [{ title: '《史記》', type: 'book', content: '漢太史令撰。' }] };
-    const transport = { getCollatedJuan: async () => juan, getCollatedJuanText: async () => null } as never;
     const mount = (extra: object) => render(
         <LocaleProvider locale="zh-Hant">
-            <CollatedEdition
-                index={{ work_id: 'w1', type: 'catalog', title: '直齋書錄解題', juan_files: ['juan/001.json', 'juan/002.json'], ...extra } as never}
-                workId="w1" transport={transport} activeJuan="juan/002.json"
+            <TextReader
+                id="w1" chapter="002"
+                transport={fakeTextTransport('w1', {
+                    kind: 'collated', json: juan,
+                    chapters: [{ n: 1, file: '001', title: '卷1', has_json: true }, { n: 2, file: '002', title: '卷2', has_json: true }],
+                    index: { type: 'catalog', title: '直齋書錄解題', ...extra },
+                })}
             />
         </LocaleProvider>,
     );
 
     it('有分组名：卷序 · 分组名，且卷序不再重复出现在信息行', async () => {
-        mount({ juan_groups: [{ label: '經錄', files: ['juan/001.json'], children: [{ label: '史部', files: ['juan/002.json'] }] }] });
+        mount({ juan_groups: [{ label: '經錄', files: ['001'], children: [{ label: '史部', files: ['002'] }] }] });
         await waitFor(() => expect(document.querySelector('.bim-rd-kicker')).toBeTruthy());
         const k = document.querySelector('.bim-rd-kicker')!;
         expect(k.textContent).toContain('史部'); // 取最深一层

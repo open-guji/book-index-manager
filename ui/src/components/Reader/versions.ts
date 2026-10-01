@@ -1,20 +1,7 @@
 /**
  * 阅读器「版本」下拉框的数据换算（overview#235）。
  */
-import type { WorkFullTextEntry } from '../../types';
 import type { ReaderVersion } from './types';
-
-/** book-text 全文清单 → 下拉框选项（顺序不变：清单已按「哪份最好」排好） */
-export function readerVersionsFromFullText(entries: readonly WorkFullTextEntry[]): ReaderVersion[] {
-    return entries.map(e => ({
-        key: e.key,
-        label: e.version_label || e.key,
-        sourceName: e.source_name,
-        license: e.license,
-        sourceUrl: e.source_url,
-        primary: e.primary,
-    }));
-}
 
 /** 选项文字：`version_label · source_name`；版本说明里已含来源名时不重复 */
 export function readerVersionOptionLabel(v: ReaderVersion): string {

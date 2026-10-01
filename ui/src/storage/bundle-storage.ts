@@ -9,16 +9,11 @@ import type {
     ResourceProgress,
     RecommendedData,
     VolumeBookMapping,
-    CollatedEditionIndex,
-    CollatedJuan,
-    WorkFullTextEntry,
-    WorkFullTextIndex,
 } from '../types';
 import type { IndexCounts } from './types';
 import { normalizeCatalog } from '../core/normalize-catalog';
 import { extractType } from '../id';
 import { buildPromotionMap } from './promotions';
-import { shardOf } from '../core/storage';
 import { isSafeSegment, isTextKey } from '../core/text-model';
 
 export interface BundleStorageConfig {
@@ -432,82 +427,6 @@ export class BundleStorage implements IndexStorage {
         return catalogs?.[0]?.data ?? null;
     }
 
-    // ─── 整理本 ───
-
-    async getCollatedEditionIndex(workId: string): Promise<CollatedEditionIndex | null> {
-        // 2026-08-26 归一把清单档 collated_edition_index.json 更名 index.json；
-        // 旧名兜底已删——e2e 合同测试 `整理本清单档用新文件名 index.json`
-        // （kaiyuanguji-web e2e/contract/data-pipeline.spec.ts）把关，且 2026-09-27
-        // 抽查 5 部真实整理本（直齋書錄解題等）旧名 collated_edition_index.json
-        // 均已 404，无条目回退到它。保留旧名请求只会给没有整理本的条目多打
-        // 一个必 404 的请求。
-        try {
-            return await this.fetchJson<CollatedEditionIndex>(
-                `${this.basePath}/items/${workId}/collated_edition/index.json`
-            );
-        } catch {
-            return null;
-        }
-    }
-
-    async getCollatedJuan(workId: string, juanFile: string): Promise<CollatedJuan | null> {
-        if (juanFile.includes('..') || !juanFile.endsWith('.json')) return null;
-
-        // 直接从 items/{workId}/collated_edition/{juanFile} 加载
-        try {
-            return await this.fetchJson<CollatedJuan>(
-                `${this.basePath}/items/${workId}/collated_edition/${juanFile}`
-            );
-        } catch {
-            return null;
-        }
-    }
-
-    async getCollatedJuanText(workId: string, juanFile: string): Promise<string | null> {
-        if (juanFile.includes('..') || !juanFile.endsWith('.json')) return null;
-        // 源是 .md，bundle 时改名为 .txt（EdgeOne 默认不 gzip text/markdown，
-        // 但会 gzip text/plain — 1MB+ 整理本文本因此能压到 ~25%）。
-        const txtFile = juanFile.replace(/\.json$/, '.txt');
-        const version = await this.ensureVersion();
-        const url = `${this.basePath}/items/${workId}/collated_edition/text/${txtFile}`;
-        const fullUrl = version ? `${url}?v=${version}` : url;
-        try {
-            const res = await fetch(fullUrl, { cache: 'no-cache' });
-            if (!res.ok) return null;
-            return await res.text();
-        } catch {
-            return null;
-        }
-    }
-
-    // ─── Book 全文 ───
-
-    async getBookFullTextIndex(bookId: string): Promise<import('../types').BookFullTextIndex | null> {
-        try {
-            return await this.fetchJson<import('../types').BookFullTextIndex>(
-                `${this.basePath}/items/${bookId}/full_text/index.json`
-            );
-        } catch {
-            return null;
-        }
-    }
-
-    async getBookFullTextChapter(bookId: string, file: string): Promise<string | null> {
-        // bundle-data 会把 .md 改名为 .txt（与 collated_edition/text/* 同理）
-        if (file.includes('..')) return null;
-        const txtFile = file.endsWith('.md') ? file.replace(/\.md$/, '.txt') : file;
-        const version = await this.ensureVersion();
-        const url = `${this.basePath}/items/${bookId}/full_text/${txtFile}`;
-        const fullUrl = version ? `${url}?v=${version}` : url;
-        try {
-            const res = await fetch(fullUrl, { cache: 'no-cache' });
-            if (!res.ok) return null;
-            return await res.text();
-        } catch {
-            return null;
-        }
-    }
-
     // ─── 阅读文本（新结构，overview#307） ───
     //
     // items/<id>/manifest.json、items/<id>/<key>/index.json、<key>/NNN.txt（打包时 md 改 txt）、<key>/NNN.json。
@@ -546,55 +465,6 @@ export class BundleStorage implements IndexStorage {
             : Promise.resolve(null);
         const [mdText, juan] = await Promise.all([md, json]);
         return mdText != null || juan ? { md: mdText, json: juan } : null;
-    }
-
-    // ─── Work 全文 ───
-
-    /**
-     * Work 全文候选清单：取自按内容分片的全局索引 `${basePath}/index/full_text/{shard}.json`。
-     *
-     * 这份分片文件与 book-text 仓自身的 `index/full_text/{0-f}.json` 同构、同分片算法
-     * （`shardOf` 与 book-text `scripts/book-text/build_index.py` 的 `shard()` 是同一套
-     * h*31+ord(c) 取模 16 哈希），构建时把 book-text 那 16 个文件原样拷进这个路径即可，
-     * 不需要另外转换。列表已排好序，首项即 `primary: true`——本函数不再重新排序。
-     */
-    async getWorkFullTextList(workId: string): Promise<WorkFullTextEntry[]> {
-        const shard = shardOf(workId).toString(16);
-        try {
-            const data = await this.fetchJson<Record<string, WorkFullTextEntry[]>>(
-                `${this.basePath}/index/full_text/${shard}.json`
-            );
-            return data[workId] ?? [];
-        } catch {
-            return [];
-        }
-    }
-
-    async getWorkFullTextIndex(workId: string, key: string): Promise<WorkFullTextIndex | null> {
-        if (key.includes('..') || key.includes('/')) return null;
-        try {
-            return await this.fetchJson<WorkFullTextIndex>(
-                `${this.basePath}/items/${workId}/full_text/${key}/index.json`
-            );
-        } catch {
-            return null;
-        }
-    }
-
-    async getWorkFullTextChapter(workId: string, key: string, file: string): Promise<string | null> {
-        if (key.includes('..') || key.includes('/') || file.includes('..')) return null;
-        // bundle-data 会把 .md 改名为 .txt（与 collated_edition/text/*、Book 全文同理）
-        const txtFile = file.endsWith('.md') ? file.replace(/\.md$/, '.txt') : file;
-        const version = await this.ensureVersion();
-        const url = `${this.basePath}/items/${workId}/full_text/${key}/${txtFile}`;
-        const fullUrl = version ? `${url}?v=${version}` : url;
-        try {
-            const res = await fetch(fullUrl, { cache: 'no-cache' });
-            if (!res.ok) return null;
-            return await res.text();
-        } catch {
-            return null;
-        }
     }
 
     // ─── 版本传承 ───

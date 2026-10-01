@@ -12,7 +12,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import type {
     BookDetailData,
-    BookFullTextIndex,
     WorkDetailData,
     CollectionDetailData,
     LineageConfidence,
@@ -41,6 +40,12 @@ const SIBLINGS_WINDOW = 2;
 const CAP_CHAPTERS = 9;
 
 /** 回目链接：有 href 走宿主的阅读页，否则 onClick 切到本组件内的全文 tab */
+/** 版本页回目网格要的章目录（layout 由 manifest＋<key>/index.json 换出；file 是章 key，如「001」） */
+export interface BookChapterList {
+    source?: { name?: string; license?: string };
+    chapters: Array<{ n: number; title: string; file: string }>;
+}
+
 export interface ChapterLink {
     href?: string;
     onClick?: () => void;
@@ -54,7 +59,7 @@ export interface BookPageProps {
     /** 右栏提要卡里的「阅读全文」主按钮（由 layout 注入） */
     readAction?: React.ReactNode;
     /** 本站全文目录（由 layout 预加载；没有全文时为空） */
-    fullText?: BookFullTextIndex | null;
+    fullText?: BookChapterList | null;
     /** 数据标了有全文、目录还没取回：先按一块阅读入口 + 三行回目占位（CLS） */
     fullTextPending?: boolean;
     /** 某一回的阅读链接（file 为章节文件名）；不给则回目不可点 */

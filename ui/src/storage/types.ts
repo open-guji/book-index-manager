@@ -1,4 +1,4 @@
-import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, BookFullTextIndex, WorkFullTextEntry, WorkFullTextIndex, ResourceProgress, RecommendedData } from '../types';
+import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResult, RelationData, EntityOption, CreateEntityParams, VolumeBookMapping, ResourceCatalog, ResourceProgress, RecommendedData } from '../types';
 import type { LineageGraph } from '../core/lineage-graph';
 import type { TextChapterContent, TextIndex, TextManifest } from '../core/text-model';
 
@@ -87,36 +87,6 @@ export interface IndexStorage {
 
     /** @deprecated 使用 getCollectionCatalogs */
     getCollectionCatalog?(collectionId: string): Promise<VolumeBookMapping | null>;
-
-    // ── 整理本（可选） ──
-
-    /** 获取整理本卷列表 */
-    getCollatedEditionIndex?(workId: string): Promise<CollatedEditionIndex | null>;
-
-    /** 获取整理本单卷内容 */
-    getCollatedJuan?(workId: string, juanFile: string): Promise<CollatedJuan | null>;
-
-    /** 获取整理本单卷原文 md（返回 markdown 字符串，无则 null） */
-    getCollatedJuanText?(workId: string, juanFile: string): Promise<string | null>;
-
-    // ── Book 全文（可选） ──
-
-    /** 获取 Book 全文目录 */
-    getBookFullTextIndex?(bookId: string): Promise<BookFullTextIndex | null>;
-
-    /** 获取 Book 全文单章 markdown */
-    getBookFullTextChapter?(bookId: string, file: string): Promise<string | null>;
-
-    // ── Work 全文（可选，一 Work 可有多份） ──
-
-    /** 获取 Work 下的全文候选清单（已按「哪份最好」排序，首项 primary） */
-    getWorkFullTextList?(workId: string): Promise<WorkFullTextEntry[]>;
-
-    /** 获取 Work 指定一份全文的目录（按 getWorkFullTextList 返回的 key） */
-    getWorkFullTextIndex?(workId: string, key: string): Promise<WorkFullTextIndex | null>;
-
-    /** 获取 Work 指定一份全文的单章 markdown */
-    getWorkFullTextChapter?(workId: string, key: string, file: string): Promise<string | null>;
 
     // ── 阅读文本（新结构，可选；overview#307） ──
     //

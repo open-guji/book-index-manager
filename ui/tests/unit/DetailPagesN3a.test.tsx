@@ -51,10 +51,9 @@ function transportFor(main: IndexDetailData, extra: Record<string, Record<string
     return {
         getItem: vi.fn(async (id: string) => (all[id] ?? null) as Record<string, unknown> | null),
         getEntry: vi.fn(async () => null),
-        getCollatedEditionIndex: vi.fn(async () => null),
         getLineageGraph: vi.fn(async () => null),
-        getWorkFullTextList: vi.fn(async () => []),
-        getBookFullTextIndex: vi.fn(async () => null),
+        getTextManifest: vi.fn(async () => null),
+        getTextIndex: vi.fn(async () => null),
     };
 }
 
@@ -103,17 +102,11 @@ describe('WorkPage（三栏）', () => {
         expect(document.body.textContent).not.toMatch(/\bdraft\b/);
     });
 
-    it('没有 has_collated 标记就不探测整理本清单（避免必 404 的请求）', async () => {
-        const p = props(WORK);
+    it('Work 不取文本目录（阅读入口只看 text_count，不探测 manifest）', async () => {
+        const p = props({ ...WORK, text_count: 1 } as unknown as IndexDetailData);
         render(<BookDetailLayout {...p} />);
-        await waitFor(() => expect((p.transport as never as { getWorkFullTextList: ReturnType<typeof vi.fn> }).getWorkFullTextList).toHaveBeenCalled());
-        expect((p.transport as never as { getCollatedEditionIndex: ReturnType<typeof vi.fn> }).getCollatedEditionIndex).not.toHaveBeenCalled();
-    });
-
-    it('has_collated 为真才取整理本清单', async () => {
-        const p = props({ ...WORK, has_collated: true } as unknown as IndexDetailData);
-        render(<BookDetailLayout {...p} />);
-        await waitFor(() => expect((p.transport as never as { getCollatedEditionIndex: ReturnType<typeof vi.fn> }).getCollatedEditionIndex).toHaveBeenCalledWith('w1'));
+        await waitFor(() => expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('史記'));
+        expect((p.transport as never as { getTextManifest: ReturnType<typeof vi.fn> }).getTextManifest).not.toHaveBeenCalled();
     });
 
     it('footerExtra 传原始状态字 draft 时页脚显示「草稿」', () => {
@@ -270,11 +263,12 @@ describe('BookPage / CollectionPage / EntityPage（三栏）', () => {
     it('Book：书名作标题、版本名作副题，有全文时出「阅读全文」', async () => {
         const book = {
             id: 'b9', type: 'book', title: '測試書', edition: '明刻本',
-            has_full_text: true,
+            text_count: 2,
             resources: [{ name: '某館', types: ['physical'] }],
         } as unknown as IndexDetailData;
         const tr = transportFor(book);
-        tr.getBookFullTextIndex = vi.fn(async () => ({ total_chapters: 2, version_label: 'x', chapters: [{ n: 1, file: '1.md' }] })) as never;
+        tr.getTextManifest = vi.fn(async () => ({ id: 'b9', versions: [{ key: 'default', kind: 'transcription', label: 'x' }] })) as never;
+        tr.getTextIndex = vi.fn(async () => ({ chapters: [{ n: 1, file: '001', title: '第一回' }] })) as never;
         const onTabChange = vi.fn();
         render(<BookDetailLayout id="b9" transport={tr as never} initialDetail={book}
             activeTab="basic" onTabChange={onTabChange} />);

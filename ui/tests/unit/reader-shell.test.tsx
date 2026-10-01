@@ -12,9 +12,9 @@ import { DEFAULT_READER_PREFS } from '../../src/components/Reader/prefs';
 import type { ReaderPrefs } from '../../src/components/Reader/prefs';
 import type { ReaderPageImage, ReaderTocItem } from '../../src/components/Reader/types';
 import { READER_CSS } from '../../src/components/Reader/reader-css';
-import { BookFullText } from '../../src/components/BookFullText';
-import { CollatedEdition } from '../../src/components/CollatedEdition';
-import type { BookFullTextIndex, CollatedEditionIndex, CollatedJuan } from '../../src/types';
+import { TextReader } from '../../src/components/TextReader';
+import type { CollatedJuan } from '../../src/types';
+import { fakeTextTransport } from './helpers/text-transport';
 
 /** 宋史式：496 卷 */
 const MANY: ReaderTocItem[] = Array.from({ length: 496 }, (_, i) => ({ key: `${i + 1}`.padStart(3, '0'), label: `卷${i + 1}` }));
@@ -257,22 +257,17 @@ describe('书影', () => {
 
 // ── 接上外壳的两个组件 ──
 
-const FT_INDEX: BookFullTextIndex = {
-    book_id: 'b1',
-    version_label: '宋史',
-    source: { name: '維基文庫', url: 'https://zh.wikisource.org/wiki/宋史', license: 'CC BY-SA 4.0' },
-    total_chapters: 3,
-    chapters: [
-        { n: 1, title: '卷一 本紀第一', file: '001.md' },
-        { n: 2, title: '卷二 本紀第二', file: '002.md' },
-        { n: 3, title: '卷三 本紀第三', file: '003.md' },
-    ],
-} as BookFullTextIndex;
+const FT_CHAPTERS = [
+    { n: 1, title: '卷一 本紀第一', file: '001' },
+    { n: 2, title: '卷二 本紀第二', file: '002' },
+    { n: 3, title: '卷三 本紀第三', file: '003' },
+];
+const FT_VERSION = { label: '維基文庫', source_name: '維基文庫', source_url: 'https://zh.wikisource.org/wiki/宋史', license: 'CC BY-SA 4.0' };
+const ftTransport = (md: string) => fakeTextTransport('b1', { chapters: FT_CHAPTERS, version: FT_VERSION, md });
 
-describe('BookFullText（全文阅读页）', () => {
+describe('TextReader（全文章）', () => {
     it('来源链接下划线、不靠颜色区分；卷名是 h1', async () => {
-        const transport = { getBookFullTextChapter: async () => '## 卷一\n\n太祖啟運立極。' } as never;
-        const { container } = render(<BookFullText index={FT_INDEX} bookId="b1" transport={transport} />);
+        const { container } = render(<TextReader id="b1" transport={ftTransport('## 卷一\n\n太祖啟運立極。')} />);
         await waitFor(() => expect(container.querySelector('article')?.textContent).toContain('太祖'));
         const link = screen.getByRole('link', { name: '維基文庫' });
         expect(link.className).toBe('bim-rd-link');
@@ -286,18 +281,16 @@ describe('BookFullText（全文阅读页）', () => {
 
     it('按章要书影：resolveImages 收到章 key', async () => {
         const resolveImages = vi.fn(async () => [{ url: 'https://img.example/p.jpg' }]);
-        const transport = { getBookFullTextChapter: async () => '正文。' } as never;
         const { container } = render(
-            <BookFullText index={FT_INDEX} bookId="b1" transport={transport} activeChapter="002" resolveImages={resolveImages} />,
+            <TextReader id="b1" transport={ftTransport('正文。')} chapter="002" resolveImages={resolveImages} />,
         );
         await waitFor(() => expect(container.querySelector('.bim-rd-img img')).toBeTruthy());
         expect(resolveImages).toHaveBeenCalledWith('002');
     });
 
     it('简体模式下正文也转换（此前全文页不转）', async () => {
-        const transport = { getBookFullTextChapter: async () => '漢太史令撰。' } as never;
         const { container } = render(
-            <LocaleProvider locale="zh-Hans"><BookFullText index={FT_INDEX} bookId="b1" transport={transport} /></LocaleProvider>,
+            <LocaleProvider locale="zh-Hans"><TextReader id="b1" transport={ftTransport('漢太史令撰。')} /></LocaleProvider>,
         );
         await waitFor(() => expect(container.querySelector('article')?.textContent).toContain('汉太史令撰'), { timeout: 8000 });
     }, 10000);
@@ -305,13 +298,18 @@ describe('BookFullText（全文阅读页）', () => {
 
 afterEach(() => { try { localStorage.clear(); } catch { /* ignore */ } });
 
-const CE_INDEX: CollatedEditionIndex = {
-    work_id: 'w1',
-    type: 'catalog',
+const CE_INDEX = {
     title: '直齋書錄解題',
-    juan_files: ['juan/001.json', 'juan/002.json'],
+    type: 'catalog',
     text_quality: { grade: 'rough', source_note: '維基文庫' },
 };
+const CE_CHAPTERS = [
+    { n: 1, file: '001', title: '卷1', has_json: true },
+    { n: 2, file: '002', title: '卷2', has_json: true },
+];
+/** 整理本阅读页（TextReader 读新结构：default 版本的章带 json） */
+const ceTransport = (extra: Record<string, unknown> = {}, item?: Record<string, unknown> | null) =>
+    fakeTextTransport('w1', { chapters: CE_CHAPTERS, index: { ...CE_INDEX, ...extra }, json: JUAN, kind: 'collated', item });
 
 const JUAN: CollatedJuan = {
     title: '正史類',
@@ -321,15 +319,12 @@ const JUAN: CollatedJuan = {
     ],
 };
 
-describe('CollatedEdition（整理本阅读页）', () => {
+describe('TextReader（整理本章）', () => {
     function mountCE(onNavigate = vi.fn()) {
-        const transport = {
-            getCollatedJuan: vi.fn(async () => JUAN),
-            getCollatedJuanText: vi.fn(async () => null),
-        } as never;
+        const transport = ceTransport();
         return render(
             <LocaleProvider locale="zh-Hant">
-                <CollatedEdition index={CE_INDEX} workId="w1" transport={transport} onNavigate={onNavigate} />
+                <TextReader id="w1" transport={transport} onNavigate={onNavigate} />
             </LocaleProvider>,
         );
     }
@@ -351,8 +346,8 @@ describe('CollatedEdition（整理本阅读页）', () => {
         expect(onNavigate).toHaveBeenCalledWith('wsj');
         // 工具条书名取自索引
         expect(container.querySelector('.bim-rd-ttl b')?.textContent).toBe('直齋書錄解題');
-        // 读过的卷在目录里补上卷名
-        await waitFor(() => expect(container.querySelector('.bim-rd-toc [aria-current="true"]')?.textContent).toBe('卷1　正史類'));
+        // 目录项取自 index.json 的章名（新结构里章名由数据给，不再靠读过的卷回填）
+        await waitFor(() => expect(container.querySelector('.bim-rd-toc [aria-current="true"]')?.textContent).toBe('卷1'));
     });
 
     it('卷头 v3：品质等级是徽标（.bim-rd-grade），不再是括号里的字；没有 license 数据就不出许可证', async () => {
@@ -369,14 +364,10 @@ describe('CollatedEdition（整理本阅读页）', () => {
 
     it('工具条 v3：书名链作品页、作者行取作品数据、当前卷；作者缺就不出', async () => {
         const onNavigate = vi.fn();
-        const transport = {
-            getCollatedJuan: vi.fn(async () => JUAN),
-            getCollatedJuanText: vi.fn(async () => null),
-            getItem: vi.fn(async () => ({ id: 'w1', title: '直齋書錄解題', authors: [{ name: '陳振孫', dynasty: '南宋' }] })),
-        } as never;
+        const transport = ceTransport({}, { id: 'w1', title: '直齋書錄解題', authors: [{ name: '陳振孫', dynasty: '南宋' }] });
         const { container } = render(
             <LocaleProvider locale="zh-Hant">
-                <CollatedEdition index={CE_INDEX} workId="w1" transport={transport} onNavigate={onNavigate} />
+                <TextReader id="w1" transport={transport} onNavigate={onNavigate} />
             </LocaleProvider>,
         );
         await waitFor(() => expect(container.querySelector('.bim-rd-by')?.textContent).toBe('〔南宋〕陳振孫 撰'));
@@ -512,13 +503,9 @@ describe('审查修订（#24 网站总管）', () => {
     });
 
     it('简体模式下整理本元数据行也转成简体', async () => {
-        const transport = {
-            getCollatedJuan: vi.fn(async () => JUAN),
-            getCollatedJuanText: vi.fn(async () => null),
-        } as never;
         const { container } = render(
             <LocaleProvider locale="zh-Hans">
-                <CollatedEdition index={CE_INDEX} workId="w1" transport={transport} />
+                <TextReader id="w1" transport={ceTransport()} />
             </LocaleProvider>,
         );
         await waitFor(() => expect(container.querySelector('.bim-rd-meta')?.textContent).toContain('2 部书'), { timeout: 8000 });
