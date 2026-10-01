@@ -178,14 +178,21 @@ function Rows({ items, links, label }: { items: { id: string; title: string; sub
     );
 }
 
-/** 同类书目与考证（不在书架上的） */
+/** 同类书目与考证（不在书架上的）。手机端同丛编分组，只露前 4 条，「全部 N 部」展开（overview#325） */
 export function MetaRelatedCatalogs({ works, links }: { works: MetaWorkRef[]; links?: Partial<MetaHomeLinks> }) {
     const { convert } = useConvert();
+    const [open, setOpen] = useState(false);
     if (!works.length) return null;
+    const capped = groupCapped(works.length);
     return (
-        <div>
+        <div className="bim-rh-grp" data-cap={capped ? '' : undefined} data-open={open ? '' : undefined}>
             <h3 className="bim-rh-gt">{convert('同類書目與考證')}<small>{convert('不在書架上的')}</small></h3>
             <Rows items={works.map((w) => ({ id: w.id, title: w.title, sub: authorsLine(w) || undefined }))} links={withMetaLinks(links)} />
+            {capped && (
+                <button type="button" className="bim-rh-expand" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+                    {convert(open ? '收起' : `全部 ${works.length} 部`)}
+                </button>
+            )}
         </div>
     );
 }

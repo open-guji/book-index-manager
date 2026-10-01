@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
 import {
-    MetaHomeView, MetaCatalogTable, MetaCollectionGroups, MetaPeopleTimeline, MetaOnlineSites, MetaDataLicense, MetaRecentPanel,
+    MetaHomeView, MetaCatalogTable, MetaCollectionGroups, MetaRelatedCatalogs, MetaPeopleTimeline, MetaOnlineSites, MetaDataLicense, MetaRecentPanel,
     META_HOME_CSS, pct, timelineLayout, yearText,
 } from '../../src/components/meta-home';
 import type { MetaHomeSections } from '../../src/components/meta-home';
@@ -123,6 +123,13 @@ describe('分区组件', () => {
         expect(btn).toHaveAttribute('aria-expanded', 'false');
         expect(container.querySelector('.bim-rh-grp')!.hasAttribute('data-cap')).toBe(true);
         fireEvent.click(btn);
+        expect(container.querySelector('.bim-rh-grp')!.hasAttribute('data-open')).toBe(true);
+    });
+    it('同类书目与考证：超过 5 条也按分组收起，出「全部 N 部」（overview#325）', () => {
+        const works = [1, 2, 3, 4, 5, 6].map((i) => ({ id: `w${i}`, title: `書目${i}` })) as unknown as Parameters<typeof MetaRelatedCatalogs>[0]['works'];
+        const { container } = render(<MetaRelatedCatalogs works={works} links={LINKS} />);
+        expect(container.querySelector('.bim-rh-grp')!.hasAttribute('data-cap')).toBe(true);
+        fireEvent.click(screen.getByText('全部 6 部'));
         expect(container.querySelector('.bim-rh-grp')!.hasAttribute('data-open')).toBe(true);
     });
     it('丛编分组：5 条（只比 4 多一条）不收，也不出按钮', () => {
