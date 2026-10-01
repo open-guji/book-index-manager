@@ -1,5 +1,5 @@
 /**
- * 阅读首页与阅读页（overview#308）的 axe 检查：3 配色 × 2 版式 × 桌面 1440／手机 390，
+ * 阅读首页、阅读页（overview#308）与元数据首页（#322）的 axe 检查：3 配色 × 2 版式 × 桌面 1440／手机 390，
  * 只拦 critical 与 serious（WCAG 2.0/2.1 A、AA），与网站 e2e/ui/a11y.spec.ts 同口径。
  * 阅读页在手机上另把「字号」「书影」两个底部抽屉各打开扫一遍。
  *
@@ -20,7 +20,7 @@ const THEMES = ['zhusha', 'indigo', 'ink'];
 const LAYOUTS = ['airy', 'boxed'];
 const VIEWPORTS = [{ name: '桌面 1440', width: 1440, height: 900 }, { name: '手机 390', width: 390, height: 844 }];
 /** [场景, 打开哪个抽屉（只在手机）] */
-const SCENES = [['home', null], ['reader', null], ['reader', '字号'], ['reader', '书影']];
+const SCENES = [['home', null], ['reader', null], ['reader', '字号'], ['reader', '书影'], ['meta', null], ['meta-empty', null]];
 
 const browser = await chromium.launch({ executablePath: process.env.CHROME || undefined, args: ['--no-sandbox'] });
 let failed = 0;
@@ -34,7 +34,7 @@ for (const vp of VIEWPORTS) {
                 if (sheet && !mobile) continue;
                 const page = await ctx.newPage();
                 await page.goto(`${BASE}?s=${scene}&theme=${theme}&layout=${layout}`, { waitUntil: 'networkidle' });
-                await page.waitForSelector(scene === 'home' ? '.bim-rh' : '.bim-rd');
+                await page.waitForSelector(scene === 'home' ? '.bim-rh' : scene.startsWith('meta') ? (scene === 'meta' ? '.bim-mh-recent li' : '.bim-mh-recent-empty') : '.bim-rd');
                 if (sheet) {
                     await page.getByRole('navigation', { name: '阅读工具' }).getByRole('button', { name: sheet }).click();
                     await page.getByRole('dialog', { name: sheet }).waitFor();

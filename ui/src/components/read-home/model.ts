@@ -40,6 +40,8 @@ export interface ReadTopicItem extends ReadCard {
     period_of?: string;
     /** 正史原志（书架上画实色） */
     orig?: true;
+    /** 著录条目数（元数据首页的书架在书脊下标它，代替「N本」） */
+    records?: number;
 }
 
 /** 专题分组；shelf＝画成书脊架（史志目录） */

@@ -10,53 +10,15 @@ import { TypeMark } from './common/TypeMark';
 import { useBidUrl } from '../core/bid-url';
 import { SearchResults } from './search/SearchResults';
 import { EMPTY_FILTERS, filtersToParams, type SearchFilters } from '../core/search-filters';
+import {
+    RECENT_IDS_STORAGE_KEY, clearAllRecentIds, loadRecentIds, removeRecentId, resolveRecentEntry, saveRecentId, type RecentEntry,
+} from '../core/recent';
 
-/** 「最近浏览」存 localStorage 的键（值为 ID 数组，新的在前）；宿主要读写或清空时用它 */
-export const RECENT_IDS_STORAGE_KEY = 'bim-recent-ids';
-const RECENT_KEY_LEGACY = 'bim-recent-entries';
-const MAX_RECENT = 50;
+export { RECENT_IDS_STORAGE_KEY };
+
 const SEARCH_LIMIT = 5;
 const SEARCH_LIMIT_EXPANDED = 50;
 const DEBOUNCE_MS = 200;
-
-function loadRecentIds(): string[] {
-    try {
-        const raw = localStorage.getItem(RECENT_IDS_STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
-        const legacy = localStorage.getItem(RECENT_KEY_LEGACY);
-        if (legacy) {
-            const ids = (JSON.parse(legacy) as { id: string }[]).map(e => e.id);
-            localStorage.setItem(RECENT_IDS_STORAGE_KEY, JSON.stringify(ids));
-            localStorage.removeItem(RECENT_KEY_LEGACY);
-            return ids;
-        }
-        return [];
-    } catch {
-        return [];
-    }
-}
-
-function saveRecentId(id: string) {
-    try {
-        const list = loadRecentIds().filter(i => i !== id);
-        list.unshift(id);
-        if (list.length > MAX_RECENT) list.length = MAX_RECENT;
-        localStorage.setItem(RECENT_IDS_STORAGE_KEY, JSON.stringify(list));
-    } catch { /* ignore */ }
-}
-
-function removeRecentId(id: string) {
-    try {
-        const list = loadRecentIds().filter(i => i !== id);
-        localStorage.setItem(RECENT_IDS_STORAGE_KEY, JSON.stringify(list));
-    } catch { /* ignore */ }
-}
-
-function clearAllRecentIds() {
-    try {
-        localStorage.removeItem(RECENT_IDS_STORAGE_KEY);
-    } catch { /* ignore */ }
-}
 
 export interface IndexBrowserProps {
     transport: IndexStorage;
@@ -161,7 +123,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     const [errorMessage, setErrorMessage] = useState('');
     const [showingRecent, setShowingRecent] = useState(!initialQuery?.trim());
     const [recentIds, setRecentIds] = useState<string[]>(loadRecentIds);
-    const [recentEntries, setRecentEntries] = useState<(IndexEntry & { notFound?: boolean })[]>([]);
+    const [recentEntries, setRecentEntries] = useState<RecentEntry[]>([]);
     const [recentLoading, setRecentLoading] = useState(false);
     const [recentExpanded, setRecentExpanded] = useState(false);
     const [stats, setStats] = useState<{ works: number; books: number; collections: number; entities: number; hasText?: number; hasImage?: number } | null>(null);
@@ -305,29 +267,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
         let cancelled = false;
         setRecentLoading(true);
         Promise.all(
-            recentIds.slice(0, 10).map(async id => {
-                try {
-                    if (transport.getEntry) {
-                        const entry = await transport.getEntry(id);
-                        if (entry) return entry;
-                    }
-                    const raw = await transport.getItem(id);
-                    if (raw) {
-                        const authors = raw.authors as { name?: string; dynasty?: string; role?: string }[] | undefined;
-                        return {
-                            id,
-                            title: (raw.title as string) || id,
-                            type: (raw.type as IndexType) || 'work',
-                            author: authors?.[0]?.name,
-                            dynasty: authors?.[0]?.dynasty,
-                            role: authors?.[0]?.role,
-                            edition: (raw.edition as string) || undefined,
-                        } as IndexEntry;
-                    }
-                } catch { /* ignore */ }
-                // 未找到的条目，返回占位卡片
-                return { id, title: id, type: 'work' as IndexType, notFound: true };
-            })
+            recentIds.slice(0, 10).map(id => resolveRecentEntry(transport, id))
         ).then(results => {
             if (cancelled) return;
             setRecentEntries(results);

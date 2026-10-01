@@ -1,0 +1,280 @@
+{
+ "counts": {
+  "works": 95055,
+  "books": 20899,
+  "collections": 84,
+  "entities": 30994
+ },
+ "shelf": {
+  "label": "歷代史志",
+  "items": [
+   {
+    "id": "d59f23o7ygw2",
+    "title": "漢書藝文志",
+    "period_of": "漢",
+    "orig": true,
+    "records": 621
+   },
+   {
+    "id": "d59f2o2larya",
+    "title": "補晉書經籍志",
+    "period_of": "晉"
+   },
+   {
+    "id": "d59f2mp2xibm",
+    "title": "補晉書藝文志",
+    "period_of": "晉"
+   },
+   {
+    "id": "d59f28nmafwh",
+    "title": "隋書經籍志",
+    "period_of": "隋",
+    "orig": true,
+    "records": 3230
+   },
+   {
+    "id": "d59f2gcburcx",
+    "title": "舊唐書經籍志",
+    "period_of": "唐",
+    "orig": true,
+    "records": 2950
+   },
+   {
+    "id": "d59f2hl0cmio",
+    "title": "新唐書藝文志",
+    "period_of": "唐",
+    "orig": true,
+    "records": 5257
+   },
+   {
+    "id": "d59f2gdp696q",
+    "title": "宋史藝文志",
+    "period_of": "宋",
+    "orig": true,
+    "records": 9984
+   },
+   {
+    "id": "d59f2mp38qv4",
+    "title": "宋史藝文志補",
+    "period_of": "宋"
+   }
+  ]
+ },
+ "related_catalogs": [
+  {
+   "id": "d59f2hqc0c1t",
+   "title": "崇文總目",
+   "authors": [
+    {
+     "name": "王堯臣",
+     "dynasty": "宋"
+    }
+   ]
+  },
+  {
+   "id": "d59f2htm01du",
+   "title": "直齋書錄解題",
+   "authors": [
+    {
+     "name": "陳振孫",
+     "dynasty": "南宋"
+    }
+   ]
+  }
+ ],
+ "catalog_progress": [
+  {
+   "id": "r0",
+   "name": "漢書藝文志",
+   "total": 621,
+   "imported": 549,
+   "status": "done",
+   "work_id": "d59f23o7ygw2"
+  },
+  {
+   "id": "r1",
+   "name": "隋書經籍志",
+   "total": 3230,
+   "imported": 3230,
+   "status": "done",
+   "work_id": "d59f28nmafwh"
+  },
+  {
+   "id": "r2",
+   "name": "欽定四庫全書總目",
+   "total": 10687,
+   "imported": 10687,
+   "status": "done"
+  },
+  {
+   "id": "r3",
+   "name": "武英殿刻書",
+   "total": 200,
+   "imported": 120,
+   "status": "in_progress"
+  }
+ ],
+ "bu": [
+  {
+   "id": "jing",
+   "label": "經部",
+   "count": 13065,
+   "children_total": 10,
+   "top": [
+    {
+     "id": "jing-yi",
+     "label": "易類",
+     "count": 2523
+    },
+    {
+     "id": "jing-li",
+     "label": "禮類",
+     "count": 1683
+    }
+   ]
+  },
+  {
+   "id": "shi",
+   "label": "史部",
+   "count": 10408,
+   "children_total": 13,
+   "top": [
+    {
+     "id": "shi-dili",
+     "label": "地理類",
+     "count": 2642
+    }
+   ]
+  }
+ ],
+ "unclassified": 41804,
+ "collection_groups": [
+  {
+   "key": "siku_qige",
+   "label": "四庫七閣",
+   "items": [
+    {
+     "id": "8rlb6yi1ecqo",
+     "title": "欽定四庫全書·文淵閣本"
+    },
+    {
+     "id": "8rlb6yibp6o0",
+     "title": "欽定四庫全書·文津閣本"
+    }
+   ]
+  },
+  {
+   "key": "xubu",
+   "label": "四庫續補",
+   "items": [
+    {
+     "id": "8rlcxphotse8",
+     "title": "續修四庫全書"
+    }
+   ]
+  }
+ ],
+ "bibliographers": [
+  {
+   "id": "hixhd2f8waju",
+   "name": "劉向",
+   "dynasty": "西漢",
+   "birth_year": -77,
+   "death_year": -6
+  },
+  {
+   "id": "hixhd2h9bdqa",
+   "name": "班固",
+   "dynasty": "東漢"
+  },
+  {
+   "id": "hixhd2h9bdye",
+   "name": "歐陽修",
+   "dynasty": "北宋",
+   "birth_year": 1007,
+   "death_year": 1072
+  },
+  {
+   "id": "hixhd2h9beoe",
+   "name": "陳振孫",
+   "dynasty": "南宋",
+   "birth_year": 1183
+  },
+  {
+   "id": "hixhd2h9bcl2",
+   "name": "紀昀",
+   "dynasty": "清",
+   "birth_year": 1724,
+   "death_year": 1805
+  }
+ ],
+ "lineage": [
+  {
+   "id": "d59df01avcw0",
+   "title": "紅樓夢",
+   "authors": [
+    {
+     "name": "曹雪芹",
+     "dynasty": "清"
+    }
+   ]
+  },
+  {
+   "id": "d59f20aowb9c",
+   "title": "史記",
+   "authors": [
+    {
+     "name": "司馬遷",
+     "dynasty": "西漢"
+    }
+   ]
+  }
+ ],
+ "sites": [
+  {
+   "id": "ctext",
+   "name": "CText 中國哲學書電子化計劃",
+   "url": "https://ctext.org",
+   "total": 11381,
+   "imported": 5700,
+   "status": "done"
+  },
+  {
+   "id": "wikisource",
+   "name": "維基文庫",
+   "total": 11381,
+   "imported": 3012,
+   "status": "done"
+  },
+  {
+   "id": "shidian",
+   "name": "識典古籍",
+   "total": 11381,
+   "imported": 6275,
+   "status": "in_progress"
+  },
+  {
+   "id": "nlc",
+   "name": "國家圖書館·中華古籍資源庫",
+   "total": 0,
+   "imported": 0,
+   "status": "todo"
+  }
+ ],
+ "stats": {
+  "works": 95055,
+  "books": 20899,
+  "collections": 84,
+  "entities": 30994,
+  "has_image": 17415,
+  "has_text": 11517,
+  "article": 2525,
+  "poem": 320,
+  "loss": {
+   "extant": 0,
+   "partially_extant": 0,
+   "lost": 0,
+   "unknown": 0
+  }
+ }
+}

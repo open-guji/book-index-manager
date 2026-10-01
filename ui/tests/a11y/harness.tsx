@@ -1,7 +1,7 @@
 /**
  * 阅读首页与阅读页（overview#308）的无障碍检查台：按查询串设配色、版式、场景，渲染真组件。
  * 用法见 tests/a11y/axe.mjs。
- *   ?s=home|reader  &theme=zhusha|indigo|ink  &layout=airy|boxed
+ *   ?s=home|reader|meta|meta-empty  &theme=zhusha|indigo|ink  &layout=airy|boxed
  */
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -10,7 +10,11 @@ import type { ReadSections } from '../../src/components/read-home';
 import { ReaderShell } from '../../src/components/Reader/ReaderShell';
 import { DEFAULT_READER_PREFS } from '../../src/components/Reader/prefs';
 import type { ReaderPrefs } from '../../src/components/Reader/prefs';
+import { MetaHomeView } from '../../src/components/meta-home';
+import type { MetaHomeSections } from '../../src/components/meta-home';
+import { RECENT_IDS_STORAGE_KEY } from '../../src/core/recent';
 import sections from '../unit/fixtures/read-sections.json';
+import metaSections from '../unit/fixtures/meta-sections.json';
 
 const q = new URLSearchParams(location.search);
 const theme = q.get('theme') ?? 'zhusha';
@@ -66,4 +70,46 @@ function Reader() {
     );
 }
 
-createRoot(document.getElementById('root')!).render(q.get('s') === 'reader' ? <Reader /> : <Home />);
+/** 元数据首页；meta-empty＝最近浏览为空 */
+function Meta({ empty }: { empty?: boolean }) {
+    try {
+        if (empty) localStorage.removeItem(RECENT_IDS_STORAGE_KEY);
+        else localStorage.setItem(RECENT_IDS_STORAGE_KEY, JSON.stringify(['d59f20aowb9c', 'hixhd2h9bcl2', '96kzkdm8e8']));
+    } catch { /* ignore */ }
+    const known: Record<string, Record<string, unknown>> = {
+        d59f20aowb9c: { title: '史記', type: 'work' },
+        hixhd2h9bcl2: { title: '紀昀', type: 'entity' },
+        '96kzkdm8e8': { title: '新鐫全部繡像紅樓夢', type: 'book', edition: '程甲本' },
+    };
+    return (
+        <div className="wrap">
+            <MetaHomeView
+                sections={metaSections as unknown as MetaHomeSections}
+                head={(
+                    <form role="search" action="/book-index">
+                        <label htmlFor="q">檢索古籍元數據</label>
+                        <input id="q" type="search" name="q" />
+                        <button type="submit">檢索</button>
+                    </form>
+                )}
+                transport={{ getItem: async (id) => known[id] ?? null }}
+                links={{
+                    item: (id) => `/book-index/${id}`,
+                    node: (id) => `/catalog?node=${id}`,
+                    type: (t) => `/book-index?type=${t}`,
+                    loss: (k) => `/book-index?loss=${k}`,
+                }}
+                catalogHref="/catalog"
+                collectionsHref="/book-index?type=collection"
+                entitiesHref="/book-index?type=entity"
+                version="501935e · 2026-09-27"
+                repoUrl="https://github.com/open-guji/book-index"
+            />
+        </div>
+    );
+}
+
+const scene = q.get('s');
+createRoot(document.getElementById('root')!).render(
+    scene === 'reader' ? <Reader /> : scene === 'meta' ? <Meta /> : scene === 'meta-empty' ? <Meta empty /> : <Home />,
+);

@@ -91,15 +91,28 @@ function countLabel(n: number | undefined): string | null {
 }
 
 /** 史志书架：按所志朝代分栏，一脊一部；实色＝正史原志 */
-export function ReadShelf({ topic, links }: { topic: ReadTopic; links?: Partial<ReadHomeLinks> }) {
+export function ReadShelf({ topic, links, hint, legendCount = '脊下「2本」＝站內有幾個本子', showTitle = true, legendExtra }: {
+    topic: ReadTopic;
+    /** 书脊的链接走 links.read（元数据首页传作品页地址） */
+    links?: Partial<ReadHomeLinks>;
+    /** 标题旁的小字，默认「按所志朝代排列，一脊一部」 */
+    hint?: string;
+    /** 图例里解释书脊下数字的一句；传 null 不出 */
+    legendCount?: string | null;
+    /** 出不出组标题（元数据首页的书架就是整个分区，不再重复标题） */
+    showTitle?: boolean;
+    /** 图例末尾再加的几句 */
+    legendExtra?: string[];
+}) {
     const { convert } = useConvert();
     const l = withDefaultLinks(links);
     if (!topic.items.length) return null;
     const cols = shelfColumns(topic.items);
     const spine = (b: ReadTopicItem) => {
-        const n = countLabel(b.text_count);
+        // 元数据首页的书架标著录条目数；阅读首页标站内本数
+        const n = b.records ? fmtCount(b.records) : countLabel(b.text_count);
         const by = firstAuthorText(b);
-        const name = [b.title, b.orig ? '正史原志' : '', by ? `${by} 撰` : '', n ? `站內 ${n}` : ''].filter(Boolean).join('，');
+        const name = [b.title, b.orig ? '正史原志' : '', by ? `${by} 撰` : '', b.records ? `著錄 ${n} 條` : n ? `站內 ${n}` : ''].filter(Boolean).join('，');
         return (
             <li key={b.id}>
                 <a
@@ -111,14 +124,14 @@ export function ReadShelf({ topic, links }: { topic: ReadTopic; links?: Partial<
                     style={{ height: spineHeight(b.title) }}
                 >
                     <Vertical text={convert(b.title)} />
-                    {n && <span className="bim-rh-n bim-rh-num">{convert(n)}</span>}
+                    {n && <span className="bim-rh-n bim-rh-num" data-records={b.records ? '' : undefined}>{convert(n)}</span>}
                 </a>
             </li>
         );
     };
     return (
         <div className="bim-rh-shelf-box">
-            <h3 className="bim-rh-gt">{convert(topic.label)}<small>{convert('按所志朝代排列，一脊一部')}</small></h3>
+            {showTitle && <h3 className="bim-rh-gt">{convert(topic.label)}<small>{convert(hint ?? '按所志朝代排列，一脊一部')}</small></h3>}
             {/* 窄屏可横向滚动：容器可聚焦，键盘也能滚（axe scrollable-region-focusable） */}
             <div className="bim-rh-shelf-wrap" tabIndex={0} role="region" aria-label={convert(`${topic.label}書架，可橫向滾動`)}>
                 <ul className="bim-rh-shelf">
@@ -133,7 +146,8 @@ export function ReadShelf({ topic, links }: { topic: ReadTopic; links?: Partial<
             <p className="bim-rh-legend">
                 <span><i data-orig="" aria-hidden="true" />{convert('正史原志')}</span>
                 <span><i aria-hidden="true" />{convert('後人補撰、續補')}</span>
-                <span>{convert('脊下「2本」＝站內有幾個本子')}</span>
+                {legendCount && <span>{convert(legendCount)}</span>}
+                {legendExtra?.map((t) => <span key={t}>{convert(t)}</span>)}
             </p>
         </div>
     );
@@ -229,7 +243,13 @@ export function ReadFamousWorks({ famous, links }: { famous: ReadFamous[]; links
 }
 
 /** 四部方块：每部总数、前几个子类（比例条），未分類单列弱化 */
-export function ReadSibu({ bu, unclassified, links }: { bu: ReadBu[]; unclassified?: number; links?: Partial<ReadHomeLinks> }) {
+export function ReadSibu({ bu, unclassified, links, unclassifiedNote = '書目分類還沒補齊，其中多數是單篇詩文，已單列在下方。' }: {
+    bu: ReadBu[];
+    unclassified?: number;
+    links?: Partial<ReadHomeLinks>;
+    /** 「未分類」一行的说明（元数据首页另写） */
+    unclassifiedNote?: string;
+}) {
     const { convert } = useConvert();
     const l = withDefaultLinks(links);
     if (!bu.length && !unclassified) return null;
@@ -268,7 +288,7 @@ export function ReadSibu({ bu, unclassified, links }: { bu: ReadBu[]; unclassifi
                 <p className="bim-rh-uncl bim-rh-num">
                     <b>{convert('未分類')}</b>
                     <span>{convert(`${fmtCount(unclassified)} 部`)}</span>
-                    <span>{convert('書目分類還沒補齊，其中多數是單篇詩文，已單列在下方。')}</span>
+                    <span>{convert(unclassifiedNote)}</span>
                     <a href={l.node('unclassified')}>{convert('查看未分類 →')}</a>
                 </p>
             )}

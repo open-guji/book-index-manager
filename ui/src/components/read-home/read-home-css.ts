@@ -96,6 +96,8 @@ export const READ_HOME_CSS = `
 .bim-rh-spine[data-orig] { background: ${bim('accent')}; border-color: ${bim('accent')}; color: ${bim('page-bg')} !important; }
 .bim-rh-spine[data-orig]:hover { background: ${bim('accent-deep')}; color: ${bim('page-bg')} !important; }
 .bim-rh-spine .bim-rh-n { margin-top: auto; padding-top: 6px; font-size: 11px; letter-spacing: 0; }
+/* 著录条目数（元数据首页）：四五位数，收窄才放得进 30px 的书脊 */
+.bim-rh-spine .bim-rh-n[data-records] { font-size: 9.5px; letter-spacing: -0.04em; }
 .bim-rh-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; font-size: 12px; color: ${bim('meta-fg')}; }
 .bim-rh-legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; border: ${bim('fr-spine-bd')}; background: ${bim('fr-spine-bg')}; }
 .bim-rh-legend i[data-orig] { background: ${bim('accent')}; border-color: ${bim('accent')}; }
