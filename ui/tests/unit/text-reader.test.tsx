@@ -56,10 +56,11 @@ const versionSelect = () => screen.getByRole('combobox', { name: '版本' }) as 
 const optionTexts = () => Array.from(versionSelect().options).map(o => o.textContent);
 
 describe('TextReader · 新结构', () => {
-    it('工具条版本下拉按 manifest 顺序列全部版本（含整理本），default 在最前、默认选中；选项只写来源', async () => {
+    it('工具条版本下拉按 manifest 顺序列全部版本（含整理本版本），default 在最前、默认选中；选项只写来源', async () => {
         setup(nativeTransport());
         await screen.findByRole('heading', { level: 1, name: '經錄' });
-        expect(optionTexts()).toEqual(['整理本', '維基文庫', 'Kanripo']);
+        // 整理本版本的 label 是类别词「整理本」，下拉改写来源名「開源古籍」（页面上不出现类别词）
+        expect(optionTexts()).toEqual(['開源古籍', '維基文庫', 'Kanripo']);
         expect(versionSelect().value).toBe('default');
     });
 
