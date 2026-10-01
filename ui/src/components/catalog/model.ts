@@ -3,10 +3,12 @@
  *
  * 组件本身只收 props（CatalogNode[] / CatalogWorkCard[]），不取数。这里的函数给
  * dev app 现场算树用，网站构建期脚本（N4b）也可以直接复用，保证两边口径一致：
- * - 节点 id = 各级分类名以「/」连接，如 `史部/正史類`；未分类 id 为 `未分類`
+ * - 节点 id = 各级分类名以「/」连接，如 `史部/紀傳類`；没有分类的作品归顶层「未分類」，id 为 `未分類`
+ *   （部、类下的「未分類」如 `史部/未分類` 是普通节点；同名类如各部的「總類」按完整路径区分）
  * - count = 整棵子树的作品数（只分到部、没分到类的作品计入部，不另开「未细分」节点）
- * - 同级顺序按 classific.json（四库法）的出现顺序，表里没有的排在后面按名称
- * - 「未分類」放在最后
+ * - 同级顺序按 classific.json 的出现顺序（2026-09-30 起为《中国古籍总目》词表，五部含「叢書部」，
+ *   overview#292），表里没有的排在后面按名称；各级的「未分類」一律放在同级最后
+ *   （词表里它排在每部、每类的最前）。没有作品的分类（如目前的叢書部）不出现
  */
 import type { CatalogNode, CatalogWorkCard, WorkClassification } from '../../types';
 
@@ -86,6 +88,9 @@ export function buildCatalogTree(
 
     const finish = (m: Map<string, MutNode>): CatalogNode[] => [...m.values()]
         .sort((a, b) => {
+            const ua = a.label === CATALOG_UNCLASSIFIED_ID ? 1 : 0;
+            const ub = b.label === CATALOG_UNCLASSIFIED_ID ? 1 : 0;
+            if (ua !== ub) return ua - ub;
             const ra = rank.get(a.id) ?? Infinity;
             const rb = rank.get(b.id) ?? Infinity;
             if (ra !== rb) return ra - rb;

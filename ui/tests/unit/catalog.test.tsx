@@ -44,6 +44,23 @@ function card(i: number, extra: Partial<CatalogWorkCard> = {}): CatalogWorkCard 
 }
 
 describe('model', () => {
+    it('buildCatalogTree：《中国古籍总目》词表（overview#292）——各级未分類放最后、同名總類分开、空叢書部不出现', () => {
+        const order = [
+            { cata_l1: '經部', cata_l2: '未分類' },
+            { cata_l1: '經部', cata_l2: '總類', cata_l3: '石經之屬' },
+            { cata_l1: '史部', cata_l2: '未分類' },
+            { cata_l1: '史部', cata_l2: '紀傳類' },
+            { cata_l1: '子部', cata_l2: '總類' },
+            { cata_l1: '叢書部', cata_l2: '彙編類' },
+        ];
+        const c = (l1: string, l2?: string, l3?: string): { classification: WorkClassification } => ({ classification: { l1, l2, l3 } as WorkClassification });
+        const tree = buildCatalogTree([c('史部', '未分類'), c('史部', '紀傳類'), c('經部', '總類', '石經之屬'), c('子部', '總類'), {}], order);
+        expect(tree.map(n => n.label)).toEqual(['經部', '史部', '子部', CATALOG_UNCLASSIFIED_ID]);
+        expect(tree[1].children!.map(n => [n.id, n.label])).toEqual([['史部/紀傳類', '紀傳類'], ['史部/未分類', '未分類']]);
+        expect(tree[0].children![0].id).toBe('經部/總類');
+        expect(tree[2].children![0].id).toBe('子部/總類');
+    });
+
     it('buildCatalogTree：四库顺序、子树计数、未分類在最后', () => {
         expect(TREE.map(n => n.label)).toEqual(['經部', '史部', '子部', CATALOG_UNCLASSIFIED_ID]);
         const shi = TREE[1];
