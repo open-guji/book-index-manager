@@ -37,6 +37,16 @@ describe('版本显示名', () => {
         expect(textVersionLabel({ key: 'default', label: '整理本' })).toBe('整理本');
         expect(textVersionLabel({ key: 'wikisource', label: '' })).toBe('wikisource');
     });
+
+    it('有 edition_label 时写「版本名 · 来源名」（overview#307）', () => {
+        expect(textVersionLabel({ key: 'kanripo', label: 'Kanripo', source_name: 'Kanripo', edition_label: '四部叢刊本' })).toBe('四部叢刊本 · Kanripo');
+        expect(textVersionLabel({ key: 'wikisource', label: '維基文庫', edition_label: '文淵閣四庫全書本' })).toBe('文淵閣四庫全書本 · 維基文庫');
+        // 来源名仍按原规则取：类别词 label 换成来源名
+        expect(textVersionLabel({ key: 'default', label: '整理本', source_name: '開源古籍', edition_label: '四部叢刊本' })).toBe('四部叢刊本 · 開源古籍');
+        // 空白 edition_label 等于没有；与来源名相同时不重复
+        expect(textVersionLabel({ key: 'kanripo', label: 'Kanripo', edition_label: '  ' })).toBe('Kanripo');
+        expect(textVersionLabel({ key: 'kanripo', label: 'Kanripo', edition_label: 'Kanripo' })).toBe('Kanripo');
+    });
 });
 
 describe('切版本落在哪一章', () => {

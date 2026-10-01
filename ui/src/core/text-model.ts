@@ -21,6 +21,8 @@ export interface TextVersion {
     kind: TextKind;
     /** 下拉显示名——只写来源（整理本／維基文庫／維基文庫 2） */
     label: string;
+    /** 版本名（底本）：「四部叢刊本」「文淵閣四庫全書本」；可选，没有就不写（book-text 901182c50b） */
+    edition_label?: string;
     /** 来源短名：collated／wikisource／kanripo／shidian… */
     source?: string;
     source_name?: string;
@@ -122,10 +124,17 @@ export function isSafeSegment(s: string): boolean {
 const CATEGORY_WORD = /^(整理本|整理|转录全文|轉錄全文|转录|轉錄|全文|文本)$/;
 
 /**
- * 读者看得懂的版本名：只写来源。label 为空或是类别词（如数据里整理本的 label「整理本」）时改用来源名，再按 key。
+ * 读者看得懂的版本名。有 edition_label 时写「版本名 · 来源名」（如「四部叢刊本 · Kanripo」，overview#307）；
+ * 没有时只写来源：label 为空或是类别词（如数据里整理本的 label「整理本」）时改用来源名，再按 key。
  * 整理本的来源名是「開源古籍」，所以下拉里写「開源古籍」而不是「整理本」。
  */
-export function textVersionLabel(v: Pick<TextVersion, 'label' | 'source_name' | 'key'>): string {
+export function textVersionLabel(v: Pick<TextVersion, 'label' | 'source_name' | 'key' | 'edition_label'>): string {
+    const source = textSourceLabel(v);
+    const edition = v.edition_label?.trim();
+    return edition && edition !== source ? `${edition} · ${source}` : source;
+}
+
+function textSourceLabel(v: Pick<TextVersion, 'label' | 'source_name' | 'key'>): string {
     for (const cand of [v.label, v.source_name]) {
         const s = cand?.trim();
         if (s && !CATEGORY_WORD.test(s)) return s;
