@@ -30,6 +30,11 @@ describe('版本显示名', () => {
     it('label 优先，其次来源名，最后 key', () => {
         expect(textVersionLabel({ key: 'wikisource', label: '維基文庫', source_name: 'x' })).toBe('維基文庫');
         expect(textVersionLabel({ key: 'wikisource', label: '', source_name: '維基文庫' })).toBe('維基文庫');
+        // 类别词不进页面：整理本的 label「整理本」改用来源名「開源古籍」（用户 10-01 定）
+        expect(textVersionLabel({ key: 'default', label: '整理本', source_name: '開源古籍' })).toBe('開源古籍');
+        expect(textVersionLabel({ key: 'x', label: '转录全文', source_name: '維基文庫' })).toBe('維基文庫');
+        // 没有来源名可用时只好保留原 label，不丢版本入口
+        expect(textVersionLabel({ key: 'default', label: '整理本' })).toBe('整理本');
         expect(textVersionLabel({ key: 'wikisource', label: '' })).toBe('wikisource');
     });
 });

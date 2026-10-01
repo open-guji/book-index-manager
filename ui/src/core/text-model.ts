@@ -118,8 +118,18 @@ export function isSafeSegment(s: string): boolean {
     return s.length > 0 && !s.includes('..') && !/[\\/?#%\s\u0000-\u001f\u007f]/.test(s);
 }
 
-/** 读者看得懂的版本名：label 为空时按来源名，再按 key */
+/** 版本类别词：页面上不出现（用户 10-01 定：统一叫「文本」，版本下拉只写来源名） */
+const CATEGORY_WORD = /^(整理本|整理|转录全文|轉錄全文|转录|轉錄|全文|文本)$/;
+
+/**
+ * 读者看得懂的版本名：只写来源。label 为空或是类别词（如数据里整理本的 label「整理本」）时改用来源名，再按 key。
+ * 整理本的来源名是「開源古籍」，所以下拉里写「開源古籍」而不是「整理本」。
+ */
 export function textVersionLabel(v: Pick<TextVersion, 'label' | 'source_name' | 'key'>): string {
+    for (const cand of [v.label, v.source_name]) {
+        const s = cand?.trim();
+        if (s && !CATEGORY_WORD.test(s)) return s;
+    }
     return v.label || v.source_name || v.key;
 }
 
