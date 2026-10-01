@@ -235,6 +235,10 @@ export type { GujiInlineNode } from './core/guji-inline';
 export * from './components/catalog';
 // 阅读首页（overview#308）：推荐、专题、名著与版本、四部、年代带、单篇诗文；数据契约 ReadSections 与网站构建期 read/sections.json 共用
 export * from './components/read-home';
+// 元数据首页（overview#322）：/book-index 无检索词时；数据契约 MetaHomeSections 与网站构建期 meta-home/sections.json 共用
+export * from './components/meta-home';
+export { loadRecentIds, saveRecentId, removeRecentId, clearAllRecentIds, resolveRecentEntry } from './core/recent';
+export type { RecentEntry } from './core/recent';
 
 export { BookDetailLayout } from './components/BookDetailLayout';
 export type {
