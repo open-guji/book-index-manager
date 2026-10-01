@@ -19,7 +19,7 @@ function loadSearchHistory(): string[] {
     }
 }
 
-function saveSearchTerm(term: string) {
+export function saveSearchTerm(term: string) {
     try {
         const list = loadSearchHistory().filter(t => t !== term);
         list.unshift(term);

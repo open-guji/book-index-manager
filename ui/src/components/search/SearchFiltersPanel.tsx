@@ -94,7 +94,6 @@ export const SearchFiltersPanel: React.FC<SearchFiltersPanelProps> = ({ filters,
                         ))}
                     </div>
                 </section>
-                <p className="bim-sr-note">{convert(t.onlyWorksNote)}</p>
                 {n > 0 && (
                     <button type="button" className="bim-sr-clear" onClick={() => onChange({ ...EMPTY_FILTERS, sort: filters.sort })}>
                         {convert(t.clearAllFilters)}

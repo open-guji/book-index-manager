@@ -146,6 +146,8 @@ describe('左栏筛选面板', () => {
         const onChange = vi.fn();
         const { rerender } = render(<SearchFiltersPanel filters={EMPTY_FILTERS} onChange={onChange} />);
         expect(screen.queryByText('清除全部筛选')).toBeNull();
+        // 「部类、存佚只适用于作品……」说明已删（overview#337 B5）
+        expect(screen.queryByText(/只适用于作品|只適用於作品/)).toBeNull();
         fireEvent.click(screen.getByRole('button', { name: '漢' }));
         expect(onChange).toHaveBeenLastCalledWith(F({ dynasty: ['漢'] }));
         fireEvent.click(screen.getByRole('checkbox', { name: '史部' }));
