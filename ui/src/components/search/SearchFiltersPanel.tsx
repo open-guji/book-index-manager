@@ -79,10 +79,6 @@ export const SearchFiltersPanel: React.FC<SearchFiltersPanelProps> = ({ filters,
                         <input type="checkbox" checked={filters.hasText} onChange={e => set({ hasText: e.target.checked })} />
                         {convert(t.hasText)}
                     </label>
-                    <label className="bim-sr-opt">
-                        <input type="checkbox" checked={filters.hasCollated} onChange={e => set({ hasCollated: e.target.checked })} />
-                        {convert(t.hasCollated)}
-                    </label>
                 </section>
                 <section className="bim-sr-fg">
                     <h3 id={`${panelId}-loss`}>{convert(t.extant)}</h3>

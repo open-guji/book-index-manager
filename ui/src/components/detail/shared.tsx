@@ -45,7 +45,7 @@ export function lossStatusLabel(s: string): string {
 }
 
 const KIND: Record<string, string> = {
-    text: '全文',
+    text: '文本',
     image: '影印',
     textImage: '圖文',
     physical: '館藏',

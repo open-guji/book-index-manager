@@ -785,7 +785,7 @@ export function descNeedsClamp(text?: string): boolean {
 }
 
 /** 「阅读全文」：有 href 渲染成链接（指向宿主的阅读页），否则按钮 */
-export function ReadButton({ href, onClick, label = '閱讀全文' }: {
+export function ReadButton({ href, onClick, label = '閱讀' }: {
     href?: string;
     onClick?: () => void;
     label?: string;

@@ -82,11 +82,11 @@ describe('BookPage（B1）', () => {
     it('提要卡：「版本」小字、主按钮之外只有文字链接「看原書影印」', async () => {
         render(<BookDetailLayout {...props(BOOK, BOOK_EXTRA, { readLink: () => '/read/b1' }, FULL_TEXT)} />);
         await waitFor(() => expect(document.querySelector('.bim-d-card-kind')?.textContent).toBe('版本'));
-        await waitFor(() => expect(screen.getByRole('link', { name: '閱讀全文' })).toBeTruthy());
+        await waitFor(() => expect(screen.getByRole('link', { name: '閱讀' })).toBeTruthy());
         expect(screen.getByRole('link', { name: '看原書影印' }).getAttribute('href')).toBe('#images');
     });
 
-    it('text_count 出主按钮（同步、不等目录）；目录取回为空则不出回目网格，站外全文照旧', async () => {
+    it('text_count 出主按钮（同步、不等目录）；目录取回为空则不出回目网格，站外文本照旧', async () => {
         const readLink = (ctx: { kind: string | null }) => (ctx.kind ? '/read/b1' : null);
         const { container } = render(<BookDetailLayout {...props(BOOK, BOOK_EXTRA, { readLink }, null)} />);
         // 首帧就有按钮（不等目录，免得提要卡晚到长高）
@@ -105,11 +105,11 @@ describe('BookPage（B1）', () => {
         expect((p.transport as never as { getTextManifest: ReturnType<typeof vi.fn> }).getTextManifest).not.toHaveBeenCalled();
     });
 
-    it('正文顺序：全文 → 影印 → 版本源流', async () => {
+    it('正文顺序：文本 → 影印 → 版本源流', async () => {
         const { container } = render(<BookDetailLayout {...props(BOOK, BOOK_EXTRA, {}, FULL_TEXT)} />);
         await screen.findByText(/從第一回讀起/);
         const heads = [...container.querySelectorAll('.bim-d-g-main .bim-d-sec-head h2')].map(h => h.textContent);
-        expect(heads).toEqual(['全文', '影印', '版本源流']);
+        expect(heads).toEqual(['文本', '影印', '版本源流']);
     });
 
     it('回目逐回带 juan 取宿主链接；先露 9 回，其余可展开', async () => {
@@ -125,15 +125,15 @@ describe('BookPage（B1）', () => {
         expect(chap.querySelectorAll('a').length).toBe(12);
     });
 
-    it('站外全文进「全文」区块；影印按组列，组名只写一次，镜像收成一行', async () => {
+    it('站外文本进「文本」区块；影印按组列，组名只写一次，镜像收成一行', async () => {
         render(<BookDetailLayout {...props(BOOK, BOOK_EXTRA, {}, FULL_TEXT)} />);
         const images = (await screen.findByText('程甲本原本掃描')).closest('section')!;
         expect(within(images).getAllByText('程甲本原本掃描').length).toBe(1);
         expect(within(images).getByText('鏡像')).toBeTruthy();
         expect(within(images).getByRole('link', { name: /Internet Archive/ })).toBeTruthy();
-        // 维基文库不在影印区，在全文区
+        // 维基文库不在影印区，在文本区
         expect(within(images).queryByText(/維基文庫/)).toBeNull();
-        const ft = screen.getByText('站外全文').closest('section')!;
+        const ft = screen.getByText('站外文本').closest('section')!;
         expect(within(ft).getByRole('link', { name: /維基文庫/ })).toBeTruthy();
     });
 

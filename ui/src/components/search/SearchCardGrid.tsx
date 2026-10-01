@@ -48,8 +48,7 @@ export const SearchCardGrid: React.FC<SearchCardGridProps> = ({ entries, query, 
                 const foot = [typeName(e.type), e.classification ? convert(e.classification) : ''].filter(Boolean).join(' · ');
                 const tags: { label: string; cls: string }[] = [];
                 if (e.has_image) tags.push({ label: v.tagImage, cls: 'bim-sr-tag--img' });
-                if (e.has_text) tags.push({ label: v.tagText, cls: '' });
-                if (e.has_collated) tags.push({ label: v.tagCollated, cls: '' });
+                if (e.has_text || e.has_collated) tags.push({ label: v.tagText, cls: '' });
                 if (e.loss_status === 'lost') tags.push({ label: v.tagLost, cls: 'bim-sr-tag--lost' });
                 return (
                     <a key={e.id} className="bim-sc" href={buildUrl(e.id)} onClick={ev => onEntryLinkClick(e, ev)}>

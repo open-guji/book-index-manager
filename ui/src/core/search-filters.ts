@@ -137,6 +137,7 @@ export function buildMeiliFilter(f: SearchFilters, type: IndexType): string | nu
             : `classification IN [${f.classification.map(q).join(', ')}]`);
     }
     if (f.hasImage) parts.push('has_image = true');
+    // 「有文本」过渡：works 先只查 has_text（只有整理本的作品会漏），等代理／索引给出 has_text OR has_collated 的写法再换（overview#322）
     if (f.hasText) parts.push('has_text = true');
     if (f.hasCollated) parts.push('has_collated = true');
     if (f.loss) parts.push(`loss_status = ${q(f.loss)}`);
@@ -171,8 +172,9 @@ export function filtersFromParams(params: { get(name: string): string | null }):
         dynasty: Array.from(new Set(list(KEYS.dynasty).filter(k => groupKeys.has(k)))),
         classification: Array.from(new Set(list(KEYS.classification).map(v => (v === UNCLASSIFIED ? '' : v)).filter(v => classValues.has(v)))),
         hasImage: params.get(KEYS.hasImage) === '1',
-        hasText: params.get(KEYS.hasText) === '1',
-        hasCollated: params.get(KEYS.hasCollated) === '1',
+        // 用户 10-01：页面上不再分「全文／整理本」，统一叫「文本」，筛选合成一个「有文本」；旧链接的 col=1 并进来
+        hasText: params.get(KEYS.hasText) === '1' || params.get(KEYS.hasCollated) === '1',
+        hasCollated: false,
         loss: loss === 'extant' || loss === 'partially_extant' || loss === 'lost' ? loss : '',
         sort: (['era:asc', 'era:desc', 'title:asc', 'title:desc'] as const).find(k => k === params.get(KEYS.sort)) ?? '',
     };
