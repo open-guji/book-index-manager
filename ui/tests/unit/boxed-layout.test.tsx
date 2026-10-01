@@ -36,6 +36,21 @@ describe('界栏：只在 data-layout="boxed" 下生效', () => {
     });
 });
 
+describe('总目界栏（9-30 反馈：标题无间距、卡片无框、列表未界栏）', () => {
+    const css = boxedRules(CATALOG_CSS).join('\n');
+    it('标题栏下方留间距', () => {
+        expect(css).toMatch(/\.bim-ct-head \{[^}]*margin: 0 0 14px/);
+    });
+    it('卡片画框', () => {
+        expect(css).toMatch(/\.bim-ct-card > a \{[^}]*border: var\(--bim-fr-bd/);
+    });
+    it('列表整表一框、去斑马、行间线', () => {
+        expect(css).toMatch(/\.bim-ct-list \{[^}]*border: var\(--bim-fr-bd/);
+        expect(css).toMatch(/\.bim-ct-lrow:nth-child\(odd\) \{[^}]*background: none/);
+        expect(css).toMatch(/\.bim-ct-lrow \+ \.bim-ct-lrow \{[^}]*border-top: var\(--bim-fr-hd-bd/);
+    });
+});
+
 describe('墨：行内链接加下划线（强调色≈正文色）', () => {
     it('详情页与阅读器都有 data-theme="ink" 的下划线规则', () => {
         expect(LAYOUT_CSS).toMatch(/:root\[data-theme="ink"\][^{]*a \{[^}]*text-decoration: underline/);
