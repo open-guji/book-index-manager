@@ -8,6 +8,7 @@
  * - 窄屏 ≤ 719px：卡片 1 列；分类树折成顶部抽屉
  *
  * 视觉与 N3a 详情页一致：黑体、暖纸底、朱色只用在当前项与悬停，卡片不画框、靠底色分块（版式「界栏」下画框，见文末）。
+ * 四角一律直角（版式判准）。
  */
 import { bim } from '../../styles/tokens';
 
@@ -37,7 +38,7 @@ export const CATALOG_CSS = `
 .bim-ct-tree li { outline: none; }
 .bim-ct-row {
   display: flex; align-items: center; gap: 4px; min-height: 34px;
-  padding: 0 10px 0 calc(var(--bimct-lv, 0) * 14px + 4px); border-radius: 6px;
+  padding: 0 10px 0 calc(var(--bimct-lv, 0) * 14px + 4px);
   font-size: 14px; line-height: 1.4; color: ${bim('body-fg')}; cursor: pointer; user-select: none;
 }
 .bim-ct-row:hover { background: ${bim('row-hover-bg')}; color: ${bim('ink')}; }
@@ -52,7 +53,7 @@ export const CATALOG_CSS = `
 .bim-ct-lb { min-width: 0; flex: 1; overflow-wrap: anywhere; }
 .bim-ct-n { flex: none; margin-left: 8px; font-size: 12px; font-weight: 400; color: ${bim('aux-fg')}; font-variant-numeric: tabular-nums; }
 .bim-ct-tree li[aria-selected="true"] > .bim-ct-row .bim-ct-n { color: ${bim('accent')}; }
-.bim-ct-tree .bim-ct-last { margin-top: 6px; padding-top: 6px; border-top: 1px solid ${bim('rule')}; }
+.bim-ct-tree .bim-ct-last { margin-top: 6px; padding-top: 6px; border-top: ${bim('fr-hd-bd')}; }
 
 /* ── 右栏 ── */
 .bim-ct-main { min-width: 0; }
@@ -61,7 +62,7 @@ export const CATALOG_CSS = `
 .bim-ct-crumb { font-size: 13px; color: ${bim('aux-fg')}; }
 .bim-ct-stat { font-size: 13px; color: ${bim('aux-fg')}; }
 .bim-ct-search { margin: 0 0 16px; }
-.bim-ct-view { margin-left: auto; display: inline-flex; border-radius: 6px; box-shadow: inset 0 0 0 1px ${bim('rule')}; overflow: hidden; }
+.bim-ct-view { margin-left: auto; display: inline-flex; background: ${bim('tint-bg')}; overflow: hidden; }
 .bim-ct-view button { min-height: 28px; padding: 0 12px; border: 0; background: none; cursor: pointer; font: inherit; font-size: 13px; color: ${bim('quiet-fg')}; }
 .bim-ct-view button[aria-pressed="true"] { background: ${bim('flag-bg')}; color: ${bim('accent')}; font-weight: 700; }
 .bim-ct-view button:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: -2px; }
@@ -71,7 +72,7 @@ export const CATALOG_CSS = `
 .bim-ct-card { min-width: 0; }
 .bim-ct-card > a {
   display: flex; flex-direction: column; gap: 6px; height: 100%; min-height: 44px;
-  padding: 14px 16px 12px; border-radius: 8px;
+  padding: 14px 16px 12px;
   background: ${bim('card-bg')}; color: inherit; text-decoration: none;
   transition: background 0.12s;
 }
@@ -92,10 +93,10 @@ export const CATALOG_CSS = `
 
 /* ── 列表视图 ── */
 .bim-ct-list { list-style: none; margin: 0; padding: 0; }
-.bim-ct-lrow:nth-child(odd) { background: ${bim('zebra-bg')}; border-radius: 6px; }
+.bim-ct-lrow:nth-child(odd) { background: ${bim('zebra-bg')}; }
 .bim-ct-lrow > a {
   display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr) minmax(0, 2fr); gap: 4px 20px; align-items: baseline;
-  min-height: 44px; padding: 10px 14px; color: inherit; text-decoration: none; border-radius: 6px;
+  min-height: 44px; padding: 10px 14px; color: inherit; text-decoration: none;
 }
 .bim-ct-lrow > a:hover { background: ${bim('tint-bg')}; }
 .bim-ct-lrow > a:hover .bim-ct-lt { color: ${bim('accent')}; }
@@ -109,7 +110,7 @@ export const CATALOG_CSS = `
 .bim-ct-pager ol { display: contents; list-style: none; }
 .bim-ct-pg {
   display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 34px; padding: 0 10px;
-  border: 0; border-radius: 6px; background: none; font: inherit; color: ${bim('body-fg')};
+  border: 0; background: none; font: inherit; color: ${bim('body-fg')};
   text-decoration: none; cursor: pointer;
 }
 .bim-ct-pg:hover { background: ${bim('row-hover-bg')}; color: ${bim('accent')}; }
@@ -132,14 +133,14 @@ export const CATALOG_CSS = `
   .bim-ct-side-h { display: none; }
   .bim-ct-drawer-btn {
     display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 0 14px;
-    border: 0; border-radius: 8px; background: ${bim('tint-bg')};
+    border: 0; background: ${bim('tint-bg')};
     font: inherit; font-size: 14px; color: ${bim('ink')}; text-align: left; cursor: pointer;
   }
   .bim-ct-drawer-btn span { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bim-ct-drawer-btn svg { flex: none; transition: transform 0.15s; color: ${bim('aux-fg')}; }
   .bim-ct-drawer-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
   .bim-ct-drawer-btn:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: 2px; }
-  .bim-ct-drawer { margin-top: 6px; padding: 6px; border-radius: 8px; background: ${bim('card-bg')}; max-height: 70vh; overflow-y: auto; }
+  .bim-ct-drawer { margin-top: 6px; padding: 6px; background: ${bim('card-bg')}; max-height: 70vh; overflow-y: auto; }
   .bim-ct[data-drawer="closed"] .bim-ct-drawer { display: none; }
   .bim-ct-title { font-size: 18px; }
   .bim-ct-pager { flex-wrap: nowrap; justify-content: space-between; }
@@ -154,15 +155,24 @@ export const CATALOG_CSS = `
   .bim-ct-pg { min-width: 44px; height: 44px; }
 }
 
-/* ── 版式「界栏」（v4）：<html data-layout="boxed"> 才生效；值走 --bim-fr-* 令牌 ── */
+/* ── 版式「界栏」（v4）：<html data-layout="boxed"> 才生效；值走 --bim-fr-* 令牌 ──
+   版式判准（overview 设计/v4/版式判准.md）：疏朗不画任何线（分类树末行上沿、呈现切换的描边都去掉）；
+   界栏每块有框、列表有行线；两种都直角。 */
 :root[data-layout="boxed"] .bim-ct-side { border: ${bim('fr-bd')}; background: ${bim('fr-bg')}; padding: 14px 8px; }
 /* 标题栏自成一框，与下方（检索框或卡片／列表）留出间距 */
 :root[data-layout="boxed"] .bim-ct-head { padding: ${bim('fr-hd-pad')}; border: ${bim('fr-bd')}; border-bottom: ${bim('fr-hd-bd')}; background: ${bim('fr-bg')}; margin: 0 0 14px; }
 /* 卡片：每张一框 */
-:root[data-layout="boxed"] .bim-ct-card > a { border: ${bim('fr-bd')}; border-radius: 0; }
+:root[data-layout="boxed"] .bim-ct-card > a { border: ${bim('fr-bd')}; }
 /* 列表：整表一框，行间细线，不用斑马底 */
 :root[data-layout="boxed"] .bim-ct-list { border: ${bim('fr-bd')}; background: ${bim('fr-bg')}; }
 :root[data-layout="boxed"] .bim-ct-lrow:nth-child(odd) { background: none; border-radius: 0; }
 :root[data-layout="boxed"] .bim-ct-lrow + .bim-ct-lrow { border-top: ${bim('fr-hd-bd')}; }
-:root[data-layout="boxed"] .bim-ct-lrow > a { border-radius: 0; }
+:root[data-layout="boxed"] .bim-ct-lrow > a { padding-top: 7px; padding-bottom: 7px; }
+/* 卡片悬停：界栏下边框变成强调色（判准「卡片」）；写成裸变量，不带回退色 */
+:root[data-layout="boxed"] .bim-ct-card > a:hover { border-color: var(--bim-accent); }
+/* 呈现切换：疏朗浅底无框，界栏透明底＋1px 框（判准「工具条按钮」） */
+:root[data-layout="boxed"] .bim-ct-view { background: none; border: ${bim('fr-bd')}; }
+/* 窄屏分类抽屉：界栏下按钮和面板都有框 */
+:root[data-layout="boxed"] .bim-ct-drawer-btn { border: ${bim('fr-bd')}; background: ${bim('fr-bg')}; }
+:root[data-layout="boxed"] .bim-ct-drawer { border: ${bim('fr-bd')}; }
 `;
