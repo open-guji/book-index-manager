@@ -432,6 +432,14 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
     color: ${bim('aux-fg')}; }
   .bim-d-zt td.bim-d-zt-blank { display: none; }
   .bim-d-zt td.bim-d-zt-main .bim-d-meta { padding-bottom: 2px; }
+  /*
+   * 手机端（overview#325）：版本行加载完、没有卷帙小字时，那个 &nbsp; 占位行（桌面防 CLS 用）还占着 24px，
+   * 书名和「年代 馆藏」之间空一截；人物页著作行空的「部类」格以行内块显示，多出一段缩进。都收掉。
+   */
+  .bim-d-zt tr:not([data-loading]) td.bim-d-zt-main > .bim-d-meta[aria-hidden="true"] { display: none; }
+  .bim-d-zt td:not(.bim-d-zt-main):empty { display: none; }
+  /* 影印分组本身是一张卡（.bim-d-rg），里面的行再铺斑马底就成了卡里套卡；桌面本来就不铺（见上），手机也不铺 */
+  .bim-d-rg .bim-d-zt tbody tr:nth-child(odd) { background: transparent; }
   /* 手机上版本行是块：解析前先按「名 + 卷帙小字 + 一行年代馆藏」占高（实测解析后 81–87px） */
   .bim-d-zt-ver tbody tr { height: auto; }
   /* 朝代页签晚到、在手机上自成一行：解析中先占两行（页签一行 + 复选框一行，实测共 66px） */
