@@ -210,8 +210,10 @@ ${BAND_MIX.map((p, i) => `.bim-rh-band a[data-k="${i}"] { background: color-mix(
   .bim-rh-works, .bim-rh-groups { grid-template-columns: minmax(0, 1fr); }
   .bim-rh-groups { gap: 24px; }
   .bim-rh-shelf-box + .bim-rh-groups { margin-top: 24px; }
-  /* 长分组只露前 6 条，「全部」按钮展开 */
-  .bim-rh-grp:not([data-open]) .bim-rh-rows li:nth-child(n+7) { display: none; }
+  /* 长分组只露前 4 条，「全部」按钮展开（overview#325：原先 6 条，专题七组铺开约 2000px） */
+  .bim-rh-grp[data-cap]:not([data-open]) .bim-rh-rows li:nth-child(n+5) { display: none; }
+  /* 年代带在手机上已改成写全名的格子，「窄段悬停看全名」不适用 */
+  .bim-rh-hover-hint { display: none; }
   .bim-rh-expand { display: inline-flex; }
   .bim-rh-bu { gap: 22px 16px; }
   .bim-rh-bu-h b { font-size: 21px; }
@@ -225,10 +227,20 @@ ${BAND_MIX.map((p, i) => `.bim-rh-band a[data-k="${i}"] { background: color-mix(
   .bim-rh-band a[data-narrow] .bim-rh-pl-s { display: none; }
 }
 
+/* 没有悬停的设备（触屏）也不说「悬停」 */
+@media (hover: none) {
+  .bim-rh-hover-hint { display: none; }
+}
+
 /* 触屏或窄屏：点击目标放大到 44px */
 @media ${COARSE_QUERY} {
   .bim-rh-rows a, .bim-rh-bu-l a, .bim-rh-au li a, .bim-rh-chip, .bim-rh-secnav a, .bim-rh-expand { min-height: 44px; display: flex; align-items: center; }
   .bim-rh-chip { display: inline-flex; }
+}
+
+/* 「全部 N 部」展开键只在窄屏有用（宽屏分组本就全显示）；上面触屏块的 display: flex 不能让它在平板宽屏上冒出来 */
+@media (min-width: 720px) {
+  .bim-rh-expand { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) { .bim-rh * { scroll-behavior: auto !important; transition: none !important; } }

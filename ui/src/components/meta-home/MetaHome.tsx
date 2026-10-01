@@ -13,7 +13,7 @@ import type { IndexType } from '../../types';
 import type { IndexStorage } from '../../storage/types';
 import { clearAllRecentIds, loadRecentIds, resolveRecentEntry, type RecentEntry } from '../../core/recent';
 import { READ_HOME_CSS } from '../read-home/read-home-css';
-import { ReadSection, ReadShelf, ReadSibu } from '../read-home/ReadHome';
+import { groupCapped, ReadSection, ReadShelf, ReadSibu } from '../read-home/ReadHome';
 import { authorsLine, fmtCount } from '../read-home/model';
 import type { ReadHomeLinks } from '../read-home/model';
 import { META_HOME_CSS } from './meta-home-css';
@@ -193,6 +193,23 @@ export function MetaRelatedCatalogs({ works, links }: { works: MetaWorkRef[]; li
 /** 七阁的分组 key：这一组画成一排方格，其余分组画成列表 */
 export const SEVEN_PAVILIONS_KEY = 'siku_qige';
 
+/** 丛编的一组：手机端和阅读首页专题一样只露前 4 条（GROUP_NARROW_CAP），「全部 N 種」展开（overview#325） */
+function CollectionGroup({ group, links }: { group: MetaHomeSections['collection_groups'][number]; links: Links }) {
+    const { convert } = useConvert();
+    const [open, setOpen] = useState(false);
+    return (
+        <div className="bim-rh-grp" data-cap={groupCapped(group.items.length) ? '' : undefined} data-open={open ? '' : undefined}>
+            <h3 className="bim-rh-gt">{convert(group.label)}<small className="bim-rh-num">{convert(`${group.items.length} 種`)}</small></h3>
+            <Rows items={group.items} links={links} label={group.label} />
+            {groupCapped(group.items.length) && (
+                <button type="button" className="bim-rh-expand" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+                    {convert(open ? '收起' : `全部 ${group.items.length} 種`)}
+                </button>
+            )}
+        </div>
+    );
+}
+
 /** 丛编：「四库七阁」一排方格，其余各组分栏列表 */
 export function MetaCollectionGroups({ groups, links }: { groups: MetaHomeSections['collection_groups']; links?: Partial<MetaHomeLinks> }) {
     const { convert } = useConvert();
@@ -221,12 +238,7 @@ export function MetaCollectionGroups({ groups, links }: { groups: MetaHomeSectio
             )}
             {rest.length > 0 && (
                 <div className="bim-mh-cg" style={ge ? undefined : { marginTop: 0 }}>
-                    {rest.map((g) => (
-                        <div key={g.key}>
-                            <h3 className="bim-rh-gt">{convert(g.label)}<small className="bim-rh-num">{convert(`${g.items.length} 種`)}</small></h3>
-                            <Rows items={g.items} links={l} label={g.label} />
-                        </div>
-                    ))}
+                    {rest.map((g) => <CollectionGroup key={g.key} group={g} links={l} />)}
                 </div>
             )}
         </>

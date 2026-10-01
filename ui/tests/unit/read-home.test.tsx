@@ -124,7 +124,7 @@ describe('各分区', () => {
         expect(container.querySelector('.bim-rh-shelf-wrap')?.getAttribute('tabindex')).toBe('0');
     });
 
-    it('专题分组：超过 6 条才出「全部」按钮，点了展开（data-open）', () => {
+    it('专题分组：超过 GROUP_NARROW_CAP＋1（5）条才收起、出「全部」按钮，点了展开（data-open）', () => {
         const big = S.topics.find((t) => t.key === 'archives')!;
         const { container } = render(<ReadTopicGroup topic={big} />);
         // 桌面上「全部」按钮由样式藏起来（只在手机出；前面用例的 <style> 会留在 head 里），按文字查

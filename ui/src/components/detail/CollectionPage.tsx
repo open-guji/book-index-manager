@@ -24,7 +24,7 @@ import { useT, useConvert } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, type RenderLink } from './primitives';
 import {
-    DetailGrid, Sec, MetaLine, MoreLink, TabFilter, SummaryCard, SideList, CardFoot, RailUp, descNeedsClamp,
+    DetailGrid, Sec, MetaLine, CapMore, narrowCapped, TabFilter, SummaryCard, SideList, CardFoot, RailUp, descNeedsClamp,
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import { buildCollectionTable, formatVolumeRange, measureText } from '../../core/detail-model';
@@ -347,7 +347,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                             />}
                         </div>
                     )}
-                    <table className="bim-d-zt">
+                    <table className="bim-d-zt" data-ncap={!showAllTitles && narrowCapped(filtered.length) ? '' : undefined}>
                         <thead className="bim-d-ui">
                             <tr>
                                 {hasVolumeColumn && <th style={{ width: '8.5em' }}>{convert('冊次')}</th>}
@@ -400,11 +400,8 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                     {visibleTitles.length === 0 && (
                         <p className="bim-d-meta bim-d-ui" style={{ margin: '12px 12px 0' }}>{convert(t.catalog.noMatch)}</p>
                     )}
-                    {filtered.length > visibleTitles.length && (
-                        <MoreLink
-                            label={`展開其餘 ${filtered.length - visibleTitles.length} ${t.unit.items}`}
-                            onClick={() => setShowAllTitles(true)}
-                        />
+                    {!showAllTitles && (
+                        <CapMore total={filtered.length} shown={visibleTitles.length} unit={t.unit.items} onClick={() => setShowAllTitles(true)} />
                     )}
                 </Sec>
             )}

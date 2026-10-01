@@ -19,7 +19,7 @@ import { useT, useConvert } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, renderInterlinear, type RenderLink } from './primitives';
 import {
-    DetailGrid, Sec, MetaLine, TabFilter, CheckFilter, MoreLink, SummaryCard, SideList, CardFoot,
+    DetailGrid, Sec, MetaLine, TabFilter, CheckFilter, CapMore, narrowCapped, SummaryCard, SideList, CardFoot,
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import {
@@ -297,7 +297,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                         />
                         <span className="bim-d-meta">{convert(byYear ? '按年代排列' : '按著錄順序')}</span>
                     </div>
-                    <table className="bim-d-zt bim-d-zt-ver">
+                    <table className="bim-d-zt bim-d-zt-ver" data-ncap={!showAll && narrowCapped(table.rows.length) ? '' : undefined}>
                         <thead className="bim-d-ui">
                             <tr>
                                 <th>{convert('版本')}</th>
@@ -326,11 +326,8 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                             {convert(era || scanOnly ? '當前篩選下沒有版本' : '暫無版本著錄')}
                         </p>
                     )}
-                    {table.rows.length > visibleRows.length && (
-                        <MoreLink
-                            label={`展開其餘 ${table.rows.length - visibleRows.length} 種版本`}
-                            onClick={() => setShowAll(true)}
-                        />
+                    {!showAll && (
+                        <CapMore total={table.rows.length} shown={visibleRows.length} unit="種版本" onClick={() => setShowAll(true)} />
                     )}
                     {table.hasInferredEra && (
                         <p className="bim-d-meta bim-d-ui" style={{ margin: '8px 0 0', fontSize: 12 }}>
