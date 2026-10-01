@@ -161,5 +161,8 @@ describe('主题（朱砂默认 / 靛蓝）', () => {
     it('分区标题栏底色随配色走（accent，不是 VS Code 的 primary）：疏朗混页面底，界栏混卡面底', () => {
         expect(BIM_TOKENS['fr-hd-bg'].value).toBe('color-mix(in srgb, var(--bim-accent) 7%, var(--bim-page-bg))');
         expect(BIM_LAYOUTS.boxed['fr-hd-bg']).toBe('color-mix(in srgb, var(--bim-accent) 6%, var(--bim-card-bg))');
+        // 疏朗也有标题栏底色，故有内边距（判准 §三，10-01）
+        expect(BIM_TOKENS['fr-hd-pad'].value).toBe('14px 18px');
+        expect(BIM_LAYOUTS.boxed['fr-hd-pad']).toBe('12px 18px');
     });
 });

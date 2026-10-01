@@ -204,8 +204,8 @@
     --bim-fr-bd: 0 solid transparent;
     /* 区块底。界栏＝卡面色 */
     --bim-fr-bg: transparent;
-    /* 区块标题栏内边距（界栏：标题栏与正文之间有分隔线） */
-    --bim-fr-hd-pad: 0;
+    /* 区块标题栏内边距。10-01 起疏朗也有淡染底的标题栏（--bim-fr-hd-bg），故疏朗 14px 18px，界栏 12px 18px */
+    --bim-fr-hd-pad: 14px 18px;
     /* 区块标题栏下沿线（border 简写） */
     --bim-fr-hd-bd: 0 solid transparent;
     /* 区块正文内边距 */

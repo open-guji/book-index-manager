@@ -200,6 +200,7 @@ describe('各分区', () => {
 describe('样式：只走令牌', () => {
     it('界栏规则读 --bim-fr-*；有手机断点；墨下文字链接加下划线（写死颜色由 tokens.test 守门）', () => {
         expect(READ_HOME_CSS).toMatch(/\.bim-rh-sec \{[^}]*border: var\(--bim-fr-bd/);
+        expect(READ_HOME_CSS).toMatch(/\.bim-rh-hd \{[^}]*background: var\(--bim-fr-hd-bg/);
         expect(READ_HOME_CSS).toMatch(/\.bim-rh-bu-c \{[^}]*border: var\(--bim-fr-card-bd/);
         expect(READ_HOME_CSS).toMatch(/\.bim-rh-rows a \{[^}]*border-top: var\(--bim-fr-row-bd/);
         expect(READ_HOME_CSS).toMatch(/\.bim-rh-shelf \{[^}]*border-bottom: var\(--bim-fr-plank/);

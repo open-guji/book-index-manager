@@ -41,16 +41,18 @@ export const READ_HOME_CSS = `
 .bim-rh-secnav a { display: inline-block; font-size: 13px; color: ${bim('quiet-fg')}; white-space: nowrap; }
 .bim-rh-secnav a:hover { color: ${bim('accent')}; }
 
-/* ── 分区通用：疏朗靠留白，界栏加外框（--bim-fr-*） ── */
+/* ── 分区通用：疏朗靠留白，界栏加外框（--bim-fr-*）；标题栏两种版式都是淡染底（判准 10-01） ── */
 .bim-rh-main { display: flex; flex-direction: column; gap: ${bim('fr-gap')}; padding: 40px 0 72px; }
 .bim-rh-sec { min-width: 0; border: ${bim('fr-bd')}; background: ${bim('fr-bg')}; scroll-margin-top: calc(${bim('reader-top')} + 56px); }
 .bim-rh-hd {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px;
   padding: ${bim('fr-hd-pad')}; border-bottom: ${bim('fr-hd-bd')}; margin-bottom: 18px;
+  background: ${bim('fr-hd-bg')};
 }
 :root[data-layout="boxed"] .bim-rh-hd { margin-bottom: 0; }
 .bim-rh-hd h2 { margin: 0; font-size: ${bim('fr-hd-size')}; font-weight: 600; letter-spacing: 0.1em; color: ${bim('ink')}; }
-.bim-rh-hd .bim-rh-sub { font-size: 13px; color: ${bim('meta-fg')}; }
+/* 副题在淡染底上，用深一档的 quiet-fg 才够对比度（靛青配色下 meta-fg 不够） */
+.bim-rh-hd .bim-rh-sub { font-size: 13px; color: ${bim('quiet-fg')}; }
 .bim-rh-hd .bim-rh-more { margin-left: auto; font-size: 13px; white-space: nowrap; }
 .bim-rh-bd { min-width: 0; padding: ${bim('fr-bd-pad')}; }
 .bim-rh-gt { display: flex; align-items: baseline; gap: 10px; margin: 0 0 10px; font-size: 14px; font-weight: 600; letter-spacing: 0.12em; color: ${bim('ink')}; }
