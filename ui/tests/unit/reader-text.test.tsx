@@ -5,7 +5,8 @@ import React from 'react';
 import { describe, expect, it } from 'vitest';
 import { render, waitFor } from '@testing-library/react';
 import { LocaleProvider } from '../../src/i18n';
-import { ReaderMdText, canParagraphize, renderProperNames, stripBlockComments } from '../../src/components/Reader/ReaderText';
+import { ReaderMdText, canParagraphize, hasOwnIndent, renderProperNames, stripBlockComments } from '../../src/components/Reader/ReaderText';
+import { READER_CSS } from '../../src/components/Reader/reader-css';
 
 const CATALOG_MD = `<!-- p4 -->
 六藝略
@@ -155,5 +156,32 @@ describe('专名线', () => {
         expect(c.querySelectorAll('.bim-rd-pn')).toHaveLength(2);
         expect(c.querySelector('.bim-jiazhu .bim-rd-pn')?.textContent).toBe('《漢書》');
         expect(c.textContent).toContain('殘《字');
+    });
+});
+
+describe('段首自带全角空格不再叠加缩进（overview#339）', () => {
+    it('hasOwnIndent：段首两个及以上全角空格才算；一格、半角、没有都不算', () => {
+        expect(hasOwnIndent('　　天地玄黃')).toBe(true);
+        expect(hasOwnIndent('　　　低一格的注')).toBe(true);
+        expect(hasOwnIndent('　天地玄黃')).toBe(false);
+        expect(hasOwnIndent('  天地玄黃')).toBe(false);
+        expect(hasOwnIndent('天地玄黃')).toBe(false);
+        expect(hasOwnIndent('天　　地')).toBe(false);
+    });
+
+    it('分行：自带「　　」的段落取消 text-indent，其余段落照旧缩进；原文空格保留', () => {
+        const md = ['　　天地玄黃，宇宙洪荒。', '日月盈昃，辰宿列張。', '　寒來暑往，秋收冬藏。'].join('\n');
+        const c = mount(<ReaderMdText text={md} mode="line" />);
+        const ps = [...c.querySelectorAll('p')];
+        expect(ps).toHaveLength(3);
+        expect(ps[0].classList.contains('bim-rd-noindent')).toBe(true);
+        expect(ps[0].textContent!.startsWith('　　天地')).toBe(true);
+        expect(ps[1].classList.contains('bim-rd-noindent')).toBe(false);
+        expect(ps[2].classList.contains('bim-rd-noindent')).toBe(false);
+    });
+
+    it('阅读器样式：正文段落缩进两字，bim-rd-noindent 取消缩进', () => {
+        expect(READER_CSS).toMatch(/\.bim-rd-prose p \{[^}]*text-indent: 2em/);
+        expect(READER_CSS).toMatch(/\.bim-rd-prose \.bim-rd-noindent \{ text-indent: 0; \}/);
     });
 });

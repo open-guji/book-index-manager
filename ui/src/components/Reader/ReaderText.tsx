@@ -120,6 +120,16 @@ export function canParagraphize(text: string | null | undefined): boolean {
 }
 
 /**
+ * 原文段首已自带两个全角空格「　　」（及以上）的段落：不再加 text-indent，免得叠成四格（overview#339）。
+ * 文本不动，由阅读器判断；只有一格或没有空格的段落照旧缩进两字。全角空格不被 HTML 折叠，原样显示即是缩进。
+ */
+export function hasOwnIndent(text: string): boolean {
+    return /^\u3000{2}/.test(text);
+}
+
+const indentClass = (text: string): string | undefined => (hasOwnIndent(text) ? 'bim-rd-noindent' : undefined);
+
+/**
  * md 正文（不含表格）。`dropTitle` 为真时去掉开头与卷名相同的 `#` 标题——
  * 卷名已经在阅读器的 h1 上了。
  */
@@ -145,7 +155,7 @@ export function ReaderMdBlocks({ text, mode, inline, dropTitle }: {
                         const { Tag, className } = level(b.level ?? 1);
                         return <Tag key={i} className={className}>{inline(b.text)}</Tag>;
                     }
-                    return <p key={i}>{renderBold(b.text, inline, i)}</p>;
+                    return <p key={i} className={indentClass(b.text)}>{renderBold(b.text, inline, i)}</p>;
                 })}
             </>
         );
@@ -180,7 +190,7 @@ export function ReaderMdBlocks({ text, mode, inline, dropTitle }: {
                     const { Tag, className } = level(3);
                     return <Tag key={i} className={className}>{inline(line.trim().slice(2, -2))}</Tag>;
                 }
-                return <p key={i}>{renderBold(line, inline, i)}</p>;
+                return <p key={i} className={indentClass(line)}>{renderBold(line, inline, i)}</p>;
             })}
         </>
     );
