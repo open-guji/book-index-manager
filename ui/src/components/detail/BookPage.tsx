@@ -379,7 +379,7 @@ export const BookPage: React.FC<BookPageProps> = ({
     const hasLineage = !!(lineage?.derived_from?.length || lineage?.related_to?.length || data.appendix?.length);
 
     const nav: RailNavItem[] = [];
-    if (chapters.length || res.text.length || fullTextPending) nav.push({ id: 'fulltext', label: '全文', count: chapters.length ? convert(`${chapters.length} ${chapUnit}`) : undefined });
+    if (chapters.length || res.text.length || fullTextPending) nav.push({ id: 'fulltext', label: '文本', count: chapters.length ? convert(`${chapters.length} ${chapUnit}`) : undefined });
     if (res.groups.length) nav.push({ id: 'images', label: hasPhysicalOnly ? '館藏' : '影印', count: imageCount });
     if (hasLineage) nav.push({ id: 'lineage', label: '版本源流' });
     if (containedIn.length) nav.push({ id: 'collections', label: '收入叢編', count: containedIn.length });
@@ -413,7 +413,7 @@ export const BookPage: React.FC<BookPageProps> = ({
             {(chapters.length > 0 || res.text.length > 0 || fullTextPending) && (
                 <Sec
                     id="fulltext"
-                    title="全文"
+                    title="文本"
                     meta={chapters.length > 0 ? (
                         <MetaLine items={[
                             convert(`${chapters.length} ${chapUnit}`),
@@ -464,7 +464,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                     {res.text.length > 0 && (
                         <>
                             {(chapters.length > 0 || fullTextPending) && (
-                                <p className="bim-d-meta bim-d-ui" style={{ margin: '14px 0 4px' }}>{convert('站外全文')}</p>
+                                <p className="bim-d-meta bim-d-ui" style={{ margin: '14px 0 4px' }}>{convert('站外文本')}</p>
                             )}
                             <table className="bim-d-zt">
                                 <tbody>
@@ -575,9 +575,9 @@ export const BookPage: React.FC<BookPageProps> = ({
             ) : null}
 
             {nav.length === 0 && (
-                <Sec title="影印與全文">
+                <Sec title="影印與文本">
                     <p className="bim-d-meta bim-d-ui" style={{ margin: 0 }}>
-                        {convert('尚未著錄該版本的影印、全文與收藏信息。')}
+                        {convert('尚未著錄該版本的影印、文本與收藏信息。')}
                     </p>
                 </Sec>
             )}

@@ -105,7 +105,7 @@ describe('排序控件（结果区）', () => {
 });
 
 describe('筛选状态：URL 往返', () => {
-    const full = F({ dynasty: ['漢', '唐'], classification: ['史部', ''], hasImage: true, hasText: true, hasCollated: true, loss: 'partially_extant' });
+    const full = F({ dynasty: ['漢', '唐'], classification: ['史部', ''], hasImage: true, hasText: true, loss: 'partially_extant' });
 
     it('写出再读回相同；键短而稳定', () => {
         const p = filtersToParams(full);
@@ -114,6 +114,15 @@ describe('筛选状态：URL 往返', () => {
         expect(p.get('img')).toBe('1');
         expect(p.get('loss')).toBe('partially_extant');
         expect(sameFilters(filtersFromParams(p), full)).toBe(true);
+    });
+
+    it('「有文本」合一（用户 10-01）：旧链接的 col=1 读成 hasText，写出只用 txt=1', () => {
+        const f = filtersFromParams(new URLSearchParams('col=1'));
+        expect(f.hasText).toBe(true);
+        expect(f.hasCollated).toBe(false);
+        const p = filtersToParams(f);
+        expect(p.get('txt')).toBe('1');
+        expect(p.get('col')).toBeNull();
     });
 
     it('保留 URL 里别的参数（q、tab），只动自己的键；清空时把自己的键删干净', () => {
@@ -191,7 +200,7 @@ describe('翻页窗口', () => {
 
 const mk = (id: string, type: IndexEntry['type'], title: string, extra: Partial<IndexEntry> = {}): IndexEntry => ({ id, type, title, ...extra });
 const WORKS = [
-    mk('w1', 'work', '史記', { author: '司馬遷', dynasty: '西漢', classification: '史部', has_image: true, has_text: true, juan_count: 130 }),
+    mk('w1', 'work', '史記', { author: '司馬遷', dynasty: '西漢', classification: '史部', has_image: true, has_text: true, has_collated: true, juan_count: 130 }),
     mk('w2', 'work', '史記集解', { author: '裴駰', dynasty: '南朝宋', classification: '史部', loss_status: 'lost' }),
 ];
 const BOOKS = [mk('b1', 'book', '宋建安黃善夫家塾刻本', { edition: '刻本', era: '宋', has_image: true })];
@@ -243,6 +252,11 @@ describe('IndexBrowser（filtersEnabled）结果区', () => {
         expect(row.textContent).toContain('西漢');
         expect(row.textContent).toContain('史部');
         expect(row.textContent).toContain('影印');
+        // 「全文」「整理本」合成一个「文本」标签（用户 10-01）
+        expect(row.querySelectorAll('.bim-sr-tag').length).toBe(2);
+        expect(row.textContent).toContain('文本');
+        expect(row.textContent).not.toMatch(/全文|整理本/);
+        expect(screen.queryByRole('checkbox', { name: /整理本|全文/ })).toBeNull();
         expect(screen.getByRole('link', { name: '史記集解' }).closest('tr')!.textContent).toContain('佚');
         // 没有的列写「—」，不编造
         expect(screen.getByRole('link', { name: '宋建安黃善夫家塾刻本' }).closest('tr')!.textContent).toContain('—');
@@ -335,7 +349,7 @@ describe('筛选的本地镜像', () => {
         expect(onFiltersChange).toHaveBeenCalledWith(F({ classification: ['史部'] }));
         // 后退：宿主传回无筛选 → 界面跟着还原
         rerender(<IndexBrowser transport={transportWith()} hideModeIndicator initialQuery="史記" filtersEnabled filters={F({ hasText: true })} onFiltersChange={onFiltersChange} />);
-        await waitFor(() => expect((screen.getByRole('checkbox', { name: '有全文' }) as HTMLInputElement).checked).toBe(true));
+        await waitFor(() => expect((screen.getByRole('checkbox', { name: '有文本' }) as HTMLInputElement).checked).toBe(true));
         expect((screen.getByRole('checkbox', { name: '史部' }) as HTMLInputElement).checked).toBe(false);
     });
 });

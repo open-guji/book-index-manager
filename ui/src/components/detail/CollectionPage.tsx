@@ -304,7 +304,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
 
     const nav: RailNavItem[] = [];
     if (table.rows.length) nav.push({ id: 'titles', label: '子目', count: table.rows.length });
-    if (resCount) nav.push({ id: 'resources', label: '影印與全文', count: resCount });
+    if (resCount) nav.push({ id: 'resources', label: '影印與文本', count: resCount });
     if (showWorks) nav.push({ id: 'works', label: t.section.containedWorks, count: works.length });
 
     const main = (
@@ -410,10 +410,10 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
             )}
 
             {resCount > 0 && (
-                <Sec id="resources" title="影印與全文" meta={convert(`${resCount} 處`)}>
+                <Sec id="resources" title="影印與文本" meta={convert(`${resCount} 處`)}>
                     {res.text.length > 0 && (
                         <div className="bim-d-rg">
-                            {res.groups.length > 0 && <h3 className="bim-d-rg-h bim-d-ui">{convert('全文')}</h3>}
+                            {res.groups.length > 0 && <h3 className="bim-d-rg-h bim-d-ui">{convert('文本')}</h3>}
                             <table className="bim-d-zt">
                                 <tbody>
                                     {res.text.map((r, i) => (

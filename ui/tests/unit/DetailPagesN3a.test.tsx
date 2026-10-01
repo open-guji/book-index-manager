@@ -2,7 +2,7 @@
  * N3a（2026-09-28）：条目页三栏版——Work / Book / Collection / Entity 四种详情组件。
  *
  * 覆盖：新数据字段（classification、_edition_count、_member_count、todo、review）
- * 有值才出现；整页只有一个主按钮「阅读全文」且链到宿主给的 readLink；
+ * 有值才出现；整页只有一个主按钮「閱讀」且链到宿主给的 readLink；
  * 谱系 / 考证 / 反馈三个 tab 不再有入口；版本表的年代页签与「只看有影印」复选框；
  * 著录分栏切换；辅助字对比度 ≥ 4.5。
  */
@@ -116,14 +116,14 @@ describe('WorkPage（三栏）', () => {
         expect(foot.textContent).not.toMatch(/\bdraft\b/);
     });
 
-    it('「阅读全文」是整页唯一的主按钮，链到宿主给的 readLink', () => {
+    it('「閱讀」是整页唯一的主按钮，链到宿主给的 readLink', () => {
         const readLink = vi.fn(() => '/read/w1');
         render(<BookDetailLayout {...props(WORK, { readLink })} />);
         const btns = document.querySelectorAll('.bim-d-btn');
         expect(btns).toHaveLength(1);
         expect(btns[0].tagName).toBe('A');
         expect(btns[0].getAttribute('href')).toBe('/read/w1');
-        expect(btns[0].textContent).toBe('閱讀全文');
+        expect(btns[0].textContent).toBe('閱讀');
         expect(readLink).toHaveBeenCalledWith(expect.objectContaining({ kind: null }));
     });
 
@@ -260,7 +260,7 @@ describe('左栏「更多」：extraTabs 与丛编目录的入口', () => {
 });
 
 describe('BookPage / CollectionPage / EntityPage（三栏）', () => {
-    it('Book：书名作标题、版本名作副题，有全文时出「阅读全文」', async () => {
+    it('Book：书名作标题、版本名作副题，有文本时出「閱讀」', async () => {
         const book = {
             id: 'b9', type: 'book', title: '測試書', edition: '明刻本',
             text_count: 2,
@@ -274,7 +274,7 @@ describe('BookPage / CollectionPage / EntityPage（三栏）', () => {
             activeTab="basic" onTabChange={onTabChange} />);
         expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('測試書');
         expect(screen.getByText('明刻本', { selector: '.bim-d-card-sub' })).toBeTruthy();
-        const btn = await screen.findByRole('button', { name: '閱讀全文' });
+        const btn = await screen.findByRole('button', { name: '閱讀' });
         fireEvent.click(btn);
         expect(onTabChange).toHaveBeenCalledWith('fulltext');
     });
