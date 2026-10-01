@@ -51,6 +51,22 @@ describe('总目界栏（9-30 反馈：标题无间距、卡片无框、列表�
     });
 });
 
+describe('总目：版式判准（疏朗不画线、界栏画框、直角）', () => {
+    const base = CATALOG_CSS.split('/* ── 版式「界栏」')[0];
+    it('疏朗（默认规则）里没有写死的 1px 线、内描边或圆角', () => {
+        expect(base).not.toMatch(/1px solid/);
+        expect(base).not.toMatch(/inset 0 0 0 1px/);
+        expect(base).not.toMatch(/border-radius/);
+        expect(base).toMatch(/\.bim-ct-tree \.bim-ct-last \{[^}]*border-top: var\(--bim-fr-hd-bd/);
+    });
+    it('界栏：呈现切换与窄屏抽屉有框，卡片悬停边框变强调色', () => {
+        const css = boxedRules(CATALOG_CSS).join('\n');
+        expect(css).toMatch(/\.bim-ct-view \{[^}]*border: var\(--bim-fr-bd/);
+        expect(css).toMatch(/\.bim-ct-drawer-btn \{[^}]*border: var\(--bim-fr-bd/);
+        expect(css).toMatch(/\.bim-ct-card > a:hover \{[^}]*border-color: var\(--bim-accent\)/);
+    });
+});
+
 describe('墨：行内链接加下划线（强调色≈正文色）', () => {
     it('详情页与阅读器都有 data-theme="ink" 的下划线规则', () => {
         expect(LAYOUT_CSS).toMatch(/:root\[data-theme="ink"\][^{]*a \{[^}]*text-decoration: underline/);
