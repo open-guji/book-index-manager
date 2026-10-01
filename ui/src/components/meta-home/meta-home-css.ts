@@ -171,6 +171,11 @@ export const META_HOME_CSS = `
   .bim-mh-tl-list small { margin-left: 0; }
   .bim-mh-cov li { grid-template-columns: minmax(0, 1fr) auto; }
   .bim-mh-cov .bim-mh-bar { grid-column: 1 / -1; grid-row: 2; }
+  /*
+   * 书目著录进度表（overview#325）：五列平分 343px，书目列只剩两个字宽，「钦定／四库／全书／总目」一行两字。
+   * 手机端藏掉「著录条目」「已对上作品」两列数字（进度条＋百分比已经表达），书目列让出来
+   */
+  .bim-mh-tbl tr > :nth-child(2), .bim-mh-tbl tr > :nth-child(3) { display: none; }
 }
 
 @media ${COARSE_QUERY} {
