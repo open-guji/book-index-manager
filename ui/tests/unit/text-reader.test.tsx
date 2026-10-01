@@ -9,6 +9,7 @@ import { TextReader } from '../../src/components/TextReader';
 import type { TextLocation, TextLocationCause } from '../../src/components/TextReader';
 import type { IndexStorage } from '../../src/storage/types';
 import type { CollatedJuan } from '../../src/types';
+import { LocaleProvider } from '../../src/i18n';
 
 const WORK = 'd59f2htm01du';
 
@@ -239,5 +240,22 @@ describe('TextReader · 工具条上一章／下一章', () => {
         const nav = screen.getByRole('group', { name: '翻卷' });
         expect((within(nav).getByRole('button', { name: '上一卷' }) as HTMLButtonElement).disabled).toBe(true);
         expect((within(nav).getByRole('button', { name: '下一卷' }) as HTMLButtonElement).disabled).toBe(false);
+    });
+});
+
+describe('TextReader · 简体模式下工具条书名跟着转换（overview#308）', () => {
+    it('宿主传字符串书名（网站传繁体条目标题）：简体模式转简体，繁体模式原样', async () => {
+        const { unmount } = render(
+            <LocaleProvider locale="zh-Hans"><TextReader id={WORK} transport={nativeTransport()} title="脂硯齋重評石頭記" /></LocaleProvider>,
+        );
+        await waitFor(() => expect(document.querySelector('.bim-rd-ttl b')?.textContent).toBe('脂砚斋重评石头记'), { timeout: 8000 });
+        unmount();
+        render(<LocaleProvider locale="zh-Hant"><TextReader id={WORK} transport={nativeTransport()} title="脂硯齋重評石頭記" /></LocaleProvider>);
+        await waitFor(() => expect(document.querySelector('.bim-rd-ttl b')?.textContent).toBe('脂硯齋重評石頭記'));
+    });
+
+    it('宿主传节点书名：原样用，不转换', async () => {
+        render(<LocaleProvider locale="zh-Hans"><TextReader id={WORK} transport={nativeTransport()} title={<em>脂硯齋</em>} /></LocaleProvider>);
+        await waitFor(() => expect(document.querySelector('.bim-rd-ttl b em')?.textContent).toBe('脂硯齋'));
     });
 });

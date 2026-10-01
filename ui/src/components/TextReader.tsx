@@ -344,7 +344,8 @@ export const TextReader: React.FC<TextReaderProps> = ({
     }));
 
     const upstream = safeUpstream(index.source?.upstream);
-    const titleText = title ?? (index.title ? convert(index.title) : entryTitle ? convert(entryTitle) : undefined);
+    // 宿主给的书名是字符串（网站传条目标题，繁体原文）也要跟着繁简走；传的是节点就原样用
+    const titleText = (typeof title === 'string' ? convert(title) : title) ?? (index.title ? convert(index.title) : entryTitle ? convert(entryTitle) : undefined);
     const titleNode = titleText ? (
         <a
             href={buildUrl(id)}
@@ -367,7 +368,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
         : undefined;
     const tables = hasGujiTableNotation(index) || hasGujiMarkdownV02(index);
     const body = md ? md.replace(/^##\s+[^\n]+\n+/, '') : null;
-    const subtitleNode = subtitle ?? (version.source_name ? convert(version.source_name) : convert(textVersionLabel(version)));
+    const subtitleNode = (typeof subtitle === 'string' ? convert(subtitle) : subtitle) ?? (version.source_name ? convert(version.source_name) : convert(textVersionLabel(version)));
 
     return (
         <ReaderShell
