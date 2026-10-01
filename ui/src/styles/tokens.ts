@@ -214,6 +214,7 @@ export const BIM_TOKEN_GROUPS = [
         // ── 版式判准（overview 设计/v4/版式判准.md §三，2026-10-01）：疏朗不画任何框线和分隔线；界栏区块、卡片、表格、侧栏都有框。
         //    边框类一律 border 简写；疏朗取 1px solid transparent（不是 none），两种版式盒子一样大，切换不跳。
         'fr-hd-size': { value: '24px', note: '分区标题字号。界栏标题在框顶标题栏里，小一档 19px' },
+        'fr-hd-bg': { value: 'color-mix(in srgb, var(--bim-accent) 7%, var(--bim-page-bg))', note: '分区标题栏底色（淡染主色）。疏朗混进页面底，界栏 6% 混进卡面底。主色取 accent（primary 是 VS Code 按钮蓝，不随配色）' },
         'fr-card-bd': { value: '1px solid transparent', note: '卡片边框。疏朗不画（靠卡面底与淡投影）；界栏 1px' },
         'fr-card-bg': { value: 'var(--bim-card-bg)', note: '卡片底' },
         'fr-row-bd': { value: '1px solid transparent', note: '列表行线、块内小分割线。疏朗不画（靠行距）；界栏 1px' },
@@ -352,6 +353,7 @@ export const BIM_LAYOUTS = {
         'fr-shadow': 'none',
         'fr-tab-bd': 'var(--bim-rule)',
         'fr-hd-size': '19px',
+        'fr-hd-bg': 'color-mix(in srgb, var(--bim-accent) 6%, var(--bim-card-bg))',
         'fr-card-bd': '1px solid var(--bim-rule)',
         'fr-row-bd': '1px solid var(--bim-rule)',
         'fr-row-pad': '7px 2px',
