@@ -360,14 +360,16 @@ export const READ_HOME_SECTION_IDS = {
 /**
  * 阅读首页整页：页首（插槽＋统计）→ 分区导航 → 推荐阅读 → 专题 → 名著与版本 → 四部 → 按年代 → 单篇诗文。
  * 没有数据的分区整块不出，分区导航也跟着不列。不出大小标题和导语（用户 10-01）。
+ * 史志书架（shelf 组）不在阅读首页出，挪到元数据页（用户 10-01，overview#322）；那边直接用 ReadShelf。
  */
 export function ReadHomeView({ sections, links, head, piecesMoreHref, className }: ReadHomeViewProps) {
     const { convert } = useConvert();
     const s = sections;
     const ids = READ_HOME_SECTION_IDS;
+    const topics = s.topics.filter((t) => !t.shelf);
     const has = {
         picks: s.picks.length > 0,
-        topics: s.topics.some((t) => t.items.length > 0),
+        topics: topics.some((t) => t.items.length > 0),
         famous: s.famous.length > 0,
         sibu: s.bu.length > 0 || s.unclassified > 0,
         period: s.periods.some((p) => p.count > 0),
@@ -396,7 +398,7 @@ export function ReadHomeView({ sections, links, head, piecesMoreHref, className 
                 )}
                 {has.topics && (
                     <ReadSection id={ids.topics} title="專題" sub={convert('按作品類型歸組；小說見下方「名著與版本」')}>
-                        <ReadTopics topics={s.topics} links={links} />
+                        <ReadTopics topics={topics} links={links} />
                     </ReadSection>
                 )}
                 {has.famous && (

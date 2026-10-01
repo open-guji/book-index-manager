@@ -58,6 +58,15 @@ describe('ReadHomeView：整页', () => {
         for (const a of within(nav).getAllByRole('link')) expect(container.querySelector(a.getAttribute('href')!)).not.toBeNull();
     });
 
+    it('史志书架不在阅读首页出（挪到元数据页，overview#322）；其余专题分组照常', () => {
+        const { container } = render(<ReadHomeView sections={S} />);
+        expect(container.querySelector('.bim-rh-shelf, .bim-rh-spine')).toBeNull();
+        expect(within(container.querySelector('#topics') as HTMLElement).getByRole('heading', { name: /^書目與考證/ })).toBeInTheDocument();
+        // 只有书架一组时，「专题」整块不出
+        const onlyShelf = render(<ReadHomeView sections={{ ...S, topics: S.topics.filter((t) => t.shelf) }} />);
+        expect(onlyShelf.container.querySelector('#topics')).toBeNull();
+    });
+
     it('页面上不出现「整理本」「全文」字样（用户 10-01）', () => {
         const html = renderToString(<ReadHomeView sections={S} />);
         const text = html.replace(/<style>[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '');
