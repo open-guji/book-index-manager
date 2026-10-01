@@ -189,7 +189,7 @@
     /* 主题切换控件的色点：靛青 */
     --bim-theme-dot-indigo: #2e5266;
     /* 主题切换控件的色点：墨 */
-    --bim-theme-dot-ink: #222221;
+    --bim-theme-dot-ink: #3b4a58;
     /* 四部分布条：經部（人物页提要卡；无别处使用） */
     --bim-sect-jing: #2e5266;
     /* 四部分布条：史部 */
@@ -289,30 +289,30 @@
 
 /* ==== 主题：ink（<html data-theme="ink">）==== */
 :root[data-theme="ink"] {
-    --bim-page-bg: #f5f5f3;
-    --bim-card-bg: #fcfcfb;
-    --bim-zebra-bg: #eeeeeb;
-    --bim-tint-bg: #ecebe8;
-    --bim-row-hover-bg: #ecebe8;
-    --bim-selection-bg: #e2e1dc;
-    --bim-band-bg: #efeeea;
-    --bim-band-bg-hover: #e6e5e1;
-    --bim-ink: #1b1b1a;
-    --bim-body-fg: #3d3d3b;
-    --bim-quiet-fg: #4a4a47;
-    --bim-meta-fg: #5f5e5b;
-    --bim-label-fg: #63625e;
-    --bim-aux-fg: #63625e;
-    --bim-hint-fg: #63625e;
-    --bim-accent: #222221;
-    --bim-accent-deep: #000000;
-    --bim-flag-bg: #e8e7e4;
-    --bim-rule-strong: #1b1b1a;
-    --bim-rule: #dfdedb;
-    --bim-rule-dashed: #c7c6c1;
-    --bim-rule-accent-soft: #c7c6c1;
-    --bim-shadow-summary: 0 10px 32px rgba(0, 0, 0, 0.06);
-    --bim-fr-shadow: 0 1px 0 var(--bim-rule), 0 12px 32px -18px rgba(0, 0, 0, 0.22);
+    --bim-page-bg: #ffffff;
+    --bim-card-bg: #f6f7f8;
+    --bim-zebra-bg: #eef0f2;
+    --bim-tint-bg: #eceef0;
+    --bim-row-hover-bg: #eef0f2;
+    --bim-selection-bg: #e3e5e8;
+    --bim-band-bg: #eef0f2;
+    --bim-band-bg-hover: #e3e5e8;
+    --bim-ink: #1d2024;
+    --bim-body-fg: #3b4046;
+    --bim-quiet-fg: #565c63;
+    --bim-meta-fg: #5f656c;
+    --bim-label-fg: #5f656c;
+    --bim-aux-fg: #5f656c;
+    --bim-hint-fg: #5f656c;
+    --bim-accent: #3b4a58;
+    --bim-accent-deep: #2e3a46;
+    --bim-flag-bg: #e8ecf0;
+    --bim-rule-strong: #1d2024;
+    --bim-rule: #e3e5e8;
+    --bim-rule-dashed: #cdd1d6;
+    --bim-rule-accent-soft: #cdd1d6;
+    --bim-shadow-summary: 0 10px 32px rgba(29, 32, 36, 0.06);
+    --bim-fr-shadow: 0 1px 0 var(--bim-rule), 0 12px 32px -18px rgba(29, 32, 36, 0.22);
 }
 
 /* ==== 版式：boxed（<html data-layout="boxed">）==== */

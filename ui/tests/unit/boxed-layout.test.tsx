@@ -67,7 +67,7 @@ describe('总目：版式判准（疏朗不画线、界栏画框、直角）', (
     });
 });
 
-describe('墨：行内链接加下划线（强调色≈正文色）', () => {
+describe('墨：行内链接加下划线（主色与正文对比不到 3:1）', () => {
     it('详情页与阅读器都有 data-theme="ink" 的下划线规则', () => {
         expect(LAYOUT_CSS).toMatch(/:root\[data-theme="ink"\][^{]*a \{[^}]*text-decoration: underline/);
         expect(READER_CSS).toMatch(/:root\[data-theme="ink"\][^{]*\{[^}]*text-decoration: underline/);

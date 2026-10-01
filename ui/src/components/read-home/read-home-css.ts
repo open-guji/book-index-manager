@@ -184,7 +184,7 @@ ${BAND_MIX.map((p, i) => `.bim-rh-band a[data-k="${i}"] { background: color-mix(
 .bim-rh-au li a:hover { color: ${bim('accent')}; }
 .bim-rh-au .bim-rh-more { display: inline-block; margin-top: 4px; font-size: 12.5px; }
 
-/* ── 配色「墨」：强调色≈正文色，行内文字链接加下划线 ── */
+/* ── 配色「墨」：主色与正文对比不到 3:1，行内文字链接加下划线 ── */
 :root[data-theme="ink"] :is(.bim-rh-go, .bim-rh-more, .bim-rh-bu-more, .bim-rh-wk-f a, .bim-rh-uncl a, .bim-rh-expand) {
   text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); text-underline-offset: 3px;
 }

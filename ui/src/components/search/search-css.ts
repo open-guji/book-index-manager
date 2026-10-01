@@ -112,6 +112,6 @@ export const SEARCH_V4_CSS = `
 /* 界栏：结果表格、筛选、翻页条读 --bim-fr-* 令牌（疏朗＝无框，下面不生效） */
 :root[data-layout="boxed"] .bim-sr-filters { border: ${bim('fr-bd')}; }
 :root[data-layout="boxed"] .bim-sr-table th { background: ${bim('fr-bg')}; }
-/* 墨：强调色≈正文色，标题链接另加下划线 */
+/* 墨：主色与正文对比不到 3:1，标题链接另加下划线 */
 :root[data-theme="ink"] .bim-sr-table td.bim-sr-c-title a { text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); text-underline-offset: 3px; }
 `;

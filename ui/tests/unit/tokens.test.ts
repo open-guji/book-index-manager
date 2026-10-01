@@ -139,8 +139,8 @@ describe('主题（朱砂默认 / 靛蓝）', () => {
         });
     }
 
-    it('墨：强调色与正文色接近（都是近黑）——所以不能靠颜色区分链接（组件里另加下划线）', () => {
-        expect(contrast(val('accent', 'ink'), val('ink', 'ink'))).toBeLessThan(1.5);
+    it('墨：主色石板蓝灰与正文色对比不到 3:1（WCAG 1.4.1 只靠颜色区分链接的门槛）——所以组件里另加下划线', () => {
+        expect(contrast(val('accent', 'ink'), val('ink', 'ink'))).toBeLessThan(3);
     });
 
     it('生成 :root[data-theme="ink"] 与 :root[data-layout="boxed"]，且只覆盖已定义的变量', () => {

@@ -502,7 +502,7 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 }
 
 /*
- * ── 配色「墨」：强调色≈正文色，行内链接不能只靠颜色认——表格、旁栏清单、提要文字里的链接加下划线，
+ * ── 配色「墨」：主色石板蓝灰与正文对比不到 3:1，行内链接不能只靠颜色认——表格、旁栏清单、提要文字里的链接加下划线，
  * 悬停加粗线。选中／当前态本来就带字重与下沿线（页签、目录当前行），不另处理。
  */
 :root[data-theme="ink"] :is(.bim-d-zt, .bim-d-side li, .bim-d-card-desc, .bim-d-desc, .bim-d-lf-card) a {
