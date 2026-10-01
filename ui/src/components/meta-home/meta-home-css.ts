@@ -66,7 +66,8 @@ export const META_HOME_CSS = `
 .bim-mh-meter i { flex: 1; height: 4px; position: relative; background: ${bim('rule')}; }
 .bim-mh-meter i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--bimmh-w, 0%); background: ${bim('accent')}; }
 .bim-mh-meter small { font-size: 12px; color: ${bim('meta-fg')}; }
-.bim-mh-st { padding: 0 5px; font-size: 11.5px; white-space: nowrap; background: ${bim('warn-bg')}; color: ${bim('warn-fg')}; }
+/* 「进行中」：字用正文色。warn-fg 在宿主把 warn-bg 定成半透明色时（网站 globals.css），叠在斑马纹上对比度不到 4.5 */
+.bim-mh-st { padding: 0 5px; font-size: 11.5px; white-space: nowrap; background: ${bim('warn-bg')}; color: ${bim('body-fg')}; }
 .bim-mh-st[data-st="done"] { background: ${bim('check-fine-bg')}; color: ${bim('check-fine-fg')}; }
 .bim-mh-st[data-st="todo"] { background: ${bim('fr-tag-bg')}; color: ${bim('meta-fg')}; }
 

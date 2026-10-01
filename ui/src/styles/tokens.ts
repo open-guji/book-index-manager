@@ -204,7 +204,7 @@ export const BIM_TOKEN_GROUPS = [
     group('版式（v4 外观系统，overview#291）：疏朗＝留白分区（默认，下列值即疏朗）；界栏＝框线分区（`<html data-layout="boxed">`）', {
         'fr-bd': { value: '0 solid transparent', note: '区块外框（border 简写）。疏朗无框；界栏 1px 实线' },
         'fr-bg': { value: 'transparent', note: '区块底。界栏＝卡面色' },
-        'fr-hd-pad': { value: '0', note: '区块标题栏内边距（界栏：标题栏与正文之间有分隔线）' },
+        'fr-hd-pad': { value: '14px 18px', note: '区块标题栏内边距。10-01 起疏朗也有淡染底的标题栏（--bim-fr-hd-bg），故疏朗 14px 18px，界栏 12px 18px' },
         'fr-hd-bd': { value: '0 solid transparent', note: '区块标题栏下沿线（border 简写）' },
         'fr-bd-pad': { value: '0', note: '区块正文内边距' },
         'fr-gap': { value: '56px', note: '区块之间的间距。界栏收紧到 24px（框线本身已分隔）' },
