@@ -7,7 +7,7 @@
  * - 中屏 720–1199px：卡片 2 列；分类树仍在左栏
  * - 窄屏 ≤ 719px：卡片 1 列；分类树折成顶部抽屉
  *
- * 视觉与 N3a 详情页一致：黑体、暖纸底、朱色只用在当前项与悬停，卡片不画框、靠底色分块。
+ * 视觉与 N3a 详情页一致：黑体、暖纸底、朱色只用在当前项与悬停，卡片不画框、靠底色分块（版式「界栏」下画框，见文末）。
  */
 import { bim } from '../../styles/tokens';
 
@@ -156,6 +156,13 @@ export const CATALOG_CSS = `
 
 /* ── 版式「界栏」（v4）：<html data-layout="boxed"> 才生效；值走 --bim-fr-* 令牌 ── */
 :root[data-layout="boxed"] .bim-ct-side { border: ${bim('fr-bd')}; background: ${bim('fr-bg')}; padding: 14px 8px; }
-:root[data-layout="boxed"] .bim-ct-head { padding: ${bim('fr-hd-pad')}; border: ${bim('fr-bd')}; border-bottom: ${bim('fr-hd-bd')}; background: ${bim('fr-bg')}; margin: 0; }
-:root[data-layout="boxed"] .bim-ct-main > .bim-ct-search { margin-top: 14px; }
+/* 标题栏自成一框，与下方（检索框或卡片／列表）留出间距 */
+:root[data-layout="boxed"] .bim-ct-head { padding: ${bim('fr-hd-pad')}; border: ${bim('fr-bd')}; border-bottom: ${bim('fr-hd-bd')}; background: ${bim('fr-bg')}; margin: 0 0 14px; }
+/* 卡片：每张一框 */
+:root[data-layout="boxed"] .bim-ct-card > a { border: ${bim('fr-bd')}; border-radius: 0; }
+/* 列表：整表一框，行间细线，不用斑马底 */
+:root[data-layout="boxed"] .bim-ct-list { border: ${bim('fr-bd')}; background: ${bim('fr-bg')}; }
+:root[data-layout="boxed"] .bim-ct-lrow:nth-child(odd) { background: none; border-radius: 0; }
+:root[data-layout="boxed"] .bim-ct-lrow + .bim-ct-lrow { border-top: ${bim('fr-hd-bd')}; }
+:root[data-layout="boxed"] .bim-ct-lrow > a { border-radius: 0; }
 `;
