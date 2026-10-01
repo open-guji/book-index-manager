@@ -21,7 +21,7 @@ import type { TextChapterContent, TextChapter, TextIndex, TextManifest, TextUpst
 import { matchChapterAcrossVersions, pickTextVersion, textVersionLabel } from '../core/text-model';
 import { useBidUrl } from '../core/bid-url';
 import { bim } from '../styles/tokens';
-import { useConvert } from '../i18n';
+import { useI18n } from '../i18n/use-i18n';
 import { LoadingDots } from './common/LoadingDots';
 import { ReaderShell } from './Reader/ReaderShell';
 import type { PanelState } from './Reader/ReaderShell';
@@ -166,7 +166,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
     id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate,
     title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical, onReportError, revisedAt, backHref, backLabel, className, style,
 }) => {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const api = useMemo(() => createTextApi(transport), [transport]);
     const [prefs, setPrefs] = useReaderPrefs();
     const buildUrl = useBidUrl();
@@ -324,12 +324,12 @@ export const TextReader: React.FC<TextReaderProps> = ({
     useEffect(() => { setJuanView('text'); }, [effectiveChapter, versionKey]);
 
     // ── 渲染 ──
-    if (manifestState === 'loading') return <div className={className} style={{ ...style, ...MUTED }}>加载中…</div>;
+    if (manifestState === 'loading') return <div className={className} style={{ ...style, ...MUTED }}>{t('reader.loading')}</div>;
     if (manifestState === 'missing' || !manifest || !version) {
-        return <div className={className} style={{ ...style, ...MUTED }}>暂无文本</div>;
+        return <div className={className} style={{ ...style, ...MUTED }}>{t('reader.noText')}</div>;
     }
-    if (indexState === 'failed') return <div className={className} style={{ ...style, ...MUTED }}>无法加载目录</div>;
-    if (!index) return <div className={className} style={{ ...style, ...MUTED }}>加载目录…</div>;
+    if (indexState === 'failed') return <div className={className} style={{ ...style, ...MUTED }}>{t('reader.tocFailed')}</div>;
+    if (!index) return <div className={className} style={{ ...style, ...MUTED }}>{t('reader.tocLoading')}</div>;
 
     const unit = unitOf(version, index);
     const toc = buildToc(index, matchStates, unit, convert, isCollated);
@@ -349,12 +349,12 @@ export const TextReader: React.FC<TextReaderProps> = ({
     const titleNode = titleText ? (
         <a
             href={buildUrl(id)}
-            title="查看条目"
+            title={t('reader.viewEntry')}
             onClick={onNavigate ? e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(id); } : undefined}
         >{titleText}</a>
     ) : undefined;
     const byline = authors.length > 0
-        ? convert(authors.slice(0, 2).map(a => `${a.dynasty ? `〔${a.dynasty}〕` : ''}${a.name}${a.role ? ` ${a.role}` : ' 撰'}`).join('、'))
+        ? convert(authors.slice(0, 2).map(a => `${a.dynasty ? `〔${a.dynasty}〕` : ''}${a.name}${` ${a.role || t('reader.defaultRole')}`}`).join('、'))
         : undefined;
     const position = chapterMeta ? chapterLabel(chapterMeta, unit, convert, isCollated) : undefined;
 
@@ -390,13 +390,13 @@ export const TextReader: React.FC<TextReaderProps> = ({
             }) : undefined}
             workLinkToggle={structured && !isKaozhen && !!onNavigate && !!juan?.sections.some(x => x.work_id)}
             toc={toc}
-            tocCaption={`目录 · ${index.chapters.length} ${convert(unit)}`}
+            tocCaption={t('reader.tocCaption', { n: index.chapters.length, unit: convert(unit) })}
             tocHeader={isCollated && index.chapters.length > 1 ? (
                 <input
                     type="search"
                     className="bim-rd-toc-search"
-                    placeholder={isKaozhen ? '搜索全部章节…' : `搜索全部${unit}…`}
-                    aria-label={isKaozhen ? '搜索全部章节' : `搜索全部${unit}`}
+                    placeholder={isKaozhen ? t('reader.searchChaptersPlaceholder') : t('reader.searchUnitPlaceholder', { unit: convert(unit) })}
+                    aria-label={isKaozhen ? t('reader.searchChapters') : t('reader.searchUnit', { unit: convert(unit) })}
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                 />
@@ -444,7 +444,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                         {(version.source_name || version.license) && (
                             <p className="bim-rd-meta">
                                 {version.source_name && (
-                                    <>来源 {version.source_url
+                                    <>{t('reader.textSource')} {version.source_url
                                         ? <a className="bim-rd-link" href={version.source_url} target="_blank" rel="noreferrer">{convert(version.source_name)}</a>
                                         : convert(version.source_name)}</>
                                 )}
@@ -454,7 +454,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                         )}
                         {upstream && (
                             <p className="bim-rd-meta" data-bim-upstream="">
-                                上游 {upstream.url
+                                {t('reader.upstream')} {upstream.url
                                     ? <a className="bim-rd-link" href={upstream.url} target="_blank" rel="noreferrer">{convert(upstream.name ?? upstream.url)}</a>
                                     : convert(upstream.name ?? '')}
                                 {upstream.license && <><span className="bim-rd-dot" />{upstream.license_url
@@ -476,19 +476,19 @@ export const TextReader: React.FC<TextReaderProps> = ({
                 </>
             )}
 
-            {!contentLoading && !structured && body == null && chapterMeta && <div className="bim-rd-state">无法加载章节内容</div>}
+            {!contentLoading && !structured && body == null && chapterMeta && <div className="bim-rd-state">{t('reader.chapterFailed')}</div>}
 
             {index.references && index.references.length > 0 && (
                 <section className="bim-rd-refs">
-                    <h2>{convert('參考文獻')}</h2>
+                    <h2>{t('reader.references')}</h2>
                     <ol>
                         {index.references.map((ref, i) => (
                             <li key={i}>
                                 {ref.url
-                                    ? <a className="bim-rd-link" href={ref.url} target="_blank" rel="noopener noreferrer">{ref.title}</a>
-                                    : <span>{ref.title}</span>}
-                                {ref.author && <span>，{ref.author}</span>}
-                                {ref.note && <span>。{ref.note}</span>}
+                                    ? <a className="bim-rd-link" href={ref.url} target="_blank" rel="noopener noreferrer">{convert(ref.title)}</a>
+                                    : <span>{convert(ref.title)}</span>}
+                                {ref.author && <span>，{convert(ref.author)}</span>}
+                                {ref.note && <span>。{convert(ref.note)}</span>}
                             </li>
                         ))}
                     </ol>

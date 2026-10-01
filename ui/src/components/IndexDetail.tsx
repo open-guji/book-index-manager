@@ -928,7 +928,7 @@ function BookVersionList({ ids, workData, transport, onNavigate, renderLink, foo
 
     // 计算分组：核心集合内（或不在任何 group 配置中）→ 直接展开；其他按 group 分组折叠
     const vg = workData?.version_graph;
-    const partition = computeVersionPartition(ids, vg);
+    const partition = computeVersionPartition(ids, vg, t.common.otherVersions);
 
     return (
         <>
@@ -1007,7 +1007,9 @@ function BookVersionList({ ids, workData, transport, onNavigate, renderLink, foo
  */
 function computeVersionPartition(
     ids: string[],
-    vg?: VersionGraph,
+    vg: VersionGraph | undefined,
+    /** 未归组那一组的标题（字典 common.otherVersions） */
+    otherLabel: string,
 ): {
     useGrouping: boolean;
     coreIds: string[];
@@ -1072,7 +1074,7 @@ function computeVersionPartition(
         };
     });
     if (ungroupedOther.length > 0) {
-        groupedIds.push({ id: '__other__', label: '其他版本', description: undefined, ids: ungroupedOther });
+        groupedIds.push({ id: '__other__', label: otherLabel, description: undefined, ids: ungroupedOther });
     }
 
     return { useGrouping: true, coreIds, groupedIds };

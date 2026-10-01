@@ -14,7 +14,8 @@
  * 响应式全部走 CSS media query，SSR 与首帧一致。
  */
 import React, { useState } from 'react';
-import { useConvert } from '../../i18n';
+import { useI18n } from '../../i18n';
+import type { MessageKey } from '../../i18n';
 import { bim } from '../../styles/tokens';
 
 /** 左栏宽 */
@@ -546,7 +547,7 @@ export function DetailGrid({ railTop, back, up, nav, railLinks, main, card, side
     card: React.ReactNode;
     side?: React.ReactNode;
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const navItems = (nav || []).filter(Boolean);
     return (
         <div className="bim-d-grid">
@@ -555,8 +556,8 @@ export function DetailGrid({ railTop, back, up, nav, railLinks, main, card, side
                 {back && <div style={{ marginTop: railTop ? 12 : 0 }}>{back}</div>}
                 {up}
                 {navItems.length > 1 && (
-                    <nav className="bim-d-rail-navwrap" aria-label={convert('本頁導航')} style={{ marginTop: 20 }}>
-                        <p className="bim-d-rail-cap" style={{ marginTop: 0 }}>{convert('本頁')}</p>
+                    <nav className="bim-d-rail-navwrap" aria-label={t('detail.pageNav')} style={{ marginTop: 20 }}>
+                        <p className="bim-d-rail-cap" style={{ marginTop: 0 }}>{t('detail.thisPage')}</p>
                         <ul className="bim-d-rail-nav">
                             {navItems.map(it => (
                                 <li key={it.id}>
@@ -570,8 +571,8 @@ export function DetailGrid({ railTop, back, up, nav, railLinks, main, card, side
                     </nav>
                 )}
                 {railLinks && railLinks.length > 0 && (
-                    <nav className="bim-d-rail-links" aria-label={convert('更多')}>
-                        <p className="bim-d-rail-cap">{convert('更多')}</p>
+                    <nav className="bim-d-rail-links" aria-label={t('detail.more')}>
+                        <p className="bim-d-rail-cap">{t('detail.more')}</p>
                         <ul className="bim-d-rail-nav">
                             {railLinks.map(l => (
                                 <li key={l.key}>
@@ -601,7 +602,7 @@ export function DetailGrid({ railTop, back, up, nav, railLinks, main, card, side
 
 /** 左栏「上一级」块：小字说明 + 一个链接（链接由调用方给，通常是 BidLink） */
 export function RailUp({ caption, children }: { caption: string; children: React.ReactNode }) {
-    const { convert } = useConvert();
+    const { convert } = useI18n();
     return (
         <div className="bim-d-up bim-d-ui">
             <span className="bim-d-up-cap">{convert(caption)}</span>
@@ -618,7 +619,7 @@ export function Sec({ id, title, meta, action, children }: {
     action?: React.ReactNode;
     children: React.ReactNode;
 }) {
-    const { convert } = useConvert();
+    const { convert } = useI18n();
     return (
         <section id={id} className="bim-d-sec">
             <div className="bim-d-sec-head bim-d-ui">
@@ -657,7 +658,7 @@ export function TabFilter<K extends string>({ items, value, onChange }: {
     value: K;
     onChange: (k: K) => void;
 }) {
-    const { convert } = useConvert();
+    const { convert } = useI18n();
     return (
         <>
             {items.map(it => (
@@ -681,7 +682,7 @@ export function CheckFilter({ label, checked, onChange }: {
     checked: boolean;
     onChange: (v: boolean) => void;
 }) {
-    const { convert } = useConvert();
+    const { convert } = useI18n();
     return (
         <label className="bim-d-check">
             <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} />
@@ -704,20 +705,20 @@ export const narrowCapped = (total: number) => total > NARROW_CAP + 1;
  * 只在未展开时渲染（展开后由调用方去掉 data-ncap 并不再渲染本按钮）。
  */
 export function CapMore({ total, shown, unit, onClick }: { total: number; shown: number; unit: string; onClick: () => void }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const wide = total - shown;
     const narrow = narrowCapped(total) ? total - Math.min(shown, NARROW_CAP) : wide;
     if (narrow <= 0) return null;
     return (
         <button type="button" className={`bim-d-more bim-d-ui${wide > 0 ? '' : ' bim-d-more-ncap'}`} onClick={onClick}>
-            {wide > 0 && <span className="bim-d-more-w">{convert(`展開其餘 ${wide} ${unit}`)}</span>}
-            <span className="bim-d-more-n">{convert(`展開其餘 ${narrow} ${unit}`)}</span>
+            {wide > 0 && <span className="bim-d-more-w">{t('detail.expandRest', { n: wide, unit: convert(unit) })}</span>}
+            <span className="bim-d-more-n">{t('detail.expandRest', { n: narrow, unit: convert(unit) })}</span>
         </button>
     );
 }
 
 export function MoreLink({ label, onClick }: { label: string; onClick: () => void }) {
-    const { convert } = useConvert();
+    const { convert } = useI18n();
     return (
         <button type="button" className="bim-d-more bim-d-ui" onClick={onClick}>
             {convert(label)}
@@ -766,7 +767,7 @@ export function SummaryCard({
     /** 卡底小字：数据版本、审核状态、待核事项 */
     foot?: React.ReactNode;
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const shownFacts = (facts || []).filter(f => f.value != null && f.value !== '');
     const shownStats = (stats || []).filter(x => x.value != null && x.value !== '' && x.value !== 0);
     const [descOpen, setDescOpen] = useState(false);
@@ -790,7 +791,7 @@ export function SummaryCard({
             {description && !!clampDescription && (
                 <button type="button" className="bim-d-card-toggle bim-d-ui" aria-expanded={descOpen}
                     onClick={() => setDescOpen(v => !v)}>
-                    {convert(descOpen ? '收起' : '展開')}
+                    {descOpen ? t('action.collapse') : t('action.expand')}
                 </button>
             )}
             {shownStats.length > 0 && (
@@ -825,12 +826,14 @@ export function descNeedsClamp(text?: string): boolean {
 }
 
 /** 「阅读全文」：有 href 渲染成链接（指向宿主的阅读页），否则按钮 */
-export function ReadButton({ href, onClick, label = '閱讀' }: {
+export function ReadButton({ href, onClick, label: labelProp }: {
     href?: string;
     onClick?: () => void;
+    /** 默认「閱讀」（字典 detail.read） */
     label?: string;
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
+    const label = labelProp ?? t('detail.read');
     if (href) {
         return (
             <a
@@ -875,7 +878,7 @@ export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8,
     /** 行首画时间轴点（同作品版本） */
     timeline?: boolean;
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     const [all, setAll] = useState(false);
     if (!items.length) return null;
     const shown = all ? items : items.slice(0, cap);
@@ -898,7 +901,7 @@ export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8,
             </ul>
             {rest > 0 && (
                 <MoreLink
-                    label={moreLabel ? moreLabel(rest) : `顯示更多（${rest}）`}
+                    label={moreLabel ? moreLabel(rest) : t('detail.showMore', { n: rest })}
                     onClick={() => setAll(true)}
                 />
             )}
@@ -911,12 +914,8 @@ export function SideList({ id, title, meta, items, metas, currentIndex, cap = 8,
 // 卡底：审核状态 / 待核 / 数据版本
 // ══════════════════════════════════════════════════════════════
 
-const REVIEW_LABEL: Record<string, string> = {
-    reviewed: '已審核',
-    disputed: '有爭議',
-    unreviewed: '未審核',
-    draft: '草稿',
-};
+/** review.status → 字典 detail.review.* 的键（只认这几种） */
+const REVIEW_STATUSES = new Set(['reviewed', 'disputed', 'unreviewed', 'draft']);
 
 /**
  * 卡底小字。revision / review / todo 有值才出现；
@@ -929,14 +928,14 @@ export function CardFoot({ revision, revisedAt, review, todo }: {
     review?: { status: string; by?: string; date?: string };
     todo?: { what: string; by?: string; date?: string }[];
 }) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     // 只认已知状态：数据少的条目 review.status 可能是原始英文（draft 等），直接露出会显得像 bug
-    const reviewLabel = review ? REVIEW_LABEL[review.status] : undefined;
+    const reviewLabel = review && REVIEW_STATUSES.has(review.status) ? t(`detail.review.${review.status}` as MessageKey) : undefined;
     const reviewText = review && review.status !== 'unreviewed' && reviewLabel
         ? [reviewLabel, review.by, review.date].filter(Boolean).join(' ')
         : '';
     const line = [
-        revision != null && revision !== '' ? `${convert('數據版本')} ${revision}` : '',
+        revision != null && revision !== '' ? `${t('detail.dataVersion')} ${revision}` : '',
         revisedAt ?? '',
         convert(reviewText),
     ].filter(Boolean);
@@ -947,7 +946,7 @@ export function CardFoot({ revision, revisedAt, review, todo }: {
             {line.length > 0 && <MetaLine items={line} style={{ fontSize: 12 }} />}
             {todos.length > 0 && (
                 <details>
-                    <summary>{convert(`待核 ${todos.length} 項`)}</summary>
+                    <summary>{t('detail.todoCount', { n: todos.length })}</summary>
                     <ul style={{ margin: '4px 0 0', paddingLeft: 18, lineHeight: 1.7 }}>
                         {todos.map((x, i) => (
                             <li key={i}>

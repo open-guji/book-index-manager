@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { LocaleContext } from '../i18n/context';
+import { useI18n } from '../i18n/use-i18n';
 import { bim } from '../styles/tokens';
 
 export interface LocaleToggleProps {
@@ -13,6 +14,7 @@ export interface LocaleToggleProps {
  */
 export const LocaleToggle: React.FC<LocaleToggleProps> = ({ style }) => {
     const ctx = useContext(LocaleContext);
+    const { t } = useI18n();
     if (!ctx) return null;
 
     const { locale, setLocale } = ctx;
@@ -24,7 +26,7 @@ export const LocaleToggle: React.FC<LocaleToggleProps> = ({ style }) => {
         <button
             type="button"
             onClick={toggle}
-            title={isHant ? '切换为简体' : '切換為繁體'}
+            title={isHant ? t('common.toHans') : t('common.toHant')}
             style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -45,12 +47,12 @@ export const LocaleToggle: React.FC<LocaleToggleProps> = ({ style }) => {
             <span style={{
                 color: isHant ? bim('primary') : undefined,
                 fontWeight: isHant ? 700 : 400,
-            }}>繁</span>
+            }}>{t('common.localeShortHant')}</span>
             <span style={{ opacity: 0.3 }}>/</span>
             <span style={{
                 color: !isHant ? bim('primary') : undefined,
                 fontWeight: !isHant ? 700 : 400,
-            }}>简</span>
+            }}>{t('common.localeShortHans')}</span>
         </button>
     );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { bim } from '../styles/tokens';
+import { useI18n } from '../i18n';
 
 // 提交端可选的四类；服务端另有 'other'（仅后台改类型用，G-23 第二批）。
 // 'contact'（想参与）服务端永不公开。
@@ -22,14 +23,16 @@ export interface FeedbackDialogProps {
 
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
-const TYPE_OPTIONS: { value: FeedbackType; label: string; icon: string; placeholder: string }[] = [
-    { value: 'bug', label: '反馈错误', icon: '🐛', placeholder: '请描述您发现的错误，包括页面位置和具体内容' },
-    { value: 'resource', label: '添加资源', icon: '📚', placeholder: '请提供完整资源链接和简要版本说明' },
-    { value: 'suggestion', label: '功能建议', icon: '💡', placeholder: '您希望网站增加或改进什么？' },
-    { value: 'contact', label: '想参与', icon: '🤝', placeholder: '想参与整理、校对或合作？简单介绍一下您自己，并留下联系方式（此类留言不公开）' },
+/** 文字（标签、占位提示）取字典 feedback.submitType / feedback.placeholder */
+const TYPE_OPTIONS: { value: FeedbackType; icon: string }[] = [
+    { value: 'bug', icon: '🐛' },
+    { value: 'resource', icon: '📚' },
+    { value: 'suggestion', icon: '💡' },
+    { value: 'contact', icon: '🤝' },
 ];
 
 export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose, onSubmit, feedbackListUrl }) => {
+    const { t } = useI18n();
     const [type, setType] = useState<FeedbackType | null>(null);
     const [content, setContent] = useState('');
     const [contact, setContact] = useState('');
@@ -78,31 +81,30 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose,
             setState('success');
         } catch (e) {
             setState('error');
-            setErrorMsg(e instanceof Error ? e.message : '提交失败，请稍后重试');
+            setErrorMsg(e instanceof Error ? e.message : t('feedback.submitFailedRetry'));
         }
     };
 
     if (!isOpen) return null;
 
     const canSubmit = type && content.trim() && state !== 'submitting';
-    const selectedOption = TYPE_OPTIONS.find(o => o.value === type);
 
     return (
         <div style={overlayStyle} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
             <div style={dialogStyle} onClick={e => e.stopPropagation()}>
                 {/* Header */}
                 <div style={headerStyle}>
-                    <span style={{ fontSize: '16px', fontWeight: 600 }}>反馈</span>
-                    <button onClick={onClose} style={closeBtnStyle} aria-label="关闭">✕</button>
+                    <span style={{ fontSize: '16px', fontWeight: 600 }}>{t('feedback.title')}</span>
+                    <button onClick={onClose} style={closeBtnStyle} aria-label={t('feedback.close')}>✕</button>
                 </div>
 
                 {state === 'success' ? (
                     <div style={successStyle}>
                         <span style={{ fontSize: '32px' }}>✓</span>
-                        <div style={{ fontSize: '15px', fontWeight: 500 }}>感谢您的反馈！</div>
+                        <div style={{ fontSize: '15px', fontWeight: 500 }}>{t('feedback.thanks')}</div>
                         {feedbackListUrl && (
                             <a href={feedbackListUrl} style={{ fontSize: '13px', color: bim('primary'), marginTop: '8px' }}>
-                                查看反馈列表 →
+                                {t('feedback.viewList')}
                             </a>
                         )}
                     </div>
@@ -119,7 +121,7 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose,
                                         ...(type === opt.value ? typeBtnActiveStyle : {}),
                                     }}
                                 >
-                                    <span>{opt.icon}</span> {opt.label}
+                                    <span>{opt.icon}</span> {t(`feedback.submitType.${opt.value}`)}
                                 </button>
                             ))}
                         </div>
@@ -129,7 +131,7 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose,
                             ref={textareaRef}
                             value={content}
                             onChange={e => setContent(e.target.value)}
-                            placeholder={selectedOption?.placeholder || '请先选择反馈类型'}
+                            placeholder={type ? t(`feedback.placeholder.${type}`) : t('feedback.chooseTypeFirst')}
                             maxLength={2000}
                             disabled={!type || state === 'submitting'}
                             style={{
@@ -143,10 +145,10 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose,
                             type="text"
                             value={contact}
                             onChange={e => setContact(e.target.value)}
-                            placeholder="邮箱（选填，仅站方可见，方便我们回复您）"
+                            placeholder={t('feedback.contactPlaceholder')}
                             maxLength={200}
                             disabled={!type || state === 'submitting'}
-                            aria-label="联系方式（选填）"
+                            aria-label={t('feedback.contactLabel')}
                             style={contactInputStyle}
                         />
 
@@ -171,7 +173,7 @@ export const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ isOpen, onClose,
                                     cursor: canSubmit ? 'pointer' : 'not-allowed',
                                 }}
                             >
-                                {state === 'submitting' ? '提交中...' : '提交反馈'}
+                                {state === 'submitting' ? t('feedback.submitting') : t('feedback.submitFeedback')}
                             </button>
                         </div>
                     </>

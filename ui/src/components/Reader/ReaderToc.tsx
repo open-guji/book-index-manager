@@ -7,6 +7,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReaderTocItem } from './types';
+import { useI18n } from '../../i18n/use-i18n';
 
 function containsKey(item: ReaderTocItem, key: string | null): boolean {
     if (!key) return false;
@@ -90,12 +91,14 @@ function firstTabKey(items: ReaderTocItem[], activeKey: string | null): string |
     return items[0]?.key ?? null;
 }
 
-export function ReaderToc({ items, activeKey, onSelect, label = '目录' }: {
+export function ReaderToc({ items, activeKey, onSelect, label: labelProp }: {
     items: ReaderTocItem[];
     activeKey: string | null;
     onSelect: (key: string) => void;
     label?: string;
 }) {
+    const { t } = useI18n();
+    const label = labelProp ?? t('reader.toc');
     const ref = useRef<HTMLDivElement>(null);
     /** 当前可 Tab 到的那一项（随方向键移动） */
     const [focusKey, setFocusKey] = useState<string | null>(null);

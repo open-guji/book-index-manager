@@ -1,5 +1,6 @@
 import React from 'react';
 import { bim } from '../../styles/tokens';
+import { useI18n } from '../../i18n';
 
 export interface RepoSourceLinkProps {
     /** 目标 URL（如 GitHub blob/tree 链接） */
@@ -18,11 +19,13 @@ export interface RepoSourceLinkProps {
  */
 export const RepoSourceLink: React.FC<RepoSourceLinkProps> = ({
     href,
-    label = '在 GitHub 查看本条目源文件',
+    label: labelProp,
     size = 16,
     className,
     style,
 }) => {
+    const { t } = useI18n();
+    const label = labelProp ?? t('common.repoSourceLink');
     return (
         <a
             href={href}

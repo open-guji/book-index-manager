@@ -1,15 +1,8 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { LocaleContext, type LocaleContextValue } from './context';
 import type { Locale } from './types';
-import { zhHant } from './locales/zh-Hant';
-import { zhHans } from './locales/zh-Hans';
-import type { LocaleMessages } from './types';
 import { getSimplifiedConverter } from './simplified-converter';
-
-const MESSAGES: Record<Locale, LocaleMessages> = {
-    'zh-Hant': zhHant,
-    'zh-Hans': zhHans,
-};
+import { getMessages } from './translate';
 
 const LOCALE_STORAGE_KEY = 'bim-locale';
 
@@ -79,7 +72,7 @@ export const LocaleProvider: React.FC<LocaleProviderProps> = ({
     const value = useMemo<LocaleContextValue>(() => ({
         locale,
         setLocale,
-        messages: MESSAGES[locale],
+        messages: getMessages(locale),
         converter,
     }), [locale, setLocale, converter]);
 

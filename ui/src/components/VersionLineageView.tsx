@@ -3,6 +3,7 @@ import type { LineageGraph } from '../core/lineage-graph';
 import { VersionLineageList } from './VersionLineageList';
 import { VersionLineageGraph } from './VersionLineageGraph';
 import { bim } from '../styles/tokens';
+import { useI18n } from '../i18n';
 
 export interface VersionLineageViewProps {
     /** 由 buildLineageGraph 生成 */
@@ -49,6 +50,7 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
     className,
     style,
 }) => {
+    const { t, convert } = useI18n();
     const [mode, setMode] = useState<'list' | 'graph'>(defaultMode);
 
     const handleModeChange = (newMode: 'list' | 'graph') => {
@@ -64,7 +66,7 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
         if (collectionsAvailable.all) return entries;
         return [
             ...entries,
-            ['all', { label: '全部', description: '显示该作品所有版本（含桥接节点）' }] as [string, { label: string; description?: string }],
+            ['all', { label: t('lineage.collectionAll'), description: t('lineage.collectionAllDesc') }] as [string, { label: string; description?: string }],
         ];
     })();
     const showCollectionToggle = !!(
@@ -74,7 +76,7 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
     if (!graph.nodes.length) {
         return (
             <div style={{ padding: 24, color: bim('muted'), textAlign: 'center' }}>
-                暂无版本传承数据
+                {t('lineage.empty')}
             </div>
         );
     }
@@ -88,18 +90,18 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
                     onClick={() => handleModeChange('list')}
                     style={btnStyle(mode === 'list')}
                 >
-                    列表
+                    {t('lineage.modeList')}
                 </button>
                 <button
                     onClick={() => handleModeChange('graph')}
                     style={btnStyle(mode === 'graph')}
                 >
-                    关系图
+                    {t('lineage.modeGraph')}
                 </button>
                 {showCollectionToggle && (
                     <div style={{ marginLeft: 'auto', marginRight: 80, display: 'flex', gap: 4, alignItems: 'center', flexWrap: 'wrap' }}>
                         <span style={{ fontSize: 12, color: bim('muted'), marginRight: 4 }}>
-                            集合：
+                            {t('lineage.collectionLabel')}
                         </span>
                         {collectionEntries.map(([key, meta]) => {
                             const count = collectionCounts?.[key];
@@ -108,9 +110,9 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
                                     key={key}
                                     onClick={() => onCollectionChange?.(key)}
                                     style={btnStyle(collection === key)}
-                                    title={meta.description}
+                                    title={meta.description ? convert(meta.description) : undefined}
                                 >
-                                    {meta.label}{count != null ? ` ${count}` : ''}
+                                    {convert(meta.label)}{count != null ? ` ${count}` : ''}
                                 </button>
                             );
                         })}
@@ -119,7 +121,7 @@ export const VersionLineageView: React.FC<VersionLineageViewProps> = ({
             </div>
             {showCollectionToggle && activeDesc && (
                 <div style={{ fontSize: 12, color: bim('muted'), marginBottom: 8, padding: '4px 8px', background: bim('bg-subtle'), borderRadius: 4 }}>
-                    {activeDesc}
+                    {convert(activeDesc)}
                 </div>
             )}
 

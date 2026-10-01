@@ -58,7 +58,7 @@ describe('ReadHomeView：整页', () => {
         for (const a of within(nav).getAllByRole('link')) expect(container.querySelector(a.getAttribute('href')!)).not.toBeNull();
     });
 
-    it('史志书架不在阅读首页出（挪到元数据页，overview#322）；其余专题分组照常', () => {
+    it('史志书架不在閱讀首頁出（挪到元数据页，overview#322）；其余专题分组照常', () => {
         const { container } = render(<ReadHomeView sections={S} />);
         expect(container.querySelector('.bim-rh-shelf, .bim-rh-spine')).toBeNull();
         expect(within(container.querySelector('#topics') as HTMLElement).getByRole('heading', { name: /^書目與考證/ })).toBeInTheDocument();
@@ -102,7 +102,7 @@ describe('ReadHomeView：整页', () => {
 });
 
 describe('各分区', () => {
-    it('推荐：题签竖排（读屏不念），卡片是整块链接，标作品类型与版本名', () => {
+    it('推荐：题签豎排（读屏不念），卡片是整块链接，标作品类型与版本名', () => {
         render(<ReadPicks picks={S.picks} />);
         const link = screen.getByRole('link', { name: /脂硯齋重評石頭記/ });
         expect(link.querySelector('.bim-rh-slip')?.getAttribute('aria-hidden')).toBe('true');
@@ -250,45 +250,45 @@ function withViewport(width: number, fn: () => void) {
     try { fn(); } finally { window.matchMedia = orig; }
 }
 
-describe('阅读页：返回阅读首页与手机底栏（overview#308）', () => {
-    it('工具条最左「‹ 阅读」链回阅读首页；不给 backHref 不出', () => {
+describe('閱讀页：返回閱讀首頁与手机底栏（overview#308）', () => {
+    it('工具条最左「‹ 閱讀」链回閱讀首頁；不给 backHref 不出', () => {
         const { rerender } = render(<Shell backHref="/read" />);
-        expect(screen.getByRole('link', { name: '返回阅读首页' }).getAttribute('href')).toBe('/read');
+        expect(screen.getByRole('link', { name: '返回閱讀首頁' }).getAttribute('href')).toBe('/read');
         rerender(<Shell />);
-        expect(screen.queryByRole('link', { name: '返回阅读首页' })).toBeNull();
+        expect(screen.queryByRole('link', { name: '返回閱讀首頁' })).toBeNull();
     });
 
     it('宽屏（≥860px）与服务端渲染：不出底栏', () => {
         withViewport(1200, () => {
             render(<Shell onReport={() => {}} />);
-            expect(screen.queryByRole('navigation', { name: '阅读工具' })).toBeNull();
+            expect(screen.queryByRole('navigation', { name: '閱讀工具' })).toBeNull();
         });
-        expect(renderToString(<Shell onReport={() => {}} />)).not.toContain('aria-label="阅读工具"');
+        expect(renderToString(<Shell onReport={() => {}} />)).not.toContain('aria-label="閱讀工具"');
     });
 
-    it('手机：底栏有卷目／书影／字号／报告错字；字号抽屉能调字号，Esc 关闭并把焦点还给按钮', () => {
+    it('手机：底栏有卷目／書影／字號／報告錯字；字號抽屉能调字號，Esc 關閉并把焦点还给按钮', () => {
         withViewport(390, () => {
             const onReport = vi.fn();
             const { container } = render(<Shell onReport={onReport} />);
-            const bar = screen.getByRole('navigation', { name: '阅读工具' });
-            expect(within(bar).getAllByRole('button').map((b) => b.textContent)).toEqual(['卷目', '书影', 'A字号', '!报告错字']);
+            const bar = screen.getByRole('navigation', { name: '閱讀工具' });
+            expect(within(bar).getAllByRole('button').map((b) => b.textContent)).toEqual(['卷目', '書影', 'A字號', '!報告錯字']);
             expect(container.querySelector('.bim-rd')!.hasAttribute('data-bb')).toBe(true);
 
-            const fsBtn = within(bar).getByRole('button', { name: /字号/ });
+            const fsBtn = within(bar).getByRole('button', { name: /字號/ });
             fireEvent.click(fsBtn);
-            const dlg = screen.getByRole('dialog', { name: '字号' });
+            const dlg = screen.getByRole('dialog', { name: '字號' });
             expect(dlg).toHaveAttribute('aria-modal', 'true');
             const before = within(dlg).getByRole('status').textContent;
-            fireEvent.click(within(dlg).getByRole('button', { name: '放大字号' }));
+            fireEvent.click(within(dlg).getByRole('button', { name: '放大字號' }));
             expect(within(dlg).getByRole('status').textContent).not.toBe(before);
             fireEvent.keyDown(dlg, { key: 'Escape' });
-            expect(screen.queryByRole('dialog', { name: '字号' })).toBeNull();
+            expect(screen.queryByRole('dialog', { name: '字號' })).toBeNull();
             expect(document.activeElement).toBe(fsBtn);
 
-            fireEvent.click(within(bar).getByRole('button', { name: /书影/ }));
-            expect(screen.getByRole('dialog', { name: '书影' })).toBeInTheDocument();
+            fireEvent.click(within(bar).getByRole('button', { name: /書影/ }));
+            expect(screen.getByRole('dialog', { name: '書影' })).toBeInTheDocument();
 
-            fireEvent.click(within(bar).getByRole('button', { name: /报告错字/ }));
+            fireEvent.click(within(bar).getByRole('button', { name: /報告錯字/ }));
             expect(onReport).toHaveBeenCalledTimes(1);
             expect(screen.queryByRole('dialog')).toBeNull();
 
@@ -299,10 +299,10 @@ describe('阅读页：返回阅读首页与手机底栏（overview#308）', () =
         });
     });
 
-    it('没有报告入口时底栏不出「报告错字」；底栏样式只在 <860px 出，工具条上的重复按钮那时藏起来', () => {
+    it('没有报告入口时底栏不出「報告錯字」；底栏样式只在 <860px 出，工具条上的重複按钮那时藏起来', () => {
         withViewport(390, () => {
             render(<Shell />);
-            expect(within(screen.getByRole('navigation', { name: '阅读工具' })).queryByRole('button', { name: /报告错字/ })).toBeNull();
+            expect(within(screen.getByRole('navigation', { name: '閱讀工具' })).queryByRole('button', { name: /報告錯字/ })).toBeNull();
         });
         expect(READER_CSS).toMatch(/@media \(min-width: 860px\) \{ \.bim-rd-bb, \.bim-rd-sheet, \.bim-rd-sheet-scrim \{ display: none; \} \}/);
         expect(READER_CSS).toMatch(/\.bim-rd\[data-bb\] \.bim-rd-bb-dup \{ display: none !important; \}/);

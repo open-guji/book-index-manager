@@ -57,7 +57,7 @@ const versionSelect = () => screen.getByRole('combobox', { name: '版本' }) as 
 const optionTexts = () => Array.from(versionSelect().options).map(o => o.textContent);
 
 describe('TextReader · 新结构', () => {
-    it('工具条版本下拉按 manifest 顺序列全部版本（含整理本版本），default 在最前、默认选中；选项只写来源', async () => {
+    it('工具条版本下拉按 manifest 顺序列全部版本（含整理本版本），default 在最前、默认选中；选项只写來源', async () => {
         setup(nativeTransport());
         await screen.findByRole('heading', { level: 1, name: '經錄' });
         // 整理本版本的 label 是类别词「整理本」，下拉改写来源名「開源古籍」（页面上不出现类别词）
@@ -72,7 +72,7 @@ describe('TextReader · 新结构', () => {
         expect(document.querySelector('.bim-rd-kicker')?.textContent).toContain('卷1');
     });
 
-    it('书名链接回条目页，作者行取条目数据', async () => {
+    it('書名链接回条目页，作者行取条目数据', async () => {
         const onNavigate = vi.fn();
         setup(nativeTransport(), { onNavigate });
         const link = await screen.findByRole('link', { name: '書錄' });
@@ -82,7 +82,7 @@ describe('TextReader · 新结构', () => {
         await waitFor(() => expect(document.querySelector('.bim-rd-by')?.textContent).toContain('陳振孫'));
     });
 
-    it('没给 onNavigate 时书名也是链接（按 href 走）', async () => {
+    it('没给 onNavigate 时書名也是链接（按 href 走）', async () => {
         setup(nativeTransport());
         const link = await screen.findByRole('link', { name: '書錄' });
         expect(link.getAttribute('href')).toBeTruthy();
@@ -98,7 +98,7 @@ describe('TextReader · 新结构', () => {
         expect(log.at(-1)![0]).toEqual({ key: 'default', chapter: '002', isDefault: true });
     });
 
-    it('切版本尽量停在同章号：整理本第 2 章 → 維基文庫第 2 章；换成 md 渲染，出处与授权随版本', async () => {
+    it('切版本尽量停在同章号：整理本第 2 章 → 維基文庫第 2 章；换成 md 渲染，出處与授权随版本', async () => {
         const { log } = setup(nativeTransport());
         await screen.findByRole('heading', { level: 1, name: '經錄' });
         fireEvent.click(screen.getAllByRole('button', { name: /下一卷/ })[0]);
@@ -121,7 +121,7 @@ describe('TextReader · 新结构', () => {
         expect(log.at(-1)![0]).toEqual({ key: 'kanripo', chapter: '001', isDefault: false });
     });
 
-    it('只有一份版本：不出下拉，书名后只标来源名', async () => {
+    it('只有一份版本：不出下拉，書名后只标來源名', async () => {
         setup(nativeTransport({}, { id: WORK, versions: [MANIFEST.versions[1]] }), { versionKey: 'wikisource' });
         await screen.findByRole('heading', { level: 1, name: '卷一' });
         expect(screen.queryByRole('combobox', { name: '版本' })).toBeNull();
@@ -157,7 +157,7 @@ describe('TextReader · 新结构', () => {
         await screen.findByRole('heading', { level: 1, name: '卷一' });
     });
 
-    it('目录按章列出，点目录换章；整理本目录顶有跨章搜索框，维基没有', async () => {
+    it('目錄按章列出，点目錄换章；整理本目錄顶有跨章搜索框，维基没有', async () => {
         setup(nativeTransport());
         await screen.findByRole('heading', { level: 1, name: '經錄' });
         expect(screen.getByRole('searchbox', { name: /搜索全部卷/ })).toBeTruthy();
@@ -166,11 +166,11 @@ describe('TextReader · 新结构', () => {
         expect(screen.queryByRole('searchbox')).toBeNull();
     });
 
-    it('报告错字：带书名、条目 id 回传；窄屏入口（正文末尾）也在', async () => {
+    it('報告錯字：带書名、条目 id 回传；窄屏入口（正文末尾）也在', async () => {
         const onReportError = vi.fn();
         setup(nativeTransport(), { onReportError });
         await screen.findByRole('heading', { level: 1, name: '經錄' });
-        const btns = screen.getAllByRole('button', { name: '报告错字', hidden: true });
+        const btns = screen.getAllByRole('button', { name: '報告錯字', hidden: true });
         expect(btns.length).toBe(2); // 右栏一个、窄屏正文末尾一个（宽屏由 CSS 隐去后者）
         fireEvent.click(btns[1]);
         expect(onReportError).toHaveBeenCalledWith(expect.objectContaining({ entryId: WORK, bookTitle: '書錄', chapterKey: '001' }));
@@ -178,12 +178,12 @@ describe('TextReader · 新结构', () => {
 
     it('没有文本：提示而不是空白', async () => {
         setup(nativeTransport({ getTextManifest: async () => null }), {});
-        await screen.findByText('暂无文本');
+        await screen.findByText('暫無文本');
     });
 
-    it('目录取不到：提示无法加载', async () => {
+    it('目錄取不到：提示无法加载', async () => {
         setup(nativeTransport({ getTextIndex: async () => null }));
-        await screen.findByText('无法加载目录');
+        await screen.findByText('無法加載目錄');
     });
 });
 
@@ -221,15 +221,15 @@ describe('TextReader · 上游授权（source.upstream，如 CBETA）', () => {
     });
 });
 
-describe('TextReader · 只认新结构（没有 manifest 显示「暂无文本」）', () => {
-    it('条目没有 manifest：显示暂无文本', async () => {
+describe('TextReader · 只认新结构（没有 manifest 显示「暫無文本」）', () => {
+    it('条目没有 manifest：显示暫無文本', async () => {
         setup(nativeTransport({ getTextManifest: async () => null }));
-        await screen.findByText('暂无文本');
+        await screen.findByText('暫無文本');
     });
 
-    it('transport 没有新接口：同样暂无文本', async () => {
+    it('transport 没有新接口：同样暫無文本', async () => {
         setup({ getItem: async () => null } as unknown as IndexStorage);
-        await screen.findByText('暂无文本');
+        await screen.findByText('暫無文本');
     });
 });
 
@@ -243,8 +243,8 @@ describe('TextReader · 工具条上一章／下一章', () => {
     });
 });
 
-describe('TextReader · 简体模式下工具条书名跟着转换（overview#308）', () => {
-    it('宿主传字符串书名（网站传繁体条目标题）：简体模式转简体，繁体模式原样', async () => {
+describe('TextReader · 简体模式下工具条書名跟着转换（overview#308）', () => {
+    it('宿主传字符串書名（网站传繁体条目标题）：简体模式转简体，繁体模式原样', async () => {
         const { unmount } = render(
             <LocaleProvider locale="zh-Hans"><TextReader id={WORK} transport={nativeTransport()} title="脂硯齋重評石頭記" /></LocaleProvider>,
         );
@@ -254,7 +254,7 @@ describe('TextReader · 简体模式下工具条书名跟着转换（overview#30
         await waitFor(() => expect(document.querySelector('.bim-rd-ttl b')?.textContent).toBe('脂硯齋重評石頭記'));
     });
 
-    it('宿主传节点书名：原样用，不转换', async () => {
+    it('宿主传节点書名：原样用，不转换', async () => {
         render(<LocaleProvider locale="zh-Hans"><TextReader id={WORK} transport={nativeTransport()} title={<em>脂硯齋</em>} /></LocaleProvider>);
         await waitFor(() => expect(document.querySelector('.bim-rd-ttl b em')?.textContent).toBe('脂硯齋'));
     });

@@ -1,7 +1,7 @@
-import type { LocaleMessages } from '../types';
+import type { CoreMessages } from '../types';
 import { bim } from '../../styles/tokens';
 
-export const zhHans: LocaleMessages = {
+export const zhHans: CoreMessages = {
     indexType: { work: '作品', book: '书籍', collection: '丛编', entity: '人物' },
     resourceType: { text: '文字资源', image: '图片资源', textImage: '文字+图片资源', physical: '馆藏' },
     resourceTypeShort: { text: '文字', image: '图片', textImage: '文字+图片', physical: '馆藏' },

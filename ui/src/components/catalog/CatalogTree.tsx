@@ -11,7 +11,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CatalogNode } from '../../types';
-import { useConvert } from '../../i18n';
+import { useI18n } from '../../i18n';
 import { CATALOG_ALL_ID, catalogTotal, findCatalogPath } from './model';
 
 export interface CatalogTreeProps {
@@ -48,8 +48,10 @@ function visibleItems(tree: CatalogNode[], expanded: Set<string>, allRow: boolea
     return out;
 }
 
-export function CatalogTree({ tree, selectedId, onSelect, allLabel = '全部', label = '分類' }: CatalogTreeProps) {
-    const { convert } = useConvert();
+export function CatalogTree({ tree, selectedId, onSelect, allLabel: allLabelProp, label: labelProp }: CatalogTreeProps) {
+    const { t, convert } = useI18n();
+    const allLabel = allLabelProp === undefined ? t('catalogPage.all') : allLabelProp;
+    const label = labelProp ?? t('catalogPage.classification');
     const ref = useRef<HTMLUListElement>(null);
     const current = selectedId && selectedId !== CATALOG_ALL_ID ? selectedId : null;
     const showAll = allLabel !== null;

@@ -2,6 +2,7 @@ import React from 'react';
 import { LoadingDots } from './common/LoadingDots';
 import { useBidUrl } from '../core/bid-url';
 import { bim } from '../styles/tokens';
+import { useI18n } from '../i18n';
 
 export interface FeedbackItem {
     id: string;
@@ -21,22 +22,24 @@ export interface FeedbackListProps {
     loading?: boolean;
 }
 
-const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
-    bug: { label: '错误反馈', color: bim('danger') },
-    resource: { label: '资源建议', color: bim('primary') },
-    suggestion: { label: '功能建议', color: bim('primary') },
-    other: { label: '其他', color: bim('desc-fg') },
+/** key 即字典 feedback.listType 的键 */
+const TYPE_CONFIG: Record<string, { key: 'bug' | 'resource' | 'suggestion' | 'other'; color: string }> = {
+    bug: { key: 'bug', color: bim('danger') },
+    resource: { key: 'resource', color: bim('primary') },
+    suggestion: { key: 'suggestion', color: bim('primary') },
+    other: { key: 'other', color: bim('desc-fg') },
 };
-const FALLBACK_TYPE = { label: '其他', color: bim('desc-fg') };
+const FALLBACK_TYPE = TYPE_CONFIG.other;
 
-const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-    pending: { label: '待处理', color: bim('warning') },
-    in_progress: { label: '处理中', color: bim('primary') },
-    resolved: { label: '已处理', color: bim('success') },
-    wontfix: { label: '不采纳', color: bim('desc-fg') },
-    duplicate: { label: '重复', color: bim('desc-fg') },
+/** key 即字典 feedback.status 的键 */
+const STATUS_CONFIG: Record<string, { key: 'pending' | 'in_progress' | 'resolved' | 'wontfix' | 'duplicate'; color: string }> = {
+    pending: { key: 'pending', color: bim('warning') },
+    in_progress: { key: 'in_progress', color: bim('primary') },
+    resolved: { key: 'resolved', color: bim('success') },
+    wontfix: { key: 'wontfix', color: bim('desc-fg') },
+    duplicate: { key: 'duplicate', color: bim('desc-fg') },
 };
-const FALLBACK_STATUS = { label: '待处理', color: bim('warning') };
+const FALLBACK_STATUS = STATUS_CONFIG.pending;
 
 function formatTime(iso: string): string {
     try {
@@ -66,12 +69,13 @@ export function isSameSiteUrl(url: string | undefined, currentHref: string): boo
 
 export const FeedbackList: React.FC<FeedbackListProps> = ({ items, loading }) => {
     const buildUrl = useBidUrl();
+    const { t, convert } = useI18n();
     if (loading) {
         return <LoadingDots />;
     }
 
     if (items.length === 0) {
-        return <div style={emptyStyle}>暂无反馈</div>;
+        return <div style={emptyStyle}>{t('feedback.empty')}</div>;
     }
 
     return (
@@ -86,10 +90,10 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({ items, loading }) =>
                         <div style={cardHeaderStyle}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <span style={{ ...badgeStyle, background: typeConf.color }}>
-                                    {typeConf.label}
+                                    {t(`feedback.listType.${typeConf.key}`)}
                                 </span>
                                 <span style={{ ...badgeStyle, background: statusConf.color }}>
-                                    {statusConf.label}
+                                    {t(`feedback.status.${statusConf.key}`)}
                                 </span>
                             </div>
                             <span style={timeStyle}>{formatTime(item.createdAt)}</span>
@@ -116,13 +120,13 @@ export const FeedbackList: React.FC<FeedbackListProps> = ({ items, loading }) =>
                         )}
 
                         {/* Content */}
-                        <div style={contentStyle}>{item.content}</div>
+                        <div style={contentStyle}>{convert(item.content)}</div>
 
                         {/* Reply */}
                         {item.reply && (
                             <div style={replyStyle}>
-                                <div style={replyLabelStyle}>回复</div>
-                                <div>{item.reply}</div>
+                                <div style={replyLabelStyle}>{t('feedback.reply')}</div>
+                                <div>{convert(item.reply)}</div>
                             </div>
                         )}
                     </div>

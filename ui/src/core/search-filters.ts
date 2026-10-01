@@ -62,7 +62,8 @@ export const DYNASTY_GROUPS: { key: string; values: string[] }[] = [
     { key: '清', values: ['清'] },
 ];
 
-/** 部类：value 即索引里 `classification` 的值；'' ＝ 未分類（代理把 `= ""` 改写成 IS EMPTY） */
+/** 部类：value 即索引里 `classification` 的值；'' ＝ 未分類（代理把 `= ""` 改写成 IS EMPTY）。
+ *  界面上 '' 一项取字典 searchPage.unclassified，其余 label 是数据，走 convert */
 export const CLASSIFICATIONS: { value: string; label: string }[] = [
     { value: '經部', label: '經部' },
     { value: '史部', label: '史部' },
@@ -71,6 +72,7 @@ export const CLASSIFICATIONS: { value: string; label: string }[] = [
     { value: '', label: '未分類' },
 ];
 
+/** 存佚选项；label 留作对外 API，界面文字取字典 searchPage.loss[value || 'all'] */
 export const LOSS_OPTIONS: { value: '' | LossStatusKey; label: string }[] = [
     { value: '', label: '全部' },
     { value: 'extant', label: '存' },

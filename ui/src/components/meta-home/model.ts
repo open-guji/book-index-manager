@@ -6,6 +6,7 @@
  * 字段要改先在 overview#322 上通知网站一侧。
  */
 import type { ReadBu, ReadTopicItem } from '../read-home/model';
+import { getT, type TFunction } from '../../i18n/translate';
 
 export interface MetaCatalogProgress {
     id: string;
@@ -118,6 +119,6 @@ export function timelineLayout(people: MetaBibliographer[]): {
 }
 
 /** 公元年份的显示：负数写「前N」 */
-export function yearText(y: number): string {
-    return y < 0 ? `前${-y}` : String(y);
+export function yearText(y: number, t: TFunction = getT('zh-Hant')): string {
+    return y < 0 ? t('metaHome.yearBC', { n: -y }) : String(y);
 }

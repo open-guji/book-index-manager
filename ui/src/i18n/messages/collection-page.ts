@@ -1,0 +1,96 @@
+import { defineMessages } from './define';
+
+/** 丛编页（CollectionPage）界面文字 */
+export const collectionPage = defineMessages({
+    kind: '叢編',
+    workCollection: '作品集',
+    stat: {
+        titles: '子目',
+    },
+    fact: {
+        publication: '刊印',
+        expected: '應收',
+        measure: '卷帙',
+    },
+    member: {
+        Book: '所收版本',
+        Work: '所收作品',
+        other: '成員',
+    },
+    memberNote: '子目與其各版本合計',
+    nZhong: '{n} 種',
+    nHan: '{n} 函',
+    dist: {
+        head: '全帙冊次分佈',
+        segTitle: '{section}　第 {from}–{to} 冊',
+        only: '只看{section}',
+        unclassified: '未分類',
+        hint: '點色段篩選部類',
+    },
+    sec: {
+        titles: '子目',
+        resources: '影印與文本',
+    },
+    totalVolumes: '全帙 {n} {unit}',
+    currentN: '當前 {n} {unit}',
+    loadAllTitle: '將載入全部 {n} {unit}',
+    grouping: '正在按部類分組…',
+    groupBySection: '按部類分組',
+    find: '在本叢編中檢索',
+    col: {
+        volumes: '冊次',
+        title: '書名',
+        versions: '版本',
+    },
+    volumeRange: '第 {range} {unit}',
+    resourcesCount: '{n} 處',
+    text: '文本',
+    empty: '尚未著錄該叢編的子目。',
+    parent: '上級叢編',
+}, {
+    kind: '丛编',
+    workCollection: '作品集',
+    stat: {
+        titles: '子目',
+    },
+    fact: {
+        publication: '刊印',
+        expected: '应收',
+        measure: '卷帙',
+    },
+    member: {
+        Book: '所收版本',
+        Work: '所收作品',
+        other: '成员',
+    },
+    memberNote: '子目与其各版本合计',
+    nZhong: '{n} 种',
+    nHan: '{n} 函',
+    dist: {
+        head: '全帙册次分布',
+        segTitle: '{section}　第 {from}–{to} 册',
+        only: '只看{section}',
+        unclassified: '未分类',
+        hint: '点色段筛选部类',
+    },
+    sec: {
+        titles: '子目',
+        resources: '影印与文本',
+    },
+    totalVolumes: '全帙 {n} {unit}',
+    currentN: '当前 {n} {unit}',
+    loadAllTitle: '将载入全部 {n} {unit}',
+    grouping: '正在按部类分组…',
+    groupBySection: '按部类分组',
+    find: '在本丛编中检索',
+    col: {
+        volumes: '册次',
+        title: '书名',
+        versions: '版本',
+    },
+    volumeRange: '第 {range} {unit}',
+    resourcesCount: '{n} 处',
+    text: '文本',
+    empty: '尚未著录该丛编的子目。',
+    parent: '上级丛编',
+});

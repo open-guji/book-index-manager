@@ -7,7 +7,8 @@
  */
 import React from 'react';
 import type { CatalogWorkCard } from '../../types';
-import { useConvert } from '../../i18n';
+import { useI18n } from '../../i18n';
+import type { TFunction } from '../../i18n';
 import { paginationItems } from './model';
 
 export interface CatalogPagerProps {
@@ -38,14 +39,14 @@ function isPlainClick(e: React.MouseEvent) {
     return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
 }
 
-function juanText(juan: CatalogWorkCard['juan']): string | null {
+function juanText(juan: CatalogWorkCard['juan'], t: TFunction): string | null {
     if (juan === undefined || juan === null || juan === '') return null;
-    return typeof juan === 'number' ? `${juan}卷` : juan;
+    return typeof juan === 'number' ? t('catalogPage.juanN', { n: juan }) : juan;
 }
 
 export function WorkCard({ work, href }: { work: CatalogWorkCard; href: string }) {
-    const { convert } = useConvert();
-    const juan = juanText(work.juan);
+    const { t, convert } = useI18n();
+    const juan = juanText(work.juan, t);
     const authors = work.authors?.filter(a => a.name) ?? [];
     const cls = work.classification?.filter(Boolean) ?? [];
     return (
@@ -75,8 +76,8 @@ export function WorkCard({ work, href }: { work: CatalogWorkCard; href: string }
 
 /** 列表视图的一行：书名（＋卷数）｜撰人｜分类；摘要不出（列表求密度） */
 export function WorkRow({ work, href }: { work: CatalogWorkCard; href: string }) {
-    const { convert } = useConvert();
-    const juan = juanText(work.juan);
+    const { t, convert } = useI18n();
+    const juan = juanText(work.juan, t);
     const authors = work.authors?.filter(a => a.name) ?? [];
     const cls = work.classification?.filter(Boolean) ?? [];
     return (
@@ -101,8 +102,8 @@ export function WorkRow({ work, href }: { work: CatalogWorkCard; href: string })
     );
 }
 
-export function CatalogPager({ page, pageCount, onPage, pageHref, label = '分頁' }: CatalogPagerProps) {
-    const { convert } = useConvert();
+export function CatalogPager({ page, pageCount, onPage, pageHref, label }: CatalogPagerProps) {
+    const { t, convert } = useI18n();
     if (pageCount <= 1) return null;
     const go = (p: number) => (e: React.MouseEvent) => {
         if (!onPage) return;
@@ -123,32 +124,32 @@ export function CatalogPager({ page, pageCount, onPage, pageHref, label = '分�
         return <button type="button" {...common} onClick={opts.current ? undefined : go(p)}>{text}</button>;
     };
     return (
-        <nav className="bim-ct-pager" aria-label={convert(label)}>
-            {control(page - 1, convert('上一頁'), { disabled: page <= 1 })}
+        <nav className="bim-ct-pager" aria-label={label ? convert(label) : t('catalogPage.pagerLabel')}>
+            {control(page - 1, t('catalogPage.prevPage'), { disabled: page <= 1 })}
             <ol>
                 {paginationItems(page, pageCount).map((p, i) => (
                     <li key={p ?? `gap${i}`} style={{ display: 'contents' }}>
                         {p === null
                             ? <span className="bim-ct-gap" aria-hidden="true">…</span>
-                            : control(p, p, { current: p === page, aria: convert(`第 ${p} 頁`) })}
+                            : control(p, p, { current: p === page, aria: t('catalogPage.pageN', { n: p }) })}
                     </li>
                 ))}
             </ol>
             {/* 窄屏页码条放不下：只留「当前 / 总页数」（宽屏 display:none，读屏不会重复） */}
             <span className="bim-ct-pg-of" aria-current="page">{page} / {pageCount}</span>
-            {control(page + 1, convert('下一頁'), { disabled: page >= pageCount })}
+            {control(page + 1, t('catalogPage.nextPage'), { disabled: page >= pageCount })}
         </nav>
     );
 }
 
 export function WorkCardGrid({
-    works, workLink = defaultWorkLink, emptyText = '此類暫無作品', view = 'card', ...pager
+    works, workLink = defaultWorkLink, emptyText, view = 'card', ...pager
 }: WorkCardGridProps) {
-    const { convert } = useConvert();
+    const { t, convert } = useI18n();
     return (
         <div className="bim-ct-works">
             {works.length === 0 ? (
-                <p className="bim-ct-empty">{typeof emptyText === 'string' ? convert(emptyText) : emptyText}</p>
+                <p className="bim-ct-empty">{emptyText === undefined ? t('catalogPage.emptyWorks') : typeof emptyText === 'string' ? convert(emptyText) : emptyText}</p>
             ) : (
                 view === 'list'
                     ? (

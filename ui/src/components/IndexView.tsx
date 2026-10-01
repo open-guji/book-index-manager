@@ -222,9 +222,9 @@ export const IndexView: React.FC<IndexViewProps> = (props) => {
                 alignItems: 'center',
                 gap: '4px',
             }}
-            title={mode === 'view' ? '切换到编辑模式' : '切换到查看模式'}
+            title={mode === 'view' ? t.common.switchToEdit : t.common.switchToView}
         >
-            {mode === 'view' ? '✏️ 编辑' : '👁 查看'}
+            {mode === 'view' ? t.common.modeEdit : t.common.modeView}
         </button>
     ) : null;
 
@@ -256,7 +256,7 @@ export const IndexView: React.FC<IndexViewProps> = (props) => {
 
     // ── Edit 模式 ──
     if (!editorData) {
-        return <div style={{ padding: '24px', textAlign: 'center', color: bim('muted') }}>无数据</div>;
+        return <div style={{ padding: '24px', textAlign: 'center', color: bim('muted') }}>{t.common.noData}</div>;
     }
 
     return (

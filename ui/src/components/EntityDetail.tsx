@@ -95,7 +95,7 @@ function AltNamesSection({ alt_names }: { alt_names: AltName[] }) {
                             fontSize: '12px',
                             minWidth: '36px',
                             paddingTop: '2px',
-                        }}>{type}</span>
+                        }}>{convert(type)}</span>
                         <span>
                             {names.map((n, i) => (
                                 <span key={i}>
@@ -113,6 +113,7 @@ function AltNamesSection({ alt_names }: { alt_names: AltName[] }) {
 
 // ── 子组件：external_ids 外链
 function ExternalIdsSection({ data }: { data: EntityDetailData }) {
+    const t = useT();
     const ext = data.external_ids;
     if (!ext) return null;
     const items: React.ReactNode[] = [];
@@ -133,7 +134,7 @@ function ExternalIdsSection({ data }: { data: EntityDetailData }) {
                     textDecoration: 'none',
                     background: `${bim('link-fg')}08`,
                 }}
-                title="CBDB 中国历代人物传记数据库"
+                title={t.common.cbdbTitle}
             >
                 CBDB {ext.cbdb_id}
             </a>
@@ -321,12 +322,9 @@ export const EntityDetail: React.FC<EntityDetailProps> = ({
     try { isDraft = extractStatus(data.id) === 'draft'; } catch {}
 
     const placeholder = isPlaceholderEntity(data);
-    const subtypeLabel = data.subtype === 'people' ? '人物'
-        : data.subtype === 'place' ? '地名'
-        : data.subtype === 'dynasty' ? '朝代'
-        : data.subtype === 'anonymous' ? '佚名'
-        : data.subtype === 'collective' ? '集体'
-        : data.subtype;
+    const subtypeLabel = data.subtype && data.subtype in t.common.entitySubtype
+        ? t.common.entitySubtype[data.subtype as keyof typeof t.common.entitySubtype]
+        : convert(data.subtype);
 
     return (
         <div>
@@ -404,7 +402,7 @@ export const EntityDetail: React.FC<EntityDetailProps> = ({
                     borderRadius: '4px',
                     margin: '8px 0',
                 }}>
-                    人物信息暂缺。该 Entity 仅作为作者占位，详细生平资料尚待补充。
+                    {t.common.entityPlaceholderNote}
                 </div>
             )}
 

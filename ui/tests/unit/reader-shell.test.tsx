@@ -47,7 +47,7 @@ function Harness({ toc = MANY, images, initial = '001', onSelect }: {
     );
 }
 
-describe('跳过目录：「跳到正文」与游走 tabindex', () => {
+describe('跳过目錄：「跳到正文」与游走 tabindex', () => {
     it('第一个可聚焦元素是「跳到正文」，指向可聚焦的正文容器', () => {
         const { container } = render(<Harness />);
         const focusables = container.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input, [tabindex="0"]');
@@ -84,7 +84,7 @@ describe('跳过目录：「跳到正文」与游走 tabindex', () => {
         expect(document.activeElement).toBe(skip);
     });
 
-    it('496 卷的目录里只有当前卷进 Tab 序列', () => {
+    it('496 卷的目錄里只有当前卷进 Tab 序列', () => {
         const { container } = render(<Harness initial="120" />);
         const toc = container.querySelector('.bim-rd-toc')!;
         const tabbable = toc.querySelectorAll('[data-rd-toc-key][tabindex="0"]');
@@ -94,7 +94,7 @@ describe('跳过目录：「跳到正文」与游走 tabindex', () => {
         expect(tabbable[0].textContent).toBe('卷120');
     });
 
-    it('↑↓ / Home / End 在目录里移动焦点，Tab 位随之移动', () => {
+    it('↑↓ / Home / End 在目錄里移动焦点，Tab 位随之移动', () => {
         const { container } = render(<Harness initial="002" />);
         const cur = container.querySelector<HTMLButtonElement>('[aria-current="true"]')!;
         cur.focus();
@@ -108,10 +108,10 @@ describe('跳过目录：「跳到正文」与游走 tabindex', () => {
     });
 });
 
-describe('目录可收起', () => {
-    it('工具条「目录」带 aria-expanded / aria-controls，点击收起再展开', () => {
+describe('目錄可收起', () => {
+    it('工具条「目錄」带 aria-expanded / aria-controls，点击收起再展开', () => {
         const { container } = render(<Harness toc={FEW} />);
-        const btn = screen.getByRole('button', { name: '目录' });
+        const btn = screen.getByRole('button', { name: '目錄' });
         const toc = container.querySelector('.bim-rd-toc')!;
         expect(btn.getAttribute('aria-controls')).toBe(toc.id);
         expect(btn).toHaveAttribute('aria-expanded', 'true');
@@ -138,7 +138,7 @@ describe('目录可收起', () => {
         expect(screen.getByRole('button', { name: /本紀/ })).toHaveAttribute('aria-expanded', 'true');
     });
 
-    it('底部「上一卷 / 下一卷」按目录顺序', () => {
+    it('底部「上一卷 / 下一卷」按目錄顺序', () => {
         const onSelect = vi.fn();
         render(<Harness toc={FEW} initial="002" onSelect={onSelect} />);
         const pager = screen.getByRole('navigation', { name: '翻卷' });
@@ -171,8 +171,8 @@ describe('翻卷导航不撑宽页面（overview#268 P1-1）', () => {
     });
 });
 
-describe('阅读页正文区加宽、目录栏紧贴正文（overview#268）', () => {
-    it('正文列居中（收起目录／书影后不留右侧空白，overview#308），最大宽 50em', () => {
+describe('閱讀页正文区加宽、目錄栏紧贴正文（overview#268）', () => {
+    it('正文列居中（收起目錄／書影后不留右侧空白，overview#308），最大宽 50em', () => {
         expect(READER_CSS).toMatch(/\.bim-rd-col \{ max-width: 50em; margin: 0 auto;/);
         expect(READER_CSS).not.toMatch(/margin: 0 auto 0 0/);
         expect(READER_CSS).toMatch(/\.bim-rd-text \{[^}]*padding: 32px 48px 96px 40px/);
@@ -180,16 +180,16 @@ describe('阅读页正文区加宽、目录栏紧贴正文（overview#268）', (
 });
 
 describe('工具条：只用文字和图标，状态用 aria-pressed', () => {
-    it('字号、自然段、专名线', () => {
+    it('字號、自然段、專名線', () => {
         const { container } = render(<LocaleProvider locale="zh-Hant"><Harness toc={FEW} /></LocaleProvider>);
         const root = container.querySelector<HTMLElement>('.bim-rd')!;
-        fireEvent.click(screen.getByRole('button', { name: '放大字号' }));
+        fireEvent.click(screen.getByRole('button', { name: '放大字號' }));
         expect(root.style.getPropertyValue('--bimrd-fs')).toBe('20px');
         const para = screen.getByRole('button', { name: '自然段' });
         expect(para).toHaveAttribute('aria-pressed', 'false');
         fireEvent.click(para);
         expect(para).toHaveAttribute('aria-pressed', 'true');
-        const pn = screen.getByRole('button', { name: '专名线' });
+        const pn = screen.getByRole('button', { name: '專名線' });
         fireEvent.click(pn);
         expect(pn).toHaveAttribute('aria-pressed', 'true');
         // 繁简切换在工具条里
@@ -204,29 +204,29 @@ describe('工具条：只用文字和图标，状态用 aria-pressed', () => {
     });
 });
 
-describe('书影', () => {
+describe('書影', () => {
     const pages: ReaderPageImage[] = [
         { url: 'https://img.example/1.jpg', width: 600, height: 900, label: '葉一上', boxes: [{ x: 1, y: 2, w: 30, h: 30 }, { x: 1, y: 40, w: 30, h: 30 }] },
         { url: 'https://img.example/2.jpg', width: 600, height: 900 },
     ];
 
-    it('没有影像：书影区默认收起，工具条上点开看占位', () => {
+    it('没有影像：書影区默认收起，工具条上点开看占位', () => {
         const { container } = render(<Harness toc={FEW} images={null} />);
         const root = container.querySelector('.bim-rd')!;
         expect(root.getAttribute('data-img')).toBe('closed');
-        const btn = screen.getByRole('button', { name: '书影' });
+        const btn = screen.getByRole('button', { name: '書影' });
         expect(btn).toHaveAttribute('aria-pressed', 'false');
         fireEvent.click(btn);
         expect(root.getAttribute('data-img')).toBe('open');
-        expect(screen.getByText('暂无书影')).toBeTruthy();
+        expect(screen.getByText('暫無書影')).toBeTruthy();
     });
 
-    it('有影像：默认展开，书影在正文之前（左侧），逐字框按原图像素画', () => {
+    it('有影像：默认展开，書影在正文之前（左侧），逐字框按原图像素画', () => {
         const { container } = render(<Harness toc={FEW} images={pages} />);
         expect(container.querySelector('.bim-rd')!.getAttribute('data-img')).toBe('open');
         const img = container.querySelector<HTMLImageElement>('.bim-rd-img img')!;
         expect(img.src).toBe('https://img.example/1.jpg');
-        expect(img.alt).toBe('书影 第 葉一上 页');
+        expect(img.alt).toBe('書影 第 葉一上 頁');
         const svg = container.querySelector('.bim-rd-img svg')!;
         expect(svg.getAttribute('viewBox')).toBe('0 0 600 900');
         expect(svg.querySelectorAll('rect')).toHaveLength(2);
@@ -245,12 +245,12 @@ describe('书影', () => {
         );
         expect(container.querySelector('svg')).toBeNull();
         expect(container.querySelector('.custom-overlay')).toBeTruthy();
-        fireEvent.click(screen.getByRole('button', { name: '下一页书影' }));
+        fireEvent.click(screen.getByRole('button', { name: '下一頁書影' }));
         expect(container.querySelector('img')!.getAttribute('src')).toBe('https://img.example/2.jpg');
         expect(overlay).toHaveBeenLastCalledWith(expect.objectContaining({ url: 'https://img.example/2.jpg' }), 1);
     });
 
-    it('窄屏样式里书影区整个不显示', () => {
+    it('窄屏样式里書影区整个不显示', () => {
         expect(READER_CSS).toMatch(/@media \(max-width: 719px\)[\s\S]*\.bim-rd-img \{ display: none !important; \}/);
     });
 });
@@ -266,7 +266,7 @@ const FT_VERSION = { label: '維基文庫', source_name: '維基文庫', source_
 const ftTransport = (md: string) => fakeTextTransport('b1', { chapters: FT_CHAPTERS, version: FT_VERSION, md });
 
 describe('TextReader（全文章）', () => {
-    it('来源链接下划线、不靠颜色区分；卷名是 h1', async () => {
+    it('來源链接下划线、不靠颜色区分；卷名是 h1', async () => {
         const { container } = render(<TextReader id="b1" transport={ftTransport('## 卷一\n\n太祖啟運立極。')} />);
         await waitFor(() => expect(container.querySelector('article')?.textContent).toContain('太祖'));
         const link = screen.getByRole('link', { name: '維基文庫' });
@@ -279,7 +279,7 @@ describe('TextReader（全文章）', () => {
         expect(container.querySelector('article h3')).toBeNull();
     });
 
-    it('按章要书影：resolveImages 收到章 key', async () => {
+    it('按章要書影：resolveImages 收到章 key', async () => {
         const resolveImages = vi.fn(async () => [{ url: 'https://img.example/p.jpg' }]);
         const { container } = render(
             <TextReader id="b1" transport={ftTransport('正文。')} chapter="002" resolveImages={resolveImages} />,
@@ -329,7 +329,7 @@ describe('TextReader（整理本章）', () => {
         );
     }
 
-    it('正文：卷名 h1、元数据一行（不上 badge）、书名链到作品', async () => {
+    it('正文：卷名 h1、元数据一行（不上 badge）、書名链到作品', async () => {
         const onNavigate = vi.fn();
         const { container } = mountCE(onNavigate);
         await waitFor(() => expect(container.querySelector('h1')?.textContent).toBe('正史類'));
@@ -358,11 +358,11 @@ describe('TextReader（整理本章）', () => {
         expect(container.querySelector('.bim-rd-meta')!.textContent).not.toMatch(/CC BY|授權|授权|（粗校）/);
     });
 
-    it('目录选中行：左侧色条（aria-current 行带 inset 阴影）', () => {
+    it('目錄选中行：左侧色条（aria-current 行带 inset 阴影）', () => {
         expect(READER_CSS).toMatch(/\.bim-rd-ti\[aria-current="true"\] \{[^}]*box-shadow: inset 2px 0 0/);
     });
 
-    it('工具条 v3：书名链作品页、作者行取作品数据、当前卷；作者缺就不出', async () => {
+    it('工具条 v3：書名链作品页、作者行取作品数据、当前卷；作者缺就不出', async () => {
         const onNavigate = vi.fn();
         const transport = ceTransport({}, { id: 'w1', title: '直齋書錄解題', authors: [{ name: '陳振孫', dynasty: '南宋' }] });
         const { container } = render(
@@ -381,11 +381,11 @@ describe('TextReader（整理本章）', () => {
         expect(c2.querySelector('.bim-rd-by')).toBeNull();
     });
 
-    it('「标出作品链接」：默认开、有 work_id 的条目标题旁出「作品 →」；关掉后无链接；有名字可访问', async () => {
+    it('「標出作品鏈接」：默认开、有 work_id 的条目标题旁出「作品 →」；关掉后无链接；有名字可访问', async () => {
         const onNavigate = vi.fn();
         const { container } = mountCE(onNavigate);
         await waitFor(() => expect(container.querySelector('h1')).toBeTruthy());
-        const box = screen.getByRole('checkbox', { name: '标出作品链接' });
+        const box = screen.getByRole('checkbox', { name: '標出作品鏈接' });
         expect(box).toBeChecked();
         const chips = container.querySelectorAll('.bim-rd-wl');
         expect(chips).toHaveLength(1);   // 只有第一条有 work_id；版本数没数据，不写「N 种版本」
@@ -401,7 +401,7 @@ describe('TextReader（整理本章）', () => {
         expect(container.querySelector('.bim-rd-entries')!.textContent).not.toContain('→作品');
     });
 
-    it('条目看法 v3：表格式行（序号、书名、作品 →／未关联），仍可展开；标出作品链接关掉就没有右列', async () => {
+    it('条目看法 v3：表格式行（序号、書名、作品 →／未關聯），仍可展开；標出作品鏈接关掉就没有右列', async () => {
         const { container } = mountCE();
         await waitFor(() => expect(container.querySelector('h1')).toBeTruthy());
         fireEvent.click(screen.getByRole('button', { name: '條目' }));
@@ -411,20 +411,20 @@ describe('TextReader（整理本章）', () => {
         expect(container.querySelector('.bim-rd-rowhead')?.getAttribute('aria-hidden')).toBe('true');
         // 第一条有 work_id：「作品 →」；第二条没有：「未关联」
         expect(within(rows[0] as HTMLElement).getByRole('link', { name: /查看作品：/ }).textContent).toBe('作品 →');
-        expect(rows[1].textContent).toContain('未关联');
-        fireEvent.click(screen.getByRole('checkbox', { name: '标出作品链接' }));
-        expect(container.querySelector('.bim-rd-entries')!.textContent).not.toMatch(/作品 →|未关联/);
+        expect(rows[1].textContent).toContain('未關聯');
+        fireEvent.click(screen.getByRole('checkbox', { name: '標出作品鏈接' }));
+        expect(container.querySelector('.bim-rd-entries')!.textContent).not.toMatch(/作品 →|未關聯/);
     });
 
-    it('右栏 v3：本卷计数（部书／已关联）＋条目锚点；点锚点滚到对应条目；有 work_id 的点亮', async () => {
+    it('右栏 v3：本卷计数（部書／已关联）＋条目锚点；点锚点滚到对应条目；有 work_id 的点亮', async () => {
         const scroll = vi.fn();
         (Element.prototype as unknown as { scrollIntoView: unknown }).scrollIntoView = scroll;
         const { container } = mountCE();
         await waitFor(() => expect(container.querySelector('.bim-rd-rail')).toBeTruthy());
         const rail = container.querySelector('.bim-rd-rail') as HTMLElement;
         expect(rail.querySelector('.bim-rd-rail-n b')?.textContent).toBe('2');
-        expect(rail.querySelector('.bim-rd-rail-linked')?.textContent).toBe('已关联 1');
-        expect(rail.querySelector('[role="img"]')?.getAttribute('aria-label')).toBe('已关联 1 / 2');
+        expect(rail.querySelector('.bim-rd-rail-linked')?.textContent).toBe('已關聯 1');
+        expect(rail.querySelector('[role="img"]')?.getAttribute('aria-label')).toBe('已關聯 1 / 2');
         const links = [...rail.querySelectorAll('a')];  // jsdom 里 <860px 规则把栏藏了，不走 role 查询
         expect(links).toHaveLength(2);
         expect(links[0].querySelector('.bim-rd-rail-dot')?.className).toContain('on');
@@ -459,7 +459,7 @@ describe('TextReader（整理本章）', () => {
         expect(screen.getByText('提要文字。')).toBeTruthy();
     });
 
-    it('跨卷搜索框在目录里，命中高亮', async () => {
+    it('跨卷搜索框在目錄里，命中高亮', async () => {
         const { container } = mountCE();
         await waitFor(() => expect(container.querySelector('h1')).toBeTruthy());
         const search = screen.getByRole('searchbox', { name: '搜索全部卷' });
@@ -470,7 +470,7 @@ describe('TextReader（整理本章）', () => {
 });
 
 describe('审查修订（#24 网站总管）', () => {
-    it('窄屏正文仍是 18px、行高 2.05：窄屏样式不覆盖字号与行高', () => {
+    it('窄屏正文仍是 18px、行高 2.05：窄屏样式不覆盖字號与行高', () => {
         const narrow = READER_CSS.slice(READER_CSS.indexOf('@media (max-width: 719px)'));
         expect(narrow).not.toMatch(/bimrd-fs, 1[0-7]px/);
         expect(narrow).not.toMatch(/line-height/);
@@ -485,10 +485,10 @@ describe('审查修订（#24 网站总管）', () => {
         })) as unknown as typeof window.matchMedia;
         try {
             const { container } = render(<Harness toc={FEW} />);
-            fireEvent.click(screen.getByRole('button', { name: '目录' }));
+            fireEvent.click(screen.getByRole('button', { name: '目錄' }));
             const toc = container.querySelector<HTMLElement>('.bim-rd-toc')!;
             expect(toc.getAttribute('aria-modal')).toBe('true');
-            const close = within(toc).getByRole('button', { name: '收起目录' });
+            const close = within(toc).getByRole('button', { name: '收起目錄' });
             const cur = toc.querySelector<HTMLElement>('[aria-current="true"]')!;
             // 最后一个可 Tab 项上按 Tab → 回到第一个
             cur.focus();

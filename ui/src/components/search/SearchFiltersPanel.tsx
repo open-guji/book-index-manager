@@ -19,7 +19,8 @@ function toggle(list: string[], v: string): string[] {
  * 这里只管 aria-expanded）。各组暂不显示命中数：代理没放行 facets。
  */
 export const SearchFiltersPanel: React.FC<SearchFiltersPanelProps> = ({ filters, onChange }) => {
-    const t = useT().searchV4;
+    const messages = useT();
+    const t = messages.searchV4;
     const { convert } = useConvert();
     const [open, setOpen] = useState(false);
     const panelId = useId();
@@ -65,7 +66,7 @@ export const SearchFiltersPanel: React.FC<SearchFiltersPanelProps> = ({ filters,
                                 checked={filters.classification.includes(c.value)}
                                 onChange={() => set({ classification: toggle(filters.classification, c.value) })}
                             />
-                            {convert(c.label)}
+                            {c.value ? convert(c.label) : messages.searchPage.unclassified}
                         </label>
                     ))}
                 </section>
@@ -89,7 +90,7 @@ export const SearchFiltersPanel: React.FC<SearchFiltersPanelProps> = ({ filters,
                                 type="button"
                                 aria-pressed={filters.loss === o.value}
                                 onClick={() => set({ loss: o.value })}
-                            >{convert(o.label)}</button>
+                            >{messages.searchPage.loss[o.value || 'all']}</button>
                         ))}
                     </div>
                 </section>

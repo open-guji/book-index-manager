@@ -63,7 +63,7 @@ function Shell(props: Partial<React.ComponentProps<typeof ReaderShell>>) {
 const srcLine = (c: HTMLElement) => c.querySelector('.bim-rd-src')?.textContent ?? null;
 
 describe('版本数据换算', () => {
-    it('选项文字 = version_label · source_name；版本说明已含来源名时不重复', () => {
+    it('选项文字 = version_label · source_name；版本说明已含來源名时不重複', () => {
         const [a, b] = SHIXU;
         expect(readerVersionOptionLabel(a)).toBe('詩序 · 維基文庫');
         expect(readerVersionOptionLabel(b)).toBe('詩序（Kanripo WYG 本）');
@@ -84,17 +84,17 @@ describe('版本数据换算', () => {
     });
 });
 
-describe('阅读器「版本」下拉框（#235）', () => {
-    it('没有 versions：不出下拉框，也不出出处行', () => {
+describe('閱讀器「版本」下拉框（#235）', () => {
+    it('没有 versions：不出下拉框，也不出出處行', () => {
         const { container } = render(<Shell />);
         expect(screen.queryByRole('combobox', { name: '版本' })).toBeNull();
         expect(srcLine(container)).toBeNull();
     });
 
-    it('只有一份全文：不出下拉框，出处与授权照常显示', () => {
+    it('只有一份全文：不出下拉框，出處与授权照常显示', () => {
         const { container } = render(<Shell versions={[TWO[1]]} />);
         expect(screen.queryByRole('combobox', { name: '版本' })).toBeNull();
-        expect(srcLine(container)).toBe('出处 CBETA授权 CC BY-NC-SA 4.0');
+        expect(srcLine(container)).toBe('出處 CBETA授權 CC BY-NC-SA 4.0');
     });
 
     it('两份以上：工具条上出下拉框，默认选 primary，选项文字是 version_label · source_name', () => {
@@ -103,7 +103,7 @@ describe('阅读器「版本」下拉框（#235）', () => {
         expect(select.closest('.bim-rd-tools')).toBeTruthy();
         expect(select.value).toBe('wikisource-01');
         expect([...select.options].map(o => o.textContent)).toEqual(['詩序 · 維基文庫', '詩序（Kanripo WYG 本）']);
-        expect(srcLine(container)).toBe('出处 維基文庫授权 CC BY-SA 4.0');
+        expect(srcLine(container)).toBe('出處 維基文庫授權 CC BY-SA 4.0');
         const link = container.querySelector('.bim-rd-src a') as HTMLAnchorElement;
         expect(link.getAttribute('href')).toBe('https://zh.wikisource.org/wiki/詩序');
         expect(link.getAttribute('target')).toBe('_blank');
@@ -127,7 +127,7 @@ describe('阅读器「版本」下拉框（#235）', () => {
         expect(window.location.href).toBe(before);
     });
 
-    it('受控：宿主换上新版本与新目录后，授权跟着变，并回到新目录的第一卷（不保留卷号）', async () => {
+    it('受控：宿主换上新版本与新目錄后，授权跟着变，并回到新目錄的第一卷（不保留卷号）', async () => {
         const onSelect = vi.fn();
         function Host() {
             const [key, setKey] = useState('cbeta-01');
@@ -150,11 +150,11 @@ describe('阅读器「版本」下拉框（#235）', () => {
         fireEvent.change(screen.getByRole('combobox', { name: '版本' }), { target: { value: 'wikisource-01' } });
         await waitFor(() => expect(onSelect).toHaveBeenCalledWith('001'));
         expect(onSelect).toHaveBeenCalledTimes(1);
-        expect(srcLine(container)).toBe('出处 維基文庫授权 CC BY-SA 4.0');
+        expect(srcLine(container)).toBe('出處 維基文庫授權 CC BY-SA 4.0');
         expect((screen.getByRole('combobox', { name: '版本' }) as HTMLSelectElement).value).toBe('wikisource-01');
     });
 
-    it('新目录异步到达（先空后有）：等目录到了才跳第一卷', async () => {
+    it('新目錄异步到达（先空后有）：等目錄到了才跳第一卷', async () => {
         const onSelect = vi.fn();
         const { rerender } = render(
             <Shell versions={TWO} currentVersionKey="cbeta-01" toc={tocOf(3, 'c')} activeKey="002" onSelect={onSelect} />,
@@ -169,7 +169,7 @@ describe('阅读器「版本」下拉框（#235）', () => {
         expect(onSelect).toHaveBeenCalledTimes(1);
     });
 
-    it('宿主 toc 不 memo、新目录晚到：先按旧目录回第一卷，新目录（卷 key 不同）到了再选它的第一卷，之后不再干预', async () => {
+    it('宿主 toc 不 memo、新目錄晚到：先按旧目錄回第一卷，新目錄（卷 key 不同）到了再选它的第一卷，之后不再干预', async () => {
         const onSelect = vi.fn();
         const newToc = (): ReaderTocItem[] => ['第001.md', '第002.md'].map(k => ({ key: k, label: k }));
         const { rerender } = render(
@@ -187,15 +187,15 @@ describe('阅读器「版本」下拉框（#235）', () => {
         expect(onSelect).toHaveBeenCalledTimes(2);
     });
 
-    it('非受控：不给 currentVersionKey 时组件自己记住所选，出处行跟着变', () => {
+    it('非受控：不给 currentVersionKey 时组件自己记住所选，出處行跟着变', () => {
         const { container } = render(<Shell versions={TWO} />);
         expect(srcLine(container)).toContain('CBETA');
         fireEvent.change(screen.getByRole('combobox', { name: '版本' }), { target: { value: 'wikisource-01' } });
         expect((screen.getByRole('combobox', { name: '版本' }) as HTMLSelectElement).value).toBe('wikisource-01');
-        expect(srcLine(container)).toBe('出处 維基文庫授权 CC BY-SA 4.0');
+        expect(srcLine(container)).toBe('出處 維基文庫授權 CC BY-SA 4.0');
     });
 
-    it('versionSource={false}：宿主自己画出处时不重复', () => {
+    it('versionSource={false}：宿主自己画出處时不重複', () => {
         const { container } = render(<Shell versions={TWO} versionSource={false} />);
         expect(screen.getByRole('combobox', { name: '版本' })).toBeTruthy();
         expect(srcLine(container)).toBeNull();
@@ -251,7 +251,7 @@ function expectHitArea44(decl: string) {
 describe('Q4 点击区 ≥44×44（390 宽 / 触屏；伪元素扩热区，外观不变）', () => {
     const coarse = '(max-width: 719px), (pointer: coarse)';
 
-    it('阅读器工具栏：目录、繁｜简、A−、A+、专名线（全是 .bim-rd-tools .bim-rd-t）', () => {
+    it('閱讀器工具栏：目錄、繁｜简、A−、A+、專名線（全是 .bim-rd-tools .bim-rd-t）', () => {
         const block = mediaBlock(READER_CSS, coarse);
         expect(ruleFor(block, '.bim-rd-tools .bim-rd-t')).toMatch(/position: relative/);
         expectHitArea44(ruleFor(block, '.bim-rd-tools .bim-rd-t::after'));
@@ -262,14 +262,14 @@ describe('Q4 点击区 ≥44×44（390 宽 / 触屏；伪元素扩热区，外�
         render(<Shell properNameToggle versions={TWO} />);
         const tools = document.querySelector('.bim-rd-tools')!;
         const t = (name: string) => tools.querySelector(`[aria-label="${name}"]`) ?? [...tools.querySelectorAll('button')].find(b => b.textContent?.includes(name));
-        for (const name of ['目录', '缩小字号', '放大字号', '专名线']) {
+        for (const name of ['目錄', '縮小字號', '放大字號', '專名線']) {
             expect(t(name)?.classList.contains('bim-rd-t'), name).toBe(true);
         }
-        expect(tools.querySelector('[aria-label="缩小字号"]')!.classList.contains('bim-rd-fs')).toBe(true);
-        expect(tools.querySelector('[aria-label="放大字号"]')!.classList.contains('bim-rd-fs')).toBe(true);
+        expect(tools.querySelector('[aria-label="縮小字號"]')!.classList.contains('bim-rd-fs')).toBe(true);
+        expect(tools.querySelector('[aria-label="放大字號"]')!.classList.contains('bim-rd-fs')).toBe(true);
     });
 
-    it('阅读器：按钮本身的尺寸与留白在窄屏块里不变（只动伪元素）', () => {
+    it('閱讀器：按钮本身的尺寸与留白在窄屏块里不变（只动伪元素）', () => {
         const block = mediaBlock(READER_CSS, coarse);
         expect(ruleFor(block, '.bim-rd-tools .bim-rd-t')).not.toMatch(/padding|min-width|min-height|width:|height:/);
     });
@@ -302,7 +302,7 @@ function headingOrderViolations(root: ParentNode): string[] {
 }
 
 describe('Q5 标题层级（heading-order）', () => {
-    it('阅读页：h1 卷名下直接是 ### 小节／整行粗体条目 → 标签降为 h2 起步，外观 class 保留原层级', () => {
+    it('閱讀页：h1 卷名下直接是 ### 小节／整行粗体条目 → 标签降为 h2 起步，外观 class 保留原层级', () => {
         const { container } = render(
             <Shell>
                 <h1 className="bim-rd-h1">卷一</h1>
@@ -321,7 +321,7 @@ describe('Q5 标题层级（heading-order）', () => {
         ]);
     });
 
-    it('外观 class 覆盖标签默认字号（class 选择器比 .bim-rd-prose hN 更具体）', () => {
+    it('外观 class 覆盖标签默认字號（class 选择器比 .bim-rd-prose hN 更具体）', () => {
         expect(READER_CSS).toMatch(/\.bim-rd-prose \.bim-rd-hl2 \{ font-size: 1\.2em;/);
         expect(READER_CSS).toMatch(/\.bim-rd-prose \.bim-rd-hl3 \{ font-size: 1\.06em;/);
         expect(READER_CSS).toMatch(/\.bim-rd-prose \.bim-rd-hl4 \{ font-size: 1em;/);

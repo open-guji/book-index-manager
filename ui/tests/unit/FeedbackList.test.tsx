@@ -21,7 +21,7 @@ describe('未知类型/状态回退（不崩）', () => {
     it('新扩充的 type（suggestion）：认识，显示专属标签', () => {
         render(<FeedbackList items={[item({ type: 'suggestion', content: '想要暗色模式' })]} />);
         expect(screen.getByText('想要暗色模式')).toBeInTheDocument();
-        expect(screen.getByText('功能建议')).toBeInTheDocument();
+        expect(screen.getByText('功能建議')).toBeInTheDocument();
     });
 
     it('完全陌生的 type（旧版数据模型之外）：不抛异常，显示「其他」', () => {
@@ -29,9 +29,9 @@ describe('未知类型/状态回退（不崩）', () => {
         expect(screen.getByText('其他')).toBeInTheDocument();
     });
 
-    it('完全陌生的 status：不抛异常，回退「待处理」', () => {
+    it('完全陌生的 status：不抛异常，回退「待處理」', () => {
         expect(() => render(<FeedbackList items={[item({ status: 'archived-2027' as FeedbackItem['status'] })]} />)).not.toThrow();
-        expect(screen.getByText('待处理')).toBeInTheDocument();
+        expect(screen.getByText('待處理')).toBeInTheDocument();
     });
 });
 
