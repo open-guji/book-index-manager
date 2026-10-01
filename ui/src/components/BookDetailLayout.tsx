@@ -16,9 +16,6 @@ import type {
     IndexEntry,
     IndexDetailData,
     ResourceCatalog,
-    CollatedEditionIndex,
-    BookFullTextIndex,
-    WorkFullTextEntry,
     WorkDetailData,
     BookDetailData,
     CollectionDetailData,
@@ -26,8 +23,9 @@ import type {
 } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { CollectionCatalog } from './CollectionCatalog';
-import { CollatedEdition } from './CollatedEdition';
-import { BookFullText } from './BookFullText';
+import { TextReader } from './TextReader';
+import type { BookChapterList } from './detail/BookPage';
+import { pickTextVersion } from '../core/text-model';
 import { VersionLineageView } from './VersionLineageView';
 import { buildLineageGraph } from '../core/lineage-graph';
 import type { LineageGraph } from '../core/lineage-graph';
@@ -78,14 +76,12 @@ export interface ExtraTab {
 export interface ReadLinkContext {
     detail: IndexDetailData;
     /**
-     * 本条目已知可读的内容：collated 整理本（Work）／fulltext 全文（Work 或 Book）／
-     * null 尚未发现（次级数据未加载完，或确实没有）。
+     * 本条目有可读文本（条目数据里 `text_count` > 0；阅读页只认新结构，见规格 §十）：
+     * 'text'；没有或数据没带 text_count 为 null。
      */
-    kind: 'collated' | 'fulltext' | null;
-    /** Work 全文的首选那份（kind 为 fulltext 且是 Work 时） */
-    fullTextKey?: string;
+    kind: 'text' | null;
     /**
-     * 直接打开某一回／章：全文章节文件名去掉扩展名（「001.md」→「001」）。
+     * 直接打开某一回／章：章 key（三位编号，如「001」；带扩展名的「001.md」也认）。
      * 版本页回目网格的每一回都用它取链接（B1）；不认这个字段的宿主返回同一个地址也无妨。
      */
     juan?: string;
@@ -96,6 +92,12 @@ export interface SourceLinkContext {
     activeJuan: string | null;
     entry: IndexEntry;
     detail: IndexDetailData;
+}
+
+/** 条目数据里有可读文本：打包注入的 text_count > 0（没有这个字段的宿主不出阅读入口） */
+function hasText(detail: IndexDetailData): boolean {
+    const n = (detail as { text_count?: unknown }).text_count;
+    return typeof n === 'number' && n > 0;
 }
 
 export interface BookDetailLayoutProps {
@@ -140,7 +142,7 @@ export interface BookDetailLayoutProps {
     /**
      * 「阅读全文」主按钮指向的阅读页（2026-09 N3a）。
      * 返回字符串 → 提要卡里出现唯一的主按钮「阅读全文」，链到该地址；返回 null → 不出现。
-     * 不传：整理本／全文存在时仍出现按钮，点击切到本组件内的 collated / fulltext tab（旧行为）。
+     * 不传：整理本／全文存在时仍出现按钮，点击切到本组件内的 阅读 tab（TextReader，tab 键 `fulltext`；`collated` 同义，兼容旧地址）。
      */
     readLink?: (ctx: ReadLinkContext) => string | null | undefined;
     /** 三栏版左栏顶部（宿主的检索框等）；窄屏时显示在最上方 */
@@ -252,16 +254,10 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
 
     const [catalogList, setCatalogList] = useState<ResourceCatalog[]>([]);
     const [catalogLoading, setCatalogLoading] = useState(false);
-    const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
-    const [collatedLoading, setCollatedLoading] = useState(false);
-    const [bookFullTextIndex, setBookFullTextIndex] = useState<BookFullTextIndex | null>(null);
-    const [bookFullTextLoading, setBookFullTextLoading] = useState(false);
-    /** 本条目的全文目录已经取过（取到或没取到）；取之前按 has_full_text 先占位 */
-    const [bookFullTextTried, setBookFullTextTried] = useState<string | null>(null);
-    /* Work 全文：候选清单（首项 primary）＋当前选中哪一份 */
-    const [workFullTexts, setWorkFullTexts] = useState<WorkFullTextEntry[]>([]);
-    const [workFullTextLoading, setWorkFullTextLoading] = useState(false);
-    const [workFullTextKey, setWorkFullTextKey] = useState<string | null>(null);
+    /* 版本页回目网格：默认版本的章目录（来自 manifest＋<key>/index.json）；只在条目带 text_count 时取 */
+    const [bookChapters, setBookChapters] = useState<BookChapterList | null>(null);
+    /** 本条目的章目录已经取过（取到或没取到）；取之前按 text_count 先占位 */
+    const [bookChaptersTried, setBookChaptersTried] = useState<string | null>(null);
     const [lineageGraph, setLineageGraph] = useState<LineageGraph | null>(null);
     const [lineageLoading, setLineageLoading] = useState(false);
     const lineageSourceRef = useRef<{ work: WorkDetailData; books: BookDetailData[] } | null>(null);
@@ -295,44 +291,24 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         }
     }, [transport]);
 
-    const loadCollated = useCallback(async (workId: string) => {
-        if (!transport.getCollatedEditionIndex) { setCollatedIndex(null); return; }
-        setCollatedLoading(true);
+    const loadBookChapters = useCallback(async (bookId: string) => {
+        if (!transport.getTextManifest || !transport.getTextIndex) { setBookChapters(null); setBookChaptersTried(bookId); return; }
         try {
-            setCollatedIndex(await transport.getCollatedEditionIndex(workId));
+            const version = pickTextVersion(await transport.getTextManifest(bookId));
+            const idx = version ? await transport.getTextIndex(bookId, version.key) : null;
+            setBookChapters(idx && idx.chapters.length > 0
+                ? {
+                    chapters: idx.chapters.map(c => ({ n: c.n, title: c.title, file: c.file })),
+                    source: {
+                        name: idx.source?.name ?? version?.source_name,
+                        license: idx.source?.license ?? version?.license ?? undefined,
+                    },
+                }
+                : null);
         } catch {
-            setCollatedIndex(null);
+            setBookChapters(null);
         } finally {
-            setCollatedLoading(false);
-        }
-    }, [transport]);
-
-    const loadBookFullText = useCallback(async (bookId: string) => {
-        if (!transport.getBookFullTextIndex) { setBookFullTextIndex(null); return; }
-        setBookFullTextLoading(true);
-        try {
-            setBookFullTextIndex(await transport.getBookFullTextIndex(bookId));
-        } catch {
-            setBookFullTextIndex(null);
-        } finally {
-            setBookFullTextLoading(false);
-            setBookFullTextTried(bookId);
-        }
-    }, [transport]);
-
-    const loadWorkFullText = useCallback(async (workId: string) => {
-        if (!transport.getWorkFullTextList) { setWorkFullTexts([]); return; }
-        setWorkFullTextLoading(true);
-        try {
-            // 只收 Work 层的；primary 缺省时（实测有单份清单不带该字段）回退首项
-            const list = ((await transport.getWorkFullTextList(workId)) ?? [])
-                .filter(v => v.owner_type !== 'Book');
-            setWorkFullTexts(list);
-            setWorkFullTextKey((list.find(v => v.primary) ?? list[0])?.key ?? null);
-        } catch {
-            setWorkFullTexts([]);
-        } finally {
-            setWorkFullTextLoading(false);
+            setBookChaptersTried(bookId);
         }
     }, [transport]);
 
@@ -386,27 +362,17 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     useEffect(() => {
         let cancelled = false;
 
-        /** 按条目类型加载次级数据（整理本／全文／谱系／丛编目录） */
+        /** 按条目类型加载次级数据（谱系／丛编目录／版本页回目） */
         const loadSecondary = (detailData: IndexDetailData) => {
             if (detailData.type === 'collection') {
                 loadCatalogs(id);
             } else if (detailData.type === 'work') {
-                // 索引已带 has_collated（reindex 按 book-text 里有没有 collated_edition/ 目录写入，
-                // bundle 打包时注入到详情）：没标记就不去探测 collated_edition/index.json，
-                // 否则没有整理本的每部作品都白打一个 404（overview#268 P3）
-                if ((detailData as { has_collated?: boolean }).has_collated) {
-                    loadCollated(id);
-                }
                 if ((detailData as WorkDetailData).version_graph || transport.getLineageGraph) {
                     loadLineage(id, detailData);
                 }
-                if (transport.getWorkFullTextList) {
-                    loadWorkFullText(id);
-                }
             } else if (detailData.type === 'book') {
-                if ((detailData as { has_full_text?: boolean }).has_full_text && transport.getBookFullTextIndex) {
-                    loadBookFullText(id);
-                }
+                // 打包注入的 text_count > 0 才取章目录：没有可读文本的版本不白打 404
+                if (hasText(detailData)) loadBookChapters(id);
             }
         };
 
@@ -429,10 +395,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         if (seeded) {
             setNotFound(false);
             setCatalogList(prev => (prev.length ? [] : prev));
-            setCollatedIndex(null);
-            setBookFullTextIndex(null);
-            setWorkFullTexts(prev => (prev.length ? [] : prev));
-            setWorkFullTextKey(null);
+            setBookChapters(null);
             setLineageGraph(null);
             lineageSourceRef.current = null;
             setEntry(seeded.entry);
@@ -448,10 +411,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             setEntry(null);
             setDetail(null);
             setCatalogList([]);
-            setCollatedIndex(null);
-            setBookFullTextIndex(null);
-            setWorkFullTexts([]);
-            setWorkFullTextKey(null);
+            setBookChapters(null);
             setLineageGraph(null);
             lineageSourceRef.current = null;
 
@@ -481,7 +441,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         };
         load();
         return () => { cancelled = true; };
-    }, [id, transport, seed, enrichDetail, loadCatalogs, loadCollated, loadLineage, loadBookFullText, loadWorkFullText]);
+    }, [id, transport, seed, enrichDetail, loadCatalogs, loadLineage, loadBookChapters]);
 
     // 切换 collection 时仅 rebuild graph，不重新拉 books
     useEffect(() => {
@@ -518,25 +478,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
          * 读者进了全文页就没有返回入口（只能按浏览器后退）。
          * 与下面 feedback 的处理同理。
          */
-        if (detail.type === 'work' && (collatedIndex || collatedLoading) && activeTab === 'collated') {
-            navItems.push({
-                key: 'collated',
-                label: collatedLoading ? `${t.detailTab.collatedEdition}…` : t.detailTab.collatedEdition,
-            });
-        }
-
-        if (detail.type === 'book' && (bookFullTextIndex || bookFullTextLoading) && activeTab === 'fulltext') {
-            navItems.push({
-                key: 'fulltext',
-                label: bookFullTextLoading ? `${t.detailTab.fullText}…` : t.detailTab.fullText,
-            });
-        }
-
-        if (detail.type === 'work' && (workFullTexts.length > 0 || workFullTextLoading) && activeTab === 'fulltext') {
-            navItems.push({
-                key: 'fulltext',
-                label: workFullTextLoading ? `${t.detailTab.fullText}…` : t.detailTab.fullText,
-            });
+        if (activeTab === 'collated' || activeTab === 'fulltext') {
+            navItems.push({ key: activeTab, label: t.detailTab.fullText });
         }
 
         if (detail.type === 'work' && (lineageGraph || lineageLoading)) {
@@ -654,50 +597,26 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
 
     // ── 内容 ──
 
-    // ── 「阅读全文」：整理本与全文两个入口合成一个主按钮 ──
-    const readKind: ReadLinkContext['kind'] = !detail ? null
-        : detail.type === 'work'
-            ? ((collatedIndex?.juan_files?.length ?? 0) > 0 ? 'collated' : workFullTexts.length > 0 ? 'fulltext' : null)
-            : detail.type === 'book'
-                /*
-                 * 版本页：数据里带 has_full_text 的先按有全文出按钮，不等目录取回——
-                 * 按钮在提要卡里，手机上卡在最上面，晚到会把整页往下顶（B1 实测 CLS 0.2）。
-                 * 目录取回后确实为空（极少：打包漏文件）就收回按钮。
-                 */
-                ? ((bookFullTextIndex?.chapters.length ?? 0) > 0
-                    || ((detail as { has_full_text?: boolean }).has_full_text && !!transport.getBookFullTextIndex
-                        && bookFullTextTried !== detail.id)
-                    ? 'fulltext' : null)
-                : null;
-    const primaryFullText = workFullTexts.find(v => v.primary) ?? workFullTexts[0];
+    // ── 「阅读全文」主按钮：条目带 text_count（打包注入）才出现，同步判定、不等目录取回（CLS） ──
+    const readKind: ReadLinkContext['kind'] = detail && hasText(detail) ? 'text' : null;
     const openReader = () => {
-        if (readKind === 'collated' && collatedIndex?.juan_files?.length) {
-            setActiveJuan(collatedIndex.juan_files[0]);
-            onTabChange('collated');
-        } else if (readKind === 'fulltext') {
-            if (detail?.type === 'work' && primaryFullText) setWorkFullTextKey(primaryFullText.key);
-            setActiveJuan(null);
-            onTabChange('fulltext');
-        }
+        setActiveJuan(null);
+        onTabChange('fulltext');
     };
     let readAction: React.ReactNode = null;
     if (detail && readLink) {
-        const href = readLink({
-            detail,
-            kind: readKind,
-            fullTextKey: detail.type === 'work' ? primaryFullText?.key : undefined,
-        });
+        const href = readLink({ detail, kind: readKind });
         if (href) readAction = <ReadButton href={href} />;
     } else if (readKind) {
         readAction = <ReadButton onClick={openReader} />;
     }
 
-    /** 版本页回目网格：某一回的链接。宿主给了 readLink 走阅读页，否则切到本组件的全文 tab */
+    /** 版本页回目网格：某一回的链接。宿主给了 readLink 走阅读页，否则切到本组件的阅读 tab */
     const chapterLink = (file: string) => {
         if (!detail) return null;
         const juan = file.replace(/\.[^.]+$/, '');
         if (readLink) {
-            const href = readLink({ detail, kind: 'fulltext', juan });
+            const href = readLink({ detail, kind: readKind, juan });
             return href ? { href } : null;
         }
         return {
@@ -741,9 +660,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     onNavigate={onNavigate}
                     renderLink={renderLink}
                     readAction={readAction}
-                    fullText={bookFullTextIndex}
-                    fullTextPending={!!(detail as { has_full_text?: boolean }).has_full_text
-                        && !!transport.getBookFullTextIndex && bookFullTextTried !== detail.id}
+                    fullText={bookChapters}
+                    fullTextPending={hasText(detail) && !!transport.getTextManifest && bookChaptersTried !== detail.id}
                     chapterLink={chapterLink}
                     railTop={railTop}
                     railLinks={railLinks}
@@ -799,58 +717,15 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             return <CollectionCatalog data={catData} onNavigate={onNavigate} renderLink={renderLink} />;
         }
 
-        if (activeTab === 'collated') {
+        if (activeTab === 'collated' || activeTab === 'fulltext') {
+            // 整理本与全文合一（overview#307）：同一个 TextReader；版本由组件自己管，章跟着 activeJuan
             return (
-                <CollatedEdition
-                    index={collatedIndex || undefined}
-                    workId={id}
+                <TextReader
+                    id={id}
                     transport={transport}
+                    chapter={activeJuan}
+                    onLocationChange={loc => setActiveJuan(loc.chapter)}
                     onNavigate={onNavigate}
-                    activeJuan={activeJuan}
-                    onJuanChange={setActiveJuan}
-                />
-            );
-        }
-
-        if (activeTab === 'fulltext' && detail.type === 'work') {
-            /*
-             * Work 全文复用 Book 全文同一组件，只换取数口。清单还在取时先给
-             * 加载提示；取完仍为空（该作品没有 Work 全文）就直说，不再像旧版那样
-             * 拿 Work id 去取 Book 全文目录、永远停在「加载全文目录…」。
-             */
-            const key = workFullTextKey ?? workFullTexts[0]?.key;
-            if (!key) {
-                return (
-                    <div style={{ padding: 24, color: bim('desc-fg') }}>
-                        {workFullTextLoading ? '加载全文目录…' : '暂无全文'}
-                    </div>
-                );
-            }
-            return (
-                <BookFullText
-                    key={key}
-                    bookId={id}
-                    workKey={key}
-                    versions={workFullTexts}
-                    onVersionChange={k => {
-                        setWorkFullTextKey(k);
-                        setActiveJuan(null);
-                    }}
-                    transport={transport}
-                    activeChapter={activeJuan}
-                    onChapterChange={setActiveJuan}
-                />
-            );
-        }
-
-        if (activeTab === 'fulltext') {
-            return (
-                <BookFullText
-                    index={bookFullTextIndex || undefined}
-                    bookId={id}
-                    transport={transport}
-                    activeChapter={activeJuan}
-                    onChapterChange={setActiveJuan}
                 />
             );
         }

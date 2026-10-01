@@ -33,25 +33,17 @@ describe('新结构取数', () => {
     });
 });
 
-describe('没有 manifest ＝ 暂无文本（不从旧目录合成）', () => {
-    it('manifest 404：返回 null，不去碰旧的取数方法，也不缓存（下次再试）', async () => {
+describe('没有 manifest ＝ 暂无文本', () => {
+    it('manifest 404：返回 null，也不缓存（下次再试）', async () => {
         const n = nativeStore({});
-        const old = {
-            getCollatedEditionIndex: vi.fn(async () => ({ work_id: WORK, juan_files: ['juan/001.json'] }) as never),
-            getWorkFullTextList: vi.fn(async () => []),
-            getBookFullTextIndex: vi.fn(async () => null),
-        };
-        const api = createTextApi(store({ ...n, ...old }));
+        const api = createTextApi(store(n));
         expect(await api.getManifest(WORK)).toBeNull();
         expect(await api.getManifest(WORK)).toBeNull();
         expect(n.getTextManifest).toHaveBeenCalledTimes(2);
-        expect(old.getCollatedEditionIndex).not.toHaveBeenCalled();
-        expect(old.getWorkFullTextList).not.toHaveBeenCalled();
-        expect(old.getBookFullTextIndex).not.toHaveBeenCalled();
     });
 
     it('transport 没有新接口：同样是 null，目录与章也是 null', async () => {
-        const api = createTextApi(store({ getCollatedEditionIndex: async () => ({ work_id: WORK, juan_files: ['juan/001.json'] }) as never }));
+        const api = createTextApi(store({}));
         expect(await api.getManifest(WORK)).toBeNull();
         expect(await api.getIndex(WORK, 'default')).toBeNull();
         expect(await api.getChapter(WORK, 'default', '001')).toBeNull();

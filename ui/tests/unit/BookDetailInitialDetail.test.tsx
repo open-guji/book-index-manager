@@ -33,10 +33,9 @@ function spyTransport(data: IndexDetailData | null) {
     return {
         getItem: vi.fn(async (_id: string) => data as unknown as Record<string, unknown> | null),
         getEntry: vi.fn(async (_id: string) => null),
-        getCollatedEditionIndex: vi.fn(async () => null),
         getLineageGraph: vi.fn(async () => null),
-        getWorkFullTextList: vi.fn(async () => []),
-        getBookFullTextIndex: vi.fn(async () => null),
+        getTextManifest: vi.fn(async () => null),
+        getTextIndex: vi.fn(async () => null),
     };
 }
 
@@ -63,8 +62,8 @@ describe('BookDetailLayout initialDetail', () => {
         // 同步断言：没有经过加载骨架
         expect(screen.getAllByText('史記').length).toBeGreaterThan(0);
         expect(screen.getAllByText(/司馬遷/).length).toBeGreaterThan(0);
-        // 次级数据（整理本／谱系／全文）照常在挂载后加载
-        await waitFor(() => expect(transport.getWorkFullTextList).toHaveBeenCalledTimes(1));
+        // 次级数据（谱系／版本回目）照常在挂载后加载
+        await waitFor(() => expect(transport.getLineageGraph).toHaveBeenCalledTimes(1));
         expect(transport.getItem).not.toHaveBeenCalledWith(SHIJI_ID);
         expect(transport.getEntry).not.toHaveBeenCalled();
     });
@@ -160,7 +159,7 @@ describe('BookDetailLayout initialDetail', () => {
         await act(async () => {
             root = hydrateRoot(container, el, { onRecoverableError: recoverable });
         });
-        await waitFor(() => expect(transport.getWorkFullTextList).toHaveBeenCalled());
+        await waitFor(() => expect(transport.getLineageGraph).toHaveBeenCalled());
 
         expect(recoverable).not.toHaveBeenCalled();
         expect(errors).not.toHaveBeenCalled();

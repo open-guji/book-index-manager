@@ -12,8 +12,7 @@ function mount(data: Record<string, unknown>) {
     const d = { id: 'c1', type: 'collection', title: '某叢書', ...data } as unknown as IndexDetailData;
     const transport = {
         getItem: vi.fn(async () => null), getEntry: vi.fn(async () => null),
-        getCollatedEditionIndex: vi.fn(async () => null), getLineageGraph: vi.fn(async () => null),
-        getWorkFullTextList: vi.fn(async () => []), getBookFullTextIndex: vi.fn(async () => null),
+        getLineageGraph: vi.fn(async () => null),
     };
     return render(<BookDetailLayout id="c1" transport={transport as never} initialDetail={d}
         activeTab="basic" onTabChange={() => {}} />);

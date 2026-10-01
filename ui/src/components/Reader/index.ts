@@ -7,7 +7,7 @@ export { ReaderMdText, renderReaderInline, renderProperNames, canParagraphize } 
 export { useReaderPrefs, DEFAULT_READER_PREFS, FONT_SIZE_STEPS } from './prefs';
 export type { ReaderPrefs } from './prefs';
 export { READER_CSS } from './reader-css';
-export { readerVersionsFromFullText, readerVersionOptionLabel, pickReaderVersion } from './versions';
+export { readerVersionOptionLabel, pickReaderVersion } from './versions';
 export type {
     ReaderCharBox,
     ReaderPageImage,

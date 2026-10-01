@@ -37,8 +37,7 @@ book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、�
 
 | 组件 | 职责 |
 |---|---|
-| `CollatedEdition` | 整理本阅读器：卷导航、目录 / 原文切换、全文搜索、文本质量徽章。`section.type` 是英文枚举，显示前一律经 `normSectionType()`；卷文件名经 `juanDisplayName()`（兼容 `juan001.json` 与 `juan/001.json`） |
-| `BookFullText` | Book 全文 Tab（读 book-text 的 `Book/…/full_text/`）；目录声明 `table_notation: guji-table-v1` 时 `:::table` 块渲染成表格（`core/guji-table.ts`＋`detail/GujiTable.tsx`） |
+| `TextReader`（整理本章的渲染在 `CollatedEdition.tsx` 的 `JuanReading` 等） | 统一阅读器（整理本与全文合一，只认新结构）。整理本章：卷导航、目录 / 原文切换、全文搜索、文本质量徽章。`section.type` 是英文枚举，显示前一律经 `normSectionType()`；卷文件名经 `juanDisplayName()`（兼容 `juan001.json` 与 `juan/001.json`） |
 | `VersionLineageView` / `Graph` / `List` | 版本传承图：Graph 用 dagre + xyflow（可选依赖），List 是无图依赖的降级 |
 | `CollectionCatalog` / `WorkCatalog` | 丛编目录（按册 / 卷分组）/ 作品目录 |
 | `IndexEditor` 及 `Resource*` / `SourceEditor` / `RelationPanel` / `Entity*` 对话框 | 编辑态，VS Code 扩展用；网站不用 |
@@ -55,7 +54,7 @@ book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、�
 
 ### guji-platform（VS Code 扩展）
 
-`IndexBrowser` + `IndexView` / `IndexEditor` + `CollatedEdition`，数据经 `VscodeStorage`（postMessage 桥接到 Node）。
+`IndexBrowser` + `IndexView` / `IndexEditor` + `TextReader`，数据经 `VscodeStorage`（postMessage 桥接到 Node）。
 
 ### 测试页（`src/app/main.tsx`，`npm run dev` → :5173）
 

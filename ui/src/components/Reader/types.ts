@@ -78,8 +78,7 @@ export type ReaderWritingMode = 'horizontal' | 'vertical';
 /**
  * 同一 owner 的一份全文（「版本」下拉框的一项，overview#235）。
  *
- * 数据来自 book-text `index/full_text/<shard>.json[owner_id]`，宿主可用
- * `readerVersionsFromFullText` 从 `WorkFullTextEntry[]` 转换。
+ * 由宿主（或 TextReader）按 manifest.json 的 versions 换算。
  */
 export interface ReaderVersion {
     /** 该份全文的 key，如 `wikisource-01`、`kanripo-01`；切换时原样回传 */

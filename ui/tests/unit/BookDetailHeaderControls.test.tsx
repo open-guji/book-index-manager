@@ -17,10 +17,7 @@ const SRC = 'https://github.com/open-guji/book-index/blob/main/Work/x.json';
 const transport = {
     getItem: async () => SHIJI as unknown as Record<string, unknown>,
     getEntry: async () => null,
-    getCollatedEditionIndex: async () => null,
     getLineageGraph: async () => null,
-    getWorkFullTextList: async () => [],
-    getBookFullTextIndex: async () => null,
 };
 
 function renderDetail(over: Partial<BookDetailLayoutProps> = {}) {

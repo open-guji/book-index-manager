@@ -220,15 +220,9 @@ describe('TextReader · 上游授权（source.upstream，如 CBETA）', () => {
 });
 
 describe('TextReader · 只认新结构（没有 manifest 显示「暂无文本」）', () => {
-    it('条目只有旧的整理本／全文、没有 manifest：不合成，显示暂无文本', async () => {
-        const old = {
-            getItem: async () => ({ title: '直齋書錄解題' }),
-            getCollatedEditionIndex: vi.fn(async () => ({ work_id: WORK, juan_files: ['juan/001.json'] }) as never),
-            getWorkFullTextList: vi.fn(async () => []),
-        };
-        setup({ ...nativeTransport({ getTextManifest: async () => null }), ...old } as unknown as IndexStorage);
+    it('条目没有 manifest：显示暂无文本', async () => {
+        setup(nativeTransport({ getTextManifest: async () => null }));
         await screen.findByText('暂无文本');
-        expect(old.getCollatedEditionIndex).not.toHaveBeenCalled();
     });
 
     it('transport 没有新接口：同样暂无文本', async () => {

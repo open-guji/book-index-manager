@@ -30,11 +30,10 @@ import 'book-index-ui/styles'                // CSS（用到组件时引入）
 | `WorkPage` / `BookPage` / `CollectionPage` / `EntityPage` | **现行详情页**（2026-09 版式重构）：作品 / 版本 / 丛编 / 人物 |
 | `primitives`（`PageFrame`、`SectionHead`、`DataTable`、`Chip` …） | 四个 Page 共用的版式原语与 `DETAIL_CSS` |
 | `deriveEra` / `deriveDating` / `buildVersionTable` … | `core/detail-model.ts` 的数据派生层（刊刻年代、角色归一、版本表） |
-| `BookFullText` / `WorkCatalog` | 全文阅读页（Book / Work 全文，走 `ReaderShell`）/ 作品目录 |
+| `WorkCatalog` | 作品目录 |
 | `IndexEditor` | 详情编辑器（写入需 storage 实现 saveItem） |
 | `HomePage` | 首页：推荐丛编 + 经典作品（kaiyuanguji-web 用） |
 | `TextReader` | **统一阅读器**（overview#307）：整理本与全文合一，版本下拉含全部版本，取数走 `core/text-api`（只认新结构），见下「统一阅读器」 |
-| `CollatedEdition` | 整理本阅读页（走 `ReaderShell`）+ 跨卷搜索；「條目」看法保留原卡片视图（旧结构，`TextReader` 取代它之前仍被 `BookDetailLayout` 使用，迁移验完后删） |
 | `ReaderShell` / `ReaderToc` / `ImagePanel` / `ReaderMdText` | 阅读器（整理本与全文共用），见下「阅读器」 |
 | `CollectionCatalog` | 丛编目录（按册/卷分组） |
 | `EmendatedBySection` | "校勘自" 引用列表 |
@@ -71,7 +70,7 @@ import 'book-index-ui/styles'                // CSS（用到组件时引入）
 - 偏好（字号、自然段、专名线）存 `localStorage['bim-reader-prefs']`，首帧用默认值，SSR 安全。
 - 宿主若有吸顶导航，设 `--bim-reader-top`（如 `60px`）。
 
-书影接口：`CollatedEdition` / `BookFullText` 的 `resolveImages(chapterKey)` 返回当卷的 `ReaderPageImage[]`（可异步）——每页一张图，URL 由宿主给，可带 `width/height` 与逐字框 `boxes`（暂定格式 `bim-charbox-v0`：原图像素坐标 `x/y/w/h`，可选 `char`/`textOffset`/`confidence`）。其他格式的框设 `boxFormat` 并用 `renderImageOverlay` 自己画，这是与 CV 交付格式对齐前的扩展点。没有影像时书影区默认收起（`imagePanel="auto"`），点工具条「书影」可看占位。
+书影接口：`TextReader` 的 `resolveImages(chapterKey)` 返回当卷的 `ReaderPageImage[]`（可异步）——每页一张图，URL 由宿主给，可带 `width/height` 与逐字框 `boxes`（暂定格式 `bim-charbox-v0`：原图像素坐标 `x/y/w/h`，可选 `char`/`textOffset`/`confidence`）。其他格式的框设 `boxFormat` 并用 `renderImageOverlay` 自己画，这是与 CV 交付格式对齐前的扩展点。没有影像时书影区默认收起（`imagePanel="auto"`），点工具条「书影」可看占位。
 
 版本下拉框（overview#235，同一 owner 有多份全文时用）：`ReaderShell` 的四个 props——
 

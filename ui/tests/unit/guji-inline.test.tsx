@@ -18,8 +18,8 @@ import {
 } from '../../src/core/guji-inline';
 import { renderInterlinear } from '../../src/components/detail/primitives';
 import { renderFullTextBody } from '../../src/components/detail/GujiTable';
-import { BookFullText } from '../../src/components/BookFullText';
-import type { BookFullTextIndex } from '../../src/types';
+import { TextReader } from '../../src/components/TextReader';
+import { fakeTextTransport } from './helpers/text-transport';
 
 const ON = { gujiMarkdown: true };
 const html = (node: React.ReactNode) => render(<>{node}</>).container;
@@ -208,22 +208,19 @@ describe('宋史卷215：52 处组字', () => {
     });
 });
 
-describe('BookFullText 接线', () => {
-    const base = {
-        book_id: 'b1',
-        version_label: '测试本',
-        source: { name: '维基文库', url: 'https://example.org' },
-        total_chapters: 1,
-        chapters: [{ n: 1, title: '卷一', file: '001.md' }],
-    };
+describe('TextReader 接线（全文章）', () => {
     const text = '## 卷一\n\n令:zi[⿰句員]，[[]]，□{guess=即}\n\n:::table\n甲 | 乙\n:::\n';
-    function mount(index: BookFullTextIndex) {
-        const transport = { getBookFullTextChapter: async () => text } as never;
-        return render(<BookFullText index={index} bookId="b1" transport={transport} />).container;
+    function mount(index: Record<string, unknown> = {}) {
+        const transport = fakeTextTransport('b1', {
+            chapters: [{ n: 1, title: '卷一', file: '001' }],
+            index: { source: { name: '维基文库', url: 'https://example.org' }, ...index },
+            md: text,
+        });
+        return render(<TextReader id="b1" transport={transport} />).container;
     }
 
     it('目录带 guji_markdown: 0.2.0 → 组字／阙文／缺字猜测／表格都生效', async () => {
-        const c = mount({ ...base, guji_markdown: '0.2.0' } as BookFullTextIndex);
+        const c = mount({ guji_markdown: '0.2.0' });
         await waitFor(() => expect(c.querySelector('article')).toBeTruthy());
         expect(c.querySelector('article .bim-zi')!.textContent).toBe('⿰句員');
         expect(c.querySelector('article .bim-qw')).not.toBeNull();
@@ -232,7 +229,7 @@ describe('BookFullText 接线', () => {
     });
 
     it('目录不带 → 原样文本', async () => {
-        const c = mount(base as BookFullTextIndex);
+        const c = mount();
         await waitFor(() => expect(c.querySelector('article')).toBeTruthy());
         expect(c.querySelector('article .bim-zi')).toBeNull();
         expect(c.querySelector('article')!.textContent).toContain(':zi[⿰句員]');

@@ -59,10 +59,8 @@ const workTransport = {
         return delay(300 + (i * 4100) / Math.max(bookIds.length, 1), books[id] ?? null);
     },
     getEntry: async () => null,
-    getCollatedEditionIndex: async () => null,
     getLineageGraph: async () => null,
-    getWorkFullTextList: async () => [],
-    getBookFullTextIndex: async () => null,
+    getTextManifest: async () => null,
 } as never;
 
 // 阅读页：整理本 / 全文都走 ReaderShell，外面是 PageFrame wide（与 BookDetailLayout 的阅读 tab 一致）

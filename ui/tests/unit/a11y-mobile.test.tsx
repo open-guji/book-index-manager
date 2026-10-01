@@ -13,7 +13,8 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IndexBrowser } from '../../src/components/IndexBrowser';
 import { FeedbackButton, FEEDBACK_FAB_OFFSET_VAR } from '../../src/components/FeedbackButton';
-import { CollatedEdition } from '../../src/components/CollatedEdition';
+import { TextReader } from '../../src/components/TextReader';
+import { fakeTextTransport } from './helpers/text-transport';
 import { BidUrlProvider } from '../../src/core/bid-url';
 import type { IndexStorage } from '../../src/storage/types';
 import type { IndexEntry, CollatedJuan } from '../../src/types';
@@ -191,22 +192,20 @@ describe('B7 整理本「▶ 展开」是可键盘操作的 button', () => {
             },
         ],
     };
-    const transport = makeTransport({
-        getCollatedJuan: async () => juan,
-    } as Partial<IndexStorage>);
+    const transport = fakeTextTransport('w0', {
+        kind: 'collated',
+        json: juan,
+        chapters: [{ n: 1, file: '001', title: '卷一', has_json: true }, { n: 2, file: '002', title: '卷二', has_json: true }],
+        index: { type: 'catalog', juan_groups: [{ label: '經部', files: ['001', '002'] }] },
+    });
 
     async function renderCollated() {
         render(
-            <CollatedEdition
+            <TextReader
+                id="w0"
                 transport={transport}
                 onNavigate={vi.fn()}
-                index={{
-                    work_id: 'w0',
-                    type: 'catalog',
-                    juan_files: ['juan/001.json', 'juan/002.json'],
-                    juan_groups: [{ label: '經部', files: ['juan/001.json', 'juan/002.json'] }],
-                }}
-                activeJuan="juan/001.json"
+                chapter="001"
             />,
         );
         // N5a 起阅读页默认是「正文」看法；「▶ 展开」卡片在「條目」看法里
@@ -228,15 +227,16 @@ describe('B7 整理本「▶ 展开」是可键盘操作的 button', () => {
 
     it('考证整理本的条目开关也是 button', async () => {
         render(
-            <CollatedEdition
-                transport={makeTransport({
-                    getCollatedJuan: async () => ({
-                        title: '考證', sections: [{ title: '考證一', type: 'kaozhen', content: '考證正文' }],
-                    }),
-                } as Partial<IndexStorage>)}
+            <TextReader
+                id="k0"
+                transport={fakeTextTransport('k0', {
+                    kind: 'collated',
+                    json: { title: '考證', sections: [{ title: '考證一', type: 'kaozhen', content: '考證正文' }] },
+                    chapters: [{ n: 1, file: '001', title: '考證', has_json: true }],
+                    index: { type: 'kaozhen' },
+                })}
                 onNavigate={vi.fn()}
-                index={{ work_id: 'k0', type: 'kaozhen', juan_files: ['juan/001.json'] }}
-                activeJuan="juan/001.json"
+                chapter="001"
             />,
         );
         await screen.findByText(/考證一/);

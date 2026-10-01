@@ -2,12 +2,12 @@ import React, { useState, useCallback } from 'react';
 import { IndexBrowser } from './IndexBrowser';
 import { IndexDetail } from './IndexDetail';
 import { CollectionCatalog } from './CollectionCatalog';
-import { CollatedEdition } from './CollatedEdition';
+import { TextReader } from './TextReader';
 import { LoadingDots } from './common/LoadingDots';
 import { HomePage } from './HomePage';
 import type { RecommendedItem } from './HomePage';
 import type { IndexStorage } from '../storage/types';
-import type { IndexEntry, IndexDetailData, ResourceCatalog, CollatedEditionIndex } from '../types';
+import type { IndexEntry, IndexDetailData, ResourceCatalog } from '../types';
 import { useT, useConvert } from '../i18n';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { bim } from '../styles/tokens';
@@ -44,24 +44,6 @@ export const IndexApp: React.FC<IndexAppProps> = ({
     const [activeTab, setActiveTab] = useState<string>('detail');
     const [catalogList, setCatalogList] = useState<ResourceCatalog[]>([]);
     const [catalogLoading, setCatalogLoading] = useState(false);
-    const [collatedIndex, setCollatedIndex] = useState<CollatedEditionIndex | null>(null);
-    const [collatedLoading, setCollatedLoading] = useState(false);
-
-    const loadCollated = useCallback(async (id: string) => {
-        if (!transport.getCollatedEditionIndex) {
-            setCollatedIndex(null);
-            return;
-        }
-        setCollatedLoading(true);
-        try {
-            const idx = await transport.getCollatedEditionIndex(id);
-            setCollatedIndex(idx);
-        } catch {
-            setCollatedIndex(null);
-        } finally {
-            setCollatedLoading(false);
-        }
-    }, [transport]);
 
     const loadCatalog = useCallback(async (id: string) => {
         if (!transport.getCollectionCatalogs && !transport.getCollectionCatalog) {
@@ -96,7 +78,6 @@ export const IndexApp: React.FC<IndexAppProps> = ({
         setSelectedEntry(entry);
         setDetailData(null);
         setCatalogList([]);
-        setCollatedIndex(null);
         setActiveTab('detail');
         setDetailLoading(true);
         try {
@@ -105,8 +86,6 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                 setDetailData(data as unknown as IndexDetailData);
                 if (data.type === 'collection') {
                     loadCatalog(entry.id);
-                } else if (data.type === 'work' && data.has_collated) {
-                    loadCollated(entry.id);
                 }
             }
         } catch (err) {
@@ -114,12 +93,11 @@ export const IndexApp: React.FC<IndexAppProps> = ({
         } finally {
             setDetailLoading(false);
         }
-    }, [transport, externalEntryClick, loadCatalog, loadCollated]);
+    }, [transport, externalEntryClick, loadCatalog]);
 
     const handleNavigate = useCallback(async (id: string) => {
         setDetailData(null);
         setCatalogList([]);
-        setCollatedIndex(null);
         setActiveTab('detail');
         setDetailLoading(true);
         try {
@@ -133,8 +111,6 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                 });
                 if (data.type === 'collection') {
                     loadCatalog(id);
-                } else if (data.type === 'work' && data.has_collated) {
-                    loadCollated(id);
                 }
             }
         } catch (err) {
@@ -142,10 +118,14 @@ export const IndexApp: React.FC<IndexAppProps> = ({
         } finally {
             setDetailLoading(false);
         }
-    }, [transport, loadCatalog, loadCollated]);
+    }, [transport, loadCatalog]);
+
+    // 有可读文本：打包注入的 text_count > 0（阅读器只认新结构，overview#307）
+    const hasText = typeof (detailData as { text_count?: unknown } | null)?.text_count === 'number'
+        && ((detailData as unknown as { text_count: number }).text_count > 0);
 
     const showTabs = (detailData?.type === 'collection' && (catalogList.length > 0 || catalogLoading)) ||
-                     (detailData?.type === 'work' && (collatedIndex || collatedLoading));
+                     (detailData?.type === 'work' && hasText);
 
     // 手机端：选中条目后只显示详情，否则显示浏览器
     const mobileShowDetail = isMobile && (detailLoading || detailData);
@@ -154,7 +134,6 @@ export const IndexApp: React.FC<IndexAppProps> = ({
         setSelectedEntry(null);
         setDetailData(null);
         setCatalogList([]);
-        setCollatedIndex(null);
         setActiveTab('detail');
     }, []);
 
@@ -200,13 +179,12 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                                             {cat.short_name ? `${convert(cat.short_name)}${t.detailTab.catalogSuffix}` : t.detailTab.collectionCatalog}
                                         </button>
                                     ))}
-                                    {detailData.type === 'work' && (collatedIndex || collatedLoading) && (
+                                    {detailData.type === 'work' && hasText && (
                                         <button
                                             onClick={() => setActiveTab('collated')}
                                             style={tabBtnStyle(activeTab === 'collated')}
                                         >
                                             {t.detailTab.collatedEdition}
-                                            {collatedLoading && <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.6 }}>...</span>}
                                         </button>
                                     )}
                                 </>
@@ -231,9 +209,8 @@ export const IndexApp: React.FC<IndexAppProps> = ({
                                 onNavigate={handleNavigate}
                             />
                         ) : activeTab === 'collated' ? (
-                            <CollatedEdition
-                                index={collatedIndex || undefined}
-                                workId={detailData.id}
+                            <TextReader
+                                id={detailData.id}
                                 transport={transport}
                                 onNavigate={handleNavigate}
                             />

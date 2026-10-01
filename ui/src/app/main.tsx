@@ -76,6 +76,7 @@ function replaceUrl(id: string | null, params?: Record<string, string | undefine
 
 const REPO_DRAFT = 'https://github.com/open-guji/book-index-draft';
 const REPO_OFFICIAL = 'https://github.com/open-guji/book-index';
+const REPO_TEXT = 'https://github.com/open-guji/book-text';
 const TYPE_TO_FOLDER: Record<string, string> = {
     book: 'Book', collection: 'Collection', work: 'Work', entity: 'Entity',
 };
@@ -107,29 +108,11 @@ function buildSourceLink(ctx: SourceLinkContext): { href: string; label: string 
     const dir = path.slice(0, path.lastIndexOf('/'));
     const id = entry.id;
 
-    if (activeTab === 'collated') {
-        if (activeJuan) {
-            return {
-                href: `${base}/blob/main/${dir}/${id}/collated_edition/${activeJuan}`,
-                label: `在 GitHub 查看本卷源文件（${repoLabel}）`,
-            };
-        }
+    if (activeTab === 'collated' || activeTab === 'fulltext') {
+        // 阅读文本在 book-text 仓：items/<id>/manifest.json 与各版本目录（overview#307）
         return {
-            href: `${base}/tree/main/${dir}/${id}/collated_edition`,
-            label: `在 GitHub 查看整理本源文件目录（${repoLabel}）`,
-        };
-    }
-    if (activeTab === 'fulltext') {
-        if (activeJuan) {
-            // URL 里 juan 用 stem (e.g. "001")，GitHub 链接需要拼回 .md
-            return {
-                href: `${base}/blob/main/${dir}/${id}/full_text/${activeJuan}.md`,
-                label: `在 GitHub 查看本章源文件（${repoLabel}）`,
-            };
-        }
-        return {
-            href: `${base}/tree/main/${dir}/${id}/full_text`,
-            label: `在 GitHub 查看全文源文件目录（${repoLabel}）`,
+            href: `${REPO_TEXT}/tree/main/items/${id}`,
+            label: '在 GitHub 查看文本源文件目录（book-text）',
         };
     }
     if (activeTab.startsWith('catalog:')) {

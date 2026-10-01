@@ -15,27 +15,23 @@ import type { ReaderPrefs } from '../../src/components/Reader/prefs';
 import type { ReaderTocItem, ReaderVersion } from '../../src/components/Reader/types';
 import { READER_CSS } from '../../src/components/Reader/reader-css';
 import {
-    readerVersionsFromFullText, readerVersionOptionLabel, pickReaderVersion,
+    readerVersionOptionLabel, pickReaderVersion,
 } from '../../src/components/Reader/versions';
 import * as publicApi from '../../src/index';
 import { LAYOUT_CSS } from '../../src/components/detail/layout';
 import { BookDetailLayout } from '../../src/components/BookDetailLayout';
-import type { IndexDetailData, WorkFullTextEntry } from '../../src/types';
+import type { IndexDetailData } from '../../src/types';
 
 // ── 数据：詩序 d59f2ew0ctmo 的两份全文（#235「数据现状」），外加一份 CBETA 式授权 ──
 
-const SHIXU: WorkFullTextEntry[] = [
+const SHIXU: ReaderVersion[] = [
     {
-        key: 'wikisource-01', owner_type: 'Work', path: 'Work/t/m/o/d59f2ew0ctmo/full_text/wikisource-01',
-        version_label: '詩序', source_name: '維基文庫',
-        source_url: 'https://zh.wikisource.org/wiki/詩序', license: 'CC BY-SA 4.0',
-        grade: 'source', total_chapters: 2, primary: true,
+        key: 'wikisource-01', label: '詩序', sourceName: '維基文庫',
+        sourceUrl: 'https://zh.wikisource.org/wiki/詩序', license: 'CC BY-SA 4.0', primary: true,
     },
     {
-        key: 'kanripo-01', owner_type: 'Work', path: 'Work/t/m/o/d59f2ew0ctmo/full_text/kanripo-01',
-        version_label: '詩序（Kanripo WYG 本）', source_name: 'Kanripo',
-        source_url: 'https://github.com/kanripo/KR1c0003', license: 'CC BY-SA 4.0',
-        grade: 'source', total_chapters: 3, primary: false,
+        key: 'kanripo-01', label: '詩序（Kanripo WYG 本）', sourceName: 'Kanripo',
+        sourceUrl: 'https://github.com/kanripo/KR1c0003', license: 'CC BY-SA 4.0', primary: false,
     },
 ];
 
@@ -67,16 +63,8 @@ function Shell(props: Partial<React.ComponentProps<typeof ReaderShell>>) {
 const srcLine = (c: HTMLElement) => c.querySelector('.bim-rd-src')?.textContent ?? null;
 
 describe('版本数据换算', () => {
-    it('book-text 全文清单 → 下拉项，字段一一对应、顺序不变', () => {
-        const v = readerVersionsFromFullText(SHIXU);
-        expect(v).toEqual([
-            { key: 'wikisource-01', label: '詩序', sourceName: '維基文庫', license: 'CC BY-SA 4.0', sourceUrl: 'https://zh.wikisource.org/wiki/詩序', primary: true },
-            { key: 'kanripo-01', label: '詩序（Kanripo WYG 本）', sourceName: 'Kanripo', license: 'CC BY-SA 4.0', sourceUrl: 'https://github.com/kanripo/KR1c0003', primary: false },
-        ]);
-    });
-
     it('选项文字 = version_label · source_name；版本说明已含来源名时不重复', () => {
-        const [a, b] = readerVersionsFromFullText(SHIXU);
+        const [a, b] = SHIXU;
         expect(readerVersionOptionLabel(a)).toBe('詩序 · 維基文庫');
         expect(readerVersionOptionLabel(b)).toBe('詩序（Kanripo WYG 本）');
         expect(readerVersionOptionLabel({ key: 'x', label: '老子' })).toBe('老子');
@@ -91,7 +79,6 @@ describe('版本数据换算', () => {
     });
 
     it('从包入口导出', () => {
-        expect(publicApi.readerVersionsFromFullText).toBe(readerVersionsFromFullText);
         expect(publicApi.readerVersionOptionLabel).toBe(readerVersionOptionLabel);
         expect(publicApi.pickReaderVersion).toBe(pickReaderVersion);
     });
@@ -111,7 +98,7 @@ describe('阅读器「版本」下拉框（#235）', () => {
     });
 
     it('两份以上：工具条上出下拉框，默认选 primary，选项文字是 version_label · source_name', () => {
-        const { container } = render(<Shell versions={readerVersionsFromFullText(SHIXU)} />);
+        const { container } = render(<Shell versions={SHIXU} />);
         const select = screen.getByRole('combobox', { name: '版本' }) as HTMLSelectElement;
         expect(select.closest('.bim-rd-tools')).toBeTruthy();
         expect(select.value).toBe('wikisource-01');
@@ -352,10 +339,7 @@ describe('Q5 标题层级（heading-order）', () => {
         const transport = {
             getItem: vi.fn(async (id: string) => (id === 'w1' ? WORK : { id, type: 'book', title: '史記', edition: '宋刻本' })),
             getEntry: vi.fn(async () => null),
-            getCollatedEditionIndex: vi.fn(async () => null),
             getLineageGraph: vi.fn(async () => null),
-            getWorkFullTextList: vi.fn(async () => []),
-            getBookFullTextIndex: vi.fn(async () => null),
         };
         const { container } = render(
             <BookDetailLayout id="w1" transport={transport as never} initialDetail={WORK} activeTab="basic" onTabChange={() => {}} />,
@@ -390,10 +374,7 @@ describe('Q3 条目页 CLS：次级区块先占高', () => {
         const transport = {
             getItem: vi.fn(async (id: string) => { await gate; return BOOKS[id] ?? null; }),
             getEntry: vi.fn(async () => null),
-            getCollatedEditionIndex: vi.fn(async () => null),
             getLineageGraph: vi.fn(async () => null),
-            getWorkFullTextList: vi.fn(async () => []),
-            getBookFullTextIndex: vi.fn(async () => null),
         };
         const { container } = render(
             <BookDetailLayout id="w1" transport={transport as never} initialDetail={WORK} activeTab="basic" onTabChange={() => {}} />,

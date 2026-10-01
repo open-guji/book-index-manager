@@ -15,8 +15,8 @@ import {
 } from '../../src/core/guji-table';
 import { renderFullTextBody } from '../../src/components/detail/GujiTable';
 import { renderInterlinear } from '../../src/components/detail/primitives';
-import { BookFullText } from '../../src/components/BookFullText';
-import type { BookFullTextIndex } from '../../src/types';
+import { TextReader } from '../../src/components/TextReader';
+import { fakeTextTransport } from './helpers/text-transport';
 
 const FIX = path.join(__dirname, 'fixtures', 'guji-table');
 const SAMPLES = fs.readdirSync(FIX).filter(f => f.endsWith('.md')).map(f => f.replace(/\.md$/, '')).sort();
@@ -222,29 +222,26 @@ describe('渲染', () => {
     });
 });
 
-describe('BookFullText 接入', () => {
-    const base = {
-        book_id: 'b1',
-        version_label: '测试本',
-        source: { name: '维基文库', url: 'https://example.org' },
-        total_chapters: 1,
-        chapters: [{ n: 1, title: '卷一', file: '001.md' }],
-    };
+describe('TextReader 接入（全文章）', () => {
     const text = '## 卷一\n\n表前。\n\n:::table\n!甲 | 乙\n丙 | 丁\n:::\n';
-    function mount(index: BookFullTextIndex) {
-        const transport = { getBookFullTextChapter: async () => text } as never;
-        return render(<BookFullText index={index} bookId="b1" transport={transport} />).container;
+    function mount(index: Record<string, unknown> = {}) {
+        const transport = fakeTextTransport('b1', {
+            chapters: [{ n: 1, title: '卷一', file: '001' }],
+            index: { source: { name: '维基文库', url: 'https://example.org' }, ...index },
+            md: text,
+        });
+        return render(<TextReader id="b1" transport={transport} />).container;
     }
 
     it('目录带 table_notation → 出表格', async () => {
-        const c = mount({ ...base, table_notation: 'guji-table-v1' } as BookFullTextIndex);
+        const c = mount({ table_notation: 'guji-table-v1' });
         await waitFor(() => expect(c.querySelector('article table')).toBeTruthy());
         expect(c.querySelectorAll('article th')).toHaveLength(2);
         expect(c.querySelector('article')!.textContent).not.toContain(':::');
     });
 
     it('目录不带 → 原样文本，无表格', async () => {
-        const c = mount(base as BookFullTextIndex);
+        const c = mount();
         await waitFor(() => expect(c.querySelector('article')).toBeTruthy());
         expect(c.querySelector('article table')).toBeNull();
         expect(c.querySelector('article')!.textContent).toContain(':::table');
