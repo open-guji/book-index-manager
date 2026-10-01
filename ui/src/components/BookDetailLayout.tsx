@@ -164,6 +164,11 @@ export interface BookDetailLayoutProps {
     height?: string;
     /** 页脚左侧附加内容（如站点的引用信息条） */
     footerExtra?: React.ReactNode;
+    /**
+     * 宿主外壳的顶栏已经放了繁简切换（kyg 9-30 反馈，overview#322）：页内顶部不再放繁简切换和 GitHub 图标。
+     * 数据来源链接仍在页脚右侧（「数据与许可」）。默认 false，行为不变。
+     */
+    hideHeaderControls?: boolean;
     className?: string;
     style?: React.CSSProperties;
 }
@@ -221,6 +226,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     feedbackApiUrl,
     height,
     footerExtra,
+    hideHeaderControls = false,
     className,
     style,
 }) => {
@@ -1002,8 +1008,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                         actions={
                             <>
                                 {/* 少边框：概览页的繁简切换去掉自带的描边 */}
-                                <LocaleToggle style={{ border: 'none', background: 'transparent' }} />
-                                {sourceLink && <RepoSourceLink {...sourceLink} />}
+                                {!hideHeaderControls && <LocaleToggle style={{ border: 'none', background: 'transparent' }} />}
+                                {!hideHeaderControls && sourceLink && <RepoSourceLink {...sourceLink} />}
                             </>
                         }
                     />
@@ -1026,7 +1032,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     }
                     actions={
                         <>
-                            <LocaleToggle />
+                            {!hideHeaderControls && <LocaleToggle />}
                             {showFeedbackTab && (
                                 <button
                                     type="button"
@@ -1041,7 +1047,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                                     {t.detailTab.feedback}
                                 </button>
                             )}
-                            {sourceLink && <RepoSourceLink {...sourceLink} />}
+                            {!hideHeaderControls && sourceLink && <RepoSourceLink {...sourceLink} />}
                         </>
                     }
                 />
