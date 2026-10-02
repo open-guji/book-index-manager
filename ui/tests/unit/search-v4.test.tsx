@@ -391,3 +391,31 @@ describe('类型页签当页没有条目', () => {
         expect(clampPage(2, 50, 50)).toBe(1);
     });
 });
+
+describe('命中数封顶（overview#359 P2-9）', () => {
+    it('formatHitCount：到 1000 写「1,000+」，以下照实', async () => {
+        const { formatHitCount } = await import('../../src/components/search/SearchResults');
+        expect(formatHitCount(1000)).toBe('1,000+');
+        expect(formatHitCount(1200)).toBe('1,000+');
+        expect(formatHitCount(999)).toBe('999');
+        expect(formatHitCount(0)).toBe('0');
+    });
+
+    it('作品封顶：页签写「作品 1,000+」、「全部」加「+」；点进去翻页也写「共 1,000+ 條」', async () => {
+        const t = transportWith();
+        (t as unknown as { searchAll: unknown }).searchAll = async () => ({
+            works: WORKS, books: BOOKS, collections: [], entities: PEOPLE, totalWorks: 1000, totalBooks: 1, totalCollections: 0, totalEntities: 632,
+        });
+        (t as unknown as { search: unknown }).search = async (_q: string, _ty: string, o: { page?: number }) => ({ entries: WORKS, total: 1000, page: o.page ?? 1, pageSize: 50 });
+        render(<IndexBrowser transport={t} hideModeIndicator initialQuery="史記" filtersEnabled />);
+        const tabs = await screen.findByRole('group', { name: /結果分類|结果分类/ });
+        expect(within(tabs).getByRole('button', { name: /作品/ }).textContent).toContain('1,000+');
+        expect(within(tabs).getByRole('button', { name: /人物/ }).textContent).toContain('632');
+        expect(within(tabs).getByRole('button', { name: /人物/ }).textContent).not.toContain('+');
+        expect(within(tabs).getByRole('button', { name: /全部/ }).textContent).toContain('1,633+');
+        fireEvent.click(within(tabs).getByRole('button', { name: /作品/ }));
+        const pager = await screen.findByRole('navigation', { name: '翻頁' });
+        expect(pager.textContent).toContain('共 1,000+ 條');
+        expect(pager.textContent).toContain('第 1 / 20 頁');
+    });
+});

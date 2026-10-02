@@ -21,6 +21,14 @@ const ALL_TAB_LIMIT = 5;
 /** Meili 默认只翻到前 1000 条（代理 MAX_OFFSET），页码封顶 */
 const MAX_HITS = 1000;
 
+/**
+ * 命中数：到了上限（Meili pagination.maxTotalHits，默认 1000）的写「1,000+」——
+ * estimatedTotalHits 在那里封顶，不是真实命中数（overview#359 P2-9：「作品 1,000」）。
+ */
+export function formatHitCount(n: number): string {
+    return n >= MAX_HITS ? `${MAX_HITS.toLocaleString()}+` : n.toLocaleString();
+}
+
 export type SearchView = 'table' | 'card';
 
 /** 页签／分组的顺序（设计稿：作品／丛编／版本／人物） */
@@ -154,6 +162,8 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
 
     const tabs = useMemo(() => TAB_ORDER.filter(ty => totals(all, ty) > 0), [all]);
     const sum = tabs.reduce((n, ty) => n + totals(all, ty), 0);
+    // 有一类封顶，加起来也只是下限
+    const sumLabel = tabs.some(ty => totals(all, ty) >= MAX_HITS) ? `${sum.toLocaleString()}+` : sum.toLocaleString();
     const empty = !busy && !error && all !== null && sum === 0;
 
     const choose = useCallback((ty: IndexType | 'all') => { setActiveType(ty); setPage(1); }, []);
@@ -189,11 +199,11 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
                 {tabs.length > 0 && (
                     <div className="bim-sr-tabs" role="group" aria-label={t.search.resultTabs} style={{ display: 'flex', flexWrap: 'wrap', gap: '0 4px', borderBottom: `1px solid ${bim('rule')}` }}>
                         <TabButton on={activeType === 'all'} onClick={() => choose('all')}>
-                            {t.search.allTab} <small>{sum.toLocaleString()}</small>
+                            {t.search.allTab} <small>{sumLabel}</small>
                         </TabButton>
                         {tabs.map(ty => (
                             <TabButton key={ty} on={activeType === ty} onClick={() => choose(ty)}>
-                                {typeName(ty)} <small>{totals(all, ty).toLocaleString()}</small>
+                                {typeName(ty)} <small>{formatHitCount(totals(all, ty))}</small>
                             </TabButton>
                         ))}
                     </div>
@@ -231,7 +241,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
 
                 {active && (
                     <div className="bim-sr-chips-row">
-                        <span className="bim-sr-count" role="status">{convert(formatTemplate(v.filteredCount, { n: sum.toLocaleString() }))}</span>
+                        <span className="bim-sr-count" role="status">{convert(formatTemplate(v.filteredCount, { n: sumLabel }))}</span>
                         {chips.map(c => (
                             <button key={c.name} type="button" className="bim-sr-tag-x" aria-label={convert(formatTemplate(v.removeFilter, { name: c.name }))} onClick={c.remove}>
                                 {convert(c.name)}<span aria-hidden="true">×</span>
@@ -258,7 +268,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
                                         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 10 }}>
                                             <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, letterSpacing: '.1em', display: 'flex', alignItems: 'center', gap: 8 }}>
                                                 <TypeMark type={ty} size={8} />{typeName(ty)}
-                                                <span style={{ fontSize: 12.5, fontWeight: 400, color: bim('meta-fg') }}>{totals(all, ty).toLocaleString()} {t.unit.items}</span>
+                                                <span style={{ fontSize: 12.5, fontWeight: 400, color: bim('meta-fg') }}>{formatHitCount(totals(all, ty))} {t.unit.items}</span>
                                             </h2>
                                             {totals(all, ty) > entriesOf(all, ty).length && (
                                                 <button type="button" className="bim-sr-clear" style={{ textDecoration: 'none' }} onClick={() => choose(ty)}>
@@ -276,7 +286,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
                 {!error && activeType !== 'all' && typed && typed.entries.length > 0 && (
                     <>
                         {renderList(typed.entries)}
-                        <ResultPager page={page} pageSize={RESULT_PAGE_SIZE} total={Math.min(typed.total, MAX_HITS)} onPage={setPage} />
+                        <ResultPager page={page} pageSize={RESULT_PAGE_SIZE} total={Math.min(typed.total, MAX_HITS)} totalLabel={formatHitCount(typed.total)} onPage={setPage} />
                     </>
                 )}
                 {/* 这一类这一页没有条目（页码过期／越界、或与「全部」的总数对不上）：给空状态，不留白 */}

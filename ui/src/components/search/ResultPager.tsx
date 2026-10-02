@@ -23,11 +23,13 @@ export interface ResultPagerProps {
     page: number;
     pageSize: number;
     total: number;
+    /** 「共 N 条」里显示的数（如封顶时的「1,000+」）；缺省 total */
+    totalLabel?: string;
     onPage: (page: number) => void;
 }
 
 /** 「共 N 条 · 每页 50 条 · 第 1 / 20 页」＋ 上一页／页码／下一页（设计稿「搜索页 v2」） */
-export const ResultPager: React.FC<ResultPagerProps> = ({ page, pageSize, total, onPage }) => {
+export const ResultPager: React.FC<ResultPagerProps> = ({ page, pageSize, total, totalLabel, onPage }) => {
     const t = useT().searchV4;
     const { convert } = useConvert();
     const pages = Math.max(1, Math.ceil(total / pageSize));
@@ -35,7 +37,7 @@ export const ResultPager: React.FC<ResultPagerProps> = ({ page, pageSize, total,
     return (
         <nav className="bim-sr-pager" aria-label={convert(t.pagerLabel)}>
             <span className="bim-sr-info">
-                {convert(formatTemplate(t.pageInfo, { total: total.toLocaleString(), size: pageSize, page, pages }))}
+                {convert(formatTemplate(t.pageInfo, { total: totalLabel ?? total.toLocaleString(), size: pageSize, page, pages }))}
             </span>
             {pages > 1 && (
                 <ul>

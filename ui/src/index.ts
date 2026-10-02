@@ -134,7 +134,7 @@ export type { SearchInputProps } from './components/SearchInput';
 export { ModeIndicator } from './components/ModeIndicator';
 export { CollectionCatalog } from './components/CollectionCatalog';
 export type { CollectionCatalogProps } from './components/CollectionCatalog';
-export { SearchResults, SEARCH_VIEW_STORAGE_KEY } from './components/search/SearchResults';
+export { SearchResults, SEARCH_VIEW_STORAGE_KEY, formatHitCount } from './components/search/SearchResults';
 export {
     EMPTY_FILTERS, DYNASTY_GROUPS, CLASSIFICATIONS, LOSS_OPTIONS, FILTER_SUPPORT,
     countActiveFilters, hasActiveFilters, hasSearchOptions, sortFor, SORTABLE_TYPES, typeSupportsFilters, buildMeiliFilter,
