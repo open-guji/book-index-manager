@@ -262,6 +262,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     const [lineageGraph, setLineageGraph] = useState<LineageGraph | null>(null);
     const [lineageLoading, setLineageLoading] = useState(false);
     const lineageSourceRef = useRef<{ work: WorkDetailData; books: BookDetailData[] } | null>(null);
+    /** 谱系请求序号：换条目或重新加载时递增，旧请求晚到的结果一律丢掉（否则左栏会出上一部作品的谱系入口） */
+    const lineageReqRef = useRef(0);
 
     const [internalJuan, setInternalJuan] = useState<string | null>(null);
     const activeJuan = activeJuanProp !== undefined ? activeJuanProp : internalJuan;
@@ -314,10 +316,13 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     }, [transport]);
 
     const loadLineage = useCallback(async (workId: string, workData: IndexDetailData) => {
+        const req = ++lineageReqRef.current;
+        const stale = () => req !== lineageReqRef.current;
         setLineageLoading(true);
         try {
             if (transport.getLineageGraph) {
                 const pre = await transport.getLineageGraph(workId);
+                if (stale()) return;
                 if (pre) setLineageGraph(pre);
             }
 
@@ -336,6 +341,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                     if (b) books.push(b as unknown as BookDetailData);
                 } catch { /* skip */ }
             }
+            if (stale()) return;
             lineageSourceRef.current = { work: workData as WorkDetailData, books };
 
             const desired = lineageCollectionProp
@@ -347,10 +353,11 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                 : (desired ?? 'all');
             setLineageGraph(buildLineageGraph(workData as WorkDetailData, books, usable));
         } catch {
+            if (stale()) return;
             setLineageGraph(null);
             lineageSourceRef.current = null;
         } finally {
-            setLineageLoading(false);
+            if (!stale()) setLineageLoading(false);
         }
         // 故意只依赖 transport：lineageCollectionProp 在 effect 里读最新值即可
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -362,6 +369,9 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
 
     useEffect(() => {
         let cancelled = false;
+        // 换条目：作废上一部作品还没回来的谱系请求
+        lineageReqRef.current++;
+        setLineageLoading(false);
 
         /** 按条目类型加载次级数据（谱系／丛编目录／版本页回目） */
         const loadSecondary = (detailData: IndexDetailData) => {

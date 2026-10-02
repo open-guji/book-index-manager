@@ -282,6 +282,23 @@ describe('左栏「更多」：版本谱系入口（overview#369）', () => {
         expect(screen.queryByRole('link', { name: /版本傳承/ })).toBeNull();
     });
 
+    it('换到别的作品后，上一部作品晚到的谱系结果不进新页面', async () => {
+        let resolveA!: (v: null) => void;
+        const other = { ...WORK, id: 'w9', title: '漢書' } as unknown as IndexDetailData;
+        const tr = transportFor(LINEAGE_WORK, { ...BOOKS, w9: other as never });
+        tr.getLineageGraph = vi.fn((id: string) => id === LINEAGE_WORK.id
+            ? new Promise<null>((r) => { resolveA = r; })
+            : Promise.resolve(null));
+        const { rerender } = render(<BookDetailLayout id={LINEAGE_WORK.id} transport={tr as never} initialDetail={LINEAGE_WORK}
+            activeTab="basic" onTabChange={() => {}} />);
+        rerender(<BookDetailLayout id="w9" transport={tr as never} initialDetail={other}
+            activeTab="basic" onTabChange={() => {}} />);
+        await waitFor(() => expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('漢書'));
+        resolveA(null);
+        await new Promise((r) => setTimeout(r, 50));
+        expect(screen.queryByRole('link', { name: /版本傳承/ })).toBeNull();
+    });
+
     it('version_graph 未启用：不出入口', async () => {
         const off = { ...WORK, version_graph: { enabled: false } } as unknown as IndexDetailData;
         render(<BookDetailLayout {...props(off)} />);
