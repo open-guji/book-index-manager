@@ -33,6 +33,13 @@ export interface BundleStorageConfig {
      * 解析好版本号后通过这个字段注入，而不是让 BundleStorage 自己猜。
      */
     version?: string | null;
+    /**
+     * 条目详情放在哪（overview#371）：
+     *   - 'chunks'：旧的 chunks/{prefix}.json 分桶（pack_bundle.py 产物）；
+     *   - 'entry'：单文件 entry/{id}.json（网站 bundle-data.mjs Phase 3 起的产物），不再请求 chunks/_manifest.json；
+     *   - 缺省 'auto'：先看 chunks/_manifest.json，取不到或为空就改走 entry/。
+     */
+    detailLayout?: 'auto' | 'chunks' | 'entry';
 }
 
 const DEFAULT_BASE_PATH = '/data';
@@ -45,7 +52,7 @@ const DEFAULT_TIMEOUT = 10000;
  * 构建时由 bundle-data 脚本将散落的 JSON 文件打包为少量 chunk。
  *
  * 数据分层（已剥离 L0 — 23 MB 的 index.json 不再生成）：
- * - L1: /data/chunks/{prefix}.json — 按 ID 前缀分桶的详情数据
+ * - L1: /data/chunks/{prefix}.json — 按 ID 前缀分桶的详情数据；或 /data/entry/{id}.json 单文件（见 detailLayout）
  * - L2: /data/tiyao/juan-{start}-{end}.json — 整理本提要（按卷组）
  *
  * 搜索由 worker 索引承担（kaiyuanguji-web 内置），BundleStorage.search* /
@@ -62,6 +69,8 @@ export class BundleStorage implements IndexStorage {
     private chunkLoading = new Map<string, Promise<Record<string, unknown>>>();
     private manifest: string[] | null = null;
     private manifestLoading: Promise<string[]> | null = null;
+    private detailLayout: 'auto' | 'chunks' | 'entry';
+    private entryFileCache = new Map<string, Promise<Record<string, unknown> | null>>();
     private tiyaoCache = new Map<string, Record<string, unknown>>();
     private tiyaoLoading = new Map<string, Promise<Record<string, unknown>>>();
     private metaCache: IndexCounts | null = null;
@@ -79,6 +88,7 @@ export class BundleStorage implements IndexStorage {
     constructor(config: BundleStorageConfig = {}) {
         this.basePath = config.basePath ?? DEFAULT_BASE_PATH;
         this.timeout = config.timeout ?? DEFAULT_TIMEOUT;
+        this.detailLayout = config.detailLayout ?? 'auto';
         // 外部注入版本号时直接采用（见 BundleStorageConfig.version 注释），
         // 跳过自己 fetch version.json 那条会被 CDN 缓存坑的路径。
         if (config.version !== undefined) {
@@ -226,6 +236,31 @@ export class BundleStorage implements IndexStorage {
         }
     }
 
+    /**
+     * 一条详情的原貌：按 detailLayout 取 chunk 或 entry/{id}.json。
+     * auto 时 chunk 清单取不到（404）或为空就退到 entry/——网站数据早已不出 chunks/，原先这里直接
+     * 当查无此条，丛编页的 getCollectionCatalogs 因而永远拿不到详情（overview#371）。
+     */
+    private async loadDetail(id: string): Promise<Record<string, unknown> | null> {
+        if (this.detailLayout !== 'entry') {
+            const manifest = await this.loadManifest();
+            if (manifest.length > 0 || this.detailLayout === 'chunks') {
+                const chunk = await this.loadChunkForId(id);
+                return (chunk[id] as Record<string, unknown>) || null;
+            }
+        }
+        return this.loadEntryFile(id);
+    }
+
+    private loadEntryFile(id: string): Promise<Record<string, unknown> | null> {
+        let p = this.entryFileCache.get(id);
+        if (!p) {
+            p = this.fetchJson<Record<string, unknown>>(`${this.basePath}/entry/${encodeURIComponent(id)}.json`).catch(() => null);
+            this.entryFileCache.set(id, p);
+        }
+        return p;
+    }
+
     /** Load chunk for a specific ID using manifest-based prefix resolution */
     private async loadChunkForId(id: string): Promise<Record<string, unknown>> {
         const prefix = await this.resolvePrefix(id);
@@ -312,8 +347,7 @@ export class BundleStorage implements IndexStorage {
             const canonicalId = promotions.get(id) ?? id;
             const redirectedFrom = canonicalId !== id ? id : undefined;
 
-            const chunk = await this.loadChunkForId(canonicalId);
-            const item = (chunk[canonicalId] as Record<string, unknown>) || null;
+            const item = await this.loadDetail(canonicalId);
             if (item) {
                 // bundle-data.mjs 在打包时已经把 index 上的 has_collated /
                 // has_text / has_image / subtype / primary_name 注入到
@@ -339,8 +373,7 @@ export class BundleStorage implements IndexStorage {
             const canonicalId = promotions.get(id) ?? id;
             const redirectedFrom = canonicalId !== id ? id : undefined;
 
-            const chunk = await this.loadChunkForId(canonicalId);
-            const detail = chunk[canonicalId] as Record<string, any> | undefined;
+            const detail = (await this.loadDetail(canonicalId)) as Record<string, any> | null;
             if (!detail) return null;
             const type = extractType(canonicalId);
             const displayTitle = type === 'entity'
@@ -527,6 +560,7 @@ export class BundleStorage implements IndexStorage {
         this.chunkLoading.clear();
         this.manifest = null;
         this.manifestLoading = null;
+        this.entryFileCache.clear();
         this.tiyaoCache.clear();
         this.tiyaoLoading.clear();
         this.metaCache = null;
