@@ -9,6 +9,7 @@
  * 专名里的繁体（保护表 PROTECTED_TERMS 里的词等）不算残留，放进 allow 白名单。
  */
 import { PROTECTED_TERMS } from './protected-terms';
+import { VARIANT_CHARS } from './variant-chars';
 
 export const COMMON_TRADITIONAL_CHARS: string = [
     '錄說語詞議樣書記類傳國經補藝紀編後與間條號為開總種無數據冊頁選時題爲詩萬證學續關東圖資歷來讀館論見鈔別進師輯陳覽寫現應從',
@@ -23,7 +24,11 @@ export const COMMON_TRADITIONAL_CHARS: string = [
     '隊準礙強髒藥鮑顧給緯悅帳巖廬貢亞壇惡諱鎮薊驍愛討彌護揮偉輒擾況較響喪鑰藍',
 ].join('');
 
-const CHAR_SET = new Set(COMMON_TRADITIONAL_CHARS);
+/**
+ * 检测用的字集：常见繁体字 ＋ 异体字归一表里的全部异体字（overview#350）。
+ * 异体字 t2cn 不认，没走归一时会原样漏到简体页面上（如「㫖」「縂」「寳」），一并当残留报出来。
+ */
+const CHAR_SET = new Set([...COMMON_TRADITIONAL_CHARS, ...Object.keys(VARIANT_CHARS)]);
 
 /**
  * 白名单：整词跳过。默认含保护表（如「曹霑」）与繁简切换按钮（有意用目标字体书写）；调用方可再追加专名。

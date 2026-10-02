@@ -5,6 +5,7 @@ import type { SearchSIndex } from '../core/storage';
 import { normalizeCatalog } from '../core/normalize-catalog';
 import { smartDecode, parseId } from '../id';
 import { buildPromotionMap } from './promotions';
+import { normalizeVariants } from '../i18n/variant-chars';
 
 /**
  * 索引分片文件中的条目格式
@@ -332,7 +333,9 @@ export class GithubStorage implements IndexStorage {
 
         try {
             const OpenCC = await import('opencc-js');
-            this.t2sConverter = OpenCC.Converter({ from: 'tw', to: 'cn' });
+            const t2cn = OpenCC.Converter({ from: 'tw', to: 'cn' });
+            // 异体字先归一（overview#350），与页面上 convert 的口径一致
+            this.t2sConverter = (text: string) => t2cn(normalizeVariants(text));
         } catch {
             this.t2sConverter = false;
             this.searchSCache = {};

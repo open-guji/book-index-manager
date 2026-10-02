@@ -9,6 +9,7 @@ import { renderInterlinear, truncateOutsideJiazhu } from './detail/primitives';
 import { bim } from '../styles/tokens';
 import { ReaderMdText, canParagraphize, renderReaderInline } from './Reader/ReaderText';
 import type { ReaderPrefs } from './Reader/prefs';
+import { normalizeVariants } from '../i18n/variant-chars';
 
 // ── 工具函数 ──
 
@@ -108,7 +109,9 @@ function ensureSearchNormalizer(): Promise<void> {
     if (_searchNormalizer) return Promise.resolve();
     if (_searchNormLoading) return _searchNormLoading;
     _searchNormLoading = import('opencc-js/t2cn').then(mod => {
-        _searchNormalizer = mod.Converter({ from: 'tw', to: 'cn' });
+        const t2cn = mod.Converter({ from: 'tw', to: 'cn' });
+        // 异体字先归一（overview#350），「㫖」与「旨」才搜得到彼此
+        _searchNormalizer = (s: string) => t2cn(normalizeVariants(s));
         _searchNormSubs.forEach(cb => cb());
     }).catch(() => {
         _searchNormalizer = (s: string) => s;
