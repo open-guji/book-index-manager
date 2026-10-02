@@ -8,7 +8,7 @@ import { splitHighlightSnippet } from '../core/highlight';
 import { bim } from '../styles/tokens';
 import { TypeMark } from './common/TypeMark';
 import { useBidUrl } from '../core/bid-url';
-import { SearchResults } from './search/SearchResults';
+import { SearchResults, type ResultTab } from './search/SearchResults';
 import { EMPTY_FILTERS, filtersToParams, type SearchFilters } from '../core/search-filters';
 import {
     RECENT_IDS_STORAGE_KEY, clearAllRecentIds, loadRecentIds, removeRecentId, resolveRecentEntry, saveRecentId, type RecentEntry,
@@ -61,6 +61,9 @@ export interface IndexBrowserProps {
     /** 当前筛选（受控，宿主把它放进 URL）；不传视为无筛选 */
     filters?: SearchFilters;
     onFiltersChange?: (filters: SearchFilters) => void;
+    /** 结果页签（受控，宿主把它放进 URL，如 ?tab=work）；只在 filtersEnabled 时生效 */
+    resultTab?: ResultTab;
+    onResultTabChange?: (tab: ResultTab) => void;
 }
 
 const TOTAL_KEYS: Record<string, keyof GroupedSearchResult> = {
@@ -90,6 +93,8 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     filtersEnabled = false,
     filters = EMPTY_FILTERS,
     onFiltersChange,
+    resultTab,
+    onResultTabChange,
 }) => {
     const t = useT();
 
@@ -473,6 +478,8 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     onFiltersChange={changeFilters}
                     onEntryLinkClick={handleEntryLinkClick}
                     typeName={ty => getConfig(ty).name}
+                    tab={resultTab}
+                    onTabChange={onResultTabChange}
                 />
             )}
 
