@@ -64,6 +64,9 @@ export interface IndexBrowserProps {
     /** 结果页签（受控，宿主把它放进 URL，如 ?tab=work）；只在 filtersEnabled 时生效 */
     resultTab?: ResultTab;
     onResultTabChange?: (tab: ResultTab) => void;
+    /** 结果页码（受控，宿主放进 URL，如 ?page=2）；只在 filtersEnabled 时生效 */
+    resultPage?: number;
+    onResultPageChange?: (page: number) => void;
 }
 
 const TOTAL_KEYS: Record<string, keyof GroupedSearchResult> = {
@@ -95,6 +98,8 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
     onFiltersChange,
     resultTab,
     onResultTabChange,
+    resultPage,
+    onResultPageChange,
 }) => {
     const t = useT();
 
@@ -480,6 +485,8 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     typeName={ty => getConfig(ty).name}
                     tab={resultTab}
                     onTabChange={onResultTabChange}
+                    page={resultPage}
+                    onPageChange={onResultPageChange}
                 />
             )}
 
