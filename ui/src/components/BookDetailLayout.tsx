@@ -631,11 +631,13 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     /*
      * 概览页不再有次级 tab 行，但丛编目录（可能不止一份）和宿主注入的 extraTabs
      * （网站的「数字化」等）仍须有入口：放到左栏「更多」，窄屏折成一行文字链接。
-     * 谱系、反馈本阶段不放入口（N3a）。
+     * 版本谱系算出图来才放入口（overview#369；加载中不放，免得每部作品都闪一下）；反馈本阶段不放（N3a）。
      */
     const extraKeys = new Set(extraTabs.map(tab => tab.key));
     const railLinks: RailLink[] = navItems
-        .filter(item => (item.key.startsWith('catalog:') && item.key !== 'catalog:loading') || extraKeys.has(item.key))
+        .filter(item => (item.key.startsWith('catalog:') && item.key !== 'catalog:loading')
+            || (item.key === 'lineage' && !!lineageGraph && !lineageLoading)
+            || extraKeys.has(item.key))
         .map(item => ({ key: item.key, label: item.label, onClick: () => onTabChange(item.key) }));
 
     const renderBasic = (): React.ReactNode => {

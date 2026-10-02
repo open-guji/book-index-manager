@@ -6,7 +6,7 @@ export {
 } from './MetaHome';
 export type { MetaHomeViewProps } from './MetaHome';
 export { META_HOME_CSS } from './meta-home-css';
-export { DEFAULT_META_HOME_LINKS, withMetaLinks, pct, timelineLayout, yearText } from './model';
+export { DEFAULT_META_HOME_LINKS, withMetaLinks, lineageHref, pct, timelineLayout, yearText } from './model';
 export type {
     MetaHomeSections, MetaHomeLinks, MetaCatalogProgress, MetaSite, MetaBibliographer, MetaWorkRef,
 } from './model';

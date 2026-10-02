@@ -18,7 +18,7 @@ import { groupCapped, ReadSection, ReadShelf, ReadSibu } from '../read-home/Read
 import { authorsLine, fmtCount } from '../read-home/model';
 import type { ReadHomeLinks } from '../read-home/model';
 import { META_HOME_CSS } from './meta-home-css';
-import { pct, timelineLayout, withMetaLinks, yearText } from './model';
+import { lineageHref, pct, timelineLayout, withMetaLinks, yearText } from './model';
 import type { MetaBibliographer, MetaCatalogProgress, MetaHomeLinks, MetaHomeSections, MetaSite, MetaWorkRef } from './model';
 
 type Links = ReturnType<typeof withMetaLinks>;
@@ -354,7 +354,7 @@ export function MetaLineageCards({ works, links }: { works: MetaWorkRef[]; links
                 const by = authorsLine(w);
                 return (
                     <li key={w.id}>
-                        <a href={l.item(w.id)}>
+                        <a href={lineageHref(l, w.id)}>
                             {TREE_ICON}
                             <b>{convert(w.title)}</b>
                             {by && <small>{convert(by)}</small>}
