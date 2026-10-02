@@ -8,7 +8,7 @@ import { render, screen, fireEvent, within, waitFor } from '@testing-library/rea
 import { renderToString } from 'react-dom/server';
 import {
     MetaHomeView, MetaCatalogTable, MetaCollectionGroups, MetaRelatedCatalogs, MetaPeopleTimeline, MetaOnlineSites, MetaDataLicense, MetaRecentPanel,
-    META_HOME_CSS, pct, timelineLayout, yearText,
+    MetaLineageCards, META_HOME_CSS, lineageHref, pct, timelineLayout, yearText,
 } from '../../src/components/meta-home';
 import type { MetaHomeSections } from '../../src/components/meta-home';
 import { RECENT_IDS_STORAGE_KEY } from '../../src/core/recent';
@@ -48,6 +48,25 @@ describe('model', () => {
     it('yearText：公元前写「前N」', () => {
         expect(yearText(-77)).toBe('前77');
         expect(yearText(1007)).toBe('1007');
+    });
+});
+
+describe('版本谱系卡（overview#369）', () => {
+    it('「看版本谱系 →」链到条目页的谱系页签，不是普通作品页', () => {
+        render(<MetaLineageCards works={S.lineage} links={LINKS} />);
+        const hrefs = screen.getAllByRole('link').map((a) => a.getAttribute('href'));
+        expect(hrefs[0]).toBe('/book-index/d59df01avcw0?tab=lineage');
+        expect(hrefs).toHaveLength(S.lineage.length);
+        for (const h of hrefs) expect(h).toMatch(/\?tab=lineage$/);
+    });
+    it('不给 links 时走默认 /item/<id>?tab=lineage', () => {
+        render(<MetaLineageCards works={S.lineage.slice(0, 1)} />);
+        expect(screen.getByRole('link').getAttribute('href')).toBe('/item/d59df01avcw0?tab=lineage');
+    });
+    it('lineageHref：已有查询串用 &，保留锚点；宿主给了 lineage 就用宿主的', () => {
+        expect(lineageHref({ item: (id) => `/book-index?id=${id}` }, 'w1')).toBe('/book-index?id=w1&tab=lineage');
+        expect(lineageHref({ item: (id) => `/item/${id}#top` }, 'w1')).toBe('/item/w1?tab=lineage#top');
+        expect(lineageHref({ item: (id) => `/item/${id}`, lineage: (id) => `/lineage/${id}` }, 'w1')).toBe('/lineage/w1');
     });
 });
 

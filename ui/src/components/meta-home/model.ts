@@ -73,15 +73,26 @@ export interface MetaHomeLinks {
     type?: (type: 'all' | 'work' | 'book' | 'collection' | 'entity') => string;
     /** 按存佚检索 */
     loss?: (key: 'extant' | 'partially_extant' | 'lost' | 'unknown') => string;
+    /** 作品的版本谱系页；不给就用 item(id) 加 `tab=lineage`（overview#369） */
+    lineage?: (id: string) => string;
 }
 
-export const DEFAULT_META_HOME_LINKS: Required<Omit<MetaHomeLinks, 'type' | 'loss'>> & Pick<MetaHomeLinks, 'type' | 'loss'> = {
+export const DEFAULT_META_HOME_LINKS: Required<Omit<MetaHomeLinks, 'type' | 'loss' | 'lineage'>> & Pick<MetaHomeLinks, 'type' | 'loss' | 'lineage'> = {
     item: (id) => `/item/${encodeURIComponent(id)}`,
     node: (id) => `/catalog?node=${encodeURIComponent(id)}`,
 };
 
 export function withMetaLinks(links?: Partial<MetaHomeLinks>) {
     return { ...DEFAULT_META_HOME_LINKS, ...(links ?? {}) } as typeof DEFAULT_META_HOME_LINKS;
+}
+
+/** 谱系页链接：宿主给了 lineage 就用它，否则在条目页链接上加 `tab=lineage`（保留原有查询串与锚点） */
+export function lineageHref(l: Pick<MetaHomeLinks, 'item' | 'lineage'>, id: string): string {
+    if (l.lineage) return l.lineage(id);
+    const href = l.item(id);
+    const hashAt = href.indexOf('#');
+    const [path, hash] = hashAt < 0 ? [href, ''] : [href.slice(0, hashAt), href.slice(hashAt)];
+    return `${path}${path.includes('?') ? '&' : '?'}tab=lineage${hash}`;
 }
 
 /** 百分比（0–100，整数）；分母为 0 时 0 */

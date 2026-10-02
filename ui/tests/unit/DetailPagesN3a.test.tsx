@@ -135,7 +135,7 @@ describe('WorkPage（三栏）', () => {
         expect(document.querySelector('.bim-d-btn')).toBeNull();
     });
 
-    it('谱系、考证、反馈不再有入口', () => {
+    it('没有谱系的作品：谱系、考证、反馈都没有入口', () => {
         render(<BookDetailLayout {...props(WORK, { showFeedbackTab: true })} />);
         expect(screen.queryByText(/版本傳承|版本谱系|版本譜系/)).toBeNull();
         expect(screen.queryByRole('button', { name: /反饋|勘誤|提交新版本/ })).toBeNull();
@@ -256,6 +256,54 @@ describe('左栏「更多」：extraTabs 与丛编目录的入口', () => {
         expect(screen.getByRole('link', { name: /甲本/ })).toBeTruthy();
         fireEvent.click(second);
         expect(onTabChange).toHaveBeenCalledWith('catalog:r2');
+    });
+});
+
+describe('左栏「更多」：版本谱系入口（overview#369）', () => {
+    const LINEAGE_WORK = {
+        ...WORK,
+        version_graph: { enabled: true, title: '史記版本傳承圖' },
+    } as unknown as IndexDetailData;
+
+    it('有谱系的作品：算出图后左栏出「版本傳承」，点了切到 lineage 页签', async () => {
+        const onTabChange = vi.fn();
+        render(<BookDetailLayout {...props(LINEAGE_WORK, { onTabChange })} />);
+        const link = await screen.findByRole('link', { name: '版本傳承' });
+        expect(link.closest('.bim-d-g-rail')).toBeTruthy();
+        fireEvent.click(link);
+        expect(onTabChange).toHaveBeenCalledWith('lineage');
+    });
+
+    it('谱系加载中不出入口（免得每部作品都闪一下）', () => {
+        const tr = transportFor(LINEAGE_WORK, BOOKS);
+        tr.getLineageGraph = vi.fn(() => new Promise<null>(() => {}));
+        render(<BookDetailLayout id={LINEAGE_WORK.id} transport={tr as never} initialDetail={LINEAGE_WORK}
+            activeTab="basic" onTabChange={() => {}} />);
+        expect(screen.queryByRole('link', { name: /版本傳承/ })).toBeNull();
+    });
+
+    it('换到别的作品后，上一部作品晚到的谱系结果不进新页面', async () => {
+        let resolveA!: (v: null) => void;
+        const other = { ...WORK, id: 'w9', title: '漢書' } as unknown as IndexDetailData;
+        const tr = transportFor(LINEAGE_WORK, { ...BOOKS, w9: other as never });
+        tr.getLineageGraph = vi.fn((id: string) => id === LINEAGE_WORK.id
+            ? new Promise<null>((r) => { resolveA = r; })
+            : Promise.resolve(null));
+        const { rerender } = render(<BookDetailLayout id={LINEAGE_WORK.id} transport={tr as never} initialDetail={LINEAGE_WORK}
+            activeTab="basic" onTabChange={() => {}} />);
+        rerender(<BookDetailLayout id="w9" transport={tr as never} initialDetail={other}
+            activeTab="basic" onTabChange={() => {}} />);
+        await waitFor(() => expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('漢書'));
+        resolveA(null);
+        await new Promise((r) => setTimeout(r, 50));
+        expect(screen.queryByRole('link', { name: /版本傳承/ })).toBeNull();
+    });
+
+    it('version_graph 未启用：不出入口', async () => {
+        const off = { ...WORK, version_graph: { enabled: false } } as unknown as IndexDetailData;
+        render(<BookDetailLayout {...props(off)} />);
+        await waitFor(() => expect(screen.getByText('宋建安黃善夫家塾刻本')).toBeTruthy());
+        expect(screen.queryByRole('link', { name: /版本傳承/ })).toBeNull();
     });
 });
 
