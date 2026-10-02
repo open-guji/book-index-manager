@@ -10,6 +10,7 @@ export { defineMessages } from './messages';
 export { findTraditionalChars, COMMON_TRADITIONAL_CHARS, TRADITIONAL_ALLOWLIST } from './traditional-check';
 export type { TraditionalHit } from './traditional-check';
 export { formatTemplate } from './helpers';
+export { VARIANT_CHARS, normalizeVariants } from './variant-chars';
 export { LocaleContext } from './context';
 export type { LocaleContextValue } from './context';
 export type { Locale, FutureLocale, LocaleMessages, CoreMessages } from './types';
