@@ -30,6 +30,22 @@ export function formatHitCount(n: number): string {
 }
 
 export type SearchView = 'table' | 'card';
+export type ResultTab = IndexType | 'all';
+
+const TAB_PARAM: Record<string, IndexType> = {
+    work: 'work', works: 'work', book: 'book', books: 'book',
+    collection: 'collection', collections: 'collection', entity: 'entity', entities: 'entity',
+};
+
+/** 地址里的结果页签（?tab=）→ 页签；单复数都认（work／works），认不出的回「全部」（overview#359 P2-3） */
+export function resultTabFromParam(v: string | null | undefined): ResultTab {
+    return (v && TAB_PARAM[v.toLowerCase()]) || 'all';
+}
+
+/** 页签 → 地址参数值；「全部」不进地址 */
+export function resultTabToParam(tab: ResultTab): string | null {
+    return tab === 'all' ? null : tab;
+}
 
 /** 页签／分组的顺序（设计稿：作品／丛编／版本／人物） */
 const TAB_ORDER: IndexType[] = ['work', 'collection', 'book', 'entity'];
@@ -54,6 +70,13 @@ export interface SearchResultsProps {
     onFiltersChange: (next: SearchFilters) => void;
     onEntryLinkClick: (entry: IndexEntry, e: React.MouseEvent<HTMLAnchorElement>) => void;
     typeName: (type: IndexType) => string;
+    /** 当前页签（宿主放进地址时传）；不传就由组件自己记 */
+    tab?: ResultTab;
+    /**
+     * 用户点了页签。换检索词／筛选（不含只换排序）时组件自己回「全部」、不回调：
+     * 受控的宿主改地址时应顺手去掉 tab，免得两次改地址互相覆盖。
+     */
+    onTabChange?: (tab: ResultTab) => void;
 }
 
 const totals = (r: GroupedSearchResult | null, type: IndexType) => ((r?.[TOTAL_OF[type]] as number | undefined) ?? 0);
@@ -66,8 +89,10 @@ const entriesOf = (r: GroupedSearchResult | null, type: IndexType) => ((r?.[KEY_
  * 都带 filters（storage 不认就忽略）。页签上的条数始终来自 searchAll 的各类总数。
  * 筛选状态由宿主持有（进 URL）；视图选择存 localStorage（per-viewer 便利，读写包 try/catch）。
  * 换了检索词／筛选就回第 1 页；旧结果在新结果到达前保留（aria-busy），页面不跳。
+ * 切页签则不留旧结果：上一类的条目立即撤下，换成加载中，直到这一类的结果到达（overview#359 P2-2）。
+ * 页签可由宿主受控（tab／onTabChange，网站放进 ?tab=，刷新、分享后保留）。
  */
-export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, filters: filtersProp, onFiltersChange, onEntryLinkClick, typeName }) => {
+export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, filters: filtersProp, onFiltersChange, onEntryLinkClick, typeName, tab, onTabChange }) => {
     const t = useT();
     const v = t.searchV4;
     const { convert } = useConvert();
@@ -80,10 +105,13 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
     useEffect(() => { setViewState(readStoredView()); }, []);
     const setView = (next: SearchView) => { setViewState(next); storeView(next); };
 
-    const [activeType, setActiveType] = useState<IndexType | 'all'>('all');
+    const [activeType, setActiveType] = useState<ResultTab>(tab ?? 'all');
+    // 宿主传来的页签变了（后退、改地址）：以宿主为准
+    useEffect(() => { if (tab !== undefined) { setActiveType(tab); setPage(1); } }, [tab]);
     const [page, setPage] = useState(1);
     const [all, setAll] = useState<GroupedSearchResult | null>(null);
-    const [typed, setTyped] = useState<{ entries: IndexEntry[]; total: number } | null>(null);
+    /** 某一类的结果；key 记它属于哪一类，对不上（切了页签、新结果还没到）就不显示 */
+    const [typed, setTyped] = useState<{ key: string; entries: IndexEntry[]; total: number } | null>(null);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');
 
@@ -134,6 +162,8 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
     }, [transport, query, filtersKey]);
 
     // 某一类的第 page 页
+    // 只按类区分：同一类翻页时旧页留着（aria-busy），换了类才撤下
+    const typedKey = activeType;
     useEffect(() => {
         if (activeType === 'all') { setTyped(null); return; }
         let cancelled = false;
@@ -141,7 +171,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
         (async () => {
             try {
                 const r = await transport.search(query, activeType, { page, pageSize: RESULT_PAGE_SIZE, filters });
-                if (!cancelled) setTyped({ entries: r.entries, total: r.total });
+                if (!cancelled) setTyped({ key: typedKey, entries: r.entries, total: r.total });
             } catch (err) {
                 if (!cancelled) { setError(err instanceof Error ? err.message : String(err)); setTyped(null); }
             } finally {
@@ -153,12 +183,15 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
     }, [transport, query, filtersKey, activeType, page]);
 
     // 页码越界（重新筛选后总数变少、或手输的旧链接）：按这一类自己的总数钳回最后一页
+    // 这一类的结果到了没有（切页签后、新结果到达前为 null）
+    const current = typed && typed.key === typedKey ? typed : null;
+
     useEffect(() => {
-        if (activeType === 'all' || !typed || busy) return;
-        const capped = Math.min(typed.total, MAX_HITS);
+        if (activeType === 'all' || !current || busy) return;
+        const capped = Math.min(current.total, MAX_HITS);
         const target = clampPage(page, capped, RESULT_PAGE_SIZE);
-        if (typed.entries.length === 0 && capped > 0 && target !== page) setPage(target);
-    }, [activeType, typed, busy, page]);
+        if (current.entries.length === 0 && capped > 0 && target !== page) setPage(target);
+    }, [activeType, current, busy, page]);
 
     const tabs = useMemo(() => TAB_ORDER.filter(ty => totals(all, ty) > 0), [all]);
     const sum = tabs.reduce((n, ty) => n + totals(all, ty), 0);
@@ -166,7 +199,11 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
     const sumLabel = tabs.some(ty => totals(all, ty) >= MAX_HITS) ? `${sum.toLocaleString()}+` : sum.toLocaleString();
     const empty = !busy && !error && all !== null && sum === 0;
 
-    const choose = useCallback((ty: IndexType | 'all') => { setActiveType(ty); setPage(1); }, []);
+    const choose = useCallback((ty: ResultTab) => {
+        setActiveType(ty);
+        setPage(1);
+        onTabChange?.(ty);
+    }, [onTabChange]);
 
     // 结果区顶上的「已选」小标签：点一个取消一个
     const chips = useMemo(() => {
@@ -283,14 +320,18 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
                         )
                 )}
 
-                {!error && activeType !== 'all' && typed && typed.entries.length > 0 && (
+                {/* 切到某一类、结果未到：不挂上一类的旧条目，也不留白 */}
+                {!error && activeType !== 'all' && !current && (
+                    <div className="bim-sr-empty" role="status" style={{ minHeight: 240 }}>{t.search.loading}</div>
+                )}
+                {!error && activeType !== 'all' && current && current.entries.length > 0 && (
                     <>
-                        {renderList(typed.entries)}
-                        <ResultPager page={page} pageSize={RESULT_PAGE_SIZE} total={Math.min(typed.total, MAX_HITS)} totalLabel={formatHitCount(typed.total)} onPage={setPage} />
+                        {renderList(current.entries)}
+                        <ResultPager page={page} pageSize={RESULT_PAGE_SIZE} total={Math.min(current.total, MAX_HITS)} totalLabel={formatHitCount(current.total)} onPage={setPage} />
                     </>
                 )}
                 {/* 这一类这一页没有条目（页码过期／越界、或与「全部」的总数对不上）：给空状态，不留白 */}
-                {!error && activeType !== 'all' && typed && typed.entries.length === 0 && !busy && (
+                {!error && activeType !== 'all' && current && current.entries.length === 0 && !busy && (
                     <div className="bim-sr-empty">
                         {convert(active ? v.emptyFiltered : formatTemplate(t.search.noResultsFor, { query }))}
                         <div><button type="button" className="bim-sr-clear" onClick={() => choose('all')}>{t.search.allTab}</button></div>

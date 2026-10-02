@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import type { AuthorInfo, CollatedEditionIndex, CollatedJuan, CollatedSection, JuanGroup, TextQualityGrade } from '../types';
 import { TEXT_QUALITY_LABELS } from '../types';
 import type { IndexStorage } from '../storage/types';
+import { NoteText } from './common/NoteText';
 import { useI18n } from '../i18n/use-i18n';
 import type { LocaleMessages } from '../i18n/types';
 import { useBidUrl } from '../core/bid-url';
@@ -45,6 +46,14 @@ const TYPE_EN2CN: Record<string, string> = {
     verification: '考证', prose: '书', reconstruction: '书',
     comment: '注释',
 };
+
+/** 「底本 {note}」：note 里的「《书名》(网址)」等渲染成链接（overview#359 P2-5）；字典里的前后缀照旧 */
+const NOTE_SLOT = '\u0000';
+function baseTextLine(template: string, note: string, convert: (s: string) => string): React.ReactNode {
+    const [before, after = ''] = template.split(NOTE_SLOT);
+    return <>{before}<NoteText text={note} convert={convert} />{after}</>;
+}
+
 export function normSectionType(t: unknown): string {
     if (typeof t !== 'string') return '';
     return TYPE_T2S[t] ?? TYPE_EN2CN[t] ?? t;
@@ -1190,7 +1199,7 @@ export function JuanReading({
         meta.push(
             <span title={messages.collated.qualityCriteria[grade]}>
                 {index?.text_quality?.source_note
-                    ? <>{t('collated.baseText', { note: convert(index.text_quality.source_note) })}<span className="bim-rd-grade">{messages.collated.qualityLabel[grade]}</span></>
+                    ? <>{baseTextLine(t('collated.baseText', { note: NOTE_SLOT }), index.text_quality.source_note, convert)}<span className="bim-rd-grade">{messages.collated.qualityLabel[grade]}</span></>
                     : <>{t('collated.textQuality')}<span className="bim-rd-grade">{messages.collated.qualityLabel[grade]}</span></>}
             </span>,
         );
