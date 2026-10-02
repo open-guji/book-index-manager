@@ -23,6 +23,7 @@ import { useBidUrl } from '../core/bid-url';
 import { bim } from '../styles/tokens';
 import { useI18n } from '../i18n/use-i18n';
 import { LoadingDots } from './common/LoadingDots';
+import { NoteText } from './common/NoteText';
 import { ReaderShell } from './Reader/ReaderShell';
 import type { PanelState } from './Reader/ReaderShell';
 import { ReaderMdText, canParagraphize } from './Reader/ReaderText';
@@ -78,6 +79,20 @@ export interface TextReaderProps {
 }
 
 const MUTED: React.CSSProperties = { padding: 24, color: bim('desc-fg'), fontSize: 14 };
+
+/** 首屏骨架：书名（宿主给了就有）＋章题与几行正文的占位条＋「加载中」；占位条用细线色（随主题），不闪动（减少动画偏好下也一样） */
+function ReaderSkeleton({ title, label, className, style }: { title?: React.ReactNode; label: string; className?: string; style?: React.CSSProperties }) {
+    const bar = (w: string, h = 14, mt = 14): React.CSSProperties => ({ width: w, height: h, marginTop: mt, borderRadius: 3, background: bim('rule') });
+    return (
+        <div className={className} style={{ ...style, padding: '20px 24px', maxWidth: 760, margin: '0 auto' }} aria-busy="true">
+            {title && <div style={{ fontSize: 15, color: bim('ink'), fontFamily: bim('font-ui') }}>{title}</div>}
+            <div style={bar('42%', 24, 28)} />
+            <div style={bar('30%', 12, 10)} />
+            {['96%', '100%', '92%', '98%', '64%'].map((w, i) => <div key={i} style={bar(w, 16, i === 0 ? 30 : 14)} />)}
+            <p role="status" style={{ marginTop: 24, color: bim('desc-fg'), fontSize: 14, fontFamily: bim('font-ui') }}>{label}</p>
+        </div>
+    );
+}
 
 /** 整理本目录在 JuanReading 里要的形状（类型、质量、考证对象），由 TextIndex 换出来 */
 const HTTP_URL = /^https?:\/\//i;
@@ -275,17 +290,23 @@ export const TextReader: React.FC<TextReaderProps> = ({
 
     // ── 章内容 ──
     const [content, setContent] = useState<TextChapterContent | null>(null);
-    const [contentLoading, setContentLoading] = useState(false);
+    /*
+     * 「加载中」由「已取到的是不是当前这一章」推出来，不另设标志：原来的标志在 effect 里才置真，
+     * 目录到手后的第一帧里它还是假、正文又是空，会先闪一下「无法加载章节内容」（慢网下肉眼可见，overview#359 P2-8）。
+     */
+    const chapterKey = versionKey && chapterMeta ? `${id}\n${versionKey}\n${chapterMeta.file}` : null;
+    const [loadedKey, setLoadedKey] = useState<string | null>(null);
+    const contentLoading = chapterKey !== null && loadedKey !== chapterKey;
     const contentSeq = useRef(0);
     useEffect(() => {
         if (!versionKey || !chapterMeta) return;
         const seq = ++contentSeq.current;
-        setContentLoading(true);
+        const key = `${id}\n${versionKey}\n${chapterMeta.file}`;
         setContent(null);
         api.getChapter(id, versionKey, chapterMeta.file, { json: !!chapterMeta.has_json })
             .then(c => { if (seq === contentSeq.current) setContent(c); })
             .catch(() => { if (seq === contentSeq.current) setContent(null); })
-            .finally(() => { if (seq === contentSeq.current) setContentLoading(false); });
+            .finally(() => { if (seq === contentSeq.current) setLoadedKey(key); });
     }, [api, id, versionKey, chapterMeta]);
 
     // ── 跨章搜索（整理本） ──
@@ -324,12 +345,13 @@ export const TextReader: React.FC<TextReaderProps> = ({
     useEffect(() => { setJuanView('text'); }, [effectiveChapter, versionKey]);
 
     // ── 渲染 ──
-    if (manifestState === 'loading') return <div className={className} style={{ ...style, ...MUTED }}>{t('reader.loading')}</div>;
+    // 文本清单、目录未到（服务端渲染出的首屏也是这一态）：先出书名与正文骨架，不是一行小字（overview#359 P2-8）
+    if (manifestState === 'loading') return <ReaderSkeleton className={className} style={style} title={title ?? entryTitle} label={t('reader.loading')} />;
     if (manifestState === 'missing' || !manifest || !version) {
         return <div className={className} style={{ ...style, ...MUTED }}>{t('reader.noText')}</div>;
     }
     if (indexState === 'failed') return <div className={className} style={{ ...style, ...MUTED }}>{t('reader.tocFailed')}</div>;
-    if (!index) return <div className={className} style={{ ...style, ...MUTED }}>{t('reader.tocLoading')}</div>;
+    if (!index) return <ReaderSkeleton className={className} style={style} title={title ?? entryTitle} label={t('reader.tocLoading')} />;
 
     const unit = unitOf(version, index);
     const toc = buildToc(index, matchStates, unit, convert, isCollated);
@@ -460,7 +482,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                                 {upstream.license && <><span className="bim-rd-dot" />{upstream.license_url
                                     ? <a className="bim-rd-link" href={upstream.license_url} target="_blank" rel="noreferrer">{upstream.license}</a>
                                     : upstream.license}</>}
-                                {upstream.note && <><span className="bim-rd-dot" />{convert(upstream.note)}</>}
+                                {upstream.note && <><span className="bim-rd-dot" /><NoteText text={upstream.note} convert={convert} /></>}
                             </p>
                         )}
                     </header>

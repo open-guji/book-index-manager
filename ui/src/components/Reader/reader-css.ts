@@ -210,7 +210,7 @@ export const READER_CSS = `
 .bim-rd-kicker { margin: 0 0 8px; font-size: 12px; letter-spacing: 0.2em; color: ${bim('label-fg')}; font-family: ${bim('font-ui')}; }
 .bim-rd-kicker .bim-rd-dot::before { content: "·"; margin: 0 0.6em; }
 .bim-rd-h1 { font-family: ${bim('font-ui')}; font-size: 28px; font-weight: 700; letter-spacing: 0.12em; margin: 0; color: ${bim('ink')}; line-height: 1.4; }
-.bim-rd-meta { margin: 6px 0 0; font-size: 13px; line-height: 1.8; color: ${bim('meta-fg')}; font-family: ${bim('font-ui')}; }
+.bim-rd-meta { margin: 6px 0 0; font-size: 13px; line-height: 1.8; color: ${bim('meta-fg')}; font-family: ${bim('font-ui')}; overflow-wrap: anywhere; }
 .bim-rd-meta .bim-rd-dot::before { content: "·"; margin: 0 0.5em; }
 .bim-rd-grade { display: inline-block; margin-left: 6px; padding: 0 6px; font-size: 11.5px; line-height: 1.7; background: ${bim('band-bg')}; color: ${bim('quiet-fg')}; }
 .bim-rd-meta select { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
