@@ -64,7 +64,10 @@ export interface SearchResultsProps {
     typeName: (type: IndexType) => string;
     /** 当前页签（宿主放进地址时传）；不传就由组件自己记 */
     tab?: ResultTab;
-    /** 用户切了页签，或换检索词／筛选后回到「全部」 */
+    /**
+     * 用户点了页签。换检索词／筛选（不含只换排序）时组件自己回「全部」、不回调：
+     * 受控的宿主改地址时应顺手去掉 tab，免得两次改地址互相覆盖。
+     */
     onTabChange?: (tab: ResultTab) => void;
 }
 
@@ -115,12 +118,10 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
         if (prev.query !== query || prev.filterOnlyKey !== filterOnlyKey) {
             setActiveType('all');
             setPage(1);
-            if (activeType !== 'all') onTabChange?.('all');
         } else if (prev.sort !== filters.sort) {
             setPage(1);
         }
         seen.current = { query, filterOnlyKey, sort: filters.sort };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [query, filterOnlyKey, filters.sort]);
 
     // 「全部」：各类前几条＋各类总数（页签条数的来源）

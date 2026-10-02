@@ -437,12 +437,13 @@ describe('页签进地址（overview#359 P2-3）', () => {
         expect(onResultTabChange).toHaveBeenLastCalledWith('all');
     });
 
-    it('换了筛选回到「全部」时也通知宿主（地址里的 tab 随之去掉）', async () => {
+    it('换了筛选：组件自己回「全部」，不回调宿主（宿主改地址时自己去掉 tab）', async () => {
         const onResultTabChange = vi.fn();
         const { rerender } = mount({ resultTab: 'work', onResultTabChange });
         await screen.findByRole('link', { name: '史記集解' });
         rerender(<IndexBrowser transport={transportWith()} hideModeIndicator initialQuery="史記" filtersEnabled
             filters={F({ dynasty: ['漢'] })} resultTab="work" onResultTabChange={onResultTabChange} />);
-        await waitFor(() => expect(onResultTabChange).toHaveBeenLastCalledWith('all'));
+        await waitFor(() => expect(within(screen.getByRole('group', { name: /結果分類|结果分类/ })).getByRole('button', { name: /全部/ }).getAttribute('aria-pressed')).toBe('true'));
+        expect(onResultTabChange).not.toHaveBeenCalled();
     });
 });
