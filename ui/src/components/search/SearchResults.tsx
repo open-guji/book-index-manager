@@ -132,12 +132,16 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
         if (pageProp !== undefined && pageProp > 0 && pageProp !== pageRef.current) setPage(pageProp);
     }, [pageProp]);
     const mainRef = useRef<HTMLDivElement>(null);
-    /** 读者翻页：回调宿主，并把结果区滚回顶部（已在视口内就不动） */
+    /**
+     * 读者翻页：回调宿主，并把结果区滚回顶部（已在视口内就不动）。
+     * 用 instant：宿主若给 html 设了 scroll-behavior: smooth（网站即是），默认会慢慢滑上去，
+     * 一千多像素要滑大半秒，读者先看到旧位置上的新结果（测试站 e2e「翻页后结果区顶部应在视口内」因此失败）。
+     */
     const goPage = useCallback((p: number) => {
         setPage(p);
         onPageChange?.(p);
         const el = mainRef.current;
-        if (el && el.getBoundingClientRect().top < 0) el.scrollIntoView?.({ block: 'start' });
+        if (el && el.getBoundingClientRect().top < 0) el.scrollIntoView?.({ block: 'start', behavior: 'instant' });
     }, [onPageChange]);
     const [all, setAll] = useState<GroupedSearchResult | null>(null);
     /** 某一类的结果；key 记它属于哪一类，对不上（切了页签、新结果还没到）就不显示 */

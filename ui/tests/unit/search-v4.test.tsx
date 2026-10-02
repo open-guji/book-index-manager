@@ -548,7 +548,8 @@ describe('页码进地址（受控 resultPage）', () => {
         main.getBoundingClientRect = () => ({ top: -400 } as DOMRect);
         fireEvent.click(within(pager).getByRole('button', { name: '2' }));
         expect(onResultPageChange).toHaveBeenLastCalledWith(2);
-        expect(scroll).toHaveBeenCalledWith({ block: 'start' });
+        // instant：不随宿主的 scroll-behavior: smooth 慢慢滑
+        expect(scroll).toHaveBeenCalledWith({ block: 'start', behavior: 'instant' });
         expect(await screen.findByRole('link', { name: '第2頁首條' })).toBeTruthy();
         // 结果区顶在视口内：不滚
         scroll.mockClear();
