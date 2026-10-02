@@ -106,8 +106,16 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
     const setView = (next: SearchView) => { setViewState(next); storeView(next); };
 
     const [activeType, setActiveType] = useState<ResultTab>(tab ?? 'all');
-    // 宿主传来的页签变了（后退、改地址）：以宿主为准
-    useEffect(() => { if (tab !== undefined) { setActiveType(tab); setPage(1); } }, [tab]);
+    const activeTypeRef = useRef(activeType);
+    activeTypeRef.current = activeType;
+    /*
+     * 宿主传来的页签与界面不同（后退、改地址）：以宿主为准，回第 1 页。
+     * 与界面相同则不动：读者点页签后宿主才 replace 地址，那时 tab 只是追上界面；
+     * 若照样回第 1 页，replace 晚到时会把读者已翻到的第 2 页打回去（测试站 e2e 翻页用例因此失败）。
+     */
+    useEffect(() => {
+        if (tab !== undefined && tab !== activeTypeRef.current) { setActiveType(tab); setPage(1); }
+    }, [tab]);
     const [page, setPage] = useState(1);
     const [all, setAll] = useState<GroupedSearchResult | null>(null);
     /** 某一类的结果；key 记它属于哪一类，对不上（切了页签、新结果还没到）就不显示 */

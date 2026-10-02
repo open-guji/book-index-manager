@@ -475,3 +475,45 @@ describe('页签进地址（overview#359 P2-3）', () => {
         expect(onResultTabChange).not.toHaveBeenCalled();
     });
 });
+
+describe('受控页签下翻页（overview#359 P2-3 回归）', () => {
+    it('点页签后宿主才把 resultTab 改成同一类（地址 replace 晚到）：已翻到的第 2 页不被打回第 1 页', async () => {
+        const search = vi.fn();
+        const t = transportWith({ search });
+        (t as unknown as { search: unknown }).search = async (q: string, ty: string, o: { page?: number; pageSize?: number }) => {
+            search(q, ty, o);
+            const p = o.page ?? 1;
+            return { entries: ty === 'work' ? [mk(`w-p${p}`, 'work', `第${p}頁首條`)] : [], total: 120, page: p, pageSize: 50 };
+        };
+        const onResultTabChange = vi.fn();
+        const { rerender } = render(<IndexBrowser transport={t} hideModeIndicator initialQuery="史記" filtersEnabled resultTab="all" onResultTabChange={onResultTabChange} />);
+        const tabs = await screen.findByRole('group', { name: /結果分類|结果分类/ });
+        fireEvent.click(within(tabs).getByRole('button', { name: /作品/ }));
+        expect(onResultTabChange).toHaveBeenLastCalledWith('work');
+        // 宿主还没把地址改过来时，读者已经翻到第 2 页
+        const pager = await screen.findByRole('navigation', { name: '翻頁' });
+        fireEvent.click(within(pager).getByRole('button', { name: '2' }));
+        expect(await screen.findByRole('link', { name: '第2頁首條' })).toBeTruthy();
+        // 地址 replace 落地：resultTab 追上界面（同一类）
+        rerender(<IndexBrowser transport={t} hideModeIndicator initialQuery="史記" filtersEnabled resultTab="work" onResultTabChange={onResultTabChange} />);
+        await new Promise((r) => setTimeout(r, 50));
+        expect(screen.getByRole('link', { name: '第2頁首條' })).toBeTruthy();
+        expect(within(screen.getByRole('navigation', { name: '翻頁' })).getByRole('button', { name: '2' }).getAttribute('aria-current')).toBe('page');
+        expect(search.mock.calls.at(-1)?.[2]).toMatchObject({ page: 2 });
+    });
+
+    it('宿主把页签改成另一类（后退、改地址）：照旧切过去并回第 1 页', async () => {
+        const t = transportWith();
+        (t as unknown as { search: unknown }).search = async (_q: string, ty: string, o: { page?: number }) => ({
+            entries: ty === 'work' ? [mk(`w-p${o.page ?? 1}`, 'work', `第${o.page ?? 1}頁首條`)] : PEOPLE, total: 120, page: o.page ?? 1, pageSize: 50,
+        });
+        const { rerender } = render(<IndexBrowser transport={t} hideModeIndicator initialQuery="史記" filtersEnabled resultTab="work" />);
+        const pager = await screen.findByRole('navigation', { name: '翻頁' });
+        fireEvent.click(within(pager).getByRole('button', { name: '2' }));
+        await screen.findByRole('link', { name: '第2頁首條' });
+        rerender(<IndexBrowser transport={t} hideModeIndicator initialQuery="史記" filtersEnabled resultTab="entity" />);
+        expect(await screen.findByRole('link', { name: '司馬遷' })).toBeTruthy();
+        const tabs = screen.getByRole('group', { name: /結果分類|结果分类/ });
+        expect(within(tabs).getByRole('button', { name: /人物/ }).getAttribute('aria-pressed')).toBe('true');
+    });
+});
