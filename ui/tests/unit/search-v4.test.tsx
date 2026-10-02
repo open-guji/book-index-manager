@@ -517,3 +517,74 @@ describe('受控页签下翻页（overview#359 P2-3 回归）', () => {
         expect(within(tabs).getByRole('button', { name: /人物/ }).getAttribute('aria-pressed')).toBe('true');
     });
 });
+
+describe('页码进地址（受控 resultPage）', () => {
+    const pagedTransport = (search = vi.fn()) => {
+        const t = transportWith();
+        (t as unknown as { search: unknown }).search = async (q: string, ty: string, o: { page?: number; pageSize?: number }) => {
+            search(q, ty, o);
+            const p = o.page ?? 1;
+            return { entries: ty === 'work' ? [mk(`w-p${p}`, 'work', `第${p}頁首條`)] : PEOPLE, total: 120, page: p, pageSize: 50 };
+        };
+        return t;
+    };
+
+    it('宿主给 resultPage=2：直接打开第 2 页', async () => {
+        const search = vi.fn();
+        render(<IndexBrowser transport={pagedTransport(search)} hideModeIndicator initialQuery="史記" filtersEnabled resultTab="work" resultPage={2} />);
+        expect(await screen.findByRole('link', { name: '第2頁首條' })).toBeTruthy();
+        expect(search.mock.calls.every(([, , o]) => o.page === 2)).toBe(true);
+    });
+
+    it('点页码：回调 onResultPageChange，结果区已滚出视口时滚回顶部', async () => {
+        const onResultPageChange = vi.fn();
+        const scroll = vi.fn();
+        const proto = HTMLElement.prototype as unknown as { scrollIntoView?: unknown };
+        const prev = proto.scrollIntoView;
+        proto.scrollIntoView = scroll;
+        render(<IndexBrowser transport={pagedTransport()} hideModeIndicator initialQuery="史記" filtersEnabled resultTab="work" resultPage={1} onResultPageChange={onResultPageChange} />);
+        const pager = await screen.findByRole('navigation', { name: '翻頁' });
+        const main = document.querySelector('.bim-sr-main') as HTMLElement;
+        main.getBoundingClientRect = () => ({ top: -400 } as DOMRect);
+        fireEvent.click(within(pager).getByRole('button', { name: '2' }));
+        expect(onResultPageChange).toHaveBeenLastCalledWith(2);
+        expect(scroll).toHaveBeenCalledWith({ block: 'start' });
+        expect(await screen.findByRole('link', { name: '第2頁首條' })).toBeTruthy();
+        // 结果区顶在视口内：不滚
+        scroll.mockClear();
+        main.getBoundingClientRect = () => ({ top: 120 } as DOMRect);
+        fireEvent.click(within(screen.getByRole('navigation', { name: '翻頁' })).getByRole('button', { name: '3' }));
+        expect(scroll).not.toHaveBeenCalled();
+        proto.scrollIntoView = prev;
+    });
+
+    it('地址追上界面（同一页）不动；宿主改成别的页（后退）就跟过去', async () => {
+        const t = pagedTransport();
+        const { rerender } = render(<IndexBrowser transport={t} hideModeIndicator initialQuery="史記" filtersEnabled resultTab="work" resultPage={1} />);
+        const pager = await screen.findByRole('navigation', { name: '翻頁' });
+        fireEvent.click(within(pager).getByRole('button', { name: '2' }));
+        await screen.findByRole('link', { name: '第2頁首條' });
+        rerender(<IndexBrowser transport={t} hideModeIndicator initialQuery="史記" filtersEnabled resultTab="work" resultPage={2} />);
+        await new Promise((r) => setTimeout(r, 30));
+        expect(screen.getByRole('link', { name: '第2頁首條' })).toBeTruthy();
+        rerender(<IndexBrowser transport={t} hideModeIndicator initialQuery="史記" filtersEnabled resultTab="work" resultPage={3} />);
+        expect(await screen.findByRole('link', { name: '第3頁首條' })).toBeTruthy();
+    });
+
+    it('切页签：组件回第 1 页、不回调页码（宿主改地址时自己去掉 page）', async () => {
+        const onResultPageChange = vi.fn();
+        render(<IndexBrowser transport={pagedTransport()} hideModeIndicator initialQuery="史記" filtersEnabled resultTab="work" resultPage={3} onResultPageChange={onResultPageChange} />);
+        await screen.findByRole('link', { name: '第3頁首條' });
+        fireEvent.click(within(screen.getByRole('group', { name: /結果分類|结果分类/ })).getByRole('button', { name: /人物/ }));
+        expect(await screen.findByRole('link', { name: '司馬遷' })).toBeTruthy();
+        expect(onResultPageChange).not.toHaveBeenCalled();
+    });
+
+    it('后退到「另一类的第 2 页」：页签与页码一起跟', async () => {
+        const t = pagedTransport();
+        const { rerender } = render(<IndexBrowser transport={t} hideModeIndicator initialQuery="史記" filtersEnabled resultTab="entity" resultPage={1} />);
+        await screen.findByRole('link', { name: '司馬遷' });
+        rerender(<IndexBrowser transport={t} hideModeIndicator initialQuery="史記" filtersEnabled resultTab="work" resultPage={2} />);
+        expect(await screen.findByRole('link', { name: '第2頁首條' })).toBeTruthy();
+    });
+});

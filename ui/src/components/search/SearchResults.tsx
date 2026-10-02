@@ -77,6 +77,13 @@ export interface SearchResultsProps {
      * 受控的宿主改地址时应顺手去掉 tab，免得两次改地址互相覆盖。
      */
     onTabChange?: (tab: ResultTab) => void;
+    /** 当前页码（宿主放进地址时传，如 ?page=2；缺省 1）；不传就由组件自己记 */
+    page?: number;
+    /**
+     * 读者点了页码（或越界页码被钳回最后一页）。切页签、换检索词／筛选时组件自己回第 1 页、不回调：
+     * 宿主改地址时顺手去掉 page，与 tab 同理。
+     */
+    onPageChange?: (page: number) => void;
 }
 
 const totals = (r: GroupedSearchResult | null, type: IndexType) => ((r?.[TOTAL_OF[type]] as number | undefined) ?? 0);
@@ -92,7 +99,7 @@ const entriesOf = (r: GroupedSearchResult | null, type: IndexType) => ((r?.[KEY_
  * 切页签则不留旧结果：上一类的条目立即撤下，换成加载中，直到这一类的结果到达（overview#359 P2-2）。
  * 页签可由宿主受控（tab／onTabChange，网站放进 ?tab=，刷新、分享后保留）。
  */
-export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, filters: filtersProp, onFiltersChange, onEntryLinkClick, typeName, tab, onTabChange }) => {
+export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, filters: filtersProp, onFiltersChange, onEntryLinkClick, typeName, tab, onTabChange, page: pageProp, onPageChange }) => {
     const t = useT();
     const v = t.searchV4;
     const { convert } = useConvert();
@@ -116,7 +123,22 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
     useEffect(() => {
         if (tab !== undefined && tab !== activeTypeRef.current) { setActiveType(tab); setPage(1); }
     }, [tab]);
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(pageProp && pageProp > 0 ? pageProp : 1);
+    const pageRef = useRef(page);
+    pageRef.current = page;
+    // 宿主给的页码与界面不同（后退、改地址）才跟；相同只是地址追上界面，不动（同上面 tab 的道理）。
+    // 写在 tab 的 effect 之后：后退到「另一类的第 2 页」时先被 tab 置 1，再由这里置 2
+    useEffect(() => {
+        if (pageProp !== undefined && pageProp > 0 && pageProp !== pageRef.current) setPage(pageProp);
+    }, [pageProp]);
+    const mainRef = useRef<HTMLDivElement>(null);
+    /** 读者翻页：回调宿主，并把结果区滚回顶部（已在视口内就不动） */
+    const goPage = useCallback((p: number) => {
+        setPage(p);
+        onPageChange?.(p);
+        const el = mainRef.current;
+        if (el && el.getBoundingClientRect().top < 0) el.scrollIntoView?.({ block: 'start' });
+    }, [onPageChange]);
     const [all, setAll] = useState<GroupedSearchResult | null>(null);
     /** 某一类的结果；key 记它属于哪一类，对不上（切了页签、新结果还没到）就不显示 */
     const [typed, setTyped] = useState<{ key: string; entries: IndexEntry[]; total: number } | null>(null);
@@ -198,7 +220,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
         if (activeType === 'all' || !current || busy) return;
         const capped = Math.min(current.total, MAX_HITS);
         const target = clampPage(page, capped, RESULT_PAGE_SIZE);
-        if (current.entries.length === 0 && capped > 0 && target !== page) setPage(target);
+        if (current.entries.length === 0 && capped > 0 && target !== page) { setPage(target); onPageChange?.(target); }
     }, [activeType, current, busy, page]);
 
     const tabs = useMemo(() => TAB_ORDER.filter(ty => totals(all, ty) > 0), [all]);
@@ -239,7 +261,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
         <div className="bim-sr-layout" data-nofilters={supported ? undefined : 'true'}>
             <style>{SEARCH_V4_CSS}</style>
             {supported && <SearchFiltersPanel filters={filters} onChange={onFiltersChange} />}
-            <div className="bim-sr-main" aria-busy={busy}>
+            <div className="bim-sr-main" aria-busy={busy} ref={mainRef}>
                 {/* 结果页签：全部 ＋ 各类（带条数） */}
                 {tabs.length > 0 && (
                     <div className="bim-sr-tabs" role="group" aria-label={t.search.resultTabs} style={{ display: 'flex', flexWrap: 'wrap', gap: '0 4px', borderBottom: `1px solid ${bim('rule')}` }}>
@@ -335,7 +357,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ transport, query, 
                 {!error && activeType !== 'all' && current && current.entries.length > 0 && (
                     <>
                         {renderList(current.entries)}
-                        <ResultPager page={page} pageSize={RESULT_PAGE_SIZE} total={Math.min(current.total, MAX_HITS)} totalLabel={formatHitCount(current.total)} onPage={setPage} />
+                        <ResultPager page={page} pageSize={RESULT_PAGE_SIZE} total={Math.min(current.total, MAX_HITS)} totalLabel={formatHitCount(current.total)} onPage={goPage} />
                     </>
                 )}
                 {/* 这一类这一页没有条目（页码过期／越界、或与「全部」的总数对不上）：给空状态，不留白 */}
