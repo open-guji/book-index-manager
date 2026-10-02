@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { Converter } from 'opencc-js/t2cn';
 
 const [inp, out] = process.argv.slice(2);
-const conv = Converter({ from: 'tw', to: 'cn' });
+const conv = Converter({ from: 't', to: 'cn' });
 const map = {};
 for (const c of JSON.parse(readFileSync(inp, 'utf8'))) map[c] = conv(c);
 writeFileSync(out, JSON.stringify(map));

@@ -13,7 +13,7 @@ let cached: ((text: string) => string) | null = null;
 export function getSimplifiedConverter(): (text: string) => string {
     if (cached) return cached;
     try {
-        const t2cn = Converter({ from: 'tw', to: 'cn' });
+        const t2cn = Converter({ from: 't', to: 'cn' });
         cached = withProtectedTerms((text: string) => t2cn(normalizeVariants(text)));
     } catch {
         cached = (text: string) => text;

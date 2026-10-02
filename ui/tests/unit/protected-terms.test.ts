@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { Converter } from 'opencc-js/t2cn';
 import { withProtectedTerms, PROTECTED_TERMS } from '../../src/i18n/protected-terms';
 
-const raw = Converter({ from: 'tw', to: 'cn' });
+const raw = Converter({ from: 't', to: 'cn' });
 const conv = withProtectedTerms(raw);
 
 describe('withProtectedTerms', () => {
@@ -16,7 +16,7 @@ describe('withProtectedTerms', () => {
     // 新增保护词时在这里补一行：[输入, 期望]
     const CASES: [string, string][] = [
         ['曹霑', '曹霑'],
-        ['曹霑著紅樓夢', '曹霑着红楼梦'],
+        ['曹霑著紅樓夢', '曹霑著红楼梦'],
         ['紅樓夢作者曹霑', '红楼梦作者曹霑'],
         ['曹霑與曹霑', '曹霑与曹霑'],
     ];

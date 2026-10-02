@@ -20,7 +20,7 @@ async function ensureT2S(): Promise<((text: string) => string) | null> {
     try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         const OpenCC = await (Function('return import("opencc-js")')() as Promise<any>);
-        t2sConverter = OpenCC.Converter({ from: 'tw', to: 'cn' }) as (text: string) => string;
+        t2sConverter = OpenCC.Converter({ from: 't', to: 'cn' }) as (text: string) => string;
         return t2sConverter as (text: string) => string;
     } catch {
         t2sConverter = false;

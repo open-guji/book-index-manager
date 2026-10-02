@@ -333,7 +333,7 @@ export class GithubStorage implements IndexStorage {
 
         try {
             const OpenCC = await import('opencc-js');
-            const t2cn = OpenCC.Converter({ from: 'tw', to: 'cn' });
+            const t2cn = OpenCC.Converter({ from: 't', to: 'cn' });
             // 异体字先归一（overview#350），与页面上 convert 的口径一致
             this.t2sConverter = (text: string) => t2cn(normalizeVariants(text));
         } catch {
