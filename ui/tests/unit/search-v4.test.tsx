@@ -391,3 +391,59 @@ describe('类型页签当页没有条目', () => {
         expect(clampPage(2, 50, 50)).toBe(1);
     });
 });
+
+describe('页签切换：加载态、不挂旧结果（overview#359 P2-2）', () => {
+    it('从「人物」切「作品」：人物条目立即撤下、出「加载中」，作品结果到了再换上', async () => {
+        const t = transportWith();
+        let release!: () => void;
+        (t as unknown as { search: unknown }).search = (_q: string, ty: string, o: { page?: number }) => ty === 'entity'
+            ? Promise.resolve({ entries: PEOPLE, total: 1, page: o.page ?? 1, pageSize: 50 })
+            : new Promise((r) => { release = () => r({ entries: WORKS, total: 120, page: o.page ?? 1, pageSize: 50 }); });
+        render(<IndexBrowser transport={t} hideModeIndicator initialQuery="史記" filtersEnabled />);
+        const tabs = await screen.findByRole('group', { name: /結果分類|结果分类/ });
+        fireEvent.click(within(tabs).getByRole('button', { name: /人物/ }));
+        expect(await screen.findByRole('link', { name: '司馬遷' })).toBeTruthy();
+        fireEvent.click(within(tabs).getByRole('button', { name: /作品/ }));
+        expect(screen.queryByRole('link', { name: '司馬遷' })).toBeNull();
+        expect(screen.getByRole('status').textContent).toMatch(/加載中|加载中/);
+        release();
+        expect(await screen.findByRole('link', { name: '史記集解' })).toBeTruthy();
+        expect(screen.queryByText(/加載中|加载中/)).toBeNull();
+    });
+});
+
+describe('页签进地址（overview#359 P2-3）', () => {
+    it('resultTabFromParam：单复数都认，认不出回「全部」；resultTabToParam：「全部」不进地址', async () => {
+        const { resultTabFromParam, resultTabToParam } = await import('../../src/components/search/SearchResults');
+        expect(resultTabFromParam('works')).toBe('work');
+        expect(resultTabFromParam('book')).toBe('book');
+        expect(resultTabFromParam('Entities')).toBe('entity');
+        expect(resultTabFromParam('collection')).toBe('collection');
+        expect(resultTabFromParam('x')).toBe('all');
+        expect(resultTabFromParam(null)).toBe('all');
+        expect(resultTabToParam('all')).toBeNull();
+        expect(resultTabToParam('work')).toBe('work');
+    });
+
+    it('受控：宿主给 resultTab 就直接打开那一类；切页签回调 onResultTabChange', async () => {
+        const search = vi.fn();
+        const onResultTabChange = vi.fn();
+        mount({ resultTab: 'work', onResultTabChange }, { search });
+        expect(await screen.findByRole('link', { name: '史記集解' })).toBeTruthy();
+        expect(search.mock.calls[0][1]).toBe('work');
+        const tabs = screen.getByRole('group', { name: /結果分類|结果分类/ });
+        expect(within(tabs).getByRole('button', { name: /作品/ }).getAttribute('aria-pressed')).toBe('true');
+        fireEvent.click(within(tabs).getByRole('button', { name: /全部/ }));
+        expect(onResultTabChange).toHaveBeenLastCalledWith('all');
+    });
+
+    it('换了筛选：组件自己回「全部」，不回调宿主（宿主改地址时自己去掉 tab）', async () => {
+        const onResultTabChange = vi.fn();
+        const { rerender } = mount({ resultTab: 'work', onResultTabChange });
+        await screen.findByRole('link', { name: '史記集解' });
+        rerender(<IndexBrowser transport={transportWith()} hideModeIndicator initialQuery="史記" filtersEnabled
+            filters={F({ dynasty: ['漢'] })} resultTab="work" onResultTabChange={onResultTabChange} />);
+        await waitFor(() => expect(within(screen.getByRole('group', { name: /結果分類|结果分类/ })).getByRole('button', { name: /全部/ }).getAttribute('aria-pressed')).toBe('true'));
+        expect(onResultTabChange).not.toHaveBeenCalled();
+    });
+});
