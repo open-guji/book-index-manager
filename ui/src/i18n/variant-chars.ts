@@ -9,7 +9,8 @@ import table from './variant-chars.json';
  *   - 正字来源：教育部异体字字典（twedu）为主，汉语大字典、日本字形表、cjkvi、Unihan kZVariant 为辅，人工复核；
  *   - 只收「本身不是 Big5 常用繁体字、也不是通用规范汉字」的纯字形异体，避免把有独立字义的字改掉；
  *   - 值是正字的繁体写法，后面照常交给 t2cn。
- * 网站服务端（lib/server/simplify.ts）与检索边缘函数通过 `book-index-ui/variant-chars.json` 引同一张表。
+ * 网站服务端（lib/server/simplify.ts）引 `book-index-ui/variant-chars.json`，检索边缘函数引同内容的 ESM 版
+ * `book-index-ui/variant-chars`（build:lib 时由 scripts/variant-chars/emit.mjs 生成），都是同一张表。
  */
 export const VARIANT_CHARS: Readonly<Record<string, string>> = table;
 

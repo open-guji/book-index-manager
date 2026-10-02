@@ -1,8 +1,8 @@
 # 异体字归一表（overview#350）
 
 `src/i18n/variant-chars.json`：异体字 → 正字（繁体写法）。简体模式下先按它归一，再走 opencc t2cn；
-繁体模式不用，原文照原样显示。网站服务端（`lib/server/simplify.ts`）与检索边缘函数通过
-`book-index-ui/variant-chars.json` 引同一张表，不另存副本。
+繁体模式不用，原文照原样显示。网站服务端（`lib/server/simplify.ts`）引 `book-index-ui/variant-chars.json`，
+检索边缘函数引同内容的 ESM 版 `book-index-ui/variant-chars`（`build:lib` 时由 `emit.mjs` 生成），不另存副本。
 
 **不要手改 json**，改口径就改 `build.py` 再重新生成。
 

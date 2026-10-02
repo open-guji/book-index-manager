@@ -32,14 +32,18 @@
       "require": "./dist/storage.cjs"
     },
     "./styles": "./dist/book-index-ui.css",
-    "./variant-chars.json": "./dist/variant-chars.json"
+    "./variant-chars.json": "./dist/variant-chars.json",
+    "./variant-chars": {
+      "types": "./dist/variant-chars-data.d.ts",
+      "import": "./dist/variant-chars-data.js"
+    }
   },
   "files": [
     "dist/"
   ],
   "scripts": {
     "dev": "vite",
-    "build:lib": "vite build --mode lib && node -e \"const fs=require('fs');fs.copyFileSync('src/styles/variables.css','dist/book-index-ui.css');fs.copyFileSync('src/i18n/variant-chars.json','dist/variant-chars.json')\"",
+    "build:lib": "vite build --mode lib && node -e \"require('fs').copyFileSync('src/styles/variables.css','dist/book-index-ui.css')\" && node scripts/variant-chars/emit.mjs",
     "watch:lib": "vite build --mode lib --watch",
     "build:app": "vite build",
     "preview": "vite preview",
