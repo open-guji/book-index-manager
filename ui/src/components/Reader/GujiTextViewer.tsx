@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useMemo } from 'react';
 import { PageWarpData } from './GujiWarpCanvas';
+import { bim } from '../../styles/tokens';
 
 export interface PunctEntry {
   id: string;
@@ -231,15 +232,15 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   margin: '2rem 0 1.2rem',
-                  color: 'var(--bim-meta-fg, #888)',
+                  color: bim('meta-fg'),
                   fontSize: '0.82rem',
                   letterSpacing: '0.08em',
                   userSelect: 'none',
                 }}
               >
-                <div style={{ flex: 1, height: '1px', background: 'var(--bim-rule, #e5e5e5)' }} />
+                <div style={{ flex: 1, height: '1px', background: bim('rule') }} />
                 <span style={{ padding: '0 12px', fontWeight: 500 }}>第 {pGroup.page} 葉</span>
-                <div style={{ flex: 1, height: '1px', background: 'var(--bim-rule, #e5e5e5)' }} />
+                <div style={{ flex: 1, height: '1px', background: bim('rule') }} />
               </div>
             )}
 

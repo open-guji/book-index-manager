@@ -102,6 +102,10 @@ export interface ReaderShellProps {
     onVersionChange?: (key: string) => void;
     /** 正文末尾的「出处 · 授权」一行；默认有 versions 时显示，宿主自己画出处时可关掉 */
     versionSource?: boolean;
+    /**
+     * 切版本后不自动回到新目录第一卷（默认会）。宿主自己决定切版本后停在哪一章
+     * （如尽量停在同一章号，见 `matchChapterAcrossVersions`）时设为 true。
+     */
     keepChapterOnVersionChange?: boolean;
     /** 自定义书影/对读面板（如 WebGL 透视矫正画布）；传入时优先渲染此项，不渲染默认 ImagePanel */
     customImagePanel?: React.ReactNode;
@@ -554,7 +558,7 @@ export function ReaderShell({
                     )}
                 </aside>
 
-                <div className="bim-rd-text" id={textId} ref={textRef} tabIndex={-1} data-rail={rail && !isWarpMode ? 'true' : undefined}>
+                <div className="bim-rd-text" id={textId} ref={textRef} tabIndex={-1} data-rail={(rail || onReportError) && !isWarpMode ? 'true' : undefined}>
                     <div className="bim-rd-col">
                         {children}
                         {versionSource && version && (version.sourceName || version.license) && (
@@ -600,7 +604,7 @@ export function ReaderShell({
                             </nav>
                         )}
                     </div>
-                    {(rail && !isWarpMode) && (
+                    {(rail || onReportError) && !isWarpMode && (
                         <aside className="bim-rd-rail" aria-label={t('reader.rail')}>
                             {rail}
                             {onReportError && (
