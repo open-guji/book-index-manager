@@ -34,6 +34,10 @@ export interface ReaderPageImage {
     /** 原图像素宽高。给了才画逐字框，也用于占位时保持比例 */
     width?: number;
     height?: number;
+    /** 对读用：本图对应的页（葉）序号，与逐字 id `<页>:<列>:<格>` 里的页相同；缺省按序号对位 */
+    pageNo?: number;
+    /** 对读用：原图像素档的 URL（透视矫正要用原图精度；缺省退回 `url`） */
+    hiresUrl?: string;
     /** 页码标签，如「葉三上」「p.12」；缺省显示序号 */
     label?: string;
     /** 图片替代文本；缺省「书影 第 N 页」 */

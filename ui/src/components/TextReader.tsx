@@ -387,14 +387,12 @@ export const TextReader: React.FC<TextReaderProps> = ({
 
     // 当前活动页对应的书影图片 URL
     const activeImageUrl = useMemo(() => {
-        if (images.images && images.images.length > 0) {
-            // 尝试在 images 中寻找匹配页码的图片
-            const found = images.images.find(img => img.label?.includes(`${activePage}`) || img.url.includes(`_${activePage}.`) || img.url.includes(`/${activePage}.`));
-            if (found) return found.url;
+        const list = images.images;
+        if (list && list.length > 0) {
+            const found = list.find(img => img.pageNo === activePage) ?? list[activePage - 1];
+            if (found) return found.hiresUrl ?? found.url;
         }
-        // 缺省回退
-        if (activePage === 10 && (warpData as any)?.imageUrl) return (warpData as any).imageUrl;
-        return `/facsimiles/96mid1ogzk/vol02/${activePage}.png`;
+        return (warpData as any)?.imageUrl ?? '';
     }, [images.images, activePage, warpData]);
 
     // 计算当前页是否具备原生 warpData，若为当前页则渲染带网格透视的 pageData，否则构造当前页的降级 pageData
@@ -419,7 +417,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                 strips: [],
                 chars: col.chars.map((ch: any) => ({
                     ...ch,
-                    bbox_col: [20, (ch.slot || ch.pos) * 110, 170, (ch.slot || ch.pos) * 110 + 100],
+                    bbox_col: [20, (ch.slot ?? ch.pos ?? 0) * 110, 170, (ch.slot ?? ch.pos ?? 0) * 110 + 100],
                 }))
             })) : [],
         };

@@ -365,8 +365,10 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
 
   // 加载主图 (本文)
   useEffect(() => {
+    if (!imageUrl) return;
     let active = true;
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.src = imageUrl;
 
     const onLoad = () => {
@@ -399,6 +401,7 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
     if (!banxin?.mate_image_url) return;
     let active = true;
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.src = banxin.mate_image_url;
 
     const onLoad = () => {
