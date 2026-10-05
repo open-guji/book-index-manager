@@ -38,6 +38,18 @@ const KIND_LABEL: Record<EntityKind, string> = {
 
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
+/** 摘要取数器：给了 `loadSummary` 用它，否则用 transport；都没有则卡片只显示规范名 */
+export function useEntitySummaryLoader(
+    transport?: EntitySummaryTransport,
+    loadSummary?: EntitySummaryLoader,
+): { owner: object; load: EntitySummaryLoader } | null {
+    return useMemo(() => {
+        if (loadSummary) return { owner: loadSummary, load: loadSummary };
+        if (transport) return { owner: transport, load: transportSummaryLoader(transport) };
+        return null;
+    }, [loadSummary, transport]);
+}
+
 export interface EntityTextProps {
     /** 正文 */
     text: string;
@@ -79,11 +91,7 @@ export const EntityText: React.FC<EntityTextProps> = ({
         return segmentEntities(text, spans);
     }, [text, entities, offsets, plainBase]);
 
-    const loader = useMemo<{ owner: object; load: EntitySummaryLoader } | null>(() => {
-        if (loadSummary) return { owner: loadSummary, load: loadSummary };
-        if (transport) return { owner: transport, load: transportSummaryLoader(transport) };
-        return null;
-    }, [loadSummary, transport]);
+    const loader = useEntitySummaryLoader(transport, loadSummary);
 
     return (
         <span className={className ? `bim-et-root ${className}` : 'bim-et-root'}>
@@ -107,7 +115,7 @@ export const EntityText: React.FC<EntityTextProps> = ({
     );
 };
 
-interface EntityMarkProps {
+export interface EntityMarkProps {
     span: EntitySpan;
     label: string;
     /** 正文本身已带书名号，就不再补隐藏的《》 */
@@ -119,7 +127,7 @@ interface EntityMarkProps {
     hoverDelayMs: number;
 }
 
-const EntityMark: React.FC<EntityMarkProps> = ({
+export const EntityMark: React.FC<EntityMarkProps> = ({
     span, label, hasBrackets, loader, buildHref, onNavigate, renderText, hoverDelayMs,
 }) => {
     const cardId = useId();

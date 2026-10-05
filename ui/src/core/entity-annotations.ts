@@ -43,6 +43,11 @@ export interface EntitySpan {
     canonicalName?: string;
     /** 置信度 0–1 */
     confidence?: number;
+    /**
+     * 逐字锚点（对读用）：起止字 id（含），格式 `<页>:<列>:<格>`。有它就不依赖 `start/end` 偏移，
+     * 直接按字 id 对位到对读正文，不受标点、缺字、夹注影响。
+     */
+    anchor?: { start: string; end: string };
 }
 
 const KIND_MAP: Record<string, EntityKind> = {
@@ -105,7 +110,11 @@ export function adaptEntityJson(raw: unknown): EntitySpan[] {
         const targetId = status === undefined || status === 'matched'
             ? (bookIndexUriToId(str(target.entity_id)) ?? bookIndexUriToId(str(target.href)) ?? undefined)
             : undefined;
+        const anchorRaw = (e.anchor ?? {}) as Record<string, unknown>;
+        const aStart = str(anchorRaw.start);
+        const aEnd = str(anchorRaw.end);
         out.push({
+            ...(aStart && aEnd ? { anchor: { start: aStart, end: aEnd } } : {}),
             key: str(e.id) ?? `e${i}`,
             kind: toKind(e.type),
             start,

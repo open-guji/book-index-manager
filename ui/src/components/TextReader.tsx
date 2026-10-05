@@ -37,6 +37,7 @@ import {
 import { GujiWarpCanvas, type PageWarpData } from './Reader/GujiWarpCanvas';
 import { GujiTextViewer } from './Reader/GujiTextViewer';
 import { useChapterWarpData, type ReaderWarpResolver } from './Reader/useChapterWarpData';
+import { useChapterEntities, type ReaderEntityResolver } from './Reader/useChapterEntities';
 
 /** 当前位置：哪份版本的哪一章。`isDefault` 时网址里不写版本 key（规格 §六） */
 export interface TextLocation {
@@ -79,6 +80,10 @@ export interface TextReaderProps {
     backLabel?: string;
     /** 矫正对读数据提供函数（返回当前卷的透视矫正数据） */
     resolveWarpData?: ReaderWarpResolver;
+    /** 对读正文的实体标注（entity.json，须带逐字 anchor）；按章取，没有就不画 */
+    resolveEntities?: ReaderEntityResolver;
+    /** 点已收录实体（Ctrl／⌘／Shift 点击或键盘回车）进条目页；不传按 `/item/<id>` 整页跳 */
+    onEntityNavigate?: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
     /** 直接传入的对读数据 */
     warpData?: PageWarpData | null;
     className?: string;
@@ -187,7 +192,7 @@ function buildToc(idx: TextIndex, matchStates: Record<string, import('./Collated
 export const TextReader: React.FC<TextReaderProps> = ({
     id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate,
     title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical, onReportError, revisedAt, backHref, backLabel,
-    resolveWarpData, warpData: warpDataProp,
+    resolveWarpData, warpData: warpDataProp, resolveEntities, onEntityNavigate,
     className, style,
 }) => {
     const { t, convert } = useI18n();
@@ -348,6 +353,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
 
     const images = useChapterImages(resolveImages, effectiveChapter ?? null);
     const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData, warpDataProp, effectiveChapter ?? null, chapterMeta as any);
+    const entitySpans = useChapterEntities(resolveEntities, effectiveChapter ?? null);
     const [selectedCharIds, setSelectedCharIds] = useState<Set<string>>(new Set());
     const [hoveredCharId, setHoveredCharId] = useState<string | null>(null);
     const [showPunctuation, setShowPunctuation] = useState<boolean>(true);
@@ -636,6 +642,9 @@ export const TextReader: React.FC<TextReaderProps> = ({
                         onCharHover={setHoveredCharId}
                         mode="horizontal"
                         showPunctuation={showPunctuation}
+                        entities={prefs.properNames ? entitySpans : undefined}
+                        entityTransport={transport}
+                        onEntityNavigate={onEntityNavigate}
                         onVisiblePageChange={(p) => setActivePage(p)}
                     />
                 </article>

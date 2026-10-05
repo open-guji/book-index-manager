@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useMemo } from 'react';
 import { PageWarpData } from './GujiWarpCanvas';
 import { bim } from '../../styles/tokens';
+import { EntityMark, useEntitySummaryLoader } from '../EntityText/EntityText';
+import { ENTITY_TEXT_CSS } from '../EntityText/entity-text-css';
+import type { EntitySpan } from '../../core/entity-annotations';
+import type { EntitySummaryLoader, EntitySummaryTransport } from '../EntityText/summary';
 
 export interface PunctEntry {
   id: string;
@@ -23,6 +27,35 @@ export interface GujiTextViewerProps {
   mode?: 'vertical' | 'horizontal';
   showPunctuation?: boolean;
   onVisiblePageChange?: (page: number) => void;
+  /**
+   * 实体标注（`adaptEntityJson` 的结果，须带 `anchor`）：按逐字 id 对位，画专名线／书名号，已收录的出摘要卡与条目链接。
+   * 不传或空数组＝不画。
+   */
+  entities?: readonly EntitySpan[];
+  /** 取摘要用的数据源（同详情页的 transport） */
+  entityTransport?: EntitySummaryTransport;
+  loadEntitySummary?: EntitySummaryLoader;
+  /** 条目链接；默认 `/item/<id>` */
+  buildEntityHref?: (id: string) => string;
+  /** 站内跳转（宿主在这里 `preventDefault` 后走自己的路由）；不传则按 href 整页跳 */
+  onEntityNavigate?: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
+}
+
+const defaultHref = (id: string) => `/item/${encodeURIComponent(id)}`;
+
+/** 一段里连续属于同一实体的字归成一组（实体跨段、跨页时按段切开，各段各画各的线） */
+function groupByEntity<T extends { charData: { id: string } }>(
+  chars: T[],
+  entityOfChar: Map<string, EntitySpan>,
+): { entity: EntitySpan | null; chars: T[] }[] {
+  const runs: { entity: EntitySpan | null; chars: T[] }[] = [];
+  for (const c of chars) {
+    const ent = entityOfChar.get(c.charData.id) ?? null;
+    const last = runs[runs.length - 1];
+    if (last && last.entity === ent) last.chars.push(c);
+    else runs.push({ entity: ent, chars: [c] });
+  }
+  return runs;
 }
 
 export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
@@ -37,6 +70,11 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   mode = 'horizontal',
   showPunctuation = true,
   onVisiblePageChange,
+  entities,
+  entityTransport,
+  loadEntitySummary,
+  buildEntityHref,
+  onEntityNavigate,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -112,6 +150,33 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       };
     });
   }, [pages, pageData, punctMap]);
+
+  // 实体按逐字 id 对位：字 id → 实体（范围内每个字都指向它；重叠时取先出现的、更长的）
+  const entityOfChar = useMemo(() => {
+    const map = new Map<string, EntitySpan>();
+    if (!entities || entities.length === 0) return map;
+    const order: string[] = [];
+    for (const pg of reflowPages) for (const para of pg.paragraphs) for (const c of para.chars) order.push(c.charData.id);
+    const index = new Map(order.map((id, i) => [id, i] as const));
+    for (const ent of entities) {
+      if (!ent.anchor) continue;
+      const a = index.get(ent.anchor.start);
+      const b = index.get(ent.anchor.end);
+      if (a === undefined || b === undefined || b < a) continue;
+      for (let i = a; i <= b; i++) if (!map.has(order[i])) map.set(order[i], ent);
+    }
+    return map;
+  }, [entities, reflowPages]);
+
+  const entityLoader = useEntitySummaryLoader(entityTransport, loadEntitySummary);
+  const hasEntities = entityOfChar.size > 0;
+
+  // 点专名里的字＝照常点字（高亮书影），不跳条目；Ctrl／⌘／Shift 点击与键盘回车才进条目页
+  const handleEntityNavigate = (id: string, e: React.MouseEvent<HTMLAnchorElement>) => {
+    const keyboard = e.detail === 0;
+    if (!(keyboard || e.ctrlKey || e.metaKey || e.shiftKey)) { e.preventDefault(); return; }
+    onEntityNavigate?.(id, e);
+  };
 
   // 2. 选区变化监听 (跨标点、跨段落、跨页原生划词，100% 保持坐标映射)
   useEffect(() => {
@@ -216,6 +281,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       ref={containerRef}
       className="guji-text-pane-content"
     >
+      {hasEntities && <style>{ENTITY_TEXT_CSS}</style>}
       <div className="guji-text-reflow-view">
         {reflowPages.map((pGroup, idx) => (
           <section
@@ -249,35 +315,51 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
                 key={para.id}
                 className="guji-reflow-paragraph"
               >
-                {para.chars.map(({ charData: ch, col, afterPuncts }) => {
-                  const isSelected = selectedCharIds.has(ch.id);
-                  const isHovered = hoveredCharId === ch.id;
+                {groupByEntity(para.chars, entityOfChar).map((run, ri) => {
+                  const nodes = run.chars.map(({ charData: ch, col, afterPuncts }) => {
+                    const isSelected = selectedCharIds.has(ch.id);
+                    const isHovered = hoveredCharId === ch.id;
 
-                  return (
-                    <React.Fragment key={ch.id}>
-                      <span
-                        data-char-id={ch.id}
-                        onClick={() => onCharClick?.(ch.id)}
-                        onMouseEnter={() => onCharHover?.(ch.id)}
-                        onMouseLeave={() => onCharHover?.(null)}
-                        className={`guji-text-char ${isSelected ? 'is-selected' : ''} ${
-                          isHovered ? 'is-hovered' : ''
-                        } ${ch.sub ? 'is-sub' : ''}`}
-                        title={`[第${pGroup.page}葉·第${col}列·第${ch.slot || ch.pos}字] ${ch.char}`}
-                      >
-                        {ch.char}
-                      </span>
-                      {/* 外挂注入标点 (不带 data-char-id，对底本坐标完全透明) */}
-                      {afterPuncts.map((p) => (
+                    return (
+                      <React.Fragment key={ch.id}>
                         <span
-                          key={p.id}
-                          className="guji-text-punct"
-                          data-punct-id={p.id}
+                          data-char-id={ch.id}
+                          onClick={() => onCharClick?.(ch.id)}
+                          onMouseEnter={() => onCharHover?.(ch.id)}
+                          onMouseLeave={() => onCharHover?.(null)}
+                          className={`guji-text-char ${isSelected ? 'is-selected' : ''} ${
+                            isHovered ? 'is-hovered' : ''
+                          } ${ch.sub ? 'is-sub' : ''}`}
+                          title={`[第${pGroup.page}葉·第${col}列·第${ch.slot || ch.pos}字] ${ch.char}`}
                         >
-                          {p.mark}
+                          {ch.char}
                         </span>
-                      ))}
-                    </React.Fragment>
+                        {/* 外挂注入标点 (不带 data-char-id，对底本坐标完全透明) */}
+                        {afterPuncts.map((p) => (
+                          <span
+                            key={p.id}
+                            className="guji-text-punct"
+                            data-punct-id={p.id}
+                          >
+                            {p.mark}
+                          </span>
+                        ))}
+                      </React.Fragment>
+                    );
+                  });
+                  if (!run.entity) return <React.Fragment key={`r${ri}`}>{nodes}</React.Fragment>;
+                  return (
+                    <EntityMark
+                      key={`${run.entity.key}@${ri}`}
+                      span={run.entity}
+                      label={run.chars.map((c) => c.charData.char).join('')}
+                      hasBrackets
+                      loader={entityLoader}
+                      buildHref={buildEntityHref ?? defaultHref}
+                      onNavigate={handleEntityNavigate}
+                      renderText={() => nodes}
+                      hoverDelayMs={250}
+                    />
                   );
                 })}
               </p>

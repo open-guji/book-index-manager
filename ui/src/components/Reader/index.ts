@@ -30,3 +30,4 @@ export { GujiInteractiveReader } from './GujiInteractiveReader';
 export type { GujiInteractiveReaderProps } from './GujiInteractiveReader';
 export { useChapterWarpData } from './useChapterWarpData';
 export type { ReaderWarpResolver } from './useChapterWarpData';
+export type { ReaderEntityResolver } from './useChapterEntities';
