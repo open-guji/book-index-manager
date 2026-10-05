@@ -7,7 +7,8 @@ import type { EntitySpan } from '../../core/entity-annotations';
 import type { EntitySummaryLoader, EntitySummaryTransport } from '../EntityText/summary';
 
 export interface PunctEntry {
-  id: string;
+  /** 缺省时按 `<anchor>#<序号>` 补 */
+  id?: string;
   anchor: string;
   pre_char?: string;
   mark: string;
@@ -84,11 +85,13 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   const punctMap = useMemo(() => {
     const map = new Map<string, PunctEntry[]>();
     if (!showPunctuation) return map;
-    for (const p of punctuations) {
+    punctuations.forEach((raw, i) => {
+      // entity／标点 json 里的标点常常没有 id；React key 与 data-punct-id 都要唯一，缺了就按锚点＋序号补
+      const p = raw.id ? raw : { ...raw, id: `${raw.anchor}#${i}` };
       const list = map.get(p.anchor) || [];
       list.push(p);
       map.set(p.anchor, list);
-    }
+    });
     return map;
   }, [punctuations, showPunctuation]);
 
