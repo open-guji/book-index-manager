@@ -87,6 +87,20 @@ import 'book-index-ui/styles'                // CSS（用到组件时引入）
 
 **`resolveImages` 要用 `useCallback`（或模块级函数）包一层**：组件按 `[resolveImages, 当前卷]` 重新取书影，每次渲染都传一个新函数会反复请求。
 
+### 正文实体标注（`EntityText`，overview#389）
+
+给一段正文和实体区间：人名、地名、官职等画直线专名线，书名画波浪线（书名号样式）；已收录的实体是 `/item/<id>` 链接，悬停或聚焦弹出摘要卡（取法同详情页 `transport.getItem`），Esc 收起。
+
+```tsx
+import { EntityText, adaptEntityJson } from 'book-index-ui';
+
+const spans = adaptEntityJson(entityJson);   // entity.json → EntitySpan[]；格式定稿后只改这一层
+<EntityText text={paragraph} entities={spans} offsets="plain" plainBase={0}
+            transport={storage} onNavigate={(id, e) => { e.preventDefault(); router.push(`/item/${id}`); }} />
+```
+
+entity.json 的 `span` 是**纯字**偏移（不计标点空白），配 `offsets="plain"`；正文只是整卷一段时用 `plainBase` 给出本段起点。`book-index://Work/<id>` 等 URI 由 `bookIndexUriToId` 转站内 id。一页铺很多段时设 `injectStyles={false}`，在页面上放一次 `<style>{ENTITY_TEXT_CSS}</style>`。
+
 ### 数据层（`book-index-ui/storage`）
 
 | 类 | 用途 |

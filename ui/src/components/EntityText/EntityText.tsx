@@ -1,0 +1,222 @@
+/**
+ * EntityText：给一段正文和它的实体区间，画专名线 / 书名号，悬停出摘要卡，点击进条目页（overview#389 E1）。
+ *
+ * - 区间用 `core/entity-annotations` 的 `EntitySpan`；entity.json 先过 `adaptEntityJson()`。
+ * - 已收录（有 targetId）的实体是 `<a href="/item/<id>">`：Tab 可达，聚焦即出卡，Esc 收起，回车进条目页。
+ *   未收录的只画线，不进 Tab 序。
+ * - 摘要取法同详情页：`transport.getItem(id)`；也可由宿主给 `loadSummary` 自取。
+ * - 不碰阅读器现有文件；接进 Reader 由宿主 / 后续接线完成。
+ */
+import React, { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useI18n } from '../../i18n';
+import {
+    remapPlainOffsets,
+    segmentEntities,
+    type EntityKind,
+    type EntitySpan,
+} from '../../core/entity-annotations';
+import { ENTITY_TEXT_CSS } from './entity-text-css';
+import {
+    cachedSummary,
+    transportSummaryLoader,
+    type EntitySummary,
+    type EntitySummaryLoader,
+    type EntitySummaryTransport,
+} from './summary';
+
+export const defaultEntityHref = (id: string) => `/item/${encodeURIComponent(id)}`;
+
+/** 卡片上的类别名（繁体原文，简体模式经 convert 转换） */
+const KIND_LABEL: Record<EntityKind, string> = {
+    work: '書名',
+    person: '人名',
+    place: '地名',
+    office: '官職',
+    dynasty: '朝代',
+    other: '專名',
+};
+
+const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+
+export interface EntityTextProps {
+    /** 正文 */
+    text: string;
+    /** 实体区间（`adaptEntityJson(entityJson)` 的结果） */
+    entities: readonly EntitySpan[];
+    /**
+     * 区间偏移的基准：`text` = `text` 的下标（默认）；
+     * `plain` = 纯字下标（entity.json 原样的 span，不计标点空白），组件自行换算。
+     */
+    offsets?: 'text' | 'plain';
+    /** `offsets="plain"` 且本段只是整卷的一部分时，本段首个计数字在整卷纯字序中的位置 */
+    plainBase?: number;
+    /** 取摘要用的数据源（同详情页的 transport） */
+    transport?: EntitySummaryTransport;
+    /** 自定义摘要取数；给了就不用 transport */
+    loadSummary?: EntitySummaryLoader;
+    /** 条目链接；默认 `/item/<id>` */
+    buildHref?: (id: string) => string;
+    /** 点击实体；宿主做站内路由时在这里 `e.preventDefault()` 再跳 */
+    onNavigate?: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
+    /** 普通文字的渲染（高亮、繁简等）；实体文字也走它 */
+    renderText?: (s: string) => React.ReactNode;
+    /** 悬停多久出卡（毫秒） */
+    hoverDelayMs?: number;
+    /** 是否随组件输出 `<style>`；一页里铺很多段时可关掉，由宿主放一次 `ENTITY_TEXT_CSS` */
+    injectStyles?: boolean;
+    className?: string;
+}
+
+const identity = (s: string): React.ReactNode => s;
+
+export const EntityText: React.FC<EntityTextProps> = ({
+    text, entities, offsets = 'text', plainBase = 0, transport, loadSummary,
+    buildHref = defaultEntityHref, onNavigate, renderText = identity, hoverDelayMs = 250,
+    injectStyles = true, className,
+}) => {
+    const segments = useMemo(() => {
+        const spans = offsets === 'plain' ? remapPlainOffsets(text, entities, plainBase) : entities;
+        return segmentEntities(text, spans);
+    }, [text, entities, offsets, plainBase]);
+
+    const loader = useMemo<{ owner: object; load: EntitySummaryLoader } | null>(() => {
+        if (loadSummary) return { owner: loadSummary, load: loadSummary };
+        if (transport) return { owner: transport, load: transportSummaryLoader(transport) };
+        return null;
+    }, [loadSummary, transport]);
+
+    return (
+        <span className={className ? `bim-et-root ${className}` : 'bim-et-root'}>
+            {injectStyles && <style>{ENTITY_TEXT_CSS}</style>}
+            {segments.map(seg => seg.type === 'text'
+                ? <React.Fragment key={`t${seg.start}`}>{renderText(seg.text)}</React.Fragment>
+                : (
+                    <EntityMark
+                        key={`${seg.span.key}@${seg.start}`}
+                        span={seg.span}
+                        label={seg.text}
+                        hasBrackets={text[seg.start - 1] === '《' && text[seg.start + seg.text.length] === '》'}
+                        loader={loader}
+                        buildHref={buildHref}
+                        onNavigate={onNavigate}
+                        renderText={renderText}
+                        hoverDelayMs={hoverDelayMs}
+                    />
+                ))}
+        </span>
+    );
+};
+
+interface EntityMarkProps {
+    span: EntitySpan;
+    label: string;
+    /** 正文本身已带书名号，就不再补隐藏的《》 */
+    hasBrackets: boolean;
+    loader: { owner: object; load: EntitySummaryLoader } | null;
+    buildHref: (id: string) => string;
+    onNavigate?: EntityTextProps['onNavigate'];
+    renderText: (s: string) => React.ReactNode;
+    hoverDelayMs: number;
+}
+
+const EntityMark: React.FC<EntityMarkProps> = ({
+    span, label, hasBrackets, loader, buildHref, onNavigate, renderText, hoverDelayMs,
+}) => {
+    const cardId = useId();
+    const [open, setOpen] = useState(false);
+    const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const cls = `bim-et bim-et-${span.kind}`;
+    const brackets = span.kind === 'work' && !hasBrackets;
+    const inner = (
+        <>
+            {brackets && <span className="bim-et-sr">《</span>}
+            {renderText(label)}
+            {brackets && <span className="bim-et-sr">》</span>}
+        </>
+    );
+
+    const clear = () => { if (timer.current) { clearTimeout(timer.current); timer.current = null; } };
+    useEffect(() => clear, []);
+
+    const show = useCallback((delay: number) => {
+        clear();
+        if (delay <= 0) setOpen(true);
+        else timer.current = setTimeout(() => setOpen(true), delay);
+    }, []);
+    const hide = useCallback(() => { clear(); setOpen(false); }, []);
+
+    if (!span.targetId) return <span className={cls}>{inner}</span>;
+    const id = span.targetId;
+
+    return (
+        <span
+            className="bim-et-w"
+            onMouseEnter={() => show(hoverDelayMs)}
+            onMouseLeave={hide}
+            onKeyDown={e => { if (e.key === 'Escape' && open) { e.stopPropagation(); hide(); } }}
+        >
+            <a
+                className={cls}
+                href={buildHref(id)}
+                data-entity-id={id}
+                aria-describedby={open ? cardId : undefined}
+                onFocus={() => show(0)}
+                onBlur={hide}
+                onClick={onNavigate ? e => onNavigate(id, e) : undefined}
+            >
+                {inner}
+            </a>
+            {open && <EntityCard id={cardId} entityId={id} span={span} loader={loader} />}
+        </span>
+    );
+};
+
+type CardState =
+    | { status: 'loading' }
+    | { status: 'ready'; summary: EntitySummary | null }
+    | { status: 'error' };
+
+const EntityCard: React.FC<{
+    id: string;
+    entityId: string;
+    span: EntitySpan;
+    loader: { owner: object; load: EntitySummaryLoader } | null;
+}> = ({ id, entityId, span, loader }) => {
+    const { convert } = useI18n();
+    const ref = useRef<HTMLSpanElement | null>(null);
+    const [align, setAlign] = useState<'start' | 'end'>('start');
+    const [state, setState] = useState<CardState>(loader ? { status: 'loading' } : { status: 'ready', summary: null });
+
+    useEffect(() => {
+        if (!loader) return;
+        let cancelled = false;
+        setState({ status: 'loading' });
+        cachedSummary(loader.owner, loader.load, entityId)
+            .then(summary => { if (!cancelled) setState({ status: 'ready', summary }); })
+            .catch(() => { if (!cancelled) setState({ status: 'error' }); });
+        return () => { cancelled = true; };
+    }, [loader, entityId]);
+
+    // 右侧放不下就改为右对齐
+    useIsoLayoutEffect(() => {
+        const el = ref.current;
+        if (!el || typeof window === 'undefined') return;
+        const r = el.getBoundingClientRect();
+        const vw = document.documentElement.clientWidth || window.innerWidth;
+        if (r.right > vw - 8 && align === 'start') setAlign('end');
+    }, [state, align]);
+
+    const summary = state.status === 'ready' ? state.summary : null;
+    const title = summary?.title ?? span.canonicalName ?? span.text;
+
+    return (
+        <span ref={ref} id={id} role="tooltip" className="bim-et-card" data-align={align}>
+            <span className="bim-et-card-k">{convert(KIND_LABEL[span.kind])}</span>
+            {title && <span className="bim-et-card-t">{convert(title)}</span>}
+            {summary?.meta && <span className="bim-et-card-m">{convert(summary.meta)}</span>}
+            {summary?.description && <span className="bim-et-card-d">{convert(summary.description)}</span>}
+            {state.status === 'loading' && <span className="bim-et-card-s">{convert('載入中…')}</span>}
+            {state.status === 'error' && <span className="bim-et-card-s">{convert('摘要載入失敗')}</span>}
+        </span>
+    );
+};
