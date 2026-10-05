@@ -389,4 +389,124 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 :root[data-theme="ink"] .bim-rd-t[aria-pressed="true"], :root[data-theme="ink"] .bim-rd-t[aria-current="true"] {
   text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px;
 }
+
+/* ── 古籍 WebGL 透视矫正对读与外挂标点 (interactive_warp) ── */
+.bim-rd[data-warp="true"] .bim-rd-img {
+  width: clamp(300px, 32vw, 560px);
+  padding: 16px 0 16px 20px;
+}
+.bim-rd[data-warp="true"] .bim-rd-text {
+  padding: 32px 48px 96px 40px;
+}
+.bim-rd[data-warp="true"] .bim-rd-col {
+  max-width: 50em;
+}
+
+.guji-warp-wrapper {
+  position: relative;
+  display: block;
+  user-select: none;
+  background: ${bim('warp-bg')};
+  box-shadow: ${bim('warp-box-shadow')};
+  max-height: 100%;
+  max-width: 100%;
+}
+.guji-warp-wrapper canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.guji-warp-wrapper svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+.guji-text-pane-content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: ${bim('bg')};
+  border-radius: 6px;
+  padding: 20px 24px;
+  box-sizing: border-box;
+}
+.guji-text-reflow-view {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  user-select: text;
+}
+.guji-reflow-paragraph {
+  margin: 0 0 1.4rem 0;
+  text-indent: 2.7rem;
+  font-family: var(--bim-font-serif, "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif);
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+  color: ${bim('ink')};
+  text-align: justify;
+}
+.guji-text-scroll-v {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  height: 100%;
+  width: max-content;
+  min-width: 100%;
+  padding: 10px 16px;
+  box-sizing: border-box;
+}
+.guji-text-col {
+  display: inline-block;
+  vertical-align: top;
+  font-family: var(--bim-font-serif, "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif);
+  font-size: 1.35rem;
+  letter-spacing: 0;
+  margin-left: 18px;
+  user-select: text;
+}
+.guji-text-char {
+  display: inline;
+  cursor: text;
+  padding: 0;
+  margin: 0;
+  transition: background-color 0.15s ease;
+}
+.guji-text-punct {
+  display: inline;
+  color: ${bim('meta-fg')};
+  font-family: -apple-system, var(--bim-font-serif, "Songti SC", "STSong", serif);
+  font-weight: 500;
+  user-select: text;
+}
+.guji-text-pane-content ::selection {
+  background: ${bim('selection-bg')};
+  color: inherit;
+}
+.guji-text-char.is-selected {
+  background-color: ${bim('selection-bg')};
+  border-radius: 2px;
+}
+.guji-text-char.is-hovered {
+  background-color: ${bim('row-hover-bg')};
+}
+.guji-text-char.is-sub {
+  font-size: 0.8em;
+  opacity: 0.9;
+}
+.bim-rd-badge-warp {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: ${bim('warp-badge-bg')};
+  color: ${bim('warp-badge-fg')};
+  border: 1px solid ${bim('warp-badge-bd')};
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-left: 6px;
+}
 `;
+

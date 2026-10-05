@@ -102,11 +102,13 @@ export interface ReaderShellProps {
     onVersionChange?: (key: string) => void;
     /** 正文末尾的「出处 · 授权」一行；默认有 versions 时显示，宿主自己画出处时可关掉 */
     versionSource?: boolean;
-    /**
-     * 切版本后不自动回到新目录第一卷（默认会）。宿主自己决定切版本后停在哪一章
-     * （如尽量停在同一章号，见 `matchChapterAcrossVersions`）时设为 true。
-     */
     keepChapterOnVersionChange?: boolean;
+    /** 自定义书影/对读面板（如 WebGL 透视矫正画布）；传入时优先渲染此项，不渲染默认 ImagePanel */
+    customImagePanel?: React.ReactNode;
+    /** 工具条上的额外控制项（如标点开关、排版模式等） */
+    toolbarExtra?: React.ReactNode;
+    /** 是否处于 interactive_warp 模式 */
+    isWarpMode?: boolean;
 
     children: React.ReactNode;
     className?: string;
@@ -241,6 +243,7 @@ export function ReaderShell({
     pager = true,
     pagerUnit: pagerUnitProp,
     versions, currentVersionKey, onVersionChange, versionSource = true, keepChapterOnVersionChange = false,
+    customImagePanel, toolbarExtra, isWarpMode,
     children, className, style,
 }: ReaderShellProps) {
     const { t, convert } = useI18n();
@@ -279,7 +282,7 @@ export function ReaderShell({
     const tocOpen = tocState === 'auto' ? isWide : tocState === 'open';
     const drawer = !isWide;
 
-    const hasImages = !!images && images.length > 0;
+    const hasImages = !!customImagePanel || (!!images && images.length > 0);
     const [imgState, setImgState] = useState<PanelState>(imagePanel);
     useEffect(() => { setImgState(imagePanel); }, [imagePanel]);
     const imgOpen = imgState === 'auto' ? (hasImages || !!imagesLoading) : imgState === 'open';
@@ -370,6 +373,7 @@ export function ReaderShell({
             data-toc={tocState}
             data-img={imgOpen ? 'open' : 'closed'}
             data-bb={showBottomBar ? '' : undefined}
+            data-warp={isWarpMode ? 'true' : undefined}
             style={rootStyle}
         >
             <style>{READER_CSS}</style>
@@ -511,6 +515,7 @@ export function ReaderShell({
                             onClick={() => onPrefsChange({ writingMode: prefs.writingMode === 'vertical' ? 'horizontal' : 'vertical' })}
                         >{t('reader.vertical')}</button>
                     )}
+                    {toolbarExtra}
                 </div>
             </div>
 
@@ -543,11 +548,13 @@ export function ReaderShell({
 
                 <aside className="bim-rd-img" aria-label={t('reader.images')}>
                     {imgOpen && (
-                        <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} />
+                        customImagePanel ? customImagePanel : (
+                            <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} />
+                        )
                     )}
                 </aside>
 
-                <div className="bim-rd-text" id={textId} ref={textRef} tabIndex={-1} data-rail={rail || onReportError ? 'true' : undefined}>
+                <div className="bim-rd-text" id={textId} ref={textRef} tabIndex={-1} data-rail={rail && !isWarpMode ? 'true' : undefined}>
                     <div className="bim-rd-col">
                         {children}
                         {versionSource && version && (version.sourceName || version.license) && (
@@ -593,7 +600,7 @@ export function ReaderShell({
                             </nav>
                         )}
                     </div>
-                    {(rail || onReportError) && (
+                    {(rail && !isWarpMode) && (
                         <aside className="bim-rd-rail" aria-label={t('reader.rail')}>
                             {rail}
                             {onReportError && (

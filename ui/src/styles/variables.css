@@ -264,6 +264,30 @@
     /* ==== 阅读器（整理本 / 全文） ==== */
     /* 宿主吸顶导航的高度：阅读器工具条、目录与书影侧栏在它下面吸顶（如 60px） */
     --bim-reader-top: 0px;
+    /* 古籍矫正底本书影画布底色 */
+    --bim-warp-bg: #faf8f5;
+    /* 古籍底本书影浮雕阴影 */
+    --bim-warp-box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    /* 古籍对读字框选中高亮底色 */
+    --bim-warp-sel-bg: rgba(196, 148, 76, 0.45);
+    /* 古籍对读字框选中描边 */
+    --bim-warp-sel-stroke: #a06e1c;
+    /* 古籍对读字框悬停高亮底色 */
+    --bim-warp-hover-bg: rgba(217, 185, 106, 0.25);
+    /* 古籍对读字框悬停描边 */
+    --bim-warp-hover-stroke: #c4944c;
+    /* 图文对读徽章背景 */
+    --bim-warp-badge-bg: rgba(184, 134, 54, 0.12);
+    /* 图文对读徽章文字颜色 */
+    --bim-warp-badge-fg: #8c6820;
+    /* 图文对读徽章边框 */
+    --bim-warp-badge-bd: rgba(184, 134, 54, 0.3);
+    /* 版心分界线 */
+    --bim-warp-banxin-border: #8a8070;
+    /* 版心中缝对折线 */
+    --bim-warp-banxin-fold: rgba(160, 110, 28, 0.65);
+    /* 版心外边线 */
+    --bim-warp-banxin-outer: #c9c3b4;
 
     /* ==== 反馈浮钮（2026-09-28 Q5） ==== */
     /* 层级：低于页面抽屉、弹层（本包对话框为 1000） */

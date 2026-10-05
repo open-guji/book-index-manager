@@ -149,7 +149,7 @@ export type { TextApi } from './core/text-api';
 export {
     isTextKey, isChapterSegment, matchChapterAcrossVersions, pickTextVersion, textVersionLabel,
 } from './core/text-model';
-export type { TextKind, TextVersion, TextManifest, TextChapter, TextIndex, TextChapterContent } from './core/text-model';
+export type { TextKind, ReadingCapability, TextVersion, TextManifest, TextChapter, TextIndex, TextChapterContent } from './core/text-model';
 // 阅读器（整理本 / 全文共用的外壳、目录、书影、正文排版）
 export * from './components/Reader';
 // 正文实体标注（专名线 / 书名号 + 摘要卡），entity.json 适配见 core/entity-annotations

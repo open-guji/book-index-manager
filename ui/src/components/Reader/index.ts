@@ -18,3 +18,15 @@ export type {
     ReaderVersion,
     ReaderReportContext,
 } from './types';
+
+// 古籍透视矫正与图文对读 (Guji Warp & Interactive Reader)
+export { GujiWarpCanvas } from './GujiWarpCanvas';
+export type { PageWarpData, CharGeometry, ColumnGeometry, BanxinData, GujiWarpCanvasProps } from './GujiWarpCanvas';
+export { GujiTextViewer } from './GujiTextViewer';
+export type { PunctEntry, GujiTextViewerProps } from './GujiTextViewer';
+export { StripWarpRenderer } from './StripWarpRenderer';
+export type { StripTransform } from './StripWarpRenderer';
+export { GujiInteractiveReader } from './GujiInteractiveReader';
+export type { GujiInteractiveReaderProps } from './GujiInteractiveReader';
+export { useChapterWarpData } from './useChapterWarpData';
+export type { ReaderWarpResolver } from './useChapterWarpData';
