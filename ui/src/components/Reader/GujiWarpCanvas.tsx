@@ -509,6 +509,7 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
           return (
             <rect
               key={item.id}
+              data-selected={isSelected ? 'true' : undefined}
               x={item.x}
               y={item.y}
               width={item.w}

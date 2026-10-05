@@ -77,6 +77,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   onEntityNavigate,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  // 点字／划词之后一小段时间内，滚动不改书影页：以读者点的字所在页为准，免得点在页首时被上一页抢回去
+  const pageLockUntil = useRef(0);
 
   // 标点索引表: anchor -> PunctEntry[]
   const punctMap = useMemo(() => {
@@ -208,6 +210,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       });
 
       if (selected.length > 0) {
+        pageLockUntil.current = Date.now() + 1200;
         onSelectionChange?.(selected);
       }
     };
@@ -262,7 +265,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         }
       }
 
-      if (currentVisible !== -1) {
+      if (currentVisible !== -1 && Date.now() >= pageLockUntil.current) {
         onVisiblePageChange(currentVisible);
       }
     };
@@ -316,7 +319,10 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
                 className="guji-reflow-paragraph"
               >
                 {groupByEntity(para.chars, entityOfChar).map((run, ri) => {
-                  const nodes = run.chars.map(({ charData: ch, col, afterPuncts }) => {
+                  const nodes = run.chars.map(({ charData: ch, col, afterPuncts: allPuncts }, ci) => {
+                    // 专名线不画到末字后面的标点上：实体末字的标点放到链接外面
+                    const isLastOfEntity = !!run.entity && ci === run.chars.length - 1;
+                    const afterPuncts = isLastOfEntity ? [] : allPuncts;
                     const isSelected = selectedCharIds.has(ch.id);
                     const isHovered = hoveredCharId === ch.id;
 
@@ -324,7 +330,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
                       <React.Fragment key={ch.id}>
                         <span
                           data-char-id={ch.id}
-                          onClick={() => onCharClick?.(ch.id)}
+                          onClick={() => { pageLockUntil.current = Date.now() + 1200; onCharClick?.(ch.id); }}
                           onMouseEnter={() => onCharHover?.(ch.id)}
                           onMouseLeave={() => onCharHover?.(null)}
                           className={`guji-text-char ${isSelected ? 'is-selected' : ''} ${
@@ -348,9 +354,12 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
                     );
                   });
                   if (!run.entity) return <React.Fragment key={`r${ri}`}>{nodes}</React.Fragment>;
+                  const tail = run.chars[run.chars.length - 1].afterPuncts.map((p) => (
+                    <span key={p.id} className="guji-text-punct" data-punct-id={p.id}>{p.mark}</span>
+                  ));
                   return (
+                    <React.Fragment key={`${run.entity.key}@${ri}`}>
                     <EntityMark
-                      key={`${run.entity.key}@${ri}`}
                       span={run.entity}
                       label={run.chars.map((c) => c.charData.char).join('')}
                       hasBrackets
@@ -360,6 +369,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
                       renderText={() => nodes}
                       hoverDelayMs={250}
                     />
+                    {tail}
+                    </React.Fragment>
                   );
                 })}
               </p>

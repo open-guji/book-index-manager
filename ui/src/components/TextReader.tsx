@@ -526,7 +526,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px 6px', fontSize: 12, color: bim('meta-fg') }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                             <span style={{ fontWeight: 600 }}>底本书影</span>
-                            <span style={{ fontSize: 11, padding: '1px 6px', background: bim('rule'), borderRadius: 10 }}>第 {activePage} 葉</span>
+                            <span data-warp-page={activePage} style={{ fontSize: 11, padding: '1px 6px', background: bim('rule'), borderRadius: 10 }}>第 {activePage} 葉</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             {selectedCharIds.size > 0 && (
