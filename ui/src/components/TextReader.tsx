@@ -34,7 +34,7 @@ import type { JuanCacheEntry, JuanView, WorkLabelCache } from './CollatedEdition
 import {
     JuanRail, JuanReading, groupFileCount, groupMatchState, hasSectionText, useCrossJuanSearch,
 } from './CollatedEdition';
-import { GujiWarpCanvas, type PageWarpData } from './Reader/GujiWarpCanvas';
+import { GujiWarpCanvas, loadImage, type PageWarpData } from './Reader/GujiWarpCanvas';
 import { GujiTextViewer } from './Reader/GujiTextViewer';
 import { useChapterWarpData, type ReaderWarpResolver } from './Reader/useChapterWarpData';
 import { useChapterEntities, type ReaderEntityResolver } from './Reader/useChapterEntities';
@@ -391,15 +391,27 @@ export const TextReader: React.FC<TextReaderProps> = ({
         }
     }, []);
 
-    // 当前活动页对应的书影图片 URL
-    const activeImageUrl = useMemo(() => {
+    // 书影图片 URL：只有带真透视数据的那一页（warpData 本页）要原图精度；其余页整幅平铺，阅读档（1200 宽）足够，
+    // 解码与上传纹理都轻得多。
+    const warpPageNo = warpData ? parseInt(warpData.page_id.split(':')[1] || '', 10) : NaN;
+    const imageUrlOfPage = useCallback((page: number): string => {
         const list = images.images;
         if (list && list.length > 0) {
-            const found = list.find(img => img.pageNo === activePage) ?? list[activePage - 1];
-            if (found) return found.hiresUrl ?? found.url;
+            const found = list.find(img => img.pageNo === page) ?? list[page - 1];
+            if (found) return page === warpPageNo ? (found.hiresUrl ?? found.url) : found.url;
         }
-        return (warpData as any)?.imageUrl ?? '';
-    }, [images.images, activePage, warpData]);
+        return page === warpPageNo ? ((warpData as any)?.imageUrl ?? '') : '';
+    }, [images.images, warpData, warpPageNo]);
+    const activeImageUrl = useMemo(() => imageUrlOfPage(activePage), [imageUrlOfPage, activePage]);
+
+    // 预取前后几页的书影：滚动时下一页已在缓存里，不用等网络
+    useEffect(() => {
+        if (!warpData) return;
+        for (const d of [1, -1, 2, 3]) {
+            const u = imageUrlOfPage(activePage + d);
+            if (u) void loadImage(u);
+        }
+    }, [warpData, activePage, imageUrlOfPage]);
 
     // 计算当前页是否具备原生 warpData，若为当前页则渲染带网格透视的 pageData，否则构造当前页的降级 pageData
     const activePageData = useMemo<PageWarpData | null>(() => {
@@ -408,26 +420,47 @@ export const TextReader: React.FC<TextReaderProps> = ({
         if (activePage === warpPageNum) {
             return warpData;
         }
-        // 查找 pages 中是否有对应页的数据
+        // 没有本页透视数据：整幅原图铺满，字格框用本册版框模板（取自带透视数据的那一页）按比例估出——
+        // 版框与 21 格行距各页一致，只是估的不是逐字真实位置（夹注左右各半格）
         const pInfo = (warpData as any).pages?.find((p: any) => p.page === activePage);
+        const [tw, th] = warpData.image_size || [2386, 3082];
+        const img = images.images?.find(i => i.pageNo === activePage) ?? images.images?.[activePage - 1];
+        const iw = img?.width ?? tw;
+        const ih = img?.height ?? th;
+        const sx = iw / tw, sy = ih / th;
+        const tmpl = new Map<number, { x0: number; x1: number; top: number; slotH: number }>();
+        for (const c of warpData.columns) {
+            const xs = (c.strips || []).flatMap(st => st.srcQuad.map(pt => pt[0]));
+            if (xs.length === 0) continue;
+            const top = (c as any).top_y ?? 0;
+            const bottom = (c as any).bottom_y ?? top + c.warped_h;
+            tmpl.set(c.col, { x0: Math.min(...xs), x1: Math.max(...xs), top, slotH: (bottom - top) / 21 });
+        }
         return {
             page_id: `vol02:${activePage}`,
             title: `欽定四庫全書總目 · 卷首二（第${activePage}葉）`,
-            image_size: [2386, 3082],
-            total_warped_w: 191 * 9,
-            columns: pInfo ? pInfo.columns.map((col: any) => ({
-                col: col.col,
-                warped_w: 191,
-                warped_h: 2473,
-                offset_x: (9 - col.col) * 191,
-                strips: [],
-                chars: col.chars.map((ch: any) => ({
-                    ...ch,
-                    bbox_col: [20, (ch.slot ?? ch.pos ?? 0) * 110, 170, (ch.slot ?? ch.pos ?? 0) * 110 + 100],
-                }))
-            })) : [],
+            image_size: [iw, ih],
+            total_warped_w: iw,
+            columns: pInfo ? pInfo.columns.map((col: any) => {
+                const t = tmpl.get(col.col) ?? { x0: 0, x1: 0, top: 0, slotH: 118 };
+                return {
+                    col: col.col,
+                    warped_w: iw,
+                    warped_h: ih,
+                    offset_x: 0,
+                    strips: [],
+                    chars: col.chars.map((ch: any) => {
+                        const slot = ch.slot ?? ch.pos ?? 0;
+                        const y0 = (t.top + (slot - 1) * t.slotH) * sy;
+                        const mid = (t.x0 + t.x1) / 2;
+                        // 夹注：a 在右半格、b 在左半格
+                        const [xa, xb] = ch.sub === 'a' ? [mid, t.x1] : ch.sub === 'b' ? [t.x0, mid] : [t.x0, t.x1];
+                        return { ...ch, bbox_col: [xa * sx, y0, xb * sx, y0 + t.slotH * sy] };
+                    }),
+                };
+            }) : [],
         };
-    }, [warpData, activePage]);
+    }, [warpData, activePage, images.images]);
 
     const { entryTitle, authors } = useEntryInfo(id, transport, title === undefined);
 

@@ -49,6 +49,32 @@ export interface GujiWarpCanvasProps {
   onCharHover?: (charId: string | null) => void;
 }
 
+/** 书影图片缓存（按 URL）：预取与正式加载共用，翻回已看过的页不再请求、不再解码 */
+const IMAGE_CACHE = new Map<string, Promise<HTMLImageElement | null>>();
+const IMAGE_CACHE_MAX = 24;
+
+export function loadImage(url: string): Promise<HTMLImageElement | null> {
+  let p = IMAGE_CACHE.get(url);
+  if (p) {
+    IMAGE_CACHE.delete(url); // 刷新到最近使用
+    IMAGE_CACHE.set(url, p);
+    return p;
+  }
+  p = new Promise<HTMLImageElement | null>((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      // 提前解码，贴纹理时不用再等
+      (img.decode ? img.decode().catch(() => undefined) : Promise.resolve()).then(() => resolve(img));
+    };
+    img.onerror = () => { IMAGE_CACHE.delete(url); resolve(null); };
+    img.src = url;
+  });
+  IMAGE_CACHE.set(url, p);
+  while (IMAGE_CACHE.size > IMAGE_CACHE_MAX) IMAGE_CACHE.delete(IMAGE_CACHE.keys().next().value as string);
+  return p;
+}
+
 export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   imageUrl,
   pageData,
@@ -67,8 +93,10 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   const mainTextureRef = useRef<WebGLTexture | null>(null);
   const mateTextureRef = useRef<WebGLTexture | null>(null);
 
-  const [mainLoaded, setMainLoaded] = useState(false);
-  const [mateLoaded, setMateLoaded] = useState(false);
+  const [mainLoaded, setMainLoaded] = useState(0);
+  const [mateLoaded, setMateLoaded] = useState(0);
+  // 当前主纹理对应哪张图；图换了而新纹理还没到时 draw() 不动画布
+  const loadedMainUrl = useRef('');
 
   const maxWarpedH = useMemo(() => {
     return Math.max(...pageData.columns.map((c) => c.warped_h), 2440);
@@ -137,6 +165,7 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   const draw = useCallback(() => {
     const renderer = rendererRef.current;
     if (!renderer || !canvasRef.current) return;
+    if (imageUrl && loadedMainUrl.current !== imageUrl) return;
 
     // 清屏，暖纸底色
     renderer.clear(totalDisplayW, totalDisplayH);
@@ -307,25 +336,25 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
         0.65
       );
     }
-  }, [pageData, banxin, totalDisplayW, totalDisplayH, totalWarpedW, maxWarpedH, contentW, margins, preserveMargins]);
+  }, [imageUrl, pageData, banxin, totalDisplayW, totalDisplayH, totalWarpedW, maxWarpedH, contentW, margins, preserveMargins]);
 
-  // 初始化单一 WebGL 渲染器
+  // 初始化单一 WebGL 渲染器：只在挂载时建一次。翻页时只换纹理、重画，不销毁 context（原先每翻一页重建一次，是卡顿主因之一）
+  const drawRef = useRef(draw);
+  drawRef.current = draw;
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    const setup = (r: StripWarpRenderer) => {
+      mainTextureRef.current = mainImgRef.current ? r.createTexture(mainImgRef.current) : null;
+      mateTextureRef.current = mateImgRef.current ? r.createTexture(mateImgRef.current) : null;
+      drawRef.current();
+    };
+
     try {
       const renderer = new StripWarpRenderer(canvas);
       rendererRef.current = renderer;
-
-      // 如果图片已经就绪，立即创建纹理并绘制
-      if (mainImgRef.current) {
-        mainTextureRef.current = renderer.createTexture(mainImgRef.current);
-      }
-      if (mateImgRef.current) {
-        mateTextureRef.current = renderer.createTexture(mateImgRef.current);
-      }
-      draw();
+      setup(renderer);
     } catch (e) {
       console.error('Failed to init WebGL renderer:', e);
     }
@@ -338,13 +367,7 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
       console.info('WebGL context restored, re-initializing...');
       if (canvasRef.current) {
         rendererRef.current = new StripWarpRenderer(canvasRef.current);
-        if (mainImgRef.current) {
-          mainTextureRef.current = rendererRef.current.createTexture(mainImgRef.current);
-        }
-        if (mateImgRef.current) {
-          mateTextureRef.current = rendererRef.current.createTexture(mateImgRef.current);
-        }
-        draw();
+        setup(rendererRef.current);
       }
     };
 
@@ -361,73 +384,43 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
         rendererRef.current = null;
       }
     };
-  }, [draw]);
+  }, []);
 
-  // 加载主图 (本文)
+  // 加载主图（本文）：走共用的图片缓存；新图没到之前不重画，继续显示上一页，免得闪空白
   useEffect(() => {
     if (!imageUrl) return;
     let active = true;
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = imageUrl;
-
-    const onLoad = () => {
-      if (!active) return;
+    loadImage(imageUrl).then((img) => {
+      if (!active || !img) return;
       mainImgRef.current = img;
-      if (rendererRef.current) {
-        if (mainTextureRef.current) {
-          rendererRef.current.deleteTexture(mainTextureRef.current);
-        }
-        mainTextureRef.current = rendererRef.current.createTexture(img);
-        draw();
+      loadedMainUrl.current = imageUrl;
+      const r = rendererRef.current;
+      if (r) {
+        r.deleteTexture(mainTextureRef.current);
+        mainTextureRef.current = r.createTexture(img);
       }
-      setMainLoaded(true);
-    };
+      setMainLoaded((n) => n + 1);
+    });
+    return () => { active = false; };
+  }, [imageUrl]);
 
-    if (img.complete && img.naturalWidth > 0) {
-      onLoad();
-    } else {
-      img.onload = onLoad;
-      img.onerror = (err) => console.error('Failed to load main image:', imageUrl, err);
-    }
-
-    return () => {
-      active = false;
-    };
-  }, [imageUrl, draw]);
-
-  // 加载对偶页图 (版心互补)
+  // 加载对偶页图（版心互补）
+  const mateUrl = banxin?.mate_image_url;
   useEffect(() => {
-    if (!banxin?.mate_image_url) return;
+    if (!mateUrl) return;
     let active = true;
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = banxin.mate_image_url;
-
-    const onLoad = () => {
-      if (!active) return;
+    loadImage(mateUrl).then((img) => {
+      if (!active || !img) return;
       mateImgRef.current = img;
-      if (rendererRef.current) {
-        if (mateTextureRef.current) {
-          rendererRef.current.deleteTexture(mateTextureRef.current);
-        }
-        mateTextureRef.current = rendererRef.current.createTexture(img);
-        draw();
+      const r = rendererRef.current;
+      if (r) {
+        r.deleteTexture(mateTextureRef.current);
+        mateTextureRef.current = r.createTexture(img);
       }
-      setMateLoaded(true);
-    };
-
-    if (img.complete && img.naturalWidth > 0) {
-      onLoad();
-    } else {
-      img.onload = onLoad;
-      img.onerror = (err) => console.error('Failed to load mate image:', banxin.mate_image_url, err);
-    }
-
-    return () => {
-      active = false;
-    };
-  }, [banxin?.mate_image_url, draw]);
+      setMateLoaded((n) => n + 1);
+    });
+    return () => { active = false; };
+  }, [mateUrl]);
 
   // 依赖变化时重新绘制
   useEffect(() => {

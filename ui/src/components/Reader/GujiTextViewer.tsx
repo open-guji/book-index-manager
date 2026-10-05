@@ -61,7 +61,7 @@ function groupByEntity<T extends { charData: { id: string } }>(
 export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   pageData,
   pages,
-  punctuations = [],
+  punctuations = NO_PUNCT,
   selectedCharIds,
   hoveredCharId,
   onSelectionChange,
@@ -153,73 +153,94 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     });
   }, [pages, pageData, punctMap]);
 
+  // 全卷字序：字 id → 序号（对位实体用）
+  const charOrder = useMemo(() => {
+    const order: string[] = [];
+    for (const pg of reflowPages) for (const para of pg.paragraphs) for (const c of para.chars) order.push(c.charData.id);
+    return order;
+  }, [reflowPages]);
+
   // 实体按逐字 id 对位：字 id → 实体（范围内每个字都指向它；重叠时取先出现的、更长的）
   const entityOfChar = useMemo(() => {
     const map = new Map<string, EntitySpan>();
     if (!entities || entities.length === 0) return map;
-    const order: string[] = [];
-    for (const pg of reflowPages) for (const para of pg.paragraphs) for (const c of para.chars) order.push(c.charData.id);
-    const index = new Map(order.map((id, i) => [id, i] as const));
+    const index = new Map(charOrder.map((id, i) => [id, i] as const));
     for (const ent of entities) {
       if (!ent.anchor) continue;
       const a = index.get(ent.anchor.start);
       const b = index.get(ent.anchor.end);
       if (a === undefined || b === undefined || b < a) continue;
-      for (let i = a; i <= b; i++) if (!map.has(order[i])) map.set(order[i], ent);
+      for (let i = a; i <= b; i++) if (!map.has(charOrder[i])) map.set(charOrder[i], ent);
     }
     return map;
-  }, [entities, reflowPages]);
+  }, [entities, charOrder]);
 
   const entityLoader = useEntitySummaryLoader(entityTransport, loadEntitySummary);
   const hasEntities = entityOfChar.size > 0;
 
-  // 点专名里的字＝照常点字（高亮书影），不跳条目；Ctrl／⌘／Shift 点击与键盘回车才进条目页
-  const handleEntityNavigate = (id: string, e: React.MouseEvent<HTMLAnchorElement>) => {
-    const keyboard = e.detail === 0;
-    if (!(keyboard || e.ctrlKey || e.metaKey || e.shiftKey)) { e.preventDefault(); return; }
-    onEntityNavigate?.(id, e);
-  };
+  // 回调一律走 ref：每页是 memo 组件，回调身份不变才不会因为外层一次 setState 全卷重渲染（3 万个字）
+  const latest = useRef({ onCharClick, onCharHover, onSelectionChange, onVisiblePageChange, onEntityNavigate });
+  latest.current = { onCharClick, onCharHover, onSelectionChange, onVisiblePageChange, onEntityNavigate };
 
-  // 2. 选区变化监听 (跨标点、跨段落、跨页原生划词，100% 保持坐标映射)
+  const handlers = useMemo<PageHandlers>(() => ({
+    click: (id) => { pageLockUntil.current = Date.now() + 1200; latest.current.onCharClick?.(id); },
+    enter: (id) => latest.current.onCharHover?.(id),
+    leave: () => latest.current.onCharHover?.(null),
+    // 点专名里的字＝照常点字（高亮书影），不跳条目；Ctrl／⌘／Shift 点击与键盘回车才进条目页
+    navigate: (id, e) => {
+      const keyboard = e.detail === 0;
+      if (!(keyboard || e.ctrlKey || e.metaKey || e.shiftKey)) { e.preventDefault(); return; }
+      latest.current.onEntityNavigate?.(id, e);
+    },
+  }), []);
+
+  // 每页只收到落在本页的选中字；没变的页拿到同一个 Set，memo 才挡得住
+  const selectedByPage = useSelectedByPage(selectedCharIds);
+
+  // 悬停（含从书影那边反过来悬停）：直接改那一个字的 class，不经 React 重渲染
+  const hoverEl = useRef<HTMLElement | null>(null);
   useEffect(() => {
-    const handleSelectionChange = () => {
+    hoverEl.current?.classList.remove('is-hovered');
+    hoverEl.current = null;
+    if (!hoveredCharId) return;
+    const el = containerRef.current?.querySelector<HTMLElement>(`span[data-char-id="${hoveredCharId}"]`);
+    if (el) { el.classList.add('is-hovered'); hoverEl.current = el; }
+  }, [hoveredCharId]);
+
+  // 2. 选区变化监听：只取选区两端的字、按文档序二分，不再逐字问「这个字在不在选区里」（3 万次 containsNode 会卡死）
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const compute = () => {
+      timer = null;
       const sel = window.getSelection();
-      if (!sel || sel.isCollapsed || sel.rangeCount === 0) return;
-
       const container = containerRef.current;
-      if (!container) return;
-
+      if (!sel || sel.isCollapsed || sel.rangeCount === 0 || !container) return;
       const range = sel.getRangeAt(0);
       const common = range.commonAncestorContainer;
       const targetNode = common.nodeType === 3 ? common.parentElement : (common as HTMLElement);
       if (!targetNode || !container.contains(targetNode)) return;
 
-      // 核心算法：只提取带有 data-char-id 的实体文字节点，自动忽略标点与段落换行容器
-      const spans = container.querySelectorAll<HTMLSpanElement>('span[data-char-id]');
+      const spans = container.querySelectorAll<HTMLElement>('span[data-char-id]');
+      // 第一个起点不早于选区起点的字
+      let lo = 0, hi = spans.length;
+      while (lo < hi) { const m = (lo + hi) >> 1; if (range.comparePoint(spans[m], 0) < 0) lo = m + 1; else hi = m; }
+      const first = lo;
+      // 最后一个起点不晚于选区终点的字
+      hi = spans.length;
+      while (lo < hi) { const m = (lo + hi) >> 1; if (range.comparePoint(spans[m], 0) <= 0) lo = m + 1; else hi = m; }
+      const last = lo - 1;
+      if (last < first) return;
       const selected: string[] = [];
-
-      spans.forEach((span) => {
-        try {
-          if (sel.containsNode(span, true)) {
-            const cid = span.getAttribute('data-char-id');
-            if (cid) selected.push(cid);
-          }
-        } catch {
-          // ignore
-        }
-      });
-
+      for (let i = first; i <= last; i++) selected.push(spans[i].getAttribute('data-char-id')!);
       if (selected.length > 0) {
         pageLockUntil.current = Date.now() + 1200;
-        onSelectionChange?.(selected);
+        latest.current.onSelectionChange?.(selected);
       }
     };
-
-    document.addEventListener('selectionchange', handleSelectionChange);
-    return () => {
-      document.removeEventListener('selectionchange', handleSelectionChange);
-    };
-  }, [onSelectionChange]);
+    const onSel = () => { if (timer) clearTimeout(timer); timer = setTimeout(compute, 120); };
+    document.addEventListener('selectionchange', onSel);
+    return () => { document.removeEventListener('selectionchange', onSel); if (timer) clearTimeout(timer); };
+  }, []);
 
   // 3. 点击底本书影时，自动平滑滚动对应文字到可见区
   useEffect(() => {
@@ -232,52 +253,31 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     }
   }, [selectedCharIds]);
 
-  // 4. 滚动监听：侦测当前视口最上方的页码并通知外层
+  // 4. 滚动监听：侦测视口参考线所在的页并通知外层。rAF 节流＋对已排好序的页做二分，每帧只读十来个页的位置
+  const hasVisibleCb = !!onVisiblePageChange;
   useEffect(() => {
-    if (!onVisiblePageChange) return;
-
-    const updateVisiblePage = () => {
-      const sections = containerRef.current?.querySelectorAll<HTMLElement>('[data-page-section]');
-      if (!sections || sections.length === 0) return;
-
-      // 视口参考线：顶部以下 120px 处
-      const targetY = 120;
-      let currentVisible = -1;
-
-      // 寻找覆盖 targetY 的段落页码，若都未覆盖则选择离 targetY 最近的页面
-      let minDistance = Infinity;
-
-      for (let i = 0; i < sections.length; i++) {
-        const sec = sections[i];
-        const rect = sec.getBoundingClientRect();
-        const pNum = parseInt(sec.getAttribute('data-page-section') || '', 10);
-        if (isNaN(pNum)) continue;
-
-        if (rect.top <= targetY && rect.bottom >= targetY) {
-          currentVisible = pNum;
-          break;
-        }
-
-        const dist = Math.abs(rect.top - targetY);
-        if (dist < minDistance) {
-          minDistance = dist;
-          currentVisible = pNum;
-        }
+    if (!hasVisibleCb) return;
+    const sections = Array.from(containerRef.current?.querySelectorAll<HTMLElement>('[data-page-section]') ?? []);
+    if (sections.length === 0) return;
+    const targetY = 120; // 视口顶部以下 120px
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      if (Date.now() < pageLockUntil.current) return;
+      // 最后一个顶边不低于参考线的页（页是自上而下排的）
+      let lo = 0, hi = sections.length - 1;
+      while (lo < hi) {
+        const m = (lo + hi + 1) >> 1;
+        if (sections[m].getBoundingClientRect().top <= targetY) lo = m; else hi = m - 1;
       }
-
-      if (currentVisible !== -1 && Date.now() >= pageLockUntil.current) {
-        onVisiblePageChange(currentVisible);
-      }
+      const pNum = parseInt(sections[lo].getAttribute('data-page-section') || '', 10);
+      if (!isNaN(pNum)) latest.current.onVisiblePageChange?.(pNum);
     };
-
-    window.addEventListener('scroll', updateVisiblePage, { passive: true });
-    // 初始化调用一次
-    updateVisiblePage();
-
-    return () => {
-      window.removeEventListener('scroll', updateVisiblePage);
-    };
-  }, [onVisiblePageChange, reflowPages]);
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+    return () => { window.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); };
+  }, [hasVisibleCb, reflowPages]);
 
   return (
     <div
@@ -287,97 +287,148 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       {hasEntities && <style>{ENTITY_TEXT_CSS}</style>}
       <div className="guji-text-reflow-view">
         {reflowPages.map((pGroup, idx) => (
-          <section
+          <PageSection
             key={`page-sec-${pGroup.page}`}
-            data-page-section={pGroup.page}
-            className="guji-page-section"
-            style={{ position: 'relative' }}
-          >
-            {/* 页间分隔与页码标牌（首页若无前置内容可紧凑显示） */}
-            {idx > 0 && (
-              <div
-                className="guji-page-divider"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  margin: '2rem 0 1.2rem',
-                  color: bim('meta-fg'),
-                  fontSize: '0.82rem',
-                  letterSpacing: '0.08em',
-                  userSelect: 'none',
-                }}
-              >
-                <div style={{ flex: 1, height: '1px', background: bim('rule') }} />
-                <span style={{ padding: '0 12px', fontWeight: 500 }}>第 {pGroup.page} 葉</span>
-                <div style={{ flex: 1, height: '1px', background: bim('rule') }} />
-              </div>
-            )}
-
-            {pGroup.paragraphs.map((para) => (
-              <p
-                key={para.id}
-                className="guji-reflow-paragraph"
-              >
-                {groupByEntity(para.chars, entityOfChar).map((run, ri) => {
-                  const nodes = run.chars.map(({ charData: ch, col, afterPuncts: allPuncts }, ci) => {
-                    // 专名线不画到末字后面的标点上：实体末字的标点放到链接外面
-                    const isLastOfEntity = !!run.entity && ci === run.chars.length - 1;
-                    const afterPuncts = isLastOfEntity ? [] : allPuncts;
-                    const isSelected = selectedCharIds.has(ch.id);
-                    const isHovered = hoveredCharId === ch.id;
-
-                    return (
-                      <React.Fragment key={ch.id}>
-                        <span
-                          data-char-id={ch.id}
-                          onClick={() => { pageLockUntil.current = Date.now() + 1200; onCharClick?.(ch.id); }}
-                          onMouseEnter={() => onCharHover?.(ch.id)}
-                          onMouseLeave={() => onCharHover?.(null)}
-                          className={`guji-text-char ${isSelected ? 'is-selected' : ''} ${
-                            isHovered ? 'is-hovered' : ''
-                          } ${ch.sub ? 'is-sub' : ''}`}
-                          title={`[第${pGroup.page}葉·第${col}列·第${ch.slot || ch.pos}字] ${ch.char}`}
-                        >
-                          {ch.char}
-                        </span>
-                        {/* 外挂注入标点 (不带 data-char-id，对底本坐标完全透明) */}
-                        {afterPuncts.map((p) => (
-                          <span
-                            key={p.id}
-                            className="guji-text-punct"
-                            data-punct-id={p.id}
-                          >
-                            {p.mark}
-                          </span>
-                        ))}
-                      </React.Fragment>
-                    );
-                  });
-                  if (!run.entity) return <React.Fragment key={`r${ri}`}>{nodes}</React.Fragment>;
-                  const tail = run.chars[run.chars.length - 1].afterPuncts.map((p) => (
-                    <span key={p.id} className="guji-text-punct" data-punct-id={p.id}>{p.mark}</span>
-                  ));
-                  return (
-                    <React.Fragment key={`${run.entity.key}@${ri}`}>
-                    <EntityMark
-                      span={run.entity}
-                      label={run.chars.map((c) => c.charData.char).join('')}
-                      hasBrackets
-                      loader={entityLoader}
-                      buildHref={buildEntityHref ?? defaultHref}
-                      onNavigate={handleEntityNavigate}
-                      renderText={() => nodes}
-                      hoverDelayMs={250}
-                    />
-                    {tail}
-                    </React.Fragment>
-                  );
-                })}
-              </p>
-            ))}
-          </section>
+            pGroup={pGroup}
+            first={idx === 0}
+            selected={selectedByPage.get(pGroup.page) ?? NO_SELECTION}
+            entityOfChar={entityOfChar}
+            entityLoader={entityLoader}
+            buildHref={buildEntityHref ?? defaultHref}
+            handlers={handlers}
+          />
         ))}
       </div>
     </div>
   );
 };
+
+const NO_SELECTION: ReadonlySet<string> = new Set();
+const NO_PUNCT: PunctEntry[] = [];
+
+interface PageHandlers {
+  click: (id: string) => void;
+  enter: (id: string) => void;
+  leave: () => void;
+  navigate: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
+}
+
+/** 选中字按页分桶；内容没变的页复用上次的 Set（身份不变，memo 的页就不重渲染） */
+function useSelectedByPage(selected: ReadonlySet<string>): Map<number, ReadonlySet<string>> {
+  const prev = useRef<Map<number, ReadonlySet<string>>>(new Map());
+  return useMemo(() => {
+    const buckets = new Map<number, Set<string>>();
+    selected.forEach((id) => {
+      const page = parseInt(id.split(':')[0], 10);
+      let set = buckets.get(page);
+      if (!set) buckets.set(page, (set = new Set()));
+      set.add(id);
+    });
+    const next = new Map<number, ReadonlySet<string>>();
+    buckets.forEach((set, page) => {
+      const old = prev.current.get(page);
+      const same = old && old.size === set.size && Array.from(set).every((id) => old.has(id));
+      next.set(page, same ? old! : set);
+    });
+    prev.current = next;
+    return next;
+  }, [selected]);
+}
+
+type ReflowPage = {
+  page: number;
+  paragraphs: {
+    id: string;
+    chars: { charData: PageWarpData['columns'][0]['chars'][0]; col: number; afterPuncts: PunctEntry[] }[];
+  }[];
+};
+
+/** 一页正文。memo：翻页、悬停、选中别页的字都不会让它重渲染 */
+const PageSection = React.memo(function PageSection({
+  pGroup, first, selected, entityOfChar, entityLoader, buildHref, handlers,
+}: {
+  pGroup: ReflowPage;
+  first: boolean;
+  selected: ReadonlySet<string>;
+  entityOfChar: Map<string, EntitySpan>;
+  entityLoader: ReturnType<typeof useEntitySummaryLoader>;
+  buildHref: (id: string) => string;
+  handlers: PageHandlers;
+}) {
+  return (
+    <section
+      data-page-section={pGroup.page}
+      className="guji-page-section"
+      style={{ position: 'relative' }}
+    >
+      {/* 页间分隔与页码标牌（首页若无前置内容可紧凑显示） */}
+      {!first && (
+        <div
+          className="guji-page-divider"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            margin: '2rem 0 1.2rem',
+            color: bim('meta-fg'),
+            fontSize: '0.82rem',
+            letterSpacing: '0.08em',
+            userSelect: 'none',
+          }}
+        >
+          <div style={{ flex: 1, height: '1px', background: bim('rule') }} />
+          <span style={{ padding: '0 12px', fontWeight: 500 }}>第 {pGroup.page} 葉</span>
+          <div style={{ flex: 1, height: '1px', background: bim('rule') }} />
+        </div>
+      )}
+
+      {pGroup.paragraphs.map((para) => (
+        <p key={para.id} className="guji-reflow-paragraph">
+          {groupByEntity(para.chars, entityOfChar).map((run, ri) => {
+            const nodes = run.chars.map(({ charData: ch, col, afterPuncts: allPuncts }, ci) => {
+              // 专名线不画到末字后面的标点上：实体末字的标点放到链接外面
+              const isLastOfEntity = !!run.entity && ci === run.chars.length - 1;
+              const afterPuncts = isLastOfEntity ? [] : allPuncts;
+              return (
+                <React.Fragment key={ch.id}>
+                  <span
+                    data-char-id={ch.id}
+                    onClick={() => handlers.click(ch.id)}
+                    onMouseEnter={() => handlers.enter(ch.id)}
+                    onMouseLeave={handlers.leave}
+                    className={`guji-text-char${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}`}
+                    title={`[第${pGroup.page}葉·第${col}列·第${ch.slot || ch.pos}字] ${ch.char}`}
+                  >
+                    {ch.char}
+                  </span>
+                  {/* 外挂注入标点 (不带 data-char-id，对底本坐标完全透明) */}
+                  {afterPuncts.map((p) => (
+                    <span key={p.id} className="guji-text-punct" data-punct-id={p.id}>{p.mark}</span>
+                  ))}
+                </React.Fragment>
+              );
+            });
+            if (!run.entity) return <React.Fragment key={`r${ri}`}>{nodes}</React.Fragment>;
+            const tail = run.chars[run.chars.length - 1].afterPuncts.map((p) => (
+              <span key={p.id} className="guji-text-punct" data-punct-id={p.id}>{p.mark}</span>
+            ));
+            return (
+              <React.Fragment key={`${run.entity.key}@${ri}`}>
+                <EntityMark
+                  span={run.entity}
+                  label={run.chars.map((c) => c.charData.char).join('')}
+                  hasBrackets
+                  loader={entityLoader}
+                  buildHref={buildHref}
+                  onNavigate={handlers.navigate}
+                  renderText={() => nodes}
+                  hoverDelayMs={250}
+                />
+                {tail}
+              </React.Fragment>
+            );
+          })}
+        </p>
+      ))}
+    </section>
+  );
+});
