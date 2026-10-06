@@ -29,12 +29,13 @@ import type { PanelState } from './Reader/ReaderShell';
 import { ReaderMdText, canParagraphize } from './Reader/ReaderText';
 import { useReaderPrefs } from './Reader/prefs';
 import { useChapterImages } from './Reader/useChapterImages';
-import type { ReaderImageOverlay, ReaderImageResolver, ReaderReportContext, ReaderTocItem, ReaderVersion } from './Reader/types';
+import type { ReaderImageOverlay, ReaderImageResolver, ReaderResolveContext, ReaderReportContext, ReaderTocItem, ReaderVersion } from './Reader/types';
 import type { JuanCacheEntry, JuanView, WorkLabelCache } from './CollatedEdition';
 import {
     JuanRail, JuanReading, groupFileCount, groupMatchState, hasSectionText, useCrossJuanSearch,
 } from './CollatedEdition';
 import { GujiWarpCanvas, loadImage, type PageWarpData } from './Reader/GujiWarpCanvas';
+import type { GujiPageInfo } from '../core/guji-pages';
 import { GujiTextViewer } from './Reader/GujiTextViewer';
 import { useChapterWarpData, type ReaderWarpResolver } from './Reader/useChapterWarpData';
 import { useChapterEntities, type ReaderEntityResolver } from './Reader/useChapterEntities';
@@ -351,26 +352,25 @@ export const TextReader: React.FC<TextReaderProps> = ({
     const workLabelCacheRef = useRef<WorkLabelCache>(new Map());
     useEffect(() => { workLabelCacheRef.current.clear(); }, [id]);
 
-    const images = useChapterImages(resolveImages, effectiveChapter ?? null);
-    const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData, warpDataProp, effectiveChapter ?? null, chapterMeta as any);
-    const entitySpans = useChapterEntities(resolveEntities, effectiveChapter ?? null);
+    const resolveCtx = useMemo<ReaderResolveContext>(() => ({ versionKey, chapter: (chapterMeta as Record<string, unknown> | null) ?? null }), [versionKey, chapterMeta]);
+    const images = useChapterImages(resolveImages, effectiveChapter ?? null, resolveCtx);
+    const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData, warpDataProp, effectiveChapter ?? null, chapterMeta as any, resolveCtx);
+    const entitySpans = useChapterEntities(resolveEntities, effectiveChapter ?? null, resolveCtx);
     const [selectedCharIds, setSelectedCharIds] = useState<Set<string>>(new Set());
     const [hoveredCharId, setHoveredCharId] = useState<string | null>(null);
     const [showPunctuation, setShowPunctuation] = useState<boolean>(true);
     const [preserveMargins, setPreserveMargins] = useState<boolean>(true);
-    const [activePage, setActivePage] = useState<number>(() => {
-        if (warpData?.page_id) {
-            const p = parseInt(warpData.page_id.split(':')[1] || '10', 10);
-            return isNaN(p) ? 10 : p;
-        }
-        return 10;
-    });
+    // 带真透视数据的那一页（如卷二第 10 页的版心拼接）；整册只有逐字坐标、没有透视时为 null
+    const nativeWarpPage = (w: PageWarpData | null | undefined): number | null => {
+        const p = parseInt(w?.page_id?.split(':')[1] ?? '', 10);
+        return isNaN(p) ? null : p;
+    };
+    const firstPageOf = (w: PageWarpData | null | undefined): number =>
+        nativeWarpPage(w) ?? (w as any)?.pages?.[0]?.page ?? 1;
+    const [activePage, setActivePage] = useState<number>(() => firstPageOf(warpData));
 
     useEffect(() => {
-        if (warpData?.page_id) {
-            const p = parseInt(warpData.page_id.split(':')[1] || '10', 10);
-            if (!isNaN(p)) setActivePage(p);
-        }
+        if (warpData) setActivePage(firstPageOf(warpData));
     }, [warpData]);
 
     useEffect(() => {
@@ -391,17 +391,28 @@ export const TextReader: React.FC<TextReaderProps> = ({
         }
     }, []);
 
-    // 书影图片 URL：只有带真透视数据的那一页（warpData 本页）要原图精度；其余页整幅平铺，阅读档（1200 宽）足够，
-    // 解码与上传纹理都轻得多。
-    const warpPageNo = warpData ? parseInt(warpData.page_id.split(':')[1] || '', 10) : NaN;
-    const imageUrlOfPage = useCallback((page: number): string => {
+    // 页号 → 本页信息（IIIF 页序、canvas 尺寸、逐字框），来自 pages.json
+    const pageInfos = useMemo(() => {
+        const m = new Map<number, GujiPageInfo>();
+        for (const p of ((warpData as any)?.pages ?? []) as GujiPageInfo[]) m.set(p.page, p);
+        return m;
+    }, [warpData]);
+    const warpPageNo = nativeWarpPage(warpData);
+
+    // 页号 → 书影图：优先按 IIIF 页序（拆页的页号≠leaf 号），没有页序时退回「页号＝leaf 号」
+    const imageOfPage = useCallback((page: number) => {
         const list = images.images;
-        if (list && list.length > 0) {
-            const found = list.find(img => img.pageNo === page) ?? list[page - 1];
-            if (found) return page === warpPageNo ? (found.hiresUrl ?? found.url) : found.url;
-        }
+        if (!list || list.length === 0) return undefined;
+        const seq = pageInfos.get(page)?.seq;
+        return (seq ? list.find(i => i.seq === seq) : undefined) ?? list.find(i => i.pageNo === page) ?? list[page - 1];
+    }, [images.images, pageInfos]);
+
+    // 书影图片 URL：只有带真透视数据的那一页要原图精度；其余页整幅平铺，阅读档（1200 宽）足够，解码与上传纹理都轻得多。
+    const imageUrlOfPage = useCallback((page: number): string => {
+        const found = imageOfPage(page);
+        if (found) return page === warpPageNo ? (found.hiresUrl ?? found.url) : found.url;
         return page === warpPageNo ? ((warpData as any)?.imageUrl ?? '') : '';
-    }, [images.images, warpData, warpPageNo]);
+    }, [imageOfPage, warpData, warpPageNo]);
     const activeImageUrl = useMemo(() => imageUrlOfPage(activePage), [imageUrlOfPage, activePage]);
 
     // 预取前后几页的书影：滚动时下一页已在缓存里，不用等网络
@@ -413,18 +424,34 @@ export const TextReader: React.FC<TextReaderProps> = ({
         }
     }, [warpData, activePage, imageUrlOfPage]);
 
-    // 计算当前页是否具备原生 warpData，若为当前页则渲染带网格透视的 pageData，否则构造当前页的降级 pageData
+    // 当前页的画布数据：本页有透视数据就用它；否则整幅原图铺满、字框用逐字坐标（canvas 像素，与书影同一坐标系）
     const activePageData = useMemo<PageWarpData | null>(() => {
         if (!warpData) return null;
-        const warpPageNum = parseInt(warpData.page_id.split(':')[1] || '10', 10);
-        if (activePage === warpPageNum) {
-            return warpData;
+        if (activePage === warpPageNo) return warpData;
+        const info = pageInfos.get(activePage);
+        if (info && info.width > 0 && info.height > 0) {
+            return {
+                page_id: `p:${activePage}`,
+                title: `第${activePage}葉`,
+                image_size: [info.width, info.height],
+                total_warped_w: info.width,
+                columns: [{
+                    col: 1,
+                    warped_w: info.width,
+                    warped_h: info.height,
+                    offset_x: 0,
+                    strips: [],
+                    chars: info.columns.flatMap(c => c.chars).map(ch => ({
+                        id: ch.id, char: ch.char, slot: ch.slot, pos: ch.pos, sub: ch.sub,
+                        bbox_col: ch.bbox ?? [0, 0, 0, 0],
+                    })),
+                }],
+            };
         }
-        // 没有本页透视数据：整幅原图铺满，字格框用本册版框模板（取自带透视数据的那一页）按比例估出——
-        // 版框与 21 格行距各页一致，只是估的不是逐字真实位置（夹注左右各半格）
+        // 没有逐字坐标的老数据：用本册带透视页的版框模板估位（夹注左右各半格）
         const pInfo = (warpData as any).pages?.find((p: any) => p.page === activePage);
         const [tw, th] = warpData.image_size || [2386, 3082];
-        const img = images.images?.find(i => i.pageNo === activePage) ?? images.images?.[activePage - 1];
+        const img = imageOfPage(activePage);
         const iw = img?.width ?? tw;
         const ih = img?.height ?? th;
         const sx = iw / tw, sy = ih / th;
@@ -437,8 +464,8 @@ export const TextReader: React.FC<TextReaderProps> = ({
             tmpl.set(c.col, { x0: Math.min(...xs), x1: Math.max(...xs), top, slotH: (bottom - top) / 21 });
         }
         return {
-            page_id: `vol02:${activePage}`,
-            title: `欽定四庫全書總目 · 卷首二（第${activePage}葉）`,
+            page_id: `p:${activePage}`,
+            title: `第${activePage}葉`,
             image_size: [iw, ih],
             total_warped_w: iw,
             columns: pInfo ? pInfo.columns.map((col: any) => {
@@ -453,14 +480,13 @@ export const TextReader: React.FC<TextReaderProps> = ({
                         const slot = ch.slot ?? ch.pos ?? 0;
                         const y0 = (t.top + (slot - 1) * t.slotH) * sy;
                         const mid = (t.x0 + t.x1) / 2;
-                        // 夹注：a 在右半格、b 在左半格
                         const [xa, xb] = ch.sub === 'a' ? [mid, t.x1] : ch.sub === 'b' ? [t.x0, mid] : [t.x0, t.x1];
                         return { ...ch, bbox_col: [xa * sx, y0, xb * sx, y0 + t.slotH * sy] };
                     }),
                 };
             }) : [],
         };
-    }, [warpData, activePage, images.images]);
+    }, [warpData, activePage, warpPageNo, pageInfos, imageOfPage]);
 
     const { entryTitle, authors } = useEntryInfo(id, transport, title === undefined);
 

@@ -12,6 +12,7 @@ export type {
     ReaderCharBox,
     ReaderPageImage,
     ReaderImageResolver,
+    ReaderResolveContext,
     ReaderImageOverlay,
     ReaderTocItem,
     ReaderWritingMode,

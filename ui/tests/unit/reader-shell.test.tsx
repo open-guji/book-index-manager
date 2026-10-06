@@ -285,7 +285,7 @@ describe('TextReader（全文章）', () => {
             <TextReader id="b1" transport={ftTransport('正文。')} chapter="002" resolveImages={resolveImages} />,
         );
         await waitFor(() => expect(container.querySelector('.bim-rd-img img')).toBeTruthy());
-        expect(resolveImages).toHaveBeenCalledWith('002');
+        expect(resolveImages).toHaveBeenCalledWith('002', expect.objectContaining({ versionKey: expect.anything() }));
     });
 
     it('简体模式下正文也转换（此前全文页不转）', async () => {

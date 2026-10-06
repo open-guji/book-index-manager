@@ -34,6 +34,8 @@ export interface ReaderPageImage {
     /** 原图像素宽高。给了才画逐字框，也用于占位时保持比例 */
     width?: number;
     height?: number;
+    /** 对读用：IIIF 页序（leaf 号补零 4 位，合扫拆页带 a–d 后缀，如 `0105a`）；对读页与书影按它对位，页号≠leaf 号时（拆页）也对得上 */
+    seq?: string;
     /** 对读用：本图对应的页（葉）序号，与逐字 id `<页>:<列>:<格>` 里的页相同；缺省按序号对位 */
     pageNo?: number;
     /** 对读用：原图像素档的 URL（透视矫正要用原图精度；缺省退回 `url`） */
@@ -55,7 +57,15 @@ export interface ReaderPageImage {
  * 按卷/章取书影。返回 null / 空数组表示这一卷没有影像（书影区显示占位或自动收起）。
  * 可以是异步的；组件只认最后一次调用的结果。
  */
-export type ReaderImageResolver = (chapterKey: string) =>
+/** 向宿主要求按章取数据时一并给的上下文 */
+export interface ReaderResolveContext {
+    /** 当前版本的真实 key（`default` 已换成具体 key） */
+    versionKey: string | null;
+    /** 本章在该版本 `index.json` 里的条目（`file`、`lines_file`、`pages`、`punct_file`、`entity_file` 等）；目录还没取到为 null */
+    chapter: Record<string, unknown> | null;
+}
+
+export type ReaderImageResolver = (chapterKey: string, ctx?: ReaderResolveContext) =>
     ReaderPageImage[] | null | undefined | Promise<ReaderPageImage[] | null | undefined>;
 
 /** 画在书影上面的自定义层（逐字框以外的格式、批注等），坐标系同原图像素 */

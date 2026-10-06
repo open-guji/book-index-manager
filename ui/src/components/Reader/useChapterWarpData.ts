@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { PageWarpData } from './GujiWarpCanvas';
+import type { ReaderResolveContext } from './types';
 
-export type ReaderWarpResolver = (chapterKey: string) =>
+export type ReaderWarpResolver = (chapterKey: string, ctx?: ReaderResolveContext) =>
     PageWarpData | null | undefined | Promise<PageWarpData | null | undefined>;
 
 /** 按当前卷/章向宿主要求透视矫正对读数据；只认最后一次请求的结果 */
@@ -9,7 +10,8 @@ export function useChapterWarpData(
     resolve: ReaderWarpResolver | undefined,
     warpDataProp: PageWarpData | null | undefined,
     key: string | null,
-    chapterMeta?: { has_warp?: boolean; warp_data?: string | PageWarpData } | null
+    chapterMeta: { has_warp?: boolean; warp_data?: string | PageWarpData } | null | undefined,
+    ctx: ReaderResolveContext,
 ): {
     warpData: PageWarpData | null;
     loading: boolean;
@@ -33,7 +35,7 @@ export function useChapterWarpData(
         // 1. 若宿主给了自定义 resolve 函数，优先使用
         if (resolve) {
             let r: ReturnType<ReaderWarpResolver>;
-            try { r = resolve(key); } catch { setWarpData(null); setLoading(false); return; }
+            try { r = resolve(key, ctx); } catch { setWarpData(null); setLoading(false); return; }
             if (!r || typeof (r as Promise<unknown>).then !== 'function') {
                 setWarpData((r as PageWarpData | null | undefined) ?? null);
                 setLoading(false);
@@ -66,7 +68,7 @@ export function useChapterWarpData(
 
         setWarpData(null);
         setLoading(false);
-    }, [resolve, warpDataProp, key, chapterMeta]);
+    }, [resolve, warpDataProp, key, chapterMeta, ctx]);
 
     return { warpData, loading };
 }
