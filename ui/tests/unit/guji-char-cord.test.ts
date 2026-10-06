@@ -29,10 +29,41 @@ const cord = {
     }],
 };
 
+describe('adaptCharCord · 无字页', () => {
+    const cordBlank = {
+        pages: [
+            { page: 1, canvas: { id: 'https://x/canvas/03/0001', seq: '0001', width: 957, height: 1359 }, cells: [] },
+            { page: 2, canvas: { id: 'https://x/canvas/03/0002', seq: '0002', width: 4195, height: 2947 }, cells: [] },
+            { page: 3, canvas: { id: 'https://x/canvas/03/0003', seq: '0003', width: 2361, height: 3096 }, cells: [{ a: '3:1:1', box: [1, 2, 3, 4] }] },
+            { page: 4, canvas: { id: 'https://x/canvas/03/0004', seq: '0004', width: 100, height: 200 }, cells: [] },
+            { page: 5, cells: [] }, // 没有 canvas：收不了（没有书影可翻）
+        ],
+    };
+    const charBlank = {
+        pages: [
+            { page: 1, columns: [] }, // 书脊签：char 里有这页但没有格
+            { page: 3, columns: [{ col: 1, cells: [{ a: '3:1:1', c: '欽' }] }] },
+            { page: 4, columns: [{ col: 1, lead_blank: 0, kind: 'blank', cells: [] }] }, // 整页空白
+        ],
+    }; // 第 2 页 char 里根本没有
+
+    it('cord 带 canvas、char 没有字的页也收：columns 为空，带 seq 与尺寸，按页号排', () => {
+        const pages = adaptCharCord(charBlank, cordBlank);
+        expect(pages.map(p => p.page)).toEqual([1, 2, 3, 4]);
+        expect(pages.map(p => p.columns.length > 0)).toEqual([false, false, true, false]);
+        expect(pages[1]).toMatchObject({ page: 2, seq: '0002', width: 4195, height: 2947, columns: [] });
+        expect(pages[2].columns[0].chars.map(c => c.id)).toEqual(['3:1:1']);
+    });
+
+    it('没有 cord：无字页没有书影可翻，不收', () => {
+        expect(adaptCharCord(charBlank).map(p => p.page)).toEqual([3]);
+    });
+});
+
 describe('adaptCharCord', () => {
     const [p, ...rest] = adaptCharCord(char, cord);
 
-    it('没有字的页不收；页序与尺寸取自 cord 的 canvas', () => {
+    it('char 没有字、cord 也没有 canvas 的页不收；页序与尺寸取自 cord 的 canvas', () => {
         expect(rest).toHaveLength(0);
         expect(p).toMatchObject({ page: 3, seq: '0003', width: 2361, height: 3096 });
     });

@@ -370,8 +370,11 @@ export const TextReader: React.FC<TextReaderProps> = ({
         const p = parseInt(w?.page_id?.split(':')[1] ?? '', 10);
         return isNaN(p) ? null : p;
     };
-    const firstPageOf = (w: PageWarpData | null | undefined): number =>
-        nativeWarpPage(w) ?? (w as any)?.pages?.[0]?.page ?? 1;
+    // 起始页：带透视的那页，否则本章第一个有字的页（无字页只供翻页，不当起点）
+    const firstPageOf = (w: PageWarpData | null | undefined): number => {
+        const pages = ((w as any)?.pages ?? []) as GujiPageInfo[];
+        return nativeWarpPage(w) ?? pages.find(p => p.columns.some(c => c.chars.length > 0))?.page ?? pages[0]?.page ?? 1;
+    };
     const [activePage, setActivePage] = useState<number>(() => firstPageOf(warpData));
 
     useEffect(() => {
@@ -423,14 +426,17 @@ export const TextReader: React.FC<TextReaderProps> = ({
     const activeImageUrl = useMemo(() => imageUrlOfPage(activePage, zoomedIn), [imageUrlOfPage, activePage, zoomedIn]);
 
     // 书影翻页：上一页／下一页取本章对读页列表里相邻的页；翻到的页同时让正文滚到该页开头
+    // 无字页（书脊签、封面签条、空白页）也在列表里，翻得到、只显示书影；正文里没有这些页，翻到时正文不动
     const pageNumbers = useMemo(() => [...pageInfos.keys()].sort((a, b) => a - b), [pageInfos]);
     const flipPage = useCallback((delta: number) => {
         const i = pageNumbers.indexOf(activePage);
         const next = pageNumbers[i < 0 ? 0 : i + delta];
         if (next === undefined || next === activePage) return;
         setActivePage(next);
-        setScrollTarget(t => ({ page: next, nonce: (t?.nonce ?? 0) + 1 }));
-    }, [pageNumbers, activePage]);
+        if (pageInfos.get(next)?.columns.some(c => c.chars.length > 0)) {
+            setScrollTarget(t => ({ page: next, nonce: (t?.nonce ?? 0) + 1 }));
+        }
+    }, [pageNumbers, pageInfos, activePage]);
     const activeIdx = pageNumbers.indexOf(activePage);
     // 键盘翻页只在书影区获得焦点时响应，不占用全局方向键（正文滚动要用）
     const onFacsimileKeyDown = useCallback((e: React.KeyboardEvent) => {

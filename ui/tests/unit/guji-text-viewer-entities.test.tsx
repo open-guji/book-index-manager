@@ -101,3 +101,21 @@ describe('GujiTextViewer 标点的前后位置（pos）', () => {
         expect(container.querySelector('.bim-et-work')!.textContent).toBe('元史');
     });
 });
+
+describe('GujiTextViewer 无字页', () => {
+    it('columns 为空的页（只有书影）不进正文：没有页分隔、没有空段落', () => {
+        const pages: any[] = [
+            { page: 1, columns: [] },
+            { page: 3, columns: [{ col: 1, chars: chars(3, 1, '漢書') }] },
+            { page: 4, columns: [] },
+            { page: 5, columns: [{ col: 1, chars: chars(5, 1, '藝文') }] },
+        ];
+        const { container } = render(
+            <LocaleProvider>
+                <GujiTextViewer pageData={{ page_id: 'vol:3', columns: [] } as any} pages={pages} selectedCharIds={new Set()} />
+            </LocaleProvider>,
+        );
+        expect(Array.from(container.querySelectorAll('[data-page-section]')).map(e => e.getAttribute('data-page-section'))).toEqual(['3', '5']);
+        expect(container.querySelectorAll('p').length).toBe(2);
+    });
+});
