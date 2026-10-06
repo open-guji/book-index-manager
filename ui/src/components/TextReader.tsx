@@ -29,11 +29,16 @@ import type { PanelState } from './Reader/ReaderShell';
 import { ReaderMdText, canParagraphize } from './Reader/ReaderText';
 import { useReaderPrefs } from './Reader/prefs';
 import { useChapterImages } from './Reader/useChapterImages';
-import type { ReaderImageOverlay, ReaderImageResolver, ReaderReportContext, ReaderTocItem, ReaderVersion } from './Reader/types';
+import type { ReaderImageOverlay, ReaderImageResolver, ReaderResolveContext, ReaderReportContext, ReaderTocItem, ReaderVersion } from './Reader/types';
 import type { JuanCacheEntry, JuanView, WorkLabelCache } from './CollatedEdition';
 import {
     JuanRail, JuanReading, groupFileCount, groupMatchState, hasSectionText, useCrossJuanSearch,
 } from './CollatedEdition';
+import { GujiWarpCanvas, loadImage, type PageWarpData } from './Reader/GujiWarpCanvas';
+import type { GujiPageInfo } from '../core/guji-pages';
+import { GujiTextViewer } from './Reader/GujiTextViewer';
+import { useChapterWarpData, type ReaderWarpResolver } from './Reader/useChapterWarpData';
+import { useChapterEntities, type ReaderEntityResolver } from './Reader/useChapterEntities';
 
 /** 当前位置：哪份版本的哪一章。`isDefault` 时网址里不写版本 key（规格 §六） */
 export interface TextLocation {
@@ -74,6 +79,14 @@ export interface TextReaderProps {
     backHref?: string;
     /** 返回链接的文字，默认「阅读」 */
     backLabel?: string;
+    /** 矫正对读数据提供函数（返回当前卷的透视矫正数据） */
+    resolveWarpData?: ReaderWarpResolver;
+    /** 对读正文的实体标注（entity.json，须带逐字 anchor）；按章取，没有就不画 */
+    resolveEntities?: ReaderEntityResolver;
+    /** 点已收录实体（Ctrl／⌘／Shift 点击或键盘回车）进条目页；不传按 `/item/<id>` 整页跳 */
+    onEntityNavigate?: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
+    /** 直接传入的对读数据 */
+    warpData?: PageWarpData | null;
     className?: string;
     style?: React.CSSProperties;
 }
@@ -179,7 +192,9 @@ function buildToc(idx: TextIndex, matchStates: Record<string, import('./Collated
 
 export const TextReader: React.FC<TextReaderProps> = ({
     id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate,
-    title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical, onReportError, revisedAt, backHref, backLabel, className, style,
+    title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical, onReportError, revisedAt, backHref, backLabel,
+    resolveWarpData, warpData: warpDataProp, resolveEntities, onEntityNavigate,
+    className, style,
 }) => {
     const { t, convert } = useI18n();
     const api = useMemo(() => createTextApi(transport), [transport]);
@@ -337,7 +352,142 @@ export const TextReader: React.FC<TextReaderProps> = ({
     const workLabelCacheRef = useRef<WorkLabelCache>(new Map());
     useEffect(() => { workLabelCacheRef.current.clear(); }, [id]);
 
-    const images = useChapterImages(resolveImages, effectiveChapter ?? null);
+    const resolveCtx = useMemo<ReaderResolveContext>(() => ({ versionKey, chapter: (chapterMeta as Record<string, unknown> | null) ?? null }), [versionKey, chapterMeta]);
+    const images = useChapterImages(resolveImages, effectiveChapter ?? null, resolveCtx);
+    const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData, warpDataProp, effectiveChapter ?? null, chapterMeta as any, resolveCtx);
+    const entitySpans = useChapterEntities(resolveEntities, effectiveChapter ?? null, resolveCtx);
+    const [selectedCharIds, setSelectedCharIds] = useState<Set<string>>(new Set());
+    const [hoveredCharId, setHoveredCharId] = useState<string | null>(null);
+    const [showPunctuation, setShowPunctuation] = useState<boolean>(true);
+    const [preserveMargins, setPreserveMargins] = useState<boolean>(true);
+    // 带真透视数据的那一页（如卷二第 10 页的版心拼接）；整册只有逐字坐标、没有透视时为 null
+    const nativeWarpPage = (w: PageWarpData | null | undefined): number | null => {
+        const p = parseInt(w?.page_id?.split(':')[1] ?? '', 10);
+        return isNaN(p) ? null : p;
+    };
+    const firstPageOf = (w: PageWarpData | null | undefined): number =>
+        nativeWarpPage(w) ?? (w as any)?.pages?.[0]?.page ?? 1;
+    const [activePage, setActivePage] = useState<number>(() => firstPageOf(warpData));
+
+    useEffect(() => {
+        if (warpData) setActivePage(firstPageOf(warpData));
+    }, [warpData]);
+
+    useEffect(() => {
+        setSelectedCharIds(new Set());
+        setHoveredCharId(null);
+    }, [effectiveChapter, versionKey]);
+
+    // 划词或点击字发生跨页或翻页时的处理：总是以选区的第一个字所在的页码作为当前书影显示页
+    const handleSelectionUpdate = useCallback((ids: string[]) => {
+        setSelectedCharIds(new Set(ids));
+        if (ids.length > 0) {
+            // 解析第一个字符所在的页码 (id 格式为 <page>:<col>:<slot>[sub])
+            const firstId = ids[0];
+            const pagePart = parseInt(firstId.split(':')[0], 10);
+            if (!isNaN(pagePart)) {
+                setActivePage(pagePart);
+            }
+        }
+    }, []);
+
+    // 页号 → 本页信息（IIIF 页序、canvas 尺寸、逐字框），来自 pages.json
+    const pageInfos = useMemo(() => {
+        const m = new Map<number, GujiPageInfo>();
+        for (const p of ((warpData as any)?.pages ?? []) as GujiPageInfo[]) m.set(p.page, p);
+        return m;
+    }, [warpData]);
+    const warpPageNo = nativeWarpPage(warpData);
+
+    // 页号 → 书影图：优先按 IIIF 页序（拆页的页号≠leaf 号），没有页序时退回「页号＝leaf 号」
+    const imageOfPage = useCallback((page: number) => {
+        const list = images.images;
+        if (!list || list.length === 0) return undefined;
+        const seq = pageInfos.get(page)?.seq;
+        return (seq ? list.find(i => i.seq === seq) : undefined) ?? list.find(i => i.pageNo === page) ?? list[page - 1];
+    }, [images.images, pageInfos]);
+
+    // 书影图片 URL：只有带真透视数据的那一页要原图精度；其余页整幅平铺，阅读档（1200 宽）足够，解码与上传纹理都轻得多。
+    const imageUrlOfPage = useCallback((page: number): string => {
+        const found = imageOfPage(page);
+        if (found) return page === warpPageNo ? (found.hiresUrl ?? found.url) : found.url;
+        return page === warpPageNo ? ((warpData as any)?.imageUrl ?? '') : '';
+    }, [imageOfPage, warpData, warpPageNo]);
+    const activeImageUrl = useMemo(() => imageUrlOfPage(activePage), [imageUrlOfPage, activePage]);
+
+    // 预取前后几页的书影：滚动时下一页已在缓存里，不用等网络
+    useEffect(() => {
+        if (!warpData) return;
+        for (const d of [1, -1, 2, 3]) {
+            const u = imageUrlOfPage(activePage + d);
+            if (u) void loadImage(u);
+        }
+    }, [warpData, activePage, imageUrlOfPage]);
+
+    // 当前页的画布数据：本页有透视数据就用它；否则整幅原图铺满、字框用逐字坐标（canvas 像素，与书影同一坐标系）
+    const activePageData = useMemo<PageWarpData | null>(() => {
+        if (!warpData) return null;
+        if (activePage === warpPageNo) return warpData;
+        const info = pageInfos.get(activePage);
+        if (info && info.width > 0 && info.height > 0) {
+            return {
+                page_id: `p:${activePage}`,
+                title: `第${activePage}葉`,
+                image_size: [info.width, info.height],
+                total_warped_w: info.width,
+                columns: [{
+                    col: 1,
+                    warped_w: info.width,
+                    warped_h: info.height,
+                    offset_x: 0,
+                    strips: [],
+                    chars: info.columns.flatMap(c => c.chars).map(ch => ({
+                        id: ch.id, char: ch.char, slot: ch.slot, pos: ch.pos, sub: ch.sub,
+                        bbox_col: ch.bbox ?? [0, 0, 0, 0],
+                    })),
+                }],
+            };
+        }
+        // 没有逐字坐标的老数据：用本册带透视页的版框模板估位（夹注左右各半格）
+        const pInfo = (warpData as any).pages?.find((p: any) => p.page === activePage);
+        const [tw, th] = warpData.image_size || [2386, 3082];
+        const img = imageOfPage(activePage);
+        const iw = img?.width ?? tw;
+        const ih = img?.height ?? th;
+        const sx = iw / tw, sy = ih / th;
+        const tmpl = new Map<number, { x0: number; x1: number; top: number; slotH: number }>();
+        for (const c of warpData.columns) {
+            const xs = (c.strips || []).flatMap(st => st.srcQuad.map(pt => pt[0]));
+            if (xs.length === 0) continue;
+            const top = (c as any).top_y ?? 0;
+            const bottom = (c as any).bottom_y ?? top + c.warped_h;
+            tmpl.set(c.col, { x0: Math.min(...xs), x1: Math.max(...xs), top, slotH: (bottom - top) / 21 });
+        }
+        return {
+            page_id: `p:${activePage}`,
+            title: `第${activePage}葉`,
+            image_size: [iw, ih],
+            total_warped_w: iw,
+            columns: pInfo ? pInfo.columns.map((col: any) => {
+                const t = tmpl.get(col.col) ?? { x0: 0, x1: 0, top: 0, slotH: 118 };
+                return {
+                    col: col.col,
+                    warped_w: iw,
+                    warped_h: ih,
+                    offset_x: 0,
+                    strips: [],
+                    chars: col.chars.map((ch: any) => {
+                        const slot = ch.slot ?? ch.pos ?? 0;
+                        const y0 = (t.top + (slot - 1) * t.slotH) * sy;
+                        const mid = (t.x0 + t.x1) / 2;
+                        const [xa, xb] = ch.sub === 'a' ? [mid, t.x1] : ch.sub === 'b' ? [t.x0, mid] : [t.x0, t.x1];
+                        return { ...ch, bbox_col: [xa * sx, y0, xb * sx, y0 + t.slotH * sy] };
+                    }),
+                };
+            }) : [],
+        };
+    }, [warpData, activePage, warpPageNo, pageInfos, imageOfPage]);
+
     const { entryTitle, authors } = useEntryInfo(id, transport, title === undefined);
 
     // 「正文／条目」看法：换章回到正文
@@ -426,9 +576,88 @@ export const TextReader: React.FC<TextReaderProps> = ({
             activeKey={effectiveChapter ?? null}
             onSelect={handleSelectChapter}
             images={images.images}
-            imagesLoading={images.loading}
+            imagesLoading={images.loading || warpLoading}
             renderImageOverlay={renderImageOverlay}
-            imagePanel={imagePanel}
+            imagePanel={warpData ? 'open' : imagePanel}
+            isWarpMode={!!warpData}
+            customImagePanel={warpData && activePageData ? (
+                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px 6px', fontSize: 12, color: bim('meta-fg') }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ fontWeight: 600 }}>底本书影</span>
+                            <span data-warp-page={activePage} style={{ fontSize: 11, padding: '1px 6px', background: bim('rule'), borderRadius: 10 }}>第 {activePage} 葉</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            {selectedCharIds.size > 0 && (
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedCharIds(new Set())}
+                                    className="bim-rd-t"
+                                    style={{ fontSize: 11, padding: '2px 6px', border: `1px solid ${bim('rule')}`, borderRadius: 4, cursor: 'pointer' }}
+                                >
+                                    清除选中 ({selectedCharIds.size})
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                    <div style={{ flex: 1, minHeight: 0, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <GujiWarpCanvas
+                            imageUrl={activeImageUrl}
+                            pageData={activePageData}
+                            selectedCharIds={selectedCharIds}
+                            hoveredCharId={hoveredCharId}
+                            preserveMargins={preserveMargins}
+                            onCharClick={(id) => {
+                                setSelectedCharIds(prev => {
+                                    const next = new Set(prev);
+                                    if (next.has(id)) next.delete(id);
+                                    else { next.clear(); next.add(id); }
+                                    return next;
+                                });
+                                const el = document.querySelector(`[data-char-id="${id}"]`);
+                                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }}
+                            onCharHover={setHoveredCharId}
+                        />
+                    </div>
+                    {/* 留白模式切换置于图片正下方 */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 0 2px' }}>
+                        <div style={{ display: 'inline-flex', border: `1px solid ${bim('rule')}`, borderRadius: 4, overflow: 'hidden' }}>
+                            <button
+                                type="button"
+                                onClick={() => setPreserveMargins(false)}
+                                className={`bim-rd-t ${!preserveMargins ? 'bim-rd-on' : ''}`}
+                                style={{ fontSize: 11, padding: '2px 10px', lineHeight: '18px', border: 'none', borderRadius: 0, cursor: 'pointer', background: !preserveMargins ? bim('accent-bg') : 'transparent', color: !preserveMargins ? bim('accent') : 'inherit' }}
+                                title="去空白：紧凑裁切版心"
+                            >
+                                去空白
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setPreserveMargins(true)}
+                                className={`bim-rd-t ${preserveMargins ? 'bim-rd-on' : ''}`}
+                                style={{ fontSize: 11, padding: '2px 10px', lineHeight: '18px', border: 'none', borderRadius: 0, cursor: 'pointer', background: preserveMargins ? bim('accent-bg') : 'transparent', color: preserveMargins ? bim('accent') : 'inherit' }}
+                                title="保留空白：完整呈现古籍天头地脚与白边"
+                            >
+                                保留空白
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ) : undefined}
+            toolbarExtra={warpData ? (
+                <>
+                    <span className="bim-rd-badge-warp">图文对读</span>
+                    <button
+                        type="button"
+                        className={`bim-rd-t ${showPunctuation ? 'bim-rd-on' : ''}`}
+                        title="切换外挂现代断句标点"
+                        onClick={() => setShowPunctuation(p => !p)}
+                    >
+                        {showPunctuation ? '标点' : '无标点'}
+                    </button>
+                </>
+            ) : undefined}
             prefs={prefs}
             onPrefsChange={setPrefs}
             versions={readerVersions.length > 1 ? readerVersions : undefined}
@@ -441,7 +670,46 @@ export const TextReader: React.FC<TextReaderProps> = ({
         >
             {contentLoading && <LoadingDots />}
 
-            {!contentLoading && structured && juan && (
+            {!contentLoading && warpData && (
+                <article className="bim-rd-prose" style={{ marginTop: 0 }}>
+                    <header style={{ marginBottom: 16 }}>
+                        <h1 className="bim-rd-h1">{chapterMeta?.title ? convert(chapterMeta.title) : position}</h1>
+                        {(version.source_name || version.license) && (
+                            <p className="bim-rd-meta">
+                                {version.source_name && convert(version.source_name)}
+                                {version.license && <><span className="bim-rd-dot" />{version.license}</>}
+                            </p>
+                        )}
+                    </header>
+                    <GujiTextViewer
+                        pageData={warpData}
+                        pages={(warpData as any).pages}
+                        punctuations={(warpData as any).punctuations || []}
+                        selectedCharIds={selectedCharIds}
+                        hoveredCharId={hoveredCharId}
+                        onSelectionChange={handleSelectionUpdate}
+                        onCharClick={(id) => {
+                            setSelectedCharIds(prev => {
+                                const next = new Set(prev);
+                                if (next.has(id)) next.delete(id);
+                                else { next.clear(); next.add(id); }
+                                return next;
+                            });
+                            const pagePart = parseInt(id.split(':')[0], 10);
+                            if (!isNaN(pagePart)) setActivePage(pagePart);
+                        }}
+                        onCharHover={setHoveredCharId}
+                        mode="horizontal"
+                        showPunctuation={showPunctuation}
+                        entities={prefs.properNames ? entitySpans : undefined}
+                        entityTransport={transport}
+                        onEntityNavigate={onEntityNavigate}
+                        onVisiblePageChange={(p) => setActivePage(p)}
+                    />
+                </article>
+            )}
+
+            {!contentLoading && !warpData && structured && juan && (
                 <JuanReading
                     key={`${versionKey}/${effectiveChapter}`}
                     juan={juan}
@@ -459,7 +727,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                 />
             )}
 
-            {!contentLoading && !structured && body != null && chapterMeta && (
+            {!contentLoading && !warpData && !structured && body != null && chapterMeta && (
                 <>
                     <header>
                         <h1 className="bim-rd-h1">{chapterMeta.title ? convert(chapterMeta.title) : position}</h1>
@@ -498,7 +766,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                 </>
             )}
 
-            {!contentLoading && !structured && body == null && chapterMeta && <div className="bim-rd-state">{t('reader.chapterFailed')}</div>}
+            {!contentLoading && !warpData && !structured && body == null && chapterMeta && <div className="bim-rd-state">{t('reader.chapterFailed')}</div>}
 
             {index.references && index.references.length > 0 && (
                 <section className="bim-rd-refs">

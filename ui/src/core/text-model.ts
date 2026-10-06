@@ -14,6 +14,7 @@
 import type { CollatedEditionIndex, JuanGroup } from '../types';
 
 export type TextKind = 'collated' | 'transcription';
+export type ReadingCapability = 'text' | 'facsimile' | 'interactive_warp';
 
 export interface TextVersion {
     /** 版本 key：主版本固定 `default`；其余 `[a-z0-9-]`、字母开头 */
@@ -32,12 +33,17 @@ export interface TextVersion {
     quality?: string | null;
     chapters_total?: number | null;
     visibility?: string;
+    /** 支持的阅读能力/模式清单：['text'] | ['text', 'facsimile'] | ['text', 'facsimile', 'interactive_warp'] */
+    reading_modes?: ReadingCapability[];
+    default_reading_mode?: ReadingCapability;
+    capabilities?: ReadingCapability[];
 }
 
 export interface TextManifest {
     id: string;
     visibility?: string;
     versions: TextVersion[];
+    reading_modes?: ReadingCapability[];
 }
 
 export interface TextChapter {
@@ -48,6 +54,10 @@ export interface TextChapter {
     /** 该章有同名 json（结构化条目） */
     has_json?: boolean;
     page_title?: string;
+    /** 是否包含 WebGL 客户端透视矫正对读数据 */
+    has_warp?: boolean;
+    /** 矫正数据文件地址或对象 */
+    warp_data?: string | any;
 }
 
 /** 文本的上游来源与授权说明（index.json 的 source.upstream） */
