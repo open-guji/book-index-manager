@@ -65,11 +65,11 @@ const transport = {
 
 const wp = () => document.querySelector('[data-warp-page]')!.getAttribute('data-warp-page');
 
-function readerEl(resolveWarpData: () => Promise<unknown>, images: unknown[]) {
+function readerEl(resolveWarpData: () => Promise<unknown>, images: unknown[], id: string = WORK) {
     return (
         <LocaleProvider>
             <TextReader
-                id={WORK}
+                id={id}
                 transport={transport}
                 versionKey="original"
                 chapter="003"
@@ -215,5 +215,16 @@ describe('TextReader 对读 · 宿主重取数据', () => {
         await waitFor(() => expect(calls).toBeGreaterThan(0), { timeout: 5000 });
         await new Promise(r => setTimeout(r, 100));
         expect(wp()).toBe('4');
+    });
+
+    it('换成另一部书（版本、章标识相同、也有当前页）：回到新书的起始页，不留在旧页', async () => {
+        const images = [1, 2, 3, 4, 5, 6].map(n => ({ pageNo: n, seq: String(n).padStart(4, '0'), url: `u${n}`, hiresUrl: `h${n}`, width: 1000, height: 1400 }));
+        const make = () => async () => ({ page_id: '', title: '', image_size: [0, 0], total_warped_w: 0, columns: [], pages: adaptCharCord(char, cord), punctuations: [] });
+        const view = render(readerEl(make(), images));
+        await waitFor(() => expect(view.container.querySelector('[data-page-section]')).not.toBeNull(), { timeout: 5000 });
+        fireEvent.click(screen.getByTestId('facsimile-next'));
+        expect(wp()).toBe('4');
+        view.rerender(readerEl(make(), images, 'otherwork1'));
+        await waitFor(() => expect(wp()).toBe('3'), { timeout: 5000 });
     });
 });

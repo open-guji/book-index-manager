@@ -380,7 +380,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
     //   - effect 要等这一帧画完才跑，书影区会先带着旧页号（数据未到时的初值）画出来，读者与 e2e 都可能读到过渡页号；
     //   - 宿主重取数据（resolve／章元数据／transport 的身份变了就会重取）也会得到一个新的 warpData 对象，
     //     若每次都当成「刚到手」，读到第 50 页会被甩回第 3 页；同一章里换了数据只在当前页已不存在时才回起始页。
-    const warpChapterKey = `${versionKey}/${effectiveChapter ?? ''}`;
+    const warpChapterKey = `${id}\n${versionKey}\n${effectiveChapter ?? ''}`;
     const [warpStart, setWarpStart] = useState({ key: warpChapterKey, data: warpData, started: !!warpData });
     if (warpStart.key !== warpChapterKey) {
         // 换章：旧章的数据还在，等新章的数据到了再定起始页
