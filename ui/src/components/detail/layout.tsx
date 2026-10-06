@@ -265,6 +265,8 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 .bim-d-stats span { display: block; margin-top: 4px; font-size: 12px; color: ${bim('aux-fg')}; }
 .bim-d-side-sub { margin: -2px 0 6px; font-size: 12px; color: ${bim('aux-fg')}; }
 .bim-d-side li .bim-d-kind { padding: 0 6px; border-radius: 3px; background: ${bim('zebra-bg')}; line-height: 18px; }
+/* 类别标签可能很长（如馆藏资源组「國圖藏本：……刻本 ……重修」）：允许收缩、折行，窄屏不撑出横向滚动（覆盖下面 .bim-d-meta 的 flex: none） */
+.bim-d-side li .bim-d-meta.bim-d-kind { flex: 0 1 auto; min-width: 0; overflow-wrap: anywhere; }
 
 /* 提要卡：版本类型／年代／卷帙 三个标签 */
 .bim-d-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
