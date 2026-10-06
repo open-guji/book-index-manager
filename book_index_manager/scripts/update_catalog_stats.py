@@ -65,8 +65,8 @@ def main():
         data_root = sys.argv[1]
     else:
         candidates = [
-            os.path.join(os.getcwd(), 'book-index-draft'),
-            'D:/workspace/book-index-draft',
+            os.path.join(os.getcwd(), 'book-index'),
+            'D:/workspace/book-index',
         ]
         data_root = next((c for c in candidates if os.path.exists(c)), candidates[0])
 

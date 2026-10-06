@@ -402,11 +402,11 @@ class CLIHandler:
         # **不攢到最後才寫**：中途若斷（工具逾時、SIGTERM），已升之條墓碑已立
         # 而映射未錄，validate 之 E03 即報且難以追認。攢 100 是折中——縱斷，
         # 待追認者至多 100 條而非萬條。循環既畢，餘數必再 flush 一次。
-        from .promotion import PromotionsStore, rewrite_references
+        from .promotion import PromotionsStore, promotions_root, rewrite_references
         FLUSH_EVERY = 100
         shared_promotions = None
         if not dry_run and len(ids) > 1:
-            shared_promotions = PromotionsStore(self.manager.storage.draft_root)
+            shared_promotions = PromotionsStore(promotions_root(self.manager.storage))
         pending = 0
 
         # 批量（>1 條）且要改引用時：逐條 promote 皆傳 rewrite_refs=False，
