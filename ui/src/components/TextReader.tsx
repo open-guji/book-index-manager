@@ -376,10 +376,22 @@ export const TextReader: React.FC<TextReaderProps> = ({
         return nativeWarpPage(w) ?? pages.find(p => p.columns.some(c => c.chars.length > 0))?.page ?? pages[0]?.page ?? 1;
     };
     const [activePage, setActivePage] = useState<number>(() => firstPageOf(warpData));
-
-    useEffect(() => {
-        if (warpData) setActivePage(firstPageOf(warpData));
-    }, [warpData]);
+    // 起始页只在「这一章的对读数据第一次到手」时定，并且在渲染阶段就定下来、不放进 effect：
+    //   - effect 要等这一帧画完才跑，书影区会先带着旧页号（数据未到时的初值）画出来，读者与 e2e 都可能读到过渡页号；
+    //   - 宿主重取数据（resolve／章元数据／transport 的身份变了就会重取）也会得到一个新的 warpData 对象，
+    //     若每次都当成「刚到手」，读到第 50 页会被甩回第 3 页；同一章里换了数据只在当前页已不存在时才回起始页。
+    const warpChapterKey = `${versionKey}/${effectiveChapter ?? ''}`;
+    const [warpStart, setWarpStart] = useState({ key: warpChapterKey, data: warpData, started: !!warpData });
+    if (warpStart.key !== warpChapterKey) {
+        // 换章：旧章的数据还在，等新章的数据到了再定起始页
+        setWarpStart({ key: warpChapterKey, data: warpData, started: false });
+    } else if (warpData !== warpStart.data) {
+        setWarpStart({ key: warpChapterKey, data: warpData, started: !!warpData });
+        if (warpData) {
+            const pages = ((warpData as any).pages ?? []) as GujiPageInfo[];
+            if (!warpStart.started || !pages.some(p => p.page === activePage)) setActivePage(firstPageOf(warpData));
+        }
+    }
 
     useEffect(() => {
         setSelectedCharIds(new Set());
@@ -428,15 +440,21 @@ export const TextReader: React.FC<TextReaderProps> = ({
     // 书影翻页：上一页／下一页取本章对读页列表里相邻的页；翻到的页同时让正文滚到该页开头
     // 无字页（书脊签、封面签条、空白页）也在列表里，翻得到、只显示书影；正文里没有这些页，翻到时正文不动
     const pageNumbers = useMemo(() => [...pageInfos.keys()].sort((a, b) => a - b), [pageInfos]);
+    // 翻页按「最新的当前页」算，不按这一次渲染闭包里的页号：渲染还没跟上（正文很长、机器慢）时连按两次方向键，
+    // 第二次读到旧页号会翻错方向（3→4 后紧跟一次「‹」得到 2，而不是 3）
+    const activePageRef = useRef(activePage);
+    activePageRef.current = activePage;
     const flipPage = useCallback((delta: number) => {
-        const i = pageNumbers.indexOf(activePage);
+        const cur = activePageRef.current;
+        const i = pageNumbers.indexOf(cur);
         const next = pageNumbers[i < 0 ? 0 : i + delta];
-        if (next === undefined || next === activePage) return;
+        if (next === undefined || next === cur) return;
+        activePageRef.current = next;
         setActivePage(next);
         if (pageInfos.get(next)?.columns.some(c => c.chars.length > 0)) {
             setScrollTarget(t => ({ page: next, nonce: (t?.nonce ?? 0) + 1 }));
         }
-    }, [pageNumbers, pageInfos, activePage]);
+    }, [pageNumbers, pageInfos]);
     const activeIdx = pageNumbers.indexOf(activePage);
     // 键盘翻页只在书影区获得焦点时响应，不占用全局方向键（正文滚动要用）
     const onFacsimileKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -676,6 +694,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                             <button
                                 type="button"
                                 onClick={() => setPreserveMargins(false)}
+                                aria-pressed={!preserveMargins}
                                 className={`bim-rd-t ${!preserveMargins ? 'bim-rd-on' : ''}`}
                                 style={{ fontSize: 11, padding: '2px 10px', lineHeight: '18px', border: 'none', borderRadius: 0, cursor: 'pointer', background: !preserveMargins ? bim('accent-bg') : 'transparent', color: !preserveMargins ? bim('accent') : 'inherit' }}
                                 title="去空白：紧凑裁切版心"
@@ -685,6 +704,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                             <button
                                 type="button"
                                 onClick={() => setPreserveMargins(true)}
+                                aria-pressed={preserveMargins}
                                 className={`bim-rd-t ${preserveMargins ? 'bim-rd-on' : ''}`}
                                 style={{ fontSize: 11, padding: '2px 10px', lineHeight: '18px', border: 'none', borderRadius: 0, cursor: 'pointer', background: preserveMargins ? bim('accent-bg') : 'transparent', color: preserveMargins ? bim('accent') : 'inherit' }}
                                 title="保留空白：完整呈现古籍天头地脚与白边"
@@ -701,6 +721,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                     <button
                         type="button"
                         className={`bim-rd-t ${showPunctuation ? 'bim-rd-on' : ''}`}
+                        aria-pressed={showPunctuation}
                         title="切换外挂现代断句标点"
                         onClick={() => setShowPunctuation(p => !p)}
                     >
