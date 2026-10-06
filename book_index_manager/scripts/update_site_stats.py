@@ -4,7 +4,7 @@
 用法:
     python -m book_index_manager.scripts.update_site_stats [DATA_ROOT]
 
-DATA_ROOT 默认为当前目录下的 book-index-draft，或通过参数指定。
+DATA_ROOT 默认为当前目录下的 book-index（正式仓；站点文件 2026-10-06 起放正式仓，overview#432），或通过参数指定。
 """
 
 import json
@@ -127,8 +127,8 @@ def main():
     else:
         # 默认查找
         candidates = [
-            os.path.join(os.getcwd(), 'book-index-draft'),
-            'D:/workspace/book-index-draft',
+            os.path.join(os.getcwd(), 'book-index'),
+            'D:/workspace/book-index',
         ]
         data_root = next((c for c in candidates if os.path.exists(c)), candidates[0])
 

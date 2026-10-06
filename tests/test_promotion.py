@@ -109,7 +109,7 @@ def test_promote_writes_promotions_json(manager: BookIndexManager, tmp_path: Pat
     draft_id = _save_draft_work(manager, "测试")
     prod_id = manager.promote_to_official(draft_id)
 
-    pjson = tmp_path / "book-index-draft" / PROMOTIONS_FILENAME
+    pjson = tmp_path / "book-index" / PROMOTIONS_FILENAME
     assert pjson.exists()
     with open(pjson, encoding="utf-8") as f:
         data = json.load(f)
@@ -127,7 +127,7 @@ def test_promotions_json_sorted_by_key(manager: BookIndexManager, tmp_path: Path
     for d in ids:
         manager.promote_to_official(d)
 
-    pjson = tmp_path / "book-index-draft" / PROMOTIONS_FILENAME
+    pjson = tmp_path / "book-index" / PROMOTIONS_FILENAME
     with open(pjson, encoding="utf-8") as f:
         data = json.load(f)
 
@@ -597,7 +597,7 @@ def test_validate_detects_one_to_many_production_id(tmp_path):
                          "_promoted_to": prod_id,
                          "_promoted_at": "2026-08-24T18:56:21Z"}, ensure_ascii=False),
             encoding="utf-8")
-    (draft / "promotions.json").write_text(_json.dumps({
+    (official / "promotions.json").write_text(_json.dumps({
         "version": 1,
         "promotions": {
             "1ev3c1fplga2o": {"production_id": prod_id, "type": "work",
@@ -647,7 +647,7 @@ def _one_to_many_fixture(tmp_path, prod_extra, draft_titles):
                          "_promoted_to": prod_id,
                          "_promoted_at": "2026-08-24T18:35:12Z"}, ensure_ascii=False),
             encoding="utf-8")
-    (draft / "promotions.json").write_text(_json.dumps({
+    (official / "promotions.json").write_text(_json.dumps({
         "version": 1,
         "promotions": {i: {"production_id": prod_id, "type": "work",
                            "promoted_at": "2026-08-24T18:35:12Z"} for i in ids},
@@ -818,7 +818,7 @@ def test_validate_detects_stale_snapshot(tmp_path):
                      "_promoted_to": pid,
                      "_promoted_at": "2026-08-25T00:00:00Z"}, ensure_ascii=False),
         encoding="utf-8")
-    (draft / "promotions.json").write_text(_json.dumps({
+    (official / "promotions.json").write_text(_json.dumps({
         "version": 1,
         "promotions": {did: {"production_id": pid, "type": "work",
                              "promoted_at": "2026-08-25T00:00:00Z"}},
@@ -855,7 +855,7 @@ def test_validate_ignores_diff_after_production_edit(tmp_path):
                      "_promoted_to": pid,
                      "_promoted_at": "2026-08-25T00:00:00Z"}, ensure_ascii=False),
         encoding="utf-8")
-    (draft / "promotions.json").write_text(_json.dumps({
+    (official / "promotions.json").write_text(_json.dumps({
         "version": 1,
         "promotions": {did: {"production_id": pid, "type": "work",
                              "promoted_at": "2026-08-25T00:00:00Z"}},

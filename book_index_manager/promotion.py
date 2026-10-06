@@ -39,6 +39,11 @@ PROMOTIONS_VERSION = 1
 _ID_SHAPE = re.compile(r"^[0-9a-z]{12,13}$")
 
 
+def promotions_root(storage) -> Path:
+    """promotions.json 所在目录：正式仓根（overview#432，2026-10-06 起）。"""
+    return storage.official_root
+
+
 @dataclass(frozen=True)
 class PromotionRecord:
     production_id: str
@@ -62,7 +67,11 @@ class PromotionRecord:
 
 
 class PromotionsStore:
-    """读写 book-index-draft/promotions.json 的轻封装。
+    """读写 promotions.json（草稿 ID → 正式 ID 对照表）的轻封装。
+
+    该档放在**正式仓 book-index 根目录**（2026-10-06 起，overview#432：网站不再
+    部署草稿仓，站点要读的对照表随正式仓走）。构造时传正式仓根目录，见
+    `promotions_root()`。
 
     **写出前必与磁盘现状合流**，只把本进程动过的那几目落下去，其余一概以
     磁盘为准。理由：`promotions.json` 是全库共用的**单一状态档**，而升格是
@@ -75,8 +84,8 @@ class PromotionsStore:
     靠后来一次 merge 才侥幸回正。
     """
 
-    def __init__(self, draft_root: Path):
-        self.path = draft_root / PROMOTIONS_FILENAME
+    def __init__(self, root: Path):
+        self.path = root / PROMOTIONS_FILENAME
         self._cache: Optional[Dict[str, PromotionRecord]] = None
         # 本进程动过的 key。save 时只有这些以内存为准，其余取磁盘。
         self._touched: Set[str] = set()
@@ -306,7 +315,7 @@ def promote_to_official(
     # 立而映射未錄（validate 之 E03），故呼叫方須確保收尾必 flush。
     _own_promotions = promotions is None
     if _own_promotions:
-        promotions = PromotionsStore(storage.draft_root)
+        promotions = PromotionsStore(promotions_root(storage))
     if promotions.get(draft_id) is not None:
         # promotions.json 有但文件没标记——视为状态不一致，拒绝
         raise BookIndexError(
@@ -566,7 +575,7 @@ def validate_promotions(storage) -> List[PromotionIssue]:
               3. 二者皆合 —— 应然之并，不报。
     """
     issues: List[PromotionIssue] = []
-    promotions = PromotionsStore(storage.draft_root)
+    promotions = PromotionsStore(promotions_root(storage))
     records = promotions.load()
     promoted_ids: Set[str] = set(records.keys())
 
@@ -922,7 +931,7 @@ def resolve_id(storage, id_str: str) -> Tuple[str, Optional[str]]:
     若 id 已 promoted：返回 (production_id, draft_id)。
     否则：返回 (id_str, None)。
     """
-    promotions = PromotionsStore(storage.draft_root)
+    promotions = PromotionsStore(promotions_root(storage))
     rec = promotions.get(id_str)
     if rec is None:
         return id_str, None

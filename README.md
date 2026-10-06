@@ -115,8 +115,10 @@ import { BookIndexManager, GithubStorage } from 'book-index-ui/storage'
 ├── book-index/          # Official：只存元数据
 │   ├── Work|Book|Collection|Entity/{c1}/{c2}/{c3}/{ID}-{名称}.json
 │   ├── index/{works,books,entities}/{0-f}.json + index/collections.json   # 真正的索引
-│   └── index.json       # 废弃残留，勿读
-├── book-index-draft/    # Draft：同上 + promotions.json
+│   ├── index.json       # 废弃残留，勿读
+│   ├── promotions.json  # 草稿 ID → 正式 ID 对照表（2026-10-06 起放正式仓，overview#432）
+│   └── resource*.json、recommended.json   # 站点内容文件（资源页、首页推荐位），同上
+├── book-index-draft/    # Draft：同上（不再含 promotions.json 与站点文件；网站不部署草稿仓）
 └── book-text/           # 文本资产（2026-08-26 拆出）：整理本 / 辑佚 / 全文
     └── Work/{c1}/{c2}/{c3}/{ID}/collated_edition/{index.json, juan/NNN.json, text/*.md}
 ```
