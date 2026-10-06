@@ -118,7 +118,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         ? pages
         : [{ page: parseInt(pageData.page_id.split(':')[1] || '1', 10), columns: pageData.columns }];
 
-    return allPagesData.map((pData) => {
+    // 无字页（只有书影的书脊签、封面签条等）不进正文
+    return allPagesData.filter((pData) => pData.columns.some((c) => c.chars.length > 0)).map((pData) => {
       const sortedCols = [...pData.columns].sort((a, b) => a.col - b.col);
       const paragraphs: {
         id: string;
