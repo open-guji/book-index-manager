@@ -28,6 +28,10 @@ export interface GujiTextViewerProps {
   mode?: 'vertical' | 'horizontal';
   showPunctuation?: boolean;
   onVisiblePageChange?: (page: number) => void;
+  /** 繁简转换（显示用）：只换显示的字，格位锚点、选区、实体对位都不受影响。不传＝原字 */
+  convert?: (s: string) => string;
+  /** 要求把某页滚到视口顶部（书影翻页时带正文）；`nonce` 变了才触发，同页重复点也会再滚一次 */
+  scrollToPage?: { page: number; nonce: number } | null;
   /**
    * 实体标注（`adaptEntityJson` 的结果，须带 `anchor`）：按逐字 id 对位，画专名线／书名号，已收录的出摘要卡与条目链接。
    * 不传或空数组＝不画。
@@ -71,6 +75,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   mode = 'horizontal',
   showPunctuation = true,
   onVisiblePageChange,
+  convert,
+  scrollToPage,
   entities,
   entityTransport,
   loadEntitySummary,
@@ -256,6 +262,17 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     }
   }, [selectedCharIds]);
 
+  // 书影翻页 → 正文滚到该页开头。锁住滚动联动，免得滚动途中被上一页抢回书影页
+  const scrollNonce = scrollToPage?.nonce;
+  useEffect(() => {
+    if (!scrollToPage) return;
+    const el = containerRef.current?.querySelector<HTMLElement>(`[data-page-section="${scrollToPage.page}"]`);
+    if (!el) return;
+    pageLockUntil.current = Date.now() + 800;
+    el.scrollIntoView({ behavior: 'auto', block: 'start' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scrollNonce]);
+
   // 4. 滚动监听：侦测视口参考线所在的页并通知外层。rAF 节流＋对已排好序的页做二分，每帧只读十来个页的位置
   const hasVisibleCb = !!onVisiblePageChange;
   useEffect(() => {
@@ -297,6 +314,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
             selected={selectedByPage.get(pGroup.page) ?? NO_SELECTION}
             entityOfChar={entityOfChar}
             entityLoader={entityLoader}
+            convert={convert}
             buildHref={buildEntityHref ?? defaultHref}
             handlers={handlers}
           />
@@ -346,23 +364,42 @@ type ReflowPage = {
   }[];
 };
 
+/** 一段的字逐个转繁简：整段转换后字数不变就按位取，否则（含多码点字、转换改了字数）退回逐字转换 */
+export function convertChars(chars: string[], convert: (s: string) => string): string[] {
+  const whole = Array.from(convert(chars.join('')));
+  if (whole.length === chars.length && chars.every((c) => Array.from(c).length === 1)) return whole;
+  return chars.map((c) => convert(c));
+}
+
 /** 一页正文。memo：翻页、悬停、选中别页的字都不会让它重渲染 */
 const PageSection = React.memo(function PageSection({
-  pGroup, first, selected, entityOfChar, entityLoader, buildHref, handlers,
+  pGroup, first, selected, entityOfChar, entityLoader, convert, buildHref, handlers,
 }: {
   pGroup: ReflowPage;
   first: boolean;
   selected: ReadonlySet<string>;
   entityOfChar: Map<string, EntitySpan>;
   entityLoader: ReturnType<typeof useEntitySummaryLoader>;
+  convert?: (s: string) => string;
   buildHref: (id: string) => string;
   handlers: PageHandlers;
 }) {
+  // 字 id → 显示字（繁简）。逐段整体转换以保住词组（髮／發 等），长度对不上才退回逐字
+  const shown = useMemo(() => {
+    const m = new Map<string, string>();
+    if (!convert) return m;
+    for (const para of pGroup.paragraphs) {
+      const chars = convertChars(para.chars.map((c) => c.charData.char), convert);
+      para.chars.forEach((c, i) => m.set(c.charData.id, chars[i]));
+    }
+    return m;
+  }, [pGroup, convert]);
+  const show = (ch: { id: string; char: string }) => shown.get(ch.id) ?? ch.char;
   return (
     <section
       data-page-section={pGroup.page}
       className="guji-page-section"
-      style={{ position: 'relative' }}
+      style={{ position: 'relative', scrollMarginTop: 96 }}
     >
       {/* 页间分隔与页码标牌（首页若无前置内容可紧凑显示） */}
       {!first && (
@@ -399,9 +436,9 @@ const PageSection = React.memo(function PageSection({
                     onMouseEnter={() => handlers.enter(ch.id)}
                     onMouseLeave={handlers.leave}
                     className={`guji-text-char${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}`}
-                    title={`[第${pGroup.page}葉·第${col}列·第${ch.slot || ch.pos}字] ${ch.char}`}
+                    title={`[第${pGroup.page}葉·第${col}列·第${ch.slot || ch.pos}字] ${show(ch)}`}
                   >
-                    {ch.char}
+                    {show(ch)}
                   </span>
                   {/* 外挂注入标点 (不带 data-char-id，对底本坐标完全透明) */}
                   {afterPuncts.map((p) => (
@@ -418,7 +455,7 @@ const PageSection = React.memo(function PageSection({
               <React.Fragment key={`${run.entity.key}@${ri}`}>
                 <EntityMark
                   span={run.entity}
-                  label={run.chars.map((c) => c.charData.char).join('')}
+                  label={run.chars.map((c) => show(c.charData)).join('')}
                   hasBrackets
                   loader={entityLoader}
                   buildHref={buildHref}

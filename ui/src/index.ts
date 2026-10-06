@@ -157,6 +157,8 @@ export * from './components/EntityText';
 // 对读：guji-pages／punct.json 适配（open-guji-cv export_guji_format.py 的 NNN.pages.json）
 export { adaptGujiPages, adaptPunctJson, iiifVolumeOf } from './core/guji-pages';
 export type { GujiPageInfo, GujiPageChar } from './core/guji-pages';
+// 对读：char／cord（NNN.char.json＋NNN.cord.json，guji-format v0.1）适配
+export { adaptCharCord } from './core/guji-char-cord';
 export { buildParagraphBlocks, detectGenre } from './core/paragraphize';
 export type { ReadingMode, ReadingGenre, ParagraphBlock } from './core/paragraphize';
 export { WorkCatalog } from './components/WorkCatalog';
