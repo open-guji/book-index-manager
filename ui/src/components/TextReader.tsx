@@ -37,6 +37,7 @@ import {
 import { GujiWarpCanvas, loadImage, type PageWarpData } from './Reader/GujiWarpCanvas';
 import type { GujiPageInfo } from '../core/guji-pages';
 import { GujiTextViewer } from './Reader/GujiTextViewer';
+import { ZoomPanBox, type ZoomPanHandle } from './Reader/ZoomPanBox';
 import { useChapterWarpData, type ReaderWarpResolver } from './Reader/useChapterWarpData';
 import { useChapterEntities, type ReaderEntityResolver } from './Reader/useChapterEntities';
 
@@ -360,6 +361,10 @@ export const TextReader: React.FC<TextReaderProps> = ({
     const [hoveredCharId, setHoveredCharId] = useState<string | null>(null);
     const [showPunctuation, setShowPunctuation] = useState<boolean>(true);
     const [preserveMargins, setPreserveMargins] = useState<boolean>(true);
+    // 书影缩放：倍数（显示百分比、放大后换原图档）；翻页按钮带正文滚动用的触发器
+    const zoomRef = useRef<ZoomPanHandle>(null);
+    const [zoomScale, setZoomScale] = useState(1);
+    const [scrollTarget, setScrollTarget] = useState<{ page: number; nonce: number } | null>(null);
     // 带真透视数据的那一页（如卷二第 10 页的版心拼接）；整册只有逐字坐标、没有透视时为 null
     const nativeWarpPage = (w: PageWarpData | null | undefined): number | null => {
         const p = parseInt(w?.page_id?.split(':')[1] ?? '', 10);
@@ -408,12 +413,33 @@ export const TextReader: React.FC<TextReaderProps> = ({
     }, [images.images, pageInfos]);
 
     // 书影图片 URL：只有带真透视数据的那一页要原图精度；其余页整幅平铺，阅读档（1200 宽）足够，解码与上传纹理都轻得多。
-    const imageUrlOfPage = useCallback((page: number): string => {
+    // 放大到 1.5 倍以上换原图档（阅读档 1200 宽放大会糊）
+    const zoomedIn = zoomScale > 1.5;
+    const imageUrlOfPage = useCallback((page: number, hires = false): string => {
         const found = imageOfPage(page);
-        if (found) return page === warpPageNo ? (found.hiresUrl ?? found.url) : found.url;
+        if (found) return page === warpPageNo || hires ? (found.hiresUrl ?? found.url) : found.url;
         return page === warpPageNo ? ((warpData as any)?.imageUrl ?? '') : '';
     }, [imageOfPage, warpData, warpPageNo]);
-    const activeImageUrl = useMemo(() => imageUrlOfPage(activePage), [imageUrlOfPage, activePage]);
+    const activeImageUrl = useMemo(() => imageUrlOfPage(activePage, zoomedIn), [imageUrlOfPage, activePage, zoomedIn]);
+
+    // 书影翻页：上一页／下一页取本章对读页列表里相邻的页；翻到的页同时让正文滚到该页开头
+    const pageNumbers = useMemo(() => [...pageInfos.keys()].sort((a, b) => a - b), [pageInfos]);
+    const flipPage = useCallback((delta: number) => {
+        const i = pageNumbers.indexOf(activePage);
+        const next = pageNumbers[i < 0 ? 0 : i + delta];
+        if (next === undefined || next === activePage) return;
+        setActivePage(next);
+        setScrollTarget(t => ({ page: next, nonce: (t?.nonce ?? 0) + 1 }));
+    }, [pageNumbers, activePage]);
+    const activeIdx = pageNumbers.indexOf(activePage);
+    // 键盘翻页只在书影区获得焦点时响应，不占用全局方向键（正文滚动要用）
+    const onFacsimileKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (e.altKey || e.ctrlKey || e.metaKey) return;
+        const tag = (e.target as HTMLElement).tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+        if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); flipPage(-1); }
+        else if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); flipPage(1); }
+    }, [flipPage]);
 
     // 预取前后几页的书影：滚动时下一页已在缓存里，不用等网络
     useEffect(() => {
@@ -581,11 +607,23 @@ export const TextReader: React.FC<TextReaderProps> = ({
             imagePanel={warpData ? 'open' : imagePanel}
             isWarpMode={!!warpData}
             customImagePanel={warpData && activePageData ? (
-                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px 6px', fontSize: 12, color: bim('meta-fg') }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ fontWeight: 600 }}>底本书影</span>
+                <div
+                    className="bim-fx-panel"
+                    data-testid="facsimile-panel"
+                    tabIndex={0}
+                    role="group"
+                    aria-label="底本书影（聚焦后可用 ← → 翻页）"
+                    onKeyDown={onFacsimileKeyDown}
+                    style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', outline: 'none' }}
+                >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px 6px', fontSize: 12, color: bim('meta-fg'), gap: 8, flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <span style={{ fontWeight: 600, marginRight: 4 }}>底本书影</span>
+                            <button type="button" className="bim-rd-t" data-testid="facsimile-prev" aria-label="上一葉"
+                                disabled={activeIdx <= 0} onClick={() => flipPage(-1)}>‹</button>
                             <span data-warp-page={activePage} style={{ fontSize: 11, padding: '1px 6px', background: bim('rule'), borderRadius: 10 }}>第 {activePage} 葉</span>
+                            <button type="button" className="bim-rd-t" data-testid="facsimile-next" aria-label="下一葉"
+                                disabled={activeIdx < 0 || activeIdx >= pageNumbers.length - 1} onClick={() => flipPage(1)}>›</button>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             {selectedCharIds.size > 0 && (
@@ -598,9 +636,15 @@ export const TextReader: React.FC<TextReaderProps> = ({
                                     清除选中 ({selectedCharIds.size})
                                 </button>
                             )}
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }} data-testid="facsimile-zoom-tools">
+                                <button type="button" className="bim-rd-t" aria-label="缩小" title="缩小" disabled={zoomScale <= 1} onClick={() => zoomRef.current?.zoomBy(1 / 1.4)}>−</button>
+                                <span data-testid="facsimile-zoom-pct" style={{ minWidth: 38, textAlign: 'center', fontSize: 11 }}>{Math.round(zoomScale * 100)}%</span>
+                                <button type="button" className="bim-rd-t" aria-label="放大" title="放大" disabled={zoomScale >= 6} onClick={() => zoomRef.current?.zoomBy(1.4)}>＋</button>
+                                <button type="button" className="bim-rd-t" title="复位（双击书影也可）" disabled={zoomScale === 1} onClick={() => zoomRef.current?.reset()} style={{ fontSize: 11, padding: '2px 4px' }}>复位</button>
+                            </span>
                         </div>
                     </div>
-                    <div style={{ flex: 1, minHeight: 0, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <ZoomPanBox ref={zoomRef} resetKey={activePage} onScaleChange={setZoomScale} style={{ flex: 1, minHeight: 0 }}>
                         <GujiWarpCanvas
                             imageUrl={activeImageUrl}
                             pageData={activePageData}
@@ -619,7 +663,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                             }}
                             onCharHover={setHoveredCharId}
                         />
-                    </div>
+                    </ZoomPanBox>
                     {/* 留白模式切换置于图片正下方 */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 0 2px' }}>
                         <div style={{ display: 'inline-flex', border: `1px solid ${bim('rule')}`, borderRadius: 4, overflow: 'hidden' }}>
@@ -705,6 +749,8 @@ export const TextReader: React.FC<TextReaderProps> = ({
                         entityTransport={transport}
                         onEntityNavigate={onEntityNavigate}
                         onVisiblePageChange={(p) => setActivePage(p)}
+                        convert={convert}
+                        scrollToPage={scrollTarget}
                     />
                 </article>
             )}
