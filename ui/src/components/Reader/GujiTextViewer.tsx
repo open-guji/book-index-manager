@@ -49,6 +49,15 @@ export interface GujiTextViewerProps {
 const defaultHref = (id: string) => `/item/${encodeURIComponent(id)}`;
 
 /** 一段里连续属于同一实体的字归成一组（实体跨段、跨页时按段切开，各段各画各的线） */
+/**
+ * 挂在同一个字上的标点按 pos 分前后：pos=before 的在字之前（如《 挂在书名首字前），其余在字之后。
+ * 分段符（kind=break）不在此列，由调用方单独处理。
+ */
+export function splitPuncts(list: PunctEntry[]): { before: PunctEntry[]; after: PunctEntry[] } {
+  const marks = list.filter((p) => p.kind !== 'break');
+  return { before: marks.filter((p) => p.pos === 'before'), after: marks.filter((p) => p.pos !== 'before') };
+}
+
 function groupByEntity<T extends { charData: { id: string } }>(
   chars: T[],
   entityOfChar: Map<string, EntitySpan>,
@@ -116,6 +125,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         chars: {
           charData: (typeof pageData.columns)[0]['chars'][0];
           col: number;
+          beforePuncts: PunctEntry[];
           afterPuncts: PunctEntry[];
         }[];
       }[] = [];
@@ -123,17 +133,19 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       let currentChars: {
         charData: (typeof pageData.columns)[0]['chars'][0];
         col: number;
+        beforePuncts: PunctEntry[];
         afterPuncts: PunctEntry[];
       }[] = [];
 
       for (const col of sortedCols) {
         for (const ch of col.chars) {
-          const afterPuncts = (punctMap.get(ch.id) || []).filter((p) => p.kind !== 'break');
+          const { before: beforePuncts, after: afterPuncts } = splitPuncts(punctMap.get(ch.id) || []);
           const hasBreak = (punctMap.get(ch.id) || []).some((p) => p.kind === 'break');
 
           currentChars.push({
             charData: ch,
             col: col.col,
+            beforePuncts,
             afterPuncts,
           });
 
@@ -360,7 +372,7 @@ type ReflowPage = {
   page: number;
   paragraphs: {
     id: string;
-    chars: { charData: PageWarpData['columns'][0]['chars'][0]; col: number; afterPuncts: PunctEntry[] }[];
+    chars: { charData: PageWarpData['columns'][0]['chars'][0]; col: number; beforePuncts: PunctEntry[]; afterPuncts: PunctEntry[] }[];
   }[];
 };
 
@@ -424,12 +436,17 @@ const PageSection = React.memo(function PageSection({
       {pGroup.paragraphs.map((para) => (
         <p key={para.id} className="guji-reflow-paragraph">
           {groupByEntity(para.chars, entityOfChar).map((run, ri) => {
-            const nodes = run.chars.map(({ charData: ch, col, afterPuncts: allPuncts }, ci) => {
-              // 专名线不画到末字后面的标点上：实体末字的标点放到链接外面
+            const nodes = run.chars.map(({ charData: ch, col, beforePuncts: allBefore, afterPuncts: allPuncts }, ci) => {
+              // 专名线不画到首字前、末字后的标点上：实体首字的前置标点、末字的后置标点放到链接外面
+              const isFirstOfEntity = !!run.entity && ci === 0;
               const isLastOfEntity = !!run.entity && ci === run.chars.length - 1;
+              const beforePuncts = isFirstOfEntity ? [] : allBefore;
               const afterPuncts = isLastOfEntity ? [] : allPuncts;
               return (
                 <React.Fragment key={ch.id}>
+                  {beforePuncts.map((p) => (
+                    <span key={p.id} className="guji-text-punct" data-punct-id={p.id}>{p.mark}</span>
+                  ))}
                   <span
                     data-char-id={ch.id}
                     onClick={() => handlers.click(ch.id)}
@@ -448,11 +465,15 @@ const PageSection = React.memo(function PageSection({
               );
             });
             if (!run.entity) return <React.Fragment key={`r${ri}`}>{nodes}</React.Fragment>;
+            const head = run.chars[0].beforePuncts.map((p) => (
+              <span key={p.id} className="guji-text-punct" data-punct-id={p.id}>{p.mark}</span>
+            ));
             const tail = run.chars[run.chars.length - 1].afterPuncts.map((p) => (
               <span key={p.id} className="guji-text-punct" data-punct-id={p.id}>{p.mark}</span>
             ));
             return (
               <React.Fragment key={`${run.entity.key}@${ri}`}>
+                {head}
                 <EntityMark
                   span={run.entity}
                   label={run.chars.map((c) => show(c.charData)).join('')}

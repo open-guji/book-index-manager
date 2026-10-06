@@ -62,3 +62,42 @@ describe('GujiTextViewer 实体标注', () => {
         expect(onEntityNavigate).toHaveBeenCalledWith('w1abc', expect.anything());
     });
 });
+
+describe('GujiTextViewer 标点的前后位置（pos）', () => {
+    const text = '孔子彖象傳元史本傳';
+    const data: any = {
+        page_id: 'vol:4',
+        columns: [{ col: 1, chars: chars(4, 1, text) }],
+        pages: [{ page: 4, columns: [{ col: 1, chars: chars(4, 1, text) }] }],
+    };
+    // 单字书名《彖》《象》；《元史》整词书名，《 挂在首字 元 之前
+    const puncts: any[] = [
+        { anchor: '4:1:3', mark: '《', pos: 'before', kind: 'point' },
+        { anchor: '4:1:3', mark: '》', pos: 'after', kind: 'point' },
+        { anchor: '4:1:3', mark: '、', pos: 'after', kind: 'point' },
+        { anchor: '4:1:4', mark: '《', pos: 'before', kind: 'point' },
+        { anchor: '4:1:4', mark: '》', pos: 'after', kind: 'point' },
+        { anchor: '4:1:6', mark: '《', pos: 'before', kind: 'point' },
+        { anchor: '4:1:7', mark: '》', pos: 'after', kind: 'point' },
+    ];
+    const render1 = (extra: Partial<React.ComponentProps<typeof GujiTextViewer>> = {}) =>
+        render(
+            <LocaleProvider>
+                <GujiTextViewer pageData={data} pages={data.pages} selectedCharIds={new Set()} punctuations={puncts} showPunctuation {...extra} />
+            </LocaleProvider>,
+        );
+
+    it('pos=before 的《 在字之前，不是挂到前一个字后面', () => {
+        const { container } = render1();
+        expect(container.querySelector('p')!.textContent).toBe('孔子《彖》、《象》傳《元史》本傳');
+    });
+
+    it('专名首字前的《 在专名线外面，线只画书名本身', () => {
+        const ents = adaptEntityJson({
+            entities: [{ id: 'e1', type: 'work', text: '元史', anchor: { start: '4:1:6', end: '4:1:7' }, span: { start_offset: 5, end_offset: 7 }, target: { status: 'new_candidate' } }],
+        });
+        const { container } = render1({ entities: ents });
+        expect(container.querySelector('p')!.textContent).toBe('孔子《彖》、《象》傳《元史》本傳');
+        expect(container.querySelector('.bim-et-work')!.textContent).toBe('元史');
+    });
+});
