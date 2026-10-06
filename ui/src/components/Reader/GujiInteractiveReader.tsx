@@ -25,7 +25,7 @@ export interface GujiInteractiveReaderProps {
  */
 export const GujiInteractiveReader: React.FC<GujiInteractiveReaderProps> = ({
   pageData,
-  rawImageUrl = '/fixtures/vol02_10.png',
+  rawImageUrl = '',
   punctuations = [],
   title,
   subtitle,
