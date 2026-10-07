@@ -266,23 +266,23 @@ describe('閱讀页：返回閱讀首頁与手机底栏（overview#308）', () =
         expect(renderToString(<Shell onReport={() => {}} />)).not.toContain('aria-label="閱讀工具"');
     });
 
-    it('手机：底栏有卷目／書影／字號／報告錯字；字號抽屉能调字號，Esc 關閉并把焦点还给按钮', () => {
+    it('手机：底栏有卷目／書影／設置／報告錯字；設置抽屉能调字號，Esc 關閉并把焦点还给按钮', () => {
         withViewport(390, () => {
             const onReport = vi.fn();
             const { container } = render(<Shell onReport={onReport} />);
             const bar = screen.getByRole('navigation', { name: '閱讀工具' });
-            expect(within(bar).getAllByRole('button').map((b) => b.textContent)).toEqual(['卷目', '書影', 'A字號', '!報告錯字']);
+            expect(within(bar).getAllByRole('button').map((b) => b.textContent)).toEqual(['卷目', '書影', '設置', '!報告錯字']);
             expect(container.querySelector('.bim-rd')!.hasAttribute('data-bb')).toBe(true);
 
-            const fsBtn = within(bar).getByRole('button', { name: /字號/ });
+            const fsBtn = within(bar).getByRole('button', { name: /設置/ });
             fireEvent.click(fsBtn);
-            const dlg = screen.getByRole('dialog', { name: '字號' });
+            const dlg = screen.getByRole('dialog', { name: '閱讀設置' });
             expect(dlg).toHaveAttribute('aria-modal', 'true');
             const before = within(dlg).getByRole('status').textContent;
             fireEvent.click(within(dlg).getByRole('button', { name: '放大字號' }));
             expect(within(dlg).getByRole('status').textContent).not.toBe(before);
             fireEvent.keyDown(dlg, { key: 'Escape' });
-            expect(screen.queryByRole('dialog', { name: '字號' })).toBeNull();
+            expect(screen.queryByRole('dialog', { name: '閱讀設置' })).toBeNull();
             expect(document.activeElement).toBe(fsBtn);
 
             fireEvent.click(within(bar).getByRole('button', { name: /書影/ }));

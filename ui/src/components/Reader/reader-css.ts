@@ -107,7 +107,7 @@ export const READER_CSS = `
 /* ── 主体：目录 | 书影 | 正文 ── */
 .bim-rd-body {
   display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr);
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
   align-items: start;
   min-height: calc(100vh - ${TOP} - var(--bimrd-bar-h));
 }
@@ -222,7 +222,7 @@ export const READER_CSS = `
 /* 宋体正文：18px / 2.05，避头尾 */
 .bim-rd-prose {
   margin-top: 28px;
-  font-family: ${bim('font-reading')};
+  font-family: var(--bimrd-ff, ${bim('font-reading')});
   line-height: 2.05;
   color: ${bim('ink')};
   text-align: justify;
@@ -316,8 +316,6 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 .bim-rd-sheet-head .bim-rd-t { margin-left: auto; min-width: 44px; min-height: 44px; justify-content: center; letter-spacing: 0; }
 .bim-rd-sheet-img { display: flex; flex-direction: column; gap: 8px; min-height: 40vh; }
 .bim-rd-sheet-img .bim-rd-img-fig img { max-height: 60vh; }
-.bim-rd-sheet-fs { display: flex; align-items: center; justify-content: center; gap: 24px; padding: 8px 0 12px; font-size: 15px; color: ${bim('ink')}; }
-.bim-rd-sheet-fs .bim-rd-t { min-width: 56px; min-height: 44px; justify-content: center; font-size: 17px; border: 1px solid ${bim('rule')}; }
 @media ${READER_BOTTOM_BAR_QUERY} {
   .bim-rd[data-bb] .bim-rd-text { padding-bottom: calc(56px + 64px + env(safe-area-inset-bottom, 0px)); }
   /* 底栏上已有的，工具条上不再重复（目录、字号） */
@@ -325,6 +323,36 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
   .bim-rd[data-bb] .bim-rd-tools .bim-rd-sep { display: none; }
 }
 @media (min-width: 860px) { .bim-rd-bb, .bim-rd-sheet, .bim-rd-sheet-scrim { display: none; } }
+
+/* ── 右侧「阅读设置」侧栏（overview#463）：≥860px 是右栏，窄屏改走底栏的底部抽屉；分组 文字／标注／版面 ── */
+.bim-rd-set {
+  grid-column: 4; grid-row: 1;
+  position: sticky; top: calc(${TOP} + var(--bimrd-bar-h));
+  width: 264px; height: calc(100vh - ${TOP} - var(--bimrd-bar-h));
+  overflow-y: auto; overscroll-behavior: contain;
+  padding: 0 16px 40px;
+  background: ${bim('sidebar-bg')};
+}
+.bim-rd-sp-top { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 8px; padding: 16px 0 8px; min-height: 48px; background: ${bim('sidebar-bg')}; font-size: 12px; letter-spacing: 0.15em; color: ${bim('meta-fg')}; }
+.bim-rd-sp-top .bim-rd-t { margin-left: auto; letter-spacing: 0; }
+.bim-rd-sp-g { padding: 12px 0 14px; border-bottom: 1px solid ${bim('rule')}; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; font-size: 13px; color: ${bim('quiet-fg')}; }
+.bim-rd-sp-g:last-child { border-bottom: 0; }
+.bim-rd-sp-h { margin: 0; font-size: 11.5px; font-weight: 400; letter-spacing: 0.16em; color: ${bim('label-fg')}; }
+.bim-rd-sp-row { align-self: stretch; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 32px; }
+.bim-rd-sp-l { color: ${bim('meta-fg')}; }
+.bim-rd-sp-sel { margin: 0; min-height: 32px; padding: 0 6px; border: 1px solid ${bim('rule')}; border-radius: 4px; background: ${bim('card-bg')}; font: inherit; color: ${bim('ink')}; cursor: pointer; }
+.bim-rd-sp-fs { display: inline-flex; align-items: center; gap: 12px; color: ${bim('ink')}; }
+.bim-rd-sp-fs .bim-rd-t { min-width: 36px; min-height: 32px; justify-content: center; border: 1px solid ${bim('rule')}; }
+.bim-rd-sp-tg { min-height: 32px; }
+.bim-rd-sp .bim-rd-t { font-size: 13px; }
+@media (max-width: 859px) {
+  /* 没有底栏（bottomBar=false）时侧栏浮在右侧 */
+  .bim-rd-set { position: fixed; z-index: 50; right: 0; top: 0; bottom: 0; height: auto; width: min(86vw, 300px); box-shadow: ${bim('shadow-dialog')}; }
+}
+.bim-rd-sheet .bim-rd-sp-g { border-bottom: 1px solid ${bim('rule')}; }
+.bim-rd-sheet .bim-rd-sp-row, .bim-rd-sheet .bim-rd-sp-tg { min-height: 44px; }
+.bim-rd-sheet .bim-rd-sp-sel { min-height: 44px; }
+.bim-rd-sheet .bim-rd-sp-fs .bim-rd-t { min-width: 56px; min-height: 44px; font-size: 17px; }
 
 /* ── 点击区 ≥44×44（INT Q4）：伪元素向外扩，按钮外观与排布不变；
       A− A+ 挨着，两边各扩约 10px 会叠在一起，所以二者之间多留 12px ── */
@@ -442,7 +470,7 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 .guji-reflow-paragraph {
   margin: 0 0 1.4rem 0;
   text-indent: 2.7rem;
-  font-family: var(--bim-font-serif, "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif);
+  font-family: var(--bimrd-ff, var(--bim-font-serif, "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif));
   font-size: 1.25rem;
   letter-spacing: 0.02em;
   color: ${bim('ink')};
@@ -460,7 +488,7 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 .guji-text-col {
   display: inline-block;
   vertical-align: top;
-  font-family: var(--bim-font-serif, "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif);
+  font-family: var(--bimrd-ff, var(--bim-font-serif, "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif));
   font-size: 1.35rem;
   letter-spacing: 0;
   margin-left: 18px;

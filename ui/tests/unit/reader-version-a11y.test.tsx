@@ -251,7 +251,7 @@ function expectHitArea44(decl: string) {
 describe('Q4 点击区 ≥44×44（390 宽 / 触屏；伪元素扩热区，外观不变）', () => {
     const coarse = '(max-width: 719px), (pointer: coarse)';
 
-    it('閱讀器工具栏：目錄、繁｜简、A−、A+、專名線（全是 .bim-rd-tools .bim-rd-t）', () => {
+    it('閱讀器工具栏：目錄、繁｜简、A−、A+、閱讀設置（全是 .bim-rd-tools .bim-rd-t）', () => {
         const block = mediaBlock(READER_CSS, coarse);
         expect(ruleFor(block, '.bim-rd-tools .bim-rd-t')).toMatch(/position: relative/);
         expectHitArea44(ruleFor(block, '.bim-rd-tools .bim-rd-t::after'));
@@ -262,7 +262,7 @@ describe('Q4 点击区 ≥44×44（390 宽 / 触屏；伪元素扩热区，外�
         render(<Shell properNameToggle versions={TWO} />);
         const tools = document.querySelector('.bim-rd-tools')!;
         const t = (name: string) => tools.querySelector(`[aria-label="${name}"]`) ?? [...tools.querySelectorAll('button')].find(b => b.textContent?.includes(name));
-        for (const name of ['目錄', '縮小字號', '放大字號', '專名線']) {
+        for (const name of ['目錄', '縮小字號', '放大字號', '閱讀設置']) {
             expect(t(name)?.classList.contains('bim-rd-t'), name).toBe(true);
         }
         expect(tools.querySelector('[aria-label="縮小字號"]')!.classList.contains('bim-rd-fs')).toBe(true);

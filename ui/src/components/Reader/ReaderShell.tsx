@@ -25,8 +25,8 @@ import { useI18n } from '../../i18n/use-i18n';
 import { READER_BOTTOM_BAR_QUERY, READER_CSS, READER_WIDE_QUERY } from './reader-css';
 import { ReaderToc } from './ReaderToc';
 import { ImagePanel } from './ImagePanel';
-import { FONT_SIZE_STEPS, DEFAULT_FONT_SIZE, stepFontSize } from './prefs';
-import type { ReaderPrefs } from './prefs';
+import { FONT_SIZE_STEPS, DEFAULT_FONT_SIZE, READER_FONT_FAMILIES, readerFontStack, stepFontSize } from './prefs';
+import type { ReaderPrefs, ReaderFontFamily } from './prefs';
 import { pickReaderVersion, readerVersionOptionLabel } from './versions';
 import type { ReaderImageOverlay, ReaderPageImage, ReaderReportContext, ReaderTocItem, ReaderVersion } from './types';
 
@@ -109,8 +109,12 @@ export interface ReaderShellProps {
     keepChapterOnVersionChange?: boolean;
     /** 自定义书影/对读面板（如 WebGL 透视矫正画布）；传入时优先渲染此项，不渲染默认 ImagePanel */
     customImagePanel?: React.ReactNode;
-    /** 工具条上的额外控制项（如标点开关、排版模式等） */
+    /** 工具条上的额外控制项（旧入口，新代码放进右侧「阅读设置」的 settingsAnnotate / settingsLayout） */
     toolbarExtra?: React.ReactNode;
+    /** 右侧「阅读设置」侧栏「标注」组里的额外控制项（如标点开关） */
+    settingsAnnotate?: React.ReactNode;
+    /** 右侧「阅读设置」侧栏「版面」组里的额外控制项（如书影留白） */
+    settingsLayout?: React.ReactNode;
     /** 是否处于 interactive_warp 模式 */
     isWarpMode?: boolean;
 
@@ -132,7 +136,7 @@ export function flattenToc(items: ReaderTocItem[]): ReaderTocItem[] {
     return out;
 }
 
-type Sheet = 'img' | 'fs' | null;
+type Sheet = 'img' | 'set' | null;
 
 const IconToc = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -147,6 +151,11 @@ const IconPrev = () => (
 const IconNext = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M9 5l7 7-7 7" />
+    </svg>
+);
+const IconSettings = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+        <path d="M4 7h10M18 7h2M4 17h2M10 17h10" /><circle cx="16" cy="7" r="2" /><circle cx="8" cy="17" r="2" />
     </svg>
 );
 const IconImage = () => (
@@ -247,7 +256,7 @@ export function ReaderShell({
     pager = true,
     pagerUnit: pagerUnitProp,
     versions, currentVersionKey, onVersionChange, versionSource = true, keepChapterOnVersionChange = false,
-    customImagePanel, toolbarExtra, isWarpMode,
+    customImagePanel, toolbarExtra, settingsAnnotate, settingsLayout, isWarpMode,
     children, className, style,
 }: ReaderShellProps) {
     const { t, convert } = useI18n();
@@ -267,6 +276,10 @@ export function ReaderShell({
     const narrowForBar = useMediaQuery(READER_BOTTOM_BAR_QUERY, false);
     const showBottomBar = bottomBar && narrowForBar;
     const [sheet, setSheet] = useState<Sheet>(null);
+    // 阅读设置侧栏（≥860px 右侧；窄屏改走底栏的底部抽屉 sheet='set'）
+    const [setOpen, setSetOpen] = useState(false);
+    const setBtnRef = useRef<HTMLButtonElement>(null);
+    const setId = `bim-rd-set-${uid}`;
     const sheetRef = useRef<HTMLDivElement>(null);
     const sheetOpener = useRef<HTMLButtonElement | null>(null);
     const openSheet = (which: Exclude<Sheet, null>, opener: HTMLButtonElement) => {
@@ -366,10 +379,87 @@ export function ReaderShell({
     const next = pos >= 0 ? flat.slice(pos + 1).find(it => !it.disabled) : undefined;
 
     const fs = prefs.fontSize ?? DEFAULT_FONT_SIZE;
+    const fontStack = readerFontStack(prefs.fontFamily);
     const rootStyle = {
         ...style,
         ...(prefs.fontSize ? { ['--bimrd-fs' as string]: `${prefs.fontSize}px` } : null),
+        ...(fontStack ? { ['--bimrd-ff' as string]: fontStack } : null),
     } as React.CSSProperties;
+    const fontLabel: Record<ReaderFontFamily, string> = {
+        song: t('reader.fontSong'), kai: t('reader.fontKai'), system: t('reader.fontSystem'),
+    };
+    const hasAnnotate = properNameToggle || !!settingsAnnotate;
+    const hasLayout = !!paragraphToggle || !!workLinkToggle || !!allowVertical || !!settingsLayout || !showBottomBar;
+    const settingsPanel = (
+        <div className="bim-rd-sp">
+            <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g1`}>
+                <h3 id={`${setId}-g1`} className="bim-rd-sp-h">{t('reader.groupText')}</h3>
+                <div className="bim-rd-sp-row">
+                    <span className="bim-rd-sp-l">{t('reader.font')}</span>
+                    <select
+                        className="bim-rd-sp-sel"
+                        aria-label={t('reader.font')}
+                        value={prefs.fontFamily}
+                        onChange={e => onPrefsChange({ fontFamily: e.target.value as ReaderFontFamily })}
+                    >
+                        {READER_FONT_FAMILIES.map(f => <option key={f.key} value={f.key}>{fontLabel[f.key]}</option>)}
+                    </select>
+                </div>
+                <div className="bim-rd-sp-row">
+                    <span className="bim-rd-sp-l">{t('reader.fontSize')}</span>
+                    <span className="bim-rd-sp-fs">
+                        <button type="button" className="bim-rd-t" aria-label={t('reader.fontSmaller')} disabled={fs <= FONT_SIZE_STEPS[0]}
+                            onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, -1) })}>A−</button>
+                        <output aria-live="polite">{fs}px</output>
+                        <button type="button" className="bim-rd-t" aria-label={t('reader.fontLarger')} disabled={fs >= FONT_SIZE_STEPS[FONT_SIZE_STEPS.length - 1]}
+                            onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, 1) })}>A+</button>
+                    </span>
+                </div>
+                <div className="bim-rd-sp-row">
+                    <span className="bim-rd-sp-l">{t('reader.script')}</span>
+                    <LocaleSwitch />
+                </div>
+            </section>
+            {hasAnnotate && (
+                <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g2`}>
+                    <h3 id={`${setId}-g2`} className="bim-rd-sp-h">{t('reader.groupMark')}</h3>
+                    {properNameToggle && (
+                        <button type="button" className="bim-rd-t bim-rd-sp-tg" aria-pressed={prefs.properNames}
+                            title={t('reader.properNameTitle')}
+                            onClick={() => onPrefsChange({ properNames: !prefs.properNames })}>{t('reader.properName')}</button>
+                    )}
+                    {settingsAnnotate}
+                </section>
+            )}
+            {hasLayout && (
+                <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g3`}>
+                    <h3 id={`${setId}-g3`} className="bim-rd-sp-h">{t('reader.groupLayout')}</h3>
+                    {paragraphToggle && (
+                        <button type="button" className="bim-rd-t bim-rd-sp-tg" aria-pressed={prefs.readingMode === 'paragraph'}
+                            title={t('reader.paragraphTitle')}
+                            onClick={() => onPrefsChange({ readingMode: prefs.readingMode === 'paragraph' ? 'line' : 'paragraph' })}>{t('reader.paragraph')}</button>
+                    )}
+                    {workLinkToggle && (
+                        <label className="bim-rd-t bim-rd-chk bim-rd-sp-tg">
+                            <input type="checkbox" checked={prefs.workLinks} onChange={e => onPrefsChange({ workLinks: e.target.checked })} />
+                            <span>{t('reader.workLinks')}</span>
+                        </label>
+                    )}
+                    {allowVertical && (
+                        <button type="button" className="bim-rd-t bim-rd-sp-tg" aria-pressed={prefs.writingMode === 'vertical'}
+                            onClick={() => onPrefsChange({ writingMode: prefs.writingMode === 'vertical' ? 'horizontal' : 'vertical' })}>{t('reader.vertical')}</button>
+                    )}
+                    {!showBottomBar && (
+                        <button type="button" className="bim-rd-t bim-rd-sp-tg" aria-pressed={imgOpen}
+                            onClick={() => setImgState(imgOpen ? 'closed' : 'open')}>
+                            <IconImage />{t('reader.images')}
+                        </button>
+                    )}
+                    {settingsLayout}
+                </section>
+            )}
+        </div>
+    );
 
     return (
         <div
@@ -377,6 +467,7 @@ export function ReaderShell({
             data-toc={tocState}
             data-img={imgOpen ? 'open' : 'closed'}
             data-bb={showBottomBar ? '' : undefined}
+            data-set={!showBottomBar && setOpen ? 'open' : undefined}
             data-warp={isWarpMode ? 'true' : undefined}
             style={rootStyle}
         >
@@ -457,14 +548,6 @@ export function ReaderShell({
                     >
                         <IconToc /><span className="bim-rd-tlabel">{t('reader.toc')}</span>
                     </button>
-                    <button
-                        type="button"
-                        className="bim-rd-t bim-rd-hide-narrow"
-                        aria-pressed={imgOpen}
-                        onClick={() => setImgState(imgOpen ? 'closed' : 'open')}
-                    >
-                        <IconImage />{t('reader.images')}
-                    </button>
                     <span className="bim-rd-sep" aria-hidden="true" />
                     <LocaleSwitch />
                     <span className="bim-rd-sep" aria-hidden="true" />
@@ -482,43 +565,15 @@ export function ReaderShell({
                         disabled={fs >= FONT_SIZE_STEPS[FONT_SIZE_STEPS.length - 1]}
                         onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, 1) })}
                     >A+</button>
-                    {(paragraphToggle || properNameToggle || allowVertical) && <span className="bim-rd-sep" aria-hidden="true" />}
-                    {paragraphToggle && (
-                        <button
-                            type="button"
-                            className="bim-rd-t"
-                            aria-pressed={prefs.readingMode === 'paragraph'}
-                            title={t('reader.paragraphTitle')}
-                            onClick={() => onPrefsChange({ readingMode: prefs.readingMode === 'paragraph' ? 'line' : 'paragraph' })}
-                        >{t('reader.paragraph')}</button>
-                    )}
-                    {workLinkToggle && (
-                        <label className="bim-rd-t bim-rd-chk">
-                            <input
-                                type="checkbox"
-                                checked={prefs.workLinks}
-                                onChange={e => onPrefsChange({ workLinks: e.target.checked })}
-                            />
-                            <span>{t('reader.workLinks')}</span>
-                        </label>
-                    )}
-                    {properNameToggle && (
-                        <button
-                            type="button"
-                            className="bim-rd-t"
-                            aria-pressed={prefs.properNames}
-                            title={t('reader.properNameTitle')}
-                            onClick={() => onPrefsChange({ properNames: !prefs.properNames })}
-                        >{t('reader.properName')}</button>
-                    )}
-                    {allowVertical && (
-                        <button
-                            type="button"
-                            className="bim-rd-t bim-rd-hide-narrow"
-                            aria-pressed={prefs.writingMode === 'vertical'}
-                            onClick={() => onPrefsChange({ writingMode: prefs.writingMode === 'vertical' ? 'horizontal' : 'vertical' })}
-                        >{t('reader.vertical')}</button>
-                    )}
+                    <span className="bim-rd-sep" aria-hidden="true" />
+                    <button
+                        ref={setBtnRef}
+                        type="button"
+                        className="bim-rd-t bim-rd-bb-dup"
+                        aria-expanded={setOpen}
+                        aria-controls={setId}
+                        onClick={() => setSetOpen(o => !o)}
+                    ><IconSettings /><span className="bim-rd-tlabel">{t('reader.settings')}</span></button>
                     {toolbarExtra}
                 </div>
             </div>
@@ -558,6 +613,20 @@ export function ReaderShell({
                     )}
                 </aside>
 
+                {!showBottomBar && setOpen && (
+                    <aside
+                        className="bim-rd-set"
+                        id={setId}
+                        aria-label={t('reader.settings')}
+                        onKeyDown={e => { if (e.key === 'Escape') { e.stopPropagation(); setSetOpen(false); setBtnRef.current?.focus(); } }}
+                    >
+                        <div className="bim-rd-sp-top">
+                            <span>{t('reader.settings')}</span>
+                            <button type="button" className="bim-rd-t" aria-label={t('reader.closeSettings')} onClick={() => { setSetOpen(false); setBtnRef.current?.focus(); }}>✕</button>
+                        </div>
+                        {settingsPanel}
+                    </aside>
+                )}
                 <div className="bim-rd-text" id={textId} ref={textRef} tabIndex={-1} data-rail={(rail || onReportError) && !isWarpMode ? 'true' : undefined}>
                     <div className="bim-rd-col">
                         {children}
@@ -634,10 +703,10 @@ export function ReaderShell({
                     ><IconImage /><span>{t('reader.images')}</span></button>
                     <button
                         type="button"
-                        aria-expanded={sheet === 'fs'}
+                        aria-expanded={sheet === 'set'}
                         aria-haspopup="dialog"
-                        onClick={e => openSheet('fs', e.currentTarget)}
-                    ><span className="bim-rd-bb-ic" aria-hidden="true">A</span><span>{t('reader.fontSize')}</span></button>
+                        onClick={e => openSheet('set', e.currentTarget)}
+                    ><IconSettings /><span>{t('reader.settingsShort')}</span></button>
                     {onReportError && (
                         <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => { setSheet(null); reportError(); }}>
                             <span className="bim-rd-bb-ic" aria-hidden="true">!</span><span>{t('reader.reportError')}</span>
@@ -653,39 +722,21 @@ export function ReaderShell({
                         ref={sheetRef}
                         role="dialog"
                         aria-modal="true"
-                        aria-label={sheet === 'img' ? t('reader.images') : t('reader.fontSize')}
+                        aria-label={sheet === 'img' ? t('reader.images') : t('reader.settings')}
                         onKeyDown={e => {
                             if (e.key === 'Escape') { e.stopPropagation(); closeSheet(); return; }
                             if (e.key === 'Tab') trapFocus(e, sheetRef.current);
                         }}
                     >
                         <div className="bim-rd-sheet-head">
-                            <span>{sheet === 'img' ? t('reader.images') : t('reader.fontSize')}</span>
+                            <span>{sheet === 'img' ? t('reader.images') : t('reader.settings')}</span>
                             <button type="button" className="bim-rd-t" aria-label={t('reader.close')} onClick={closeSheet}>✕</button>
                         </div>
                         {sheet === 'img' ? (
                             <div className="bim-rd-sheet-img">
                                 <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} />
                             </div>
-                        ) : (
-                            <div className="bim-rd-sheet-fs">
-                                <button
-                                    type="button"
-                                    className="bim-rd-t"
-                                    aria-label={t('reader.fontSmaller')}
-                                    disabled={fs <= FONT_SIZE_STEPS[0]}
-                                    onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, -1) })}
-                                >A−</button>
-                                <output aria-live="polite">{fs}px</output>
-                                <button
-                                    type="button"
-                                    className="bim-rd-t"
-                                    aria-label={t('reader.fontLarger')}
-                                    disabled={fs >= FONT_SIZE_STEPS[FONT_SIZE_STEPS.length - 1]}
-                                    onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, 1) })}
-                                >A+</button>
-                            </div>
-                        )}
+                        ) : settingsPanel}
                     </div>
                 </>
             )}
