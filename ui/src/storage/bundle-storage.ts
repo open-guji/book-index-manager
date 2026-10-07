@@ -15,12 +15,15 @@ import { normalizeCatalog } from '../core/normalize-catalog';
 import { extractType } from '../id';
 import { buildPromotionMap } from './promotions';
 import { isSafeSegment, isTextKey } from '../core/text-model';
+import type { HubMap } from '../core/derived-compat';
 
 export interface BundleStorageConfig {
     /** chunk 文件的基础路径，默认 '/data' */
     basePath?: string;
     /** 请求超时（毫秒），默认 10000 */
     timeout?: number;
+    /** 枢纽名称表 `_hubs.json` 相对 basePath 的路径（schema-v2，overview#458），默认 '_hubs.json' */
+    hubsPath?: string;
     /**
      * 外部已解析好的数据版本（commitId 前 12 位），传入后 ensureVersion() 不再
      * 自己去 fetch `${basePath}/version.json`。
@@ -63,6 +66,8 @@ const DEFAULT_TIMEOUT = 10000;
 export class BundleStorage implements IndexStorage {
     private basePath: string;
     private timeout: number;
+    private hubsPath: string;
+    private hubsLoading: Promise<HubMap | null> | null = null;
 
     // 缓存
     private chunkCache = new Map<string, Record<string, unknown>>();
@@ -88,6 +93,7 @@ export class BundleStorage implements IndexStorage {
     constructor(config: BundleStorageConfig = {}) {
         this.basePath = config.basePath ?? DEFAULT_BASE_PATH;
         this.timeout = config.timeout ?? DEFAULT_TIMEOUT;
+        this.hubsPath = config.hubsPath ?? '_hubs.json';
         this.detailLayout = config.detailLayout ?? 'auto';
         // 外部注入版本号时直接采用（见 BundleStorageConfig.version 注释），
         // 跳过自己 fetch version.json 那条会被 CDN 缓存坑的路径。
@@ -339,6 +345,12 @@ export class BundleStorage implements IndexStorage {
 
     async searchAll(_query: string, _limit: number = 5): Promise<GroupedSearchResult> {
         throw new Error('BundleStorage.searchAll 已废弃：请使用 worker 搜索');
+    }
+
+    /** 枢纽名称表；站点包没打 `_hubs.json`（旧 schema）时返回 null */
+    getHubs(): Promise<HubMap | null> {
+        this.hubsLoading ??= this.fetchJson<HubMap>(`${this.basePath}/${this.hubsPath}`).catch(() => null);
+        return this.hubsLoading;
     }
 
     async getItem(id: string): Promise<Record<string, unknown> | null> {

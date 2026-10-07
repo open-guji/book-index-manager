@@ -533,6 +533,10 @@ export interface CollectionDetailData extends BaseDetailData {
     contained_works?: { id: string; title: string; volume_index?: number }[];
     /** 派生：成員數（books ∪ contained_works ∪ 反掛 contained_in，去重）；=0 不寫 */
     _member_count?: number;
+    /** schema-v2 build 产物：成员卡片（只有前 20 项，全表在 members/ 分页）；读者端经 derived-compat 归一成 books／contained_works */
+    _members?: unknown[];
+    /** derived-compat 标记：`_members` 只是前 N 项，总数见 `_member_count` */
+    _members_truncated?: boolean;
     /** 成员型别（派生，2026-09-28）：成员是 Book／Work／两者兼有；缺则无从推断 */
     _member_type?: 'Book' | 'Work' | 'Collection' | 'mixed' | string;
     /** 应收总数（卷／册／种／函分列，各自可 null）；source 仅内部 */
