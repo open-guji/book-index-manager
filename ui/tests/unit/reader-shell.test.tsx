@@ -216,11 +216,10 @@ describe('書影', () => {
         { url: 'https://img.example/2.jpg', width: 600, height: 900 },
     ];
 
-    it('没有影像：書影区默认收起，设置侧栏里点开看占位', () => {
+    it('没有影像：書影区默认收起，工具条上点开看占位', () => {
         const { container } = render(<Harness toc={FEW} images={null} />);
         const root = container.querySelector('.bim-rd')!;
         expect(root.getAttribute('data-img')).toBe('closed');
-        openSettings();
         const btn = screen.getByRole('button', { name: '書影' });
         expect(btn).toHaveAttribute('aria-pressed', 'false');
         fireEvent.click(btn);

@@ -29,6 +29,10 @@ export const READER_CSS = `
   color: ${bim('ink')};
   font-family: ${bim('font-ui')};
   --bimrd-bar-h: ${BAR_H};
+  /* 设置侧栏的暖黄：与朱／靛／墨三套主色都不冲，只做底色与选中态 */
+  --bimrd-warm: ${bim('reader-warm')};
+  --bimrd-warm-bg: color-mix(in srgb, var(--bimrd-warm) 8%, ${bim('page-bg')});
+  --bimrd-on-bg: color-mix(in srgb, var(--bimrd-warm) 24%, ${bim('page-bg')});
 }
 .bim-rd *, .bim-rd *::before, .bim-rd *::after { box-sizing: border-box; }
 
@@ -331,11 +335,11 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
   width: 264px; height: calc(100vh - ${TOP} - var(--bimrd-bar-h));
   overflow-y: auto; overscroll-behavior: contain;
   padding: 0 16px 40px;
-  /* 比目录栏（灰）暖一档：纸色里调入 3% 朱，与页面同色系又能分出层次 */
-  background: color-mix(in srgb, ${bim('accent')} 3%, ${bim('page-bg')});
+  /* 比目录栏（灰）暖一档：纸色里调入一点暖黄，与页面同色系又能分出层次 */
+  background: var(--bimrd-warm-bg);
   border-left: 1px solid ${bim('rule')};
 }
-.bim-rd-sp-top { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 8px; padding: 16px 0 8px; min-height: 48px; background: color-mix(in srgb, ${bim('accent')} 3%, ${bim('page-bg')}); font-size: 12px; letter-spacing: 0.15em; color: ${bim('meta-fg')}; }
+.bim-rd-sp-top { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 8px; padding: 16px 0 8px; min-height: 48px; background: var(--bimrd-warm-bg); font-size: 12px; letter-spacing: 0.15em; color: ${bim('meta-fg')}; }
 .bim-rd-sp-top .bim-rd-t { margin-left: auto; letter-spacing: 0; }
 .bim-rd-sp-g { padding: 12px 0 14px; border-bottom: 1px solid ${bim('rule')}; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; font-size: 13px; color: ${bim('quiet-fg')}; }
 .bim-rd-sp-g:last-child { border-bottom: 0; }
@@ -346,14 +350,14 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 .bim-rd-sp-fs { display: inline-flex; align-items: center; gap: 12px; color: ${bim('ink')}; }
 .bim-rd-sp-fs .bim-rd-t { min-width: 36px; min-height: 32px; justify-content: center; border: 1px solid ${bim('rule')}; }
 .bim-rd-sp-tg { min-height: 32px; }
-.bim-rd-sp .bim-rd-t[aria-pressed="true"] { background: ${bim('flag-bg')}; border-radius: 4px; padding: 6px 8px; }
-.bim-rd-sp-fs .bim-rd-t:hover:not(:disabled) { border-color: ${bim('accent')}; }
+.bim-rd-sp .bim-rd-t[aria-pressed="true"] { background: var(--bimrd-on-bg); color: ${bim('ink')}; border-radius: 4px; padding: 6px 8px; }
+.bim-rd-sp-fs .bim-rd-t:hover:not(:disabled) { border-color: var(--bimrd-warm); }
 .bim-rd-sp .bim-rd-t { font-size: 13px; }
 @media (max-width: 859px) {
   /* 没有底栏（bottomBar=false）时侧栏浮在右侧 */
   .bim-rd-set { position: fixed; z-index: 50; right: 0; top: 0; bottom: 0; height: auto; width: min(86vw, 300px); box-shadow: ${bim('shadow-dialog')}; }
 }
-.bim-rd-sheet { background: color-mix(in srgb, ${bim('accent')} 4%, ${bim('card-bg')}); }
+.bim-rd-sheet { background: color-mix(in srgb, var(--bimrd-warm) 6%, ${bim('card-bg')}); }
 .bim-rd-sheet .bim-rd-sp-g { border-bottom: 1px solid ${bim('rule')}; }
 .bim-rd-sheet .bim-rd-sp-row, .bim-rd-sheet .bim-rd-sp-tg { min-height: 44px; }
 .bim-rd-sheet .bim-rd-sp-sel { min-height: 44px; }

@@ -389,7 +389,7 @@ export function ReaderShell({
         song: t('reader.fontSong'), kai: t('reader.fontKai'), system: t('reader.fontSystem'),
     };
     const hasAnnotate = properNameToggle || !!settingsAnnotate;
-    const hasLayout = !!paragraphToggle || !!workLinkToggle || !!allowVertical || !!settingsLayout || !showBottomBar;
+    const hasLayout = !!paragraphToggle || !!workLinkToggle || !!allowVertical || !!settingsLayout;
     const settingsPanel = (
         <div className="bim-rd-sp">
             <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g1`}>
@@ -448,12 +448,6 @@ export function ReaderShell({
                     {allowVertical && (
                         <button type="button" className="bim-rd-t bim-rd-sp-tg" aria-pressed={prefs.writingMode === 'vertical'}
                             onClick={() => onPrefsChange({ writingMode: prefs.writingMode === 'vertical' ? 'horizontal' : 'vertical' })}>{t('reader.vertical')}</button>
-                    )}
-                    {!showBottomBar && (
-                        <button type="button" className="bim-rd-t bim-rd-sp-tg" aria-pressed={imgOpen}
-                            onClick={() => setImgState(imgOpen ? 'closed' : 'open')}>
-                            <IconImage />{t('reader.images')}
-                        </button>
                     )}
                     {settingsLayout}
                 </section>
@@ -547,6 +541,14 @@ export function ReaderShell({
                         onClick={toggleToc}
                     >
                         <IconToc /><span className="bim-rd-tlabel">{t('reader.toc')}</span>
+                    </button>
+                    <button
+                        type="button"
+                        className="bim-rd-t bim-rd-hide-narrow"
+                        aria-pressed={imgOpen}
+                        onClick={() => setImgState(imgOpen ? 'closed' : 'open')}
+                    >
+                        <IconImage />{t('reader.images')}
                     </button>
                     <span className="bim-rd-sep" aria-hidden="true" />
                     <LocaleSwitch />
