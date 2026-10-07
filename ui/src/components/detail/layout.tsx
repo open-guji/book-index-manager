@@ -255,6 +255,8 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 .bim-d-dist-seg[aria-pressed="true"] { outline: 2px solid ${bim('ink')}; outline-offset: -2px; }
 .bim-d-dist-bar:has(.bim-d-dist-seg[aria-pressed="true"]) .bim-d-dist-seg:not([aria-pressed="true"]) { opacity: .35; }
 .bim-d-sq { display: inline-block; width: 7px; height: 7px; margin-right: 8px; border-radius: 1px; vertical-align: middle; }
+/* 侧栏卡里的作品简介：不能内联写 margin 简写——会把 boxed 布局给子元素的左右 16px 抹成 0（简介贴边） */
+.bim-d-side-desc { margin: 8px 0 0; }
 .bim-d-side-note { margin: 8px 0 0; font-size: 12px; color: ${bim('aux-fg')}; }
 
 /* 提要卡：数字格（版本 / 有影印 / 家著录） */

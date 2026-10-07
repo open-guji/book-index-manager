@@ -613,9 +613,9 @@ export const BookPage: React.FC<BookPageProps> = ({
                     />
                     {work.description?.text && (
                         <p style={{
-                            margin: '8px 0 0', fontSize: 14, lineHeight: 1.8,
+                            fontSize: 14, lineHeight: 1.8,
                             display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                        }} className="bim-d-card-desc">
+                        }} className="bim-d-card-desc bim-d-side-desc">
                             {convert(work.description.text.replace(/[#*_>`[\]]/g, ''))}
                         </p>
                     )}
