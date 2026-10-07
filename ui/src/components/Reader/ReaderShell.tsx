@@ -506,7 +506,7 @@ export function ReaderShell({
                         <button
                             type="button"
                             className="bim-rd-t"
-                            aria-pressed={prefs.properNames}
+                            aria-pressed={!!prefs.properNames}
                             title={t('reader.properNameTitle')}
                             onClick={() => onPrefsChange({ properNames: !prefs.properNames })}
                         >{t('reader.properName')}</button>

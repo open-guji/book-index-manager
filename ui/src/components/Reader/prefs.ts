@@ -14,8 +14,11 @@ export interface ReaderPrefs {
     fontSize: number | null;
     /** 条目分行（现状）／自然段 */
     readingMode: ReadingMode;
-    /** 专名线（书名加波浪线） */
-    properNames: boolean;
+    /**
+     * 专名线（书名加波浪线）。null = 用户没选过：有专名层数据的章默认开、没有的默认关
+     * （由 TextReader 按本章实体数决定）；用户点过开关后存 true／false，以后一律照用户的。
+     */
+    properNames: boolean | null;
     /** 横排／竖排（竖排预留） */
     writingMode: ReaderWritingMode;
     /** 条目标题旁标出「作品 →」链接（阅读页 v3「标出作品链接」，默认开） */
@@ -25,7 +28,7 @@ export interface ReaderPrefs {
 export const DEFAULT_READER_PREFS: ReaderPrefs = {
     fontSize: null,
     readingMode: 'line',
-    properNames: false,
+    properNames: null,
     writingMode: 'horizontal',
     workLinks: true,
 };
@@ -46,7 +49,7 @@ export function loadReaderPrefs(): ReaderPrefs {
         if (typeof p.fontSize === 'number' && (FONT_SIZE_STEPS as readonly number[]).includes(p.fontSize)) out.fontSize = p.fontSize;
         const mode = p.readingMode ?? localStorage.getItem(LEGACY_MODE_KEY);
         if (mode === 'paragraph') out.readingMode = 'paragraph';
-        if (p.properNames === true) out.properNames = true;
+        if (p.properNames === true || p.properNames === false) out.properNames = p.properNames;
         if (p.writingMode === 'vertical') out.writingMode = 'vertical';
         if (p.workLinks === false) out.workLinks = false;
     } catch { /* 存储不可用：用默认值 */ }
