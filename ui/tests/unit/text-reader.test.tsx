@@ -157,6 +157,19 @@ describe('TextReader · 新结构', () => {
         await screen.findByRole('heading', { level: 1, name: '卷一' });
     });
 
+    it('受控：宿主把版本与章一起改到另一版（水合后 resolve 到起始卷），不得被旧版目录判无效而回卷一', async () => {
+        const t = nativeTransport();
+        const log: Log = [];
+        const onLocationChange = (l: TextLocation, c: TextLocationCause) => { log.push([l, c]); };
+        const { rerender } = render(<TextReader id={WORK} transport={t} versionKey="default" chapter="001" onLocationChange={onLocationChange} />);
+        await screen.findByRole('heading', { level: 1, name: '經錄' });
+        // default 的目录（001/002）还在手上时，宿主一次性给出 wikisource＋卷三
+        rerender(<TextReader id={WORK} transport={t} versionKey="wikisource" chapter="003" onLocationChange={onLocationChange} />);
+        await screen.findByRole('heading', { level: 1, name: '卷三' });
+        // 不能向宿主发过「改回第一章」的 auto 通知（宿主一照办就切回卷一）
+        expect(log.filter(([l, c]) => c === 'auto' && l.key === 'wikisource' && l.chapter !== '003')).toEqual([]);
+    });
+
     it('目錄按章列出，点目錄换章；整理本目錄顶有跨章搜索框，维基没有', async () => {
         setup(nativeTransport());
         await screen.findByRole('heading', { level: 1, name: '經錄' });
