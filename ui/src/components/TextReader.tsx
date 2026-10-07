@@ -711,7 +711,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                             onClick={() => setPreserveMargins(false)}
                             aria-pressed={!preserveMargins}
                             className={`bim-rd-t ${!preserveMargins ? 'bim-rd-on' : ''}`}
-                            style={{ padding: '6px 12px', border: 'none', borderRadius: 0, background: !preserveMargins ? bim('accent-bg') : 'transparent', color: !preserveMargins ? bim('accent') : 'inherit' }}
+                            style={{ padding: '6px 12px', border: 'none', borderRadius: 0, background: !preserveMargins ? bim('flag-bg') : 'transparent', color: !preserveMargins ? bim('accent') : 'inherit' }}
                             title="去空白：紧凑裁切版心"
                         >去空白</button>
                         <button
@@ -719,7 +719,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                             onClick={() => setPreserveMargins(true)}
                             aria-pressed={preserveMargins}
                             className={`bim-rd-t ${preserveMargins ? 'bim-rd-on' : ''}`}
-                            style={{ padding: '6px 12px', border: 'none', borderRadius: 0, background: preserveMargins ? bim('accent-bg') : 'transparent', color: preserveMargins ? bim('accent') : 'inherit' }}
+                            style={{ padding: '6px 12px', border: 'none', borderRadius: 0, background: preserveMargins ? bim('flag-bg') : 'transparent', color: preserveMargins ? bim('accent') : 'inherit' }}
                             title="保留空白：完整呈现古籍天头地脚与白边"
                         >保留空白</button>
                     </div>
