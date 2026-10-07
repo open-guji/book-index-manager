@@ -251,19 +251,27 @@ export const TextReader: React.FC<TextReaderProps> = ({
         return idx;
     }, [api, id]);
 
-    const [index, setIndex] = useState<TextIndex | null>(null);
+    /*
+     * 目录连同它所属的 (id, 版本) 一起存。版本／作品一变，上一份目录在 effect 清掉之前还会在手上渲染一帧：
+     * 若不核对归属，下面「章无效就回第一章」会拿旧版目录去判新版的章，向宿主发 auto 通知把章切回卷一
+     * （水合后宿主 resolve 出起始卷时间歇复现）。归属对不上就当目录还没到。
+     */
+    const [indexRec, setIndexRec] = useState<{ owner: string; idx: TextIndex } | null>(null);
     const [indexState, setIndexState] = useState<'loading' | 'ready' | 'failed'>('loading');
+    const indexOwner = versionKey ? `${id}\n${versionKey}` : null;
+    const index = indexRec && indexRec.owner === indexOwner ? indexRec.idx : null;
     useEffect(() => {
         if (!versionKey) return;
         let cancelled = false;
-        setIndex(null);
+        const owner = `${id}\n${versionKey}`;
+        setIndexRec(null);
         setIndexState('loading');
         loadIndex(versionKey).then(idx => {
             if (cancelled) return;
-            if (idx && idx.chapters.length > 0) { setIndex(idx); setIndexState('ready'); } else setIndexState('failed');
+            if (idx && idx.chapters.length > 0) { setIndexRec({ owner, idx }); setIndexState('ready'); } else setIndexState('failed');
         });
         return () => { cancelled = true; };
-    }, [versionKey, loadIndex]);
+    }, [id, versionKey, loadIndex]);
 
     // 没给章或章无效：选第一章并通知
     useEffect(() => {
