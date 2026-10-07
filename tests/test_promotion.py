@@ -76,7 +76,8 @@ def test_promote_creates_official_file_with_new_id(manager: BookIndexManager, tm
     assert "promoted_to" not in prod_data  # 无前缀旧名也不该留
 
 
-def test_promote_writes_tombstone_on_draft(manager: BookIndexManager):
+def test_promote_leaves_draft_file_untouched(manager: BookIndexManager):
+    """schema-v2：草稿档不写升格印记（`_promoted_to`／`_promoted_at`），权威是 promotions.json。"""
     draft_id = _save_draft_work(manager, "测试作品")
     prod_id = manager.promote_to_official(draft_id)
 
@@ -86,10 +87,11 @@ def test_promote_writes_tombstone_on_draft(manager: BookIndexManager):
         draft_data = json.load(f)
 
     assert draft_data["id"] == draft_id  # 自身 ID 不变
-    # 条目档上是派生栏，带 `_` 前缀（SCHEMA.md §記錄之共通欄位）
-    assert draft_data["_promoted_to"] == prod_id
-    assert draft_data["_promoted_at"]  # 有时间戳
+    for k in ("_promoted_to", "_promoted_at", "promoted_to", "promoted_at"):
+        assert k not in draft_data
     assert draft_data["title"] == "测试作品"  # 其他字段保留
+    # 权威对照表
+    assert PromotionsStore(manager.storage.official_root).get(draft_id).production_id == prod_id
 
 
 def test_promote_new_id_has_official_status_bit(manager: BookIndexManager):
@@ -178,9 +180,10 @@ def test_promote_does_not_rewrite_skipped_files(manager: BookIndexManager):
     draft_path = manager.storage.find_file_by_id(draft_id)
     with open(draft_path, encoding="utf-8") as f:
         draft_data = json.load(f)
-    # 自己的 id 保持 draft_id；只有 _promoted_to 指向 prod_id
+    # 自己的 id 保持 draft_id；promotions.json 指向 prod_id
     assert draft_data["id"] == draft_id
-    assert draft_data["_promoted_to"] == prod_id
+    assert "_promoted_to" not in draft_data
+    assert manager.storage.promoted_to_of(draft_id) == prod_id
 
 
 def test_promote_with_rewrite_refs_false_skips_rewrite(manager: BookIndexManager):
@@ -443,80 +446,44 @@ def test_validate_ignores_tombstone_self_reference(manager: BookIndexManager):
     assert naked_refs == []
 
 
-# ── 11. _sync_work_books_link dedup（regression：promote 不重复 append） ──
+# ── 11. Work.books（schema-v2 起不存在：Book.work_id 是唯一一侧） ──
 
-def test_promote_book_does_not_duplicate_in_work_books(manager: BookIndexManager):
-    """Regression: 之前 promote Book 后 Work.books 出现 [P, P] 重复。
+def test_save_book_does_not_write_work_books(manager: BookIndexManager):
+    """存 Book 不再回写 Work.books（F6-4 #1）。"""
+    work_id = _save_draft_work(manager, "测试 Work")
+    _save_draft_book(manager, "版本一", work_id)
+    assert "books" not in manager.get_item(work_id)
 
-    场景：Work 已 promote。下属 Book 升级时：
-      Phase 1 save production Book → _sync 把 P append 到 Work.books（此时仍含 D）
-      Phase 4 rewrite_references 改 D→P → Work.books 出现 P 两次
 
-    fix：_sync_work_books_link 加全量 dedup。
-    """
-    # 1. 建 Work + 1 个 Book，Book.work_id 指向 Work
+def test_promote_book_does_not_touch_work_books(manager: BookIndexManager):
+    """升 Work、再升 Book：Work 不生出 books，Book.work_id 改指正式 Work。"""
     work_draft = _save_draft_work(manager, "测试 Work")
     book_draft = _save_draft_book(manager, "版本一", work_draft)
-
-    # 验证初始 Work.books 含 1 项
-    work_data = manager.get_item(work_draft)
-    assert work_data["books"] == [book_draft]
-
-    # 2. 先 promote Work
     work_prod = manager.promote_to_official(work_draft)
-
-    # 此时 production Work.books 应含 [book_draft]（rewrite 没改 Book id）
-    prod_work = manager.get_item(work_prod)
-    assert prod_work["books"] == [book_draft]
-
-    # 3. 再 promote Book（这是触发 bug 的关键路径）
     book_prod = manager.promote_to_official(book_draft)
 
-    # 关键断言：Work.books 应该恰好 [book_prod]，没有重复
-    prod_work_after = manager.get_item(work_prod)
-    assert prod_work_after["books"] == [book_prod], \
-        f'expected [{book_prod!r}], got {prod_work_after["books"]!r}'
+    assert "books" not in manager.get_item(work_prod)
+    assert manager.get_item(book_prod)["work_id"] == work_prod
 
 
-def test_sync_work_books_dedupes_existing_duplicates(manager: BookIndexManager):
-    """_sync_work_books_link 应清理已有重复（防御性，不只针对 self）。"""
+def test_legacy_work_books_is_left_alone(manager: BookIndexManager):
+    """迁移前的旧数据里 Work.books 若还在，也不再被去重／改写，原样保留（读者兼容）。"""
     work_id = _save_draft_work(manager, "测试 Work")
-    # 手工把 Work.books 写成有重复的脏状态
     work = manager.get_item(work_id)
-    work["books"] = ["bookA", "bookA", "bookB", "bookB", "bookC"]
-    from book_index_manager.id_generator import smart_decode, BookIndexIdGenerator
-    work_id_val = smart_decode(work_id)
-    manager.storage.save_item(BookIndexType.Work, work_id_val, work)
-
-    # save 一个 work_id=work_id 的 Book，触发 sync
-    book_meta = {"type": "book", "title": "新增", "work_id": work_id}
-    manager.save_item(book_meta, BookIndexType.Book, BookIndexStatus.Draft)
-    new_book_id = book_meta["id"]
-
-    work_after = manager.get_item(work_id)
-    # books 应去重 + 追加 self
-    assert work_after["books"] == ["bookA", "bookB", "bookC", new_book_id]
+    work["books"] = ["bookA", "bookA", "bookB"]
+    from book_index_manager.id_generator import smart_decode
+    manager.storage.save_item(BookIndexType.Work, smart_decode(work_id), work)
+    _save_draft_book(manager, "新增", work_id)
+    assert manager.get_item(work_id)["books"] == ["bookA", "bookA", "bookB"]
 
 
-def test_validate_detects_tombstone_losing_promoted_to(manager: BookIndexManager):
-    """E02：tombstone 文件整个丢掉 _promoted_to。
-
-    E02/E03 原先只反向遍历「文件带 _promoted_to」者，恰好看不见这一种——
-    而这正是外部脚本绕过 save_item 直接 json.dump 重写 tombstone 时最常见的破坏方式。
-    book-index-draft 实测：74 条 promotions 记录，对应的 tombstone 文件
-    **全部**丢了 _promoted_to，validate 却报 0 个 E02。
-    """
+def test_validate_tombstone_without_marks_is_normal(manager: BookIndexManager):
+    """schema-v2：墓碑档不写 `_promoted_to` 是常态，不再报 E02；promotions.json 才是权威。"""
     draft_id = _save_draft_work(manager, "测试")
     manager.promote_to_official(draft_id)
 
-    draft_path = manager.storage.find_file_by_id(draft_id)
-    data = json.loads(draft_path.read_text(encoding="utf-8"))
-    del data["_promoted_to"]
-    draft_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
-
     issues = manager.validate_promotions()
-    codes = [i.code for i in issues]
-    assert "E02" in codes
+    assert issues == []
 
 
 def test_validate_detects_missing_tombstone_file(manager: BookIndexManager):
@@ -539,11 +506,11 @@ def test_validate_warns_on_legacy_unprefixed_tombstone(manager: BookIndexManager
     draft_id = _save_draft_work(manager, "测试")
     prod_id = manager.promote_to_official(draft_id)
 
-    # 改回无前缀旧名，模拟未迁移的文件
+    # 手工写成无前缀旧名，模拟未迁移的旧墓碑
     draft_path = manager.storage.find_file_by_id(draft_id)
     data = json.loads(draft_path.read_text(encoding="utf-8"))
-    data["promoted_to"] = data.pop("_promoted_to")
-    data["promoted_at"] = data.pop("_promoted_at")
+    data["promoted_to"] = prod_id
+    data["promoted_at"] = "2026-05-13T00:00:00Z"
     draft_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
     issues = manager.validate_promotions()
@@ -554,17 +521,133 @@ def test_validate_warns_on_legacy_unprefixed_tombstone(manager: BookIndexManager
     assert "E02" not in [i.code for i in issues]
 
 
-def test_tombstone_write_protection_reads_prefixed_field(manager: BookIndexManager):
-    """写保护认 `_promoted_to`——这是它唯一的判断依据，认错就等于保护失效。"""
+def test_tombstone_write_protection_reads_promotions_json(manager: BookIndexManager):
+    """写保护认 promotions.json（schema-v2 墓碑档无印记）；档上留着旧印记的也认。"""
     draft_id = _save_draft_work(manager, "测试")
     manager.promote_to_official(draft_id)
 
     draft_path = manager.storage.find_file_by_id(draft_id)
     data = json.loads(draft_path.read_text(encoding="utf-8"))
-    assert "_promoted_to" in data
+    assert "_promoted_to" not in data
 
     with pytest.raises(StorageError):
         manager.save_item({**data, "title": "改标题"}, BookIndexType.Work, BookIndexStatus.Draft)
+
+
+def test_tombstone_write_protection_still_reads_legacy_mark(manager: BookIndexManager):
+    """没进 promotions.json、但档上带旧 `_promoted_to` 的，写保护仍生效（迁移前数据）。"""
+    draft_id = _save_draft_work(manager, "测试")
+    draft_path = manager.storage.find_file_by_id(draft_id)
+    data = json.loads(draft_path.read_text(encoding="utf-8"))
+    data["_promoted_to"] = "fakefakefake1"
+    draft_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+    with pytest.raises(StorageError):
+        manager.save_item({**data, "title": "改标题"}, BookIndexType.Work, BookIndexStatus.Draft)
+
+
+# ── 分类类档（schema-v2，SCHEMA〈八〉） ──
+
+def _write_cls(root: Path, scheme: str, nodes: list, members: dict):
+    """造 classification/<scheme>/：nodes=[(id,label,parent)]，members={node:[[wid,src],…]}。"""
+    from book_index_manager.promotion import _dump_members
+    base = root / "classification"
+    (base / scheme / "members").mkdir(parents=True, exist_ok=True)
+    (base / "schemes.json").write_text(json.dumps(
+        [{"id": scheme, "name": scheme, "primary": True, "exclusive": True,
+          "tree": f"{scheme}/tree.json"}], ensure_ascii=False), encoding="utf-8")
+    (base / scheme / "tree.json").write_text(json.dumps(
+        {"scheme": scheme, "nodes": [{"id": i, "label": l, "parent": p, "level": 1}
+                                     for i, l, p in nodes]}, ensure_ascii=False), encoding="utf-8")
+    for node, rows in members.items():
+        (base / scheme / "members" / f"{node}.json").write_text(
+            _dump_members(node, rows), encoding="utf-8")
+
+
+def test_promote_work_moves_classification_rows_to_official(manager: BookIndexManager):
+    """草稿 Work 升格：类档成员行改 id 搬进正式库同节点，草稿库那行删去，版式保持一行一条。"""
+    storage = manager.storage
+    wid = _save_draft_work(manager, "分类作品")
+    other = "d59f205cxd6o"
+    nodes = [("zm0001", "經部", None)]
+    _write_cls(storage.draft_root, "zongmu", nodes, {"zm0001": [[wid, "国史经籍志"], [other + "x", "k"]]})
+    _write_cls(storage.official_root, "zongmu", nodes, {"zm0001": [[other, "旧"]]})
+
+    prod_id = manager.promote_to_official(wid)
+
+    off = (storage.official_root / "classification/zongmu/members/zm0001.json").read_text(encoding="utf-8")
+    dr = (storage.draft_root / "classification/zongmu/members/zm0001.json").read_text(encoding="utf-8")
+    assert json.loads(off)["members"] == sorted([[other, "旧"], [prod_id, "国史经籍志"]])
+    assert json.loads(dr)["members"] == [[other + "x", "k"]]
+    assert wid not in dr and wid not in off
+    # 版式：一行一条
+    assert off.startswith('{\n  "node": "zm0001",\n  "members": [\n    ["')
+    assert off.endswith('\n  ]\n}\n')
+
+
+def test_promote_work_deletes_empty_draft_member_file(manager: BookIndexManager):
+    storage = manager.storage
+    wid = _save_draft_work(manager, "唯一成员")
+    nodes = [("zm0001", "經部", None)]
+    _write_cls(storage.draft_root, "zongmu", nodes, {"zm0001": [[wid, "s"]]})
+    _write_cls(storage.official_root, "zongmu", nodes, {})
+
+    prod_id = manager.promote_to_official(wid)
+
+    assert not (storage.draft_root / "classification/zongmu/members/zm0001.json").exists()
+    off = json.loads((storage.official_root / "classification/zongmu/members/zm0001.json").read_text("utf-8"))
+    assert off["members"] == [[prod_id, "s"]]
+
+
+def test_promote_work_keeps_row_in_draft_when_official_lacks_node(manager: BookIndexManager):
+    """正式库树上没有该节点：不凭空造节点，行留在草稿库、只改 id。"""
+    storage = manager.storage
+    wid = _save_draft_work(manager, "无处可去")
+    _write_cls(storage.draft_root, "zongmu", [("zm0009", "新类", None)], {"zm0009": [[wid, "s"]]})
+    _write_cls(storage.official_root, "zongmu", [("zm0001", "經部", None)], {})
+
+    prod_id = manager.promote_to_official(wid)
+
+    dr = json.loads((storage.draft_root / "classification/zongmu/members/zm0009.json").read_text("utf-8"))
+    assert dr["members"] == [[prod_id, "s"]]
+    assert not (storage.official_root / "classification/zongmu/members/zm0009.json").exists()
+
+
+def test_rewrite_references_rewrites_classification_members_in_place(tmp_path: Path):
+    """rewrite_references 扫 classification/*/members/*.json，按原文替换，版式不变。"""
+    from book_index_manager.promotion import rewrite_references, _dump_members
+    root = tmp_path / "book-index"
+    _write_cls(root, "zongmu", [("zm0001", "經部", None)],
+               {"zm0001": [["d59f205cxd6o", "a"], ["d59f20a3cxs0", "b"]]})
+    f = root / "classification/zongmu/members/zm0001.json"
+    n = rewrite_references([root], {"d59f205cxd6o": "d59zzzzzzzzz"})
+    assert n == 1
+    assert f.read_text(encoding="utf-8") == _dump_members(
+        "zm0001", [["d59zzzzzzzzz", "a"], ["d59f20a3cxs0", "b"]])
+
+
+def test_validate_detects_naked_reference_in_classification(manager: BookIndexManager):
+    """E04 也扫类档：已升格的草稿 id 留在成员行里算裸引用。"""
+    storage = manager.storage
+    wid = _save_draft_work(manager, "裸引用")
+    prod_id = manager.promote_to_official(wid)
+    _write_cls(storage.official_root, "zongmu", [("zm0001", "經部", None)], {"zm0001": [[wid, "s"]]})
+
+    issues = manager.validate_promotions()
+    assert any(i.code == "E04" and "classification" in (i.path or "") for i in issues)
+
+
+# ── 索引：promoted_to 取自 promotions.json（墓碑档无印记） ──
+
+def test_rebuild_index_gets_promoted_to_from_promotions_json(manager: BookIndexManager):
+    from book_index_manager.storage import type_key_of
+    draft_id = _save_draft_work(manager, "测试")
+    prod_id = manager.promote_to_official(draft_id)
+
+    manager.storage.rebuild_index(BookIndexStatus.Draft)
+    shard = manager.storage._load_shard(
+        manager.storage.draft_root, type_key_of(BookIndexType.Work), draft_id)
+    assert shard[draft_id]["promoted_to"] == prod_id
 
 
 # ── E07：production_id 一對多（id 撞號之痕） ──

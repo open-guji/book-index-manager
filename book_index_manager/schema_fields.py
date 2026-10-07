@@ -6,6 +6,8 @@
 规则：无该字段（键不存在）一律视为通过，不报错（「只标异常，不标正常」）。
 """
 
+import json
+import os
 import re
 from typing import Dict, List, Optional, Tuple
 
@@ -58,6 +60,57 @@ def classification_ok(c: dict, vocab: Vocab) -> bool:
     if not l4:
         return True
     return (l1, l2, l3, l4) in l1234
+
+
+def classification_dir_problems(root, work_ids=None) -> List[str]:
+    """校验 `<root>/classification/` 类档（schema-v2，SCHEMA〈八〉）。无该目录返回 []。
+
+    查：①`schemes.json`／`tree.json` 可读；②成员档名＝其 `node`；③节点在树上且未 retired；
+    ④`exclusive` 分类法一部 Work 只出现一次；⑤给了 `work_ids`（本仓＋参照仓的 Work id 集）时，
+    成员 id 必是其中之一。与 build/build_derived.load_classification 的 `classify check` 同口径。
+    """
+    base = os.path.join(str(root), 'classification')
+    sp = os.path.join(base, 'schemes.json')
+    if not os.path.exists(sp):
+        return []
+    problems: List[str] = []
+    try:
+        with open(sp, encoding='utf-8') as f:
+            schemes = json.load(f)
+    except (OSError, ValueError) as e:
+        return [f'schemes.json 读不了：{e}']
+    schemes = schemes.get('schemes', schemes) if isinstance(schemes, dict) else schemes
+    for sch in schemes if isinstance(schemes, list) else []:
+        sid = sch.get('id')
+        try:
+            with open(os.path.join(base, sch.get('tree') or f'{sid}/tree.json'), encoding='utf-8') as f:
+                nodes = {n['id']: n for n in json.load(f)['nodes']}
+        except (OSError, ValueError, KeyError) as e:
+            problems.append(f'{sid}: tree.json 读不了：{e}')
+            continue
+        mdir = os.path.join(base, str(sid), 'members')
+        seen: Dict[str, str] = {}
+        for fn in sorted(os.listdir(mdir)) if os.path.isdir(mdir) else []:
+            try:
+                with open(os.path.join(mdir, fn), encoding='utf-8') as f:
+                    m = json.load(f)
+            except (OSError, ValueError) as e:
+                problems.append(f'{sid}/members/{fn}: 读不了：{e}')
+                continue
+            node = m.get('node')
+            if fn != f'{node}.json':
+                problems.append(f'{sid}/members/{fn}: 檔名與 node {node} 不符')
+            if node not in nodes or nodes[node].get('retired'):
+                problems.append(f'{sid}/members/{fn}: 節點 {node} 不存在或已 retired')
+                continue
+            for row in m.get('members') or []:
+                wid = row[0]
+                if sch.get('exclusive') and wid in seen:
+                    problems.append(f'{sid}: {wid} 同在 {seen[wid]} 與 {node}（互斥分類法）')
+                seen[wid] = node
+                if work_ids is not None and wid not in work_ids:
+                    problems.append(f'{sid}/members/{fn}: 成員 {wid} 不是已知 Work')
+    return problems
 
 
 # ---- Book.edition_type ----
@@ -182,6 +235,9 @@ MEMBER_TYPES = {'Work', 'Book', 'Collection', 'mixed'}
 
 
 def derive_member_type(d, reverse_has_book=False, reverse_has_work=False):
+    """Collection 成员类型。schema-v2 起 `_member_type` 由 build 派生，成员的归属只在成员侧
+    `contained_in`，故以反挂清单（reverse_has_*）为准；`books`／`contained_works` 只是迁移前
+    旧数据的兜底（新数据里没有这两个字段，读到即空，不影响结果）。"""
     has_b = bool(d.get('books')) or reverse_has_book
     has_w = bool(d.get('contained_works')) or reverse_has_work
     if has_b and has_w:
@@ -261,7 +317,7 @@ def validate_collection_fields(collection: dict, reverse_has_book=False,
 
 __all__ = [
     'Vocab', 'build_vocab',
-    'classification_ok', 'EDITION_TYPES', 'edition_type_ok',
+    'classification_ok', 'classification_dir_problems', 'EDITION_TYPES', 'edition_type_ok',
     'provenance_ok', 'physical_description_ok',
     'BASE_EDITION_ROLES', 'base_edition_ok',
     'dates_ok', 'external_ids_ok',
