@@ -288,3 +288,62 @@ def test_scan_fields_cli(tmp_path, monkeypatch, capsys):
     assert {r["field"] for r in rows} == {
         "classification", "edition_type", "external_ids", "_member_type"}
     assert [r["id"] for r in rows if r["field"] == "classification"] == ["w1"]
+
+
+# ─── schema-v2：classification/ 类档校验 ───
+
+def _make_cls(root, nodes, members, exclusive=True):
+    base = root / "classification"
+    _write(base / "schemes.json",
+           [{"id": "zongmu", "name": "總目", "primary": True, "exclusive": exclusive,
+             "tree": "zongmu/tree.json"}])
+    _write(base / "zongmu" / "tree.json", {"scheme": "zongmu", "nodes": nodes})
+    for fn, m in members.items():
+        _write(base / "zongmu" / "members" / fn, m)
+
+
+def test_classification_dir_problems_clean(tmp_path):
+    from book_index_manager import classification_dir_problems
+    _make_cls(tmp_path, [{"id": "zm0001", "label": "經部", "parent": None}],
+              {"zm0001.json": {"node": "zm0001", "members": [["w1", "s"]]}})
+    assert classification_dir_problems(tmp_path) == []
+    assert classification_dir_problems(tmp_path / "nope") == []     # 无 classification/ 即无问题
+
+
+def test_classification_dir_problems_detects(tmp_path):
+    from book_index_manager import classification_dir_problems
+    nodes = [{"id": "zm0001", "label": "經部", "parent": None},
+             {"id": "zm0002", "label": "史部", "parent": None},
+             {"id": "zm0003", "label": "舊", "parent": None, "retired": True}]
+    _make_cls(tmp_path, nodes, {
+        "zm0001.json": {"node": "zm0001", "members": [["w1", "s"], ["w2", "s"]]},
+        "zm0002.json": {"node": "zm0002", "members": [["w1", "s"]]},          # w1 互斥冲突
+        "zm0003.json": {"node": "zm0003", "members": [["w3", "s"]]},          # retired 节点
+        "wrong.json": {"node": "zm0001", "members": []},                      # 档名≠node
+    })
+    probs = classification_dir_problems(tmp_path, work_ids={"w1", "w2"})
+    text = "\n".join(probs)
+    assert "互斥" in text and "retired" in text and "檔名與 node" in text
+    # 给了 work_ids 时，成员必须是已知 Work：w3 在 retired 节点上先报节点问题而 continue，不重复报
+    assert "w3" not in text
+
+
+def test_scan_fields_cli_v2_classification_dir(tmp_path, monkeypatch, capsys):
+    """v2 数据：类档本身有问题要报；Work 源档里还留旧 classification 字段也要报。"""
+    root = tmp_path / "ws"
+    (root / "book-index").mkdir(parents=True)
+    _make_cls(root / "book-index-draft", [{"id": "zm0001", "label": "經部", "parent": None}],
+              {"zm0009.json": {"node": "zm0009", "members": [["w1", "s"]]}})   # 节点不存在
+    _write(root / "book-index-draft" / "Work" / "a" / "b" / "c" / "w1-test.json",
+           {"id": "w1", "type": "work", "title": "t", "classification": {"l1": "經部"}})
+
+    monkeypatch.setattr(sys, "argv", ["book-index", "scan-fields", "--root", str(root)])
+    try:
+        main()
+    except SystemExit as e:
+        assert e.code in (None, 0)
+    out, _ = capsys.readouterr()
+    rows = list(csv.DictReader(io.StringIO(out)))
+    fields = {(r["type"], r["field"]) for r in rows}
+    assert ("classification", "classification/") in fields
+    assert ("work", "classification") in fields

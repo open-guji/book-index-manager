@@ -1,5 +1,11 @@
 """
-扫描 Work/ 目录，把 has_collated 字段写回 index/works/*.json 分片。
+【已作废（schema-v2）】扫描 Work/ 目录，把 has_collated 字段写回 index/works/*.json 分片。
+
+schema-v2 起 `index/` 整个是 build 产物（`build/build_derived.py --write-index` 生成），
+`has_collated` 取源档 `_has_collated`（SCHEMA〈十〉例外，暂留源档）；手改分片会被下一次 build
+覆盖。本脚本默认只打印此说明、不写任何文件；确要对迁移前的旧库手工回填，加 `--force-legacy`。
+
+（以下为原说明）
 
 dev server (vite-plugin-api.ts) 启动时不再逐条 fs.existsSync，列表/统计接口
 直接读索引里的 has_collated。每次新增/删除 collated_edition 目录后跑一次即可。
@@ -83,6 +89,12 @@ def update_shards(data_root: Path, collated_ids: set[str]) -> tuple[int, int]:
 
 
 def main():
+    argv = [a for a in sys.argv[1:] if a != '--force-legacy']
+    if len(argv) == len(sys.argv) - 1:
+        print('已作废: schema-v2 起 index/ 由 build_derived.py 生成，has_collated 取源档 _has_collated；'
+              '不再手改分片。确要对旧库回填请加 --force-legacy。', file=sys.stderr)
+        return
+    sys.argv = [sys.argv[0], *argv]
     if len(sys.argv) > 1:
         data_root = Path(sys.argv[1])
     else:

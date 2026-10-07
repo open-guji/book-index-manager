@@ -603,10 +603,9 @@ def validate_promotions(storage) -> List[PromotionIssue]:
 
     检查项：
       [E01] promotions.json 里的每条 entry，production 文件存在
-      [E02] promotions.json 里的每条 entry，draft 文件 promoted_to 与之一致
-            （含 tombstone 文件整个丢掉 promoted_to 的情形——E02/E03 原先只遍历
-            「文件带 promoted_to」者，恰好漏掉这一种，而这正是外部脚本直接 json.dump
-            重写 tombstone 时最常见的破坏方式）
+      [E02] promotions.json 里的每条 entry：draft 文件须在；档上若还留着（迁移前的）
+            promoted_to 印记，须与之一致。schema-v2 起墓碑档不写印记，档上无印记是常态，
+            不再报 E02（此前「整个丢掉 promoted_to」要报，那是旧制）。
       [E03] draft 文件带 promoted_to，但 promotions.json 没对应记录
       [E04] 全仓出现裸引用：某 JSON 内容里出现已 promoted 的 draft-id
             （tombstone 文件自身和 promotions.json 不算）
@@ -685,8 +684,7 @@ def validate_promotions(storage) -> List[PromotionIssue]:
                 message=f"Promotion target {rec.production_id} resides in draft repo",
             ))
 
-        # E02 正向：从 promotions.json 出发查 tombstone，捕捉「文件整个丢掉
-        # promoted_to」——下面 E02/E03 的反向遍历只看得到「文件带 promoted_to」者。
+        # E02 正向：从 promotions.json 出发查 draft 文件在不在。
         draft_path = id_paths.get(draft_id)
         if draft_path is None:
             issues.append(PromotionIssue(
