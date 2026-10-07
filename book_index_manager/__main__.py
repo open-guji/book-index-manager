@@ -526,11 +526,13 @@ class CLIHandler:
             return False, {"status": "error", "draft_id": draft_id, "message": "Draft file not found"}
 
         meta = self.manager.storage.load_metadata(draft_path)
-        if isinstance(meta, dict) and read_promoted_to(meta):
+        # 旧墓碑印记 或 promotions.json（schema-v2 起墓碑不写印记，它是唯一权威）
+        done = self.manager.storage.promoted_to_of(draft_id, meta if isinstance(meta, dict) else None)
+        if done:
             return False, {
                 "status": "error",
                 "draft_id": draft_id,
-                "message": f"already promoted to {read_promoted_to(meta)}",
+                "message": f"already promoted to {done}",
             }
 
         return True, {
@@ -579,6 +581,7 @@ class CLIHandler:
         from .schema_fields import (
             build_vocab,
             classification_ok,
+            classification_dir_problems,
             edition_type_ok,
             provenance_ok,
             physical_description_ok,
@@ -603,8 +606,11 @@ class CLIHandler:
             with open(classific_path, "r", encoding="utf-8") as f:
                 vocab = build_vocab(json.load(f))
         except FileNotFoundError:
-            print(f"Warning: classific.json not found at {classific_path}, "
-                  "skipping classification check", file=sys.stderr)
+            # schema-v2：classific.json 是 classification/zongmu/tree.json 的生成物，可以不在；
+            # 旧字段 Work.classification 的词表检查只对还带旧字段的数据有意义。
+            if not (self.manager.storage.official_root / "classification").is_dir():
+                print(f"Warning: classific.json not found at {classific_path}, "
+                      "skipping classification check", file=sys.stderr)
         except Exception as e:
             print(f"Warning: failed to read classific.json: {e}", file=sys.stderr)
 
@@ -655,13 +661,25 @@ class CLIHandler:
                     bucket.add(rid)
 
         rows = []
+        # schema-v2：有 classification/ 类档的仓，校验类档本身（节点存在、互斥、成员是已知 Work）
+        # 成员可能指向参照仓的 Work，故不传 work_ids（不查成员是否本仓已知）
+        v2_classification = False
+        for root in roots:
+            if (root / "classification").is_dir():
+                v2_classification = True
+                for prob in classification_dir_problems(root):
+                    rows.append((root.name, "classification", "classification/", prob))
         for d in items:
             t = str(d.get("type")).lower()
             item_id = d.get("id") or ""
             if t == "work":
                 if "classification" in d and d.get("classification") is not None:
                     c = d.get("classification")
-                    if vocab is not None and (
+                    if v2_classification:
+                        # schema-v2：该仓有 classification/ 类档，源档里不该再有旧字段
+                        rows.append((item_id, t, "classification",
+                                     "旧字段 classification 应已迁入 classification/ 类档，源档不再写"))
+                    elif vocab is not None and (
                             not isinstance(c, dict) or not classification_ok(c, vocab)):
                         rows.append((item_id, t, "classification",
                                      f"classification 非法：{c!r}"))

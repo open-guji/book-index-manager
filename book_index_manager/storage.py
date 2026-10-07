@@ -10,6 +10,7 @@ from .logger import logger
 from .exceptions import StorageError
 from .migration import migrate_metadata
 from .entry_extractor import build_index_entry, build_entity_index_entry
+from .revision_fields import needs_bump
 
 
 # Semver revision 字段。production 条目必有，draft 不维护。
@@ -183,8 +184,8 @@ class BookIndexStorage:
         """Save an item (book, collection, or work) and update the index.
 
         Args:
-            allow_tombstone_edit: 默认 False。若目标文件已有 promoted_to 字段
-                （即已升级为 production 的 tombstone），save_item 会拒绝写入，
+            allow_tombstone_edit: 默认 False。若目标已升格（档上有旧 promoted_to 印记，
+                或 promotions.json 有其记录，即已升级为 production 的 tombstone），save_item 会拒绝写入，
                 避免破坏 frozen snapshot 语义。设为 True 显式 opt-in。
             bump: production 条目版本号 bump 级别。
                 'patch'（默认）/ 'minor' / 'major' / None（不 bump）。
@@ -224,13 +225,22 @@ class BookIndexStorage:
                 f"See machine_id.py for the lease-based allocator."
             )
 
+        # 改版前的旧内容：revision 是否 bump 要比对（SCHEMA〈十〉白名单，见 revision_fields）。
+        # 须在下面「改名」分支 unlink 旧档之前读。
+        old_metadata = None
+        if existing_path is not None and bump is not None:
+            try:
+                old_metadata = self.load_metadata(existing_path)
+            except Exception:
+                old_metadata = None
+
         # Tombstone 写保护：D 升级后，原 draft 文件成为 frozen snapshot，
         # 后续编辑应该写到 production 文件，而不是覆盖 tombstone。
         if existing_path and not allow_tombstone_edit:
             try:
                 existing_meta = self.load_metadata(existing_path)
-                if isinstance(existing_meta, dict) and read_promoted_to(existing_meta):
-                    prod_id = read_promoted_to(existing_meta)
+                if isinstance(existing_meta, dict) and self.promoted_to_of(id_str, existing_meta):
+                    prod_id = self.promoted_to_of(id_str, existing_meta)
                     raise StorageError(
                         f"{id_str} has been promoted to {prod_id}; edit {prod_id} instead. "
                         f"Pass allow_tombstone_edit=True to override."
@@ -296,13 +306,24 @@ class BookIndexStorage:
             except Exception:
                 is_official = False
             if is_official and bump is not None:
-                old_rev = metadata.get('revision')
-                new_rev = _bump_revision(old_rev, bump)
-                metadata['revision'] = new_rev
-                # 同日多改不刷新（决策 Q7）
-                today = _today_iso()
-                if metadata.get('revised_at') != today:
-                    metadata['revised_at'] = today
+                # 只动了关系反向链／分类／`_` 派生栏／管理栏的写入不算改版（SCHEMA〈十〉）：
+                # 旧档在、且比对后没有「算」的字段变化，则 revision／revised_at 原样保留。
+                unchanged = (isinstance(old_metadata, dict)
+                             and not needs_bump(strip_nulls(old_metadata), strip_nulls(metadata)))
+                if unchanged:
+                    for k in ('revision', 'revised_at'):
+                        if k in old_metadata:
+                            metadata[k] = old_metadata[k]
+                        else:
+                            metadata.pop(k, None)
+                else:
+                    old_rev = metadata.get('revision')
+                    new_rev = _bump_revision(old_rev, bump)
+                    metadata['revision'] = new_rev
+                    # 同日多改不刷新（决策 Q7）
+                    today = _today_iso()
+                    if metadata.get('revised_at') != today:
+                        metadata['revised_at'] = today
 
             with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(strip_nulls(metadata), f, indent=2, ensure_ascii=False)
@@ -318,56 +339,9 @@ class BookIndexStorage:
 
             logger.info(f"Saved {type_val.name}: {name} -> {file_path}")
 
-            # Bidirectional link: Book.work_id → Work.books
-            if type_val == BookIndexType.Book:
-                self._sync_work_books_link(id_str, metadata)
-
             return file_path
         except Exception as e:
             raise StorageError(f"Failed to save item {name}: {e}")
-
-    def _sync_work_books_link(self, book_id: str, book_metadata: dict):
-        """When saving a Book with work_id, ensure the Work's books array contains
-        this Book exactly once.
-
-        Defensive dedup: 不仅 append-if-missing，还把整个 books 数组去重保序。
-        触发场景是 promote_to_official —— Phase 1 用 save_item 写 production Book
-        会触发 sync 把 P append（此时 Work.books 还有原 D），Phase 4 的
-        rewrite_references 把 D 改成 P → 同 P 出现两次。dedup 一次性处理。
-        """
-        work_id = book_metadata.get("work_id")
-        if not work_id:
-            return
-        try:
-            work_path = self.find_file_by_id(work_id)
-            if not work_path:
-                logger.warning(f"Work {work_id} not found for bidirectional link from Book {book_id}")
-                return
-            with open(work_path, "r", encoding="utf-8") as f:
-                work_data = json.load(f)
-            books = work_data.get("books", [])
-            # 全量 dedup（保序）+ 确保 self 在内
-            seen: set = set()
-            deduped: list = []
-            for x in books:
-                if x in seen:
-                    continue
-                seen.add(x)
-                deduped.append(x)
-            if book_id not in seen:
-                deduped.append(book_id)
-            if deduped != books:
-                work_data["books"] = deduped
-                with open(work_path, "w", encoding="utf-8") as f:
-                    json.dump(work_data, f, indent=2, ensure_ascii=False)
-                    f.write("\n")
-                if len(deduped) < len(books):
-                    logger.info(f"Synced Book {book_id} into Work {work_id}.books "
-                                f"({len(books)}→{len(deduped)} after dedup)")
-                else:
-                    logger.info(f"Added Book {book_id} to Work {work_id}.books")
-        except Exception as e:
-            logger.warning(f"Failed to sync Work.books link for Book {book_id} -> Work {work_id}: {e}")
 
     def _migrate_keys(self, metadata: dict):
         """Migrate old Chinese keys and old resource format to new schema."""
@@ -548,10 +522,52 @@ class BookIndexStorage:
     # 可独立测试和复用）。这里保留 method 入口，方便老代码继续调用，
     # 也避免改外部 API。
     def _build_index_entry(self, metadata: dict, type_val: BookIndexType, rel_path: str) -> dict:
-        return build_index_entry(metadata, type_val, rel_path)
+        id_str = metadata.get("id") or metadata.get("ID") or ""
+        return build_index_entry(metadata, type_val, rel_path,
+                                 promoted_to=self.promoted_to_of(id_str))
 
     def _build_entity_index_entry(self, metadata: dict, id_str: str, rel_path: str) -> dict:
-        return build_entity_index_entry(metadata, id_str, rel_path)
+        return build_entity_index_entry(metadata, id_str, rel_path,
+                                        promoted_to=self.promoted_to_of(id_str))
+
+    # ── promotions.json（草稿 id → 正式 id；schema-v2 起墓碑档不再写印记，它是唯一权威）──
+
+    def promoted_to_of(self, id_str: str, metadata: Optional[dict] = None) -> Optional[str]:
+        """某条是否已升格：档上的旧印记（迁移前）优先，没有就查 `promotions.json`。"""
+        if isinstance(metadata, dict):
+            legacy = read_promoted_to(metadata)
+            if legacy:
+                return legacy
+        if not id_str:
+            return None
+        return self._promotions_map().get(id_str)
+
+    def _promotions_map(self) -> Dict[str, str]:
+        """`{draft_id: production_id}`；按文件 mtime／大小缓存（文件 10MB 级，别每条重读）。"""
+        path = self.official_root / "promotions.json"
+        try:
+            st = path.stat()
+            key = (st.st_mtime_ns, st.st_size)
+        except OSError:
+            self._promotions_cache = (None, {})
+            return {}
+        cached = getattr(self, "_promotions_cache", None)
+        if cached and cached[0] == key:
+            return cached[1]
+        out: Dict[str, str] = {}
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for k, v in (data.get("promotions") or {}).items():
+                pid = v if isinstance(v, str) else (
+                    (v.get("production_id") or v.get("to") or v.get("official_id") or v.get("id"))
+                    if isinstance(v, dict) else None)
+                if pid:
+                    out[k] = pid
+        except (OSError, ValueError, AttributeError):
+            out = {}
+        self._promotions_cache = (key, out)
+        return out
 
     def _process_type_for_rebuild(self, root: Path, type_val: BookIndexType) -> Dict[int, Dict]:
         """Scan one type directory and return shard_num → {id: entry} for deep reindex."""

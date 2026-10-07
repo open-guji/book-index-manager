@@ -145,7 +145,8 @@ def _extract_resource_flags(metadata: Dict[str, Any]) -> Dict[str, bool]:
     return {"has_text": has_text, "has_image": has_image}
 
 
-def build_entity_index_entry(metadata: Dict[str, Any], id_str: str, rel_path: str) -> Dict[str, Any]:
+def build_entity_index_entry(metadata: Dict[str, Any], id_str: str, rel_path: str,
+                             promoted_to: Optional[str] = None) -> Dict[str, Any]:
     """Entity 类型的 index 条目（people/place/dynasty/...）。
 
     `period` 与 Work 同理，是选集合用的粗粒度时代轴，必须入 index
@@ -185,28 +186,35 @@ def build_entity_index_entry(metadata: Dict[str, Any], id_str: str, rel_path: st
     #   二、kaiyuanguji-web 打包的 loadShardedIndex() 靠 promoted_to 跳过
     #       墓碑，认不出就会把 entity 墓碑当普通条目，去读其 path；
     #   三、据此误判「entity 墓碑可随手清理」——实则 index 仍以其档为落点。
-    promoted_to = read_promoted_to(metadata)
+    # schema-v2：墓碑档不再写 promoted_to，权威是 promotions.json，由调用方查好传入；
+    # 档上还留着旧印记的（迁移前）以档为先，与 build_derived.index_entry 同。
+    promoted_to = read_promoted_to(metadata) or promoted_to
     if promoted_to:
         entry["promoted_to"] = promoted_to
     return entry
 
 
-def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_path: str) -> Dict[str, Any]:
+def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_path: str,
+                      promoted_to: Optional[str] = None) -> Dict[str, Any]:
     """从 metadata dict 提取所有 index 字段。
 
     Entity 类型走单独的 build_entity_index_entry。
     其他类型（Book / Collection / Work）输出统一格式：
       {id, title, type, path, [author, era, sort_year, holder, dynasty, role,
        juan_count, measure_info, additional_titles, attached_texts,
-       has_text, has_image, edition, subtype, period, loss_status,
+       has_text, has_image, has_collated, edition, subtype, period, loss_status,
        original_title, work_id, promoted_to]}
 
     可选字段仅当有值时出现（避免索引 shard 充斥空字段）。
+    schema-v2：本函数与 book-index `build/build_derived.py` 的 `index_entry()` 逐字对齐
+    （键序、取值规则一致，二者生成的 index 逐字节相同）。`promoted_to` 的权威来源是
+    promotions.json，由调用方查好传入；`has_text`／`has_image` 只由 resources 推；
+    `has_collated` 取源档 `_has_collated`／`has_collated`（暂留源档，SCHEMA〈十〉例外）。
     """
     id_str = metadata.get("id") or metadata.get("ID", "")
 
     if type_val == BookIndexType.Entity:
-        return build_entity_index_entry(metadata, id_str, rel_path)
+        return build_entity_index_entry(metadata, id_str, rel_path, promoted_to)
 
     title = metadata.get("title", "未命名")
     author = _extract_first_author(metadata)
@@ -256,6 +264,8 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
         entry["has_text"] = True
     if flags["has_image"]:
         entry["has_image"] = True
+    if metadata.get("_has_collated") or metadata.get("has_collated"):
+        entry["has_collated"] = True
     if edition:
         entry["edition"] = edition
     if subtype:
@@ -276,7 +286,7 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
         entry["work_id"] = work_id
     # 条目档上是 `_promoted_to`（派生栏带底线前缀），index 侧不加底线——
     # 整个 index 文件都是派生产物，栏再加底线是重复。见 SCHEMA.md §索引檔。
-    promoted_to = read_promoted_to(metadata)
+    promoted_to = read_promoted_to(metadata) or promoted_to
     if promoted_to:
         entry["promoted_to"] = promoted_to
     return entry

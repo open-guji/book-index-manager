@@ -357,3 +357,40 @@ def test_book_entry_without_dating_has_no_era():
         BookIndexType.Book, "Book/b/2.json",
     )
     assert "era" not in entry and "sort_year" not in entry and "year" not in entry
+
+
+# ── schema-v2：与 build/build_derived.index_entry 对齐 ──
+
+def test_index_entry_promoted_to_from_param():
+    """墓碑档不再带印记，promoted_to 由调用方（查 promotions.json）传入。"""
+    entry = build_index_entry({"id": "w1", "title": "X"}, BookIndexType.Work, "p.json",
+                              promoted_to="d59dh3z6zmyo")
+    assert entry["promoted_to"] == "d59dh3z6zmyo"
+    entity = build_entity_index_entry({"primary_name": "X"}, "e1", "p.json",
+                                      promoted_to="hixhd2h9bdxw")
+    assert entity["promoted_to"] == "hixhd2h9bdxw"
+
+
+def test_index_entry_file_mark_wins_over_param():
+    """档上还留着旧印记（迁移前）的以档为先，与 build 同。"""
+    entry = build_index_entry({"id": "w1", "title": "X", "_promoted_to": "fromfile"},
+                              BookIndexType.Work, "p.json", promoted_to="fromparam")
+    assert entry["promoted_to"] == "fromfile"
+
+
+def test_index_entry_has_collated_from_source_field():
+    """`_has_collated`（SCHEMA〈十〉例外，暂留源档）→ index 的 has_collated，键序在 has_image 之后。"""
+    md = {"id": "w1", "title": "X", "_has_collated": True,
+          "resources": [{"types": ["text", "image"]}], "edition": "某本"}
+    entry = build_index_entry(md, BookIndexType.Work, "p.json")
+    assert entry["has_collated"] is True
+    keys = list(entry)
+    assert keys.index("has_image") < keys.index("has_collated") < keys.index("edition")
+    assert "has_collated" not in build_index_entry({"id": "w2", "title": "Y"}, BookIndexType.Work, "p.json")
+
+
+def test_index_entry_has_text_only_from_resources():
+    """has_text／has_image 只由 resources 推，源档的 `_has_text` 不进 index（build 同）。"""
+    entry = build_index_entry({"id": "w1", "title": "X", "_has_text": True, "has_text": True},
+                              BookIndexType.Work, "p.json")
+    assert "has_text" not in entry

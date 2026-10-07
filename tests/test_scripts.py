@@ -82,7 +82,15 @@ def test_update_has_collated_with_one_collated_work(monkeypatch, capsys, tmp_pat
             encoding="utf-8",
         )
 
-    _, _, code = run_script(monkeypatch, capsys, "update_has_collated", str(root))
+    # 已作废（schema-v2）：默认不写
+    _, err, code = run_script(monkeypatch, capsys, "update_has_collated", str(root))
+    assert code == 0
+    assert "已作废" in err
+    for shard_file in (root / "index" / "works").glob("*.json"):
+        assert "has_collated" not in shard_file.read_text(encoding="utf-8")
+
+    # 对迁移前旧库回填：显式 --force-legacy
+    _, _, code = run_script(monkeypatch, capsys, "update_has_collated", str(root), "--force-legacy")
     assert code == 0
     # 验证 has_collated 写回了
     found = False
@@ -152,6 +160,24 @@ def test_update_catalog_stats_with_collection_resource(monkeypatch, capsys, empt
     )
     _, _, code = run_script(monkeypatch, capsys, "update_catalog_stats", str(empty_data_root))
     assert code == 0
+
+
+def test_update_catalog_stats_counts_books_by_contained_in(monkeypatch, capsys, empty_data_root):
+    """schema-v2：sidecar 已删，叢編的 Book 数按 Book.contained_in 反查。"""
+    cid = "1agpxlq9l8nb4"
+    (empty_data_root / "resource.json").write_text(json.dumps(
+        {"resources": [{"id": "skqs", "name": "钦定四库全书", "collection_id": cid}]},
+        ensure_ascii=False), encoding="utf-8")
+    bdir = empty_data_root / "Book" / "a" / "b" / "c"
+    bdir.mkdir(parents=True)
+    for i, ci in enumerate([[{"id": cid, "volume_index": 1}], [cid], [{"id": "other"}]]):
+        (bdir / f"book{i}x-书{i}.json").write_text(json.dumps(
+            {"id": f"book{i}x", "type": "book", "title": f"书{i}", "contained_in": ci},
+            ensure_ascii=False), encoding="utf-8")
+    _, _, code = run_script(monkeypatch, capsys, "update_catalog_stats", str(empty_data_root))
+    assert code == 0
+    item = json.loads((empty_data_root / "resource.json").read_text(encoding="utf-8"))["resources"][0]
+    assert item["imported"] == 2 and item["total"] == 2
 
 
 # ─── create_books_from_catalog.py ───

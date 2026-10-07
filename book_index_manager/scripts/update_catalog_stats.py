@@ -1,9 +1,9 @@
 """
 统计各叢書目錄的 imported 数据，更新 resource.json。
 
-- 有 collection_id 的：从 volume_book_mapping 读取 book 数
+- 有 collection_id 的：按 `Book.contained_in` 反查该叢編收了多少 Book（schema-v2；
+  sidecar `volume_book_mapping.json` 已在 M6 删除，仅在反查为 0 且 sidecar 还在时回退用它）
 - 有 work_id 的：统计 indexed_by 中引用该 work 的 Work 总数
-- 有 collection_id 且是丛编：从 volume_book_mapping 读取 book 统计
 
 用法:
     python -m book_index_manager.scripts.update_catalog_stats [DATA_ROOT]
@@ -37,8 +37,36 @@ def count_indexed_by(data_root: str, work_id: str) -> int:
     return count
 
 
+def count_books_in_collection(data_root: str, collection_id: str) -> int:
+    """按 `Book.contained_in` 反查：有多少 Book 收在这个叢編里（schema-v2 的唯一一侧）。
+
+    contained_in 项可以是 {id: ...} 或裸 id 字符串（旧形）。
+    """
+    count = 0
+    for f in glob.glob(os.path.join(data_root, 'Book', '*', '*', '*', '*.json')):
+        try:
+            with open(f, encoding='utf-8') as fh:
+                data = json.load(fh)
+        except (json.JSONDecodeError, OSError):
+            continue
+        for ref in (data.get('contained_in') or []) if isinstance(data, dict) else []:
+            rid = ref.get('id') if isinstance(ref, dict) else ref
+            if rid == collection_id:
+                count += 1
+                break
+    return count
+
+
 def count_catalog_books(data_root: str, collection_id: str) -> int | None:
-    """从 volume_book_mapping.json 读取 book 总数。"""
+    """叢編的 Book 总数：先按 contained_in 反查，为 0 再回退旧 sidecar volume_book_mapping.json。"""
+    n = count_books_in_collection(data_root, collection_id)
+    if n > 0:
+        return n
+    return _count_catalog_books_sidecar(data_root, collection_id)
+
+
+def _count_catalog_books_sidecar(data_root: str, collection_id: str) -> int | None:
+    """（迁移前数据）从 volume_book_mapping.json 读取 book 总数。"""
     from book_index_manager.storage import shard_dirs
     c1, c2, c3 = shard_dirs(collection_id)
 
