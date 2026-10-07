@@ -199,7 +199,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
 }) => {
     const { t, convert } = useI18n();
     const api = useMemo(() => createTextApi(transport), [transport]);
-    const [prefs, setPrefs] = useReaderPrefs();
+    const [storedPrefs, setPrefs] = useReaderPrefs();
     const buildUrl = useBidUrl();
 
     const onLocationRef = useRef(onLocationChange);
@@ -365,6 +365,9 @@ export const TextReader: React.FC<TextReaderProps> = ({
     const images = useChapterImages(resolveImages, effectiveChapter ?? null, resolveCtx);
     const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData, warpDataProp, effectiveChapter ?? null, chapterMeta as any, resolveCtx);
     const entitySpans = useChapterEntities(resolveEntities, effectiveChapter ?? null, resolveCtx);
+    // 专名线：用户没选过时，本章有专名层数据就默认开（没有就不画空线）；选过就照用户的
+    const properNamesOn = storedPrefs.properNames ?? entitySpans.length > 0;
+    const prefs = useMemo(() => ({ ...storedPrefs, properNames: properNamesOn }), [storedPrefs, properNamesOn]);
     const [selectedCharIds, setSelectedCharIds] = useState<Set<string>>(new Set());
     const [hoveredCharId, setHoveredCharId] = useState<string | null>(null);
     const [showPunctuation, setShowPunctuation] = useState<boolean>(true);
