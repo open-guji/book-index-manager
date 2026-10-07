@@ -22,6 +22,8 @@ import type {
     EntityDetailData,
 } from '../types';
 import type { IndexStorage } from '../storage/types';
+import { withDerivedCompat } from '../storage/derived-compat-transport';
+import { adaptEntry } from '../core/derived-compat';
 import { CollectionCatalog } from './CollectionCatalog';
 import { TextReader } from './TextReader';
 import type { BookChapterList } from './detail/BookPage';
@@ -202,7 +204,7 @@ function seedMatches(id: string, detail: IndexDetailData | undefined): detail is
 
 export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     id,
-    transport,
+    transport: transportProp,
     initialDetail,
     initialEntry,
     activeTab,
@@ -232,6 +234,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     className,
     style,
 }) => {
+    /* schema-v2：条目里的 `_books`／`_members`／`_works` 等派生字段归一成旧形状（overview#458） */
+    const transport = useMemo(() => withDerivedCompat(transportProp), [transportProp]);
     const t = useT();
     /** tr：字典键取词（界面文字）；t 是旧的整本字典对象 */
     const { t: tr, convert } = useI18n();
@@ -243,7 +247,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
      */
     const [seed] = useState(() => {
         if (!seedMatches(id, initialDetail)) return null;
-        const d = { ...initialDetail } as IndexDetailData;
+        const d = adaptEntry({ ...initialDetail } as Record<string, unknown>) as unknown as IndexDetailData;
         const e = initialEntry ?? fallbackEntry(id, d);
         if (enrichDetail) enrichDetail(e, d);
         return { id, entry: e, detail: d };
@@ -398,7 +402,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         if (seed && seed.id === id) {
             seeded = seed;
         } else if (latest.initialDetail && (latest.initialDetail as { id?: unknown }).id === id) {
-            const d = { ...latest.initialDetail } as IndexDetailData;
+            const d = adaptEntry({ ...latest.initialDetail } as Record<string, unknown>) as unknown as IndexDetailData;
             const e = latest.initialEntry ?? fallbackEntry(id, d);
             if (enrichDetail) enrichDetail(e, d);
             seeded = { entry: e, detail: d };

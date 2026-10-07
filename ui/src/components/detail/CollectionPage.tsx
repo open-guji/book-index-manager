@@ -173,6 +173,8 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
 
     // ── 提要卡 ──
     const members = data._member_count || data.books?.length || works.length;
+    /** 子目总数：`_members` 被截断（只有前 20 项）时按 `_member_count` 显示 */
+    const rowTotal = data._members_truncated ? members : table.rows.length;
     const measure = measureText(data, m.unit.juan);
     const cnt = data.count;
     const numOf = (v: number | null | undefined) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
@@ -180,14 +182,15 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     const juanNum = numOf(cnt?.juan) ?? numOf(data.juan_count?.number);
     const ceNum = numOf(cnt?.ce) ?? (table.totalVolumes || null);
     const stats = [
-        { value: table.rows.length, label: t('collectionPage.stat.titles') },
+        // schema-v2：`_members` 只带前 20 项，总数以 `_member_count` 为准
+        { value: rowTotal, label: t('collectionPage.stat.titles') },
         { value: juanNum ?? 0, label: m.unit.juan },
         { value: ceNum ?? 0, label: m.unit.volume },
     ];
     const facts: CardFact[] = useMemo(() => {
         const out: CardFact[] = [];
         if (data.publication_info?.details) out.push({ label: t('collectionPage.fact.publication'), value: convert(data.publication_info.details) });
-        if (members && members !== table.rows.length) {
+        if (members && (members !== table.rows.length || data._members_truncated)) {
             const memberLabel = data._member_type === 'Book' ? t('collectionPage.member.Book')
                 : data._member_type === 'Work' ? t('collectionPage.member.Work') : t('collectionPage.member.other');
             out.push({ label: memberLabel, value: `${members} ${m.unit.bu}`, title: t('collectionPage.memberNote') });
@@ -220,7 +223,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
         const present = SECTIONS.filter(x => (n.get(x.key) ?? 0) > 0);
         if (present.length < 2) return [];
         return [
-            { key: '', label: `${m.catalog.all} ${table.rows.length}` },
+            { key: '', label: `${m.catalog.all} ${rowTotal}` },
             ...present.map(x => ({ key: x.key, label: `${x.label} ${n.get(x.key)}` })),
         ];
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -302,7 +305,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     );
 
     const nav: RailNavItem[] = [];
-    if (table.rows.length) nav.push({ id: 'titles', label: t('collectionPage.sec.titles'), count: table.rows.length });
+    if (table.rows.length) nav.push({ id: 'titles', label: t('collectionPage.sec.titles'), count: rowTotal });
     if (resCount) nav.push({ id: 'resources', label: t('collectionPage.sec.resources'), count: resCount });
     if (showWorks) nav.push({ id: 'works', label: m.section.containedWorks, count: works.length });
 
@@ -313,9 +316,9 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                     id="titles"
                     title={t('collectionPage.sec.titles')}
                     meta={<MetaLine items={[
-                        `${table.rows.length} ${m.unit.items}`,
+                        `${rowTotal} ${m.unit.items}`,
                         table.totalVolumes ? t('collectionPage.totalVolumes', { n: table.totalVolumes, unit: m.unit.volume }) : '',
-                        filtered.length !== table.rows.length ? t('collectionPage.currentN', { n: filtered.length, unit: m.unit.items }) : '',
+                        filtered.length !== rowTotal ? t('collectionPage.currentN', { n: filtered.length, unit: m.unit.items }) : '',
                     ]} />}
                     action={catalogAction}
                 >
