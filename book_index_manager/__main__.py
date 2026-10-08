@@ -543,6 +543,11 @@ class CLIHandler:
             "path": str(draft_path).replace("\\", "/"),
         }
 
+    def handle_split_promotions(self):
+        """一次性迁移：正式仓根 promotions.json 切成 promotions/<末2位>.json。"""
+        from .promotion import promotions_root, split_promotions
+        print(json.dumps(split_promotions(promotions_root(self.manager.storage)), ensure_ascii=False))
+
     def handle_validate_promotions(self):
         """校验全仓 promotion 状态一致性。"""
         issues = self.manager.validate_promotions()
@@ -909,6 +914,11 @@ def main():
                     "全仓无对已 promoted draft-id 的裸引用。")
     p.add_argument("--verbose", action="store_true", help="同时输出每个问题对应文件路径")
 
+    # split-promotions
+    subparsers.add_parser(
+        "split-promotions", parents=[parent_parser],
+        help="把正式仓根 promotions.json 切成 promotions/<草稿id末2位>.json（一次性迁移）")
+
     # scan-fields
     p = subparsers.add_parser("scan-fields", parents=[parent_parser],
                               help="全量扫描 S1-S5 新字段并输出问题清单 CSV",
@@ -953,6 +963,7 @@ def main():
             "scan-fields": handler.handle_scan_fields,
             "promote": handler.handle_promote,
             "validate-promotions": handler.handle_validate_promotions,
+            "split-promotions": handler.handle_split_promotions,
         }
 
         if args.command in cmd_map:
