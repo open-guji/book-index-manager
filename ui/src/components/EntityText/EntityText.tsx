@@ -33,6 +33,7 @@ const KIND_LABEL: Record<EntityKind, string> = {
     place: '地名',
     office: '官職',
     dynasty: '朝代',
+    reign: '年號',
     other: '專名',
 };
 
