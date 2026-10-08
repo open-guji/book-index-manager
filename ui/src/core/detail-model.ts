@@ -1623,7 +1623,15 @@ export function numberToChinese(n: number): string {
 export function sourceText(s: DescriptionSource | null | undefined): string {
     if (s == null) return '';
     if (typeof s === 'string') return s;
-    return s.title ?? '';
+    if ('name' in s && s.name) return s.name;
+    return ('title' in s && s.title) || '';
+}
+
+/** 来源标注的链接：`{title, url}` 取 url；Source 对象仅 `type` 为 url 且 `details` 是 http(s) 地址时取 details */
+export function sourceHref(s: DescriptionSource | null | undefined): string | undefined {
+    if (s == null || typeof s === 'string') return undefined;
+    const href = 'url' in s && s.url ? s.url : 'type' in s && s.type === 'url' ? s.details : undefined;
+    return href && /^https?:\/\//i.test(href) ? href : undefined;
 }
 
 /** 计量文本：measure_info 优先（70% 有），回退 juan_count */

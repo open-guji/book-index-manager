@@ -23,7 +23,7 @@ import {
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import {
-    buildVersionTable, bucketResources, measureText, sourceText,
+    buildVersionTable, bucketResources, measureText, sourceText, sourceHref,
     type ResolvedVersion, type VersionRow,
 } from '../../core/detail-model';
 import { getDisplayNameFromUrl, resourceHref } from '../../core/resources';
@@ -233,7 +233,15 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                     <MarkdownText text={data.description.text} style={{ fontSize: 15, lineHeight: 1.85 }} />
                     {data.description.sources?.length ? (
                         <div className="bim-d-meta bim-d-ui" style={{ marginTop: 6, fontSize: 12 }}>
-                            {data.description.sources.map(s => convert(sourceText(s))).filter(Boolean).join(' · ')}
+                            {data.description.sources
+                                .map(s => ({ text: convert(sourceText(s)), href: sourceHref(s) }))
+                                .filter(x => x.text)
+                                .map((x, i) => (
+                                    <React.Fragment key={i}>
+                                        {i > 0 ? ' · ' : null}
+                                        {x.href ? <a href={x.href} target="_blank" rel="noopener noreferrer">{x.text}</a> : x.text}
+                                    </React.Fragment>
+                                ))}
                         </div>
                     ) : null}
                 </>
