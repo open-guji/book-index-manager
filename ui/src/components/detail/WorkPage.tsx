@@ -16,6 +16,7 @@ import type {
 } from '../../types';
 import type { IndexStorage } from '../../storage/types';
 import { useI18n } from '../../i18n';
+import { mapLimit, DETAIL_FETCH_CONCURRENCY } from '../../core/map-limit';
 import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, renderInterlinear, type RenderLink } from './primitives';
 import {
@@ -84,7 +85,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
         if (pending.length === 0) return;
 
         let cancelled = false;
-        Promise.all(pending.map(id =>
+        mapLimit(pending, DETAIL_FETCH_CONCURRENCY, id =>
             transport.getItem(id)
                 .then(raw => {
                     const b = (raw ?? {}) as Partial<Resolved>;
@@ -100,7 +101,8 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                     }] as const;
                 })
                 .catch(() => [id, { id }] as const),
-        )).then(entries => {
+        () => cancelled,
+        ).then(entries => {
             if (cancelled) return;
             setResolved(prev => {
                 const next = new Map(prev);

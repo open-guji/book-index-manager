@@ -21,6 +21,7 @@ import { bim } from '../../styles/tokens';
 import type { AuthorInfo, CollectionDetailData, VolumeBookMapping } from '../../types';
 import type { IndexStorage } from '../../storage/types';
 import { useI18n } from '../../i18n';
+import { mapLimit, DETAIL_FETCH_CONCURRENCY } from '../../core/map-limit';
 import { MarkdownText } from '../common/MarkdownText';
 import { BidLink, type RenderLink } from './primitives';
 import {
@@ -111,7 +112,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
         let cancelled = false;
         // 分批：一次 144 个请求同时飞出去会顶满连接；批内并发、批间顺序
         const batch = idsToResolve.slice(0, RESOLVE_BATCH);
-        Promise.all(batch.map(id =>
+        mapLimit(batch, DETAIL_FETCH_CONCURRENCY, id =>
             transport.getItem(id)
                 .then(raw => {
                     const d = (raw ?? {}) as {
@@ -131,7 +132,8 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                     return [id, v] as const;
                 })
                 .catch(() => [id, {} as RowInfo] as const),
-        )).then(entries => {
+        () => cancelled,
+        ).then(entries => {
             if (cancelled) return;
             setInfo(prev => {
                 const next = new Map(prev);
