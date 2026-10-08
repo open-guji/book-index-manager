@@ -83,6 +83,8 @@ export class BundleStorage implements IndexStorage {
     /** draft_id → production_id 重定向表（整档，从 /data/promotions.json 加载；只在分片取不到时才用） */
     private promotions: Map<string, string> | null = null;
     private promotionsLoading: Promise<Map<string, string>> | null = null;
+    /** 整档加载失败时 `promotions` 是个空表占位；此时它不是权威，后续查询仍要先试分片 */
+    private promotionsLoadFailed = false;
     /** 草稿 id 末 2 位 → 该片的 draft→production 表；null＝这一片取不到（旧站点包没有 promotions/ 目录等），退回整档 */
     private promotionShards = new Map<string, Promise<Map<string, string> | null>>();
 
@@ -161,9 +163,11 @@ export class BundleStorage implements IndexStorage {
             try {
                 const raw = await this.fetchJson<unknown>(`${this.basePath}/promotions.json`);
                 this.promotions = buildPromotionMap(raw);
+                this.promotionsLoadFailed = false;
             } catch {
                 // 文件不存在或拉取失败：当作"无任何升级"，保持原行为
                 this.promotions = new Map();
+                this.promotionsLoadFailed = true;
             }
             return this.promotions;
         })();
@@ -192,7 +196,7 @@ export class BundleStorage implements IndexStorage {
      * 取不到才下整档 promotions.json（整档保留一个客户端发版周期，之后可停）。
      */
     private async canonicalIdFor(id: string): Promise<string> {
-        if (this.promotions) return this.promotions.get(id) ?? id;
+        if (this.promotions && !this.promotionsLoadFailed) return this.promotions.get(id) ?? id;
         if (id.length >= PROMOTION_SHARD_KEY_LENGTH) {
             const shard = await this.promotionShard(id);
             if (shard) return shard.get(id) ?? id;

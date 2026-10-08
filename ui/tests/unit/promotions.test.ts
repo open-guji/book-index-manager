@@ -199,7 +199,9 @@ describe('BundleStorage promotions 按分片取（overview#451 分片第 3 步�
             const s = new BundleStorage({ basePath: '/data' });
             const e = await s.getEntry(DRAFT);
             expect(e).toMatchObject({ id: PROD, redirected_from: DRAFT });
-            await s.getItem(DRAFT_SAME_SHARD);
+            const second = await s.getItem(DRAFT_SAME_SHARD);
+            expect(second).toMatchObject({ redirected_from: DRAFT_SAME_SHARD });
+            expect((second as { title?: string }).title).toBe('红楼梦');
             expect(calls.filter(u => u.includes('/promotions/x1.json')).length).toBe(1);
             expect(calls.some(u => u.includes('/promotions.json'))).toBe(false);
         } finally {
@@ -226,7 +228,10 @@ describe('BundleStorage promotions 按分片取（overview#451 分片第 3 步�
         try {
             const e = await new BundleStorage({ basePath: '/data' }).getEntry(DRAFT);
             expect(e).toMatchObject({ id: PROD, redirected_from: DRAFT });
-            expect(calls.some(u => u.includes('/promotions.json'))).toBe(true);
+            const shardAt = calls.findIndex(u => u.includes('/promotions/x1.json'));
+            const wholeAt = calls.findIndex(u => u.includes('/promotions.json'));
+            expect(shardAt).toBeGreaterThanOrEqual(0);
+            expect(wholeAt).toBeGreaterThan(shardAt);
         } finally {
             restore();
         }
@@ -239,6 +244,28 @@ describe('BundleStorage promotions 按分片取（overview#451 分片第 3 步�
             const e = await new BundleStorage({ basePath: '/data' }).getEntry(DRAFT);
             expect(e).toMatchObject({ id: PROD, redirected_from: DRAFT });
             expect(calls.some(u => u.includes('/promotions.json'))).toBe(true);
+        } finally {
+            restore();
+        }
+    });
+
+    it('整档加载失败留下的空表不是权威：之后别的分片仍能重定向', async () => {
+        const calls: string[] = [];
+        const OTHER_DRAFT = '1evdraftwwwy2'; // 末 2 位 'y2'，和第一次查询的后缀不同
+        const base = handler({ shard: 404, whole: false }, calls);
+        const { restore } = setupFetch((url: string) => {
+            if (url.includes('/promotions/y2.json')) {
+                calls.push(url);
+                return { ok: true, body: { version: 1, promotions: { [OTHER_DRAFT]: { production_id: PROD, type: 'work', promoted_at: 't' } } } };
+            }
+            return base(url);
+        });
+        try {
+            const s = new BundleStorage({ basePath: '/data' });
+            // 第一次：x1 分片 404、整档也没有 → 空表占位，按无升格处理
+            expect(await s.getEntry(NOT_PROMOTED)).toMatchObject({ id: NOT_PROMOTED });
+            // 之后：另一个后缀的分片可用，必须还能重定向
+            expect(await s.getEntry(OTHER_DRAFT)).toMatchObject({ id: PROD, redirected_from: OTHER_DRAFT });
         } finally {
             restore();
         }
