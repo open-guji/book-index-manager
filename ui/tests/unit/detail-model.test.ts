@@ -19,6 +19,7 @@ import {
     resourceNote,
     resourceDisambiguator,
     sourceText,
+    sourceHref,
     buildVersionTable,
     buildCollectionTable,
     normalizeVolumeIndex,
@@ -1400,5 +1401,22 @@ describe('sourceText（来源标注两种形态）', () => {
     it('空值不炸，返回空串（调用方 filter 掉）', () => {
         expect(sourceText(null)).toBe('');
         expect(sourceText(undefined)).toBe('');
+    });
+});
+
+describe('Source 对象形态（schema-v2，overview#458）', () => {
+    it('{name,type,details} 取 name', () => {
+        expect(sourceText({ name: '中國哲學書電子化計劃', type: 'url', details: 'https://ctext.org' })).toBe('中國哲學書電子化計劃');
+    });
+    it('type 为 url 且 details 是 http(s) 时有链接', () => {
+        expect(sourceHref({ name: 'x', type: 'url', details: 'https://ctext.org' })).toBe('https://ctext.org');
+    });
+    it('非 url 类型、javascript: 地址、字符串、旧 {title} 均无链接；旧 {title,url} 保持', () => {
+        expect(sourceHref({ name: 'x', type: 'book', details: '卷四' })).toBeUndefined();
+        expect(sourceHref({ name: 'x', type: 'url', details: 'javascript:alert(1)' })).toBeUndefined();
+        expect(sourceHref('孫楷第')).toBeUndefined();
+        expect(sourceHref({ title: 't' })).toBeUndefined();
+        expect(sourceHref({ title: 't', url: 'https://ctext.org' })).toBe('https://ctext.org');
+        expect(sourceHref(null)).toBeUndefined();
     });
 });

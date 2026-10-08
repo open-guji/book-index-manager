@@ -293,9 +293,20 @@ export interface SyncConfig {
  *
  * 历史上写成两种形态：早期是裸字符串，后来（小说类条目为主）改成
  * `{title, url?}` 对象。全库两种并存（约 10.6 万条字符串 : 672 条对象），
- * 谁也没法单方面废弃，所以类型上认下来，渲染前一律走 sourceText()。
+ * 谁也没法单方面废弃，所以类型上认下来，渲染前一律走 sourceText()／sourceHref()。
+ * schema-v2 又允许元素为 Source 对象 `{name, type, details}`（数据不迁移，长期并存）。
  */
-export type DescriptionSource = string | { title: string; url?: string };
+export type DescriptionSource =
+    | string
+    | { title: string; url?: string }
+    | SourceObject;
+
+/** schema-v2 Source 对象：`type` 为 `url` 时 `details` 是链接 */
+export interface SourceObject {
+    name: string;
+    type?: string;
+    details?: string;
+}
 
 /** 描述信息 */
 export interface DescriptionInfo {
