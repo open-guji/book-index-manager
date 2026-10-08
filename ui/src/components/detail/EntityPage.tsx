@@ -92,6 +92,16 @@ function altNameRank(type?: string): number {
     return i === -1 ? ALT_NAME_ORDER.length : i;
 }
 
+/** subtype → 标签。已知查表；未知原样露出（经繁简转换），缺失不显示——不再回退成「人物」 */
+export function entitySubtypeLabel(
+    labels: Record<string, string> | object,
+    subtype: string | undefined,
+    convert: (s: string) => string,
+): string | undefined {
+    if (!subtype) return undefined;
+    return (labels as Record<string, string>)[subtype] ?? convert(subtype);
+}
+
 /** 生卒：负数为公元前 */
 function fmtYear(n: number | undefined, t: TFunction): string {
     return n == null ? '' : (n < 0 ? t('entityPage.bce', { n: -n }) : String(n));
@@ -270,7 +280,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
 
     const card = (
         <SummaryCard
-            kind={(m.entityPage.subtype as Record<string, string>)[data.subtype] ?? t('entityPage.subtype.people')}
+            kind={entitySubtypeLabel(m.entityPage.subtype, data.subtype, convert)}
             title={convert(data.primary_name || data.title)}
             subtitle={subtitle || undefined}
             meta={<>

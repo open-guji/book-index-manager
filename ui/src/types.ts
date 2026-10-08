@@ -130,7 +130,7 @@ export interface ResourceGroupInfo {
 export type IndexType = 'book' | 'work' | 'collection' | 'entity';
 
 /** Entity subtype（人物 / 地名 / 朝代 / 匿名 / 集体编撰） */
-export type EntitySubtype = 'people' | 'place' | 'dynasty' | 'anonymous' | 'collective';
+export type EntitySubtype = 'people' | 'place' | 'dynasty' | 'reign' | 'office' | 'anonymous' | 'collective';
 
 /** 别名分类（基于 CBDB ALTNAME_CODES，简化为我方枚举） */
 export type AltNameType = '字' | '號' | '諡號' | '賜號' | '別名' | '常用名' | '簡體'

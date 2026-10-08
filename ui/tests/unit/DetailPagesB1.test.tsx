@@ -246,6 +246,18 @@ describe('EntityPage（B1）', () => {
         expect(container.querySelector('.bim-d-btn')).toBeNull();
     });
 
+    it('提要卡 subtype 标签：reign／office 有专名，未知原样露出，不再误标「人物」', async () => {
+        for (const [subtype, label] of [['reign', '年號'], ['office', '官名'], ['xyz', 'xyz']]) {
+            const d = { ...ENTITY, subtype } as unknown as IndexDetailData;
+            const { container, unmount } = render(<BookDetailLayout {...props(d, ENTITY_EXTRA)} />);
+            await screen.findByText('字仲晦，號晦庵');
+            const kind = (container.querySelector('.bim-d-card') as HTMLElement).textContent ?? '';
+            expect(kind).toContain(label);
+            expect(kind).not.toContain('人物');
+            unmount();
+        }
+    });
+
     it('著作舉要：已解析行里版本最多的三种', async () => {
         const { container } = render(<BookDetailLayout {...props(ENTITY, ENTITY_EXTRA)} />);
         await waitFor(() => expect(container.querySelector('.bim-d-picks[aria-busy]')).toBeNull());
