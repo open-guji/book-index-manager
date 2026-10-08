@@ -180,7 +180,8 @@ export class BundleStorage implements IndexStorage {
         let shard = this.promotionShards.get(key);
         if (!shard) {
             shard = this.fetchJson<unknown>(`${this.basePath}/promotions/${key}.json`)
-                .then(raw => buildPromotionMap(raw), () => null);
+                // 打包只产出非空的合法片：版本不对、形状坏了、空表都当「这片不可用」，退回整档，别当成「没有升格」
+                .then(raw => { const map = buildPromotionMap(raw); return map.size > 0 ? map : null; }, () => null);
             this.promotionShards.set(key, shard);
         }
         return shard;
