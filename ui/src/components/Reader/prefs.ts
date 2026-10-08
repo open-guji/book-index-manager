@@ -27,8 +27,11 @@ export interface ReaderPrefs {
     fontSize: number | null;
     /** 条目分行（现状）／自然段 */
     readingMode: ReadingMode;
-    /** 专名线（书名加波浪线） */
-    properNames: boolean;
+    /**
+     * 专名线（书名加波浪线）。null = 用户没选过：有专名层数据的章默认开、没有的默认关
+     * （由 TextReader 按本章实体数决定）；用户点过开关后存 true／false，以后一律照用户的。
+     */
+    properNames: boolean | null;
     /** 横排／竖排（竖排预留） */
     writingMode: ReaderWritingMode;
     /** 正文字体：宋体（默认，沿用 --bim-font-reading）／楷体／系统默认（无衬线）；只用系统已装字体，不加载网络字体 */
@@ -40,7 +43,7 @@ export interface ReaderPrefs {
 export const DEFAULT_READER_PREFS: ReaderPrefs = {
     fontSize: null,
     readingMode: 'line',
-    properNames: false,
+    properNames: null,
     writingMode: 'horizontal',
     workLinks: true,
     fontFamily: 'song',
@@ -62,7 +65,7 @@ export function loadReaderPrefs(): ReaderPrefs {
         if (typeof p.fontSize === 'number' && (FONT_SIZE_STEPS as readonly number[]).includes(p.fontSize)) out.fontSize = p.fontSize;
         const mode = p.readingMode ?? localStorage.getItem(LEGACY_MODE_KEY);
         if (mode === 'paragraph') out.readingMode = 'paragraph';
-        if (p.properNames === true) out.properNames = true;
+        if (p.properNames === true || p.properNames === false) out.properNames = p.properNames;
         if (p.writingMode === 'vertical') out.writingMode = 'vertical';
         if (p.workLinks === false) out.workLinks = false;
         if (p.fontFamily === 'kai' || p.fontFamily === 'system') out.fontFamily = p.fontFamily;

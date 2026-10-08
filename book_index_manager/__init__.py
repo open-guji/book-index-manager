@@ -25,6 +25,7 @@ from .schema_fields import (
     Vocab,
     build_vocab,
     classification_ok,
+    classification_dir_problems,
     EDITION_TYPES,
     edition_type_ok,
     provenance_ok,

@@ -424,7 +424,7 @@ export function ReaderShell({
                 <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g2`}>
                     <h3 id={`${setId}-g2`} className="bim-rd-sp-h">{t('reader.groupMark')}</h3>
                     {properNameToggle && (
-                        <button type="button" className="bim-rd-t bim-rd-sp-tg" aria-pressed={prefs.properNames}
+                        <button type="button" className="bim-rd-t bim-rd-sp-tg" aria-pressed={!!prefs.properNames}
                             title={t('reader.properNameTitle')}
                             onClick={() => onPrefsChange({ properNames: !prefs.properNames })}>{t('reader.properName')}</button>
                     )}

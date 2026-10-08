@@ -26,6 +26,12 @@ export interface IndexStorage {
     /** 获取单条元数据 */
     getItem(id: string): Promise<Record<string, unknown> | null>;
 
+    /**
+     * 枢纽名称表 `_hubs.json`（schema-v2，overview#458）：`{id: {t, title, dyn?}}`。
+     * 卡片里 `{id, h:1}` 的枢纽引用没有 title，读者端从这里取名；不提供则显示 ID。
+     */
+    getHubs?(): Promise<import('../core/derived-compat').HubMap | null>;
+
     /** 保存元数据 */
     saveItem(metadata: Record<string, unknown>): Promise<{ id: string; path: string }>;
 

@@ -25,7 +25,6 @@ from .id_generator import (
 from .exceptions import BookIndexError
 from ._utils import (
     has_legacy_promotion_keys,
-    mark_promoted,
     read_promoted_to,
     strip_promotion_marks,
 )
@@ -224,6 +223,49 @@ def _rewrite_file(path: Path, mapping: Dict[str, str]) -> bool:
 # 不能被映射替换掉）。Phase 4 后 caller 该调 reindex 重建 shard。
 _CONTENT_SUBDIRS = ("Book", "Work", "Collection", "Entity")
 
+# 类档目录（schema-v2，SCHEMA〈八〉）：成员行 `[work_id, source]` 里的 Work id 也是引用，
+# 升格时要跟着改；但它不是实体档，id→路径表、E02/E03 之类按实体档做的校验不扫它。
+_CLASSIFICATION_DIR = "classification"
+_REF_SUBDIRS = _CONTENT_SUBDIRS + (_CLASSIFICATION_DIR,)
+
+
+def _classification_member_files(root: Path):
+    """root/classification/<分类法>/members/<节点>.json，按路径排序。"""
+    base = root / _CLASSIFICATION_DIR
+    if not base.is_dir():
+        return []
+    return sorted(base.glob("*/members/*.json"))
+
+
+def _dump_members(node: str, rows: list) -> str:
+    """类档成员文件的落盘格式：一行一条成员（与 bim classify／build/migrate_v2 一致）。"""
+    head = '{\n  "node": %s,\n  "members": [' % json.dumps(node, ensure_ascii=False)
+    if not rows:
+        return head + ']\n}\n'
+    body = ',\n'.join('    ' + json.dumps(r, ensure_ascii=False) for r in rows)
+    return head + '\n' + body + '\n  ]\n}\n'
+
+
+def _rewrite_classification_file(path: Path, mapping: Dict[str, str]) -> bool:
+    """类档里的成员 id 改写。按原文替换整引号包住的 id，保持「一行一条」的版式不变
+    （走 json.dump 会把每行成员拆成多行，整档 diff）。"""
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return False
+    if not any(k in text for k in mapping):
+        return False
+    new_text = re.sub(
+        r'"([0-9a-z]{10,13})"',
+        lambda m: '"%s"' % mapping.get(m.group(1), m.group(1)),
+        text,
+    )
+    if new_text == text:
+        return False
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(new_text)
+    return True
+
 
 def rewrite_references(
     roots: List[Path],
@@ -232,7 +274,8 @@ def rewrite_references(
 ) -> int:
     """把 mapping 里所有 D→P 应用到 roots 下的实体 JSON 文件。返回改动文件数。
 
-    只扫 roots/<Book|Work|Collection|Entity>/**/*.json 这些实体文件。
+    只扫 roots/<Book|Work|Collection|Entity>/**/*.json 这些实体文件，
+    及 roots/classification/*/members/*.json 类档成员行（按原文替换，保留版式）。
     显式不碰：
       - index/**/*.json：自动生成的 shard，应由 reindex 重建。
       - promotions.json：状态文件，key 是 draft_id 不能被替换。
@@ -253,7 +296,68 @@ def rewrite_references(
                     continue
                 if _rewrite_file(json_file, mapping):
                     changed += 1
+        for member_file in _classification_member_files(root):
+            if member_file.resolve() in skip_files:
+                continue
+            if _rewrite_classification_file(member_file, mapping):
+                changed += 1
     return changed
+
+
+def move_classification_rows(storage, draft_id: str, prod_id: str) -> int:
+    """草稿 Work 升格：把它在草稿库类档里的成员行改 id 搬进正式库同一分类法、同一节点的类档。
+
+    SCHEMA〈八〉：「草稿 Work 升格时 promote 把它的成员行改 id 搬进正式库类档」。
+    正式库没有该分类法／节点（树里查不到）时不搬，改 id 后留在草稿库类档里，
+    免得凭空造出正式库树上没有的节点；返回搬走的行数。
+    """
+    moved = 0
+    for src in _classification_member_files(storage.draft_root):
+        try:
+            data = json.loads(src.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        rows = data.get("members") if isinstance(data, dict) else None
+        if not isinstance(rows, list):
+            continue
+        mine = [r for r in rows if isinstance(r, list) and r and r[0] == draft_id]
+        if not mine:
+            continue
+        node = data.get("node")
+        scheme = src.parent.parent.name
+        dst_dir = storage.official_root / _CLASSIFICATION_DIR / scheme
+        tree_path = dst_dir / "tree.json"
+        in_official_tree = False
+        try:
+            tree = json.loads(tree_path.read_text(encoding="utf-8"))
+            in_official_tree = any(n.get("id") == node and not n.get("retired")
+                                   for n in tree.get("nodes", []))
+        except (OSError, json.JSONDecodeError, AttributeError):
+            pass
+        new_rows = [[prod_id] + r[1:] for r in mine]
+        keep = [r for r in rows if r not in mine]
+        if not in_official_tree:
+            # 留在草稿库，只改 id（保持原位次）
+            rows_out = [[prod_id] + r[1:] if r in mine else r for r in rows]
+            src.write_text(_dump_members(node, rows_out), encoding="utf-8", newline="\n")
+            continue
+        dst = dst_dir / "members" / f"{node}.json"
+        dst_rows: list = []
+        if dst.exists():
+            try:
+                dst_rows = json.loads(dst.read_text(encoding="utf-8")).get("members", [])
+            except (OSError, json.JSONDecodeError, AttributeError):
+                dst_rows = []
+        dst_rows = sorted(dst_rows + [r for r in new_rows if r not in dst_rows],
+                          key=lambda r: r[0])
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.write_text(_dump_members(node, dst_rows), encoding="utf-8", newline="\n")
+        if keep:
+            src.write_text(_dump_members(node, keep), encoding="utf-8", newline="\n")
+        else:
+            src.unlink()          # 草稿库该节点已无成员：删空档（空 members 档无意义）
+        moved += len(mine)
+    return moved
 
 
 # ── 主 promote 流程 ──
@@ -303,7 +407,7 @@ def promote_to_official(
     with open(draft_path, "r", encoding="utf-8") as f:
         draft_metadata = json.load(f)
 
-    if read_promoted_to(draft_metadata):
+    if read_promoted_to(draft_metadata):          # 迁移前的旧墓碑印记
         raise BookIndexError(
             f"{draft_id} already promoted to {read_promoted_to(draft_metadata)}"
         )
@@ -316,11 +420,11 @@ def promote_to_official(
     _own_promotions = promotions is None
     if _own_promotions:
         promotions = PromotionsStore(promotions_root(storage))
-    if promotions.get(draft_id) is not None:
-        # promotions.json 有但文件没标记——视为状态不一致，拒绝
+    existing = promotions.get(draft_id)
+    if existing is not None:
+        # schema-v2：墓碑档不写印记，promotions.json 是唯一权威，有记录即已升格
         raise BookIndexError(
-            f"{draft_id} appears in promotions.json but file has no promoted_to. "
-            f"State inconsistent; manual fix required."
+            f"{draft_id} already promoted to {existing.production_id}"
         )
 
     # ── Phase 1: 生成 P + 写 production ──
@@ -333,6 +437,12 @@ def promote_to_official(
     prod_metadata["id"] = prod_id
     # 保险：清掉万一被深拷贝带过来的 tombstone 字段（D 还没写呢，但稳健起见）
     strip_promotion_marks(prod_metadata)
+    # 升格＝首次写入 production：`schema_version` 必填（SCHEMA〈字段表〉），草稿常缺，补 1；
+    # 草稿不维护版本号，带过来的 `revision`／`revised_at` 一律丢掉，由 save_item 初始化为
+    # 1.0.0／当日（overview#473 尾巴清单 P0）。
+    prod_metadata.setdefault("schema_version", 1)
+    prod_metadata.pop("revision", None)
+    prod_metadata.pop("revised_at", None)
 
     # storage.save_item 会自动按 prod_id_val 的 status 路由到 book-index/
     # 但 save_item 内部要查 find_file_by_id 看有没有同 ID 文件——刚生成的 P 必然没有，OK。
@@ -382,15 +492,12 @@ def promote_to_official(
                     json.dump(ce_data, f, indent=2, ensure_ascii=False)
                     f.write("\n")
 
-    # ── Phase 2: 写 tombstone ──
+    # ── Phase 2: 草稿档不动，只记 draft shard ──
+    # schema-v2：不再给草稿墓碑写 `_promoted_to`／`_promoted_at`——权威是 promotions.json，
+    # `index/` 里的 promoted_to 由它回填（SCHEMA〈十一〉）。草稿档保持升格前原样。
     promoted_at = _now_iso()
-    mark_promoted(draft_metadata, prod_id, promoted_at)
 
-    with open(draft_path, "w", encoding="utf-8") as f:
-        json.dump(draft_metadata, f, indent=2, ensure_ascii=False)
-        f.write("\n")
-
-    # 更新 draft shard：在原 entry 上挂 promoted_to
+    # 更新 draft shard：在原 entry 上挂 promoted_to（与 build 生成的 index 一致）
     _mark_draft_shard_promoted(storage, draft_id, type_val, prod_id)
 
     # ── Phase 3: 写 promotions.json ──
@@ -403,7 +510,13 @@ def promote_to_official(
     if _own_promotions:
         promotions.save()
 
+    # ── Phase 3b: 分类类档成员行（仅 Work） ──
+    # SCHEMA〈八〉：草稿 Work 升格时，把它在草稿库 classification/ 里的成员行改 id 搬进正式库类档。
+    if type_val == BookIndexType.Work:
+        move_classification_rows(storage, draft_id, prod_id)
+
     # ── Phase 4: 改引用 ──
+    # Work.books 之类反向链 schema-v2 起不存在（Book.work_id 是唯一一侧），故无须再去重。
     if rewrite_refs:
         rewrite_references(
             roots=[storage.draft_root, storage.official_root],
@@ -411,43 +524,7 @@ def promote_to_official(
             skip_files={draft_path, prod_path},
         )
 
-    # ── Phase 5: dedupe Work.books（仅当升 Book 时） ──
-    # 修复：Phase 1 save_item 触发 _sync_work_books_link append P + Phase 4 rewrite
-    # 把 D 改 P，造成 Work.books 出现 [P, ..., P]。这里清一次。
-    if type_val == BookIndexType.Book:
-        _dedupe_work_books_after_promote(storage, prod_metadata.get("work_id"))
-
     return prod_id
-
-
-def _dedupe_work_books_after_promote(storage, work_id: Optional[str]):
-    """promote Book 后清理对应 Work.books 数组的重复条目（保序）。"""
-    if not work_id:
-        return
-    try:
-        work_path = storage.find_file_by_id(work_id)
-        if work_path is None:
-            return
-        with open(work_path, "r", encoding="utf-8") as f:
-            work_data = json.load(f)
-        books = work_data.get("books", [])
-        if not isinstance(books, list):
-            return
-        seen: Set[str] = set()
-        deduped: List[str] = []
-        for x in books:
-            if x in seen:
-                continue
-            seen.add(x)
-            deduped.append(x)
-        if deduped != books:
-            work_data["books"] = deduped
-            with open(work_path, "w", encoding="utf-8") as f:
-                json.dump(work_data, f, indent=2, ensure_ascii=False)
-                f.write("\n")
-    except Exception:
-        # 失败不阻塞 promote 主流程；下次 reindex 也能拿到正确状态
-        pass
 
 
 def _mark_draft_shard_promoted(
@@ -532,10 +609,9 @@ def validate_promotions(storage) -> List[PromotionIssue]:
 
     检查项：
       [E01] promotions.json 里的每条 entry，production 文件存在
-      [E02] promotions.json 里的每条 entry，draft 文件 promoted_to 与之一致
-            （含 tombstone 文件整个丢掉 promoted_to 的情形——E02/E03 原先只遍历
-            「文件带 promoted_to」者，恰好漏掉这一种，而这正是外部脚本直接 json.dump
-            重写 tombstone 时最常见的破坏方式）
+      [E02] promotions.json 里的每条 entry：draft 文件须在；档上若还留着（迁移前的）
+            promoted_to 印记，须与之一致。schema-v2 起墓碑档不写印记，档上无印记是常态，
+            不再报 E02（此前「整个丢掉 promoted_to」要报，那是旧制）。
       [E03] draft 文件带 promoted_to，但 promotions.json 没对应记录
       [E04] 全仓出现裸引用：某 JSON 内容里出现已 promoted 的 draft-id
             （tombstone 文件自身和 promotions.json 不算）
@@ -614,8 +690,7 @@ def validate_promotions(storage) -> List[PromotionIssue]:
                 message=f"Promotion target {rec.production_id} resides in draft repo",
             ))
 
-        # E02 正向：从 promotions.json 出发查 tombstone，捕捉「文件整个丢掉
-        # promoted_to」——下面 E02/E03 的反向遍历只看得到「文件带 promoted_to」者。
+        # E02 正向：从 promotions.json 出发查 draft 文件在不在。
         draft_path = id_paths.get(draft_id)
         if draft_path is None:
             issues.append(PromotionIssue(
@@ -625,21 +700,8 @@ def validate_promotions(storage) -> List[PromotionIssue]:
                 message=f"Tombstone file for {draft_id} not found",
             ))
             continue
-        try:
-            with open(draft_path, "r", encoding="utf-8") as f:
-                draft_data = json.load(f)
-        except (OSError, json.JSONDecodeError):
-            draft_data = {}
-        if not isinstance(draft_data, dict) or not read_promoted_to(draft_data):
-            issues.append(PromotionIssue(
-                severity="error", code="E02",
-                draft_id=draft_id, production_id=rec.production_id,
-                path=str(draft_path),
-                message=(
-                    f"Tombstone {draft_id} has no promoted_to, "
-                    f"but promotions.json says {rec.production_id}"
-                ),
-            ))
+        # schema-v2：墓碑档不写 promoted_to，promotions.json 是唯一权威——档上无印记是常态，
+        # 不再报 E02。档上若还留着（旧）印记，指向不符者由下面 E02/E03 的反向遍历抓。
 
     # E07: production_id 一对多——须辨「撞号」与「并条之应然记账」，见 docstring
     by_prod: Dict[str, List[str]] = {}
@@ -816,7 +878,7 @@ def validate_promotions(storage) -> List[PromotionIssue]:
         # 目錄 glob ＋ 十萬次 Path.resolve()，二者皆是系統呼叫大戶。
         for root in (storage.draft_root, storage.official_root):
             is_draft = (root == storage.draft_root)
-            for subdir in _CONTENT_SUBDIRS:
+            for subdir in _REF_SUBDIRS:
                 sub = root / subdir
                 if not sub.exists():
                     continue

@@ -94,6 +94,7 @@ def test_official_default_bump_patch(manager):
     manager.save_item(md, BookIndexType.Work, BookIndexStatus.Official)
     assert md['revision'] == '1.0.1'
     # 第三次
+    md['title'] = '默认 patch v3'
     manager.save_item(md, BookIndexType.Work, BookIndexStatus.Official)
     assert md['revision'] == '1.0.2'
 
@@ -106,8 +107,10 @@ def test_official_minor_bump(manager):
     manager.save_item(md, BookIndexType.Work, BookIndexStatus.Official)  # 1.0.0
     id_val = smart_decode(md['id'])
     type_val = BookIndexIdGenerator.parse(id_val).type
+    md['title'] = 'minor 测试 v2'
     manager.storage.save_item(type_val, id_val, md, bump='minor')
     assert md['revision'] == '1.1.0'
+    md['title'] = 'minor 测试 v3'
     manager.storage.save_item(type_val, id_val, md, bump='major')
     assert md['revision'] == '2.0.0'
 
@@ -135,7 +138,9 @@ def test_promote_initializes_production_revision(manager):
     # draft tombstone 不应有 revision（draft 不维护）
     d = manager.get_item(draft_id)
     assert 'revision' not in d
-    assert d['_promoted_to'] == prod_id
+    # schema-v2：墓碑档不写升格印记，权威是 promotions.json
+    assert '_promoted_to' not in d and 'promoted_to' not in d
+    assert manager.storage.promoted_to_of(draft_id) == prod_id
 
 
 # ── 同日多改不刷新 revised_at ──
@@ -216,7 +221,56 @@ def test_revised_at_does_not_refresh_same_day(manager, monkeypatch):
     manager.save_item(md, BookIndexType.Work, BookIndexStatus.Official)
     today = md['revised_at']
     # 模拟同一天再保存
+    md['title'] = '同日多改 v2'
     manager.save_item(md, BookIndexType.Work, BookIndexStatus.Official)
     assert md['revised_at'] == today  # 同日不刷新（即便 today 函数返回同值）
     # revision 还是该 ++
     assert md['revision'] == '1.0.1'
+
+
+# ── SCHEMA〈十〉白名单：只动「不算」的字段不 bump（F3-3 needs_bump） ──
+
+def _save_again(manager, md):
+    from book_index_manager.id_generator import smart_decode, BookIndexIdGenerator
+    id_val = smart_decode(md['id'])
+    type_val = BookIndexIdGenerator.parse(id_val).type
+    manager.storage.save_item(type_val, id_val, md)
+
+
+def test_official_save_without_content_change_does_not_bump(manager):
+    md = {'type': 'work', 'title': '无变化', 'authors': []}
+    manager.save_item(md, BookIndexType.Work, BookIndexStatus.Official)
+    assert md['revision'] == '1.0.0'
+    _save_again(manager, md)
+    assert md['revision'] == '1.0.0'
+
+
+def test_official_save_derived_and_admin_fields_do_not_bump(manager):
+    md = {'type': 'work', 'title': '派生栏', 'authors': []}
+    manager.save_item(md, BookIndexType.Work, BookIndexStatus.Official)
+    rev, at = md['revision'], md['revised_at']
+    # 分类归属（旧字段）、反向链、_ 派生栏、管理栏：都不算
+    md['classification'] = {'l1': '經部'}
+    md['books'] = ['b1']
+    md['_has_text'] = True
+    md['updated_at'] = '2099-01-01'
+    _save_again(manager, md)
+    w = manager.get_item(md['id'])
+    assert w['revision'] == rev and w['revised_at'] == at
+
+
+def test_official_save_unregistered_field_bumps(manager):
+    md = {'type': 'work', 'title': '新字段', 'authors': []}
+    manager.save_item(md, BookIndexType.Work, BookIndexStatus.Official)
+    md['some_new_field'] = 1          # 未登记的新字段按「算」处理
+    _save_again(manager, md)
+    assert md['revision'] == '1.0.1'
+
+
+def test_needs_bump_unit():
+    from book_index_manager.revision_fields import needs_bump
+    base = {'id': 'x', 'title': 'T', 'revision': '1.0.0', 'contained_works': ['a']}
+    assert not needs_bump(base, {**base, 'contained_works': ['a', 'b']})   # 叢編成员增减不算
+    assert not needs_bump(base, {**base, 'promoted_to': 'p'})
+    assert needs_bump(base, {**base, 'description': 'd'})
+    assert needs_bump(base, {**base, 'related': ['y']})

@@ -24,7 +24,7 @@
  */
 
 /** 实体类别。`work` 画书名号（波浪线），其余画专名线（直线） */
-export type EntityKind = 'work' | 'person' | 'place' | 'office' | 'dynasty' | 'other';
+export type EntityKind = 'work' | 'person' | 'place' | 'office' | 'dynasty' | 'reign' | 'other';
 
 /** 组件使用的实体区间 */
 export interface EntitySpan {
@@ -58,6 +58,7 @@ const KIND_MAP: Record<string, EntityKind> = {
     place: 'place',
     office: 'office',
     dynasty: 'dynasty',
+    reign: 'reign',
 };
 
 function toKind(raw: unknown): EntityKind {

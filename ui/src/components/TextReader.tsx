@@ -199,7 +199,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
 }) => {
     const { t, convert } = useI18n();
     const api = useMemo(() => createTextApi(transport), [transport]);
-    const [prefs, setPrefs] = useReaderPrefs();
+    const [storedPrefs, setPrefs] = useReaderPrefs();
     const buildUrl = useBidUrl();
 
     const onLocationRef = useRef(onLocationChange);
@@ -251,19 +251,27 @@ export const TextReader: React.FC<TextReaderProps> = ({
         return idx;
     }, [api, id]);
 
-    const [index, setIndex] = useState<TextIndex | null>(null);
+    /*
+     * 目录连同它所属的 (id, 版本) 一起存。版本／作品一变，上一份目录在 effect 清掉之前还会在手上渲染一帧：
+     * 若不核对归属，下面「章无效就回第一章」会拿旧版目录去判新版的章，向宿主发 auto 通知把章切回卷一
+     * （水合后宿主 resolve 出起始卷时间歇复现）。归属对不上就当目录还没到。
+     */
+    const [indexRec, setIndexRec] = useState<{ owner: string; idx: TextIndex } | null>(null);
     const [indexState, setIndexState] = useState<'loading' | 'ready' | 'failed'>('loading');
+    const indexOwner = versionKey ? `${id}\n${versionKey}` : null;
+    const index = indexRec && indexRec.owner === indexOwner ? indexRec.idx : null;
     useEffect(() => {
         if (!versionKey) return;
         let cancelled = false;
-        setIndex(null);
+        const owner = `${id}\n${versionKey}`;
+        setIndexRec(null);
         setIndexState('loading');
         loadIndex(versionKey).then(idx => {
             if (cancelled) return;
-            if (idx && idx.chapters.length > 0) { setIndex(idx); setIndexState('ready'); } else setIndexState('failed');
+            if (idx && idx.chapters.length > 0) { setIndexRec({ owner, idx }); setIndexState('ready'); } else setIndexState('failed');
         });
         return () => { cancelled = true; };
-    }, [versionKey, loadIndex]);
+    }, [id, versionKey, loadIndex]);
 
     // 没给章或章无效：选第一章并通知
     useEffect(() => {
@@ -357,6 +365,9 @@ export const TextReader: React.FC<TextReaderProps> = ({
     const images = useChapterImages(resolveImages, effectiveChapter ?? null, resolveCtx);
     const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData, warpDataProp, effectiveChapter ?? null, chapterMeta as any, resolveCtx);
     const entitySpans = useChapterEntities(resolveEntities, effectiveChapter ?? null, resolveCtx);
+    // 专名线：用户没选过时，本章有专名层数据就默认开（没有就不画空线）；选过就照用户的
+    const properNamesOn = storedPrefs.properNames ?? entitySpans.length > 0;
+    const prefs = useMemo(() => ({ ...storedPrefs, properNames: properNamesOn }), [storedPrefs, properNamesOn]);
     const [selectedCharIds, setSelectedCharIds] = useState<Set<string>>(new Set());
     const [hoveredCharId, setHoveredCharId] = useState<string | null>(null);
     const [showPunctuation, setShowPunctuation] = useState<boolean>(true);

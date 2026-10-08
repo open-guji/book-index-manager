@@ -92,6 +92,7 @@ describe('adaptEntityJson', () => {
         expect(adaptEntityJson(null)).toEqual([]);
         expect(adaptEntityJson({ foo: 1 })).toEqual([]);
         expect(adaptEntityJson([{ type: 'office', start_offset: 0, end_offset: 2 }])[0]).toMatchObject({ kind: 'office', key: 'e0' });
+        expect(adaptEntityJson([{ type: 'reign', start_offset: 0, end_offset: 2 }])[0]).toMatchObject({ kind: 'reign', key: 'e0' });
         expect(adaptEntityJson([{ type: '???', start_offset: 0, end_offset: 2 }])[0].kind).toBe('other');
     });
 });

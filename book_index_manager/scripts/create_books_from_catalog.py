@@ -1,5 +1,9 @@
 """
-根据 volume_book_mapping.json 批量创建缺失的 Book JSON 文件。
+【已基本作废（schema-v2）】根据 volume_book_mapping.json 批量创建缺失的 Book JSON 文件。
+
+输入的 sidecar `volume_book_mapping.json` 已在迁移 M6 从两库删除（成员关系只在 Book.contained_in
+一侧），已建好的 Book 无需再从它反推。仅当手头还有迁移前的数据副本、sidecar 仍在时才有用；
+找不到 sidecar 时直接说明并退出。新 Book 请走 `bim` 的 save_item／录入 skill。
 
 扫描指定 Collection 的 catalog，找到有 book_id 但无对应文件的条目，
 创建 Book JSON 并更新索引。
@@ -162,6 +166,8 @@ def main():
     catalog_files = find_catalog_files(data_root, collection_id)
     if not catalog_files:
         print(f'错误: 未找到 {collection_id} 的 volume_book_mapping.json')
+        print('说明: schema-v2 起 sidecar 已删（成员关系只在 Book.contained_in），本脚本已基本作废；'
+              '新 Book 请用 save_item／录入 skill 建。')
         sys.exit(1)
 
     total_created = 0
