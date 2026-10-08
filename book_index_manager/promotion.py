@@ -437,6 +437,12 @@ def promote_to_official(
     prod_metadata["id"] = prod_id
     # 保险：清掉万一被深拷贝带过来的 tombstone 字段（D 还没写呢，但稳健起见）
     strip_promotion_marks(prod_metadata)
+    # 升格＝首次写入 production：`schema_version` 必填（SCHEMA〈字段表〉），草稿常缺，补 1；
+    # 草稿不维护版本号，带过来的 `revision`／`revised_at` 一律丢掉，由 save_item 初始化为
+    # 1.0.0／当日（overview#473 尾巴清单 P0）。
+    prod_metadata.setdefault("schema_version", 1)
+    prod_metadata.pop("revision", None)
+    prod_metadata.pop("revised_at", None)
 
     # storage.save_item 会自动按 prod_id_val 的 status 路由到 book-index/
     # 但 save_item 内部要查 find_file_by_id 看有没有同 ID 文件——刚生成的 P 必然没有，OK。
