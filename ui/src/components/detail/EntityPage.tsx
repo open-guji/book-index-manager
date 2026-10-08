@@ -31,6 +31,7 @@ import {
 } from './layout';
 import { bim } from '../../styles/tokens';
 import { measureText, normalizeRole, roleFacets, type RoleClass } from '../../core/detail-model';
+import { mapLimit, DETAIL_FETCH_CONCURRENCY } from '../../core/map-limit';
 
 /** 桌面 cap，与作品页版本表同一量级 */
 const CAP_WORKS = 16;
@@ -167,7 +168,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
     useEffect(() => {
         if (!transport || idsToResolve.length === 0) return;
         let cancelled = false;
-        Promise.all(idsToResolve.map(id =>
+        mapLimit(idsToResolve, DETAIL_FETCH_CONCURRENCY, id =>
             transport.getItem(id)
                 .then(raw => {
                     const w = (raw ?? {}) as {
@@ -186,7 +187,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                     }] as const;
                 })
                 .catch(() => [id, { id, loaded: true }] as const),
-        )).then(entries => {
+        ).then(entries => {
             if (cancelled) return;
             setResolved(prev => {
                 const next = new Map(prev);

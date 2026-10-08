@@ -30,6 +30,7 @@ import type { BookChapterList } from './detail/BookPage';
 import { pickTextVersion } from '../core/text-model';
 import { VersionLineageView } from './VersionLineageView';
 import { buildLineageGraph } from '../core/lineage-graph';
+import { mapLimit, DETAIL_FETCH_CONCURRENCY } from '../core/map-limit';
 import type { LineageGraph } from '../core/lineage-graph';
 import { FeedbackTab } from './FeedbackTab';
 import { LocaleToggle } from './LocaleToggle';
@@ -338,13 +339,13 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             }
 
             const bookIds = (workData as WorkDetailData).books ?? [];
-            const books: BookDetailData[] = [];
-            for (const bid of bookIds) {
+            // 有界并发取各版本（原来是逐个串行 await）；mapLimit 按 bookIds 顺序返回，谱系图顺序不变
+            const fetched = await mapLimit(bookIds, DETAIL_FETCH_CONCURRENCY, async (bid) => {
                 try {
-                    const b = await transport.getItem(bid);
-                    if (b) books.push(b as unknown as BookDetailData);
-                } catch { /* skip */ }
-            }
+                    return await transport.getItem(bid);
+                } catch { return null; /* skip */ }
+            });
+            const books = fetched.filter(Boolean) as unknown as BookDetailData[];
             if (stale()) return;
             lineageSourceRef.current = { work: workData as WorkDetailData, books };
 
