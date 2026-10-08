@@ -76,6 +76,21 @@ def test_promote_creates_official_file_with_new_id(manager: BookIndexManager, tm
     assert "promoted_to" not in prod_data  # 无前缀旧名也不该留
 
 
+def test_promote_initializes_schema_version_and_revision(manager: BookIndexManager):
+    """升格记录须带 schema_version＝1、revision＝1.0.0、revised_at＝当日（草稿缺或带旧值都一样）。"""
+    from datetime import date
+    bare = _save_draft_work(manager, "无版本作品")
+    stale = _save_draft_work(manager, "带旧版本号作品",
+                             {"revision": "1.3.0", "revised_at": "2020-01-01", "schema_version": 1})
+    for draft_id in (bare, stale):
+        prod_id = manager.promote_to_official(draft_id)
+        with open(manager.find_item_path(prod_id), encoding="utf-8") as f:
+            prod_data = json.load(f)
+        assert prod_data["schema_version"] == 1
+        assert prod_data["revision"] == "1.0.0"
+        assert prod_data["revised_at"] == date.today().isoformat()
+
+
 def test_promote_leaves_draft_file_untouched(manager: BookIndexManager):
     """schema-v2：草稿档不写升格印记（`_promoted_to`／`_promoted_at`），权威是 promotions.json。"""
     draft_id = _save_draft_work(manager, "测试作品")
