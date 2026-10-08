@@ -155,6 +155,93 @@ describe('BundleStorage promotions redirect', () => {
     });
 });
 
+// ── BundleStorage：按分片取 ──
+
+describe('BundleStorage promotions 按分片取（overview#451 分片第 3 步）', () => {
+    const DRAFT = '1evdraftxxxx1'; // 末 2 位 'x1'
+    const DRAFT_SAME_SHARD = '1evdraftyyyx1';
+    const NOT_PROMOTED = '1evdraftzzzx1'; // 同一片，没有升格
+    const PROD = 'd59prodxxxx1';
+
+    function handler(opts: { shard?: 'ok' | number; whole?: boolean }, calls: string[]) {
+        return (url: string) => {
+            calls.push(url);
+            if (url.includes('/version.json')) return { ok: true, body: { commitId: 'abc' } };
+            if (url.includes('/promotions/x1.json')) {
+                if (opts.shard === 'ok') {
+                    return {
+                        ok: true,
+                        body: { version: 1, promotions: {
+                            [DRAFT]: { production_id: PROD, type: 'work', promoted_at: 't' },
+                            [DRAFT_SAME_SHARD]: { production_id: PROD, type: 'work', promoted_at: 't' },
+                        } },
+                    };
+                }
+                return { ok: false, status: opts.shard ?? 404 };
+            }
+            if (url.includes('/promotions.json')) {
+                if (!opts.whole) return { ok: false, status: 404 };
+                return { ok: true, body: { version: 1, promotions: { [DRAFT]: { production_id: PROD, type: 'work', promoted_at: 't' } } } };
+            }
+            if (url.includes('/chunks/_manifest.json')) return { ok: true, body: ['d59', '1ev'] };
+            if (url.includes('/chunks/d59.json')) return { ok: true, body: { [PROD]: { title: '红楼梦', type: 'work' } } };
+            if (url.includes('/chunks/1ev.json')) return { ok: true, body: { [NOT_PROMOTED]: { title: '未升格草稿', type: 'work' } } };
+            return { ok: false, status: 404 };
+        };
+    }
+
+    it('有分片：只取 id 所在那一片，重定向正确，不下整档；同一片只取一次', async () => {
+        const calls: string[] = [];
+        const { restore } = setupFetch(handler({ shard: 'ok', whole: true }, calls));
+        try {
+            const s = new BundleStorage({ basePath: '/data' });
+            const e = await s.getEntry(DRAFT);
+            expect(e).toMatchObject({ id: PROD, redirected_from: DRAFT });
+            await s.getItem(DRAFT_SAME_SHARD);
+            expect(calls.filter(u => u.includes('/promotions/x1.json')).length).toBe(1);
+            expect(calls.some(u => u.includes('/promotions.json'))).toBe(false);
+        } finally {
+            restore();
+        }
+    });
+
+    it('分片里没有这个 id：原样返回，不下整档', async () => {
+        const calls: string[] = [];
+        const { restore } = setupFetch(handler({ shard: 'ok', whole: true }, calls));
+        try {
+            const e = await new BundleStorage({ basePath: '/data' }).getEntry(NOT_PROMOTED);
+            expect(e).toMatchObject({ id: NOT_PROMOTED });
+            expect(e!.redirected_from).toBeUndefined();
+            expect(calls.some(u => u.includes('/promotions.json'))).toBe(false);
+        } finally {
+            restore();
+        }
+    });
+
+    it.each([404, 500])('分片 HTTP %i（旧站点包）：退回整档，行为与以前相同', async (status) => {
+        const calls: string[] = [];
+        const { restore } = setupFetch(handler({ shard: status, whole: true }, calls));
+        try {
+            const e = await new BundleStorage({ basePath: '/data' }).getEntry(DRAFT);
+            expect(e).toMatchObject({ id: PROD, redirected_from: DRAFT });
+            expect(calls.some(u => u.includes('/promotions.json'))).toBe(true);
+        } finally {
+            restore();
+        }
+    });
+
+    it('分片和整档都没有：当作没有升格', async () => {
+        const calls: string[] = [];
+        const { restore } = setupFetch(handler({ shard: 404, whole: false }, calls));
+        try {
+            const e = await new BundleStorage({ basePath: '/data' }).getEntry(NOT_PROMOTED);
+            expect(e).toMatchObject({ id: NOT_PROMOTED });
+        } finally {
+            restore();
+        }
+    });
+});
+
 // ── GithubStorage redirect ──
 
 describe('GithubStorage promotions redirect', () => {

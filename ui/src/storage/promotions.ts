@@ -7,6 +7,9 @@
  * 这里只关心客户端如何拉取并用作 redirect 查表 —— 不涉及生成逻辑。
  */
 
+/** 数据包分片 `promotions/<草稿id末2位>.json` 的后缀长度（与 kaiyuanguji-web 打包脚本、bim 源档分片一致） */
+export const PROMOTION_SHARD_KEY_LENGTH = 2;
+
 export interface PromotionRecord {
     production_id: string;
     type: string;

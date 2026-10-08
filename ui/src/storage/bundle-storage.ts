@@ -13,7 +13,7 @@ import type {
 import type { IndexCounts } from './types';
 import { normalizeCatalog } from '../core/normalize-catalog';
 import { extractType } from '../id';
-import { buildPromotionMap } from './promotions';
+import { buildPromotionMap, PROMOTION_SHARD_KEY_LENGTH } from './promotions';
 import { isSafeSegment, isTextKey } from '../core/text-model';
 import type { HubMap } from '../core/derived-compat';
 
@@ -80,9 +80,11 @@ export class BundleStorage implements IndexStorage {
     private tiyaoLoading = new Map<string, Promise<Record<string, unknown>>>();
     private metaCache: IndexCounts | null = null;
     private metaLoading: Promise<IndexCounts | null> | null = null;
-    /** draft_id → production_id 重定向表（从 /data/promotions.json 加载） */
+    /** draft_id → production_id 重定向表（整档，从 /data/promotions.json 加载；只在分片取不到时才用） */
     private promotions: Map<string, string> | null = null;
     private promotionsLoading: Promise<Map<string, string>> | null = null;
+    /** 草稿 id 末 2 位 → 该片的 draft→production 表；null＝这一片取不到（旧站点包没有 promotions/ 目录等），退回整档 */
+    private promotionShards = new Map<string, Promise<Map<string, string> | null>>();
 
     /** 数据版本（commitId 前 12 位）。null=已尝试加载但失败；undefined=未加载 */
     private version: string | null | undefined;
@@ -170,6 +172,31 @@ export class BundleStorage implements IndexStorage {
         } finally {
             this.promotionsLoading = null;
         }
+    }
+
+    /** 取草稿 id 所在的一片 `promotions/<末2位>.json`（几 KB）；取不到返回 null，调用方退回整档 */
+    private promotionShard(id: string): Promise<Map<string, string> | null> {
+        const key = id.slice(-PROMOTION_SHARD_KEY_LENGTH);
+        let shard = this.promotionShards.get(key);
+        if (!shard) {
+            shard = this.fetchJson<unknown>(`${this.basePath}/promotions/${key}.json`)
+                .then(raw => buildPromotionMap(raw), () => null);
+            this.promotionShards.set(key, shard);
+        }
+        return shard;
+    }
+
+    /**
+     * 草稿 id → 正式 id（不是草稿就原样）。整档已在内存就直接查；否则先只取 id 所在那一片，
+     * 取不到才下整档 promotions.json（整档保留一个客户端发版周期，之后可停）。
+     */
+    private async canonicalIdFor(id: string): Promise<string> {
+        if (this.promotions) return this.promotions.get(id) ?? id;
+        if (id.length >= PROMOTION_SHARD_KEY_LENGTH) {
+            const shard = await this.promotionShard(id);
+            if (shard) return shard.get(id) ?? id;
+        }
+        return (await this.ensurePromotions()).get(id) ?? id;
     }
 
     // ─── L1: 详情 chunk ───
@@ -355,8 +382,7 @@ export class BundleStorage implements IndexStorage {
 
     async getItem(id: string): Promise<Record<string, unknown> | null> {
         try {
-            const promotions = await this.ensurePromotions();
-            const canonicalId = promotions.get(id) ?? id;
+            const canonicalId = await this.canonicalIdFor(id);
             const redirectedFrom = canonicalId !== id ? id : undefined;
 
             const item = await this.loadDetail(canonicalId);
@@ -381,8 +407,7 @@ export class BundleStorage implements IndexStorage {
     /** 从 chunk 读取详情构造 IndexEntry。chunk miss 即返回 null（无 fallback）。 */
     async getEntry(id: string): Promise<IndexEntry | null> {
         try {
-            const promotions = await this.ensurePromotions();
-            const canonicalId = promotions.get(id) ?? id;
+            const canonicalId = await this.canonicalIdFor(id);
             const redirectedFrom = canonicalId !== id ? id : undefined;
 
             const detail = (await this.loadDetail(canonicalId)) as Record<string, any> | null;
