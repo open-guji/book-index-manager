@@ -179,12 +179,18 @@ describe('閱讀页正文区加宽、目錄栏紧贴正文（overview#268）', (
     });
 });
 
+/** 展开右侧「阅读设置」侧栏（overview#463）；侧栏里的开关默认不渲染 */
+function openSettings() {
+    fireEvent.click(screen.getByRole('button', { name: '閱讀設置' }));
+}
+
 describe('工具条：只用文字和图标，状态用 aria-pressed', () => {
     it('字號、自然段、專名線', () => {
         const { container } = render(<LocaleProvider locale="zh-Hant"><Harness toc={FEW} /></LocaleProvider>);
         const root = container.querySelector<HTMLElement>('.bim-rd')!;
         fireEvent.click(screen.getByRole('button', { name: '放大字號' }));
         expect(root.style.getPropertyValue('--bimrd-fs')).toBe('20px');
+        openSettings();
         const para = screen.getByRole('button', { name: '自然段' });
         expect(para).toHaveAttribute('aria-pressed', 'false');
         fireEvent.click(para);
@@ -192,8 +198,8 @@ describe('工具条：只用文字和图标，状态用 aria-pressed', () => {
         const pn = screen.getByRole('button', { name: '專名線' });
         fireEvent.click(pn);
         expect(pn).toHaveAttribute('aria-pressed', 'true');
-        // 繁简切换在工具条里
-        expect(screen.getByRole('button', { name: '切换为简体' })).toBeTruthy();
+        // 繁简切换：工具条一个，设置侧栏「文字」组里一个
+        expect(screen.getAllByRole('button', { name: '切换为简体' })).toHaveLength(2);
     });
 
     it('工具条按钮一律是无框的 .bim-rd-t', () => {
@@ -385,6 +391,7 @@ describe('TextReader（整理本章）', () => {
         const onNavigate = vi.fn();
         const { container } = mountCE(onNavigate);
         await waitFor(() => expect(container.querySelector('h1')).toBeTruthy());
+        openSettings();
         const box = screen.getByRole('checkbox', { name: '標出作品鏈接' });
         expect(box).toBeChecked();
         const chips = container.querySelectorAll('.bim-rd-wl');
@@ -412,6 +419,7 @@ describe('TextReader（整理本章）', () => {
         // 第一条有 work_id：「作品 →」；第二条没有：「未关联」
         expect(within(rows[0] as HTMLElement).getByRole('link', { name: /查看作品：/ }).textContent).toBe('作品 →');
         expect(rows[1].textContent).toContain('未關聯');
+        openSettings();
         fireEvent.click(screen.getByRole('checkbox', { name: '標出作品鏈接' }));
         expect(container.querySelector('.bim-rd-entries')!.textContent).not.toMatch(/作品 →|未關聯/);
     });
@@ -511,4 +519,42 @@ describe('审查修订（#24 网站总管）', () => {
         await waitFor(() => expect(container.querySelector('.bim-rd-meta')?.textContent).toContain('2 部书'), { timeout: 8000 });
         expect(container.querySelector('.bim-rd-meta')?.textContent).toContain('底本 维基文库粗校');
     }, 10000);
+});
+
+describe('阅读设置侧栏（overview#463）', () => {
+    afterEach(() => { try { localStorage.removeItem('bim-reader-prefs'); } catch { /* ignore */ } });
+
+    it('旧 localStorage 值照常生效；没有 fontFamily 时是宋体，坏值回落默认', async () => {
+        const { loadReaderPrefs } = await import('../../src/components/Reader/prefs');
+        localStorage.setItem('bim-reader-prefs', JSON.stringify({ fontSize: 20, readingMode: 'paragraph', properNames: true, workLinks: false }));
+        expect(loadReaderPrefs()).toMatchObject({ fontSize: 20, readingMode: 'paragraph', properNames: true, workLinks: false, fontFamily: 'song' });
+        localStorage.setItem('bim-reader-prefs', JSON.stringify({ fontFamily: 'kai' }));
+        expect(loadReaderPrefs().fontFamily).toBe('kai');
+        localStorage.setItem('bim-reader-prefs', JSON.stringify({ fontFamily: 'comic-sans' }));
+        expect(loadReaderPrefs().fontFamily).toBe('song');
+    });
+
+    it('顶栏只留繁简、A−／A+、设置键；专名线等收进侧栏，分文字／标注／版面三组', () => {
+        render(<LocaleProvider locale="zh-Hant"><Harness toc={FEW} /></LocaleProvider>);
+        const tools = document.querySelector('.bim-rd-tools')!;
+        expect(tools.textContent).not.toContain('專名線');
+        expect(screen.queryByRole('complementary', { name: '閱讀設置' })).toBeNull();
+        openSettings();
+        const side = screen.getByRole('complementary', { name: '閱讀設置' });
+        for (const g of ['文字', '標註', '版面']) expect(within(side).getByRole('heading', { name: g })).toBeTruthy();
+        expect(within(side).getByRole('button', { name: '專名線' })).toBeTruthy();
+        fireEvent.keyDown(side, { key: 'Escape' });
+        expect(screen.queryByRole('complementary', { name: '閱讀設置' })).toBeNull();
+    });
+
+    it('字体选项写进 --bimrd-ff；选宋体（默认）不覆盖站点字体', () => {
+        const { container } = render(<LocaleProvider locale="zh-Hant"><Harness toc={FEW} /></LocaleProvider>);
+        const root = container.querySelector<HTMLElement>('.bim-rd')!;
+        expect(root.style.getPropertyValue('--bimrd-ff')).toBe('');
+        openSettings();
+        fireEvent.change(screen.getByRole('combobox', { name: '字體' }), { target: { value: 'kai' } });
+        expect(root.style.getPropertyValue('--bimrd-ff')).toContain('Kaiti');
+        fireEvent.change(screen.getByRole('combobox', { name: '字體' }), { target: { value: 'song' } });
+        expect(root.style.getPropertyValue('--bimrd-ff')).toBe('');
+    });
 });

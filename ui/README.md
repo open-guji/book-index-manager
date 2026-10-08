@@ -66,10 +66,10 @@ import 'book-index-ui/styles'                // CSS（用到组件时引入）
 整理本与全文共用一个外壳 `ReaderShell`：
 
 - 布局：**书影在正文左边**，目录在最左。宽屏（≥1100px）目录是可收起的侧栏（默认展开）；更窄时是抽屉（默认收起，选卷后自动合上，Esc 关闭，打开时 Tab 圈在抽屉内）；窄屏（≤719px）书影区不显示，只留正文。
-- 工具条（吸顶）只用文字与图标：目录、书影、繁｜简、A− A+、自然段（体裁判得清时才出现，W7）、专名线（书名加波浪线）。竖排预留 `allowVertical`，默认不显示。
+- 工具条（吸顶）只用文字与图标：目录、繁｜简、A− A+、「阅读设置」键（overview#463）。其余偏好收进**右侧「阅读设置」侧栏**（≥860px 右侧可折叠栏；窄屏是底栏「设置」打开的底部抽屉），分三组：文字（字体、字号、繁简）、标注（专名线，对读时加标点）、版面（自然段、标出作品链接、书影、对读留白，竖排预留 `allowVertical`）。宿主可用 `settingsAnnotate` / `settingsLayout` 往侧栏塞自己的控件。字体选项只有宋体（默认，沿用 `--bim-font-reading`）／楷体／系统默认（无衬线），全是系统已装字体，不加载网络字体；楷体栈 `Kaiti SC → Kaiti TC → STKaiti → KaiTi → AR PL UKai CN → Noto Serif CJK SC → serif`。
 - 正文：`--bim-font-reading`（宋体，默认接 `--bim-font-serif`，宿主覆盖后者即可）18px、行高 2.05（手机端同样），`line-break: strict` 避头尾；界面黑体。
 - 无障碍：第一个可聚焦元素是「跳到正文」；目录用游走 tabindex，几百卷也只有当前卷进 Tab 序列（↑↓ Home End 移动）。
-- 偏好（字号、自然段、专名线）存 `localStorage['bim-reader-prefs']`，首帧用默认值，SSR 安全。
+- 偏好（字号、字体、自然段、专名线…）存 `localStorage['bim-reader-prefs']`，首帧用默认值，SSR 安全。
 - 宿主若有吸顶导航，设 `--bim-reader-top`（如 `60px`）。
 
 书影接口：`TextReader` 的 `resolveImages(chapterKey)` 返回当卷的 `ReaderPageImage[]`（可异步）——每页一张图，URL 由宿主给，可带 `width/height` 与逐字框 `boxes`（暂定格式 `bim-charbox-v0`：原图像素坐标 `x/y/w/h`，可选 `char`/`textOffset`/`confidence`）。其他格式的框设 `boxFormat` 并用 `renderImageOverlay` 自己画，这是与 CV 交付格式对齐前的扩展点。没有影像时书影区默认收起（`imagePanel="auto"`），点工具条「书影」可看占位。

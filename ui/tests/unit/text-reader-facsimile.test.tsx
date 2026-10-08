@@ -165,6 +165,7 @@ describe('TextReader 对读 · 起始页与开关状态', () => {
 
     it('「标点」「去空白／保留空白」按钮带 aria-pressed，点一下状态跟着变', async () => {
         await setup();
+        fireEvent.click(screen.getByRole('button', { name: /閱讀設置|阅读设置/ }));
         const punct = document.querySelector('button[title="切换外挂现代断句标点"]') as HTMLButtonElement;
         expect(punct.getAttribute('aria-pressed')).toBe('true');
         fireEvent.click(punct);

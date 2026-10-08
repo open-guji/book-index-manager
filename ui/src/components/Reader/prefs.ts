@@ -9,6 +9,19 @@ import { useCallback, useEffect, useState } from 'react';
 import type { ReadingMode } from '../../core/paragraphize';
 import type { ReaderWritingMode } from './types';
 
+export type ReaderFontFamily = 'song' | 'kai' | 'system';
+
+/** 字体选项与字体栈；`song` 不覆盖，沿用站点的 --bim-font-reading */
+export const READER_FONT_FAMILIES: ReadonlyArray<{ key: ReaderFontFamily; stack: string | null }> = [
+    { key: 'song', stack: null },
+    { key: 'kai', stack: '"Kaiti SC", "Kaiti TC", STKaiti, "KaiTi", "AR PL UKai CN", "Noto Serif CJK SC", serif' },
+    { key: 'system', stack: 'var(--bim-font-ui)' },
+];
+
+export function readerFontStack(key: ReaderFontFamily): string | null {
+    return READER_FONT_FAMILIES.find(f => f.key === key)?.stack ?? null;
+}
+
 export interface ReaderPrefs {
     /** 正文字号（px）；null = 默认 18（宽窄屏一致，2026-09-28 定：宋体 18px、行高 2.05） */
     fontSize: number | null;
@@ -21,6 +34,8 @@ export interface ReaderPrefs {
     properNames: boolean | null;
     /** 横排／竖排（竖排预留） */
     writingMode: ReaderWritingMode;
+    /** 正文字体：宋体（默认，沿用 --bim-font-reading）／楷体／系统默认（无衬线）；只用系统已装字体，不加载网络字体 */
+    fontFamily: ReaderFontFamily;
     /** 条目标题旁标出「作品 →」链接（阅读页 v3「标出作品链接」，默认开） */
     workLinks: boolean;
 }
@@ -31,6 +46,7 @@ export const DEFAULT_READER_PREFS: ReaderPrefs = {
     properNames: null,
     writingMode: 'horizontal',
     workLinks: true,
+    fontFamily: 'song',
 };
 
 /** 可选字号档位；默认 18 在中间偏下 */
@@ -52,6 +68,7 @@ export function loadReaderPrefs(): ReaderPrefs {
         if (p.properNames === true || p.properNames === false) out.properNames = p.properNames;
         if (p.writingMode === 'vertical') out.writingMode = 'vertical';
         if (p.workLinks === false) out.workLinks = false;
+        if (p.fontFamily === 'kai' || p.fontFamily === 'system') out.fontFamily = p.fontFamily;
     } catch { /* 存储不可用：用默认值 */ }
     return out;
 }

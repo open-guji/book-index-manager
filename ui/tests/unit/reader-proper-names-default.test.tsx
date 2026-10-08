@@ -52,7 +52,13 @@ async function mount(withEntities: boolean) {
     return view;
 }
 
-const btn = () => screen.getByRole('button', { name: /專名線|专名线/ });
+// 专名线开关在右侧「阅读设置」侧栏里（overview#463），收起时不渲染：先展开再取
+const btn = () => {
+    if (!screen.queryByRole('button', { name: /專名線|专名线/ })) {
+        fireEvent.click(screen.getAllByRole('button', { name: /閱讀設置|阅读设置/ })[0]);
+    }
+    return screen.getByRole('button', { name: /專名線|专名线/ });
+};
 
 describe('专名线默认值', () => {
     beforeEach(() => { localStorage.clear(); });

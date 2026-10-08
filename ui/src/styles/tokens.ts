@@ -240,6 +240,7 @@ export const BIM_TOKEN_GROUPS = [
             value: '0px',
             note: '宿主吸顶导航的高度：阅读器工具条、目录与书影侧栏在它下面吸顶（如 60px）',
         },
+        'reader-warm': { value: '#c9a24a', note: '阅读设置侧栏的暖黄：只做底色（8%）与选中态（24%），与朱／靛／墨三套主色都不冲' },
         'warp-bg': { value: '#faf8f5', note: '古籍矫正底本书影画布底色' },
         'warp-box-shadow': { value: '0 2px 12px rgba(0, 0, 0, 0.08)', note: '古籍底本书影浮雕阴影' },
         'warp-sel-bg': { value: 'rgba(196, 148, 76, 0.45)', note: '古籍对读字框选中高亮底色' },
