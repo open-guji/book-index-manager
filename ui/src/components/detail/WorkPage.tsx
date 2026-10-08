@@ -101,6 +101,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                     }] as const;
                 })
                 .catch(() => [id, { id }] as const),
+        () => cancelled,
         ).then(entries => {
             if (cancelled) return;
             setResolved(prev => {

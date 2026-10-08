@@ -28,6 +28,28 @@ describe('mapLimit', () => {
         expect(await mapLimit([1, 2], 8, async (n) => n + 1)).toEqual([2, 3]);
     });
 
+    it('limit 非法（0、负数、NaN）按 1 处理，每项都执行且结果完整', async () => {
+        for (const bad of [0, -3, NaN]) {
+            let inflight = 0, peak = 0;
+            const out = await mapLimit([1, 2, 3], bad, async (n) => { inflight++; peak = Math.max(peak, inflight); await tick(); inflight--; return n; });
+            expect(out).toEqual([1, 2, 3]);
+            expect(peak).toBe(1);
+        }
+    });
+
+    it('shouldStop 为真后不再取新项（已在飞的跑完）', async () => {
+        let stop = false;
+        const started: number[] = [];
+        await mapLimit([...Array(20).keys()], 2, async (n) => {
+            started.push(n);
+            await tick();
+            if (n === 3) stop = true;
+            return n;
+        }, () => stop);
+        expect(started.length).toBeLessThan(20);
+        expect(started).not.toContain(19);
+    });
+
     it('有一项抛错就整体 reject（与 Promise.all 一致，调用方自己 catch）', async () => {
         await expect(mapLimit([1, 2, 3], 2, async (n) => { if (n === 2) throw new Error('x'); return n; })).rejects.toThrow('x');
     });

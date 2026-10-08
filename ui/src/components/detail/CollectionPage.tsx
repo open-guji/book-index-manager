@@ -132,6 +132,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
                     return [id, v] as const;
                 })
                 .catch(() => [id, {} as RowInfo] as const),
+        () => cancelled,
         ).then(entries => {
             if (cancelled) return;
             setInfo(prev => {

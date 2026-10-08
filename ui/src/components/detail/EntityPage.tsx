@@ -187,6 +187,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                     }] as const;
                 })
                 .catch(() => [id, { id, loaded: true }] as const),
+        () => cancelled,
         ).then(entries => {
             if (cancelled) return;
             setResolved(prev => {

@@ -344,7 +344,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                 try {
                     return await transport.getItem(bid);
                 } catch { return null; /* skip */ }
-            });
+            }, stale);
             const books = fetched.filter(Boolean) as unknown as BookDetailData[];
             if (stale()) return;
             lineageSourceRef.current = { work: workData as WorkDetailData, books };
