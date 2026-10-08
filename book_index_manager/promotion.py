@@ -31,6 +31,9 @@ from ._utils import (
 
 
 PROMOTIONS_FILENAME = "promotions.json"
+# 分片形（overview `F-数据结构/promotions-分片方案.md`）：`promotions/<草稿 id 末 2 位>.json`，
+# 每片形状同整档。分片规则与网站 PH 分片（`h1/promotions/<末2位>.*.json`）相同。
+PROMOTIONS_DIRNAME = "promotions"
 PROMOTIONS_VERSION = 1
 
 # Base36 ID 形状：12-13 字符纯小写字母数字。base58 老 ID 升级前已经全量迁完，
@@ -65,8 +68,105 @@ class PromotionRecord:
         )
 
 
+def promotion_shard_key(draft_id: str) -> str:
+    """分片键：草稿 id 末 2 位（与网站 PH 分片同）。"""
+    return draft_id[-2:]
+
+
+def promotions_sharded(root: Path) -> bool:
+    """正式仓根下有 `promotions/` 目录即分片形。"""
+    return (Path(root) / PROMOTIONS_DIRNAME).is_dir()
+
+
+def promotion_source_files(root: Path) -> List[Path]:
+    """对照表的全部源档：整档（若在）＋各分片（按名排序）。"""
+    root = Path(root)
+    out = []
+    legacy = root / PROMOTIONS_FILENAME
+    if legacy.is_file():
+        out.append(legacy)
+    d = root / PROMOTIONS_DIRNAME
+    if d.is_dir():
+        out.extend(sorted(p for p in d.glob("*.json") if p.is_file()))
+    return out
+
+
+def _read_promotions_file(path: Path) -> Dict[str, dict]:
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return {}
+    promotions = data.get("promotions", {}) if isinstance(data, dict) else {}
+    return promotions if isinstance(promotions, dict) else {}
+
+
+def load_all_raw(root: Path) -> Dict[str, dict]:
+    """`{草稿id: 原始记录 dict}`，整档与分片两种形状都认（过渡期两者都在时取并集，分片优先）。"""
+    out: Dict[str, dict] = {}
+    for p in promotion_source_files(root):
+        out.update(_read_promotions_file(p))
+    return out
+
+
+def load_all(root: Path) -> Dict[str, "PromotionRecord"]:
+    """`{草稿id: PromotionRecord}`——读对照表的统一口，整档、分片两种形状都认。"""
+    out: Dict[str, PromotionRecord] = {}
+    for draft_id, rec in load_all_raw(root).items():
+        try:
+            out[draft_id] = PromotionRecord.from_dict(rec)
+        except (KeyError, TypeError):
+            continue
+    return out
+
+
+def _write_promotions_file(path: Path, records: Dict[str, "PromotionRecord"]):
+    """key 字典序、indent 2、档尾换行，原子写。"""
+    sorted_items = {k: records[k].to_dict() for k in sorted(records.keys())}
+    payload = {"version": PROMOTIONS_VERSION, "promotions": sorted_items}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # 原子寫：先寫暫存檔再 os.replace。promote 每升一條 save 一次，若逕
+    # open(path,"w") 就地截斷再 dump，「先截斷、後寫滿」的窗口每條書都開
+    # 一次——2026-08-25 實遇 timeout 之 SIGTERM 正撞在窗口裡，77,392 目
+    # 之檔只剩 81,103 行。升格記錄是唯一一份 draft↔production 對照表，
+    # 它壞了，validate-promotions／sweep／撞號檢測全部失效。
+    tmp = str(path) + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+        # 檔尾一個換行——SCHEMA〈JSON 書寫格式〉（2026-08-21 定，全庫一律）。
+        f.write("\n")
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp, path)
+
+
+def split_promotions(root: Path) -> Dict[str, int]:
+    """一次性迁移：把根目录整档切成 `promotions/<末2位>.json`，再删整档。
+
+    回 `{"records": 条数, "shards": 片数}`。分片目录已有内容时与之合流（分片优先）。
+    """
+    root = Path(root)
+    legacy = root / PROMOTIONS_FILENAME
+    if not legacy.is_file():
+        raise BookIndexError(f"{legacy} not found; nothing to split")
+    records = load_all(root)
+    by_shard: Dict[str, Dict[str, PromotionRecord]] = {}
+    for k, rec in records.items():
+        by_shard.setdefault(promotion_shard_key(k), {})[k] = rec
+    d = root / PROMOTIONS_DIRNAME
+    for key, recs in by_shard.items():
+        _write_promotions_file(d / f"{key}.json", recs)
+    if load_all(root) != records:
+        raise BookIndexError("split verification failed; legacy file kept")
+    legacy.unlink()
+    return {"records": len(records), "shards": len(by_shard)}
+
+
 class PromotionsStore:
-    """读写 promotions.json（草稿 ID → 正式 ID 对照表）的轻封装。
+    """读写升格对照表（草稿 ID → 正式 ID）的轻封装。
+
+    两种形状：根目录整档 `promotions.json`，或分片 `promotions/<草稿id末2位>.json`
+    （有 `promotions/` 目录即分片形，只重写动过的片）。读一律走 `load_all()`。
 
     该档放在**正式仓 book-index 根目录**（2026-10-06 起，overview#432：网站不再
     部署草稿仓，站点要读的对照表随正式仓走）。构造时传正式仓根目录，见
@@ -84,28 +184,21 @@ class PromotionsStore:
     """
 
     def __init__(self, root: Path):
-        self.path = root / PROMOTIONS_FILENAME
+        self.root = Path(root)
         self._cache: Optional[Dict[str, PromotionRecord]] = None
         # 本进程动过的 key。save 时只有这些以内存为准，其余取磁盘。
         self._touched: Set[str] = set()
 
+    @property
+    def path(self) -> Path:
+        """分片形回 `promotions/` 目录，否则回整档路径（报错、日志用）。"""
+        if promotions_sharded(self.root):
+            return self.root / PROMOTIONS_DIRNAME
+        return self.root / PROMOTIONS_FILENAME
+
     def _read_disk(self) -> Dict[str, PromotionRecord]:
-        if not self.path.exists():
-            return {}
-        try:
-            with open(self.path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-        except (OSError, json.JSONDecodeError):
-            # 读不动就当空——save 会以内存为准写出，总比写坏强
-            return {}
-        promotions = data.get("promotions", {}) if isinstance(data, dict) else {}
-        out: Dict[str, PromotionRecord] = {}
-        for draft_id, rec in promotions.items():
-            try:
-                out[draft_id] = PromotionRecord.from_dict(rec)
-            except (KeyError, TypeError):
-                continue
-        return out
+        # 读不动的档当空——save 会以内存为准写出，总比写坏强
+        return load_all(self.root)
 
     def load(self) -> Dict[str, PromotionRecord]:
         if self._cache is not None:
@@ -115,36 +208,46 @@ class PromotionsStore:
 
     def save(self):
         promotions = self.load()
-        # 与磁盘现状合流：以磁盘为底，只覆盖本进程动过的那几目。
-        merged = self._read_disk()
-        for k in self._touched:
-            if k in promotions:
-                merged[k] = promotions[k]
-            else:
-                merged.pop(k, None)
-        # 内存与合流之果对齐，免得同一个 store 后续再 save 时把别人的目又丢掉
-        self._cache = merged
-        self._touched = set()
-        # key 字典序排序，git diff 友好
-        sorted_items = {k: merged[k].to_dict() for k in sorted(merged.keys())}
-        payload = {"version": PROMOTIONS_VERSION, "promotions": sorted_items}
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        # 原子寫：先寫暫存檔再 os.replace。promote 每升一條 save 一次，若逕
-        # open(path,"w") 就地截斷再 dump，「先截斷、後寫滿」的窗口每條書都開
-        # 一次——2026-08-25 實遇 timeout 之 SIGTERM 正撞在窗口裡，77,392 目
-        # 之檔只剩 81,103 行。升格記錄是唯一一份 draft↔production 對照表，
-        # 它壞了，validate-promotions／sweep／撞號檢測全部失效。
-        tmp = str(self.path) + ".tmp"
-        with open(tmp, "w", encoding="utf-8") as f:
-            json.dump(payload, f, indent=2, ensure_ascii=False)
-            # 檔尾一個換行——SCHEMA〈JSON 書寫格式〉（2026-08-21 定，全庫一律）。
-            # 少了它，每跑一次 promote 就把改寫過的每個檔去掉檔尾換行，於是
-            # 「一個欄位一行、可自動合併」退化成整檔衝突——而那正是並行作業
-            # 賴以不撞車的前提。實測一次 promote 波及 15 檔，13 檔中招。
-            f.write("\n")
-            f.flush()
-            os.fsync(f.fileno())
-        os.replace(tmp, self.path)
+        sharded = promotions_sharded(self.root)
+        if sharded and (self.root / PROMOTIONS_FILENAME).is_file() and self._touched:
+            raise BookIndexError(
+                f"both {PROMOTIONS_FILENAME} and {PROMOTIONS_DIRNAME}/ exist under {self.root}; "
+                f"finish the split (split_promotions) before writing")
+        touched, self._touched = self._touched, set()
+        if not sharded:
+            # 整档形：与磁盘现状合流，以磁盘为底，只覆盖本进程动过的那几目。
+            merged = self._read_disk()
+            for k in touched:
+                if k in promotions:
+                    merged[k] = promotions[k]
+                else:
+                    merged.pop(k, None)
+            # 内存与合流之果对齐，免得同一个 store 后续再 save 时把别人的目又丢掉
+            self._cache = merged
+            _write_promotions_file(self.root / PROMOTIONS_FILENAME, merged)
+            return
+        # 分片形：只重写动过的那几片；每片同样「读盘合流」后原子写，空片删档。
+        d = self.root / PROMOTIONS_DIRNAME
+        for key in sorted({promotion_shard_key(k) for k in touched}):
+            path = d / f"{key}.json"
+            shard: Dict[str, PromotionRecord] = {}
+            for k, rec in _read_promotions_file(path).items():
+                try:
+                    shard[k] = PromotionRecord.from_dict(rec)
+                except (KeyError, TypeError):
+                    continue
+            for k in touched:
+                if promotion_shard_key(k) != key:
+                    continue
+                if k in promotions:
+                    shard[k] = promotions[k]
+                else:
+                    shard.pop(k, None)
+            if shard:
+                _write_promotions_file(path, shard)
+            elif path.exists():
+                path.unlink()
+        self._cache = self._read_disk()
 
     def add(self, draft_id: str, record: PromotionRecord):
         self.load()

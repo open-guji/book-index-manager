@@ -543,29 +543,33 @@ class BookIndexStorage:
         return self._promotions_map().get(id_str)
 
     def _promotions_map(self) -> Dict[str, str]:
-        """`{draft_id: production_id}`；按文件 mtime／大小缓存（文件 10MB 级，别每条重读）。"""
-        path = self.official_root / "promotions.json"
-        try:
-            st = path.stat()
-            key = (st.st_mtime_ns, st.st_size)
-        except OSError:
+        """`{draft_id: production_id}`；整档、分片（`promotions/`）两种形状都认。
+
+        按整档与分片目录的 mtime／大小缓存（对照表 10MB 级，别每条重读）。分片是原子
+        rename 写入，目录 mtime 随之变，故只看目录不必逐片 stat。
+        """
+        from .promotion import PROMOTIONS_DIRNAME, PROMOTIONS_FILENAME, load_all_raw
+        key = []
+        for path in (self.official_root / PROMOTIONS_FILENAME, self.official_root / PROMOTIONS_DIRNAME):
+            try:
+                st = path.stat()
+                key.append((st.st_mtime_ns, st.st_size))
+            except OSError:
+                key.append(None)
+        key = tuple(key)
+        if key == (None, None):
             self._promotions_cache = (None, {})
             return {}
         cached = getattr(self, "_promotions_cache", None)
         if cached and cached[0] == key:
             return cached[1]
         out: Dict[str, str] = {}
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-            for k, v in (data.get("promotions") or {}).items():
-                pid = v if isinstance(v, str) else (
-                    (v.get("production_id") or v.get("to") or v.get("official_id") or v.get("id"))
-                    if isinstance(v, dict) else None)
-                if pid:
-                    out[k] = pid
-        except (OSError, ValueError, AttributeError):
-            out = {}
+        for k, v in load_all_raw(self.official_root).items():
+            pid = v if isinstance(v, str) else (
+                (v.get("production_id") or v.get("to") or v.get("official_id") or v.get("id"))
+                if isinstance(v, dict) else None)
+            if pid:
+                out[k] = pid
         self._promotions_cache = (key, out)
         return out
 
