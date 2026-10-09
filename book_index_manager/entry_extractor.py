@@ -36,6 +36,16 @@ def _extract_titles_list(raw: Any) -> List[str]:
     return result
 
 
+def _first_author_dynasty(metadata: Dict[str, Any]) -> str:
+    """authors[] 中第一个有非空 dynasty 的作者的朝代（不限第 1 位）；没有则空串。"""
+    authors = metadata.get("authors", [])
+    if isinstance(authors, list):
+        for a in authors:
+            if isinstance(a, dict) and isinstance(a.get("dynasty"), str) and a["dynasty"]:
+                return a["dynasty"]
+    return ""
+
+
 def _extract_first_author(metadata: Dict[str, Any]) -> Dict[str, str]:
     """从 metadata.authors 提取首位作者的 name/dynasty/role。
 
@@ -239,15 +249,16 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
     entry.update(dating)  # era / sort_year，见 _extract_dating
     if holder:
         entry["holder"] = holder
-    # dynasty：authors[0] 优先，顶层字段兜底。
+    # dynasty（撰人朝代）：authors[] 中第一个有朝代的作者优先，顶层字段兜底。
     #
-    # 全库实测（book-index-draft，2026-08-19）：2139 个 Work 有顶层 dynasty 而
-    # authors 为空——出土文献按设计就无撰人（「多為出土簡帛，本無撰人可言」，
-    # 见这些条目的 ai_note）。只读 authors[0] 会让 reindex 把它们的 dynasty
-    # 从索引里全部抹掉。
-    # 两处都有的 35802 条里仅 30 条不一致，且 authors[0] 皆为更精确者
-    # （三國吳 vs 晉、東晉 vs 晉），故 authors[0] 优先。
-    dynasty = author["dynasty"] or metadata.get("dynasty") or ""
+    # 顶层兜底：出土文献按设计 authors 为空、顶层有 dynasty（book-index-draft
+    # 2026-08-19 实测 2139 条），只读作者会让 reindex 把它们的朝代抹掉。
+    # 作者优先：作者朝代往往更精确（三國吳 vs 晉、元末明初 vs 明）。
+    # 不只看 authors[0]：首位作者朝代空而后位有者（正式库约 50 条）也要取到
+    # （overview#496 §六-1，与 book-index build/build_derived.py index_entry、
+    # ui/src/core/storage.ts 三处同步）。注意这与卡片 dyn（成书朝代，顶层优先）
+    # 语义不同，目录经理 10-09 定不统一。
+    dynasty = _first_author_dynasty(metadata) or metadata.get("dynasty") or ""
     if dynasty:
         entry["dynasty"] = dynasty
     if author["role"]:

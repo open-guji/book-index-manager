@@ -202,9 +202,10 @@ export class BookIndexStorage {
         const shardData = await this.loadShard(root, typeKey, idStr);
 
         // 提取 author / dynasty / role
-        // dynasty 取 authors[0] 优先、顶层字段兜底：出土文献按设计 authors 为空
-        // 而顶层有 dynasty，只读 authors[0] 会让这类条目在索引里丢掉朝代。
-        // 与 Python 端 entry_extractor.build_index_entry 保持一致。
+        // dynasty（撰人朝代）取 authors[] 中第一个有朝代的作者、顶层字段兜底：
+        // 出土文献按设计 authors 为空而顶层有 dynasty；首位作者朝代空而后位有者也要取到
+        // （overview#496 §六-1）。与 Python 端 entry_extractor.build_index_entry、
+        // book-index build_derived.index_entry 保持一致。注意与卡片 dyn（成书朝代）不同。
         let author = '';
         let dynasty = '';
         let role = '';
@@ -220,6 +221,12 @@ export class BookIndexStorage {
             }
         } else if (typeof authors === 'string') {
             author = authors;
+        }
+        if (Array.isArray(authors)) {
+            const withDyn = authors.find(
+                (a: any) => typeof a === 'object' && a !== null && typeof a.dynasty === 'string' && a.dynasty,
+            ) as any;
+            if (withDyn) dynasty = withDyn.dynasty;
         }
         if (!dynasty && typeof metadata.dynasty === 'string') dynasty = metadata.dynasty;
 
@@ -502,7 +509,13 @@ export class BookIndexStorage {
                             author = String(first);
                         }
                     }
-                    if (!dynasty && typeof metadata.dynasty === 'string') dynasty = metadata.dynasty;
+                    if (Array.isArray(authors)) {
+            const withDyn = authors.find(
+                (a: any) => typeof a === 'object' && a !== null && typeof a.dynasty === 'string' && a.dynasty,
+            ) as any;
+            if (withDyn) dynasty = withDyn.dynasty;
+        }
+        if (!dynasty && typeof metadata.dynasty === 'string') dynasty = metadata.dynasty;
 
                     const additionalTitles = Array.isArray(metadata.additional_titles)
                         ? (metadata.additional_titles as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]

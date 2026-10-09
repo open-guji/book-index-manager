@@ -262,6 +262,17 @@ describe('BookIndexStorage 索引 shard', () => {
         expect(entries[0].author).toBe('司馬遷');
     });
 
+    it('index dynasty 取第一个有朝代的作者，顶层兜底（overview#496 §六-1）', async () => {
+        await storage.saveItem('work', WORK_ID_SHIJI, {
+            title: '史記', dynasty: '明',
+            authors: [{ name: '甲', dynasty: '' }, { name: '乙', dynasty: '清' }],
+        });
+        await storage.saveItem('work', WORK_ID_HAN, { title: '漢書', authors: [], dynasty: '戰國' });
+        const byTitle = Object.fromEntries((await storage.loadEntries('work', 'draft')).map(e => [e.title, e]));
+        expect(byTitle['史記'].dynasty).toBe('清');
+        expect(byTitle['漢書'].dynasty).toBe('戰國');
+    });
+
     it('loadEntries 提取 has_text/has_image（resources 标记）', async () => {
         await storage.saveItem('work', WORK_ID_SHIJI, {
             title: '史記',

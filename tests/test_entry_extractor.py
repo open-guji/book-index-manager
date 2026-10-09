@@ -394,3 +394,14 @@ def test_index_entry_has_text_only_from_resources():
     entry = build_index_entry({"id": "w1", "title": "X", "_has_text": True, "has_text": True},
                               BookIndexType.Work, "p.json")
     assert "has_text" not in entry
+
+
+def test_dynasty_takes_first_author_that_has_one():
+    """首位作者朝代空、后位有者，取后位（overview#496 §六-1；与 book-index build 同）。"""
+    entry = build_index_entry(
+        {"id": "b1", "title": "X", "dynasty": "明",
+         "authors": [{"name": "甲", "dynasty": ""}, {"name": "乙", "dynasty": "清"}]},
+        BookIndexType.Book,
+        "Book/b/1.json",
+    )
+    assert entry["dynasty"] == "清"
