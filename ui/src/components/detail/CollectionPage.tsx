@@ -145,7 +145,9 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     }, [transport, idsToResolve, m.unit.juan]);
 
     // ── 上级丛编 ──
-    const parentId = (data.contained_in || [])[0];
+    // contained_in 项兼认两形：旧字符串 id 与终版 {id}（overview#496 §五 B1）
+    const firstParent = (data.contained_in || [])[0];
+    const parentId = typeof firstParent === 'string' ? firstParent : firstParent?.id;
     useEffect(() => {
         if (!parentId) { setParent(null); return; }
         setParent({ id: parentId });

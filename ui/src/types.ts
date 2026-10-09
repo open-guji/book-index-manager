@@ -538,7 +538,8 @@ export interface CollectionDetailData extends BaseDetailData {
      */
     subtype?: 'book_collection' | 'work_collection' | string;
     work_id?: string;
-    contained_in?: string[];
+    /** 上级丛编。终版为 `{id}` 对象；旧数据为裸 id 字符串，读者两形都认 */
+    contained_in?: Array<string | { id: string }>;
     history?: string[];
     books?: string[];
     contained_works?: { id: string; title: string; volume_index?: number }[];
