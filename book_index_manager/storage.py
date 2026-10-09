@@ -113,6 +113,10 @@ LEGACY_KEY_MAP: dict[str, str] = {
 }
 
 
+
+# 文件名中题名部分的最大字数（码位）；须与 ui/src/core/storage.ts 的 MAX_NAME_CHARS 一致
+MAX_NAME_CHARS = 60
+
 class BookIndexStorage:
     def __init__(self, workspace_root: str):
         """
@@ -172,6 +176,10 @@ class BookIndexStorage:
         clean_name = re.sub(
             r'[^\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaffa-zA-Z0-9\U00020000-\U0003134f]',
             '', name)
+        # 文件名里的题名部分最多取 MAX_NAME_CHARS 个字（按码位，与 ui cleanName 逐字一致），
+        # 防题名塞子目时拼出超过 255 字节的文件名（overview#409 李小有詩記）。
+        # 读者一律按 `{id}-*.json` 前缀找档，截断不影响读取。
+        clean_name = clean_name[:MAX_NAME_CHARS]
         if not clean_name:
             clean_name = "Undefined"
 
@@ -262,7 +270,10 @@ class BookIndexStorage:
             existing_stem = existing_path.stem
             # 去掉全角括号内容: "<id>-<title>（<注>）" → "<id>-<title>"
             normalized = re.sub(r'（[^（）]*）', '', existing_stem)
-            if normalized == file_path.stem:
+            if normalized == file_path.stem or (
+                    len(file_path.stem) - len(id_str) - 1 >= MAX_NAME_CHARS
+                    and existing_stem.startswith(file_path.stem)):
+                # 第二种：旧档名是截断前的长名，新名是它的前 MAX_NAME_CHARS 字——同一题名，不改名
                 logger.info(f"Keeping existing file path for {id_str}: {existing_path} (bracket-annotated, equivalent to {file_path.name})")
                 file_path = existing_path
             else:
