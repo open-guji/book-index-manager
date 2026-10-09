@@ -199,6 +199,12 @@ describe('CollectionPage（B1）', () => {
         expect(container.querySelector('.bim-d-g-main .bim-d-tab')).toBeNull();
     });
 
+    it('左栏「上級叢編」：contained_in 为对象形 {id} 也认', async () => {
+        const coll = { ...COLL, contained_in: [{ id: 'c0' }] } as unknown as IndexDetailData;
+        const { container } = render(<BookDetailLayout {...props(coll, COLL_EXTRA)} />);
+        await waitFor(() => expect(container.querySelector('.bim-d-up')?.textContent).toContain('武英殿刻書'));
+    });
+
     it('本丛编内检索：按书名过滤', async () => {
         render(<BookDetailLayout {...props(COLL, COLL_EXTRA)} />);
         const input = await screen.findByRole('searchbox', { name: '在本叢編中檢索' });
