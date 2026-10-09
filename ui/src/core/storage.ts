@@ -186,18 +186,12 @@ export class BookIndexStorage {
         const title = (metadata.title as string) || (metadata['书名'] as string) || '未命名';
         const edition = (metadata.edition as string) || '';
         const name = edition ? `${title}${edition}` : title;
-        let filePath = this.getPath(type, idStr, name);
+        const filePath = this.getPath(type, idStr, name);
 
         // 检查是否已存在，需要重命名
         const existingPath = await this.findFileById(idStr);
         if (existingPath && existingPath !== filePath) {
-            const stem = (p: string) => p.substring(p.lastIndexOf('/') + 1).replace(/\.json$/, '');
-            if (Array.from(cleanName(name)).length >= MAX_NAME_CHARS && stem(existingPath).startsWith(stem(filePath))) {
-                // 旧档名是截断前的长名、新名是它的前 MAX_NAME_CHARS 字：同一题名，沿用旧档，不改名
-                filePath = existingPath;
-            } else {
-                try { await this.fs.deleteFile(existingPath); } catch { /* ignore */ }
-            }
+            try { await this.fs.deleteFile(existingPath); } catch { /* ignore */ }
         }
 
         // 确保目录存在

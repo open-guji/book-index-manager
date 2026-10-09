@@ -270,10 +270,7 @@ class BookIndexStorage:
             existing_stem = existing_path.stem
             # 去掉全角括号内容: "<id>-<title>（<注>）" → "<id>-<title>"
             normalized = re.sub(r'（[^（）]*）', '', existing_stem)
-            if normalized == file_path.stem or (
-                    len(file_path.stem) - len(id_str) - 1 >= MAX_NAME_CHARS
-                    and existing_stem.startswith(file_path.stem)):
-                # 第二种：旧档名是截断前的长名，新名是它的前 MAX_NAME_CHARS 字——同一题名，不改名
+            if normalized == file_path.stem:
                 logger.info(f"Keeping existing file path for {id_str}: {existing_path} (bracket-annotated, equivalent to {file_path.name})")
                 file_path = existing_path
             else:

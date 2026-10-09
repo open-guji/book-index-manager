@@ -534,14 +534,15 @@ describe('cleanName 截断（与 Python storage.py MAX_NAME_CHARS 同一组向�
         expect(cleanName('李小有詩記')).toBe('李小有詩記');
     });
 
-    it('旧档名是截断前的长名：再次 saveItem 沿用旧档，不改名', async () => {
+    it('旧档名是截断前的长名：再次 saveItem 改为截断名，旧档删除，只留一个档', async () => {
         const { fs, storage } = makeStorage();
         const capped = await storage.saveItem('work', WORK_ID_SHIJI, { title: LONG });
         const legacy = capped.replace(/\.json$/, '饑驅拙言仗友隨鷗.json');
         fs.files.set(legacy, fs.files.get(capped)!);
         fs.files.delete(capped);
         const again = await storage.saveItem('work', WORK_ID_SHIJI, { title: LONG, ai_note: 'x' });
-        expect(again).toBe(legacy);
-        expect(fs.files.has(capped)).toBe(false);
+        expect(again).toBe(capped);
+        expect(fs.files.has(legacy)).toBe(false);
+        expect(fs.files.has(capped)).toBe(true);
     });
 });

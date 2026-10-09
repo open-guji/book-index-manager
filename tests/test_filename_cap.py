@@ -3,7 +3,7 @@
 覆盖：
 - get_path 按码位截到 60 字（SMP 汉字算一个字），与 ui cleanName 用同一组向量
 - 新写长题名：文件名题名部分恰 60 字，UTF-8 字节不超限
-- 旧档名是截断前的长名：再次 save 沿用旧档，不改名、不多出新档
+- 旧档名是截断前的长名：再次 save 改名为截断名，旧档删除，只留一个档（不保留旧路径，防经符号链接写出工作区）
 """
 from __future__ import annotations
 
@@ -50,7 +50,7 @@ def test_long_title_written_capped(manager):
     assert md['title'] == LONG  # 题名本身不截
 
 
-def test_legacy_long_filename_kept(manager):
+def test_legacy_long_filename_renamed_once(manager):
     md = {'type': 'work', 'title': LONG, 'authors': [{'name': '李槃', 'role': '撰'}]}
     manager.save_item(md, BookIndexType.Work, BookIndexStatus.Draft)
     capped = manager.storage.find_file_by_id(md['id'])
@@ -60,4 +60,4 @@ def test_legacy_long_filename_kept(manager):
     md['ai_note'] = '再存一次'
     manager.save_item(md, BookIndexType.Work, BookIndexStatus.Draft)
     files = sorted(capped.parent.glob(f"{md['id']}-*.json"))
-    assert files == [full]
+    assert files == [capped]
