@@ -20,6 +20,7 @@ import { describe, expect, it, beforeEach } from 'vitest';
 import {
     BookIndexStorage,
     cleanName,
+    MAX_NAME_CHARS,
     firstAuthorDynasty,
     shardOf,
     NUM_SHARDS,
@@ -510,5 +511,38 @@ describe('firstAuthorDynasty', () => {
         expect(firstAuthorDynasty([{ name: '甲', dynasty: '元末明初' }, { name: '乙', dynasty: '明' }])).toBe('元末明初');
         expect(firstAuthorDynasty(['施耐庵', { name: '乙' }])).toBe('');
         expect(firstAuthorDynasty(undefined)).toBe('');
+    });
+});
+
+describe('cleanName 截断（与 Python storage.py MAX_NAME_CHARS 同一组向量，overview#409）', () => {
+    // 与 tests/test_filename_cap.py 的 LONG 相同
+    const LONG = '李小有詩記（' + '饑驅拙言、仗友隨鷗、葭園唱和、瞻烏歎、羈游譜、'.repeat(4) + '𠀀尾）';
+
+    it('上限 60 字', () => {
+        expect(MAX_NAME_CHARS).toBe(60);
+    });
+
+    it('按码位截到 60 字，结果与 Python 逐字一致', () => {
+        expect(cleanName(LONG)).toBe('李小有詩記饑驅拙言仗友隨鷗葭園唱和瞻烏歎羈游譜饑驅拙言仗友隨鷗葭園唱和瞻烏歎羈游譜饑驅拙言仗友隨鷗葭園唱和瞻烏歎羈游譜饑');
+    });
+
+    it('SMP 汉字算一个字', () => {
+        expect(Array.from(cleanName('𠀀'.repeat(70))).length).toBe(60);
+    });
+
+    it('短名不变', () => {
+        expect(cleanName('李小有詩記')).toBe('李小有詩記');
+    });
+
+    it('旧档名是截断前的长名：再次 saveItem 改为截断名，旧档删除，只留一个档', async () => {
+        const { fs, storage } = makeStorage();
+        const capped = await storage.saveItem('work', WORK_ID_SHIJI, { title: LONG });
+        const legacy = capped.replace(/\.json$/, '饑驅拙言仗友隨鷗.json');
+        fs.files.set(legacy, fs.files.get(capped)!);
+        fs.files.delete(capped);
+        const again = await storage.saveItem('work', WORK_ID_SHIJI, { title: LONG, ai_note: 'x' });
+        expect(again).toBe(capped);
+        expect(fs.files.has(legacy)).toBe(false);
+        expect(fs.files.has(capped)).toBe(true);
     });
 });

@@ -136,12 +136,17 @@ export function firstAuthorDynasty(authors: unknown): string {
  * 旧版正则只覆盖到 U+9FA5，会漏掉这些字 — 造成 TS 端算路径与 Python
  * 写出的路径不一致。
  */
+/** 文件名中题名部分的最大字数（码位）；须与 Python storage.py 的 MAX_NAME_CHARS 一致 */
+export const MAX_NAME_CHARS = 60;
+
 export function cleanName(name: string): string {
     const cleaned = name.replace(
         /[^㐀-䶿一-鿿豈-﫿a-zA-Z0-9\u{20000}-\u{3134f}]/gu,
         ''
     );
-    return cleaned || 'Undefined';
+    // 按码位截断（SMP 汉字算一个字），与 Python 的 str 切片一致；防文件名超 255 字节（overview#409）
+    const capped = Array.from(cleaned).slice(0, MAX_NAME_CHARS).join('');
+    return capped || 'Undefined';
 }
 
 export class BookIndexStorage {
