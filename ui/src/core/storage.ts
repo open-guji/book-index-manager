@@ -59,7 +59,7 @@ export interface IndexFileEntry {
     path: string;
     author: string;
     holder: string;
-    /** 撰人朝代（authors[0].dynasty）——不是刊刻朝代 */
+    /** 撰人朝代（authors[] 中第一个有朝代者，顶层 dynasty 兜底）——不是刊刻朝代 */
     dynasty?: string;
     /**
      * 刊刻朝代，= Book.dating.era。与 dynasty 是两回事：史記·武英殿本
@@ -101,6 +101,23 @@ function joinPath(...parts: string[]): string {
         return '//' + joined.slice(2).replace(/\/+/g, '/');
     }
     return joined.replace(/\/+/g, '/');
+}
+
+/**
+ * 撰人朝代：authors[] 中第一个有非空 dynasty 的作者的值（不限第 1 位）；没有则空串。
+ * index 的 dynasty 取它、再以顶层 dynasty 兜底（overview#496 §六-1）。与 Python 端
+ * entry_extractor._first_author_dynasty、book-index build_derived.index_entry 同。
+ * 注意与卡片 dyn（成书朝代，顶层优先）语义不同。
+ */
+export function firstAuthorDynasty(authors: unknown): string {
+    if (!Array.isArray(authors)) return '';
+    for (const a of authors) {
+        if (typeof a === 'object' && a !== null) {
+            const d = (a as { dynasty?: unknown }).dynasty;
+            if (typeof d === 'string' && d) return d;
+        }
+    }
+    return '';
 }
 
 /**
@@ -202,9 +219,10 @@ export class BookIndexStorage {
         const shardData = await this.loadShard(root, typeKey, idStr);
 
         // 提取 author / dynasty / role
-        // dynasty 取 authors[0] 优先、顶层字段兜底：出土文献按设计 authors 为空
-        // 而顶层有 dynasty，只读 authors[0] 会让这类条目在索引里丢掉朝代。
-        // 与 Python 端 entry_extractor.build_index_entry 保持一致。
+        // dynasty（撰人朝代）取 authors[] 中第一个有朝代的作者、顶层字段兜底：
+        // 出土文献按设计 authors 为空而顶层有 dynasty；首位作者朝代空而后位有者也要取到
+        // （overview#496 §六-1）。与 Python 端 entry_extractor.build_index_entry、
+        // book-index build_derived.index_entry 保持一致。注意与卡片 dyn（成书朝代）不同。
         let author = '';
         let dynasty = '';
         let role = '';
@@ -213,7 +231,6 @@ export class BookIndexStorage {
             const first = authors[0];
             if (typeof first === 'object' && first !== null) {
                 author = (first as any).name || '';
-                dynasty = (first as any).dynasty || '';
                 role = (first as any).role || '';
             } else {
                 author = String(first);
@@ -221,7 +238,7 @@ export class BookIndexStorage {
         } else if (typeof authors === 'string') {
             author = authors;
         }
-        if (!dynasty && typeof metadata.dynasty === 'string') dynasty = metadata.dynasty;
+        dynasty = firstAuthorDynasty(authors) || (typeof metadata.dynasty === 'string' ? metadata.dynasty : '');
 
         // publication_info.year 不再进索引：它是自由文本，IndexEntry 运行时类型
         // 从不读它，搜索分片也不带——零消费者。刊刻年代改投影 dating（datingProjection）。
@@ -496,13 +513,12 @@ export class BookIndexStorage {
                         const first = authors[0];
                         if (typeof first === 'object' && first !== null) {
                             author = (first as any).name || '';
-                            dynasty = (first as any).dynasty || '';
                             role = (first as any).role || '';
                         } else {
                             author = String(first);
                         }
                     }
-                    if (!dynasty && typeof metadata.dynasty === 'string') dynasty = metadata.dynasty;
+                    dynasty = firstAuthorDynasty(authors) || (typeof metadata.dynasty === 'string' ? metadata.dynasty : '');
 
                     const additionalTitles = Array.isArray(metadata.additional_titles)
                         ? (metadata.additional_titles as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]

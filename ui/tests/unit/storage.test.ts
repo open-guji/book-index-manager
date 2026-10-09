@@ -20,6 +20,7 @@ import { describe, expect, it, beforeEach } from 'vitest';
 import {
     BookIndexStorage,
     cleanName,
+    firstAuthorDynasty,
     shardOf,
     NUM_SHARDS,
     scoreEntry,
@@ -262,6 +263,17 @@ describe('BookIndexStorage 索引 shard', () => {
         expect(entries[0].author).toBe('司馬遷');
     });
 
+    it('index dynasty 取第一个有朝代的作者，顶层兜底（overview#496 §六-1）', async () => {
+        await storage.saveItem('work', WORK_ID_SHIJI, {
+            title: '史記', dynasty: '明',
+            authors: [{ name: '甲', dynasty: '' }, { name: '乙', dynasty: '清' }],
+        });
+        await storage.saveItem('work', WORK_ID_HAN, { title: '漢書', authors: [], dynasty: '戰國' });
+        const byTitle = Object.fromEntries((await storage.loadEntries('work', 'draft')).map(e => [e.title, e]));
+        expect(byTitle['史記'].dynasty).toBe('清');
+        expect(byTitle['漢書'].dynasty).toBe('戰國');
+    });
+
     it('loadEntries 提取 has_text/has_image（resources 标记）', async () => {
         await storage.saveItem('work', WORK_ID_SHIJI, {
             title: '史記',
@@ -489,5 +501,14 @@ describe('rankByRelevanceWithSimplified', () => {
         const map = { h: { t: '汉书' } };
         const r = rankByRelevanceWithSimplified([e], '量子力學', '量子力学', map);
         expect(r).toEqual([]);
+    });
+});
+
+describe('firstAuthorDynasty', () => {
+    it('取第一个有朝代的作者，不限第 1 位；非数组或都没有则空串', () => {
+        expect(firstAuthorDynasty([{ name: '甲', dynasty: '' }, { name: '乙', dynasty: '清' }])).toBe('清');
+        expect(firstAuthorDynasty([{ name: '甲', dynasty: '元末明初' }, { name: '乙', dynasty: '明' }])).toBe('元末明初');
+        expect(firstAuthorDynasty(['施耐庵', { name: '乙' }])).toBe('');
+        expect(firstAuthorDynasty(undefined)).toBe('');
     });
 });
