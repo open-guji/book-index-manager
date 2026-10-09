@@ -253,7 +253,7 @@ describe('EntityPage（B1）', () => {
     });
 
     it('提要卡 subtype 标签：reign／office 有专名，未知原样露出，不再误标「人物」', async () => {
-        for (const [subtype, label] of [['reign', '年號'], ['office', '官名'], ['xyz', 'xyz']]) {
+        for (const [subtype, label] of [['reign', '年號'], ['office', '官職'], ['xyz', 'xyz']]) {
             const d = { ...ENTITY, subtype } as unknown as IndexDetailData;
             const { container, unmount } = render(<BookDetailLayout {...props(d, ENTITY_EXTRA)} />);
             await screen.findByText('字仲晦，號晦庵');
