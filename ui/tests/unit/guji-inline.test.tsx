@@ -14,7 +14,7 @@ import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { render, waitFor } from '@testing-library/react';
 import {
-    parseGujiInline, gujiInlineToPlain, hasGujiMarkdownV02, mayHaveGujiInline,
+    parseGujiInline, gujiInlineToPlain, hasGujiMarkdownV02, mayHaveGujiInline, JZ_MAX_LENGTH,
 } from '../../src/core/guji-inline';
 import { renderInterlinear } from '../../src/components/detail/primitives';
 import { renderFullTextBody } from '../../src/components/detail/GujiTable';
@@ -275,9 +275,13 @@ describe('转义 \\< \\>（spec §10）', () => {
 });
 
 describe('夹注长度上限（spec §0.4）', () => {
-    it('默认上限 4096：恰好 4096 字仍是夹注，4097 字按字面', () => {
-        const a = '甲'.repeat(4096), b = '甲'.repeat(4097);
-        expect(plain(`<${a}>`)).toBe(`（${a}）`);
+    it('阅读器默认上限 65536（spec 缺省 4096，按真实数据放宽）：4097 字、24415 字仍是夹注，65537 字按字面', () => {
+        expect(JZ_MAX_LENGTH).toBe(65536);
+        for (const n of [4096, 4097, 24415, 65536]) {
+            const a = '甲'.repeat(n);
+            expect(plain(`<${a}>`)).toBe(`（${a}）`);
+        }
+        const b = '甲'.repeat(65537);
         expect(plain(`<${b}>`)).toBe(`<${b}>`);
     });
     it('可覆盖：上限 3，3 字生效、7 字降级为字面', () => {

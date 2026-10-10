@@ -79,4 +79,24 @@ describe('整理本质量徽标：新词表六档', () => {
         expect(await badgeOf(container)).toBeNull();
         expect(container.querySelector('.bim-rd-meta')?.textContent).toContain('部書');
     });
+
+    it.each([[undefined], [''], [null]])('质量档缺值（%s）不显示徽标，也不落到「质量未评定」', async (grade) => {
+        const { container } = mountWithGrade(grade);
+        expect(await badgeOf(container)).toBeNull();
+        expect(container.querySelector('.bim-rd-meta')?.textContent).not.toMatch(/質量未評定|质量未评定/);
+        expect(container.querySelector('.bim-rd-meta [title]')).toBeNull();
+    });
+
+    it.each([
+        ['source', 'zh-Hant', '照錄來源原文，本站未另行校對'],
+        ['none', 'zh-Hant', '質量未評定'],
+        ['placeholder', 'zh-Hant', '占位條目，正文尚未錄入'],
+        ['source', 'zh-Hans', '照录来源原文，本站未另行校对'],
+        ['none', 'zh-Hans', '质量未评定'],
+        ['placeholder', 'zh-Hans', '占位条目，正文尚未录入'],
+    ] as const)('%s（%s）的 tooltip 采纳文本总管复核：%s', async (grade, locale, tip) => {
+        const { container } = mountWithGrade(grade, locale);
+        const badge = await badgeOf(container);
+        expect(badge?.closest('[title]')?.getAttribute('title')).toBe(tip);
+    });
 });

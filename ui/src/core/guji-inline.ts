@@ -28,8 +28,13 @@ export type GujiInlineNode =
     | { type: 'qz'; guess: string }
     | { type: 'zi'; label: string };
 
-/** 夹注内容长度上限（spec syntax.md §0.4：夹注 `<…>` 默认 4096）；超限视为未闭合，`<` 按字面 */
-export const JZ_MAX_LENGTH = 4096;
+/**
+ * 夹注内容长度上限；超限视为未闭合，`<` 按字面（spec syntax.md §0.4）。
+ * spec 缺省是 4096，阅读器按真实数据放宽到 65536：book-text 全库最长的夹注 24,415 字，
+ * 超 4096 的有 66 个、超 8192 的有 5 个（2026-10-10 扫描，overview#516）。
+ * spec 一致性语料的 over-limit 用例自己用 `options.maxSpanLength` 传上限，不受这个默认值影响。
+ */
+export const JZ_MAX_LENGTH = 65536;
 
 export interface GujiInlineOptions {
     /** 夹注内容长度上限；缺省 `JZ_MAX_LENGTH`。只管 `<…>`，旧 `⟨…⟩` 不设限 */
