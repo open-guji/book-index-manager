@@ -10,6 +10,7 @@ import type { ReadingMode } from '../../core/paragraphize';
 import type { ProperNameMode } from '../../core/entity-annotations';
 import type { ReaderWritingMode } from './types';
 import type { QuoteStyle } from './marks';
+import type { ScriptMode } from '../../i18n/script-scope';
 
 export type { ProperNameMode, QuoteStyle };
 
@@ -18,7 +19,7 @@ export type ReaderFontFamily = 'song' | 'kai' | 'system';
 /** 书名标法：波浪线／书名号 */
 export type BookTitleStyle = 'wavy' | 'bracket';
 /** 字形：原字（不转换，保留异体字）／通行繁体（异体归一）／简体；null = 跟站点繁简 */
-export type ReaderScriptMode = 'orig' | 'hant' | 'hans';
+export type ReaderScriptMode = ScriptMode;
 
 /** 专名号是否画（lite、full 都画；lite 只画人名、地名、朝代，由 `filterEntitiesByMode` 筛实体）；null＝没选过，调用方自己按本章实体数决定 */
 export function properNamesOn(mode: ProperNameMode | null | undefined): boolean {
