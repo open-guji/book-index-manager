@@ -42,3 +42,39 @@ jobs:
       - name: Test
         working-directory: ui
         run: npm test
+
+  # 阅读器版式护栏（真 Chromium，overview#526；Ella 的 ui/tests/layout，bim#185）。
+  # 几何断言（行首无空位、抬头字不偏移、去空白前后画布尺寸不同），不做截图像素比对，所以与 runner 字体基本无关。
+  # 先作为独立 job、不设必过；跑稳几次再决定要不要设为必过。第一次在 Actions runner 上跑：
+  # 若因字体让容差不稳，把失败日志贴 #526，由 ui 侧调 harness，不要放宽断言。
+  ui-layout:
+    name: layout (ui/, real Chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ui/package-lock.json
+      - name: Install
+        working-directory: ui
+        run: npm ci
+      - name: Install Chromium
+        working-directory: ui
+        run: npx playwright install --with-deps chromium
+      - name: Layout guard
+        working-directory: ui
+        timeout-minutes: 8
+        run: npm run test:layout
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-layout-report
+          path: |
+            ui/test-results
+            ui/playwright-report
+          if-no-files-found: ignore
+          retention-days: 7
