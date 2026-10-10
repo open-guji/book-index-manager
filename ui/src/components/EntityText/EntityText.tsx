@@ -75,6 +75,8 @@ export interface EntityTextProps {
     renderText?: (s: string) => React.ReactNode;
     /** 悬停多久出卡（毫秒） */
     hoverDelayMs?: number;
+    /** 移出词或卡片后多久收卡（毫秒），默认 280 */
+    closeDelayMs?: number;
     /** 是否随组件输出 `<style>`；一页里铺很多段时可关掉，由宿主放一次 `ENTITY_TEXT_CSS` */
     injectStyles?: boolean;
     className?: string;
@@ -85,6 +87,7 @@ const identity = (s: string): React.ReactNode => s;
 export const EntityText: React.FC<EntityTextProps> = ({
     text, entities, offsets = 'text', plainBase = 0, transport, loadSummary,
     buildHref = defaultEntityHref, onNavigate, renderText = identity, hoverDelayMs = 250,
+    closeDelayMs,
     injectStyles = true, className,
 }) => {
     const segments = useMemo(() => {
@@ -110,6 +113,7 @@ export const EntityText: React.FC<EntityTextProps> = ({
                         onNavigate={onNavigate}
                         renderText={renderText}
                         hoverDelayMs={hoverDelayMs}
+                        closeDelayMs={closeDelayMs}
                     />
                 ))}
         </span>
@@ -128,14 +132,22 @@ export interface EntityMarkProps {
     onNavigate?: EntityTextProps['onNavigate'];
     renderText: (s: string) => React.ReactNode;
     hoverDelayMs: number;
+    /** 移出词或卡片后多久收卡（毫秒）；期间移回词或卡片则不收 */
+    closeDelayMs?: number;
 }
+
+/** 同一时刻只开一张卡：新卡打开时立刻收掉上一张 */
+let openCardCloser: (() => void) | null = null;
 
 export const EntityMark: React.FC<EntityMarkProps> = ({
     span, label, hasBrackets, plain, loader, buildHref, onNavigate, renderText, hoverDelayMs,
+    closeDelayMs = 280,
 }) => {
     const cardId = useId();
     const [open, setOpen] = useState(false);
-    const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [active, setActive] = useState(false);
+    const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const cls = `bim-et bim-et-${span.kind}${plain ? ' bim-et-nu' : ''}`;
     const brackets = span.kind === 'work' && !hasBrackets;
     const inner = (
@@ -146,38 +158,74 @@ export const EntityMark: React.FC<EntityMarkProps> = ({
         </>
     );
 
-    const clear = () => { if (timer.current) { clearTimeout(timer.current); timer.current = null; } };
-    useEffect(() => clear, []);
+    const clearOpen = () => { if (openTimer.current) { clearTimeout(openTimer.current); openTimer.current = null; } };
+    const clearClose = () => { if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; } };
 
-    const show = useCallback((delay: number) => {
-        clear();
-        if (delay <= 0) setOpen(true);
-        else timer.current = setTimeout(() => setOpen(true), delay);
+    const closeNow = useCallback(() => {
+        clearOpen(); clearClose();
+        setOpen(false); setActive(false);
+        if (openCardCloser === closeNow) openCardCloser = null;
     }, []);
-    const hide = useCallback(() => { clear(); setOpen(false); }, []);
+    useEffect(() => () => { clearOpen(); clearClose(); if (openCardCloser === closeNow) openCardCloser = null; }, [closeNow]);
 
-    if (!span.targetId) return <span className={cls}>{inner}</span>;
+    const openCard = useCallback(() => {
+        if (openCardCloser && openCardCloser !== closeNow) openCardCloser();
+        openCardCloser = closeNow;
+        setOpen(true);
+    }, [closeNow]);
+
+    /** 进入词或卡片：整词高亮；已开则取消待收，未开则按延迟出卡 */
+    const enter = useCallback((delay: number) => {
+        clearClose();
+        setActive(true);
+        if (open) return;
+        clearOpen();
+        if (delay <= 0) openCard();
+        else openTimer.current = setTimeout(openCard, delay);
+    }, [open, openCard]);
+    /** 移出：延迟收卡 */
+    const leave = useCallback(() => {
+        clearOpen(); clearClose();
+        closeTimer.current = setTimeout(closeNow, closeDelayMs);
+    }, [closeNow, closeDelayMs]);
+
+    const hasLink = !!span.targetId;
     const id = span.targetId;
+    // 未收录的实体也出卡（只写类别），但不可聚焦
+    const wrapProps = {
+        className: 'bim-et-w',
+        'data-active': active ? '' : undefined,
+        onMouseEnter: () => enter(hoverDelayMs),
+        onMouseLeave: leave,
+        // 焦点移到卡内的详情链接不算离开；移出整个词+卡才收
+        onBlur: (e: React.FocusEvent<HTMLElement>) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node | null)) closeNow();
+        },
+        onKeyDown: (e: React.KeyboardEvent) => { if (e.key === 'Escape' && open) { e.stopPropagation(); closeNow(); } },
+    };
+
+    if (!hasLink || !id) {
+        return (
+            <span {...wrapProps}>
+                <span className={cls}>{inner}</span>
+                {open && <EntityCard id={cardId} entityId={null} span={span} loader={null} buildHref={buildHref} onNavigate={onNavigate} />}
+            </span>
+        );
+    }
 
     return (
-        <span
-            className="bim-et-w"
-            onMouseEnter={() => show(hoverDelayMs)}
-            onMouseLeave={hide}
-            onKeyDown={e => { if (e.key === 'Escape' && open) { e.stopPropagation(); hide(); } }}
-        >
+        <span {...wrapProps}>
             <a
                 className={cls}
                 href={buildHref(id)}
                 data-entity-id={id}
                 aria-describedby={open ? cardId : undefined}
-                onFocus={() => show(0)}
-                onBlur={hide}
+                onFocus={() => enter(0)}
                 onClick={onNavigate ? e => onNavigate(id, e) : undefined}
             >
                 {inner}
             </a>
-            {open && <EntityCard id={cardId} entityId={id} span={span} loader={loader} />}
+            {open && <EntityCard id={cardId} entityId={id} span={span} loader={loader} buildHref={buildHref} onNavigate={onNavigate} />}
         </span>
     );
 };
@@ -189,17 +237,20 @@ type CardState =
 
 const EntityCard: React.FC<{
     id: string;
-    entityId: string;
+    /** null = 未收录：只写类别 */
+    entityId: string | null;
     span: EntitySpan;
     loader: { owner: object; load: EntitySummaryLoader } | null;
-}> = ({ id, entityId, span, loader }) => {
-    const { convert } = useI18n();
+    buildHref: (id: string) => string;
+    onNavigate?: EntityTextProps['onNavigate'];
+}> = ({ id, entityId, span, loader, buildHref, onNavigate }) => {
+    const { convert, t } = useI18n();
     const ref = useRef<HTMLSpanElement | null>(null);
     const [align, setAlign] = useState<'start' | 'end'>('start');
-    const [state, setState] = useState<CardState>(loader ? { status: 'loading' } : { status: 'ready', summary: null });
+    const [state, setState] = useState<CardState>(loader && entityId ? { status: 'loading' } : { status: 'ready', summary: null });
 
     useEffect(() => {
-        if (!loader) return;
+        if (!loader || !entityId) return;
         let cancelled = false;
         setState({ status: 'loading' });
         cachedSummary(loader.owner, loader.load, entityId)
@@ -220,6 +271,14 @@ const EntityCard: React.FC<{
     const summary = state.status === 'ready' ? state.summary : null;
     const title = summary?.title ?? span.canonicalName ?? span.text;
 
+    if (!entityId) {
+        return (
+            <span ref={ref} id={id} role="tooltip" className="bim-et-card" data-align={align}>
+                <span className="bim-et-card-k">{convert(KIND_LABEL[span.kind])}</span>
+            </span>
+        );
+    }
+
     return (
         <span ref={ref} id={id} role="tooltip" className="bim-et-card" data-align={align}>
             <span className="bim-et-card-k">{convert(KIND_LABEL[span.kind])}</span>
@@ -228,6 +287,11 @@ const EntityCard: React.FC<{
             {summary?.description && <span className="bim-et-card-d">{convert(summary.description)}</span>}
             {state.status === 'loading' && <span className="bim-et-card-s">{convert('載入中…')}</span>}
             {state.status === 'error' && <span className="bim-et-card-s">{convert('摘要載入失敗')}</span>}
+            <a
+                className="bim-et-card-a"
+                href={buildHref(entityId)}
+                onClick={onNavigate ? e => onNavigate(entityId, e) : undefined}
+            >{t('reader.entityDetail')}</a>
         </span>
     );
 };
