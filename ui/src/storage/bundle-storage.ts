@@ -505,7 +505,7 @@ export class BundleStorage implements IndexStorage {
     // ─── 阅读文本（新结构，overview#307） ───
     //
     // items/<id>/manifest.json、items/<id>/<key>/index.json、<key>/NNN.txt（打包时 md 改 txt）、<key>/NNN.json。
-    // 旧结构的条目没有 manifest.json，getTextManifest 返回 null，阅读器再走旧接口（core/text-api 的适配）。
+    // 没有 manifest.json 的条目 getTextManifest 返回 null，阅读器显示「暂无文本」（旧目录结构已全删，没有旧接口可回退）。
 
     async getTextManifest(id: string): Promise<import('../core/text-model').TextManifest | null> {
         if (!isSafeSegment(id)) return null;

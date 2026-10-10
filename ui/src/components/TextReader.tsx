@@ -363,7 +363,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
 
     const resolveCtx = useMemo<ReaderResolveContext>(() => ({ versionKey, chapter: (chapterMeta as Record<string, unknown> | null) ?? null }), [versionKey, chapterMeta]);
     const images = useChapterImages(resolveImages, effectiveChapter ?? null, resolveCtx);
-    const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData, warpDataProp, effectiveChapter ?? null, chapterMeta as any, resolveCtx);
+    const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData, warpDataProp, effectiveChapter ?? null, resolveCtx);
     const entitySpans = useChapterEntities(resolveEntities, effectiveChapter ?? null, resolveCtx);
     // 专名线：用户没选过时，本章有专名层数据就默认开（没有就不画空线）；选过就照用户的
     const properNamesOn = storedPrefs.properNames ?? entitySpans.length > 0;
