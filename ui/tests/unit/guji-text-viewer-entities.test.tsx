@@ -63,6 +63,22 @@ describe('GujiTextViewer 实体标注', () => {
     });
 });
 
+describe('GujiTextViewer 实体标注：span 缺失也按 anchor 对位（spec/05：span 是可选缓存）', () => {
+    it('条目不带 span 时仍画线、出链接', () => {
+        const noSpan = adaptEntityJson({
+            entities: [
+                { id: 'e1', type: 'work', text: '漢書藝文志', anchor: { start: '3:1:1', end: '3:1:5' }, target: { status: 'matched', entity_id: 'w1abc' } },
+                { id: 'e2', type: 'people', text: '王弼', anchor: { start: '3:1:6', end: '3:1:7' }, span: { start_offset: 0, end_offset: 0 }, target: { status: 'new_candidate' } },
+            ],
+        });
+        expect(noSpan).toHaveLength(2);
+        const { container } = setup({ entities: noSpan });
+        const link = container.querySelector('a.bim-et-work') as HTMLAnchorElement;
+        expect(link.getAttribute('href')).toBe('/item/w1abc');
+        expect(container.querySelector('span.bim-et-person')?.textContent).toBe('王弼');
+    });
+});
+
 describe('GujiTextViewer 标点的前后位置（pos）', () => {
     const text = '孔子彖象傳元史本傳';
     const data: any = {

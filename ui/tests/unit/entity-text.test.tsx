@@ -284,3 +284,41 @@ describe('<EntityText>', () => {
         await waitFor(() => expect(screen.getByRole('tooltip').textContent).toBe('人名刘向'));
     });
 });
+
+describe('adaptEntityJson：span 可选（guji-format spec/05），定位靠 anchor', () => {
+    const base = { type: 'work', text: '史記', target: { status: 'new_candidate' } };
+
+    it('有 anchor 无 span：留条目，没有偏移', () => {
+        const [s] = adaptEntityJson([{ ...base, id: 'a', anchor: { start: '1:1:1', end: '1:1:2' } }]);
+        expect(s.anchor).toEqual({ start: '1:1:1', end: '1:1:2' });
+        expect(s.start).toBeUndefined();
+        expect(s.end).toBeUndefined();
+    });
+
+    it('有 anchor 且 span 不合法：丢偏移、留条目', () => {
+        const [s] = adaptEntityJson([{ ...base, id: 'a', anchor: { start: '1:1:1', end: '1:1:2' }, span: { start_offset: 5, end_offset: 5 } }]);
+        expect(s.anchor).toBeDefined();
+        expect(s.start).toBeUndefined();
+    });
+
+    it('无 anchor 有 span：照旧按偏移；两者皆无：丢弃', () => {
+        const out = adaptEntityJson([
+            { ...base, id: 'a', span: { start_offset: 3, end_offset: 5 } },
+            { ...base, id: 'b' },
+        ]);
+        expect(out).toHaveLength(1);
+        expect(out[0]).toMatchObject({ key: 'a', start: 3, end: 5 });
+    });
+
+    it('排序：有偏移的按起点，只有 anchor 的排在最后；按偏移切分时跳过无偏移的', () => {
+        const spans = adaptEntityJson([
+            { ...base, id: 'x', anchor: { start: '1:1:1', end: '1:1:2' } },
+            { ...base, id: 'y', span: { start_offset: 2, end_offset: 4 } },
+            { ...base, id: 'z', span: { start_offset: 0, end_offset: 2 } },
+        ]);
+        expect(spans.map(s => s.key)).toEqual(['z', 'y', 'x']);
+        const segs = segmentEntities('史記史記', spans);
+        expect(segs.filter(g => g.type === 'entity').map(g => g.type === 'entity' && g.span.key)).toEqual(['z', 'y']);
+        expect(remapPlainOffsets('史記史記', spans).map(s => s.key)).toEqual(['z', 'y']);
+    });
+});

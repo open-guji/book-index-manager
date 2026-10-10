@@ -18,6 +18,7 @@
  *     "confidence": 0.9, "source": "llm:qwen-plus" }] }
  * ```
  *
+ * `span` 是可选缓存（guji-format spec/05），`anchor` 才是权威定位：没有 `span` 的条目照收，只按 anchor 对位。
  * 注意 `span` 的偏移是**纯字**下标（底本去掉标点、空白、《》/ 标记后的字序，end 不含），
  * 不是带标点正文的下标——组件用 `offsets="plain"` 时会按 `isCountedChar` 换算。
  * A1 定稿后只改 `adaptEntityJson` / `isCountedChar` 这一层。
@@ -31,10 +32,13 @@ export interface EntitySpan {
     /** 标注自身的 id（entity.json 里的 e0001 之类），用作 React key */
     key: string;
     kind: EntityKind;
-    /** 起点偏移（含） */
-    start: number;
-    /** 终点偏移（不含） */
-    end: number;
+    /**
+     * 起点偏移（含）。规范里 `span` 只是可选缓存（guji-format spec/05）：条目没带 `span` 时为 undefined，
+     * 这样的条目只能按 `anchor` 对位（`GujiTextViewer` 就是这么用的）；按偏移切分的 `segmentEntities`／`remapPlainOffsets` 会跳过它。
+     */
+    start?: number;
+    /** 终点偏移（不含）；同 `start`，没带 `span` 时为 undefined */
+    end?: number;
     /** 标注原文，用于校对偏移 */
     text?: string;
     /** 已对上的站内条目 id（base36）；没有表示未收录，只画线不链接 */
@@ -45,7 +49,7 @@ export interface EntitySpan {
     confidence?: number;
     /**
      * 逐字锚点（对读用）：起止字 id（含），格式 `<页>:<列>:<格>`。有它就不依赖 `start/end` 偏移，
-     * 直接按字 id 对位到对读正文，不受标点、缺字、夹注影响。
+     * 直接按字 id 对位到对读正文，不受标点、缺字、夹注影响。规范里它是必有的权威定位。
      */
     anchor?: { start: string; end: string };
 }
@@ -88,9 +92,15 @@ function str(v: unknown): string | undefined {
     return typeof v === 'string' && v ? v : undefined;
 }
 
+/** 有偏移的区间（按偏移切分用） */
+type OffsetSpan = EntitySpan & { start: number; end: number };
+const hasOffsets = (s: EntitySpan): s is OffsetSpan => s.start !== undefined && s.end !== undefined;
+
 /**
- * entity.json（整份对象，或直接给 entities 数组）→ EntitySpan[]，按起点排序。
- * 字段缺失或偏移不合法的条目丢弃，不抛错。
+ * entity.json（整份对象，或直接给 entities 数组）→ EntitySpan[]，按起点排序（无偏移的排在最后，保持文件内顺序）。
+ * 定位二选一即收：`anchor` 起止格位都有（权威），或 `span` 偏移合法（缓存，无 anchor 时按偏移）。
+ * 两者都没有、或只有不合法偏移的条目丢弃，不抛错。`span` 缺失不再丢整条（规范里它是可选缓存）；
+ * 有 anchor 而 span 不合法时，丢偏移、留条目。
  */
 export function adaptEntityJson(raw: unknown): EntitySpan[] {
     const list: unknown[] = Array.isArray(raw)
@@ -106,27 +116,32 @@ export function adaptEntityJson(raw: unknown): EntitySpan[] {
         const target = (e.target ?? {}) as Record<string, unknown>;
         const start = num(span.start_offset) ?? num(e.start_offset);
         const end = num(span.end_offset) ?? num(e.end_offset);
-        if (start === undefined || end === undefined || start < 0 || end <= start) return;
+        const offsetsOk = start !== undefined && end !== undefined && start >= 0 && end > start;
+        const anchorRaw = (e.anchor ?? {}) as Record<string, unknown>;
+        const aStart = str(anchorRaw.start);
+        const aEnd = str(anchorRaw.end);
+        const hasAnchor = !!(aStart && aEnd);
+        if (!offsetsOk && !hasAnchor) return;
         const status = str(target.status);
         const targetId = status === undefined || status === 'matched'
             ? (bookIndexUriToId(str(target.entity_id)) ?? bookIndexUriToId(str(target.href)) ?? undefined)
             : undefined;
-        const anchorRaw = (e.anchor ?? {}) as Record<string, unknown>;
-        const aStart = str(anchorRaw.start);
-        const aEnd = str(anchorRaw.end);
         out.push({
             ...(aStart && aEnd ? { anchor: { start: aStart, end: aEnd } } : {}),
             key: str(e.id) ?? `e${i}`,
             kind: toKind(e.type),
-            start,
-            end,
+            ...(offsetsOk ? { start, end } : {}),
             text: str(e.text),
             targetId,
             canonicalName: str(target.canonical_name),
             confidence: num(e.confidence),
         });
     });
-    return out.sort((a, b) => a.start - b.start || b.end - a.end);
+    // 有偏移的按起点排（同起点长的在前）；无偏移的（只有 anchor）排后面，数组排序稳定，保持文件内顺序
+    return out.sort((a, b) => {
+        if (!hasOffsets(a) || !hasOffsets(b)) return Number(!hasOffsets(a)) - Number(!hasOffsets(b));
+        return a.start - b.start || b.end - a.end;
+    });
 }
 
 /**
@@ -152,6 +167,7 @@ export function remapPlainOffsets(text: string, spans: readonly EntitySpan[], pl
     }
     const out: EntitySpan[] = [];
     for (const s of spans) {
+        if (!hasOffsets(s)) continue;
         const a = s.start - plainBase;
         const b = s.end - plainBase;
         if (a < 0 || b > pos.length || b <= a) continue;
@@ -163,14 +179,14 @@ export function remapPlainOffsets(text: string, spans: readonly EntitySpan[], pl
 }
 
 /** 区间内（去掉不计数字符后）是否与标注原文一致 */
-function matchesText(text: string, s: EntitySpan): boolean {
+function matchesText(text: string, s: OffsetSpan): boolean {
     if (!s.text) return true;
     const got = Array.from(text.slice(s.start, s.end)).filter(isCountedChar).join('');
     return got === s.text;
 }
 
 /** 偏移对不上原文时，在附近找最近的一处原文；找不到返回 null */
-function relocate(text: string, s: EntitySpan, window: number): EntitySpan | null {
+function relocate(text: string, s: OffsetSpan, window: number): OffsetSpan | null {
     if (!s.text) return null;
     let best = -1;
     let from = Math.max(0, s.start - window);
@@ -196,9 +212,10 @@ export type EntitySegment =
  * - 区间重叠时保留先开始（同起点取更长）的，后面与之重叠的丢弃。
  */
 export function segmentEntities(text: string, spans: readonly EntitySpan[], relocateWindow = 16): EntitySegment[] {
-    const fixed: EntitySpan[] = [];
+    const fixed: OffsetSpan[] = [];
     for (const raw of spans) {
-        let s: EntitySpan | null = { ...raw, start: Math.max(0, raw.start), end: Math.min(text.length, raw.end) };
+        if (!hasOffsets(raw)) continue; // 只有 anchor 的条目无法按偏移切正文
+        let s: OffsetSpan | null = { ...raw, start: Math.max(0, raw.start), end: Math.min(text.length, raw.end) };
         if (s.end <= s.start || !matchesText(text, s)) s = relocate(text, raw, relocateWindow);
         if (s) fixed.push(s);
     }
