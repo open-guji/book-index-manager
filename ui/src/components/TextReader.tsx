@@ -110,6 +110,8 @@ function ReaderSkeleton({ title, label, className, style }: { title?: React.Reac
 
 /** 整理本目录在 JuanReading 里要的形状（类型、质量、考证对象），由 TextIndex 换出来 */
 const HTTP_URL = /^https?:\/\//i;
+/** 对读数据没带标点时的缺省：模块常量，别每次渲染 new 一个（否则 punctMap／reflowPages 每次都重算） */
+const NO_PUNCTUATIONS: never[] = [];
 /** 上游说明：只认 http(s) 链接（数据来自文本仓，仍不把任意 scheme 放进 href）；名字、授权、说明全空则不显示 */
 function safeUpstream(u: TextUpstream | undefined): TextUpstream | null {
     if (!u || typeof u !== 'object') return null;
@@ -476,8 +478,14 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     // 第二次读到旧页号会翻错方向（3→4 后紧跟一次「‹」得到 2，而不是 3）
     const activePageRef = useRef(activePage);
     activePageRef.current = activePage;
+    // 主动翻页后一小段时间内，正文滚动联动报上来的「视口所在页」不改页号。锁必须在点击处理函数里就上好：
+    // 渲染这次点击之前，React 会先冲刷上一次渲染还没来得及跑的 effect（机器慢时会堆积），其中的页追踪
+    // 此时正文还没滚到新页，会报旧页、把刚设的新页号覆盖掉（页号停在旧页、正文却已滚走）。
+    // 正文那边的 800ms 锁要等本次渲染后的滚动 effect 才设，赶不上这一拍。
+    const navLockUntil = useRef(0);
     const goToPage = useCallback((next: number) => {
         if (activePageRef.current === next || !pageInfos.has(next)) return;
+        navLockUntil.current = Date.now() + 1000;
         activePageRef.current = next;
         setActivePage(next);
         if (pageInfos.get(next)?.columns.some(c => c.chars.length > 0)) {
@@ -817,7 +825,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                     <GujiTextViewer
                         pageData={warpData}
                         pages={(warpData as any).pages}
-                        punctuations={(warpData as any).punctuations || []}
+                        punctuations={(warpData as any).punctuations || NO_PUNCTUATIONS}
                         selectedCharIds={selectedCharIds}
                         hoveredCharId={hoveredCharId}
                         onSelectionChange={handleSelectionUpdate}
@@ -837,7 +845,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                         entities={drawnEntities}
                         entityTransport={transport}
                         onEntityNavigate={onEntityNavigate}
-                        onVisiblePageChange={(p) => setActivePage(p)}
+                        onVisiblePageChange={(p) => { if (Date.now() >= navLockUntil.current) setActivePage(p); }}
                         convert={convert}
                         scrollToPage={scrollTarget}
                         pageBreaks={prefs.pageBreaks}

@@ -224,6 +224,23 @@ describe('TextReader 对读 · 宿主重取数据', () => {
         expect(wp()).toBe('4');
     });
 
+    it('主动翻页后，正文自己的 800ms 锁过期了、滚动联动再报一次旧页：不把刚翻到的页号覆盖掉', async () => {
+        // 偶发超时的根因：渲染点击之前 React 会先冲刷上一次渲染堆积的 effect，页追踪那一拍还在报旧页。
+        // 锁要在点击处理函数里就上（TextReader.goToPage），不能靠渲染后的滚动 effect。
+        // 这里把「滚动联动晚到一拍」做成必现：等过正文的 800ms 锁，再触发一次滚动。jsdom 里 scrollIntoView 不真滚，
+        // 伪造的版面里参考线上一直是第一页，所以只要页追踪没被挡住，就会把页号报回 3。
+        const images = [1, 2, 3, 4, 5, 6].map(n => ({ pageNo: n, seq: String(n).padStart(4, '0'), url: `u${n}`, hiresUrl: `h${n}`, width: 1000, height: 1400 }));
+        const make = () => async () => ({ page_id: '', title: '', image_size: [0, 0], total_warped_w: 0, columns: [], pages: adaptCharCord(char, cord), punctuations: [] });
+        const view = render(readerEl(make(), images));
+        await waitFor(() => expect(view.container.querySelector('[data-page-section]')).not.toBeNull(), { timeout: 5000 });
+        fireEvent.click(screen.getByTestId('facsimile-next'));
+        await waitFor(() => expect(wp()).toBe('4'), { timeout: 5000 });
+        await new Promise(r => setTimeout(r, 900));
+        fireEvent.scroll(window);
+        await new Promise(r => setTimeout(r, 100)); // 滚动处理在 rAF 里
+        expect(wp()).toBe('4');
+    });
+
     it('换成另一部书（版本、章标识相同、也有当前页）：回到新书的起始页，不留在旧页', async () => {
         const images = [1, 2, 3, 4, 5, 6].map(n => ({ pageNo: n, seq: String(n).padStart(4, '0'), url: `u${n}`, hiresUrl: `h${n}`, width: 1000, height: 1400 }));
         const make = () => async () => ({ page_id: '', title: '', image_size: [0, 0], total_warped_w: 0, columns: [], pages: adaptCharCord(char, cord), punctuations: [] });

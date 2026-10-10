@@ -389,6 +389,9 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     const update = () => {
       raf = 0;
       if (Date.now() < pageLockUntil.current) return;
+      // 没有布局（容器被隐藏、display:none、jsdom）时所有页锚点的位置都是 0，二分会选中最后一页，
+      // 把读者甩到末页；首尾两页位置相同＝没有可用的位置信息，这一帧不判页
+      if (sections.length > 1 && sections[0].getBoundingClientRect().top === sections[sections.length - 1].getBoundingClientRect().top) return;
       const targetY = refYRef.current === null ? 120 : refYRef.current * window.innerHeight;
       // 最后一个顶边不低于参考线的页（页是自上而下排的）
       let lo = 0, hi = sections.length - 1;
