@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { ReadingMode } from '../../core/paragraphize';
 import type { ReaderWritingMode } from './types';
+import type { ScriptMode } from '../../i18n/script-scope';
 
 export type ReaderFontFamily = 'song' | 'kai' | 'system';
 
@@ -20,7 +21,7 @@ export type QuoteStyle = 'modern' | 'classic' | 'original';
 /** 书名标法：波浪线／书名号 */
 export type BookTitleStyle = 'wavy' | 'bracket';
 /** 字形：原字（不转换，保留异体字）／通行繁体（异体归一）／简体；null = 跟站点繁简 */
-export type ReaderScriptMode = 'orig' | 'hant' | 'hans';
+export type ReaderScriptMode = ScriptMode;
 
 /** 专名号是否画（lite、full 都画；lite 的精简过滤由后续道接线）；null＝没选过，调用方自己按本章实体数决定 */
 export function properNamesOn(mode: ProperNameMode | null | undefined): boolean {
