@@ -143,7 +143,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   const plainBooks = bookTitleStyle === 'bracket';
 
   // 1. 横排自然段构建 (支持多页流式段落，遵循 guji-markdown reflow 与 guji-punct break 规范)
-  const reflowPages = useMemo(() => {
+  const reflow = useMemo(() => {
     // 若传入了全卷多页数据，则组织为多页流；否则使用单页数据
     const allPagesData: { page: number; label?: string; columns: (typeof pageData.columns) }[] =
       pages && pages.length > 0
@@ -151,7 +151,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         : [{ page: parseInt(pageData.page_id.split(':')[1] || '1', 10), columns: pageData.columns }];
 
     // 无字页（只有书影的书脊签、封面签条等）不进正文
-    return allPagesData.filter((pData) => pData.columns.some((c) => c.chars.length > 0)).map((pData) => {
+    const built: ReflowPage[] = allPagesData.filter((pData) => pData.columns.some((c) => c.chars.length > 0)).map((pData) => {
       const sortedCols = [...pData.columns].sort((a, b) => a.col - b.col);
       const paragraphs: ReflowParagraph[] = [];
       let currentChars: ReflowChar[] = [];
@@ -193,7 +193,9 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         }
       }
 
-      if (currentChars.length > 0) {
+      // 页尾剩下的字没有 break 收尾：句子可能跨页接着写（pageBreaks 关时与下一页首段合并，overview#527）
+      const endsOpen = currentChars.length > 0;
+      if (endsOpen) {
         paragraphs.push({
           id: `para-p${pData.page}-${paragraphs.length}`,
           chars: currentChars,
@@ -203,11 +205,40 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       return {
         page: pData.page,
         paragraphs,
+        endsOpen,
         ...(pData.label ? { label: pData.label } : {}),
         ...(pendingBlank > 0 ? { trailingBlank: pendingBlank } : {}),
       };
     });
-  }, [pages, pageData, punctMap]);
+    // 分叶分割线关＝连续阅读：页尾无 break 收尾的末段与下一页首段并成一段，句子跨页不断（overview#527）。
+    // 字 id 不变；并入上一页 <section> 渲染的字记在 mergedOwner（选中集合要按渲染位置分桶），
+    // 下一页的页锚点改指它的首字（leadFirstId）。下一页首字带抬头／行首空格／前置空列时是原件的另起一段，不并。
+    const mergedOwner = new Map<string, number>();
+    if (!pageBreaks) {
+      let open: { para: ReflowParagraph; owner: number } | null = null;
+      for (const pg of built) {
+        const lead = pg.paragraphs[0];
+        const s0 = lead?.chars[0]?.start;
+        const startsParagraph = !!s0 && !!(s0.raised || s0.leadBlank || s0.blankBefore);
+        const wouldOrphanBlank = pg.paragraphs.length === 1 && !!pg.trailingBlank;
+        if (open && lead && !startsParagraph && !wouldOrphanBlank) {
+          for (const c of lead.chars) mergedOwner.set(c.charData.id, open.owner);
+          open.para.chars = open.para.chars.concat(lead.chars);
+          pg.leadFirstId = lead.chars[0].charData.id;
+          pg.paragraphs = pg.paragraphs.slice(1);
+        }
+        if (pg.endsOpen && !pg.trailingBlank) {
+          const last = pg.paragraphs[pg.paragraphs.length - 1];
+          if (last) open = { para: last, owner: pg.page };
+          // 整页都并走了（pg 没有段）：敞口仍在上一页那一段上，open 不变
+        } else {
+          open = null;
+        }
+      }
+    }
+    return { pages: built, mergedOwner };
+  }, [pages, pageData, punctMap, pageBreaks]);
+  const reflowPages = reflow.pages;
 
   // 全卷字序：字 id → 序号（对位实体用）
   const charOrder = useMemo(() => {
@@ -251,7 +282,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   }), []);
 
   // 每页只收到落在本页的选中字；没变的页拿到同一个 Set，memo 才挡得住
-  const selectedByPage = useSelectedByPage(selectedCharIds);
+  const selectedByPage = useSelectedByPage(selectedCharIds, reflow.mergedOwner);
 
   // 悬停（含从书影那边反过来悬停）：直接改那一个字的 class，不经 React 重渲染
   const hoverEl = useRef<HTMLElement | null>(null);
@@ -277,14 +308,19 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       if (!targetNode || !container.contains(targetNode)) return;
 
       const spans = container.querySelectorAll<HTMLElement>('span[data-char-id]');
+      // 探针点用字的文本节点起点 (text,0)，不能用 (span,0)：浏览器拖选的端点落在文本节点里，
+      // (span,0) 在树序上早于 (text,0)，会让选区起点所在的首字被判成「在选区之前」而漏掉（overview#528）。
+      const probe = (el: HTMLElement): Node => el.firstChild ?? el;
       // 第一个起点不早于选区起点的字
       let lo = 0, hi = spans.length;
-      while (lo < hi) { const m = (lo + hi) >> 1; if (range.comparePoint(spans[m], 0) < 0) lo = m + 1; else hi = m; }
+      while (lo < hi) { const m = (lo + hi) >> 1; if (range.comparePoint(probe(spans[m]), 0) < 0) lo = m + 1; else hi = m; }
       const first = lo;
       // 最后一个起点不晚于选区终点的字
       hi = spans.length;
-      while (lo < hi) { const m = (lo + hi) >> 1; if (range.comparePoint(spans[m], 0) <= 0) lo = m + 1; else hi = m; }
-      const last = lo - 1;
+      while (lo < hi) { const m = (lo + hi) >> 1; if (range.comparePoint(probe(spans[m]), 0) <= 0) lo = m + 1; else hi = m; }
+      let last = lo - 1;
+      // 终点恰在某字 (text,0)＝该字一个笔画都没选上，不算
+      if (last >= first && range.endOffset === 0 && range.endContainer === probe(spans[last])) last--;
       if (last < first) return;
       const selected: string[] = [];
       for (let i = first; i <= last; i++) selected.push(spans[i].getAttribute('data-char-id')!);
@@ -309,11 +345,20 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     }
   }, [selectedCharIds]);
 
+  /** 页的位置锚点：一般是该页的 <section>；首段并入了上一页（分叶线关）时是该页的第一个字 */
+  const pageAnchor = (page: number): HTMLElement | null => {
+    const c = containerRef.current;
+    if (!c) return null;
+    const lead = reflowPages.find((pg) => pg.page === page)?.leadFirstId;
+    if (lead) return c.querySelector<HTMLElement>(`span[data-char-id="${lead}"]`);
+    return c.querySelector<HTMLElement>(`[data-page-section="${page}"]`);
+  };
+
   // 书影翻页 → 正文滚到该页开头。锁住滚动联动，免得滚动途中被上一页抢回书影页
   const scrollNonce = scrollToPage?.nonce;
   useEffect(() => {
     if (!scrollToPage) return;
-    const el = containerRef.current?.querySelector<HTMLElement>(`[data-page-section="${scrollToPage.page}"]`);
+    const el = pageAnchor(scrollToPage.page);
     if (!el) return;
     pageLockUntil.current = Date.now() + 800;
     el.scrollIntoView({ behavior: 'auto', block: 'start' });
@@ -333,7 +378,12 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   //    rAF 节流＋对已排好序的页做二分，每帧只读十来个页的位置
   useEffect(() => {
     if (!hasVisibleCb) return;
-    const sections = Array.from(containerRef.current?.querySelectorAll<HTMLElement>('[data-page-section]') ?? []);
+    const sections: HTMLElement[] = [];
+    const sectionPages: number[] = [];
+    for (const pg of reflowPages) {
+      const a = pageAnchor(pg.page);
+      if (a) { sections.push(a); sectionPages.push(pg.page); }
+    }
     if (sections.length === 0) return;
     let raf = 0;
     const update = () => {
@@ -346,8 +396,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         const m = (lo + hi + 1) >> 1;
         if (sections[m].getBoundingClientRect().top <= targetY) lo = m; else hi = m - 1;
       }
-      const pNum = parseInt(sections[lo].getAttribute('data-page-section') || '', 10);
-      if (!isNaN(pNum)) latest.current.onVisiblePageChange?.(pNum);
+      latest.current.onVisiblePageChange?.(sectionPages[lo]);
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
     updatePageRef.current = () => { if (!raf) raf = requestAnimationFrame(update); };
@@ -405,12 +454,12 @@ interface PageHandlers {
 }
 
 /** 选中字按页分桶；内容没变的页复用上次的 Set（身份不变，memo 的页就不重渲染） */
-function useSelectedByPage(selected: ReadonlySet<string>): Map<number, ReadonlySet<string>> {
+function useSelectedByPage(selected: ReadonlySet<string>, mergedOwner: ReadonlyMap<string, number>): Map<number, ReadonlySet<string>> {
   const prev = useRef<Map<number, ReadonlySet<string>>>(new Map());
   return useMemo(() => {
     const buckets = new Map<number, Set<string>>();
     selected.forEach((id) => {
-      const page = parseInt(id.split(':')[0], 10);
+      const page = mergedOwner.get(id) ?? parseInt(id.split(':')[0], 10); // 并进上一页段里的字按渲染位置分桶
       let set = buckets.get(page);
       if (!set) buckets.set(page, (set = new Set()));
       set.add(id);
@@ -423,7 +472,7 @@ function useSelectedByPage(selected: ReadonlySet<string>): Map<number, ReadonlyS
     });
     prev.current = next;
     return next;
-  }, [selected]);
+  }, [selected, mergedOwner]);
 }
 
 /** 列的版式字段，挂在本列首字上（spec/02 §4.3） */
@@ -437,6 +486,10 @@ type ReflowPage = {
   paragraphs: ReflowParagraph[];
   /** 页尾的空列数 */
   trailingBlank?: number;
+  /** 页尾剩下的字没有 break 收尾（句子可能跨页） */
+  endsOpen?: boolean;
+  /** 本页首段已并入上一页时，本页第一个字的 id（页锚点用它，不用 <section>） */
+  leadFirstId?: string;
 };
 
 /** 空列：一格宽的空位（不占文本，复制不出字符） */
