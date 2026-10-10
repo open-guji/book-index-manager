@@ -23,9 +23,10 @@ const KEY = 'bim-reader-prefs';
 
 describe('scriptConverter', () => {
     const site = getSimplifiedConverter();
-    it('没选过：照站点（简体站点走站点转换，繁体站点不转）', () => {
+    it('没选过：照站点（简体站点走站点转换，繁体站点按通行繁体＝异体字归一）', () => {
         expect(scriptConverter(null, 'zh-Hans', site)).toBe(site);
-        expect(scriptConverter(undefined, 'zh-Hant', null)).toBeNull();
+        // 2026-10-10 起默认「通行」（overview#540）：此前繁体站点没选过时不转，界面却显示「繁」被按下，二者不一致
+        expect(scriptConverter(undefined, 'zh-Hant', null)).toBe(normalizeVariants);
     });
     it('orig：一律不转', () => {
         expect(scriptConverter('orig', 'zh-Hans', site)).toBeNull();
@@ -50,7 +51,7 @@ const out = () => screen.getByTestId('out').textContent;
 
 describe('ScriptModeScope：同一段文本三态对照', () => {
     const cases: Array<[ScriptMode | null, 'zh-Hant' | 'zh-Hans', string]> = [
-        [null, 'zh-Hant', SAMPLE], // 默认偏好＋繁体站点：与改动前一致（原样）
+        [null, 'zh-Hant', HANT], // 默认偏好＋繁体站点：通行繁体（2026-10-10 起，overview#540；此前是原样）
         [null, 'zh-Hans', HANS], // 默认偏好＋简体站点：与改动前一致（简体）
         ['orig', 'zh-Hant', SAMPLE], // 原字：所见即底本，异体字保留
         ['orig', 'zh-Hans', SAMPLE], // 原字：简体站点上也不转（站点 locale 只管界面文字）
@@ -122,9 +123,10 @@ describe('TextReader：偏好 scriptMode 接到正文渲染', () => {
     };
     beforeEach(() => { localStorage.clear(); });
 
-    it('默认偏好：繁体站点原样、简体站点转简体（与改动前一致）', async () => {
+    it('默认偏好：繁体站点通行繁体（异体字归一）、简体站点转简体；想看原字要选「原」', async () => {
         const hant = mount('zh-Hant');
-        await waitFor(() => expect(body(hant.container)).toContain('其㫖縂在寳'));
+        await waitFor(() => expect(body(hant.container)).toContain(HANT));
+        expect(body(hant.container)).not.toContain('㫖');
         hant.unmount();
         const hans = mount('zh-Hans');
         await waitFor(() => expect(body(hans.container)).toContain(HANS));
