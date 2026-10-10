@@ -539,7 +539,6 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 .guji-text-char.is-guess { color: ${bim('meta-fg')}; text-decoration: underline dotted; text-underline-offset: 0.2em; } /* 残字：灰字加点线 */
 .guji-text-char.is-zi { border: 1px solid color-mix(in srgb, currentColor 40%, transparent); border-radius: 2px; padding: 0 0.12em; margin: 0 0.05em; } /* 组字：细框，同 .bim-zi */
 .guji-text-char.is-raised { display: inline-block; transform: translateY(-0.2em); } /* 抬头：本列首字高出一格 */
-.guji-text-lead-blank { display: inline-block; height: 1px; } /* 行首空格：n 个字宽的空位（宽度在 style） */
 .guji-text-blank-col { display: inline-block; width: 1em; height: 1px; } /* 空列：一格宽的空位 */
 .bim-rd-badge-warp {
   display: inline-flex;

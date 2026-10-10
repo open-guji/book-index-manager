@@ -651,9 +651,9 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     const body = md ? md.replace(/^##\s+[^\n]+\n+/, '') : null;
     const originalVersion = isOriginalVersion(version);
     const sourceNameShown = originalVersion ? t('reader.originalSource') : version.source_name ? convert(version.source_name) : undefined;
-    // 本站原件版本：来源与版权放在章节名同一行后面（窄屏折到标题下的来源行）；其它版本照旧只写来源名
+    // 本站原件版本：顶栏不写来源与版权（正文下方的出处页脚已经写了）；其它版本照旧只写来源名
     const subtitleNode = (typeof subtitle === 'string' ? convert(subtitle) : subtitle)
-        ?? (originalVersion ? [sourceNameShown, version.license].filter(Boolean).join(' · ') : (sourceNameShown ?? convert(textVersionLabel(version))));
+        ?? (originalVersion ? undefined : (sourceNameShown ?? convert(textVersionLabel(version))));
 
     return (
         <ReaderShell

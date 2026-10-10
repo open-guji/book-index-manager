@@ -1,7 +1,7 @@
 /**
  * overview#513（#501 第 8、13 条）：
  *   - 对读章没有 .txt：getChapter 立即 null、对读数据（char／cord）还在路上时显示加载态，不闪「无法加载章节内容」；
- *   - 顶部标题行 书名·版本；原件版本的来源行界面层映射为「本站独立整理 · CC0 1.0」。
+ *   - 顶部标题行 书名·版本；原件版本顶栏不写来源与版权（正文下方出处页脚写「本站独立整理 CC0 1.0」）。
  */
 import React from 'react';
 import { describe, expect, it, afterEach } from 'vitest';
@@ -40,13 +40,14 @@ describe('对读章加载竞态', () => {
 describe('标题行与来源行', () => {
     const orig = { edition_label: '武英殿刻本', source: 'original', is_original: true, source_name: '开源古籍CV整理', license: 'CC0 1.0' };
 
-    it('原件版本：标题行为 书名·版本，来源映射为「本站独立整理 · CC0 1.0」，不出现 CV 整理字样', async () => {
+    it('原件版本：标题行为 书名·版本，顶栏不带来源（来源只在出处页脚，映射为「本站独立整理 CC0 1.0」），不出现 CV 整理字样', async () => {
         const t = fakeTextTransport(ID, { md: '正文', version: orig });
         const { container } = render(<TextReader id={ID} transport={t} title="钦定四库全书总目" />);
         await screen.findByText('正文');
         const ttl = container.querySelector('.bim-rd-ttl')!;
         expect(ttl.querySelector('b')!.textContent).toBe('钦定四库全书总目·武英殿刻本');
-        expect(ttl.querySelector('.bim-rd-ttl-src')!.textContent).toMatch(/本站(独立整理|獨立整理) · CC0 1\.0/);
+        expect(ttl.querySelector('.bim-rd-ttl-src')).toBeNull();
+        expect(ttl.textContent).not.toContain('CC0');
         expect(container.textContent).not.toContain('开源古籍CV整理');
         const meta = container.querySelector('.bim-rd-meta-src')!;
         expect(meta.textContent).toMatch(/本站(独立整理|獨立整理)CC0 1\.0/);

@@ -201,8 +201,14 @@ describe('工具条：只用文字和图标，状态用 aria-pressed', () => {
         fireEvent.click(pn.getByRole('button', { name: '完整' }));
         expect(pn.getByRole('button', { name: '完整' })).toHaveAttribute('aria-pressed', 'true');
         expect(pn.getByRole('button', { name: '不顯示' })).toHaveAttribute('aria-pressed', 'false');
-        // 繁简切换：工具条一个；设置侧栏「文字」组里换成字形三态（原字／通行繁體／簡體）
-        expect(screen.getAllByRole('button', { name: '切换为简体' })).toHaveLength(1);
+        // 字形三态：工具条一组快捷（原｜繁｜简），设置侧栏「文字」组里一组完整的（原字／通行繁體／簡體），同一个偏好
+        const quick = within(screen.getByRole('group', { name: '字形' }));
+        expect(quick.getByRole('button', { name: '原字' })).toHaveAttribute('aria-pressed', 'false');
+        expect(quick.getByRole('button', { name: '通行繁體' })).toHaveAttribute('aria-pressed', 'true');
+        fireEvent.click(quick.getByRole('button', { name: '原字' }));
+        expect(quick.getByRole('button', { name: '原字' })).toHaveAttribute('aria-pressed', 'true');
+        expect(within(screen.getByRole('group', { name: '繁簡' })).getByRole('button', { name: '原字' })).toHaveAttribute('aria-pressed', 'true');
+        fireEvent.click(quick.getByRole('button', { name: '通行繁體' }));
         expect(within(screen.getByRole('group', { name: '繁簡' })).getByRole('button', { name: '通行繁體' })).toHaveAttribute('aria-pressed', 'true');
     });
 

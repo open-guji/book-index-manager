@@ -47,7 +47,8 @@ describe.skipIf(!DIR)('原件真实数据抽样', () => {
         // 只算进了正文的页（有字）；blank 列在无字页上不进正文
         const textPages = pages.filter(p => p.columns.some(c => c.chars.length > 0));
         const inText = (f: (c: (typeof pages)[0]['columns'][0]) => boolean) => textPages.reduce((n, p) => n + p.columns.filter(f).length, 0);
-        expect(container.querySelectorAll('.guji-text-lead-blank')).toHaveLength(inText(c => !!c.lead_blank && c.chars.length > 0));
+        // lead_blank 是原件列首空格，重排阅读里不留空位（换行处不能出现两字空白）
+        expect(container.querySelectorAll('.guji-text-lead-blank')).toHaveLength(0);
         expect(container.querySelectorAll('.is-raised')).toHaveLength(inText(c => !!c.raised && c.chars.length > 0));
         expect(container.querySelectorAll('.guji-text-blank-col')).toHaveLength(inText(c => c.kind === 'blank'));
         expect(container.querySelectorAll('.is-lacuna')).toHaveLength(textPages.reduce((n, p) => n + p.columns.reduce((m, c) => m + c.chars.filter(x => x.lacuna).length, 0), 0));
