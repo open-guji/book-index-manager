@@ -27,7 +27,7 @@ import { NoteText } from './common/NoteText';
 import { ReaderShell } from './Reader/ReaderShell';
 import type { PanelState } from './Reader/ReaderShell';
 import { ReaderMdText, canParagraphize } from './Reader/ReaderText';
-import { useReaderPrefs } from './Reader/prefs';
+import { properNamesOn, useReaderPrefs } from './Reader/prefs';
 import { useChapterImages } from './Reader/useChapterImages';
 import type { ReaderImageOverlay, ReaderImageResolver, ReaderResolveContext, ReaderReportContext, ReaderTocItem, ReaderVersion } from './Reader/types';
 import type { JuanCacheEntry, JuanView, WorkLabelCache } from './CollatedEdition';
@@ -365,9 +365,10 @@ export const TextReader: React.FC<TextReaderProps> = ({
     const images = useChapterImages(resolveImages, effectiveChapter ?? null, resolveCtx);
     const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData, warpDataProp, effectiveChapter ?? null, resolveCtx);
     const entitySpans = useChapterEntities(resolveEntities, effectiveChapter ?? null, resolveCtx);
-    // 专名线：用户没选过时，本章有专名层数据就默认开（没有就不画空线）；选过就照用户的
-    const properNamesOn = storedPrefs.properNames ?? entitySpans.length > 0;
-    const prefs = useMemo(() => ({ ...storedPrefs, properNames: properNamesOn }), [storedPrefs, properNamesOn]);
+    // 专名号：用户没选过（properNameMode==null）时，本章有专名层数据就默认 full（没有就 off，不画空线）；选过就照用户的
+    const properNameMode = storedPrefs.properNameMode ?? (entitySpans.length > 0 ? 'full' : 'off');
+    const properNamesDrawn = properNamesOn(properNameMode);
+    const prefs = useMemo(() => ({ ...storedPrefs, properNameMode }), [storedPrefs, properNameMode]);
     const [selectedCharIds, setSelectedCharIds] = useState<Set<string>>(new Set());
     const [hoveredCharId, setHoveredCharId] = useState<string | null>(null);
     const [showPunctuation, setShowPunctuation] = useState<boolean>(true);
@@ -779,7 +780,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                         onCharHover={setHoveredCharId}
                         mode="horizontal"
                         showPunctuation={showPunctuation}
-                        entities={prefs.properNames ? entitySpans : undefined}
+                        entities={properNamesDrawn ? entitySpans : undefined}
                         entityTransport={transport}
                         onEntityNavigate={onEntityNavigate}
                         onVisiblePageChange={(p) => setActivePage(p)}
@@ -840,7 +841,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
                             mode={prefs.readingMode}
                             tables={tables}
                             gujiMarkdown={hasGujiMarkdownV02(index)}
-                            properNames={prefs.properNames}
+                            properNames={properNamesDrawn}
                         />
                     </article>
                 </>

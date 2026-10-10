@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { TextReader } from '../../src/components/TextReader';
 import { adaptCharCord } from '../../src/core/guji-char-cord';
 import { DEFAULT_READER_PREFS, loadReaderPrefs } from '../../src/components/Reader/prefs';
@@ -53,46 +53,54 @@ async function mount(withEntities: boolean) {
 }
 
 // 专名线开关在右侧「阅读设置」侧栏里（overview#463），收起时不渲染：先展开再取
-const btn = () => {
-    if (!screen.queryByRole('button', { name: /專名線|专名线/ })) {
+const grp = () => {
+    if (!screen.queryByRole('group', { name: /專名線|专名线/ })) {
         fireEvent.click(screen.getAllByRole('button', { name: /閱讀設置|阅读设置/ })[0]);
     }
-    return screen.getByRole('button', { name: /專名線|专名线/ });
+    return within(screen.getByRole('group', { name: /專名線|专名线/ }));
 };
+const full = () => grp().getByRole('button', { name: '完整' });
+const off = () => grp().getByRole('button', { name: /不顯示|不显示/ });
 
 describe('专名线默认值', () => {
     beforeEach(() => { localStorage.clear(); });
 
     it('prefs：默认 null（没选过）；存储里的 true／false 都照用', () => {
-        expect(DEFAULT_READER_PREFS.properNames).toBeNull();
-        expect(loadReaderPrefs().properNames).toBeNull();
-        localStorage.setItem('bim-reader-prefs', JSON.stringify({ properNames: false }));
-        expect(loadReaderPrefs().properNames).toBe(false);
-        localStorage.setItem('bim-reader-prefs', JSON.stringify({ properNames: true }));
-        expect(loadReaderPrefs().properNames).toBe(true);
+        expect(DEFAULT_READER_PREFS.properNameMode).toBeNull();
+        expect(loadReaderPrefs().properNameMode).toBeNull();
+        localStorage.setItem('bim-reader-prefs', JSON.stringify({ properNameMode: 'off' }));
+        expect(loadReaderPrefs().properNameMode).toBe('off');
+        localStorage.setItem('bim-reader-prefs', JSON.stringify({ properNameMode: 'lite' }));
+        expect(loadReaderPrefs().properNameMode).toBe('lite');
+        localStorage.setItem('bim-reader-prefs', JSON.stringify({ properNameMode: 'full' }));
+        expect(loadReaderPrefs().properNameMode).toBe('full');
     });
 
     it('本章有专名层数据：没选过时一进来就画专名线、开关是按下状态', async () => {
         const { container } = await mount(true);
         await waitFor(() => expect(container.querySelectorAll('.bim-et-work').length).toBeGreaterThan(0));
-        expect(btn().getAttribute('aria-pressed')).toBe('true');
+        expect(full().getAttribute('aria-pressed')).toBe('true');
     });
 
     it('用户关掉后记住：存 false，再进来仍是关', async () => {
         const first = await mount(true);
         await waitFor(() => expect(first.container.querySelectorAll('.bim-et-work').length).toBeGreaterThan(0));
-        fireEvent.click(btn());
+        fireEvent.click(off());
         await waitFor(() => expect(first.container.querySelectorAll('.bim-et').length).toBe(0));
-        expect(JSON.parse(localStorage.getItem('bim-reader-prefs') ?? '{}').properNames).toBe(false);
+        const stored = JSON.parse(localStorage.getItem('bim-reader-prefs') ?? '{}');
+        expect(stored.properNameMode).toBe('off');
+        expect('properNames' in stored).toBe(false); // 写回只写新键
         first.unmount();
         const second = await mount(true);
-        await waitFor(() => expect(btn().getAttribute('aria-pressed')).toBe('false'));
+        await waitFor(() => expect(off().getAttribute('aria-pressed')).toBe('true'));
         expect(second.container.querySelectorAll('.bim-et').length).toBe(0);
     });
 
     it('本章没有专名层数据：没选过时不画线、开关不按下', async () => {
         const { container } = await mount(false);
         expect(container.querySelectorAll('.bim-et').length).toBe(0);
-        expect(btn().getAttribute('aria-pressed')).toBe('false');
+        // 没选过：按本章实体数默认——没有专名层数据＝off 按下，full 不按下
+        expect(off().getAttribute('aria-pressed')).toBe('true');
+        expect(full().getAttribute('aria-pressed')).toBe('false');
     });
 });

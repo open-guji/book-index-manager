@@ -195,11 +195,15 @@ describe('工具条：只用文字和图标，状态用 aria-pressed', () => {
         expect(para).toHaveAttribute('aria-pressed', 'false');
         fireEvent.click(para);
         expect(para).toHaveAttribute('aria-pressed', 'true');
-        const pn = screen.getByRole('button', { name: '專名線' });
-        fireEvent.click(pn);
-        expect(pn).toHaveAttribute('aria-pressed', 'true');
-        // 繁简切换：工具条一个，设置侧栏「文字」组里一个
-        expect(screen.getAllByRole('button', { name: '切换为简体' })).toHaveLength(2);
+        // 专名号三档：没选过时三档都不按下；点「完整」后按下
+        const pn = within(screen.getByRole('group', { name: '專名線' }));
+        expect(pn.getByRole('button', { name: '完整' })).toHaveAttribute('aria-pressed', 'false');
+        fireEvent.click(pn.getByRole('button', { name: '完整' }));
+        expect(pn.getByRole('button', { name: '完整' })).toHaveAttribute('aria-pressed', 'true');
+        expect(pn.getByRole('button', { name: '不顯示' })).toHaveAttribute('aria-pressed', 'false');
+        // 繁简切换：工具条一个；设置侧栏「文字」组里换成字形三态（原字／通行繁體／簡體）
+        expect(screen.getAllByRole('button', { name: '切换为简体' })).toHaveLength(1);
+        expect(within(screen.getByRole('group', { name: '繁簡' })).getByRole('button', { name: '通行繁體' })).toHaveAttribute('aria-pressed', 'true');
     });
 
     it('工具条按钮一律是无框的 .bim-rd-t', () => {
@@ -527,7 +531,8 @@ describe('阅读设置侧栏（overview#463）', () => {
     it('旧 localStorage 值照常生效；没有 fontFamily 时是宋体，坏值回落默认', async () => {
         const { loadReaderPrefs } = await import('../../src/components/Reader/prefs');
         localStorage.setItem('bim-reader-prefs', JSON.stringify({ fontSize: 20, readingMode: 'paragraph', properNames: true, workLinks: false }));
-        expect(loadReaderPrefs()).toMatchObject({ fontSize: 20, readingMode: 'paragraph', properNames: true, workLinks: false, fontFamily: 'song' });
+        // 旧键 properNames:true 迁到 properNameMode:'full'
+        expect(loadReaderPrefs()).toMatchObject({ fontSize: 20, readingMode: 'paragraph', properNameMode: 'full', workLinks: false, fontFamily: 'song' });
         localStorage.setItem('bim-reader-prefs', JSON.stringify({ fontFamily: 'kai' }));
         expect(loadReaderPrefs().fontFamily).toBe('kai');
         localStorage.setItem('bim-reader-prefs', JSON.stringify({ fontFamily: 'comic-sans' }));
@@ -542,7 +547,7 @@ describe('阅读设置侧栏（overview#463）', () => {
         openSettings();
         const side = screen.getByRole('complementary', { name: '閱讀設置' });
         for (const g of ['文字', '標註', '版面']) expect(within(side).getByRole('heading', { name: g })).toBeTruthy();
-        expect(within(side).getByRole('button', { name: '專名線' })).toBeTruthy();
+        expect(within(side).getByRole('group', { name: '專名線' })).toBeTruthy();
         fireEvent.keyDown(side, { key: 'Escape' });
         expect(screen.queryByRole('complementary', { name: '閱讀設置' })).toBeNull();
     });

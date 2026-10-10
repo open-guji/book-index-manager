@@ -26,7 +26,7 @@ import { READER_BOTTOM_BAR_QUERY, READER_CSS, READER_WIDE_QUERY } from './reader
 import { ReaderToc } from './ReaderToc';
 import { ImagePanel } from './ImagePanel';
 import { FONT_SIZE_STEPS, DEFAULT_FONT_SIZE, READER_FONT_FAMILIES, readerFontStack, stepFontSize } from './prefs';
-import type { ReaderPrefs, ReaderFontFamily } from './prefs';
+import type { ReaderPrefs, ReaderFontFamily, ProperNameMode, QuoteStyle, BookTitleStyle, ReaderScriptMode } from './prefs';
 import { pickReaderVersion, readerVersionOptionLabel } from './versions';
 import type { ReaderImageOverlay, ReaderPageImage, ReaderReportContext, ReaderTocItem, ReaderVersion } from './types';
 
@@ -220,6 +220,54 @@ function LocaleSwitch() {
     );
 }
 
+/** 设置面板里的单选按钮组（只绑定偏好，不做行为）：一行标签＋若干 aria-pressed 按钮 */
+function SegRow<V extends string>({ label, value, options, onPick, title }: {
+    label: string;
+    value: V | null;
+    options: ReadonlyArray<{ key: V; label: string; title?: string }>;
+    onPick: (v: V) => void;
+    title?: string;
+}) {
+    return (
+        <div className="bim-rd-sp-row" role="group" aria-label={label} title={title}>
+            <span className="bim-rd-sp-l">{label}</span>
+            <span className="bim-rd-sp-fs">
+                {options.map(o => (
+                    <button key={o.key} type="button" className="bim-rd-t" aria-pressed={value === o.key} title={o.title}
+                        onClick={() => onPick(o.key)}>{o.label}</button>
+                ))}
+            </span>
+        </div>
+    );
+}
+
+/**
+ * 字形三态：原字／通行繁体／简体。选繁体／简体时照旧同步站点 locale；选原字只设偏好、不动站点 locale。
+ * scriptMode 为 null（没选过）或已选繁／简时，显示成跟随站点当前的繁／简。
+ */
+function ScriptRow({ prefs, onPrefsChange }: { prefs: ReaderPrefs; onPrefsChange: (patch: Partial<ReaderPrefs>) => void }) {
+    const ctx = useContext(LocaleContext);
+    const { t } = useI18n();
+    const siteScript: ReaderScriptMode = ctx?.locale === 'zh-Hans' ? 'hans' : 'hant';
+    const shown: ReaderScriptMode = prefs.scriptMode === 'orig' ? 'orig' : siteScript;
+    return (
+        <SegRow<ReaderScriptMode>
+            label={t('reader.script')}
+            value={shown}
+            options={[
+                { key: 'orig', label: t('reader.scriptOrig') },
+                { key: 'hant', label: t('reader.scriptHant') },
+                { key: 'hans', label: t('reader.scriptHans') },
+            ]}
+            onPick={v => {
+                onPrefsChange({ scriptMode: v });
+                if (v === 'hant') ctx?.setLocale('zh-Hant');
+                else if (v === 'hans') ctx?.setLocale('zh-Hans');
+            }}
+        />
+    );
+}
+
 /** 视口顶端所在条目的锚点 id：正文里 `id="rd-e-N"` 的元素中，最后一个顶边已滚过工具条下沿的 */
 function currentAnchor(root: HTMLElement | null, barBottom: number): string | undefined {
     if (!root) return undefined;
@@ -389,7 +437,6 @@ export function ReaderShell({
         song: t('reader.fontSong'), kai: t('reader.fontKai'), system: t('reader.fontSystem'),
     };
     const hasAnnotate = properNameToggle || !!settingsAnnotate;
-    const hasLayout = !!paragraphToggle || !!workLinkToggle || !!allowVertical || !!settingsLayout;
     const settingsPanel = (
         <div className="bim-rd-sp">
             <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g1`}>
@@ -415,43 +462,79 @@ export function ReaderShell({
                             onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, 1) })}>A+</button>
                     </span>
                 </div>
-                <div className="bim-rd-sp-row">
-                    <span className="bim-rd-sp-l">{t('reader.script')}</span>
-                    <LocaleSwitch />
-                </div>
+                <ScriptRow prefs={prefs} onPrefsChange={onPrefsChange} />
+                <SegRow<QuoteStyle>
+                    label={t('reader.quoteStyle')}
+                    value={prefs.quoteStyle}
+                    options={[
+                        { key: 'modern', label: t('reader.quoteModern') },
+                        { key: 'classic', label: t('reader.quoteClassic') },
+                        { key: 'original', label: t('reader.quoteOriginal') },
+                    ]}
+                    onPick={v => onPrefsChange({ quoteStyle: v })}
+                />
             </section>
             {hasAnnotate && (
                 <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g2`}>
                     <h3 id={`${setId}-g2`} className="bim-rd-sp-h">{t('reader.groupMark')}</h3>
                     {properNameToggle && (
-                        <button type="button" className="bim-rd-t bim-rd-sp-tg" aria-pressed={!!prefs.properNames}
-                            title={t('reader.properNameTitle')}
-                            onClick={() => onPrefsChange({ properNames: !prefs.properNames })}>{t('reader.properName')}</button>
+                        <>
+                            <SegRow<ProperNameMode>
+                                label={t('reader.properName')}
+                                value={prefs.properNameMode}
+                                title={t('reader.properNameTitle')}
+                                options={[
+                                    { key: 'off', label: t('reader.properNameOff') },
+                                    { key: 'lite', label: t('reader.properNameLite'), title: t('reader.properNameLiteTitle') },
+                                    { key: 'full', label: t('reader.properNameFull') },
+                                ]}
+                                onPick={v => onPrefsChange({ properNameMode: v })}
+                            />
+                            <label className="bim-rd-t bim-rd-chk bim-rd-sp-tg">
+                                <input type="checkbox" checked={prefs.showWorks} onChange={e => onPrefsChange({ showWorks: e.target.checked })} />
+                                <span>{t('reader.showWorks')}</span>
+                            </label>
+                            <SegRow<BookTitleStyle>
+                                label={t('reader.bookTitleStyle')}
+                                value={prefs.bookTitleStyle}
+                                options={[
+                                    { key: 'wavy', label: t('reader.bookTitleWavy') },
+                                    { key: 'bracket', label: t('reader.bookTitleBracket') },
+                                ]}
+                                onPick={v => onPrefsChange({ bookTitleStyle: v })}
+                            />
+                        </>
                     )}
                     {settingsAnnotate}
                 </section>
             )}
-            {hasLayout && (
-                <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g3`}>
-                    <h3 id={`${setId}-g3`} className="bim-rd-sp-h">{t('reader.groupLayout')}</h3>
-                    {paragraphToggle && (
-                        <button type="button" className="bim-rd-t bim-rd-sp-tg" aria-pressed={prefs.readingMode === 'paragraph'}
-                            title={t('reader.paragraphTitle')}
-                            onClick={() => onPrefsChange({ readingMode: prefs.readingMode === 'paragraph' ? 'line' : 'paragraph' })}>{t('reader.paragraph')}</button>
-                    )}
-                    {workLinkToggle && (
-                        <label className="bim-rd-t bim-rd-chk bim-rd-sp-tg">
-                            <input type="checkbox" checked={prefs.workLinks} onChange={e => onPrefsChange({ workLinks: e.target.checked })} />
-                            <span>{t('reader.workLinks')}</span>
-                        </label>
-                    )}
-                    {allowVertical && (
-                        <button type="button" className="bim-rd-t bim-rd-sp-tg" aria-pressed={prefs.writingMode === 'vertical'}
-                            onClick={() => onPrefsChange({ writingMode: prefs.writingMode === 'vertical' ? 'horizontal' : 'vertical' })}>{t('reader.vertical')}</button>
-                    )}
-                    {settingsLayout}
-                </section>
-            )}
+            <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g3`}>
+                <h3 id={`${setId}-g3`} className="bim-rd-sp-h">{t('reader.groupLayout')}</h3>
+                {paragraphToggle && (
+                    <button type="button" className="bim-rd-t bim-rd-sp-tg" aria-pressed={prefs.readingMode === 'paragraph'}
+                        title={t('reader.paragraphTitle')}
+                        onClick={() => onPrefsChange({ readingMode: prefs.readingMode === 'paragraph' ? 'line' : 'paragraph' })}>{t('reader.paragraph')}</button>
+                )}
+                {workLinkToggle && (
+                    <label className="bim-rd-t bim-rd-chk bim-rd-sp-tg">
+                        <input type="checkbox" checked={prefs.workLinks} onChange={e => onPrefsChange({ workLinks: e.target.checked })} />
+                        <span>{t('reader.workLinks')}</span>
+                    </label>
+                )}
+                {allowVertical && (
+                    <button type="button" className="bim-rd-t bim-rd-sp-tg" aria-pressed={prefs.writingMode === 'vertical'}
+                        onClick={() => onPrefsChange({ writingMode: prefs.writingMode === 'vertical' ? 'horizontal' : 'vertical' })}>{t('reader.vertical')}</button>
+                )}
+                <label className="bim-rd-t bim-rd-chk bim-rd-sp-tg">
+                    <input type="checkbox" checked={prefs.pageBreaks} onChange={e => onPrefsChange({ pageBreaks: e.target.checked })} />
+                    <span>{t('reader.pageBreaks')}</span>
+                </label>
+                <label className="bim-rd-t bim-rd-chk bim-rd-sp-tg">
+                    <input type="checkbox" checked={prefs.preserveMargins} onChange={e => onPrefsChange({ preserveMargins: e.target.checked })} />
+                    <span>{t('reader.preserveMargins')}</span>
+                </label>
+                {settingsLayout}
+            </section>
         </div>
     );
 
