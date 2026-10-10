@@ -202,6 +202,7 @@ def dates_ok(d: dict):
             return f'floruit 起 > 止：{floruit!r}'
     if birth is not None and death is not None and birth > death:
         return f'birth > death：{birth} > {death}'
+    # B2 後記錄不再帶 birth_year／death_year：有則須與 dates 一致，無則不查
     by, dy = d.get('birth_year'), d.get('death_year')
     if birth is not None and by is not None and birth != by:
         return f'dates.birth={birth} 与 birth_year={by} 不一致'
