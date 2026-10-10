@@ -54,3 +54,11 @@ describe('VARIANT_SUPPLEMENT', () => {
         expect(toSimplified('風月寳鑑')).toBe('风月宝鉴');
     });
 });
+
+describe('残留检测也认补漏表', () => {
+    it('findTraditionalChars 会报出简体输出里漏掉的补漏表异体字', async () => {
+        const { findTraditionalChars } = await import('../../src/i18n/traditional-check');
+        const hits = findTraditionalChars('甲𠮓乙𡚁丙').map(h => h.char);
+        expect(hits).toEqual(['𠮓', '𡚁']);
+    });
+});

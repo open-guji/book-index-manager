@@ -3,7 +3,8 @@ import { VARIANT_SUPPLEMENT } from './variant-supplement';
 
 /**
  * 异体字 → 正字（overview#350）。简体模式下先归一，再走 opencc t2cn——t2cn 的字表只收标准繁体，
- * 「㫖」「縂」「寳」这类异体字会原样漏到简体页面上。繁体模式不用它：原文照原样显示。
+ * 「㫖」「縂」「寳」这类异体字会原样漏到简体页面上。繁体站点默认不用它：原文照原样显示；
+ * 阅读器里用户显式选了「通行繁体」（scriptMode=hant，overview#514）时才用它做异体字归一，选「原字」则一律不转。
  *
  * 表是生成的（ui/scripts/variant-chars/，方法与口径见那里的 README），不要手改 json：
  *   - 依据 book-text 全量正文统计简体模式下残留的非简体字，取出现 ≥1000 次的；
