@@ -528,7 +528,9 @@ const PageSection = React.memo(function PageSection({
     const m = new Map<string, string>();
     if (!convert) return m;
     for (const para of pGroup.paragraphs) {
-      const chars = convertChars(para.chars.map((c) => c.charData.char), convert);
+      // 规范层（overview#525）：有 convert（通行繁體／簡體档）时，该位有人审过的 norm 就先用它代替原字，再整段转换；
+      // 没有 convert＝原字档，忽略 norm。该位没有 norm 条目时与改前完全一致（照旧走 convert 里的全局异体字表）
+      const chars = convertChars(para.chars.map((c) => c.charData.norm ?? c.charData.char), convert);
       para.chars.forEach((c, i) => m.set(c.charData.id, chars[i]));
     }
     return m;

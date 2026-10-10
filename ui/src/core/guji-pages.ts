@@ -26,6 +26,8 @@ export interface GujiPageChar {
     guess?: true;
     /** 组字：Unicode 未收的字的原形（IDS 串或描述），`char` 是近似字 */
     zi?: string;
+    /** 规范层（norm.json）：人审过的「异体→通行字」，恰好一个字、且与 `char` 不同；缺省＝该位没有逐位规范（overview#525） */
+    norm?: string;
 }
 
 /** 列类别（spec/02 §4.3）：`blank` 空列（无字）、`banxin` 版心列；缺省正文列 */

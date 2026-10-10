@@ -14,6 +14,8 @@ export interface CharGeometry {
   lacuna?: boolean;
   guess?: boolean;
   zi?: string;
+  /** 规范层（norm.json）：人审过的通行字，恰好一个字；缺省＝该位没有逐位规范（overview#525） */
+  norm?: string;
 }
 
 export interface ColumnGeometry {

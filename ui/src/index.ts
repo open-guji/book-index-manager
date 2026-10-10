@@ -158,7 +158,8 @@ export * from './components/EntityText';
 export { adaptPunctJson, iiifVolumeOf } from './core/guji-pages';
 export type { GujiPageInfo, GujiPageChar } from './core/guji-pages';
 // 对读：char／cord（NNN.char.json＋NNN.cord.json，guji-format v0.1）适配
-export { adaptCharCord } from './core/guji-char-cord';
+export { adaptCharCord, adaptNorm, adaptNormDetailed } from './core/guji-char-cord';
+export type { NormAdapted } from './core/guji-char-cord';
 export { buildParagraphBlocks, detectGenre } from './core/paragraphize';
 export type { ReadingMode, ReadingGenre, ParagraphBlock } from './core/paragraphize';
 export { WorkCatalog } from './components/WorkCatalog';
