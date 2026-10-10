@@ -693,7 +693,7 @@ export function ReaderShell({
                 <aside className="bim-rd-img" aria-label={t('reader.images')}>
                     {imgOpen && (
                         customImagePanel ? customImagePanel : (
-                            <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} />
+                            <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} preserveMargins={prefs.preserveMargins} />
                         )
                     )}
                 </aside>
@@ -819,7 +819,7 @@ export function ReaderShell({
                         </div>
                         {sheet === 'img' ? (
                             <div className="bim-rd-sheet-img">
-                                <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} />
+                                <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} preserveMargins={prefs.preserveMargins} />
                             </div>
                         ) : settingsPanel}
                     </div>

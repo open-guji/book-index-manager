@@ -64,6 +64,8 @@ export const reader = defineMessages({
     quoteOriginal: '原樣',
     pageBreaks: '顯示分葉分割線',
     preserveMargins: '書影保留空白',
+    facsimilePager: '書影翻頁',
+    facsimilePageInput: '書影葉碼（輸入數字後按 Enter 或離開輸入框跳轉）',
     vertical: '豎排',
     closeToc: '收起目錄',
     // ── 正文页脚、右栏、翻页 ──
@@ -152,6 +154,8 @@ export const reader = defineMessages({
     quoteOriginal: '原样',
     pageBreaks: '显示分叶分割线',
     preserveMargins: '书影保留空白',
+    facsimilePager: '书影翻页',
+    facsimilePageInput: '书影叶码（输入数字后按 Enter 或离开输入框跳转）',
     vertical: '竖排',
     closeToc: '收起目录',
     sourceLabel: '出处',
