@@ -13,8 +13,17 @@
  */
 import type { CollatedEditionIndex, JuanGroup } from '../types';
 
-export type TextKind = 'collated' | 'transcription';
+/**
+ * 版本类别：collated＝外部整理本；self_collated＝本站独立整理（界面上与 collated 同类，渲染路径不变）；transcription＝全文。
+ * 判断「是不是整理本」一律用 isCollatedKind，不要直接比 'collated'。
+ */
+export type TextKind = 'collated' | 'self_collated' | 'transcription';
 export type ReadingCapability = 'text' | 'facsimile' | 'interactive_warp';
+
+/** 整理本类（collated 与 self_collated 同类，渲染路径相同） */
+export function isCollatedKind(kind: TextKind | string | null | undefined): boolean {
+    return kind === 'collated' || kind === 'self_collated';
+}
 
 export interface TextVersion {
     /** 版本 key：主版本固定 `default`；其余 `[a-z0-9-]`、字母开头 */
@@ -24,6 +33,8 @@ export interface TextVersion {
     label: string;
     /** 版本名（底本）：「四部叢刊本」「文淵閣四庫全書本」；可选，没有就不写（book-text 901182c50b） */
     edition_label?: string;
+    /** 版本备注（manifest 声明）；界面暂不显示 */
+    note?: string;
     /** 来源短名：collated／wikisource／kanripo／shidian… */
     source?: string;
     /** 本站独立整理的原件版本（manifest 声明；界面层显示「本站独立整理」） */
@@ -56,6 +67,10 @@ export interface TextChapter {
     /** 该章有同名 json（结构化条目） */
     has_json?: boolean;
     page_title?: string;
+    /** sidecar 附件（仅类型，尚未接渲染）：字形、格线、影像对应文件 */
+    char_file?: string;
+    cord_file?: string;
+    facsimile_file?: string;
 }
 
 /** 文本的上游来源与授权说明（index.json 的 source.upstream） */
@@ -106,7 +121,7 @@ export interface TextChapterContent {
 // ── key 与章号 ──
 
 /** 合法的版本 key：主版本固定 default；其余 [a-z0-9-]、字母开头、非保留字 */
-export const RESERVED_TEXT_KEYS = ['default', 'manifest', 'fragments', 'sources'] as const;
+export const RESERVED_TEXT_KEYS = ['default', 'manifest', 'fragments', 'sources', 'extra'] as const;
 const KEY_RE = /^[a-z][a-z0-9-]*$/;
 
 export function isTextKey(key: unknown): key is string {

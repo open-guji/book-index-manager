@@ -16,31 +16,40 @@ export function hasResourceType(entry: { types?: ResourceTypeAtom[] }, atom: Res
     return getResourceTypes(entry).includes(atom);
 }
 
-/** 整理本文本质量等级 */
-export type TextQualityGrade = 'published' | 'fine' | 'rough' | 'ocr';
+/**
+ * 整理本文本质量等级（book-text 新规格）。旧值 `published` 已去掉，读侧由 CollatedEdition 的 normalizeTextQualityGrade 映射为 `source`。
+ * source＝底本原文；none＝暂无正文；placeholder＝占位。
+ */
+export type TextQualityGrade = 'source' | 'ocr' | 'rough' | 'fine' | 'none' | 'placeholder';
 
 /** enum → 繁体中文 badge 文字 */
 export const TEXT_QUALITY_LABELS: Record<TextQualityGrade, string> = {
-    published: '出版',
-    fine: '精校',
+    source: '底本',
+    ocr: 'OCR',
     rough: '粗校',
-    ocr: '機器識別',
+    fine: '精校',
+    none: '暫無正文',
+    placeholder: '占位',
 };
 
-/** enum → 错误率判定标准（tooltip 显示） */
+/** enum → 判定标准（tooltip 显示）；source／none／placeholder 的文字为待文本总管复核的初稿 */
 export const TEXT_QUALITY_CRITERIA: Record<TextQualityGrade, string> = {
-    published: '達到出版、學術研究標準，錯誤率在萬分之一以內',
-    fine: '通讀無障礙，錯誤率在百分之一以內',
-    rough: '保證文意基本正確，錯誤率在百分之三以內',
+    source: '採用底本原文，本站未另行校對',
     ocr: '保持大意和結構，錯誤率在百分之十以內',
+    rough: '保證文意基本正確，錯誤率在百分之三以內',
+    fine: '通讀無障礙，錯誤率在百分之一以內',
+    none: '本版本暫無正文',
+    placeholder: '占位，正文尚未錄入',
 };
 
 /** enum → 主题色 */
 export const TEXT_QUALITY_COLORS: Record<TextQualityGrade, string> = {
-    published: bim('quality-published'),
-    fine: bim('quality-fine'),
-    rough: bim('quality-rough'),
+    source: bim('quality-source'),
     ocr: bim('quality-ocr'),
+    rough: bim('quality-rough'),
+    fine: bim('quality-fine'),
+    none: bim('quality-none'),
+    placeholder: bim('quality-placeholder'),
 };
 
 /** 覆盖信息 */
