@@ -527,7 +527,6 @@ const PageSection = React.memo(function PageSection({
               return (
                 <React.Fragment key={ch.id}>
                   {start && start.blankBefore > 0 && <BlankCols n={start.blankBefore} />}
-                  {start?.leadBlank ? <span className="guji-text-lead-blank" aria-hidden="true" data-lead-blank={start.leadBlank} style={{ width: `${start.leadBlank}em` }} /> : null}
                   {beforePuncts.map(punct)}
                   <span
                     data-char-id={ch.id}

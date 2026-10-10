@@ -200,27 +200,41 @@ function useMediaQuery(query: string, ssrDefault: boolean): boolean {
     return match;
 }
 
-function LocaleSwitch({ onSwitch }: { onSwitch?: (next: 'zh-Hant' | 'zh-Hans') => void }) {
+/**
+ * 顶栏快捷的字形三态：原｜繁｜简（和设置面板里的 ScriptRow 同一个偏好）。
+ * 选繁／简时同步站点 locale；选「原」只设偏好、不动站点 locale。scriptMode 为 null 或已选繁／简时，显示成跟随站点当前的繁／简。
+ */
+function ScriptSwitch({ prefs, onPrefsChange }: { prefs: ReaderPrefs; onPrefsChange: (patch: Partial<ReaderPrefs>) => void }) {
     const ctx = useContext(LocaleContext);
     const { t } = useI18n();
     if (!ctx) return null;
-    const isHant = ctx.locale === 'zh-Hant';
+    const siteScript: ReaderScriptMode = ctx.locale === 'zh-Hans' ? 'hans' : 'hant';
+    const shown: ReaderScriptMode = prefs.scriptMode === 'orig' ? 'orig' : siteScript;
+    const opts: { key: ReaderScriptMode; short: string; title: string }[] = [
+        { key: 'orig', short: t('reader.scriptOrigShort'), title: t('reader.scriptOrig') },
+        { key: 'hant', short: t('common.localeShortHant'), title: t('reader.scriptHant') },
+        { key: 'hans', short: t('common.localeShortHans'), title: t('reader.scriptHans') },
+    ];
     return (
-        <button
-            type="button"
-            className="bim-rd-t"
-            title={isHant ? t('common.toHans') : t('common.toHant')}
-            aria-label={isHant ? t('common.toHans') : t('common.toHant')}
-            onClick={() => {
-                const next = isHant ? 'zh-Hans' : 'zh-Hant';
-                ctx.setLocale(next);
-                onSwitch?.(next);
-            }}
-        >
-            <span className={isHant ? 'bim-rd-on' : 'bim-rd-off'}>{t('common.localeShortHant')}</span>
-            <span className="bim-rd-off">｜</span>
-            <span className={isHant ? 'bim-rd-off' : 'bim-rd-on'}>{t('common.localeShortHans')}</span>
-        </button>
+        <span className="bim-rd-script-sw" role="group" aria-label={t('reader.scriptQuick')}>
+            {opts.map((o, i) => (
+                <React.Fragment key={o.key}>
+                    {i > 0 && <span className="bim-rd-off" aria-hidden="true">｜</span>}
+                    <button
+                        type="button"
+                        className="bim-rd-t"
+                        aria-pressed={shown === o.key}
+                        title={o.title}
+                        aria-label={o.title}
+                        onClick={() => {
+                            onPrefsChange({ scriptMode: o.key });
+                            if (o.key === 'hant') ctx.setLocale('zh-Hant');
+                            else if (o.key === 'hans') ctx.setLocale('zh-Hans');
+                        }}
+                    >{o.short}</button>
+                </React.Fragment>
+            ))}
+        </span>
     );
 }
 
@@ -638,7 +652,7 @@ export function ReaderShell({
                         <IconImage />{t('reader.images')}
                     </button>
                     <span className="bim-rd-sep" aria-hidden="true" />
-                    <LocaleSwitch onSwitch={next => onPrefsChange({ scriptMode: next === 'zh-Hans' ? 'hans' : 'hant' })} />
+                    <ScriptSwitch prefs={prefs} onPrefsChange={onPrefsChange} />
                     <span className="bim-rd-sep" aria-hidden="true" />
                     <button
                         type="button"

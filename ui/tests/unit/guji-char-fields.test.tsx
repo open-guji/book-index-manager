@@ -136,13 +136,10 @@ describe('阅读器显示：新字段', () => {
         expect(el(container, '3:1:2').className).not.toMatch(/is-raised/);
     });
 
-    it('lead_blank：本列首字前留 n 字宽空位，不进文本', () => {
+    it('lead_blank：只是原件列首空格，重排阅读里不留空位（否则换行处会出现两字空白），文本不受影响', () => {
         const { container } = mount(adaptCharCord(charDoc([cell('3:1:1', '甲'), cell('3:1:2', '乙')], { lead_blank: 3 })));
-        const sp = container.querySelector('.guji-text-lead-blank') as HTMLElement;
-        expect(sp.getAttribute('data-lead-blank')).toBe('3');
-        expect(sp.style.width).toBe('3em');
+        expect(container.querySelector('.guji-text-lead-blank')).toBeNull();
         expect(container.querySelector('p')!.textContent).toBe('甲乙');
-        expect(sp.nextElementSibling).toBe(el(container, '3:1:1'));
     });
 
     it('kind: blank 空列：显示空位、不丢列、不进文本；页尾空列也留着', () => {
