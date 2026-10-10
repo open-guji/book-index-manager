@@ -32,6 +32,8 @@ WORKS = [
     'd59f2ndpfh1d',  # 玉環廳志：源档 related_works 11 条（被 _related 取代）
     'd59f5ilweo6h',  # 補晉書藝文志：_related 里有枢纽
     'd59fxe4tgstm',  # 隋代藝文志：什么都没有
+    'd59f28no5v5v',  # 原道：收入 3 部枢纽选本（collected_in 枢纽）
+    'd59f28npq1vl',  # 晉書：_related 里有 4 个枢纽（text_carried_by）
     'd59f2nh28f7k',  # indexed_by 有、_catalogs 空
     'd59f27x5xeki',  # 高士傳：15 家著录
 ]
