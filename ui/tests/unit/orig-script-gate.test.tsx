@@ -27,14 +27,23 @@ function Shell({ origScriptAvailable, initial, spy }: { origScriptAvailable?: bo
     );
 }
 
-const mount = (props: React.ComponentProps<typeof Shell>) => render(<LocaleProvider locale="zh-Hant"><Shell {...props} /></LocaleProvider>);
-/** 顶栏快捷（名叫「字形」的 group，按钮 原｜繁｜简）与设置面板里的字形行，各一个「原」按钮 */
-const origButtons = () => screen.getAllByRole('button', { name: /^原字$|^此文本沒有規範層，無「原字」可選$/ });
+/** 设置面板默认是关的，字形行（ScriptRow）不挂载；测试必须先打开，否则只检查了顶栏那一个按钮 */
+const mount = (props: React.ComponentProps<typeof Shell>) => {
+    const v = render(<LocaleProvider locale="zh-Hant"><Shell {...props} /></LocaleProvider>);
+    if (!screen.queryByRole('group', { name: '繁簡' })) fireEvent.click(screen.getAllByRole('button', { name: /^閱讀設置$/ })[0]);
+    return v;
+};
+/** 顶栏快捷（原｜繁｜简）与设置面板里的字形行，各一个「原」按钮——两处都要在 */
+const origButtons = () => {
+    const bs = screen.getAllByRole('button', { name: /^原字$|^此文本沒有規範層，無「原字」可選$/ });
+    expect(bs, '顶栏和设置面板各一个「原」按钮（面板没打开就只有一个）').toHaveLength(2);
+    return bs;
+};
 
 describe('字形「原字」档的可选性', () => {
     it('缺省（宿主没传）：可选，与改前一致', () => {
         mount({});
-        for (const b of origButtons()) expect((b as HTMLButtonElement).disabled).toBe(false);
+        for (const b of origButtons()) expect((b as HTMLButtonElement).disabled).toBe(false); // 两处都可选
     });
 
     it('自校文本（origScriptAvailable）：可选，点了设成 orig', () => {
@@ -48,7 +57,6 @@ describe('字形「原字」档的可选性', () => {
         const spy = vi.fn();
         mount({ origScriptAvailable: false, spy });
         const bs = origButtons();
-        expect(bs.length).toBeGreaterThanOrEqual(1);
         for (const b of bs) {
             expect((b as HTMLButtonElement).disabled).toBe(true);
             expect(b.getAttribute('title')).toBe('此文本沒有規範層，無「原字」可選');
@@ -72,7 +80,7 @@ describe('字形「原字」档的可选性', () => {
         const spy = vi.fn();
         mount({ origScriptAvailable: false, initial: { scriptMode: 'orig' }, spy });
         const pressed = origButtons().filter(b => b.getAttribute('aria-pressed') === 'true');
-        expect(pressed.length).toBeGreaterThanOrEqual(1);
+        expect(pressed).toHaveLength(2); // 顶栏和面板都显示「原」按下
         const group = screen.getAllByRole('group', { name: /字形/ })[0];
         const hant = within(group).getAllByRole('button').find(b => /繁/.test(b.textContent ?? ''));
         fireEvent.click(hant!);
