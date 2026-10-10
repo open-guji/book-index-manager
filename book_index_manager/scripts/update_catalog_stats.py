@@ -40,7 +40,7 @@ def count_indexed_by(data_root: str, work_id: str) -> int:
 def count_books_in_collection(data_root: str, collection_id: str) -> int:
     """按 `Book.contained_in` 反查：有多少 Book 收在这个叢編里（schema-v2 的唯一一侧）。
 
-    contained_in 项可以是 {id: ...} 或裸 id 字符串（旧形）。
+    contained_in 项只认对象形 {id: ...}（裸 id 字符串旧形已清零）。
     """
     count = 0
     for f in glob.glob(os.path.join(data_root, 'Book', '*', '*', '*', '*.json')):
@@ -50,7 +50,7 @@ def count_books_in_collection(data_root: str, collection_id: str) -> int:
         except (json.JSONDecodeError, OSError):
             continue
         for ref in (data.get('contained_in') or []) if isinstance(data, dict) else []:
-            rid = ref.get('id') if isinstance(ref, dict) else ref
+            rid = ref.get('id') if isinstance(ref, dict) else None
             if rid == collection_id:
                 count += 1
                 break

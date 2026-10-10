@@ -126,7 +126,7 @@ const FULL_TEXT = {
 };
 
 const COLL = {
-    id: 'c1', type: 'collection', title: '武英殿聚珍版叢書', subtype: 'book_collection', contained_in: ['c0'],
+    id: 'c1', type: 'collection', title: '武英殿聚珍版叢書', subtype: 'book_collection', contained_in: [{ id: 'c0' }],
     description: { text: '清乾隆三十八年詔開四庫館，擇要交武英殿排印。' },
     contained_works: Array.from({ length: 12 }, (_, i) => ({ id: `cw${i}`, title: i === 0 ? '周易口訣義' : `易說${i}`, volume_index: [i * 2 + 2] })),
     resources: [{ id: 'wm', name: 'Wikimedia Commons', url: 'https://commons.wikimedia.org/wiki/Category:x', types: ['image'] }],
