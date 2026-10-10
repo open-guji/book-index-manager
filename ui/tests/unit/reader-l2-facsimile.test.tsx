@@ -9,6 +9,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { TextReader } from '../../src/components/TextReader';
 import { ImagePanel, trimRect } from '../../src/components/Reader/ImagePanel';
+import { fullImageTrimRect, type PageWarpData } from '../../src/components/Reader/GujiWarpCanvas';
 import { adaptCharCord } from '../../src/core/guji-char-cord';
 import type { IndexStorage } from '../../src/storage/types';
 import type { ReaderPageImage } from '../../src/components/Reader/types';
@@ -190,43 +191,64 @@ describe('L2 · 输入葉码跳转', () => {
 });
 
 describe('L2 · 保留空白／去空白', () => {
-    const keep = () => document.querySelector('button[title^="保留空白"]') as HTMLButtonElement;
-    const trim = () => document.querySelector('button[title^="去空白"]') as HTMLButtonElement;
     const openSettings = () => fireEvent.click(screen.getByRole('button', { name: /閱讀設置|阅读设置/ }));
+    const box = () => screen.getByLabelText(/書影保留空白|书影保留空白/) as HTMLInputElement;
 
-    it('默认保留空白；点「去空白」书影画布的 preserveMargins 变 false，再点回 true', async () => {
+    it('设置面板里只有一个书影留白控件（勾选框），没有重复的「去空白／保留空白」按钮和「图文对读」徽章', async () => {
+        await setup();
+        openSettings();
+        expect(box()).toBeTruthy();
+        expect(document.querySelector('button[title^="去空白"]')).toBeNull();
+        expect(document.querySelector('button[title^="保留空白"]')).toBeNull();
+        expect(document.querySelector('.bim-rd-badge-warp')).toBeNull();
+    });
+
+    it('默认保留空白；取消勾选书影画布的 preserveMargins 变 false，再勾回 true', async () => {
         await setup();
         expect(stub().getAttribute('data-preserve')).toBe('true');
         openSettings();
-        fireEvent.click(trim());
+        expect(box().checked).toBe(true);
+        fireEvent.click(box());
         expect(stub().getAttribute('data-preserve')).toBe('false');
-        expect(trim().getAttribute('aria-pressed')).toBe('true');
-        fireEvent.click(keep());
+        expect(box().checked).toBe(false);
+        fireEvent.click(box());
         expect(stub().getAttribute('data-preserve')).toBe('true');
     });
 
     it('选择写进阅读偏好并在刷新（重新挂载）后保持', async () => {
         await setup();
         openSettings();
-        fireEvent.click(trim());
+        fireEvent.click(box());
         expect(JSON.parse(localStorage.getItem('bim-reader-prefs')!).preserveMargins).toBe(false);
         cleanup();
         await setup();
         await waitFor(() => expect(stub().getAttribute('data-preserve')).toBe('false'));
         openSettings();
-        expect(trim().getAttribute('aria-pressed')).toBe('true');
+        expect(box().checked).toBe(false);
+    });
+});
+
+describe('L2 · 对读画布去空白（整幅原图页）：fullImageTrimRect', () => {
+    const page = (chars: [number, number, number, number][], extra: Partial<PageWarpData> = {}): PageWarpData => ({
+        page_id: 'p:3', title: '', image_size: [1000, 1400], total_warped_w: 1000,
+        columns: [{ col: 1, warped_w: 1000, warped_h: 1400, offset_x: 0, strips: [], chars: chars.map((b, i) => ({ id: `c${i}`, char: '字', slot: i + 1, pos: i + 1, bbox_col: b })) }],
+        ...extra,
     });
 
-    it('设置面板里的「书影保留空白」勾选框与书影区按钮是同一个偏好（修前两者互不相通）', async () => {
-        await setup();
-        openSettings();
-        const box = screen.getByLabelText(/書影保留空白|书影保留空白/) as HTMLInputElement;
-        expect(box.checked).toBe(true);
-        fireEvent.click(box); // 取消勾选 → 去空白
-        expect(stub().getAttribute('data-preserve')).toBe('false');
-        expect(trim().getAttribute('aria-pressed')).toBe('true');
-        fireEvent.click(keep());
-        expect(box.checked).toBe(true);
+    it('裁到字框外接矩形，四周留短边 3%（30px）', () => {
+        expect(fullImageTrimRect(page([[200, 300, 300, 400], [600, 900, 700, 1000]]))).toEqual({ x: 170, y: 270, w: 560, h: 760 });
+    });
+    it('框贴着图边时夹进图内', () => {
+        const r = fullImageTrimRect(page([[0, 0, 100, 100], [500, 500, 600, 600]]))!;
+        expect([r.x, r.y]).toEqual([0, 0]);
+        expect(r.w).toBe(630);
+    });
+    it('有透视 strip、没有字框、字框几乎铺满整页：不裁', () => {
+        const withStrip = page([[200, 300, 300, 400]]);
+        withStrip.columns[0].strips = [{ srcQuad: [[0, 0], [1, 0], [1, 1], [0, 1]], dstRect: [0, 0, 1, 1] } as never];
+        expect(fullImageTrimRect(withStrip)).toBeNull();
+        expect(fullImageTrimRect(page([]))).toBeNull();
+        expect(fullImageTrimRect(page([[5, 5, 990, 1390]]))).toBeNull();
     });
 });
 
