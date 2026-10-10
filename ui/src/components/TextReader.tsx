@@ -14,8 +14,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AuthorInfo, CollatedEditionIndex } from '../types';
 import type { IndexStorage } from '../storage/types';
-import { hasGujiTableNotation } from '../core/guji-table';
-import { hasGujiMarkdownV02 } from '../core/guji-inline';
 import { createTextApi } from '../core/text-api';
 import type { TextChapterContent, TextChapter, TextIndex, TextManifest, TextUpstream, TextVersion } from '../core/text-model';
 import { matchChapterAcrossVersions, pickTextVersion, textVersionLabel } from '../core/text-model';
@@ -648,7 +646,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     const rail = structured && sectionText
         ? <JuanRail juan={juan!} view={juanView} onView={setJuanView} textHasEntries={textHasEntries} />
         : undefined;
-    const tables = hasGujiTableNotation(index) || hasGujiMarkdownV02(index);
+    // spec 03 §2.1：未声明 guji_markdown 也按 v0.2 宽松解析（overview#516 W-B），表格块随 v0.2 一并认
+    const tables = true;
     const body = md ? md.replace(/^##\s+[^\n]+\n+/, '') : null;
     const originalVersion = isOriginalVersion(version);
     const sourceNameShown = originalVersion ? t('reader.originalSource') : version.source_name ? convert(version.source_name) : undefined;
@@ -926,7 +925,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                             text={body}
                             mode={prefs.readingMode}
                             tables={tables}
-                            gujiMarkdown={hasGujiMarkdownV02(index)}
+                            gujiMarkdown
                             bookMarking={bookMarkingOf(prefs)}
                             quoteStyle={prefs.quoteStyle}
                         />

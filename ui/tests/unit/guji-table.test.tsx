@@ -240,10 +240,10 @@ describe('TextReader 接入（全文章）', () => {
         expect(c.querySelector('article')!.textContent).not.toContain(':::');
     });
 
-    it('目录不带 → 原样文本，无表格', async () => {
+    it('目录不带 → 同样识别表格块（宽松按 v0.2，overview#516 W-B）', async () => {
         const c = mount();
         await waitFor(() => expect(c.querySelector('article')).toBeTruthy());
-        expect(c.querySelector('article table')).toBeNull();
-        expect(c.querySelector('article')!.textContent).toContain(':::table');
+        expect(c.querySelector('article table')).not.toBeNull();
+        expect(c.querySelector('article')!.textContent).not.toContain(':::');
     });
 });

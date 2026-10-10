@@ -228,11 +228,10 @@ describe('TextReader 接线（全文章）', () => {
         expect(c.querySelector('article table')).not.toBeNull();
     });
 
-    it('目录不带 → 原样文本', async () => {
+    it('目录不带 → 同样宽松按 v0.2 解析（spec 03 §2.1，overview#516 W-B）', async () => {
         const c = mount();
         await waitFor(() => expect(c.querySelector('article')).toBeTruthy());
-        expect(c.querySelector('article .bim-zi')).toBeNull();
-        expect(c.querySelector('article')!.textContent).toContain(':zi[⿰句員]');
-        expect(c.querySelector('article table')).toBeNull();
+        expect(c.querySelector('article .bim-zi')).not.toBeNull();
+        expect(c.querySelector('article')!.textContent).not.toContain(':zi[');
     });
 });
