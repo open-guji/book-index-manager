@@ -24,7 +24,7 @@ import {
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import {
-    buildVersionTable, bucketResources, measureText, sourceText, sourceHref,
+    buildVersionTable, bucketResources, measureText, sourceText, sourceHref, workVersionIds, workClassification,
     type ResolvedVersion, type VersionRow,
 } from '../../core/detail-model';
 import { getDisplayNameFromUrl, resourceHref } from '../../core/resources';
@@ -62,10 +62,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
     const { t, convert, messages: m } = useI18n();
 
     // ── 版本解析 ──
-    const versionIds = useMemo(
-        () => [...(data.books || []), ...(data.collections || [])],
-        [data.books, data.collections],
-    );
+    const versionIds = useMemo(() => workVersionIds({ _books: data._books }), [data._books]);
 
     const [resolved, setResolved] = useState<Map<string, Resolved>>(new Map());
     const [showAll, setShowAll] = useState(false);
@@ -131,7 +128,11 @@ export const WorkPage: React.FC<WorkPageProps> = ({
     const imageCount = table.allRows.filter(r => r.hasImage).length;
 
     // ── 关联 ──
-    const related = data.related_works || [];
+    // `_related`：已按本条视角取词、带对方现行题名（枢纽的题名由 withHubTitles 补；预取的种子里枢纽没有题名，显示为空）
+    const related = useMemo(
+        () => (data._related || []).map(r => ({ ...r, title: r.title ?? '' })),
+        [data._related],
+    );
     const collectedIn = related.filter(r => r.relation === 'collected_in');
     const otherRelated = useMemo(() => {
         const order = ['part_of', 'has_part', 'studied_by', 'studies', 'preceded_by', 'followed_by'];
@@ -209,7 +210,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
         { value: indexed.length, label: t('workPage.stat.catalogs') },
     ];
 
-    const cls = data.classification;
+    const cls = workClassification(data);
     const clsItems = cls
         ? [cls.l1, cls.l2, cls.l3, cls.l4].filter(Boolean).map(s => convert(s!))
         : [];

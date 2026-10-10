@@ -27,13 +27,13 @@ describe('ResourceEditor 写 types', () => {
         expect('type' in next[0]).toBe(false);
     });
 
-    it('改类型：旧单值 type 被去掉，换成 types（text+image 拆两项）', () => {
+    it('改类型：草稿里残留的旧单值 type 被去掉，换成 types（text+image 拆两项）', () => {
         const onChange = vi.fn();
-        const items: ResourceEntry[] = [{ id: 'a', name: '旧资源', url: 'https://e.com', type: 'text' }];
+        const items = [{ id: 'a', name: '旧资源', url: 'https://e.com', type: 'text' }] as unknown as ResourceEntry[];
         render(<ResourceEditor items={items} onChange={onChange} />);
         fireEvent.click(screen.getByText('旧资源')); // 展开
         const select = screen.getAllByRole('combobox')[0] as HTMLSelectElement;
-        expect(select.value).toBe('text'); // 旧 type 仍能读出
+        expect(select.value).toBe('text'); // 不再读旧 type：没有 types 时按缺省 text
         fireEvent.change(select, { target: { value: 'text+image' } });
         const next = onChange.mock.calls[0][0] as ResourceEntry[];
         expect(next[0].types).toEqual(['text', 'image']);
@@ -60,5 +60,13 @@ describe('validateResource 闭集', () => {
         expect(validateResource({ ...base, types: ['catalog'] } as ResourceEntry)).toEqual([]);
         expect(validateResource({ ...base, types: ['image', 'annotated'] } as unknown as ResourceEntry)).toEqual([]);
         expect(validateResource({ ...base, types: ['bogus'] } as unknown as ResourceEntry)).not.toEqual([]);
+    });
+
+    it('types 必填：单值 type（含 text+image）不再被接受', async () => {
+        const { validateResource } = await import('../../src/core/schema');
+        const base = { id: 'a', name: 'A', url: 'https://e.com' };
+        expect(validateResource({ ...base, type: 'text' } as unknown as ResourceEntry)).toEqual(['types is required']);
+        expect(validateResource({ ...base, type: 'text+image' } as unknown as ResourceEntry)).toEqual(['types is required']);
+        expect(validateResource({ ...base, types: ['text', 'image'] } as ResourceEntry)).toEqual([]);
     });
 });

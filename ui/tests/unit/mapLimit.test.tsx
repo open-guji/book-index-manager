@@ -58,7 +58,7 @@ describe('mapLimit', () => {
 describe('版本表取数有并发上限', () => {
     it('作品页 24 个版本：getItem 同时在飞的不超过 8', async () => {
         const ids = Array.from({ length: 24 }, (_, i) => `b${i}`);
-        const work = { id: 'w1', type: 'work', title: '史記', books: ids, _edition_count: ids.length } as unknown as IndexDetailData;
+        const work = { id: 'w1', type: 'work', title: '史記', _books: ids.map(id => ({ id })), _edition_count: ids.length } as unknown as IndexDetailData;
         let inflight = 0, peak = 0, calls = 0;
         const getItem = vi.fn(async (id: string) => {
             if (id === 'w1') return work as unknown as Record<string, unknown>;

@@ -211,18 +211,17 @@ npm run build:lib    # 输出 dist/ 给 npm 发布
 
 Apache 2.0
 
-## schema-v2 派生字段兼容（overview#458）
+## schema-v2 派生字段（overview#458）
 
-读者端在数据入口把 build 产物的派生字段归一成旧形状（`ui/src/core/derived-compat.ts`），**新字段优先、缺了回退旧字段，旧格式数据行为不变**：
+详情页（`BookDetailLayout` 及其下各页）直接读 build 产物的 `_` 字段，没有中间的归一／兼容层：
 
-| 记录 | 新字段 | 补到 | 旧字段已有值时 |
-|---|---|---|---|
-| Work | `_books` | `books`（Book id） | 不动 |
-| Work | `_classifications`（优先 zongmu） | `classification` | 不动 |
-| Work | `_related` | `related_works`（含 title，反向词） | `_related` 存在即取（源档 related_works 已无 title） |
-| Work | `_catalogs` | `indexed_by` | 不动 |
-| Work／Book | `_collections` | `contained_in` | 不动 |
-| Collection | `_members`（前 20 项）＋`_member_count` | `books`（Book 成员）／`contained_works`（Work 成员） | 不动；`_members` 被截断时子目表计数按 `_member_count` |
-| Entity | `_works` | `works` | 不动 |
+| 记录 | 页面读的字段 |
+|---|---|
+| Work | `_books`（版本卡）、`_edition_count`、`_classifications`（优先 zongmu）、`_related`（含 `direction`）、`_collections`；著录文字仍读源档的 `indexed_by` |
+| Book | `_collections`（所属丛编与册次）；上级作品的版本取自 Work 的 `_books` |
+| Collection | `_members`（前 20 项）＋`_member_count`；上级丛编读源档的 `contained_in` |
+| Entity | `_works` |
 
-卡片里 `{id, h:1}` 的枢纽引用没有 title，名称取自 `_hubs.json`：`IndexStorage.getHubs?()` 提供（`BundleStorage` 默认读 `${basePath}/_hubs.json`，可用 `hubsPath` 改相对路径）；不提供时枢纽引用无名，页面回退显示 ID。`BookDetailLayout` 会自动给传入的 `transport` 和 `initialDetail` 套这层归一（`withDerivedCompat`）。夹具取自 book-index `schema-v2` 的 `build/contract-sample/`（`tests/unit/fixtures/contract-sample/`）。
+卡片里 `{id, h:1}` 的枢纽引用没有 title，名称取自 `_hubs.json`：`IndexStorage.getHubs?()` 提供（`BundleStorage` 默认读 `${basePath}/_hubs.json`，可用 `hubsPath` 改相对路径）；不提供时枢纽引用无名，页面回退显示 ID。`BookDetailLayout` 会给传入的 `transport` 套一层 `withHubTitles`（只补枢纽卡的 `title`，不改字段形状）。夹具取自 book-index `schema-v2` 的 `build/contract-sample/`（`tests/unit/fixtures/contract-sample/`）。
+
+`tests/unit/DerivedGolden.test.tsx` 用 `tests/unit/fixtures/derived-golden/`（真实 build 产物里挑的 47 个样本）逐字节比对整页渲染，改页面后输出有意变化时才重新生成（见该测试文件头部）。

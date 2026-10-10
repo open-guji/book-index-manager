@@ -18,8 +18,7 @@ const DOMAIN_ID_MAP: Record<string, string> = {
     'digital.library': 'digital-library',
 };
 
-// resources[].types 闭集（schema/common.md）；旧单值 type 只读兼容，新数据不再写
-const VALID_TYPES = new Set(['text', 'image', 'text+image', 'physical', 'catalog', 'annotated']);
+// resources[].types 闭集（schema/common.md）；单值 type 已不再接受
 const VALID_TYPE_ATOMS = new Set(['text', 'image', 'physical', 'catalog', 'annotated']);
 const VALID_ROOT_TYPES = new Set(['catalog', 'search']);
 const PUBLIC_SUFFIXES = new Set(['com', 'org', 'net', 'cn', 'edu', 'gov', 'io', 'jp', 'tw', 'hk']);
@@ -57,7 +56,7 @@ export function extractIdFromUrl(url: string): string {
 export function validateResource(entry: ResourceEntry): string[] {
     const errors: string[] = [];
     if (!entry.name) errors.push('name is required');
-    // 优先校验 types（新格式），否则校验 type（旧格式）
+    // types 必填（单值 type 的兼容已清退）
     let isPhysicalOnly = false;
     if (entry.types !== undefined) {
         if (!Array.isArray(entry.types) || entry.types.length === 0) {
@@ -68,11 +67,8 @@ export function validateResource(entry: ResourceEntry): string[] {
             }
             isPhysicalOnly = entry.types.length === 1 && entry.types[0] === 'physical';
         }
-    } else if (entry.type !== undefined) {
-        if (!VALID_TYPES.has(entry.type)) errors.push(`invalid type '${entry.type}', must be one of ${[...VALID_TYPES].join(', ')}`);
-        isPhysicalOnly = entry.type === 'physical';
     } else {
-        errors.push('either type or types is required');
+        errors.push('types is required');
     }
     if (entry.root_type && !VALID_ROOT_TYPES.has(entry.root_type)) errors.push(`invalid root_type '${entry.root_type}'`);
     if (!isPhysicalOnly && !entry.url) errors.push('url is required for non-physical resources');

@@ -330,10 +330,10 @@ describe('Q5 标题层级（heading-order）', () => {
     it('条目页：「收入叢編」等旁栏小标题是 h2（提要卡 h1 之下），外观 class 不变', async () => {
         const WORK = {
             id: 'w1', type: 'work', title: '史記',
-            books: ['b1'],
-            related_works: [
-                { id: 'c9', title: '二十四史', relation: 'collected_in' },
-                { id: 'w2', title: '史記索隱', relation: 'studied_by' },
+            _books: [{ id: 'b1' }],
+            _related: [
+                { id: 'c9', title: '二十四史', relation: 'collected_in', direction: 'out' },
+                { id: 'w2', title: '史記索隱', relation: 'studied_by', direction: 'in' },
             ],
         } as unknown as IndexDetailData;
         const transport = {
@@ -360,7 +360,7 @@ describe('Q3 条目页 CLS：次级区块先占高', () => {
     const WORK = {
         id: 'w1', type: 'work', title: '史記',
         authors: [{ name: '司馬遷', role: 'author', dynasty: '西漢' }],
-        books: ['b1', 'b2', 'b3'],
+        _books: [{ id: 'b1' }, { id: 'b2' }, { id: 'b3' }],
     } as unknown as IndexDetailData;
     const BOOKS: Record<string, unknown> = {
         b1: { id: 'b1', type: 'book', title: '史記', edition: '宋建安黃善夫家塾刻本' },

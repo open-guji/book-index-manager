@@ -22,8 +22,7 @@ import type {
     EntityDetailData,
 } from '../types';
 import type { IndexStorage } from '../storage/types';
-import { withDerivedCompat } from '../storage/derived-compat-transport';
-import { adaptEntry } from '../core/derived-compat';
+import { withHubTitles } from '../storage/hub-titles';
 import { CollectionCatalog } from './CollectionCatalog';
 import { TextReader } from './TextReader';
 import type { BookChapterList } from './detail/BookPage';
@@ -48,7 +47,7 @@ import { WorkPage } from './detail/WorkPage';
 import { BookPage } from './detail/BookPage';
 import { CollectionPage } from './detail/CollectionPage';
 import { EntityPage } from './detail/EntityPage';
-import { measureText, displayAuthorRole } from '../core/detail-model';
+import { measureText, displayAuthorRole, workVersionIds } from '../core/detail-model';
 import { bim } from '../styles/tokens';
 
 // ── 类型 ──
@@ -235,8 +234,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     className,
     style,
 }) => {
-    /* schema-v2：条目里的 `_books`／`_members`／`_works` 等派生字段归一成旧形状（overview#458） */
-    const transport = useMemo(() => withDerivedCompat(transportProp), [transportProp]);
+    /* build 产物里枢纽（入度 > 200）的引用只写 {id, h:1}：getItem 返回的条目先补上枢纽名称（页面直接读 `_` 字段） */
+    const transport = useMemo(() => withHubTitles(transportProp), [transportProp]);
     const t = useT();
     /** tr：字典键取词（界面文字）；t 是旧的整本字典对象 */
     const { t: tr, convert } = useI18n();
@@ -248,7 +247,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
      */
     const [seed] = useState(() => {
         if (!seedMatches(id, initialDetail)) return null;
-        const d = adaptEntry({ ...initialDetail } as Record<string, unknown>) as unknown as IndexDetailData;
+        const d = { ...initialDetail } as IndexDetailData;
         const e = initialEntry ?? fallbackEntry(id, d);
         if (enrichDetail) enrichDetail(e, d);
         return { id, entry: e, detail: d };
@@ -338,7 +337,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                 return;
             }
 
-            const bookIds = (workData as WorkDetailData).books ?? [];
+            const bookIds = workVersionIds(workData as WorkDetailData);
             // 有界并发取各版本（原来是逐个串行 await）；mapLimit 按 bookIds 顺序返回，谱系图顺序不变
             const fetched = await mapLimit(bookIds, DETAIL_FETCH_CONCURRENCY, async (bid) => {
                 try {
@@ -403,7 +402,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         if (seed && seed.id === id) {
             seeded = seed;
         } else if (latest.initialDetail && (latest.initialDetail as { id?: unknown }).id === id) {
-            const d = adaptEntry({ ...latest.initialDetail } as Record<string, unknown>) as unknown as IndexDetailData;
+            const d = { ...latest.initialDetail } as IndexDetailData;
             const e = latest.initialEntry ?? fallbackEntry(id, d);
             if (enrichDetail) enrichDetail(e, d);
             seeded = { entry: e, detail: d };
@@ -772,7 +771,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                         if (!workData) return undefined;
                         const out: Record<string, number> = {};
                         const srcBooks = lineageSourceRef.current?.books ?? [];
-                        out.all = (workData.books?.length ?? 0)
+                        out.all = (workData._books?.length ?? 0)
                             - (workData.version_graph?.excluded_books?.length ?? 0);
                         const cs = workData.version_graph?.collections;
                         if (cs) {

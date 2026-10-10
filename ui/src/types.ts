@@ -3,23 +3,16 @@ import { bim } from './styles/tokens';
 /** 资源原子类型 */
 export type ResourceTypeAtom = 'text' | 'image' | 'physical';
 
-/** 资源类型（旧版兼容：可单值或组合）。新数据应用 `types: ResourceTypeAtom[]` */
+/** 资源类型的“显示值”：原子类型，或编辑器下拉里的 `text+image` 组合项（数据里只存 `types` 原子数组，不存 `text+image`） */
 export type ResourceType = ResourceTypeAtom | 'text+image';
 
-/**
- * 归一化资源条目的类型为原子类型数组。
- * 优先读 `types`（新格式），回退到 `type`（旧格式）。
- * 'text+image' 会被拆分为 ['text', 'image']。
- */
-export function getResourceTypes(entry: { type?: ResourceType; types?: ResourceTypeAtom[] }): ResourceTypeAtom[] {
-    if (entry.types && entry.types.length > 0) return entry.types;
-    if (!entry.type) return [];
-    if (entry.type === 'text+image') return ['text', 'image'];
-    return [entry.type as ResourceTypeAtom];
+/** 资源条目的类型原子数组：只读 `types`（单值 `type` 的读侧兼容已于 2026-10 清退）；缺失返回 [] */
+export function getResourceTypes(entry: { types?: ResourceTypeAtom[] }): ResourceTypeAtom[] {
+    return entry.types && entry.types.length > 0 ? entry.types : [];
 }
 
-/** 检测是否包含某种类型（兼容新旧格式） */
-export function hasResourceType(entry: { type?: ResourceType; types?: ResourceTypeAtom[] }, atom: ResourceTypeAtom): boolean {
+/** 检测是否包含某种类型 */
+export function hasResourceType(entry: { types?: ResourceTypeAtom[] }, atom: ResourceTypeAtom): boolean {
     return getResourceTypes(entry).includes(atom);
 }
 
@@ -96,9 +89,7 @@ export interface ResourceEntry {
     name: string;
     short_name?: string;
     url: string;
-    /** @deprecated 使用 types。保留作向后兼容读取。 */
-    type?: ResourceType;
-    /** 资源类型数组（自由组合）。优先于 type。 */
+    /** 资源类型数组（自由组合） */
     types?: ResourceTypeAtom[];
     root_type?: 'catalog' | 'search';
     structure?: string[];
@@ -480,13 +471,115 @@ export interface DatingInfo {
     later_repair?: { era?: string };
 }
 
+/**
+ * ── build 产物（`_build/entry/<id>.json`）里的 `_` 派生字段 ──
+ *
+ * 形状以 book-index 仓 `schema/derived.md` 为准。卡片用短键；值为空（`""`、`[]`、`0`、false）的键省略，
+ * 读者按「缺即无」处理。枢纽（入度 > 200 的记录）在引用它的卡片里只写 `{id, h: 1}`，名称在 `_hubs.json`；
+ * 经 `withHubTitles`（storage/hub-titles.ts）取到的条目，枢纽卡片已补上 `title`。
+ */
+
+/** 册次：整数、数组或字符串（「第1卷」「9-12」都有） */
+export type DerivedVolume = number | number[] | string;
+
+/** Book 卡（`_books` 的元素） */
+export interface DerivedBookCard {
+    id: string;
+    title?: string;
+    edition?: string;
+    /** edition_type */
+    etype?: string;
+    /** 朝代＋年号，如「清 乾隆」 */
+    dating?: string;
+    /** 公元年（供排序） */
+    y?: number;
+    holder?: string;
+    juan?: number;
+    img?: true;
+    txt?: true;
+    /** resources 项数 */
+    nres?: number;
+}
+
+/** Work `_related` 的元素：对方（Work 或 Collection）的卡片＋关系 */
+export interface DerivedRelatedCard {
+    id: string;
+    title?: string;
+    /** 枢纽：无 title，名称见 _hubs.json */
+    h?: 1;
+    /** 本条视角的关系词（`in` 方向时已取反向词） */
+    relation?: string;
+    direction?: 'out' | 'in';
+    note?: string;
+}
+
+/** Work `_classifications` 的元素 */
+export interface DerivedClassification {
+    scheme: string;
+    node?: string;
+    path?: string[];
+    l1: string;
+    l2?: string;
+    l3?: string;
+    l4?: string;
+    source?: string;
+}
+
+/** Work／Book `_catalogs` 的元素 */
+export interface DerivedCatalogCard {
+    bid: string;
+    title?: string;
+    h?: 1;
+    dyn?: string;
+    section?: string;
+}
+
+/** Work／Book `_collections` 的元素：所属丛编（Collection 卡）＋本条在其中的位置 */
+export interface DerivedCollectionRef {
+    id: string;
+    title?: string;
+    h?: 1;
+    /** 册次（source 的 volume_index） */
+    vol?: DerivedVolume;
+    /** 附属子目（source 的 sub_items） */
+    sub?: string[];
+    group?: string;
+    ord?: number;
+}
+
+/** Collection `_members` 的元素：成员（Work 卡或 Book 卡）＋成员在本丛编中的位置 */
+export interface DerivedMemberCard {
+    id: string;
+    t?: 'book' | 'work';
+    title?: string;
+    vol?: DerivedVolume;
+    sub?: string[];
+    group?: string;
+    ord?: number;
+    section?: string;
+}
+
+/** Entity `_works` 的元素：Work 卡（`id` 改名 `work_id`）＋署名角色 */
+export interface DerivedEntityWork {
+    work_id: string;
+    title?: string;
+    role?: string;
+    dyn?: string;
+    nb?: number;
+    img?: true;
+    txt?: true;
+}
+
 /** Book 详情 */
 export interface BookDetailData extends BaseDetailData {
     type: 'book';
     /** 刊刻年代（结构化）。优先于从题名现推的结果 */
     dating?: DatingInfo;
     work_id?: string;
+    /** 源档字段：本书被收入的丛编（成员侧写）。详情页读下面的 `_collections` */
     contained_in?: ContainedInEntry[];
+    /** build 产物：所属丛编（每个丛编一项，枢纽丛编无 title，名称见 withHubTitles） */
+    _collections?: DerivedCollectionRef[];
     location_history?: LocationInfo[];
     related_books?: string[];
     /** 版本传承信息（用于版本图） */
@@ -541,14 +634,14 @@ export interface CollectionDetailData extends BaseDetailData {
     /** 上级丛编，`{id}` 对象形（与 Book／Work 一致；旧裸 id 字符串形已清零，不再兼容） */
     contained_in?: Array<{ id: string }>;
     history?: string[];
+    /** @deprecated 源档已无此字段（成员只在成员侧 contained_in 写）；详情页读 `_members`。仅旧版 IndexDetail 还读 */
     books?: string[];
+    /** @deprecated 同上 */
     contained_works?: { id: string; title: string; volume_index?: number }[];
-    /** 派生：成員數（books ∪ contained_works ∪ 反掛 contained_in，去重）；=0 不寫 */
+    /** build 产物：成员总数；无成员为 0 */
     _member_count?: number;
-    /** schema-v2 build 产物：成员卡片（只有前 20 项，全表在 members/ 分页）；读者端经 derived-compat 归一成 books／contained_works */
-    _members?: unknown[];
-    /** derived-compat 标记：`_members` 只是前 N 项，总数见 `_member_count` */
-    _members_truncated?: boolean;
+    /** build 产物：成员卡片，只有前 20 项（全表在 members/ 分页，站点包没带）；总数见 `_member_count` */
+    _members?: DerivedMemberCard[];
     /** 成员型别（派生，2026-09-28）：成员是 Book／Work／两者兼有；缺则无从推断 */
     _member_type?: 'Book' | 'Work' | 'Collection' | 'mixed' | string;
     /** 应收总数（卷／册／种／函分列，各自可 null）；source 仅内部 */
@@ -569,16 +662,27 @@ export interface WorkDetailData extends BaseDetailData {
     type: 'work';
     parent_works?: string[];
     parent_work?: { id: string; title: string };
-    /** 小型作品的版本列表（Book ID 数组） */
+    /** @deprecated 源档已无此字段（作品归属只在 Book.work_id）；详情页读 `_books`。仅旧版 IndexDetail 还读 */
     books?: string[];
-    /** 大型作品的版本列表（Collection ID 数组）—— 如四库全书七閣本 */
+    /** @deprecated 同上 */
     collections?: string[];
+    /** 源档字段（编辑器用；不带对方题名）。详情页读 `_related` */
     related_works?: { id: string; title: string; relation?: 'part_of' | 'has_part' | 'collected_in' | 'text_carried_by' | 'studied_by' | 'preceded_by' | 'followed_by' | 'related' | (string & {}); note?: string }[];
     /** 版本传承图（多版本作品如红楼梦、十三经等） */
     version_graph?: VersionGraph;
-    /** 派生：掛在本作品下的 Book 數（由 Book.work_id 反查）；=0 不寫 */
+    /** build 产物：掛在本作品下的版本（Book 卡），有年代者在前、按年代升序 */
+    _books?: DerivedBookCard[];
+    /** build 产物：掛在本作品下的 Book 數（= `_books.length`） */
     _edition_count?: number;
-    /** 四部分類；沒有此鍵只代表尚無可靠依據 */
+    /** build 产物：分类（总目 zongmu 等，可有多条；没有只代表尚無可靠依據） */
+    _classifications?: DerivedClassification[];
+    /** build 产物：与本作品有关系的作品／丛编，按本条视角取词，带对方现行题名与 direction */
+    _related?: DerivedRelatedCard[];
+    /** build 产物：著录本作品的志书（只有名称与部类；著录原文在源档 `indexed_by`） */
+    _catalogs?: DerivedCatalogCard[];
+    /** build 产物：所属丛编 */
+    _collections?: DerivedCollectionRef[];
+    /** @deprecated 源档已无此字段（分类在 classification/ 成员档）；详情页读 `_classifications` */
     classification?: WorkClassification;
     /** Work 子類（book / article / poem / chapter） */
     subtype?: string;
@@ -605,8 +709,10 @@ export interface EntityDetailData extends BaseDetailData {
     dates?: EntityDates;
     /** 籍贯（「建州」），人物页提要卡写成「建州人」 */
     native_place?: string;
-    /** 关联作品反查 */
+    /** @deprecated 源档已无此字段（署名只在 Work.authors[].entity_id）；详情页读 `_works`。仅旧版 EntityDetail 还读 */
     works?: EntityWorkRef[];
+    /** build 产物：著录本专名的作品（Work 卡，`id` 改名 `work_id`，另有 role） */
+    _works?: DerivedEntityWork[];
     /** 外部数据库引用（CBDB 等） */
     external_ids?: ExternalIds;
     /** 是否草稿 */
