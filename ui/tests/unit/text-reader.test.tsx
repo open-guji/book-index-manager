@@ -65,6 +65,27 @@ describe('TextReader · 新结构', () => {
         expect(versionSelect().value).toBe('default');
     });
 
+    it('self_collated（自校本）与整理本同类：单位是「卷」、有跨章搜索框；全文仍是「章」、无搜索框', async () => {
+        const selfCollated = {
+            id: WORK,
+            versions: [{ key: 'default', kind: 'self_collated', label: '自校本', source: 'self', source_name: '自校本', license: 'CC0 1.0' }],
+        };
+        const first = setup(nativeTransport({}, selfCollated));
+        await screen.findByRole('heading', { level: 1, name: '經錄' });
+        expect(document.querySelector('.bim-rd-kicker')?.textContent).toContain('卷1');
+        expect(document.querySelector('.bim-rd-kicker')?.textContent).not.toContain('章1');
+        expect(document.querySelector('input.bim-rd-toc-search')).not.toBeNull();
+        first.unmount();
+
+        const transcription = {
+            id: WORK,
+            versions: [{ key: 'wikisource', kind: 'transcription', label: '維基文庫', source: 'wikisource', source_name: '維基文庫', license: 'CC BY-SA 4.0' }],
+        };
+        setup(nativeTransport({}, transcription));
+        await screen.findByRole('heading', { level: 1, name: '卷一' });
+        expect(document.querySelector('input.bim-rd-toc-search')).toBeNull();
+    });
+
     it('整理本章有 json：结构化渲染（书目条目、作品链接），卷头小标题带位置', async () => {
         setup(nativeTransport());
         await screen.findByRole('heading', { level: 1, name: '經錄' });
