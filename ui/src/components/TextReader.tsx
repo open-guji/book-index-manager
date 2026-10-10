@@ -392,7 +392,9 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     const [selectedCharIds, setSelectedCharIds] = useState<Set<string>>(new Set());
     const [hoveredCharId, setHoveredCharId] = useState<string | null>(null);
     const [showPunctuation, setShowPunctuation] = useState<boolean>(true);
-    const [preserveMargins, setPreserveMargins] = useState<boolean>(true);
+    // 书影保留空白：走阅读偏好（持久化；设置面板里的勾选框与书影区的分段按钮是同一个偏好）
+    const preserveMargins = storedPrefs.preserveMargins;
+    const setPreserveMargins = useCallback((v: boolean) => setPrefs({ preserveMargins: v }), [setPrefs]);
     // 书影缩放：倍数（显示百分比、放大后换原图档）；翻页按钮带正文滚动用的触发器
     const zoomRef = useRef<ZoomPanHandle>(null);
     const [zoomScale, setZoomScale] = useState(1);
@@ -476,17 +478,40 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     // 第二次读到旧页号会翻错方向（3→4 后紧跟一次「‹」得到 2，而不是 3）
     const activePageRef = useRef(activePage);
     activePageRef.current = activePage;
-    const flipPage = useCallback((delta: number) => {
-        const cur = activePageRef.current;
-        const i = pageNumbers.indexOf(cur);
-        const next = pageNumbers[i < 0 ? 0 : i + delta];
-        if (next === undefined || next === cur) return;
+    const goToPage = useCallback((next: number) => {
+        if (activePageRef.current === next || !pageInfos.has(next)) return;
         activePageRef.current = next;
         setActivePage(next);
         if (pageInfos.get(next)?.columns.some(c => c.chars.length > 0)) {
             setScrollTarget(t => ({ page: next, nonce: (t?.nonce ?? 0) + 1 }));
         }
-    }, [pageNumbers, pageInfos]);
+    }, [pageInfos]);
+    const flipPage = useCallback((delta: number) => {
+        const cur = activePageRef.current;
+        const i = pageNumbers.indexOf(cur);
+        const next = pageNumbers[i < 0 ? 0 : i + delta];
+        if (next === undefined || next === cur) return;
+        goToPage(next);
+    }, [pageNumbers, goToPage]);
+    // 输入葉码跳转：越界夹到首／末页；列表里没有的页号（跳号）取最近的一页；非数字返回 null（调用方还原输入框）
+    const resolveTypedPage = useCallback((raw: string): number | null => {
+        const m = raw.trim().match(/^\d+$/);
+        if (!m || pageNumbers.length === 0) return null;
+        const parsed = parseInt(raw.trim(), 10);
+        const n = Number.isFinite(parsed) ? parsed : Number.MAX_SAFE_INTEGER; // 超长数字串会解析成 Infinity：当作超出末页
+        return pageNumbers.reduce((best, p) => (Math.abs(p - n) < Math.abs(best - n) ? p : best), pageNumbers[0]);
+    }, [pageNumbers]);
+    const [pageDraft, setPageDraft] = useState<string | null>(null);
+    const pageDraftRef = useRef<string | null>(null);
+    const editPageDraft = useCallback((v: string) => { pageDraftRef.current = v; setPageDraft(v); }, []);
+    const commitPageDraft = useCallback(() => {
+        const d = pageDraftRef.current;
+        pageDraftRef.current = null;
+        setPageDraft(null); // 无论成功与否都回到「显示当前页号」
+        if (d === null) return;
+        const target = resolveTypedPage(d);
+        if (target !== null) goToPage(target);
+    }, [resolveTypedPage, goToPage]);
     const activeIdx = pageNumbers.indexOf(activePage);
     // 键盘翻页只在书影区获得焦点时响应，不占用全局方向键（正文滚动要用）
     const onFacsimileKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -682,11 +707,6 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px 6px', fontSize: 12, color: bim('meta-fg'), gap: 8, flexWrap: 'wrap' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                             <span style={{ fontWeight: 600, marginRight: 4 }}>底本书影</span>
-                            <button type="button" className="bim-rd-t" data-testid="facsimile-prev" aria-label="上一葉"
-                                disabled={activeIdx <= 0} onClick={() => flipPage(-1)}>‹</button>
-                            <span data-warp-page={activePage} style={{ fontSize: 11, padding: '1px 6px', background: bim('rule'), borderRadius: 10 }}>第 {activePage} 葉</span>
-                            <button type="button" className="bim-rd-t" data-testid="facsimile-next" aria-label="下一葉"
-                                disabled={activeIdx < 0 || activeIdx >= pageNumbers.length - 1} onClick={() => flipPage(1)}>›</button>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             {selectedCharIds.size > 0 && (
@@ -727,6 +747,37 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                             onCharHover={setHoveredCharId}
                         />
                     </ZoomPanBox>
+                    {/* 页导航在书影图片正下方：箭头点击区 ≥ 40×40（触屏），「第 x 葉」的数字可输入（回车／失焦跳转，越界夹取，非数字还原） */}
+                    <div data-testid="facsimile-pager" role="group" aria-label={t('reader.facsimilePager')}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '6px 4px 0', fontSize: 13, color: bim('meta-fg') }}>
+                        <button type="button" className="bim-rd-t" data-testid="facsimile-prev" aria-label="上一葉"
+                            style={{ minWidth: 40, minHeight: 40, fontSize: 20, lineHeight: 1 }}
+                            disabled={activeIdx <= 0} onClick={() => flipPage(-1)}>‹</button>
+                        <span data-warp-page={activePage} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '1px 8px', background: bim('rule'), borderRadius: 10 }}>
+                            第
+                            <input
+                                type="text"
+                                inputMode="numeric"
+                                data-testid="facsimile-page-input"
+                                aria-label={t('reader.facsimilePageInput')}
+                                size={Math.max(2, String(pageDraft ?? activePage).length)}
+                                value={pageDraft ?? String(activePage)}
+                                onFocus={e => e.currentTarget.select()}
+                                onChange={e => editPageDraft(e.target.value)}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter') { e.preventDefault(); commitPageDraft(); }
+                                    else if (e.key === 'Escape') { pageDraftRef.current = null; setPageDraft(null); }
+                                    e.stopPropagation(); // 输入时的方向键、翻页键不要触发书影翻页
+                                }}
+                                onBlur={commitPageDraft}
+                                style={{ width: `${Math.max(2, String(pageDraft ?? activePage).length) + 1}ch`, minHeight: 28, textAlign: 'center', font: 'inherit', border: `1px solid ${bim('rule')}`, borderRadius: 4, background: 'transparent', color: 'inherit' }}
+                            />
+                            葉
+                        </span>
+                        <button type="button" className="bim-rd-t" data-testid="facsimile-next" aria-label="下一葉"
+                            style={{ minWidth: 40, minHeight: 40, fontSize: 20, lineHeight: 1 }}
+                            disabled={activeIdx < 0 || activeIdx >= pageNumbers.length - 1} onClick={() => flipPage(1)}>›</button>
+                    </div>
                 </div>
             ) : undefined}
             settingsAnnotate={warpData ? (
