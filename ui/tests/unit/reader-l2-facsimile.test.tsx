@@ -148,6 +148,13 @@ describe('L2 · 输入葉码跳转', () => {
         expect(input().value).toBe('1');
     });
 
+    it('超长数字串（parseInt 得 Infinity）按越界处理，夹到末页', async () => {
+        await setup();
+        fireEvent.change(input(), { target: { value: '9'.repeat(400) } });
+        fireEvent.keyDown(input(), { key: 'Enter' });
+        expect(wp()).toBe('6');
+    });
+
     it('非数字忽略并还原为当前页', async () => {
         await setup();
         for (const bad of ['abc', '', ' ', '-2', '3.5', '一二']) {
@@ -234,6 +241,9 @@ describe('L2 · 普通书影面板（ImagePanel）去空白', () => {
         expect(trimRect(page({ width: undefined }))).toBeNull();
         expect(trimRect(page({ boxes: [{ x: 5, y: 5, w: 0, h: 0 }] }))).toBeNull();
         expect(trimRect(page({ boxFormat: 'other' }))).toBeNull();
+        // 框完全落在图外：不裁，不产生负宽高
+        expect(trimRect(page({ boxes: [{ x: 1500, y: 1600, w: 50, h: 50 }] }))).toBeNull();
+        expect(trimRect(page({ boxes: [{ x: -300, y: -300, w: 50, h: 50 }] }))).toBeNull();
         // 框几乎铺满整页：不裁
         expect(trimRect(page({ boxes: [{ x: 0, y: 0, w: 1000, h: 1400 }] }))).toBeNull();
     });
@@ -251,6 +261,8 @@ describe('L2 · 普通书影面板（ImagePanel）去空白', () => {
         expect(fig.getAttribute('data-trim')).toBe('170,270,560,860');
         const img = fig.querySelector('img') as HTMLImageElement;
         expect(img.style.width).toBe(`${(1000 / 560) * 100}%`);
+        expect(img.style.left).toBe(`${(-170 / 560) * 100}%`);
+        expect(img.style.top).toBe(`${(-270 / 860) * 100}%`);
         expect(container.querySelector('svg')!.getAttribute('viewBox')).toBe('170 270 560 860');
         rerender(<LocaleProvider><ImagePanel pages={[page()]} preserveMargins /></LocaleProvider>);
         expect(container.querySelector('.bim-rd-img-trimmed')).toBeNull();

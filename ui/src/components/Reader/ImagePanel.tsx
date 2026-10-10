@@ -43,8 +43,10 @@ export function trimRect(page: ReaderPageImage): { x: number; y: number; w: numb
     }
     if (!(x1 > x0) || !(y1 > y0)) return null;
     const pad = Math.min(W, H) * 0.03;
-    const x = Math.max(0, x0 - pad), y = Math.max(0, y0 - pad);
-    const w = Math.min(W, x1 + pad) - x, h = Math.min(H, y1 + pad) - y;
+    // 起点和远端边都夹进图内；框完全落在图外时宽高为 0 或负，不裁（否则会算出无效的宽高比）
+    const x = Math.min(W, Math.max(0, x0 - pad)), y = Math.min(H, Math.max(0, y0 - pad));
+    const w = Math.min(W, Math.max(0, x1 + pad)) - x, h = Math.min(H, Math.max(0, y1 + pad)) - y;
+    if (!(w > 0) || !(h > 0)) return null;
     // 几乎没裁掉东西就不动（裁切反而引入取整误差）
     if (w >= W * 0.98 && h >= H * 0.98) return null;
     return { x, y, w, h };

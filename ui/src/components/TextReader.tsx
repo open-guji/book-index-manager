@@ -477,7 +477,8 @@ export const TextReader: React.FC<TextReaderProps> = ({
     const resolveTypedPage = useCallback((raw: string): number | null => {
         const m = raw.trim().match(/^\d+$/);
         if (!m || pageNumbers.length === 0) return null;
-        const n = parseInt(raw.trim(), 10);
+        const parsed = parseInt(raw.trim(), 10);
+        const n = Number.isFinite(parsed) ? parsed : Number.MAX_SAFE_INTEGER; // 超长数字串会解析成 Infinity：当作超出末页
         return pageNumbers.reduce((best, p) => (Math.abs(p - n) < Math.abs(best - n) ? p : best), pageNumbers[0]);
     }, [pageNumbers]);
     const [pageDraft, setPageDraft] = useState<string | null>(null);
