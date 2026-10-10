@@ -299,19 +299,19 @@ describe('TextReader 接线：偏好 → 对读正文', () => {
         return view;
     }
     const put = (p: object) => localStorage.setItem('bim-reader-prefs', JSON.stringify(p));
-    const kinds = (c: HTMLElement) => Array.from(c.querySelectorAll('.bim-et')).map((e) => e.className.match(/bim-et-(work|person|place|office|dynasty|reign|other)\b/)?.[1]).sort();
+    const kinds = (c: HTMLElement) => Array.from(c.querySelectorAll('.bim-et')).map((e) => e.className.match(/bim-et-(work|people|place|office|dynasty|reign|other)\b/)?.[1]).sort();
 
     beforeEach(() => { localStorage.clear(); });
 
     it('properNameMode：full 全画；lite 只画人名、地名、朝代（官职不画）；off 不画人名等，书名只看 showWorks', async () => {
         put({ properNameMode: 'full' });
-        expect(kinds((await mount()).container)).toEqual(['dynasty', 'office', 'person', 'work']);
+        expect(kinds((await mount()).container)).toEqual(['dynasty', 'office', 'people', 'work']);
         document.body.innerHTML = '';
         put({ properNameMode: 'lite' });
-        expect(kinds((await mount()).container)).toEqual(['dynasty', 'person', 'work']);
+        expect(kinds((await mount()).container)).toEqual(['dynasty', 'people', 'work']);
         document.body.innerHTML = '';
         put({ properNameMode: 'lite', showWorks: false });
-        expect(kinds((await mount()).container)).toEqual(['dynasty', 'person']);
+        expect(kinds((await mount()).container)).toEqual(['dynasty', 'people']);
         document.body.innerHTML = '';
         put({ properNameMode: 'off', showWorks: true });
         expect(kinds((await mount()).container)).toEqual(['work']);

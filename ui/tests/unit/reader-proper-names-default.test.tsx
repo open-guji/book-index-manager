@@ -88,7 +88,7 @@ describe('专名线默认值', () => {
         await waitFor(() => expect(first.container.querySelectorAll('.bim-et-work').length).toBeGreaterThan(0));
         fireEvent.click(off());
         // 专名号档位「不显示」关掉人名等；书名只看「标注书名」开关（overview#510），不随档位
-        await waitFor(() => expect(first.container.querySelectorAll('.bim-et-person').length).toBe(0));
+        await waitFor(() => expect(first.container.querySelectorAll('.bim-et-people').length).toBe(0));
         expect(first.container.querySelectorAll('.bim-et-work').length).toBeGreaterThan(0);
         const stored = JSON.parse(localStorage.getItem('bim-reader-prefs') ?? '{}');
         expect(stored.properNameMode).toBe('off');
@@ -96,7 +96,7 @@ describe('专名线默认值', () => {
         first.unmount();
         const second = await mount(true);
         await waitFor(() => expect(off().getAttribute('aria-pressed')).toBe('true'));
-        expect(second.container.querySelectorAll('.bim-et-person').length).toBe(0);
+        expect(second.container.querySelectorAll('.bim-et-people').length).toBe(0);
     });
 
     it('本章没有专名层数据：没选过时不画线、开关不按下', async () => {

@@ -29,7 +29,7 @@ export const defaultEntityHref = (id: string) => `/item/${encodeURIComponent(id)
 /** 卡片上的类别名（繁体原文，简体模式经 convert 转换） */
 const KIND_LABEL: Record<EntityKind, string> = {
     work: '書名',
-    person: '人名',
+    people: '人名',
     place: '地名',
     office: '官職',
     dynasty: '朝代',

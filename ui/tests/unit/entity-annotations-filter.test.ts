@@ -4,14 +4,14 @@
 import { describe, expect, it } from 'vitest';
 import { filterEntitiesByMode, type EntityKind, type EntitySpan, type ProperNameMode } from '../../src/core/entity-annotations';
 
-const KINDS: EntityKind[] = ['work', 'person', 'place', 'office', 'dynasty', 'reign', 'other'];
+const KINDS: EntityKind[] = ['work', 'people', 'place', 'office', 'dynasty', 'reign', 'other'];
 const mk = (kind: EntityKind, i = 0): EntitySpan => ({ key: `e${kind}${i}`, kind, text: kind });
 const ALL = KINDS.map((k) => mk(k));
 
 const EXPECT: Record<ProperNameMode, EntityKind[]> = {
     off: [],
-    lite: ['person', 'place', 'dynasty'],
-    full: ['person', 'place', 'dynasty', 'office', 'reign', 'other'],
+    lite: ['people', 'place', 'dynasty'],
+    full: ['people', 'place', 'dynasty', 'office', 'reign', 'other'],
 };
 
 describe('filterEntitiesByMode', () => {
@@ -36,10 +36,10 @@ describe('filterEntitiesByMode', () => {
     });
 
     it('顺序保持，且不改入参、不改 span 对象', () => {
-        const input = [mk('person', 1), mk('work', 2), mk('place', 3), mk('other', 4)];
+        const input = [mk('people', 1), mk('work', 2), mk('place', 3), mk('other', 4)];
         const snapshot = JSON.parse(JSON.stringify(input));
         const out = filterEntitiesByMode(input, 'full');
-        expect(out.map((s) => s.key)).toEqual(['eperson1', 'ework2', 'eplace3', 'eother4']);
+        expect(out.map((s) => s.key)).toEqual(['epeople1', 'ework2', 'eplace3', 'eother4']);
         expect(input).toEqual(snapshot);
         expect(out).not.toBe(input);
         expect(out[0]).toBe(input[0]);

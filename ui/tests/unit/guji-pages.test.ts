@@ -19,6 +19,23 @@ describe('adaptPunctJson / iiifVolumeOf', () => {
         expect(adaptPunctJson([{ mark: '。', anchor: '3:1:4', id: 'x' }])[0].id).toBe('x');
     });
 
+    it('pre_char：恰好一个码点（含代理对）保留；多字符、空串、非字符串的整条丢弃；缺省或 null 不丢', () => {
+        const out = adaptPunctJson([
+            { anchor: '3:1:1', mark: '。', pre_char: '王' },
+            { anchor: '3:1:2', mark: '。', pre_char: '\u{20000}' }, // CJK 扩展 B：2 个 UTF-16 码元，1 个码点
+            { anchor: '3:1:3', mark: '。', pre_char: '王弼' },
+            { anchor: '3:1:4', mark: '。', pre_char: '' },
+            { anchor: '3:1:5', mark: '。', pre_char: 7 },
+            { anchor: '3:1:6', mark: '。' },
+            { anchor: '3:1:7', mark: '。', pre_char: null },
+        ]);
+        expect(out.map(p => p.anchor)).toEqual(['3:1:1', '3:1:2', '3:1:6', '3:1:7']);
+        expect(out[0].pre_char).toBe('王');
+        expect(out[1].pre_char).toBe('\u{20000}');
+        expect(out[2].pre_char).toBeUndefined();
+        expect(out[3].pre_char).toBeUndefined();
+    });
+
     it('册号从 canvas id 取', () => {
         expect(iiifVolumeOf({ pages: [page(3, '0003', [])] })).toEqual({ bookId: 'b', vol: '03' });
         expect(iiifVolumeOf({ pages: [] })).toBeNull();

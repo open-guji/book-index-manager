@@ -30,8 +30,14 @@ export interface GujiPageInfo {
     columns: { col: number; chars: GujiPageChar[] }[];
 }
 
-/** `punct.json`（`{punctuations: [...]}` 或直接数组）→ 标点条目；缺 `anchor`／`mark` 的丢弃 */
-export function adaptPunctJson(raw: unknown): { id?: string; anchor: string; mark: string; kind?: 'point' | 'break' | 'range'; pos?: 'after' | 'before'; pre_char?: string }[] {
+/** 单个字符：恰好一个码点（代理对算一个字） */
+const isSingleChar = (v: unknown): v is string => typeof v === 'string' && Array.from(v).length === 1;
+
+/**
+ * `punct.json`（`{punctuations: [...]}` 或直接数组）→ 标点条目；缺 `anchor`／`mark` 的丢弃。
+ * `pre_char` 缺省（或 null）即不带；给了但不是单个字符的，整条标点丢弃（不抛错）。
+ */
+export function adaptPunctJson(raw: unknown): { id?: string; anchor: string; mark: string; kind?: 'point' | 'break'; pos?: 'after' | 'before'; pre_char?: string }[] {
     const list: unknown[] = Array.isArray(raw)
         ? raw
         : raw && typeof raw === 'object' && Array.isArray((raw as { punctuations?: unknown }).punctuations)
@@ -42,7 +48,8 @@ export function adaptPunctJson(raw: unknown): { id?: string; anchor: string; mar
         if (!item || typeof item !== 'object') continue;
         const p = item as Record<string, any>;
         if (typeof p.anchor !== 'string' || typeof p.mark !== 'string') continue;
-        out.push({ id: typeof p.id === 'string' ? p.id : undefined, anchor: p.anchor, mark: p.mark, kind: p.kind, pos: p.pos, pre_char: p.pre_char });
+        if (p.pre_char != null && !isSingleChar(p.pre_char)) continue;
+        out.push({ id: typeof p.id === 'string' ? p.id : undefined, anchor: p.anchor, mark: p.mark, kind: p.kind, pos: p.pos, pre_char: p.pre_char ?? undefined });
     }
     return out;
 }

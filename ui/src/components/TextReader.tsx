@@ -16,7 +16,7 @@ import type { AuthorInfo, CollatedEditionIndex } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { createTextApi } from '../core/text-api';
 import type { TextChapterContent, TextChapter, TextIndex, TextManifest, TextUpstream, TextVersion } from '../core/text-model';
-import { matchChapterAcrossVersions, pickTextVersion, textVersionLabel } from '../core/text-model';
+import { isCollatedKind, matchChapterAcrossVersions, pickTextVersion, textVersionLabel } from '../core/text-model';
 import { useBidUrl } from '../core/bid-url';
 import { bim } from '../styles/tokens';
 import { useI18n } from '../i18n/use-i18n';
@@ -145,7 +145,7 @@ function asCollatedIndex(id: string, idx: TextIndex): CollatedEditionIndex {
 function unitOf(version: TextVersion | undefined, idx: TextIndex | null): string {
     if (idx?.type === 'kaozhen') return '章';
     if (idx?.juan_metadata && Object.values(idx.juan_metadata).some(m => m.vol_label)) return '冊';
-    return version?.kind === 'collated' ? '卷' : '章';
+    return isCollatedKind(version?.kind) ? '卷' : '章';
 }
 
 /** 章在目录里的名字：有章名就用章名（已带「卷一」「第三回」这类位置词的不重复加），整理本的章名前补位置（「卷3　正史類」） */
@@ -348,7 +348,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     }, [api, id, versionKey, chapterMeta]);
 
     // ── 跨章搜索（整理本） ──
-    const isCollated = version?.kind === 'collated';
+    const isCollated = isCollatedKind(version?.kind);
     const [searchQuery, setSearchQuery] = useState('');
     useEffect(() => { setSearchQuery(''); }, [id, versionKey]);
     const loadEntry = useMemo(

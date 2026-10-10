@@ -3,20 +3,31 @@
  *
  * 组件（`components/EntityText`）只认本文件的 `EntitySpan`，不直接读 entity.json。
  * entity.json 的格式（A1，overview#385）定稿前，以 open-guji-cv
- * `open_guji_cv/render/entity_extract.py` 的 `build_entity_json()` 输出（guji-entity v0.1）为准：
+ * `open_guji_cv/render/entity_extract.py` 的 `build_entity_json()` 输出（guji-entity v0.1）为准。
+ * 类别统一用新规格口径：`type` 取 `work` | `people` | `place` | `office` | `dynasty` | `reign` | `other`。
+ * 读侧保持宽容：旧 entity.json 里的 `person` 读作 `people`，`book` 读作 `work`（`KIND_MAP`），类型层不再出现 `'person'`。
  *
  * ```json
  * { "$schema": "https://open-guji.org/schema/entity/v0.1.json", "version": "0.1.0",
  *   "book_id": "...", "volume": 1,
  *   "entities": [{
- *     "id": "e0001", "type": "work" | "people" | "place" | "office" | "dynasty" | "other",
+ *     "id": "e0001", "type": "work" | "people" | "place" | "office" | "dynasty" | "reign" | "other",
  *     "text": "史記",
  *     "anchor": { "start": "1:2:3", "end": "1:2:4" },
  *     "span": { "start_offset": 12, "end_offset": 14 },
  *     "target": { "status": "matched" | "new_candidate" | "external",
- *                 "entity_id": "...", "canonical_name": "...", "href": "book-index://Work/<id>" },
- *     "confidence": 0.9, "source": "llm:qwen-plus" }] }
+ *                 "entity_id": "...", "canonical_name": "...", "href": "book-index://Work/<id>",
+ *                 "confidence": 0.8, "level": "exact", "note": "同名人物，按上下文定" },
+ *     "confidence": 0.9, "source": "llm:qwen-plus",
+ *     "group": "g0007",
+ *     "ambiguous": { "candidates": [
+ *         { "entity_id": "...", "canonical_name": "...", "confidence": 0.5 },
+ *         { "entity_id": "...", "canonical_name": "...", "confidence": 0.3 }] } }] }
  * ```
+ *
+ * 新字段（仅读入，本层不接 UI）：`target.confidence/level/note` → `targetConfidence/targetLevel/targetNote`；
+ * 顶层 `group` → `group`；`ambiguous.candidates` → `candidates`。顶层 `confidence` 缺失时回退用 `target.confidence`。
+ * 非法形状（非数字、非数组、非对象）一律忽略，不抛错。
  *
  * `span` 是可选缓存（guji-format spec/05），`anchor` 才是权威定位：没有 `span` 的条目照收，只按 anchor 对位。
  * 注意 `span` 的偏移是**纯字**下标（底本去掉标点、空白、《》/ 标记后的字序，end 不含），
@@ -25,7 +36,7 @@
  */
 
 /** 实体类别。`work` 画书名号（波浪线），其余画专名线（直线） */
-export type EntityKind = 'work' | 'person' | 'place' | 'office' | 'dynasty' | 'reign' | 'other';
+export type EntityKind = 'work' | 'people' | 'place' | 'office' | 'dynasty' | 'reign' | 'other';
 
 /** 组件使用的实体区间 */
 export interface EntitySpan {
@@ -45,8 +56,18 @@ export interface EntitySpan {
     targetId?: string;
     /** 条目规范名（卡片标题的后备） */
     canonicalName?: string;
-    /** 置信度 0–1 */
+    /** 置信度 0–1（顶层 `confidence`；缺失时回退用 `target.confidence`） */
     confidence?: number;
+    /** `target.confidence`（0–1）：对已匹配目标的把握 */
+    targetConfidence?: number;
+    /** `target.level`：匹配层级（原样保留，本层不解释） */
+    targetLevel?: string;
+    /** `target.note`：匹配说明（原样保留） */
+    targetNote?: string;
+    /** 顶层 `group`：同一实体的分组标识 */
+    group?: string;
+    /** `ambiguous.candidates`：歧义时的候选目标 */
+    candidates?: Array<{ entity_id?: string; canonical_name?: string; confidence?: number }>;
     /**
      * 逐字锚点（对读用）：起止字 id（含），格式 `<页>:<列>:<格>`。有它就不依赖 `start/end` 偏移，
      * 直接按字 id 对位到对读正文，不受标点、缺字、夹注影响。规范里它是必有的权威定位。
@@ -54,11 +75,15 @@ export interface EntitySpan {
     anchor?: { start: string; end: string };
 }
 
+/**
+ * 旧输入的别名也收（读侧宽容，旧 entity.json 仍在）：`person`→`people`，`book`→`work`。
+ * 类型层只有 EntityKind 的新名字，不再出现 `'person'`。
+ */
 const KIND_MAP: Record<string, EntityKind> = {
     work: 'work',
     book: 'work',
-    people: 'person',
-    person: 'person',
+    people: 'people',
+    person: 'people',
     place: 'place',
     office: 'office',
     dynasty: 'dynasty',
@@ -66,7 +91,8 @@ const KIND_MAP: Record<string, EntityKind> = {
 };
 
 function toKind(raw: unknown): EntityKind {
-    return (typeof raw === 'string' && KIND_MAP[raw]) || 'other';
+    // hasOwn：不让 'constructor' 之类的原型属性混进来
+    return (typeof raw === 'string' && Object.prototype.hasOwnProperty.call(KIND_MAP, raw) && KIND_MAP[raw]) || 'other';
 }
 
 /**
@@ -90,6 +116,24 @@ function num(v: unknown): number | undefined {
 
 function str(v: unknown): string | undefined {
     return typeof v === 'string' && v ? v : undefined;
+}
+
+/** `ambiguous.candidates`：非数组或非对象的项忽略；字段类型不对的字段丢掉，不丢整项 */
+function candidatesOf(ambiguous: unknown): EntitySpan['candidates'] {
+    const list = ambiguous && typeof ambiguous === 'object' ? (ambiguous as { candidates?: unknown }).candidates : undefined;
+    if (!Array.isArray(list)) return undefined;
+    type Candidate = NonNullable<EntitySpan['candidates']>[number];
+    const out: Candidate[] = [];
+    for (const c of list) {
+        if (!c || typeof c !== 'object' || Array.isArray(c)) continue;
+        const o = c as Record<string, unknown>;
+        const cand: Candidate = {};
+        if (str(o.entity_id) !== undefined) cand.entity_id = str(o.entity_id);
+        if (str(o.canonical_name) !== undefined) cand.canonical_name = str(o.canonical_name);
+        if (num(o.confidence) !== undefined) cand.confidence = num(o.confidence);
+        out.push(cand);
+    }
+    return out;
 }
 
 /** 有偏移的区间（按偏移切分用） */
@@ -126,6 +170,8 @@ export function adaptEntityJson(raw: unknown): EntitySpan[] {
         const targetId = status === undefined || status === 'matched'
             ? (bookIndexUriToId(str(target.entity_id)) ?? bookIndexUriToId(str(target.href)) ?? undefined)
             : undefined;
+        const targetConfidence = num(target.confidence);
+        const candidates = candidatesOf(e.ambiguous);
         out.push({
             ...(aStart && aEnd ? { anchor: { start: aStart, end: aEnd } } : {}),
             key: str(e.id) ?? `e${i}`,
@@ -134,7 +180,12 @@ export function adaptEntityJson(raw: unknown): EntitySpan[] {
             text: str(e.text),
             targetId,
             canonicalName: str(target.canonical_name),
-            confidence: num(e.confidence),
+            confidence: num(e.confidence) ?? targetConfidence,
+            ...(targetConfidence !== undefined ? { targetConfidence } : {}),
+            ...(str(target.level) !== undefined ? { targetLevel: str(target.level) } : {}),
+            ...(str(target.note) !== undefined ? { targetNote: str(target.note) } : {}),
+            ...(str(e.group) !== undefined ? { group: str(e.group) } : {}),
+            ...(candidates !== undefined ? { candidates } : {}),
         });
     });
     // 有偏移的按起点排（同起点长的在前）；无偏移的（只有 anchor）排后面，数组排序稳定，保持文件内顺序
@@ -238,8 +289,8 @@ export type ProperNameMode = 'off' | 'lite' | 'full';
 
 const KINDS_BY_MODE: Record<ProperNameMode, readonly EntityKind[]> = {
     off: [],
-    lite: ['person', 'place', 'dynasty'],
-    full: ['person', 'place', 'dynasty', 'office', 'reign', 'other'],
+    lite: ['people', 'place', 'dynasty'],
+    full: ['people', 'place', 'dynasty', 'office', 'reign', 'other'],
 };
 
 /** 按专名号档位筛实体；书名（work）只看 showWorks（缺省 true），与档位无关。返回新数组，保持原顺序，不改入参。 */

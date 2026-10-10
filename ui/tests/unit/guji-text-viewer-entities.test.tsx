@@ -38,7 +38,7 @@ describe('GujiTextViewer 实体标注', () => {
         const link = container.querySelector('a.bim-et-work') as HTMLAnchorElement;
         expect(link.getAttribute('href')).toBe('/item/w1abc');
         expect(Array.from(link.querySelectorAll('[data-char-id]')).map(e => e.textContent).join('')).toBe('漢書藝文志');
-        const plain = container.querySelector('span.bim-et-person') as HTMLElement;
+        const plain = container.querySelector('span.bim-et-people') as HTMLElement;
         expect(plain.tagName).toBe('SPAN');
         expect(plain.textContent).toBe('王弼');
         expect(container.querySelectorAll('[data-char-id]').length).toBe(8);
@@ -75,7 +75,7 @@ describe('GujiTextViewer 实体标注：span 缺失也按 anchor 对位（spec/0
         const { container } = setup({ entities: noSpan });
         const link = container.querySelector('a.bim-et-work') as HTMLAnchorElement;
         expect(link.getAttribute('href')).toBe('/item/w1abc');
-        expect(container.querySelector('span.bim-et-person')?.textContent).toBe('王弼');
+        expect(container.querySelector('span.bim-et-people')?.textContent).toBe('王弼');
     });
 });
 
