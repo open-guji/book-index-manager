@@ -235,3 +235,67 @@ describe('TextReader 接线（全文章）', () => {
         expect(c.querySelector('article')!.textContent).not.toContain(':zi[');
     });
 });
+
+// ── overview#516 W-G 裁决：夹注三条与 spec 对齐 ──
+describe('夹注分行 `|` 只首个生效（spec §1）', () => {
+    it('第一个 | 是分行点，横排忽略；其后的 | 保留为字', () => {
+        expect(plain('子曰<甲|乙|丙>')).toBe('子曰（甲乙|丙）');
+        expect(plain('<甲|乙|丙|丁>')).toBe('（甲乙|丙|丁）');
+    });
+    it('只一个 | 时与改前一致；夹注外的 | 按字面', () => {
+        expect(plain('子曰<孔子也|魯人>')).toBe('子曰（孔子也魯人）');
+        expect(plain('甲|乙')).toBe('甲|乙');
+    });
+    it('嵌套夹注各自有各自的第一个 |', () => {
+        expect(plain('<甲|乙<丙|丁|戊>|己>')).toBe('（甲乙（丙丁|戊）|己）');
+    });
+    it('夹注里被阙文等原子隔开，仍只首个 | 生效', () => {
+        expect(plain('<甲|[[缺]]|乙>')).toBe('（甲□|乙）');
+    });
+    it('表格格内转义 \\| 同样按首个分行、其后为字', () => {
+        expect(plain('<甲\\|乙\\|丙>')).toBe('（甲乙|丙）');
+    });
+    it('渲染：第二个 | 出现在注文里', () => {
+        const c = html(renderInterlinear('子曰<甲|乙|丙>', undefined, ON));
+        expect(c.querySelector('.bim-jiazhu')!.textContent).toBe('甲乙|丙');
+    });
+});
+
+describe('转义 \\< \\>（spec §10）', () => {
+    it('\\< \\> 输出尖括号本身，不成夹注', () => {
+        expect(plain('此處用 \\<尖括號\\>')).toBe('此處用 <尖括號>');
+        expect(html(renderInterlinear('此處用 \\<尖括號\\>', undefined, ON)).querySelectorAll('.bim-jiazhu')).toHaveLength(0);
+    });
+    it('转义的 \\> 不闭合夹注', () => {
+        expect(plain('<甲\\>乙>')).toBe('（甲>乙）');
+    });
+    it('转义的 \\< 不起夹注，后面的真夹注照常', () => {
+        expect(plain('\\<甲>乙<丙>')).toBe('<甲>乙（丙）');
+    });
+});
+
+describe('夹注长度上限（spec §0.4）', () => {
+    it('默认上限 4096：恰好 4096 字仍是夹注，4097 字按字面', () => {
+        const a = '甲'.repeat(4096), b = '甲'.repeat(4097);
+        expect(plain(`<${a}>`)).toBe(`（${a}）`);
+        expect(plain(`<${b}>`)).toBe(`<${b}>`);
+    });
+    it('可覆盖：上限 3，3 字生效、7 字降级为字面', () => {
+        const o = { jzMaxLength: 3 };
+        expect(gujiInlineToPlain(parseGujiInline('子曰<孔子也>', o))).toBe('子曰（孔子也）');
+        expect(gujiInlineToPlain(parseGujiInline('子曰<孔子也字仲尼>', o))).toBe('子曰<孔子也字仲尼>');
+    });
+    it('超限降级后，内容里的内层夹注仍各自判断', () => {
+        const o = { jzMaxLength: 3 };
+        expect(gujiInlineToPlain(parseGujiInline('<甲乙丙丁<戊>>', o))).toBe('<甲乙丙丁（戊）>');
+    });
+    it('旧 ⟨…⟩ 不设限', () => {
+        const long = '甲'.repeat(5000);
+        expect(plain(`⟨${long}⟩`)).toBe(`（${long}）`);
+    });
+    it('渲染：选项 jzMaxLength 透传', () => {
+        const c = html(renderInterlinear('子曰<孔子也字仲尼>', undefined, { gujiMarkdown: true, jzMaxLength: 3 }));
+        expect(c.querySelectorAll('.bim-jiazhu')).toHaveLength(0);
+        expect(c.textContent).toBe('子曰<孔子也字仲尼>');
+    });
+});
