@@ -20,7 +20,7 @@ export const ENTITY_TEXT_CSS = `
 .bim-et-person, .bim-et-office, .bim-et-dynasty, .bim-et-reign, .bim-et-other { text-decoration-style: solid; }
 .bim-et-place { text-decoration-style: double; text-decoration-thickness: 3px; }
 a.bim-et { cursor: pointer; }
-a.bim-et:hover, a.bim-et:focus-visible { color: ${bim('accent')}; text-decoration-color: ${bim('accent')}; }
+a.bim-et:hover, a.bim-et:focus-visible, .bim-et-w[data-active] > .bim-et { color: ${bim('accent')}; text-decoration-color: ${bim('accent')}; }
 a.bim-et:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: 2px; border-radius: 2px; }
 .bim-et-sr {
   position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -44,6 +44,8 @@ a.bim-et:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: 2p
   margin-top: 4px; color: ${bim('body-fg')};
 }
 .bim-et-card-s { display: block; color: ${bim('hint-fg')}; }
+.bim-et-card-a { display: block; margin-top: 6px; color: ${bim('accent')}; text-decoration: none; }
+.bim-et-card-a:hover, .bim-et-card-a:focus-visible { text-decoration: underline; }
 @media (prefers-reduced-motion: no-preference) {
   .bim-et-card { animation: bim-et-in 120ms ease-out; }
   @keyframes bim-et-in { from { opacity: 0; transform: translateY(-2px); } to { opacity: 1; transform: none; } }
