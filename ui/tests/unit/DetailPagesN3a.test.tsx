@@ -1,7 +1,7 @@
 /**
  * N3a（2026-09-28）：条目页三栏版——Work / Book / Collection / Entity 四种详情组件。
  *
- * 覆盖：新数据字段（classification、_edition_count、_member_count、todo、review）
+ * 覆盖：新数据字段（_classifications、_edition_count、_member_count、todo、review）
  * 有值才出现；整页只有一个主按钮「閱讀」且链到宿主给的 readLink；
  * 谱系 / 考证 / 反馈三个 tab 不再有入口；版本表的年代页签与「只看有影印」复选框；
  * 著录分栏切换；辅助字对比度 ≥ 4.5。
@@ -20,17 +20,17 @@ const WORK: IndexDetailData = {
     description: { text: '紀傳體通史。' },
     juan_count: { number: 130 },
     loss_status: 'extant',
-    classification: { l1: '史部', l2: '正史類', l3: '', l4: '', basis: 'S', source: '欽定四庫全書總目' },
+    _classifications: [{ scheme: 'zongmu', l1: '史部', l2: '正史類', source: '欽定四庫全書總目' }],
     _edition_count: 3,
-    books: ['b1', 'b2', 'b3'],
+    _books: [{ id: 'b1' }, { id: 'b2' }, { id: 'b3' }],
     indexed_by: [
         { source: '漢書藝文志', title_info: '太史公百三十篇', summary: '十篇有錄無書。' },
         { source: '隋書經籍志', title_info: '史記一百三十卷', summary: '目錄一卷。' },
     ],
     emendated_by: [{ source: '漢志考證' }],
-    related_works: [
-        { id: 'c9', title: '二十四史', relation: 'collected_in' },
-        { id: 'w2', title: '史記索隱', relation: 'studied_by' },
+    _related: [
+        { id: 'c9', title: '二十四史', relation: 'collected_in', direction: 'out' },
+        { id: 'w2', title: '史記索隱', relation: 'studied_by', direction: 'in' },
     ],
     todo: [{ what: '核對卷數', by: '目錄總管' }],
     review: { status: 'reviewed', by: '甲', date: '2026-09-28' },
@@ -81,14 +81,14 @@ describe('WorkPage（三栏）', () => {
         expect(screen.getByText(/已審核 甲 2026-09-28/)).toBeTruthy();
         expect(screen.getByText('待核 1 項')).toBeTruthy();
         expect(screen.getByText(/數據版本 1\.0\.3/)).toBeTruthy();
-        // _edition_count 优先于 books 长度
+        // _edition_count 优先于 _books 长度
         const stats = [...document.querySelectorAll('.bim-d-stats > div')].map(d => d.textContent);
         expect(stats[0]).toBe('3版本');
         expect(stats.at(-1)).toMatch(/家著錄$/);
     });
 
-    it('没有 classification / todo / review 就不显示', () => {
-        const bare = { ...WORK, classification: undefined, todo: undefined, review: undefined, revision: undefined } as IndexDetailData;
+    it('没有 _classifications / todo / review 就不显示', () => {
+        const bare = { ...WORK, _classifications: undefined, todo: undefined, review: undefined, revision: undefined } as IndexDetailData;
         render(<BookDetailLayout {...props(bare)} />);
         expect(screen.queryByText('史部')).toBeNull();
         expect(screen.queryByText(/待核/)).toBeNull();
@@ -243,7 +243,7 @@ describe('左栏「更多」：extraTabs 与丛编目录的入口', () => {
     });
 
     it('丛编有多份目录：每份都有入口', async () => {
-        const coll = { id: 'c2', type: 'collection', title: '某叢書', books: ['b1'] } as unknown as IndexDetailData;
+        const coll = { id: 'c2', type: 'collection', title: '某叢書', _members: [{ id: 'b1', t: 'book' }] } as unknown as IndexDetailData;
         const tr = transportFor(coll, BOOKS) as Record<string, unknown>;
         tr.getCollectionCatalogs = vi.fn(async () => [
             { resource_id: 'r1', short_name: '甲本', data: { volumes: [] } },
@@ -327,10 +327,10 @@ describe('BookPage / CollectionPage / EntityPage（三栏）', () => {
         expect(onTabChange).toHaveBeenCalledWith('fulltext');
     });
 
-    it('Collection：_member_count 作种数；只有 books[] 时为可见行补取书名', async () => {
+    it('Collection：_member_count 作种数；只有 Book 成员（只有 ID）时为可见行补取书名', async () => {
         const coll = {
             id: 'c1', type: 'collection', title: '二十四史武英殿本', subtype: 'book_collection',
-            books: ['b1', 'b2'], _member_count: 25,
+            _members: [{ id: 'b1', t: 'book' }, { id: 'b2', t: 'book' }], _member_count: 25,
         } as unknown as IndexDetailData;
         render(<BookDetailLayout {...props(coll)} />);
         expect(screen.getByText('25 部')).toBeTruthy();
@@ -343,7 +343,7 @@ describe('BookPage / CollectionPage / EntityPage（三栏）', () => {
             id: 'e1', type: 'entity', subtype: 'people', title: '孔子', primary_name: '孔子',
             dynasty: '春秋', birth_year: -551, death_year: -479,
             alt_names: [{ name: '仲尼', type: '字' }],
-            works: [{ work_id: 'w1', role: '撰' }, { work_id: 'w2', role: '校' }],
+            _works: [{ work_id: 'w1', role: '撰' }, { work_id: 'w2', role: '校' }],
         } as unknown as IndexDetailData;
         render(<BookDetailLayout {...props(ent, {}, { w1: WORK as never, w2: { id: 'w2', type: 'work', title: '尚書' } })} />);
         expect(screen.getByText('仲尼')).toBeTruthy();

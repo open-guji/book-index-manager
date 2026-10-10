@@ -16,6 +16,7 @@ import type {
     CollectionDetailData,
     LineageConfidence,
 } from '../../types';
+import { getResourceTypes } from '../../types';
 import type { IndexStorage } from '../../storage/types';
 import { useT, useI18n } from '../../i18n';
 import type { MessageKey } from '../../i18n';
@@ -27,7 +28,7 @@ import {
 } from './layout';
 import {
     deriveEra, deriveEditionType, sortYear,
-    normalizeVolumeIndex, formatVolumeRange, measureText,
+    normalizeVolumeIndex, formatVolumeRange, measureText, workVersionIds, memberTotal,
 } from '../../core/detail-model';
 import { AuthorByline, ResourceGroupList, ResourceRow, splitResources } from './shared';
 import { VersionLineageView } from '../VersionLineageView';
@@ -135,11 +136,11 @@ export const BookPage: React.FC<BookPageProps> = ({
 
     // ── 收入丛编 ──
     useEffect(() => {
-        const entries = data.contained_in || [];
+        const entries = data._collections || [];
         if (!transport || entries.length === 0) { setCollections(new Map()); return; }
         let cancelled = false;
         Promise.all(entries.map(e => {
-            const cid = typeof e === 'string' ? e : e.id;
+            const cid = e.id;
             return transport.getItem(cid)
                 .then(raw => [cid, raw as unknown as CollectionDetailData] as const)
                 .catch(() => [cid, null] as const);
@@ -150,14 +151,14 @@ export const BookPage: React.FC<BookPageProps> = ({
             setCollections(m);
         });
         return () => { cancelled = true; };
-    }, [transport, data.contained_in]);
+    }, [transport, data._collections]);
 
     // ── 同作品版本：不多于 40 种时全解析、按年代排；本页也在列里（高亮） ──
     const siblingIds = useMemo(() => {
-        const ids = new Set<string>([...(work?.books || []), ...(data.related_books || [])]);
+        const ids = new Set<string>([...(work ? workVersionIds(work) : []), ...(data.related_books || [])]);
         ids.add(data.id);
         return [...ids];
-    }, [work?.books, data.related_books, data.id]);
+    }, [work, data.related_books, data.id]);
     const otherCount = siblingIds.length - 1;
 
     useEffect(() => {
@@ -219,8 +220,8 @@ export const BookPage: React.FC<BookPageProps> = ({
      * 「收入叢編」已把册号列出来时，资源行不再给「展开 N 册」——
      * 展开出来的还是同一串数字。
      */
-    const listedVolumeCounts = new Set((data.contained_in || []).map(e =>
-        typeof e === 'string' ? 0 : normalizeVolumeIndex(e.volume_index).length).filter(n => n > 0));
+    const listedVolumeCounts = new Set((data._collections || []).map(e =>
+        normalizeVolumeIndex(e.vol).length).filter(n => n > 0));
 
     /** 底本名：base_edition 有名字的优先，其次解析到的版本名 */
     const refName = (id: string): string => {
@@ -252,8 +253,7 @@ export const BookPage: React.FC<BookPageProps> = ({
         }
         if (measure) out.push({ label: tr('bookPage.fact.measure'), value: convert(measure) });
 
-        const volumes = (data.contained_in || []).flatMap(e =>
-            typeof e === 'string' ? [] : normalizeVolumeIndex(e.volume_index));
+        const volumes = (data._collections || []).flatMap(e => normalizeVolumeIndex(e.vol));
         if (volumes.length) {
             out.push({
                 label: tr('bookPage.fact.volumes'),
@@ -289,8 +289,7 @@ export const BookPage: React.FC<BookPageProps> = ({
 
         // 存藏：provenance（机构＋索书號）优先，其次 physical 资源，最后 current_location
         const prov = (data.provenance || []).filter(p => p && p.institution);
-        const physical = (data.resources || []).filter(r =>
-            (r.types || (r.type ? [r.type] : [])).includes('physical'));
+        const physical = (data.resources || []).filter(r => getResourceTypes(r).includes('physical'));
         if (prov.length) {
             out.push({
                 label: tr('bookPage.fact.holdings'),
@@ -372,7 +371,7 @@ export const BookPage: React.FC<BookPageProps> = ({
         />
     );
 
-    const containedIn = data.contained_in || [];
+    const containedIn = data._collections || [];
     const chapters = fullText?.chapters || [];
     /** 章节单位：小说「回」，其余「章」「卷」——取第一章章名的末字 */
     const chapUnit = convert((chapters[0] && splitChapterTitle(chapters[0].title)[0].slice(-1)) || '') || tr('bookPage.chapterUnit');
@@ -534,10 +533,10 @@ export const BookPage: React.FC<BookPageProps> = ({
                     <table className="bim-d-zt">
                         <tbody>
                             {containedIn.map((entry, i) => {
-                                const cid = typeof entry === 'string' ? entry : entry.id;
-                                const vols = typeof entry === 'string' ? [] : normalizeVolumeIndex(entry.volume_index);
+                                const cid = entry.id;
+                                const vols = normalizeVolumeIndex(entry.vol);
                                 const coll = collections.get(cid);
-                                const total = coll?._member_count || coll?.books?.length || coll?.contained_works?.length || 0;
+                                const total = memberTotal(coll);
                                 return (
                                     <tr key={`${cid}-${i}`}>
                                         <td className="bim-d-zt-main">

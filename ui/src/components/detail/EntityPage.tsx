@@ -19,7 +19,7 @@
  *   Entity.related_people[]                 → 右栏旁栏清单
  */
 import React, { useState, useEffect, useMemo } from 'react';
-import type { EntityDetailData, AltName } from '../../types';
+import type { EntityDetailData, AltName, WorkDetailData } from '../../types';
 import type { IndexStorage } from '../../storage/types';
 import { useI18n, type TFunction } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
@@ -30,7 +30,7 @@ import {
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import { bim } from '../../styles/tokens';
-import { measureText, normalizeRole, roleFacets, type RoleClass } from '../../core/detail-model';
+import { measureText, normalizeRole, roleFacets, workClassification, type RoleClass } from '../../core/detail-model';
 import { mapLimit, DETAIL_FETCH_CONCURRENCY } from '../../core/map-limit';
 
 /** 桌面 cap，与作品页版本表同一量级 */
@@ -53,7 +53,7 @@ export interface EntityPageProps {
 interface ResolvedWork {
     id: string;
     title?: string;
-    /** 该作品的版本数（_edition_count，缺省时 books ∪ collections 的长度） */
+    /** 该作品的版本数（_edition_count，缺省时 _books 的长度） */
     versionCount?: number;
     /** 部类：classification.l1 l2 */
     cls?: string;
@@ -130,7 +130,8 @@ export const EntityPage: React.FC<EntityPageProps> = ({
     const [sort, setSort] = useState<'default' | 'versions'>('default');
     const [resolved, setResolved] = useState<Map<string, ResolvedWork>>(new Map());
 
-    const allRows: WorkRow[] = useMemo(() => (data.works || []).map(w => {
+    const works = useMemo(() => data._works || [], [data._works]);
+    const allRows: WorkRow[] = useMemo(() => works.map(w => {
         const r = resolved.get(w.work_id);
         return {
             id: w.work_id,
@@ -144,9 +145,9 @@ export const EntityPage: React.FC<EntityPageProps> = ({
             hasImage: r?.hasImage,
             loaded: !!r?.loaded,
         };
-    }), [data.works, resolved]);
+    }), [works, resolved]);
 
-    const facets = useMemo(() => roleFacets((data.works || []).map(w => w.role), t('detail.roleAll')), [data.works, t]);
+    const facets = useMemo(() => roleFacets(works.map(w => w.role), t('detail.roleAll')), [works, t]);
 
     const filtered = useMemo(() => {
         const rows = role === '全部' ? allRows : allRows.filter(r => r.cls === role);
@@ -171,19 +172,17 @@ export const EntityPage: React.FC<EntityPageProps> = ({
         mapLimit(idsToResolve, DETAIL_FETCH_CONCURRENCY, id =>
             transport.getItem(id)
                 .then(raw => {
-                    const w = (raw ?? {}) as {
-                        title?: string; books?: string[]; collections?: string[]; _edition_count?: number;
-                        classification?: { l1?: string; l2?: string };
-                        has_image?: boolean; _has_image?: boolean;
-                    };
-                    const n = w._edition_count ?? ((w.books?.length ?? 0) + (w.collections?.length ?? 0));
-                    const cls = [w.classification?.l1, w.classification?.l2].filter(Boolean).join(' ');
+                    const w = (raw ?? {}) as Pick<WorkDetailData, 'title' | '_books' | '_edition_count' | '_classifications'>
+                        & { _has_image?: boolean };
+                    const n = w._edition_count ?? (w._books?.length ?? 0);
+                    const c = workClassification(w);
+                    const cls = [c?.l1, c?.l2].filter(Boolean).join(' ');
                     return [id, {
                         id, title: w.title, versionCount: n, loaded: true,
                         cls: cls || undefined,
-                        l1: w.classification?.l1 || undefined,
+                        l1: c?.l1 || undefined,
                         measure: raw ? measureText(raw as never, m.unit.juan) || undefined : undefined,
-                        hasImage: !!(w.has_image ?? w._has_image),
+                        hasImage: !!w._has_image,
                     }] as const;
                 })
                 .catch(() => [id, { id, loaded: true }] as const),
@@ -233,10 +232,10 @@ export const EntityPage: React.FC<EntityPageProps> = ({
         for (const g of mainNames) {
             out.push({ label: g.label, value: g.names.map(n => convert(n)).join('、') });
         }
-        const n = (data.works || []).length;
+        const n = works.length;
         if (n) out.push({ label: t('entityPage.fact.works'), value: t('entityPage.nZhong', { n }) });
         return out;
-    }, [data.works, mainNames, convert, t]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [works, mainNames, convert, t]); // eslint-disable-line react-hooks/exhaustive-deps
 
     /** 副题「字元晦，號晦庵」：各取第一个 */
     const firstOf = (types: string[]) => nameGroups.find(g => types.includes(g.label))?.names[0];

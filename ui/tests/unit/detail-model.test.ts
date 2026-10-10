@@ -3,7 +3,7 @@
  *
  * 样本全部取自生产仓实测数据（2026-09-05，book-index 7581ec5）：
  * 史記 35 个版本的 edition 题名、御定佩文韻府的 23 册资源、
- * 武英殿聚珍版叢書的 144 条 contained_works。
+ * 武英殿聚珍版叢書的 144 条 Work 成员（build 产物 `_members`）。
  *
  * 重点防的是「推断层悄悄退化」——deriveEra 覆盖率掉了不会报错，
  * 只会让页面上多出一片「—」，所以这里对典型题名逐条钉死。
@@ -34,6 +34,10 @@ import {
     sortYear,
     deriveYearRange,
     deriveDating,
+    workVersionIds,
+    workClassification,
+    collectionMembers,
+    memberTotal,
 } from '../../src/core/detail-model';
 import type { ResourceEntry, CollectionDetailData, VersionGraph } from '../../src/types';
 import { mergeVolumeResources } from '../../src/core/resources';
@@ -539,7 +543,7 @@ describe('buildCollectionTable', () => {
 
     it('优先用目录档（含部类 / 册次 / 缺册）', () => {
         const t = buildCollectionTable(
-            { ...base, contained_works: [{ id: 'w1', title: '不該用這個' }] } as CollectionDetailData,
+            { ...base, _members: [{ id: 'w1', t: 'work', title: '不該用這個' }] } as CollectionDetailData,
             {
                 collection_id: 'c1', title: '某叢編', total_volumes: 964,
                 stats: { total_books: 2 },
@@ -558,24 +562,26 @@ describe('buildCollectionTable', () => {
         expect(t.totalVolumes).toBe(964);
     });
 
-    it('无目录档时用 contained_works（武英殿的 144 条走这条路，零额外请求）', () => {
+    it('无目录档时用 _members 里的 Work 卡（武英殿的 144 条走这条路，零额外请求）', () => {
         const t = buildCollectionTable({
             ...base,
-            books: ['b1', 'b2'],
-            contained_works: [
-                { id: 'w1', title: '周易口訣義', volume_index: [2, 3, 4, 5] },
-                { id: 'w2', title: '易說', volume_index: [6] },
+            _members: [
+                { id: 'w1', t: 'work', title: '周易口訣義', vol: [2, 3, 4, 5] },
+                { id: 'w2', t: 'work', title: '易說', vol: 6 },
+                { id: 'b9', t: 'book' },
             ],
         } as CollectionDetailData);
         expect(t.source).toBe('works');
         expect(t.rows[0].title).toBe('周易口訣義');
         expect(t.rows[0].volumes).toEqual([2, 3, 4, 5]);
+        expect(t.rows[1].volumes).toEqual([6]);       // 单个册次也归一成数组
+        expect(t.rows).toHaveLength(2);               // Work 与 Book 混着时只列 Work 成员
         expect(t.sections).toEqual([]);
     });
 
-    it('只有 books[] 时回退，未解析的用 ID 占位', () => {
+    it('只有 Book 成员（_members 里 t 不是 work）时回退，未解析的用 ID 占位', () => {
         const t = buildCollectionTable(
-            { ...base, books: ['b1', 'b2'] } as CollectionDetailData,
+            { ...base, _members: [{ id: 'b1', t: 'book' }, { id: 'b2', t: 'book' }] } as CollectionDetailData,
             null,
             new Map([['b1', { title: '解析到的書', edition: '某本' }]]),
         );
@@ -588,6 +594,54 @@ describe('buildCollectionTable', () => {
         const t = buildCollectionTable(base as CollectionDetailData);
         expect(t.rows).toEqual([]);
         expect(t.source).toBe('books');
+    });
+});
+
+describe('读 build 产物 `_` 字段的取值器', () => {
+    it('workVersionIds：_books 的 id，保序', () => {
+        expect(workVersionIds({ _books: [{ id: 'b1' }, { id: 'b2' }] } as never)).toEqual(['b1', 'b2']);
+        expect(workVersionIds({} as never)).toEqual([]);
+    });
+
+    it('workClassification：优先总目（zongmu），否则取第一条；没有则 undefined', () => {
+        const cls = [
+            { scheme: 'other', l1: '甲部' },
+            { scheme: 'zongmu', l1: '史部', l2: '正史類', source: '欽定四庫全書總目' },
+        ];
+        expect(workClassification({ _classifications: cls } as never)).toEqual({
+            l1: '史部', l2: '正史類', l3: '', l4: '', source: '欽定四庫全書總目',
+        });
+        expect(workClassification({ _classifications: [cls[0]] } as never)).toEqual({ l1: '甲部', l2: '', l3: '', l4: '' });
+        expect(workClassification({} as never)).toBeUndefined();
+        expect(workClassification({ _classifications: [] } as never)).toBeUndefined();
+    });
+
+    it('collectionMembers：Work 卡带册次，Book 卡只出 id；_member_count 大于卡片数即截断', () => {
+        const m = collectionMembers({
+            _members: [
+                { id: 'w1', t: 'work', title: '甲', vol: [1, 2] },
+                { id: 'w2', t: 'work', title: '乙', vol: '3-4' },
+                { id: 'b1', t: 'book' },
+            ],
+            _member_count: 288,
+        } as never);
+        expect(m.works).toEqual([
+            { id: 'w1', title: '甲', volumes: [1, 2] },
+            { id: 'w2', title: '乙', volumes: [3, 4] },
+        ]);
+        expect(m.bookIds).toEqual(['b1']);
+        expect(m.total).toBe(288);
+        expect(m.truncated).toBe(true);
+        const whole = collectionMembers({ _members: [{ id: 'b1', t: 'book' }] } as never);
+        expect(whole.total).toBe(1);
+        expect(whole.truncated).toBe(false);
+        expect(collectionMembers({} as never)).toEqual({ works: [], bookIds: [], total: 0, truncated: false });
+    });
+
+    it('memberTotal：_member_count，缺则按卡片数', () => {
+        expect(memberTotal({ _member_count: 40, _members: [{ id: 'a' }] } as never)).toBe(40);
+        expect(memberTotal({ _members: [{ id: 'a' }, { id: 'b' }] } as never)).toBe(2);
+        expect(memberTotal(null)).toBe(0);
     });
 });
 

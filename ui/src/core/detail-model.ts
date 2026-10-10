@@ -28,6 +28,7 @@ import type {
     VersionGraph,
     VolumeBookMapping,
     VolumeBookEntry,
+    WorkClassification,
 } from '../types';
 import { getResourceTypes } from '../types';
 import { getTypeGroupKey, mergeVolumeResources, volumeStats } from './resources';
@@ -1475,7 +1476,7 @@ export interface CollectionRow {
 
 export interface CollectionTable {
     rows: CollectionRow[];
-    /** 数据来源：catalog = 目录档（最全）；works = contained_works；books = 仅 ID */
+    /** 数据来源：catalog = 目录档（最全）；works = Work 成员（含题名册次）；books = Book 成员（仅 ID） */
     source: 'catalog' | 'works' | 'books';
     /** 可用的部类筛选项 */
     sections: string[];
@@ -1483,16 +1484,65 @@ export interface CollectionTable {
     totalVolumes?: number;
 }
 
+/** Work 的版本 ID：`_books` 卡片的 id（build 已排好：有年代者在前、按年代升序） */
+export function workVersionIds(work: Pick<WorkDetailData, '_books'>): string[] {
+    return (work._books ?? []).map(b => b.id).filter((id): id is string => typeof id === 'string');
+}
+
+/** Work 的分类：优先总目（zongmu），没有就取第一条；无 `_classifications` 为 undefined */
+export function workClassification(work: Pick<WorkDetailData, '_classifications'>): WorkClassification | undefined {
+    const list = work._classifications ?? [];
+    const c = list.find(x => x.scheme === 'zongmu') ?? list[0];
+    if (!c) return undefined;
+    return {
+        l1: c.l1 ?? '', l2: c.l2 ?? '', l3: c.l3 ?? '', l4: c.l4 ?? '',
+        ...(c.source ? { source: c.source } : {}),
+    };
+}
+
+export interface CollectionMembers {
+    /** Work 成员（`_members` 里 `t:'work'` 的卡）：带题名与册次，可直接成表 */
+    works: { id: string; title: string; volumes: number[] }[];
+    /** 其余（Book）成员的 id：只有 ID，题名要逐条 getItem */
+    bookIds: string[];
+    /** 成员总数（`_member_count`；缺则按已有卡片数） */
+    total: number;
+    /** `_members` 只是前 20 项（全表在 members/ 分页，站点包没带）：页面按 `total` 显示总数 */
+    truncated: boolean;
+}
+
+/** 丛编成员：读 build 产物的 `_members`（卡片）与 `_member_count`（总数） */
+export function collectionMembers(coll: Pick<CollectionDetailData, '_members' | '_member_count'>): CollectionMembers {
+    const cards = coll._members ?? [];
+    const total = typeof coll._member_count === 'number' ? coll._member_count : cards.length;
+    return {
+        works: cards.filter(c => c.t === 'work').map(c => ({
+            id: c.id,
+            title: c.title ?? '',
+            volumes: normalizeVolumeIndex(c.vol),
+        })),
+        bookIds: cards.filter(c => c.t !== 'work').map(c => c.id).filter((id): id is string => typeof id === 'string'),
+        total,
+        truncated: total > cards.length,
+    };
+}
+
+/** 丛编成员总数：`_member_count`，缺则按 `_members` 已有的卡片数 */
+export function memberTotal(coll: Pick<CollectionDetailData, '_members' | '_member_count'> | null | undefined): number {
+    return coll?._member_count || coll?._members?.length || 0;
+}
+
 /**
  * 构造丛编「收錄書籍」表。
  *
  * 三级数据源，按信息量降序：
  *   1. volume_book_mapping.json —— 含部类/册次/缺册/附属子目，但生产仓只有 7 份
- *   2. contained_works[] —— 含标题与册次，29 部丛编有（其中 16 部带 volume_index）
- *   3. books[] —— 只有 ID，需逐条 getItem 才能拿标题
+ *   2. `_members` 里的 Work 卡 —— 含标题与册次（武英殿聚珍版 144 条、先秦典籍等）
+ *   3. `_members` 里的 Book 卡 —— 只有 ID，需逐条 getItem 才能拿标题
  *
- * 优先级很重要：武英殿聚珍版有 144 条 contained_works（自带标题+册次），
- * 走第 2 级就能直接渲染，不必对 books[] 发 144 次请求。
+ * 优先级很重要：武英殿聚珍版的 Work 成员自带标题+册次，
+ * 走第 2 级就能直接渲染，不必对 Book 成员发 144 次请求。
+ * 丛编里 Work 与 Book 混着时只列 Work 成员（第 3 级只在没有 Work 成员时用）。
  */
 export function buildCollectionTable(
     coll: CollectionDetailData,
@@ -1515,18 +1565,16 @@ export function buildCollectionTable(
         return { rows, source: 'catalog', sections, totalVolumes: catalog.total_volumes };
     }
 
-    // 2. contained_works
-    if (coll.contained_works && coll.contained_works.length > 0) {
-        const rows = coll.contained_works.map(w => ({
-            id: w.id,
-            title: w.title,
-            volumes: normalizeVolumeIndex(w.volume_index),
-        }));
+    const { works, bookIds } = collectionMembers(coll);
+
+    // 2. Work 成员
+    if (works.length > 0) {
+        const rows = works.map(w => ({ id: w.id, title: w.title, volumes: w.volumes }));
         return { rows, source: 'works', sections: [] };
     }
 
-    // 3. books（惰性解析）
-    const rows = (coll.books || []).map(id => ({
+    // 3. Book 成员（惰性解析）
+    const rows = bookIds.map(id => ({
         id,
         title: resolvedBooks?.get(id)?.title || id,
         edition: resolvedBooks?.get(id)?.edition,

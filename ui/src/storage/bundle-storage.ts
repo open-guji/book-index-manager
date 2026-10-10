@@ -10,12 +10,11 @@ import type {
     RecommendedData,
     VolumeBookMapping,
 } from '../types';
-import type { IndexCounts } from './types';
+import type { IndexCounts, HubMap } from './types';
 import { normalizeCatalog } from '../core/normalize-catalog';
 import { extractType } from '../id';
 import { buildPromotionMap, PROMOTION_SHARD_KEY_LENGTH } from './promotions';
 import { isSafeSegment, isTextKey } from '../core/text-model';
-import type { HubMap } from '../core/derived-compat';
 
 export interface BundleStorageConfig {
     /** chunk 文件的基础路径，默认 '/data' */

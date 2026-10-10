@@ -1,8 +1,8 @@
 /**
  * 丛编页（武英殿聚珍版叢書这类）—— 2026-09 B1 新设计（overview#251）。
  *
- * 「子目」表的数据有三个来源，按信息量降序：目录档 → contained_works
- * → books[]（见 buildCollectionTable）。武英殿的 144 条走 contained_works。
+ * 「子目」表的数据有三个来源，按信息量降序：目录档 → `_members` 里的 Work 卡
+ * → `_members` 里的 Book 卡（见 buildCollectionTable）。武英殿的 144 条走 Work 卡。
  *
  * 中栏：子目（本丛编内检索 + 斑马表：冊次｜書名，下附撰人·卷數｜版本數）→ 影印与全文（按资源组分）；
  * 右栏：提要卡（「叢編」小字，长说明截 6 行可展开，不放主按钮）→ 包含作品；
@@ -28,7 +28,8 @@ import {
     DetailGrid, Sec, MetaLine, CapMore, narrowCapped, TabFilter, SummaryCard, SideList, CardFoot, RailUp, descNeedsClamp,
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
-import { buildCollectionTable, formatVolumeRange, measureText } from '../../core/detail-model';
+import { buildCollectionTable, collectionMembers, formatVolumeRange, measureText, workClassification } from '../../core/detail-model';
+import type { WorkDetailData } from '../../types';
 import { AuthorByline, ResourceGroupList, ResourceRow, SECTIONS, sectionKey, splitResources } from './shared';
 
 const CAP_TITLES = 16;
@@ -81,6 +82,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     const [groupAll, setGroupAll] = useState(false);
 
     const table = useMemo(() => buildCollectionTable(data, catalog), [data, catalog]);
+    const members = useMemo(() => collectionMembers(data), [data]);
 
     /* 子目行补取：书名（只有 ID 的）、撰人、卷数、版本数。只取可见行 */
     const [info, setInfo] = useState<Map<string, RowInfo>>(new Map());
@@ -115,19 +117,14 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
         mapLimit(batch, DETAIL_FETCH_CONCURRENCY, id =>
             transport.getItem(id)
                 .then(raw => {
-                    const d = (raw ?? {}) as {
-                        title?: string; edition?: string; authors?: AuthorInfo[]; measure_info?: string;
-                        juan_count?: { number?: number; description?: string };
-                        _edition_count?: number; books?: string[];
-                        classification?: { l1?: string };
-                    };
+                    const d = (raw ?? {}) as Pick<WorkDetailData, 'title' | 'edition' | 'authors' | '_books' | '_edition_count' | '_classifications'>;
                     const v: RowInfo = {
                         title: d.title,
                         edition: d.edition,
                         authors: d.authors,
                         measure: raw ? measureText(raw as never, m.unit.juan) : undefined,
-                        versionCount: d._edition_count ?? d.books?.length,
-                        l1: d.classification?.l1 || undefined,
+                        versionCount: d._edition_count ?? d._books?.length,
+                        l1: workClassification(d)?.l1 || undefined,
                     };
                     return [id, v] as const;
                 })
@@ -162,7 +159,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     const resCount = res.text.length + res.groups.reduce((n, g) => n + g.rows.length + g.mirrors.length, 0);
 
     /* 「包含作品」：表格列的就是同一批条目时不再重复一遍 */
-    const works = data.contained_works || [];
+    const works = members.works;
     const tableIds = new Set(table.rows.map(r => r.id).filter(Boolean));
     const showWorks = works.length > 0 && !works.every(w => tableIds.has(w.id));
 
@@ -175,9 +172,9 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     const hasVolumeColumn = table.rows.some(r => r.volumes.length > 0 || r.expected != null);
 
     // ── 提要卡 ──
-    const members = data._member_count || data.books?.length || works.length;
+    const memberCount = members.total;
     /** 子目总数：`_members` 被截断（只有前 20 项）时按 `_member_count` 显示 */
-    const rowTotal = data._members_truncated ? members : table.rows.length;
+    const rowTotal = members.truncated ? memberCount : table.rows.length;
     const measure = measureText(data, m.unit.juan);
     const cnt = data.count;
     const numOf = (v: number | null | undefined) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
@@ -185,7 +182,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     const juanNum = numOf(cnt?.juan) ?? numOf(data.juan_count?.number);
     const ceNum = numOf(cnt?.ce) ?? (table.totalVolumes || null);
     const stats = [
-        // schema-v2：`_members` 只带前 20 项，总数以 `_member_count` 为准
+        // `_members` 只带前 20 项，总数以 `_member_count` 为准
         { value: rowTotal, label: t('collectionPage.stat.titles') },
         { value: juanNum ?? 0, label: m.unit.juan },
         { value: ceNum ?? 0, label: m.unit.volume },
@@ -193,10 +190,10 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     const facts: CardFact[] = useMemo(() => {
         const out: CardFact[] = [];
         if (data.publication_info?.details) out.push({ label: t('collectionPage.fact.publication'), value: convert(data.publication_info.details) });
-        if (members && (members !== table.rows.length || data._members_truncated)) {
+        if (memberCount && (memberCount !== table.rows.length || members.truncated)) {
             const memberLabel = data._member_type === 'Book' ? t('collectionPage.member.Book')
                 : data._member_type === 'Work' ? t('collectionPage.member.Work') : t('collectionPage.member.other');
-            out.push({ label: memberLabel, value: `${members} ${m.unit.bu}`, title: t('collectionPage.memberNote') });
+            out.push({ label: memberLabel, value: `${memberCount} ${m.unit.bu}`, title: t('collectionPage.memberNote') });
         }
         // 「應收」只留数字格没有的两项：種、函（卷、冊已在数字格里）；都没有就不出这一行
         const zhongHan = [
@@ -213,7 +210,7 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
         }
         // 「年代」不再出：已在「刊印」与副题里
         return out;
-    }, [data, members, table.rows.length, juanNum, measure, cnt, convert, t, m]);
+    }, [data, memberCount, members.truncated, table.rows.length, juanNum, measure, cnt, convert, t, m]);
 
     // ── 部类页签与册次分布（须全部子目解析完） ──
     const secTabs = useMemo(() => {

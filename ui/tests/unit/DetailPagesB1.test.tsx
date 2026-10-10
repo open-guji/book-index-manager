@@ -64,7 +64,7 @@ const BOOK: IndexDetailData = {
 } as unknown as IndexDetailData;
 
 const BOOK_EXTRA = {
-    w1: { id: 'w1', type: 'work', title: '紅樓夢', books: ['b0', 'b1', 'b2'], _edition_count: 3 },
+    w1: { id: 'w1', type: 'work', title: '紅樓夢', _books: [{ id: 'b0' }, { id: 'b1' }, { id: 'b2' }], _edition_count: 3 },
     b0: { id: 'b0', type: 'book', title: '紅樓夢', edition: '夢覺本', dating: { year: 1784 } },
     b2: { id: 'b2', type: 'book', title: '新鐫全部繡像紅樓夢', edition: '程乙本', dating: { year: 1792 } },
 };
@@ -167,8 +167,8 @@ const COLL: IndexDetailData = {
     id: 'c1', type: 'collection', title: '武英殿聚珍版叢書', subtype: 'book_collection',
     contained_in: [{ id: 'c0' }],
     description: { text: LONG_DESC },
-    contained_works: Array.from({ length: 20 }, (_, i) => ({
-        id: `cw${i}`, title: i === 0 ? '周易口訣義' : i === 1 ? '易說' : `子目${i}`, volume_index: [i * 2 + 2, i * 2 + 3],
+    _members: Array.from({ length: 20 }, (_, i) => ({
+        id: `cw${i}`, t: 'work', title: i === 0 ? '周易口訣義' : i === 1 ? '易說' : `子目${i}`, vol: [i * 2 + 2, i * 2 + 3],
     })),
     resources: [{ id: 'wm', name: 'Wikimedia Commons', url: 'https://commons.wikimedia.org/wiki/Category:x', types: ['image'] }],
     _member_count: 40,
@@ -225,7 +225,7 @@ const ENTITY: IndexDetailData = {
         { name: '仲晦', type: '字' }, { name: '元晦', type: '字' },
         { name: '晦庵', type: '號' }, { name: '文公', type: '諡號' }, { name: '沈郎', type: '小名' },
     ],
-    works: [
+    _works: [
         { work_id: 'ew1', role: '撰' }, { work_id: 'ew2', role: '撰' },
         { work_id: 'ew3', role: '撰' }, { work_id: 'ew4', role: '編' },
     ],
@@ -233,9 +233,9 @@ const ENTITY: IndexDetailData = {
 } as unknown as IndexDetailData;
 
 const ENTITY_EXTRA = {
-    ew1: { id: 'ew1', type: 'work', title: '詩集傳', _edition_count: 7, has_image: true, classification: { l1: '經部', l2: '詩類' }, juan_count: { number: 8 } },
+    ew1: { id: 'ew1', type: 'work', title: '詩集傳', _edition_count: 7, _has_image: true, _classifications: [{ scheme: 'zongmu', l1: '經部', l2: '詩類' }], juan_count: { number: 8 } },
     ew2: { id: 'ew2', type: 'work', title: '四書章句集注', _edition_count: 6 },
-    ew3: { id: 'ew3', type: 'work', title: '御批資治通鑑綱目', _edition_count: 15, classification: { l1: '史部' } },
+    ew3: { id: 'ew3', type: 'work', title: '御批資治通鑑綱目', _edition_count: 15, _classifications: [{ scheme: 'zongmu', l1: '史部' }] },
     ew4: { id: 'ew4', type: 'work', title: '伊洛淵源錄', _edition_count: 0 },
 };
 
@@ -329,16 +329,16 @@ const CLS_COLL = {
     count: { juan: 30, ce: 12, zhong: 4, han: null },
     juan_count: { number: 30 },
     publication_info: { year: '1773-1803', details: '清武英殿木活字排印' },
-    contained_works: [
-        { id: 'k1', title: '易甲', volume_index: [1, 2, 3] }, { id: 'k2', title: '易乙', volume_index: [4, 5] },
-        { id: 'k3', title: '史丙', volume_index: [6, 7, 8, 9] }, { id: 'k4', title: '子丁', volume_index: [10, 11, 12] },
+    _members: [
+        { id: 'k1', t: 'work', title: '易甲', vol: [1, 2, 3] }, { id: 'k2', t: 'work', title: '易乙', vol: [4, 5] },
+        { id: 'k3', t: 'work', title: '史丙', vol: [6, 7, 8, 9] }, { id: 'k4', t: 'work', title: '子丁', vol: [10, 11, 12] },
     ],
 } as unknown as IndexDetailData;
 const CLS_EXTRA = {
-    k1: { id: 'k1', type: 'work', title: '易甲', classification: { l1: '經部' } },
-    k2: { id: 'k2', type: 'work', title: '易乙', classification: { l1: '經部' } },
-    k3: { id: 'k3', type: 'work', title: '史丙', classification: { l1: '史部' } },
-    k4: { id: 'k4', type: 'work', title: '子丁', classification: { l1: '子部' } },
+    k1: { id: 'k1', type: 'work', title: '易甲', _classifications: [{ scheme: 'zongmu', l1: '經部' }] },
+    k2: { id: 'k2', type: 'work', title: '易乙', _classifications: [{ scheme: 'zongmu', l1: '經部' }] },
+    k3: { id: 'k3', type: 'work', title: '史丙', _classifications: [{ scheme: 'zongmu', l1: '史部' }] },
+    k4: { id: 'k4', type: 'work', title: '子丁', _classifications: [{ scheme: 'zongmu', l1: '子部' }] },
 };
 
 describe('CollectionPage（v3）', () => {
@@ -382,10 +382,10 @@ describe('CollectionPage（v3）', () => {
         const ids = Array.from({ length: N }, (_, i) => `b${i}`);
         const big = {
             ...CLS_COLL, id: 'big',
-            contained_works: ids.map((id, i) => ({ id, title: `書${i}`, volume_index: [i + 1] })),
+            _members: ids.map((id, i) => ({ id, t: 'work', title: `書${i}`, vol: [i + 1] })),
         } as unknown as IndexDetailData;
         const extra = Object.fromEntries(ids.map((id, i) => [id, {
-            id, type: 'work', title: `書${i}`, classification: { l1: i % 2 ? '史部' : '經部' },
+            id, type: 'work', title: `書${i}`, _classifications: [{ scheme: 'zongmu', l1: i % 2 ? '史部' : '經部' }],
         }]));
         const tr = transportFor(big, extra, null) as { getItem: (id: string) => Promise<unknown> };
         const asked = new Set<string>();
@@ -405,7 +405,7 @@ describe('CollectionPage（v3）', () => {
     }, 20000);
 
     it('子目没有部类信息（或只有一类）时不出页签与分布条', async () => {
-        const one = { ...CLS_EXTRA, k3: { ...CLS_EXTRA.k3, classification: { l1: '經部' } }, k4: { ...CLS_EXTRA.k4, classification: { l1: '經部' } } };
+        const one = { ...CLS_EXTRA, k3: { ...CLS_EXTRA.k3, _classifications: [{ scheme: 'zongmu', l1: '經部' }] }, k4: { ...CLS_EXTRA.k4, _classifications: [{ scheme: 'zongmu', l1: '經部' }] } };
         const { container } = render(<BookDetailLayout {...props(CLS_COLL, one)} />);
         await waitFor(() => expect(container.querySelector('#titles table')).toBeTruthy());
         await waitFor(() => expect(container.querySelectorAll('.bim-d-sq').length).toBe(4));

@@ -2,6 +2,9 @@ import type { IndexType, IndexEntry, PageResult, LoadOptions, GroupedSearchResul
 import type { LineageGraph } from '../core/lineage-graph';
 import type { TextChapterContent, TextIndex, TextManifest } from '../core/text-model';
 
+/** `_hubs.json`：`{id: {t: 'w'|'c'|'e', title, dyn?}}`——枢纽（入度 > 200 的记录）的名称表 */
+export type HubMap = Record<string, { t?: string; title?: string; dyn?: string }>;
+
 /**
  * 索引数据存储接口
  * 隔离本地文件系统 / GitHub 只读等数据源
@@ -30,7 +33,7 @@ export interface IndexStorage {
      * 枢纽名称表 `_hubs.json`（schema-v2，overview#458）：`{id: {t, title, dyn?}}`。
      * 卡片里 `{id, h:1}` 的枢纽引用没有 title，读者端从这里取名；不提供则显示 ID。
      */
-    getHubs?(): Promise<import('../core/derived-compat').HubMap | null>;
+    getHubs?(): Promise<HubMap | null>;
 
     /** 保存元数据 */
     saveItem(metadata: Record<string, unknown>): Promise<{ id: string; path: string }>;
