@@ -3,23 +3,16 @@ import { bim } from './styles/tokens';
 /** 资源原子类型 */
 export type ResourceTypeAtom = 'text' | 'image' | 'physical';
 
-/** 资源类型（旧版兼容：可单值或组合）。新数据应用 `types: ResourceTypeAtom[]` */
+/** 资源类型的“显示值”：原子类型，或编辑器下拉里的 `text+image` 组合项（数据里只存 `types` 原子数组，不存 `text+image`） */
 export type ResourceType = ResourceTypeAtom | 'text+image';
 
-/**
- * 归一化资源条目的类型为原子类型数组。
- * 优先读 `types`（新格式），回退到 `type`（旧格式）。
- * 'text+image' 会被拆分为 ['text', 'image']。
- */
-export function getResourceTypes(entry: { type?: ResourceType; types?: ResourceTypeAtom[] }): ResourceTypeAtom[] {
-    if (entry.types && entry.types.length > 0) return entry.types;
-    if (!entry.type) return [];
-    if (entry.type === 'text+image') return ['text', 'image'];
-    return [entry.type as ResourceTypeAtom];
+/** 资源条目的类型原子数组：只读 `types`（单值 `type` 的读侧兼容已于 2026-10 清退）；缺失返回 [] */
+export function getResourceTypes(entry: { types?: ResourceTypeAtom[] }): ResourceTypeAtom[] {
+    return entry.types && entry.types.length > 0 ? entry.types : [];
 }
 
-/** 检测是否包含某种类型（兼容新旧格式） */
-export function hasResourceType(entry: { type?: ResourceType; types?: ResourceTypeAtom[] }, atom: ResourceTypeAtom): boolean {
+/** 检测是否包含某种类型 */
+export function hasResourceType(entry: { types?: ResourceTypeAtom[] }, atom: ResourceTypeAtom): boolean {
     return getResourceTypes(entry).includes(atom);
 }
 
@@ -96,9 +89,7 @@ export interface ResourceEntry {
     name: string;
     short_name?: string;
     url: string;
-    /** @deprecated 使用 types。保留作向后兼容读取。 */
-    type?: ResourceType;
-    /** 资源类型数组（自由组合）。优先于 type。 */
+    /** 资源类型数组（自由组合） */
     types?: ResourceTypeAtom[];
     root_type?: 'catalog' | 'search';
     structure?: string[];

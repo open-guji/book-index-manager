@@ -279,7 +279,7 @@ export class BookIndexStorage {
         // 提取 measure_info（UI 展示用計量文本）
         const measureInfo = typeof metadata.measure_info === 'string' ? metadata.measure_info : '';
 
-        // 提取资源类型标记（兼容新 types 数组格式与旧 type 字符串格式）
+        // 提取资源类型标记（只认 types 数组）
         let hasText = false;
         let hasImage = false;
         const resources = metadata.resources;
@@ -290,10 +290,6 @@ export class BookIndexStorage {
                 if (Array.isArray(types)) {
                     if (types.includes('text')) hasText = true;
                     if (types.includes('image')) hasImage = true;
-                } else {
-                    const rt = (r as any).type;
-                    if (rt === 'text' || rt === 'text+image') hasText = true;
-                    if (rt === 'image' || rt === 'text+image') hasImage = true;
                 }
             }
         }
@@ -553,10 +549,6 @@ export class BookIndexStorage {
                             if (Array.isArray(types)) {
                                 if (types.includes('text')) hasText = true;
                                 if (types.includes('image')) hasImage = true;
-                            } else {
-                                const rt = (r as any).type;
-                                if (rt === 'text' || rt === 'text+image') hasText = true;
-                                if (rt === 'image' || rt === 'text+image') hasImage = true;
                             }
                         }
                     }

@@ -37,12 +37,12 @@ export interface ResourceEditorProps {
     filterType?: ResourceType;
 }
 
-/** 编辑器下拉里的「类型」值 → types 原子数组（`text+image` 拆成两项；新资源只写 types，不写单值 type） */
+/** 编辑器下拉里的「类型」值 → types 原子数组（`text+image` 拆成两项；数据里只写 types） */
 function splitResourceType(value: ResourceType): ResourceTypeAtom[] {
     return value === 'text+image' ? ['text', 'image'] : [value];
 }
 
-/** 资源现有 types（或旧 type）→ 下拉里选中的值；无类型按 text */
+/** 资源现有 types → 下拉里选中的值；无类型按 text */
 function selectedResourceType(item: ResourceEntry): ResourceType {
     const types = getResourceTypes(item);
     if (types.length === 0) return 'text';
@@ -111,10 +111,10 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
         onChange(newItems);
     };
 
-    /** 改类型：只写 types 数组，并去掉旧单值 type（编辑过的旧资源随之迁到新写法） */
+    /** 改类型：只写 types 数组，并顺手去掉草稿里可能残留的旧单值 type（读侧已不认它） */
     const handleTypeChange = (originalIndex: number, value: ResourceType) => {
         const newItems = [...items];
-        const { type: _legacyType, ...rest } = newItems[originalIndex];
+        const { type: _legacyType, ...rest } = newItems[originalIndex] as ResourceEntry & { type?: unknown };
         newItems[originalIndex] = { ...rest, types: splitResourceType(value) };
         onChange(newItems);
     };
