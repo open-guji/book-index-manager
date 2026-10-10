@@ -26,6 +26,8 @@ export interface TextVersion {
     edition_label?: string;
     /** 来源短名：collated／wikisource／kanripo／shidian… */
     source?: string;
+    /** 本站独立整理的原件版本（manifest 声明；界面层显示「本站独立整理」） */
+    is_original?: boolean;
     source_name?: string;
     source_url?: string | null;
     /** 授权，按份记；阅读器随版本显示 */
