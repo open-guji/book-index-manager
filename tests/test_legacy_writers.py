@@ -34,3 +34,22 @@ def test_save_item_still_migrates_volume_count(manager):
     out = _saved(manager, {"type": "book", "title": "测试", "volume_count": 4})
     assert out["juan_count"] == 4
     assert "volume_count" not in out
+
+
+def test_mark_promoted_removed():
+    """记录内写 _promoted_to／_promoted_at 的死代码已删；读侧兼读保留。"""
+    from book_index_manager import _utils
+
+    assert not hasattr(_utils, "mark_promoted")
+    assert hasattr(_utils, "read_promoted_to")
+    assert hasattr(_utils, "strip_promotion_marks")
+
+
+def test_promote_does_not_write_marks_into_records(manager):
+    draft = {"type": "work", "title": "测试作品", "authors": [{"name": "某", "role": "撰"}]}
+    manager.save_item(draft, BookIndexType.Work, BookIndexStatus.Draft)
+    manager.promote_to_official(draft["id"])
+    path = manager.storage.find_file_by_id(draft["id"])
+    data = json.loads(path.read_text(encoding="utf-8"))
+    for k in ("_promoted_to", "_promoted_at", "promoted_to", "promoted_at"):
+        assert k not in data
