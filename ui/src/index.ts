@@ -264,7 +264,7 @@ export type { LocaleProviderProps } from './i18n/provider';
 export {
     useT, useConvert, useI18n, getT, getMessages, formatTemplate, LocaleContext,
     findTraditionalChars, COMMON_TRADITIONAL_CHARS, TRADITIONAL_ALLOWLIST,
-    VARIANT_CHARS, normalizeVariants,
+    VARIANT_CHARS, VARIANT_SUPPLEMENT, normalizeVariants,
 } from './i18n';
 export type { Locale, FutureLocale, LocaleMessages, LocaleContextValue, I18n, MessageKey, TFunction, TraditionalHit } from './i18n';
 

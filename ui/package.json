@@ -33,6 +33,11 @@
     },
     "./styles": "./dist/book-index-ui.css",
     "./variant-chars.json": "./dist/variant-chars.json",
+    "./variant-supplement": {
+      "types": "./dist/variant-supplement.d.ts",
+      "import": "./dist/variant-supplement.js",
+      "require": "./dist/variant-supplement.cjs"
+    },
     "./variant-chars": {
       "types": "./dist/variant-chars-data.d.ts",
       "import": "./dist/variant-chars-data.js"

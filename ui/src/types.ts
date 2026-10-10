@@ -32,14 +32,14 @@ export const TEXT_QUALITY_LABELS: Record<TextQualityGrade, string> = {
     placeholder: '占位',
 };
 
-/** enum → 判定标准（tooltip 显示）；source／none／placeholder 的文字为待文本总管复核的初稿 */
+/** enum → 判定标准（tooltip 显示）；source／none／placeholder 的文字已经文本总管复核（overview#516） */
 export const TEXT_QUALITY_CRITERIA: Record<TextQualityGrade, string> = {
-    source: '採用底本原文，本站未另行校對',
+    source: '照錄來源原文，本站未另行校對',
     ocr: '保持大意和結構，錯誤率在百分之十以內',
     rough: '保證文意基本正確，錯誤率在百分之三以內',
     fine: '通讀無障礙，錯誤率在百分之一以內',
-    none: '本版本暫無正文',
-    placeholder: '占位，正文尚未錄入',
+    none: '質量未評定',
+    placeholder: '占位條目，正文尚未錄入',
 };
 
 /** enum → 主题色 */

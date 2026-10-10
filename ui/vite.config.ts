@@ -19,6 +19,7 @@ export default defineConfig(({ mode }) => {
           entry: {
             index: resolve(__dirname, 'src/index.ts'),
             storage: resolve(__dirname, 'src/storage-entry.ts'),
+            'variant-supplement': resolve(__dirname, 'src/i18n/variant-supplement.ts'),
           },
           name: 'BookIndexUI',
           formats: ['es', 'cjs'],
