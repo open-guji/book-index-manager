@@ -148,15 +148,27 @@ describe('TextReader：偏好 scriptMode 接到正文渲染', () => {
         await waitFor(() => expect(body(v.container)).toContain(HANS));
     });
 
-    it('面板里点「原字」：正文立刻回到底本原字，站点 locale 不变；再点「简体」转回简体', async () => {
+    // 设置面板在窄屏是底部抽屉、宽屏是侧栏：按「繁简」组直接取，没展开就点设置键
+    const panelGroup = () => {
+        if (!screen.queryByRole('group', { name: '繁简' })) fireEvent.click(screen.getAllByRole('button', { name: /阅读设置|设置/ })[0]);
+        return within(screen.getByRole('group', { name: '繁简' }));
+    };
+
+    it('外来文本上「原字」置灰（overview#540）：点了正文不变，站点 locale 不变', async () => {
         const v = mount('zh-Hans');
         await waitFor(() => expect(body(v.container)).toContain(HANS));
-        // 设置面板在窄屏是底部抽屉、宽屏是侧栏：按「繁简」组直接取，没展开就点设置键
-        if (!screen.queryByRole('group', { name: '繁简' })) fireEvent.click(screen.getAllByRole('button', { name: /阅读设置|设置/ })[0]);
-        const grp = () => within(screen.getByRole('group', { name: '繁简' }));
-        fireEvent.click(grp().getByRole('button', { name: '原字' }));
+        const orig = panelGroup().getByRole('button', { name: /原字/ }) as HTMLButtonElement;
+        expect(orig.disabled).toBe(true);
+        fireEvent.click(orig);
+        await waitFor(() => expect(body(v.container)).toContain(HANS));
+        expect(body(v.container)).not.toContain(SAMPLE);
+    });
+
+    it('存档已经是原字的读者：正文是底本原字；点「简体」转回简体', async () => {
+        // 以前在自校文本里选过「原」，现在这本外来文本上没法再选「原」，但离开它没有障碍
+        const v = mount('zh-Hans', { scriptMode: 'orig' });
         await waitFor(() => expect(body(v.container)).toContain(SAMPLE));
-        fireEvent.click(grp().getByRole('button', { name: '简体' }));
+        fireEvent.click(panelGroup().getByRole('button', { name: '简体' }));
         await waitFor(() => expect(body(v.container)).toContain(HANS));
     });
 });

@@ -48,6 +48,8 @@ export interface PageWarpData {
   total_warped_w: number;
   columns: ColumnGeometry[];
   banxin?: BanxinData;
+  /** 本章声明了规范层（norm_file，哪怕是空表）＝自校文本，「原字」档可选；缺省＝外来文本，原字档置灰（overview#540） */
+  hasNorm?: boolean;
 }
 
 /**
