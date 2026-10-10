@@ -165,8 +165,14 @@ def build_entity_index_entry(metadata: Dict[str, Any], id_str: str, rel_path: st
     subtype = metadata.get("subtype", "people")
     primary_name = metadata.get("primary_name", "")
     dynasty = metadata.get("dynasty", "")
-    birth_year = metadata.get("birth_year")
-    death_year = metadata.get("death_year")
+    # 生卒年取 dates.birth／dates.death，缺则回退 birth_year／death_year（index 键名不变）
+    dates = metadata.get("dates") if isinstance(metadata.get("dates"), dict) else {}
+    birth_year = dates.get("birth")
+    if birth_year is None:
+        birth_year = metadata.get("birth_year")
+    death_year = dates.get("death")
+    if death_year is None:
+        death_year = metadata.get("death_year")
 
     external = metadata.get("external_ids") or {}
     cbdb_id = external.get("cbdb_id") if isinstance(external, dict) else None
@@ -275,6 +281,8 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
         entry["has_text"] = True
     if flags["has_image"]:
         entry["has_image"] = True
+    # 過渡：只透傳源檔舊值。權威是 book-index build 從 book-text 推的 has_collated（工作包 C）；
+    # 源檔旗標由數據道刪除（工作包 D）後此處自然為空，屆時一併刪（工作包 G）。
     if metadata.get("_has_collated") or metadata.get("has_collated"):
         entry["has_collated"] = True
     if edition:
