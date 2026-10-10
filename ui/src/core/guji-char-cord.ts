@@ -9,15 +9,42 @@
  * 输出结构与旧 `adaptGujiPages`（pages.json）一致，阅读器组件不用改。char 里有而 cord 没有的格 bbox 为 null；
  * 没有 cord（章条目无 `cord_file`）时各页尺寸为 0，只能读字、没有对读。
  *
- * 无字页（书脊签、封面签条、空白页等：char 里没有格、cord 里有 canvas）也收进页列表，`columns` 为空：
- * 书影翻页要翻到它们，正文侧不出这些页（阅读器按「有没有字」区分）。
+ * 无字页（书脊签、封面签条、空白页等：char 里没有格、cord 里有 canvas）也收进页列表，`columns` 里没有字
+ * （只可能有 `kind: blank` 的空列）：书影翻页要翻到它们，正文侧不出这些页（阅读器按「有没有字」区分）。
+ *
+ * char 的版式字段（spec/02 §4.2–4.4：页 `label`；列 `raised`／`lead_blank`／`kind`；格 `lane`／`lacuna`／`guess`／`zi`）
+ * 原样带到输出上，缺省不带键——旧数据的输出与改前逐字段一致（overview#517）。
  */
-import type { GujiPageChar, GujiPageInfo } from './guji-pages';
+import type { GujiColumnKind, GujiPageChar, GujiPageInfo } from './guji-pages';
 
 const ANCHOR = /^(\d+):(-?\d+):(-?\d+)([a-z]?)$/;
 
 function num(v: unknown): number | undefined {
     return typeof v === 'number' && Number.isFinite(v) ? v : undefined;
+}
+
+const LANES = new Set(['main', 'solo', 'jz_r', 'jz_l']);
+const KINDS = new Set(['body', 'banxin', 'blank']);
+
+/** 格的可选字段（spec/02 §4.4）：只收合法值，缺省不带键——旧数据的输出与改前逐字段一致 */
+function cellExtras(cell: Record<string, any>): Pick<GujiPageChar, 'lane' | 'lacuna' | 'guess' | 'zi'> {
+    const out: Pick<GujiPageChar, 'lane' | 'lacuna' | 'guess' | 'zi'> = {};
+    if (typeof cell.lane === 'string' && LANES.has(cell.lane) && cell.lane !== 'main') out.lane = cell.lane as GujiPageChar['lane'];
+    if (cell.lacuna === true) out.lacuna = true;
+    if (cell.guess === true) out.guess = true;
+    if (typeof cell.zi === 'string' && cell.zi) out.zi = cell.zi;
+    return out;
+}
+
+/** 列的可选字段（spec/02 §4.3）：`raised`、`lead_blank` 只收正整数（0 即缺省），`kind` 只收三个枚举（body 即缺省） */
+function columnExtras(col: Record<string, any>): { kind?: GujiColumnKind; raised?: number; lead_blank?: number } {
+    const out: { kind?: GujiColumnKind; raised?: number; lead_blank?: number } = {};
+    if (typeof col.kind === 'string' && KINDS.has(col.kind) && col.kind !== 'body') out.kind = col.kind as GujiColumnKind;
+    const r = num(col.raised);
+    if (r !== undefined && Number.isInteger(r) && r > 0) out.raised = r;
+    const b = num(col.lead_blank);
+    if (b !== undefined && Number.isInteger(b) && b > 0) out.lead_blank = b;
+    return out;
 }
 
 function pagesOf(raw: unknown): Record<string, any>[] {
@@ -41,6 +68,12 @@ export function adaptCharCord(charRaw: unknown, cordRaw?: unknown): GujiPageInfo
         }
     }
     const out: GujiPageInfo[] = [];
+    const labels = new Map<number, string>();
+    const blankOnly = new Map<number, GujiPageInfo['columns']>();
+    for (const pg of pagesOf(charRaw)) {
+        const pn = num(pg.page);
+        if (pn !== undefined && typeof pg.label === 'string' && pg.label) labels.set(pn, pg.label);
+    }
     for (const pg of pagesOf(charRaw)) {
         const page = num(pg.page);
         if (page === undefined) continue;
@@ -53,11 +86,17 @@ export function adaptCharCord(charRaw: unknown, cordRaw?: unknown): GujiPageInfo
                 const m = ANCHOR.exec(String(cell?.a ?? ''));
                 if (!m || typeof cell.c !== 'string') continue;
                 const slot = parseInt(m[3], 10);
-                chars.push({ id: cell.a, char: cell.c, slot, pos: slot, sub: m[4] || null, bbox: boxes.get(cell.a) ?? null });
+                chars.push({ id: cell.a, char: cell.c, slot, pos: slot, sub: m[4] || null, bbox: boxes.get(cell.a) ?? null, ...cellExtras(cell) });
             }
-            if (chars.length > 0) columns.push({ col: colNo, chars });
+            const extras = columnExtras(col);
+            // 空列（kind: blank）也留着：阅读器要显示空位，不丢列
+            if (chars.length > 0 || extras.kind === 'blank') columns.push({ col: colNo, chars, ...extras });
         }
-        if (columns.length === 0) continue; // 无字页由下面按 cord 的 canvas 收
+        if (!columns.some(c => c.chars.length > 0)) {
+            // 无字页由下面按 cord 的 canvas 收；它的 blank 空列带过去，不丢列
+            if (columns.length > 0) blankOnly.set(page, columns);
+            continue;
+        }
         // 列号小的在右；同列号重复（不应出现）保持文件顺序
         columns.sort((a, b) => a.col - b.col);
         const cp = cordPages.get(page);
@@ -66,6 +105,7 @@ export function adaptCharCord(charRaw: unknown, cordRaw?: unknown): GujiPageInfo
             seq: String(cp?.canvas?.seq ?? ''),
             width: num(cp?.canvas?.width) ?? num(cp?.image?.width) ?? 0,
             height: num(cp?.canvas?.height) ?? num(cp?.image?.height) ?? 0,
+            ...(typeof pg.label === 'string' && pg.label ? { label: pg.label } : {}),
             columns,
         });
     }
@@ -79,7 +119,8 @@ export function adaptCharCord(charRaw: unknown, cordRaw?: unknown): GujiPageInfo
             seq: String(seq),
             width: num(cp.canvas?.width) ?? num(cp.image?.width) ?? 0,
             height: num(cp.canvas?.height) ?? num(cp.image?.height) ?? 0,
-            columns: [],
+            ...(labels.has(page) ? { label: labels.get(page) } : {}),
+            columns: blankOnly.get(page) ?? [],
         });
     }
     return out.sort((a, b) => a.page - b.page);
