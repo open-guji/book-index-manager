@@ -19,17 +19,33 @@ import { buildParagraphBlocks, detectGenre, type ReadingMode } from '../../core/
 import { useConvert } from '../../i18n';
 import { useI18n } from '../../i18n/use-i18n';
 import type { TFunction } from '../../i18n/translate';
+import { properNamesOn, type ReaderPrefs } from './prefs';
+import { transformMark, type QuoteStyle } from './marks';
 
 /** 纯文本片段 → 节点（高亮等由调用方注入） */
 export type TextRenderer = (s: string) => React.ReactNode;
 
 const identity: TextRenderer = s => s;
 
+/** 正文里书名的标法：波浪线（书名号视觉隐去）／书名号（原文，不画线）／都不标（书名号视觉隐去，也不画线） */
+export type BookMarking = 'wavy' | 'bracket' | 'none';
+
+/**
+ * 按阅读偏好定书名标法：`showWorks` 关＝都不标；选书名号＝书名号；选波浪线则要专名号开着（`properNameMode` 非 off）才画，
+ * 关着时仍是原文（保持改动前的默认：本章没有专名层数据时默认 off，不画线）。
+ */
+export function bookMarkingOf(prefs: Pick<ReaderPrefs, 'showWorks' | 'bookTitleStyle' | 'properNameMode'>): BookMarking {
+    if (!prefs.showWorks) return 'none';
+    if (prefs.bookTitleStyle === 'bracket') return 'bracket';
+    return properNamesOn(prefs.properNameMode) ? 'wavy' : 'bracket';
+}
+
 /**
  * 专名线：`《書名》` → 波浪线。书名号放进屏幕阅读器可读、视觉隐藏的 span，
  * 复制粘贴仍是《書名》。书名号不成对的片段原样输出。
+ * `marking='none'`：只隐去书名号（同样留在 DOM 里），不画线。
  */
-export function renderProperNames(text: string, renderText: TextRenderer = identity): React.ReactNode {
+export function renderProperNames(text: string, renderText: TextRenderer = identity, marking: 'wavy' | 'none' = 'wavy'): React.ReactNode {
     if (text.indexOf('《') < 0) return renderText(text);
     const out: React.ReactNode[] = [];
     const re = /《([^《》\n]+)》/g;
@@ -38,11 +54,12 @@ export function renderProperNames(text: string, renderText: TextRenderer = ident
     let m: RegExpExecArray | null;
     while ((m = re.exec(text))) {
         if (m.index > last) out.push(<React.Fragment key={k++}>{renderText(text.slice(last, m.index))}</React.Fragment>);
-        out.push(
-            <span key={k++} className="bim-rd-pn">
+        const inner = (
+            <>
                 <span className="bim-rd-sr">《</span>{renderText(m[1])}<span className="bim-rd-sr">》</span>
-            </span>,
+            </>
         );
+        out.push(marking === 'wavy' ? <span key={k++} className="bim-rd-pn">{inner}</span> : <React.Fragment key={k++}>{inner}</React.Fragment>);
         last = m.index + m[0].length;
     }
     if (last === 0) return renderText(text);
@@ -53,8 +70,12 @@ export function renderProperNames(text: string, renderText: TextRenderer = ident
 export interface InlineOptions {
     /** 高亮等纯文本处理（夹注内外都会调用） */
     renderText?: TextRenderer;
-    /** 专名线 */
+    /** 专名线（旧开关）：true＝波浪线，false＝原文。同时传了 `bookMarking` 以后者为准 */
     properNames?: boolean;
+    /** 书名标法，见 `bookMarkingOf` */
+    bookMarking?: BookMarking;
+    /** 引号样式（只改显示）；缺省／original＝原样 */
+    quoteStyle?: QuoteStyle;
     /** guji-markdown 0.2.0 行内写法 */
     gujiMarkdown?: boolean;
     /** 闕文／組字提示用的字典（组件里传 useI18n().t）；不传按繁体 */
@@ -63,8 +84,14 @@ export interface InlineOptions {
 
 /** 一段行内文字：夹注 → 专名线 → 高亮，由外到内 */
 export function renderReaderInline(text: string, opts: InlineOptions = {}): React.ReactNode {
-    const base = opts.renderText ?? identity;
-    const leaf: TextRenderer = opts.properNames ? s => renderProperNames(s, base) : base;
+    let base = opts.renderText ?? identity;
+    const qs = opts.quoteStyle;
+    if (qs && qs !== 'original') {
+        const inner = base;
+        base = s => inner(transformMark(s, { quoteStyle: qs }));
+    }
+    const marking = opts.bookMarking ?? (opts.properNames ? 'wavy' : 'bracket');
+    const leaf: TextRenderer = marking === 'bracket' ? base : s => renderProperNames(s, base, marking);
     const io: InterlinearOptions | undefined = opts.gujiMarkdown ? { gujiMarkdown: true, t: opts.t } : undefined;
     return renderInterlinear(text, leaf, io);
 }
@@ -208,18 +235,20 @@ export function useConvertedText(text: string | null | undefined): string {
  * `tables` 为真时先切出 `:::table` 块（目录声明 guji-table-v1 或 guji-markdown ≥ 0.2.0 的书），
  * 块外的文字仍按分行 / 自然段排。
  */
-export function ReaderMdText({ text, mode, tables = false, gujiMarkdown = false, properNames = false, renderText, dropTitle }: {
+export function ReaderMdText({ text, mode, tables = false, gujiMarkdown = false, properNames = false, bookMarking, quoteStyle, renderText, dropTitle }: {
     text: string;
     mode: ReadingMode;
     tables?: boolean;
     gujiMarkdown?: boolean;
     properNames?: boolean;
+    bookMarking?: BookMarking;
+    quoteStyle?: QuoteStyle;
     renderText?: TextRenderer;
     dropTitle?: string;
 }) {
     const converted = useConvertedText(text);
     const { t, convert } = useI18n();
-    const inline = (s: string) => renderReaderInline(s, { renderText, properNames, gujiMarkdown, t });
+    const inline = (s: string) => renderReaderInline(s, { renderText, properNames, bookMarking, quoteStyle, gujiMarkdown, t });
     const io: InterlinearOptions | undefined = gujiMarkdown ? { gujiMarkdown: true, t } : undefined;
     const title = dropTitle ? convert(dropTitle) : undefined;
 

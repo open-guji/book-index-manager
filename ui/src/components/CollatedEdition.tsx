@@ -8,8 +8,7 @@ import type { LocaleMessages } from '../i18n/types';
 import { useBidUrl } from '../core/bid-url';
 import { renderInterlinear, truncateOutsideJiazhu } from './detail/primitives';
 import { bim } from '../styles/tokens';
-import { ReaderMdText, canParagraphize, renderReaderInline } from './Reader/ReaderText';
-import { properNamesOn } from './Reader/prefs';
+import { ReaderMdText, bookMarkingOf, canParagraphize, renderReaderInline } from './Reader/ReaderText';
 import type { ReaderPrefs } from './Reader/prefs';
 import { normalizeVariants } from '../i18n/variant-chars';
 
@@ -1139,7 +1138,8 @@ export function JuanReading({
     const isKaozhen = index?.type === 'kaozhen';
 
     const renderText = useCallback((seg: string) => (q ? renderHighlighted(seg, q, normalizer) : seg), [q, normalizer]);
-    const inline = (s: string) => renderReaderInline(s, { renderText, properNames: properNamesOn(prefs.properNameMode), t });
+    const bookMarking = bookMarkingOf(prefs);
+    const inline = (s: string) => renderReaderInline(s, { renderText, bookMarking, quoteStyle: prefs.quoteStyle, t });
 
     const catalogSections = useMemo(() => {
         if (!q) return juan.sections;
@@ -1211,7 +1211,7 @@ export function JuanReading({
             {effectiveView === 'text' && (
                 <article className="bim-rd-prose">
                     {useMd
-                        ? <ReaderMdText text={rawText!} mode={prefs.readingMode} properNames={properNamesOn(prefs.properNameMode)} renderText={renderText} dropTitle={juan.title} />
+                        ? <ReaderMdText text={rawText!} mode={prefs.readingMode} bookMarking={bookMarking} quoteStyle={prefs.quoteStyle} renderText={renderText} dropTitle={juan.title} />
                         : <CollatedEntries sections={juan.sections} onNavigate={onNavigate} inline={inline} workLinks={prefs.workLinks} />}
                 </article>
             )}

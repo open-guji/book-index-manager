@@ -24,7 +24,8 @@ const char = { pages: [{ page: 3, columns: [{ col: 1, cells: [
 const cord = { pages: [{ page: 3, canvas: { id: `https://x/iiif/${WORK}/canvas/03/0003`, seq: '0003', width: 1000, height: 1400 },
     cells: ['3:1:1', '3:1:2', '3:1:3', '3:1:4'].map((a, i) => ({ a, box: [1, 1 + i * 20, 10, 10] })) }] };
 const entity = { entities: [
-    { id: 'e1', type: 'work', text: '讀易私言', anchor: { start: '3:1:1', end: '3:1:4' }, span: { start_offset: 0, end_offset: 4 }, target: { status: 'new_candidate' } },
+    { id: 'e1', type: 'work', text: '讀易', anchor: { start: '3:1:1', end: '3:1:2' }, span: { start_offset: 0, end_offset: 2 }, target: { status: 'new_candidate' } },
+    { id: 'e2', type: 'people', text: '私言', anchor: { start: '3:1:3', end: '3:1:4' }, span: { start_offset: 2, end_offset: 4 }, target: { status: 'new_candidate' } },
 ] };
 
 const transport = {
@@ -86,14 +87,16 @@ describe('专名线默认值', () => {
         const first = await mount(true);
         await waitFor(() => expect(first.container.querySelectorAll('.bim-et-work').length).toBeGreaterThan(0));
         fireEvent.click(off());
-        await waitFor(() => expect(first.container.querySelectorAll('.bim-et').length).toBe(0));
+        // 专名号档位「不显示」关掉人名等；书名只看「标注书名」开关（overview#510），不随档位
+        await waitFor(() => expect(first.container.querySelectorAll('.bim-et-person').length).toBe(0));
+        expect(first.container.querySelectorAll('.bim-et-work').length).toBeGreaterThan(0);
         const stored = JSON.parse(localStorage.getItem('bim-reader-prefs') ?? '{}');
         expect(stored.properNameMode).toBe('off');
         expect('properNames' in stored).toBe(false); // 写回只写新键
         first.unmount();
         const second = await mount(true);
         await waitFor(() => expect(off().getAttribute('aria-pressed')).toBe('true'));
-        expect(second.container.querySelectorAll('.bim-et').length).toBe(0);
+        expect(second.container.querySelectorAll('.bim-et-person').length).toBe(0);
     });
 
     it('本章没有专名层数据：没选过时不画线、开关不按下', async () => {
