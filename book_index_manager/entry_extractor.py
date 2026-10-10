@@ -281,6 +281,8 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
         entry["has_text"] = True
     if flags["has_image"]:
         entry["has_image"] = True
+    # 過渡：只透傳源檔舊值。權威是 book-index build 從 book-text 推的 has_collated（工作包 C）；
+    # 源檔旗標由數據道刪除（工作包 D）後此處自然為空，屆時一併刪（工作包 G）。
     if metadata.get("_has_collated") or metadata.get("has_collated"):
         entry["has_collated"] = True
     if edition:
