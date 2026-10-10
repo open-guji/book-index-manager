@@ -790,30 +790,6 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                     {showPunctuation ? '标点' : '无标点'}
                 </button>
             ) : undefined}
-            settingsLayout={warpData ? (
-                <>
-                    <span className="bim-rd-badge-warp">图文对读</span>
-                    {/* 书影留白：去空白＝紧凑裁切版心，保留空白＝完整呈现天头地脚与白边 */}
-                    <div role="group" aria-label="书影留白" style={{ display: 'inline-flex', border: `1px solid ${bim('rule')}`, borderRadius: 4, overflow: 'hidden' }}>
-                        <button
-                            type="button"
-                            onClick={() => setPreserveMargins(false)}
-                            aria-pressed={!preserveMargins}
-                            className={`bim-rd-t ${!preserveMargins ? 'bim-rd-on' : ''}`}
-                            style={{ padding: '6px 12px', border: 'none', borderRadius: 0, background: !preserveMargins ? 'var(--bimrd-on-bg)' : 'transparent', color: !preserveMargins ? bim('ink') : 'inherit' }}
-                            title="去空白：紧凑裁切版心"
-                        >去空白</button>
-                        <button
-                            type="button"
-                            onClick={() => setPreserveMargins(true)}
-                            aria-pressed={preserveMargins}
-                            className={`bim-rd-t ${preserveMargins ? 'bim-rd-on' : ''}`}
-                            style={{ padding: '6px 12px', border: 'none', borderRadius: 0, background: preserveMargins ? 'var(--bimrd-on-bg)' : 'transparent', color: preserveMargins ? bim('ink') : 'inherit' }}
-                            title="保留空白：完整呈现古籍天头地脚与白边"
-                        >保留空白</button>
-                    </div>
-                </>
-            ) : undefined}
             prefs={prefs}
             onPrefsChange={setPrefs}
             versions={readerVersions.length > 1 ? readerVersions : undefined}

@@ -48,6 +48,33 @@ export interface PageWarpData {
   banxin?: BanxinData;
 }
 
+/**
+ * 去空白时「整幅原图」页（逐字坐标新数据：没有透视 strip，整张书影铺满画布）的裁切区：
+ * 所有字框的外接矩形，四周各留 3%（按短边算）。有透视 strip 的页走原来的版心裁切，这里返回 null；
+ * 没有字框、框退化、或几乎没裁掉东西（≥98%）也返回 null（保持整图）。
+ */
+export function fullImageTrimRect(pageData: PageWarpData): { x: number; y: number; w: number; h: number } | null {
+  const [W, H] = pageData.image_size || [0, 0];
+  if (!(W > 0) || !(H > 0)) return null;
+  if (pageData.columns.some((c) => (c.strips?.length ?? 0) > 0)) return null;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const col of pageData.columns) {
+    for (const ch of col.chars) {
+      const [a, b, c, d] = ch.bbox_col;
+      if (![a, b, c, d].every(Number.isFinite) || !(c > a) || !(d > b)) continue;
+      x0 = Math.min(x0, col.offset_x + a); y0 = Math.min(y0, b);
+      x1 = Math.max(x1, col.offset_x + c); y1 = Math.max(y1, d);
+    }
+  }
+  if (!(x1 > x0) || !(y1 > y0)) return null;
+  const pad = Math.min(W, H) * 0.03;
+  const x = Math.min(W, Math.max(0, x0 - pad)), y = Math.min(H, Math.max(0, y0 - pad));
+  const w = Math.min(W, Math.max(0, x1 + pad)) - x, h = Math.min(H, Math.max(0, y1 + pad)) - y;
+  if (!(w > 0) || !(h > 0)) return null;
+  if (w >= W * 0.98 && h >= H * 0.98) return null;
+  return { x, y, w, h };
+}
+
 export interface GujiWarpCanvasProps {
   imageUrl: string;
   pageData: PageWarpData;
@@ -166,9 +193,12 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
     };
   }, [pageData, preserveMargins]);
 
+  // 整幅原图页（无透视 strip）去空白：画布只取版心那一块（保留空白时整图）
+  const crop = useMemo(() => (preserveMargins ? null : fullImageTrimRect(pageData)), [pageData, preserveMargins]);
+
   const contentW = totalWarpedW + (banxin ? banxin.total_w : 0);
-  const totalDisplayW = contentW + margins.left + margins.right;
-  const totalDisplayH = maxWarpedH + margins.top + margins.bottom;
+  const totalDisplayW = crop ? crop.w : contentW + margins.left + margins.right;
+  const totalDisplayH = crop ? crop.h : maxWarpedH + margins.top + margins.bottom;
 
   // 统一绘制函数 (单 Context 纯净渲染，杜绝多 Context 驱动冲突与黑屏)
   const draw = useCallback(() => {
@@ -295,7 +325,14 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
               colOffsetX: 0,
               colOffsetY: 0,
               strip: {
-                srcQuad: [
+                srcQuad: crop
+                  ? [
+                    [crop.x, crop.y],
+                    [crop.x + crop.w, crop.y],
+                    [crop.x + crop.w, crop.y + crop.h],
+                    [crop.x, crop.y + crop.h],
+                  ]
+                  : [
                   [0, 0],
                   [pageData.image_size[0], 0],
                   [pageData.image_size[0], pageData.image_size[1]],
@@ -345,7 +382,7 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
         0.65
       );
     }
-  }, [imageUrl, pageData, banxin, totalDisplayW, totalDisplayH, totalWarpedW, maxWarpedH, contentW, margins, preserveMargins]);
+  }, [imageUrl, pageData, banxin, totalDisplayW, totalDisplayH, totalWarpedW, maxWarpedH, contentW, margins, preserveMargins, crop]);
 
   // 初始化单一 WebGL 渲染器：只在挂载时建一次。翻页时只换纹理、重画，不销毁 context（原先每翻一页重建一次，是卡顿主因之一）
   const drawRef = useRef(draw);
@@ -453,15 +490,15 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
         list.push({
           id: ch.id,
           char: ch.char,
-          x: margins.left + col.offset_x + x0,
-          y: margins.top + y0,
+          x: margins.left + col.offset_x + x0 - (crop?.x ?? 0),
+          y: margins.top + y0 - (crop?.y ?? 0),
           w: Math.max(x1 - x0, 1),
           h: Math.max(y1 - y0, 1),
         });
       }
     }
     return list;
-  }, [pageData, margins]);
+  }, [pageData, margins, crop]);
 
   return (
     <div

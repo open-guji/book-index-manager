@@ -174,7 +174,7 @@ describe('TextReader 对读 · 起始页与开关状态', () => {
         expect(seen).toEqual(['3']);
     });
 
-    it('「标点」「去空白／保留空白」按钮带 aria-pressed，点一下状态跟着变', async () => {
+    it('「标点」按钮带 aria-pressed，点一下状态跟着变', async () => {
         await setup();
         fireEvent.click(screen.getByRole('button', { name: /閱讀設置|阅读设置/ }));
         const punct = document.querySelector('button[title="切换外挂现代断句标点"]') as HTMLButtonElement;
@@ -183,11 +183,6 @@ describe('TextReader 对读 · 起始页与开关状态', () => {
         expect(punct.getAttribute('aria-pressed')).toBe('false');
         fireEvent.click(punct);
         expect(punct.getAttribute('aria-pressed')).toBe('true');
-        const keep = document.querySelector('button[title^="保留空白"]') as HTMLButtonElement;
-        const trim = document.querySelector('button[title^="去空白"]') as HTMLButtonElement;
-        expect([keep.getAttribute('aria-pressed'), trim.getAttribute('aria-pressed')]).toEqual(['true', 'false']);
-        fireEvent.click(trim);
-        expect([keep.getAttribute('aria-pressed'), trim.getAttribute('aria-pressed')]).toEqual(['false', 'true']);
     });
 });
 
