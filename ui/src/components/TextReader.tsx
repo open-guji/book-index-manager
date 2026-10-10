@@ -27,8 +27,9 @@ import { LoadingDots } from './common/LoadingDots';
 import { NoteText } from './common/NoteText';
 import { ReaderShell } from './Reader/ReaderShell';
 import type { PanelState } from './Reader/ReaderShell';
-import { ReaderMdText, canParagraphize } from './Reader/ReaderText';
-import { properNamesOn, useReaderPrefs } from './Reader/prefs';
+import { ReaderMdText, bookMarkingOf, canParagraphize } from './Reader/ReaderText';
+import { filterEntitiesByMode } from '../core/entity-annotations';
+import { useReaderPrefs } from './Reader/prefs';
 import { useChapterImages } from './Reader/useChapterImages';
 import type { ReaderImageOverlay, ReaderImageResolver, ReaderResolveContext, ReaderReportContext, ReaderTocItem, ReaderVersion } from './Reader/types';
 import type { JuanCacheEntry, JuanView, WorkLabelCache } from './CollatedEdition';
@@ -382,8 +383,12 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     const entitySpans = useChapterEntities(resolveEntities, effectiveChapter ?? null, resolveCtx);
     // 专名号：用户没选过（properNameMode==null）时，本章有专名层数据就默认 full（没有就 off，不画空线）；选过就照用户的
     const properNameMode = storedPrefs.properNameMode ?? (entitySpans.length > 0 ? 'full' : 'off');
-    const properNamesDrawn = properNamesOn(properNameMode);
     const prefs = useMemo(() => ({ ...storedPrefs, properNameMode }), [storedPrefs, properNameMode]);
+    // 对读正文要画的实体：按专名号档位筛（lite＝人名、地名、朝代）；书名只看 showWorks，与档位无关
+    const drawnEntities = useMemo(
+        () => filterEntitiesByMode(entitySpans, properNameMode, { showWorks: prefs.showWorks }),
+        [entitySpans, properNameMode, prefs.showWorks],
+    );
     const [selectedCharIds, setSelectedCharIds] = useState<Set<string>>(new Set());
     const [hoveredCharId, setHoveredCharId] = useState<string | null>(null);
     const [showPunctuation, setShowPunctuation] = useState<boolean>(true);
@@ -854,12 +859,18 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                         onCharHover={setHoveredCharId}
                         mode="horizontal"
                         showPunctuation={showPunctuation}
-                        entities={properNamesDrawn ? entitySpans : undefined}
+                        entities={drawnEntities}
                         entityTransport={transport}
                         onEntityNavigate={onEntityNavigate}
                         onVisiblePageChange={(p) => setActivePage(p)}
                         convert={convert}
                         scrollToPage={scrollTarget}
+                        pageBreaks={prefs.pageBreaks}
+                        pageIndicatorY={prefs.pageIndicatorY}
+                        onPageIndicatorYChange={(y) => setPrefs({ pageIndicatorY: y })}
+                        quoteStyle={prefs.quoteStyle}
+                        bookTitleStyle={prefs.bookTitleStyle}
+                        showWorks={prefs.showWorks}
                     />
                 </article>
             )}
@@ -916,7 +927,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                             mode={prefs.readingMode}
                             tables={tables}
                             gujiMarkdown={hasGujiMarkdownV02(index)}
-                            properNames={properNamesDrawn}
+                            bookMarking={bookMarkingOf(prefs)}
+                            quoteStyle={prefs.quoteStyle}
                         />
                     </article>
                 </>
