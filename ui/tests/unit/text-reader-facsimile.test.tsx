@@ -96,13 +96,16 @@ async function setup() {
     );
     await waitFor(() => expect(screen.getByTestId('facsimile-next')).toBeTruthy(), { timeout: 5000 });
     await waitFor(() => expect(view.container.querySelector('[data-page-section]')).not.toBeNull(), { timeout: 5000 });
+    // 正文排版（reflowPages）晚到一拍会让 GujiTextViewer 的页追踪 effect 重跑、把页号拉回参考线所在页；
+    // 先等它安静下来，再开始点翻页，避免机器慢时的偶发失败
+    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
     return view;
 }
 
 describe('TextReader 对读书影翻页 · 无字页', () => {
     it('起始页是第一个有字的页；正文里只有有字的页', async () => {
         const { container } = await setup();
-        expect(wp()).toBe('3');
+        await waitFor(() => expect(wp()).toBe('3'), { timeout: 5000 });
         expect(Array.from(container.querySelectorAll('[data-page-section]')).map(e => e.getAttribute('data-page-section'))).toEqual(['3', '4', '6']);
     });
 
@@ -111,19 +114,27 @@ describe('TextReader 对读书影翻页 · 无字页', () => {
         const prev = screen.getByTestId('facsimile-prev') as HTMLButtonElement;
         expect(prev.disabled).toBe(false);
         fireEvent.click(prev);
-        expect(wp()).toBe('2');
-        expect(screen.getByTestId('canvas-stub').getAttribute('data-boxes')).toBe('0');
-        expect(screen.getByTestId('canvas-stub').getAttribute('data-image')).toContain('u2');
+        await waitFor(() => {
+            expect(wp()).toBe('2');
+            expect(screen.getByTestId('canvas-stub').getAttribute('data-boxes')).toBe('0');
+            expect(screen.getByTestId('canvas-stub').getAttribute('data-image')).toContain('u2');
+        }, { timeout: 5000 });
         fireEvent.click(prev);
-        expect(wp()).toBe('1');
-        expect((screen.getByTestId('facsimile-prev') as HTMLButtonElement).disabled).toBe(true);
+        await waitFor(() => {
+            expect(wp()).toBe('1');
+            expect((screen.getByTestId('facsimile-prev') as HTMLButtonElement).disabled).toBe(true);
+        }, { timeout: 5000 });
         for (let i = 0; i < 4; i++) fireEvent.click(screen.getByTestId('facsimile-next'));
-        expect(wp()).toBe('5');
-        expect(screen.getByTestId('canvas-stub').getAttribute('data-boxes')).toBe('0');
+        await waitFor(() => {
+            expect(wp()).toBe('5');
+            expect(screen.getByTestId('canvas-stub').getAttribute('data-boxes')).toBe('0');
+        }, { timeout: 5000 });
         fireEvent.click(screen.getByTestId('facsimile-next'));
-        expect(wp()).toBe('6');
-        expect((screen.getByTestId('facsimile-next') as HTMLButtonElement).disabled).toBe(true);
-    });
+        await waitFor(() => {
+            expect(wp()).toBe('6');
+            expect((screen.getByTestId('facsimile-next') as HTMLButtonElement).disabled).toBe(true);
+        }, { timeout: 5000 });
+    }, 20000);
 
     it('翻到无字页时正文不跳；翻到有字页时仍让正文滚到该页开头', async () => {
         const { container } = await setup();
@@ -183,7 +194,7 @@ describe('TextReader 对读 · 起始页与开关状态', () => {
 describe('TextReader 对读 · 连按翻页键', () => {
     it('渲染还没跟上时连按「›」「‹」：第二次按最新页号算，回到原来的页（不是翻到再前一页）', async () => {
         await setup();
-        expect(wp()).toBe('3');
+        await waitFor(() => expect(wp()).toBe('3'), { timeout: 5000 });
         const panel = screen.getByTestId('facsimile-panel');
         // 同一个 act 里连按：两次按键之间 React 来不及渲染，第二次拿到的还是旧闭包
         act(() => {
@@ -206,9 +217,9 @@ describe('TextReader 对读 · 宿主重取数据', () => {
         const make = () => async () => ({ page_id: '', title: '', image_size: [0, 0], total_warped_w: 0, columns: [], pages: adaptCharCord(char, cord), punctuations: [] });
         const view = render(readerEl(make(), images));
         await waitFor(() => expect(view.container.querySelector('[data-page-section]')).not.toBeNull(), { timeout: 5000 });
-        expect(wp()).toBe('3');
+        await waitFor(() => expect(wp()).toBe('3'), { timeout: 5000 });
         fireEvent.click(screen.getByTestId('facsimile-next'));
-        expect(wp()).toBe('4');
+        await waitFor(() => expect(wp()).toBe('4'), { timeout: 5000 });
         // 宿主重取：resolve 的身份变了，hook 重新要一次数据，得到一个内容相同、对象不同的 warpData
         let calls = 0;
         const again = make();
@@ -224,7 +235,7 @@ describe('TextReader 对读 · 宿主重取数据', () => {
         const view = render(readerEl(make(), images));
         await waitFor(() => expect(view.container.querySelector('[data-page-section]')).not.toBeNull(), { timeout: 5000 });
         fireEvent.click(screen.getByTestId('facsimile-next'));
-        expect(wp()).toBe('4');
+        await waitFor(() => expect(wp()).toBe('4'), { timeout: 5000 });
         view.rerender(readerEl(make(), images, 'otherwork1'));
         await waitFor(() => expect(wp()).toBe('3'), { timeout: 5000 });
     });
