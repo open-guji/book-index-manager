@@ -1409,7 +1409,6 @@ export function normalizeRole(role?: string | null): RoleClass {
     // 去掉私用區壞字與空白（實測有 '等奉撰' 這種）
     const t = role.replace(/[\s-]/g, '');
     if (!t) return '撰';
-    if (t === 'author') return '撰';
     for (const { cls, re } of ROLE_RULES) {
         if (re.test(t)) return cls;
     }
@@ -1419,9 +1418,9 @@ export function normalizeRole(role?: string | null): RoleClass {
 /**
  * 作者署名里的 role 显示值。
  *
- * 数据里有 16 条 `authors[].role` 写成英文 "author"（录入工具的占位值
- * 没被替换掉），直接渲染就是「紀昀等編 author」这种中英夹杂。
- * 这类无信息量的占位值不显示；真正的中文职任（撰/編/總纂官…）原样保留。
+ * 曾有 `authors[].role` 写成英文 "author"（录入工具的占位值没被替换掉），直接渲染就是
+ * 「紀昀等編 author」这种中英夹杂。数据已清零（2026-10）、写入端也已改写「撰」，
+ * 这里的防御仍留着：不含汉字的 role（"author"、"ed."…）一律不显示；真正的中文职任（撰/編/總纂官…）原样保留。
  */
 export function displayAuthorRole(role?: string): string {
     if (!role) return '';
