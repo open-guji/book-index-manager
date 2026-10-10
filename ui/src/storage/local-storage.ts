@@ -122,27 +122,10 @@ export class LocalStorage implements IndexStorage {
                     if (col) relations.belongsToCollection = { ...col, type: 'collection' };
                 }
             }
-        } else if (type === 'collection') {
-            if (metadata.books && Array.isArray(metadata.books)) {
-                const books = await Promise.all(
-                    (metadata.books as string[]).map(bid => this.resolveEntity(bid))
-                );
-                relations.containedBooks = books.filter((b): b is NonNullable<typeof b> => b !== null)
-                    .map(b => ({ ...b, type: 'book' as IndexType }));
-            }
-        } else if (type === 'work') {
-            if (metadata.parent_work && typeof metadata.parent_work === 'object') {
-                const pw = metadata.parent_work as { id: string; title: string };
-                relations.parentWork = { id: pw.id, title: pw.title, type: 'work' };
-            }
-            if (metadata.books && Array.isArray(metadata.books)) {
-                const books = await Promise.all(
-                    (metadata.books as string[]).map(bid => this.resolveEntity(bid))
-                );
-                relations.containedBooks = books.filter((b): b is NonNullable<typeof b> => b !== null)
-                    .map(b => ({ ...b, type: 'book' as IndexType }));
-            }
         }
+        // Work 的上级作品（旧 parent_work）与 Work／Collection 的 books 反向列表（旧 books）已随 schema-v2 删除：
+        // 作品归属只在 Book.work_id，丛编成员只在成员侧 contained_in，反向由 build 产物 _books／_members 给；
+        // 本地模式不扫全库，故 collection／work 不再返回 containedBooks／parentWork。
 
         return relations;
     }
@@ -169,19 +152,6 @@ export class LocalStorage implements IndexStorage {
                     }
                 }
                 break;
-            case 'parentWork':
-            case 'parent_work': {
-                const target = await this.storage.getItem(targetId);
-                metadata.parent_work = { id: targetId, title: (target?.title as string) || '' };
-                break;
-            }
-            case 'containedBooks':
-            case 'books':
-                if (!Array.isArray(metadata.books)) metadata.books = [];
-                if (!(metadata.books as string[]).includes(targetId)) {
-                    (metadata.books as string[]).push(targetId);
-                }
-                break;
             default:
                 throw new Error(`Unknown relation field: ${field}`);
         }
@@ -203,14 +173,6 @@ export class LocalStorage implements IndexStorage {
             case 'belongsToCollection':
             case 'contained_in':
                 metadata.contained_in = [];
-                break;
-            case 'parentWork':
-            case 'parent_work':
-                delete metadata.parent_work;
-                break;
-            case 'containedBooks':
-            case 'books':
-                metadata.books = [];
                 break;
             default:
                 throw new Error(`Unknown relation field: ${field}`);

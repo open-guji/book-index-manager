@@ -54,10 +54,6 @@ export interface TextChapter {
     /** 该章有同名 json（结构化条目） */
     has_json?: boolean;
     page_title?: string;
-    /** 是否包含 WebGL 客户端透视矫正对读数据 */
-    has_warp?: boolean;
-    /** 矫正数据文件地址或对象 */
-    warp_data?: string | any;
 }
 
 /** 文本的上游来源与授权说明（index.json 的 source.upstream） */

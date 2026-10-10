@@ -752,8 +752,12 @@ describe('normalizeRole / roleFacets', () => {
         expect(normalizeRole(undefined)).toBe('撰');
         expect(normalizeRole('')).toBe('撰');
         expect(normalizeRole('   ')).toBe('撰');
-        expect(normalizeRole('author')).toBe('撰');   // 4 条英文脏数据
         expect(normalizeRole('等奉撰')).toBe('撰');  // 私用区坏字
+    });
+
+    it('英文 "author" 的回退已删（数据与写入端都已清为「撰」）：不再特判，落到「其他」', () => {
+        expect(normalizeRole('author')).toBe('其他');
+        expect(displayAuthorRole('author')).toBe('');  // 显示层防御保留
     });
 
     it('「傳」归撰而非注：数据里是「作传」不是「经之传注」', () => {
@@ -775,9 +779,9 @@ describe('normalizeRole / roleFacets', () => {
     });
 
     it('roleFacets 按固定顺序给出计数，空类不出现', () => {
-        const facets = roleFacets(['撰', '撰', '編', '注', null, 'author']);
+        const facets = roleFacets(['撰', '撰', '編', '注', null, '']);
         expect(facets[0]).toEqual({ cls: '全部', label: '全部', count: 6 });
-        // null 与 author 都归撰 → 撰 4 条
+        // null 与空串都归撰 → 撰 4 条
         expect(facets.find(f => f.cls === '撰')!.count).toBe(4);
         expect(facets.find(f => f.cls === '編')!.count).toBe(1);
         expect(facets.find(f => f.cls === '注')!.count).toBe(1);

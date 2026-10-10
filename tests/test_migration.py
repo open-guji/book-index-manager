@@ -4,7 +4,8 @@ from book_index_manager.migration import migrate_metadata, migrate_old_resource
 def test_migrate_old_resource_text():
     old = {"title": "维基文库", "url": "https://zh.wikisource.org/wiki/test"}
     result = migrate_old_resource(old, "text")
-    assert result["type"] == "text"
+    assert result["types"] == ["text"]
+    assert "type" not in result
     assert result["name"] == "维基文库"
     assert result["id"] == "wikisource"
 
@@ -12,7 +13,8 @@ def test_migrate_old_resource_text():
 def test_migrate_old_resource_image():
     old = {"title": "Internet Archive", "url": "https://archive.org/details/test", "details": "彩色"}
     result = migrate_old_resource(old, "image")
-    assert result["type"] == "image"
+    assert result["types"] == ["image"]
+    assert "type" not in result
     assert result["id"] == "archive"
     assert result["details"] == "彩色"
 
@@ -33,8 +35,8 @@ def test_migrate_metadata_converts():
     assert "text_resources" not in result
     assert "image_resources" not in result
     assert len(result["resources"]) == 2
-    assert result["resources"][0]["type"] == "text"
-    assert result["resources"][1]["type"] == "image"
+    assert result["resources"][0]["types"] == ["text"]
+    assert result["resources"][1]["types"] == ["image"]
 
 
 def test_migrate_metadata_no_old_fields():

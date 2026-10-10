@@ -96,24 +96,6 @@ def shard_of(id_str: str, n: int = NUM_SHARDS) -> int:
 from ._utils import strip_nulls, read_promoted_to  # noqa: F401
 
 
-# 历史数据中文 key → 当前 schema 英文 key 的迁移表。
-# 在 _migrate_keys 中使用，仅当 metadata 同时缺英文 key 时才迁移
-# （避免覆盖已规范化的字段）。
-LEGACY_KEY_MAP: dict[str, str] = {
-    "书名": "title",
-    "作品名": "title",
-    "作者": "authors",
-    "收录于": "contained_in",
-    "出版年份": "publication_info",
-    "现藏于": "current_location",
-    "页数": "page_count",
-    "册数": "juan_count",
-    "首页图片": "first_image",
-    "介绍": "description",
-}
-
-
-
 # 文件名中题名部分的最大字数（码位）；须与 ui/src/core/storage.ts 的 MAX_NAME_CHARS 一致
 MAX_NAME_CHARS = 60
 
@@ -210,7 +192,7 @@ class BookIndexStorage:
         if type_val == BookIndexType.Entity:
             name = metadata.get("primary_name") or metadata.get("title") or "未命名"
         else:
-            name = metadata.get("title") or metadata.get("书名") or metadata.get("名称") or "未命名"
+            name = metadata.get("title") or "未命名"
         edition = metadata.get("edition") or ""
         if edition:
             name = f"{name}{edition}"
@@ -300,9 +282,6 @@ class BookIndexStorage:
             # 但元数据 type="work" 才是权威。不能用 type_val 覆盖 metadata 里既有的 type。
             if not metadata.get("type"):
                 metadata["type"] = type_val.name.lower()
-            if "title" not in metadata and ("书名" in metadata or "名称" in metadata):
-                metadata["title"] = metadata.get("书名") or metadata.get("名称")
-
             self._migrate_keys(metadata)
 
             # Production semver bump（仅 production 仓 + bump != None；draft 不维护版本号）
@@ -352,40 +331,12 @@ class BookIndexStorage:
             raise StorageError(f"Failed to save item {name}: {e}")
 
     def _migrate_keys(self, metadata: dict):
-        """Migrate old Chinese keys and old resource format to new schema."""
-        # 中文 → 英文 key 映射定义在 module-level（LEGACY_KEY_MAP），
-        # 方便外部测试 / 文档引用。
-        for zh_key, en_key in LEGACY_KEY_MAP.items():
-            if zh_key in metadata and en_key not in metadata:
-                val = metadata.pop(zh_key)
-                if en_key == "authors":
-                    if isinstance(val, str):
-                        metadata[en_key] = [{"name": val, "role": "author"}]
-                    else:
-                        metadata[en_key] = val
-                elif en_key == "description":
-                    if isinstance(val, str):
-                        metadata[en_key] = {"text": val, "sources": metadata.get(en_key, {}).get("sources", [])}
-                    else:
-                        metadata[en_key] = val
-                elif en_key == "publication_info":
-                    metadata[en_key] = {"year": str(val), "details": ""}
-                elif en_key == "current_location":
-                    metadata[en_key] = {"name": str(val)}
-                elif en_key in ("page_count", "juan_count"):
-                    try:
-                        num = int(val) if val and str(val).isdigit() else 0
-                        metadata[en_key] = {"number": num, "description": str(val) if not str(val).isdigit() else ""}
-                    except Exception:
-                        metadata[en_key] = {"number": 0, "description": str(val)}
-                elif en_key == "contained_in":
-                    if isinstance(val, str):
-                        metadata[en_key] = [val]
-                    else:
-                        metadata[en_key] = val
-                else:
-                    metadata[en_key] = val
+        """Migrate old English key / old resource format to new schema.
 
+        中文键（书名／作者／收录于／页数／现藏于／出版年份 等）的迁移已于 2026-10-10 整段删除：
+        两库约 25.6 万条记录顶层中文键实测为 0，代码内无产生中文键的调用方；
+        旧实现会写回 role:"author"、字符串形 contained_in、占位 0／空串（legacy.md §五）。
+        """
         # Migrate old English key: volume_count → juan_count
         if "volume_count" in metadata and "juan_count" not in metadata:
             metadata["juan_count"] = metadata.pop("volume_count")

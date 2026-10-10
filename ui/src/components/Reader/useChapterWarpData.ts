@@ -5,12 +5,14 @@ import type { ReaderResolveContext } from './types';
 export type ReaderWarpResolver = (chapterKey: string, ctx?: ReaderResolveContext) =>
     PageWarpData | null | undefined | Promise<PageWarpData | null | undefined>;
 
-/** 按当前卷/章向宿主要求透视矫正对读数据；只认最后一次请求的结果 */
+/**
+ * 按当前卷/章向宿主要求透视矫正对读数据；只认最后一次请求的结果。
+ * 章元数据里的 has_warp／warp_data（章 json 内联或 URL）已于 2026-10-10 删除，数据与网站都不用；矫正数据只走宿主的 resolve 或 warpDataProp。
+ */
 export function useChapterWarpData(
     resolve: ReaderWarpResolver | undefined,
     warpDataProp: PageWarpData | null | undefined,
     key: string | null,
-    chapterMeta: { has_warp?: boolean; warp_data?: string | PageWarpData } | null | undefined,
     ctx: ReaderResolveContext,
 ): {
     warpData: PageWarpData | null;
@@ -49,26 +51,9 @@ export function useChapterWarpData(
             return;
         }
 
-        // 2. 若 chapterMeta 声明了 warp_data
-        if (chapterMeta?.warp_data) {
-            if (typeof chapterMeta.warp_data === 'object') {
-                setWarpData(chapterMeta.warp_data as PageWarpData);
-                return;
-            }
-            if (typeof chapterMeta.warp_data === 'string') {
-                setLoading(true);
-                fetch(chapterMeta.warp_data)
-                    .then(res => res.ok ? res.json() : null)
-                    .then(data => { if (my === seq.current) setWarpData(data); })
-                    .catch(() => { if (my === seq.current) setWarpData(null); })
-                    .finally(() => { if (my === seq.current) setLoading(false); });
-                return;
-            }
-        }
-
         setWarpData(null);
         setLoading(false);
-    }, [resolve, warpDataProp, key, chapterMeta, ctx]);
+    }, [resolve, warpDataProp, key, ctx]);
 
     return { warpData, loading };
 }

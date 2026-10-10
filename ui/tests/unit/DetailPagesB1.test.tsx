@@ -165,7 +165,7 @@ const LONG_DESC = '清乾隆三十八年詔開四庫館，自《永樂大典》�
 
 const COLL: IndexDetailData = {
     id: 'c1', type: 'collection', title: '武英殿聚珍版叢書', subtype: 'book_collection',
-    contained_in: ['c0'],
+    contained_in: [{ id: 'c0' }],
     description: { text: LONG_DESC },
     contained_works: Array.from({ length: 20 }, (_, i) => ({
         id: `cw${i}`, title: i === 0 ? '周易口訣義' : i === 1 ? '易說' : `子目${i}`, volume_index: [i * 2 + 2, i * 2 + 3],
@@ -199,10 +199,11 @@ describe('CollectionPage（B1）', () => {
         expect(container.querySelector('.bim-d-g-main .bim-d-tab')).toBeNull();
     });
 
-    it('左栏「上級叢編」：contained_in 为对象形 {id} 也认', async () => {
-        const coll = { ...COLL, contained_in: [{ id: 'c0' }] } as unknown as IndexDetailData;
-        const { container } = render(<BookDetailLayout {...props(coll, COLL_EXTRA)} />);
-        await waitFor(() => expect(container.querySelector('.bim-d-up')?.textContent).toContain('武英殿刻書'));
+    it('左栏「上級叢編」：contained_in 只认对象形 {id}，旧裸字符串形不再显示', async () => {
+        const legacy = { ...COLL, contained_in: ['c0'] } as unknown as IndexDetailData;
+        const { container } = render(<BookDetailLayout {...props(legacy, COLL_EXTRA)} />);
+        await screen.findByText('〔唐〕史徴 撰');
+        expect(container.querySelector('.bim-d-up')).toBeNull();
     });
 
     it('本丛编内检索：按书名过滤', async () => {

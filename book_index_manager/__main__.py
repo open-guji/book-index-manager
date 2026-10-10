@@ -189,7 +189,9 @@ class CLIHandler:
             print(json.dumps({"status": "error", "message": f"Item {bid} not found"}, ensure_ascii=False))
             sys.exit(1)
 
-        resource = {"name": self.args.name, "type": self.args.res_type}
+        from .schema import split_type_atoms
+        # 新 resource 写 types 数组（闭集），不再写单值 type；text+image 拆成两项
+        resource = {"name": self.args.name, "types": split_type_atoms(self.args.res_type)}
         if self.args.id:
             resource["id"] = self.args.id
         if self.args.url:
@@ -873,8 +875,9 @@ def main():
     p.add_argument("--id", default=None, help="Resource short ID (e.g. 'wikisource', 'archive')")
     p.add_argument("--name", required=True, help="Resource display name")
     p.add_argument("--url", default=None, help="Resource URL")
-    p.add_argument("--type", dest="res_type", choices=["text", "image", "text+image", "physical"],
-                   default="text", help="Resource type")
+    p.add_argument("--type", dest="res_type", choices=["text", "image", "text+image", "physical", "catalog", "annotated"],
+                   default="text",
+                   help="Resource type（写入 types 数组；text+image 拆成 [text, image]）")
     p.add_argument("--details", default=None, help="Additional details")
 
     # check-index

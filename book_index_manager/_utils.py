@@ -51,14 +51,6 @@ def has_legacy_promotion_keys(metadata: dict) -> bool:
     return legacy and PROMOTED_TO not in metadata
 
 
-def mark_promoted(metadata: dict, production_id: str, promoted_at: str) -> None:
-    """在条目档上写 tombstone 标记，并清掉可能残留的无前缀旧名。"""
-    metadata[PROMOTED_TO] = production_id
-    metadata[PROMOTED_AT] = promoted_at
-    metadata.pop(_LEGACY_PROMOTED_TO, None)
-    metadata.pop(_LEGACY_PROMOTED_AT, None)
-
-
 def strip_promotion_marks(metadata: dict) -> None:
     """从 production 副本上摘掉 tombstone 标记（新旧两种写法都摘）。"""
     for key in (PROMOTED_TO, PROMOTED_AT, _LEGACY_PROMOTED_TO, _LEGACY_PROMOTED_AT):

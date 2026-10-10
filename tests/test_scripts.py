@@ -170,14 +170,15 @@ def test_update_catalog_stats_counts_books_by_contained_in(monkeypatch, capsys, 
         ensure_ascii=False), encoding="utf-8")
     bdir = empty_data_root / "Book" / "a" / "b" / "c"
     bdir.mkdir(parents=True)
-    for i, ci in enumerate([[{"id": cid, "volume_index": 1}], [cid], [{"id": "other"}]]):
+    # 裸 id 字符串旧形已清零、不再计入；只认对象形 {id}
+    for i, ci in enumerate([[{"id": cid, "volume_index": 1}], [cid], [{"id": "other"}], [{"id": cid}]]):
         (bdir / f"book{i}x-书{i}.json").write_text(json.dumps(
             {"id": f"book{i}x", "type": "book", "title": f"书{i}", "contained_in": ci},
             ensure_ascii=False), encoding="utf-8")
     _, _, code = run_script(monkeypatch, capsys, "update_catalog_stats", str(empty_data_root))
     assert code == 0
     item = json.loads((empty_data_root / "resource.json").read_text(encoding="utf-8"))["resources"][0]
-    assert item["imported"] == 2 and item["total"] == 2
+    assert item["imported"] == 2 and item["total"] == 2  # book0x、book3x；裸字符串的 book1x 不计
 
 
 # ─── create_books_from_catalog.py ───

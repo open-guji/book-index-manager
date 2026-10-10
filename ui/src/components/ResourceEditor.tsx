@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { ResourceEntry, ResourceType, ResourceTypeAtom, DownloadProgress } from '../types';
 import { getResourceTypes, hasResourceType } from '../types';
+import { getCombinedTypeKey } from '../core/resources';
 import { useT } from '../i18n';
 import type { LocaleMessages } from '../i18n';
 import { bim } from '../styles/tokens';
@@ -36,8 +37,20 @@ export interface ResourceEditorProps {
     filterType?: ResourceType;
 }
 
+/** 编辑器下拉里的「类型」值 → types 原子数组（`text+image` 拆成两项；新资源只写 types，不写单值 type） */
+function splitResourceType(value: ResourceType): ResourceTypeAtom[] {
+    return value === 'text+image' ? ['text', 'image'] : [value];
+}
+
+/** 资源现有 types（或旧 type）→ 下拉里选中的值；无类型按 text */
+function selectedResourceType(item: ResourceEntry): ResourceType {
+    const types = getResourceTypes(item);
+    if (types.length === 0) return 'text';
+    return getCombinedTypeKey(types);
+}
+
 function createEmptyEntry(): ResourceEntry {
-    return { id: '', name: '', url: '', type: 'text', details: '' };
+    return { id: '', name: '', url: '', types: ['text'], details: '' };
 }
 
 export const ResourceEditor: React.FC<ResourceEditorProps> = ({
@@ -77,7 +90,7 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
 
     const handleAdd = () => {
         const entry = createEmptyEntry();
-        if (filterType) entry.type = filterType;
+        if (filterType) entry.types = splitResourceType(filterType);
         onChange([...items, entry]);
         setExpandedIndex(items.length);
     };
@@ -95,6 +108,14 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
             const autoId = extractIdFromUrl(value as string);
             if (autoId) newItems[originalIndex].id = autoId;
         }
+        onChange(newItems);
+    };
+
+    /** 改类型：只写 types 数组，并去掉旧单值 type（编辑过的旧资源随之迁到新写法） */
+    const handleTypeChange = (originalIndex: number, value: ResourceType) => {
+        const newItems = [...items];
+        const { type: _legacyType, ...rest } = newItems[originalIndex];
+        newItems[originalIndex] = { ...rest, types: splitResourceType(value) };
         onChange(newItems);
     };
 
@@ -155,12 +176,12 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                             fontSize: '11px',
                             padding: '1px 6px',
                             borderRadius: '3px',
-                            background: typeColor(item.type ?? 'text'),
+                            background: typeColor(selectedResourceType(item)),
                             color: bim('on-color-fg'),
                         }}>
                             {(() => {
                                 const types = getResourceTypes(item);
-                                if (types.length === 0) return item.type ?? 'text';
+                                if (types.length === 0) return 'text';
                                 if (types.length === 1) return RESOURCE_TYPES.find(rt => rt.value === types[0])?.label ?? types[0];
                                 if (types.includes('text') && types.includes('image')) return RESOURCE_TYPES.find(rt => rt.value === 'text+image')?.label ?? 'text+image';
                                 return types.join('+');
@@ -212,8 +233,8 @@ export const ResourceEditor: React.FC<ResourceEditorProps> = ({
                                     <label style={labelStyle}>
                                         <span style={labelTextStyle}>{t.label.type}</span>
                                         <select
-                                            value={item.type}
-                                            onChange={e => handleUpdate(originalIndex, 'type', e.target.value)}
+                                            value={selectedResourceType(item)}
+                                            onChange={e => handleTypeChange(originalIndex, e.target.value as ResourceType)}
                                             style={{ ...inputStyle, flex: 1 }}
                                         >
                                             {RESOURCE_TYPES.map(rt => (

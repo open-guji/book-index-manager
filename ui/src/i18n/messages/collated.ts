@@ -26,6 +26,7 @@ export const collated = defineMessages({
         '注释': '註釋',
         '考证': '考證',
         '诗': '詩',
+        '小计': '小計',
     },
     // ── 卷头信息行 ──
     countTiao: '{n} 條',
@@ -84,6 +85,7 @@ export const collated = defineMessages({
         '注释': '注释',
         '考证': '考证',
         '诗': '诗',
+        '小计': '小计',
     },
     countTiao: '{n} 条',
     countTiaoOf: '{m} / {n} 条',
