@@ -19,7 +19,8 @@ export default defineConfig({
     webServer: {
         command: 'npx vite --port 5199',
         port: 5199,
-        reuseExistingServer: true,
+        // 本机可复用已起的 vite；CI 一律新起（旧服务器可能是别的检出版本，会测到过期代码）
+        reuseExistingServer: !process.env.CI,
         timeout: 60_000,
         cwd: '../..',
     },

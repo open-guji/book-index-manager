@@ -125,6 +125,7 @@ test.describe('书影画布：去空白', () => {
         const meta = await page.evaluate(() => ({
             image: (window as unknown as { __image: { w: number; h: number } }).__image,
             trim: (window as unknown as { __trim: { w: number; h: number } | null }).__trim,
+            boxes: (window as unknown as { __boxes: number[][] }).__boxes,
         }));
         return { ...d, ...meta, errors };
     }
@@ -138,6 +139,15 @@ test.describe('书影画布：去空白', () => {
         expect(kept.w).toBe(kept.image.w);
         // 去空白：画布就是裁切区，且两个方向都比保留空白小
         // 裁切区是小数；<canvas width> 属性按整数解析，截断而不是四舍五入
+        // 预期裁切区在这里独立算（字框并集＋短边 3% 的边），不借用被测的 fullImageTrimRect——否则它错了测试也跟着错
+        const xs = trimmed.boxes.flatMap(b => [b[0], b[2]]), ys = trimmed.boxes.flatMap(b => [b[1], b[3]]);
+        const pad = Math.min(trimmed.image.w, trimmed.image.h) * 0.03;
+        const ew = Math.min(trimmed.image.w, Math.max(...xs) + pad) - Math.max(0, Math.min(...xs) - pad);
+        const eh = Math.min(trimmed.image.h, Math.max(...ys) + pad) - Math.max(0, Math.min(...ys) - pad);
+        expect(trimmed.trim!.w).toBeCloseTo(ew, 6);
+        expect(trimmed.trim!.h).toBeCloseTo(eh, 6);
+        expect(trimmed.w).toBe(Math.floor(ew));
+        expect(trimmed.h).toBe(Math.floor(eh));
         expect(trimmed.w).toBe(Math.floor(trimmed.trim!.w));
         expect(trimmed.h).toBe(Math.floor(trimmed.trim!.h));
         expect(trimmed.w, '去空白后宽度应变小').toBeLessThan(kept.w);

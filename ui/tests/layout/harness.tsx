@@ -63,6 +63,7 @@ function Canvas() {
     const w = window as unknown as Record<string, unknown>;
     w.__image = { w: info.width, h: info.height };
     w.__trim = fullImageTrimRect(pageData);
+    w.__boxes = info.columns.flatMap(c => c.chars).map(ch => ch.bbox).filter(Boolean);
     if (!url) return null;
     return (
         <div id="host" style={{ width: 600, height: 800 }}>
