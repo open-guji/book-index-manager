@@ -232,3 +232,23 @@ export function segmentEntities(text: string, spans: readonly EntitySpan[], relo
     if (cursor < text.length) out.push({ type: 'text', text: text.slice(cursor), start: cursor });
     return out;
 }
+
+/** 专名号三档：关（不画）／精简（人名、地名、朝代）／完整（再加官职、年号、其它） */
+export type ProperNameMode = 'off' | 'lite' | 'full';
+
+const KINDS_BY_MODE: Record<ProperNameMode, readonly EntityKind[]> = {
+    off: [],
+    lite: ['person', 'place', 'dynasty'],
+    full: ['person', 'place', 'dynasty', 'office', 'reign', 'other'],
+};
+
+/** 按专名号档位筛实体；书名（work）只看 showWorks（缺省 true），与档位无关。返回新数组，保持原顺序，不改入参。 */
+export function filterEntitiesByMode(
+    spans: readonly EntitySpan[],
+    mode: ProperNameMode,
+    opts?: { showWorks?: boolean },
+): EntitySpan[] {
+    const showWorks = opts?.showWorks !== false;
+    const keep = new Set<EntityKind>(KINDS_BY_MODE[mode]);
+    return spans.filter((s) => (s.kind === 'work' ? showWorks : keep.has(s.kind)));
+}
