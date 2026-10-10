@@ -15,7 +15,7 @@ def migrate_old_resource(item: dict, resource_type: str) -> dict:
     """Convert a single old-format resource item to new ResourceEntry dict.
 
     Old format: {"name"/"title": "...", "url": "...", "details": "..."}
-    New format: ResourceEntry with id, name, url, type, etc.
+    New format: ResourceEntry with id, name, url, types (array), etc.
     """
     name = item.get("name") or item.get("title") or ""
     url = item.get("url", "")
@@ -26,7 +26,7 @@ def migrate_old_resource(item: dict, resource_type: str) -> dict:
         id=res_id,
         name=name,
         url=url,
-        type=resource_type,
+        types=[resource_type],
         details=details,
     ).to_dict()
 

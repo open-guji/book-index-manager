@@ -203,6 +203,22 @@ def test_add_resource(monkeypatch, capsys, root):
     parsed = json.loads(out.strip())
     resources = parsed.get("resources", [])
     assert any(r.get("name") == "维基文库" for r in resources)
+    res = next(r for r in resources if r.get("name") == "维基文库")
+    assert res["types"] == ["text"]
+    assert "type" not in res
+
+
+def test_add_resource_text_plus_image_splits_into_types(monkeypatch, capsys, root):
+    out, _, _ = run_cli(monkeypatch, capsys, "draft", "双类型", "--type", "book", "--root", root)
+    bid = extract_id(out)
+    _, _, code = run_cli(monkeypatch, capsys,
+                          "add-resource", "--bid", bid, "--name", "某站",
+                          "--url", "https://example.com/x", "--type", "text+image", "--root", root)
+    assert code == 0
+    out, _, _ = run_cli(monkeypatch, capsys, "get", "--bid", bid, "--root", root)
+    res = json.loads(out.strip())["resources"][0]
+    assert res["types"] == ["text", "image"]
+    assert "type" not in res
 
 
 # ─── reindex / shadow-reindex / check-index ───

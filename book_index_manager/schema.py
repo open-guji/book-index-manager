@@ -19,8 +19,20 @@ DOMAIN_ID_MAP = {
     "digital.library": "digital-library",
 }
 
-VALID_TYPES = {"text", "image", "text+image", "physical"}
-VALID_TYPE_ATOMS = {"text", "image", "physical"}
+# resources[].types 闭集（schema/common.md）：影像｜文本｜实物馆藏记录｜书目入口｜带注释的整理本
+VALID_TYPE_ATOMS = {"text", "image", "physical", "catalog", "annotated"}
+# 旧单值 type 的合法值（只读兼容；新数据不再写 type）
+VALID_TYPES = {"text", "image", "text+image", "physical", "catalog", "annotated"}
+
+
+def split_type_atoms(value: str) -> list:
+    """把单值 type（可含 `text+image` 组合）拆成 types 原子数组；不识别的值原样保留一项。
+
+    写入端用：`add-resource --type text+image` → `["text", "image"]`。
+    """
+    if not value:
+        return []
+    return [a for a in value.split("+") if a]
 
 
 def normalize_resource_types(entry: dict) -> list:
@@ -35,10 +47,9 @@ def normalize_resource_types(entry: dict) -> list:
     t = entry.get("type")
     if not t:
         return []
-    if t == "text+image":
-        return ["text", "image"]
-    if t in VALID_TYPE_ATOMS:
-        return [t]
+    atoms = split_type_atoms(t) if isinstance(t, str) else []
+    if atoms and all(a in VALID_TYPE_ATOMS for a in atoms):
+        return atoms
     return []
 VALID_ROOT_TYPES = {"catalog", "search"}
 
@@ -104,9 +115,9 @@ class ResourceEntry:
     id: str = ""
     name: str = ""
     url: str = ""
-    # 旧格式（保留兼容读写）。新数据请使用 types。
+    # 旧单值 type：只读兼容（from_dict 可读、validate 可校），to_dict 不再写出。
     type: str = ""  # text | image | text+image | physical
-    # 新格式：自由组合 ['text', 'image', 'physical']
+    # 现行写法：闭集 text | image | physical | catalog | annotated 的数组
     types: Optional[List[str]] = None
     root_type: str = "catalog"  # catalog | search
     structure: Optional[List[str]] = None
@@ -117,13 +128,13 @@ class ResourceEntry:
     def to_dict(self) -> dict:
         """Serialize to a JSON-compatible dict, omitting default/empty optional fields."""
         d = {"id": self.id, "name": self.name, "url": self.url}
-        # types 优先；若没有则回退到 type
+        # 只写 types 数组；旧单值 type（含 text+image）转成 types 写出，不再写 type
         if self.types:
             d["types"] = list(self.types)
         elif self.type:
-            d["type"] = self.type
+            d["types"] = split_type_atoms(self.type)
         else:
-            d["type"] = "text"
+            d["types"] = ["text"]
         if self.root_type != "catalog":
             d["root_type"] = self.root_type
         if self.structure:

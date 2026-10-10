@@ -18,8 +18,9 @@ const DOMAIN_ID_MAP: Record<string, string> = {
     'digital.library': 'digital-library',
 };
 
-const VALID_TYPES = new Set(['text', 'image', 'text+image', 'physical']);
-const VALID_TYPE_ATOMS = new Set(['text', 'image', 'physical']);
+// resources[].types 闭集（schema/common.md）；旧单值 type 只读兼容，新数据不再写
+const VALID_TYPES = new Set(['text', 'image', 'text+image', 'physical', 'catalog', 'annotated']);
+const VALID_TYPE_ATOMS = new Set(['text', 'image', 'physical', 'catalog', 'annotated']);
 const VALID_ROOT_TYPES = new Set(['catalog', 'search']);
 const PUBLIC_SUFFIXES = new Set(['com', 'org', 'net', 'cn', 'edu', 'gov', 'io', 'jp', 'tw', 'hk']);
 

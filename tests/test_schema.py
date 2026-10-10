@@ -15,7 +15,8 @@ def test_resource_entry_to_dict_minimal():
     d = r.to_dict()
     assert d["id"] == "wikisource"
     assert d["name"] == "维基文库"
-    assert d["type"] == "text"
+    assert d["types"] == ["text"]
+    assert "type" not in d  # 不再写单值 type
     assert "root_type" not in d  # catalog is default, omitted
     assert "structure" not in d
     assert "coverage" not in d
@@ -67,3 +68,28 @@ def test_resource_entry_validate():
 
     r4 = ResourceEntry(id="test", name="Test", type="physical")
     assert r4.validate() == []
+
+
+def test_resource_entry_to_dict_splits_text_plus_image():
+    r = ResourceEntry(id="x", name="X", url="https://example.com", type="text+image")
+    d = r.to_dict()
+    assert d["types"] == ["text", "image"]
+    assert "type" not in d
+
+
+def test_resource_entry_to_dict_prefers_types_and_defaults():
+    d = ResourceEntry(id="x", name="X", url="https://e.com", types=["image", "annotated"]).to_dict()
+    assert d["types"] == ["image", "annotated"]
+    assert "type" not in d
+    # 什么都没给：默认 text，同样写 types
+    d2 = ResourceEntry(id="x", name="X", url="https://e.com").to_dict()
+    assert d2["types"] == ["text"] and "type" not in d2
+
+
+def test_types_closed_set_accepts_catalog_and_annotated():
+    from book_index_manager.schema import normalize_resource_types, VALID_TYPE_ATOMS
+    assert VALID_TYPE_ATOMS == {"text", "image", "physical", "catalog", "annotated"}
+    assert normalize_resource_types({"types": ["catalog", "annotated"]}) == ["catalog", "annotated"]
+    assert normalize_resource_types({"type": "text+image"}) == ["text", "image"]  # 读侧回退保留
+    assert normalize_resource_types({"type": "bogus"}) == []
+    assert ResourceEntry(id="c", name="C", url="https://e.com", types=["catalog"]).validate() == []
