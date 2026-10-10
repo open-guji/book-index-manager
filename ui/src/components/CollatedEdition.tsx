@@ -146,32 +146,48 @@ const HIGHLIGHT_BG = bim('highlight-bg');
 
 /**
  * 在 displayed 中查找 query 出现位置并用 <mark> 包裹。
- * 通过 normalizer（繁→简）做归一化匹配，使简体输入能命中繁体内容。
- * 假定归一化是 1:1 长度映射（tw→cn 绝大多数字符如此），位置直接对位。
+ * 通过 normalizer（繁→简）做归一化匹配，使简体输入能命中繁体内容；
+ * 原字模式下 displayed 是底本原字（含异体字、扩展区字），归一化后的文本与它逐码位对应（overview#514）。
+ * 假定归一化是 1:1 码位映射（tw→cn、异体字归一绝大多数字符如此）。位置按码位算而不是 UTF-16 下标：
+ * 扩展区字（如「𠮓」）占两个 UTF-16 单元，归一成基本区字后单元数变了，按下标对位会错位或整段放弃高亮。
  */
-function renderHighlighted(displayed: string, query: string, normalizer: Normalizer): React.ReactNode {
+export function renderHighlighted(displayed: string, query: string, normalizer: Normalizer): React.ReactNode {
     if (!query) return displayed;
     const nq = normalizeForSearch(query, normalizer);
     if (!nq) return displayed;
     const ndisp = normalizeForSearch(displayed, normalizer);
-    // 长度不一致时退化为不高亮（仍显示原文），避免错位
-    if (ndisp.length !== displayed.length) return displayed;
+    const dispCps = Array.from(displayed);
+    const ndispCps = Array.from(ndisp);
+    // 码位数不一致时退化为不高亮（仍显示原文），避免错位
+    if (ndispCps.length !== dispCps.length) return displayed;
+    // ndisp 的 UTF-16 下标 → 码位序号
+    const cpIndexAt = new Map<number, number>();
+    let off = 0;
+    ndispCps.forEach((cp, i) => { cpIndexAt.set(off, i); off += cp.length; });
+    const nqLen = Array.from(nq).length;
     const out: React.ReactNode[] = [];
-    let cursor = 0;
+    let cursor = 0; // 码位序号
+    let searchFrom = 0; // ndisp 的 UTF-16 下标
     let key = 0;
-    while (cursor < displayed.length) {
-        const idx = ndisp.indexOf(nq, cursor);
+    while (cursor < dispCps.length) {
+        const idx = ndisp.indexOf(nq, searchFrom);
+        const at = idx === -1 ? undefined : cpIndexAt.get(idx);
         if (idx === -1) {
-            out.push(displayed.slice(cursor));
+            out.push(dispCps.slice(cursor).join(''));
             break;
         }
-        if (idx > cursor) out.push(displayed.slice(cursor, idx));
+        if (at === undefined) { // 命中落在代理对中间，不可能出现；跳过这一处
+            searchFrom = idx + 1;
+            continue;
+        }
+        if (at > cursor) out.push(dispCps.slice(cursor, at).join(''));
         out.push(
             <mark key={key++} style={{ background: HIGHLIGHT_BG, padding: 0, color: 'inherit' }}>
-                {displayed.slice(idx, idx + nq.length)}
+                {dispCps.slice(at, at + nqLen).join('')}
             </mark>
         );
-        cursor = idx + nq.length;
+        cursor = at + nqLen;
+        searchFrom = idx + nq.length;
     }
     return <>{out}</>;
 }

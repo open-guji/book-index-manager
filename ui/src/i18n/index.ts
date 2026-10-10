@@ -11,6 +11,9 @@ export { findTraditionalChars, COMMON_TRADITIONAL_CHARS, TRADITIONAL_ALLOWLIST }
 export type { TraditionalHit } from './traditional-check';
 export { formatTemplate } from './helpers';
 export { VARIANT_CHARS, normalizeVariants } from './variant-chars';
+export { ScriptModeScope, scriptConverter } from './script-scope';
+export type { ScriptMode } from './script-scope';
+export { VARIANT_SUPPLEMENT } from './variant-supplement';
 export { LocaleContext } from './context';
 export type { LocaleContextValue } from './context';
 export type { Locale, FutureLocale, LocaleMessages, CoreMessages } from './types';
