@@ -1,13 +1,26 @@
 /** 阅读文本统一数据模型（overview#307，只认新结构）：key、路径安全、切版本停在同章 */
 import { describe, expect, it } from 'vitest';
 import {
-    isChapterSegment, isSafeSegment, isTextKey, matchChapterAcrossVersions, pickTextVersion, textVersionLabel,
+    RESERVED_TEXT_KEYS, isChapterSegment, isCollatedKind, isSafeSegment, isTextKey, matchChapterAcrossVersions, pickTextVersion, textVersionLabel,
 } from '../../src/core/text-model';
 
 describe('版本 key 与章号', () => {
     it('isTextKey：default 与 [a-z0-9-] 字母开头的非保留字', () => {
         for (const k of ['default', 'collated', 'wikisource', 'wikisource-2', 'open-guji', 'shidian']) expect(isTextKey(k), k).toBe(true);
-        for (const k of ['manifest', 'fragments', 'sources', '001', '3d', 'Wiki', 'a_b', '', 'a/b', '..', undefined, 5]) expect(isTextKey(k), String(k)).toBe(false);
+        for (const k of ['manifest', 'fragments', 'sources', 'extra', '001', '3d', 'Wiki', 'a_b', '', 'a/b', '..', undefined, 5]) expect(isTextKey(k), String(k)).toBe(false);
+    });
+
+    it('保留字含 extra（新规格：extra 不是合法版本 key）', () => {
+        expect(RESERVED_TEXT_KEYS).toContain('extra');
+        expect(isTextKey('extra')).toBe(false);
+        expect(isTextKey('extra-2')).toBe(true);
+    });
+
+    it('isCollatedKind：collated 与 self_collated 同类，全文不是', () => {
+        expect(isCollatedKind('collated')).toBe(true);
+        expect(isCollatedKind('self_collated')).toBe(true);
+        expect(isCollatedKind('transcription')).toBe(false);
+        expect(isCollatedKind(undefined)).toBe(false);
     });
 
     it('URL 片段：纯数字是章号，字母开头是版本 key', () => {

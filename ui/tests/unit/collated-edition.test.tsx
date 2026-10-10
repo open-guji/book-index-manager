@@ -8,7 +8,22 @@
 import React from 'react';
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { OtherSection, CollatedEntries, normSectionType, isPageHeaderContent, entryHeadingLeveler } from '../../src/components/CollatedEdition';
+import { OtherSection, CollatedEntries, normSectionType, isPageHeaderContent, entryHeadingLeveler, normalizeTextQualityGrade } from '../../src/components/CollatedEdition';
+
+describe('文本质量档归一（新词表 source／ocr／rough／fine／none／placeholder）', () => {
+    it('六个新值原样返回', () => {
+        for (const g of ['source', 'ocr', 'rough', 'fine', 'none', 'placeholder']) expect(normalizeTextQualityGrade(g), g).toBe(g);
+    });
+
+    it('旧值 published 映射为 source（底本），不再是独立档', () => {
+        expect(normalizeTextQualityGrade('published')).toBe('source');
+    });
+
+    it('其它未知值、非字符串返回 null（不显示徽标）', () => {
+        for (const g of ['bogus', 'constructor', 'toString', '', 'SOURCE', '__proto__']) expect(normalizeTextQualityGrade(g), g).toBeNull();
+        for (const g of [undefined, null, 1, {}]) expect(normalizeTextQualityGrade(g), String(g)).toBeNull();
+    });
+});
 
 describe('normSectionType：英文枚举 → 中文', () => {
     it('2026-08 迁移后的英文枚举都能翻译', () => {

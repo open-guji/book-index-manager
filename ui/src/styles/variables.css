@@ -112,11 +112,15 @@
     --bim-section-tag-fg: #e74c3c;
     /* 与底本匹配状态提示 */
     --bim-matchstate-fg: #b78900;
-    /* 文本质量等级（出版 / 精校 / 粗校 / OCR） */
-    --bim-quality-published: #1b5e20;
-    --bim-quality-fine: #2e7d32;
-    --bim-quality-rough: #1565c0;
+    /* 文本质量等级（底本 / OCR / 粗校 / 精校 / 暂无正文 / 占位） */
+    --bim-quality-source: #1b5e20;
     --bim-quality-ocr: #e65100;
+    --bim-quality-rough: #1565c0;
+    --bim-quality-fine: #2e7d32;
+    /* 中性灰：暂无正文 */
+    --bim-quality-none: #5f6368;
+    /* 中性灰：占位 */
+    --bim-quality-placeholder: #757575;
 
     /* ==== 版本传承（VersionLineageGraph / List） / 关系方向（RelationPanel） ==== */
     /* 佚失标记 */

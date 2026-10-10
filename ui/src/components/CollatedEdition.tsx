@@ -14,9 +14,20 @@ import { normalizeVariants } from '../i18n/variant-chars';
 
 // ── 工具函数 ──
 
-function normalizeTextQualityGrade(g: unknown): TextQualityGrade | null {
+/**
+ * 质量档读侧归一：旧值 `published` 并入 `source`（底本）；其它未知值返回 null（不显示徽标）。
+ */
+export function normalizeTextQualityGrade(g: unknown): TextQualityGrade | null {
     if (typeof g !== 'string') return null;
+    if (g === 'published') return 'source';
     return Object.prototype.hasOwnProperty.call(TEXT_QUALITY_LABELS, g) ? (g as TextQualityGrade) : null;
+}
+
+/** 暂无正文／占位的徽标用灰色、不加粗；其余档保持原样式 */
+function gradeBadgeStyle(grade: TextQualityGrade): React.CSSProperties | undefined {
+    if (grade === 'none') return { color: bim('quality-none'), fontWeight: 400 };
+    if (grade === 'placeholder') return { color: bim('quality-placeholder'), fontWeight: 400 };
+    return undefined;
 }
 
 /**
@@ -1180,11 +1191,12 @@ export function JuanReading({
     if (countText) meta.push(countText);
     if (isKaozhen && index?.target_source) meta.push(<>{t('collated.kaozhenTarget', { target: convert(index.target_source) })}</>);
     if (grade) {
+        const gradeBadge = <span className="bim-rd-grade" style={gradeBadgeStyle(grade)}>{messages.collated.qualityLabel[grade]}</span>;
         meta.push(
             <span title={messages.collated.qualityCriteria[grade]}>
                 {index?.text_quality?.source_note
-                    ? <>{baseTextLine(t('collated.baseText', { note: NOTE_SLOT }), index.text_quality.source_note, convert)}<span className="bim-rd-grade">{messages.collated.qualityLabel[grade]}</span></>
-                    : <>{t('collated.textQuality')}<span className="bim-rd-grade">{messages.collated.qualityLabel[grade]}</span></>}
+                    ? <>{baseTextLine(t('collated.baseText', { note: NOTE_SLOT }), index.text_quality.source_note, convert)}{gradeBadge}</>
+                    : <>{t('collated.textQuality')}{gradeBadge}</>}
             </span>,
         );
     }
