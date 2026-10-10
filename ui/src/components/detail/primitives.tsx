@@ -864,6 +864,8 @@ export interface InterlinearOptions {
      * `guji_markdown: "0.2.0"` 的書開（見 `core/guji-inline.ts`）；不開時與改前逐字一致。
      */
     gujiMarkdown?: boolean;
+    /** 夹注内容长度上限（仅 gujiMarkdown 时有效，缺省 4096，见 `core/guji-inline.ts`） */
+    jzMaxLength?: number;
     /** 闕文／組字提示（title）用的字典；不传按繁体。组件里传 useI18n().t */
     t?: TFunction;
 }
@@ -910,7 +912,7 @@ export function renderInterlinear(
     if (!text) return '';
     if (opts?.gujiMarkdown) {
         if (!mayHaveGujiInline(text)) return renderText(text);
-        return renderGujiNodes(parseGujiInline(text), renderText, 0, opts.t ?? getT('zh-Hant'));
+        return renderGujiNodes(parseGujiInline(text, { jzMaxLength: opts.jzMaxLength }), renderText, 0, opts.t ?? getT('zh-Hant'));
     }
     if (text.indexOf('\u27e8') < 0 && text.indexOf('<') < 0) return renderText(text);
     const out: React.ReactNode[] = [];

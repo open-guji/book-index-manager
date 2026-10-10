@@ -28,6 +28,14 @@ export type GujiInlineNode =
     | { type: 'qz'; guess: string }
     | { type: 'zi'; label: string };
 
+/** 夹注内容长度上限（spec syntax.md §0.4：夹注 `<…>` 默认 4096）；超限视为未闭合，`<` 按字面 */
+export const JZ_MAX_LENGTH = 4096;
+
+export interface GujiInlineOptions {
+    /** 夹注内容长度上限；缺省 `JZ_MAX_LENGTH`。只管 `<…>`，旧 `⟨…⟩` 不设限 */
+    jzMaxLength?: number;
+}
+
 /** 全文目录顶层的规范版本字段名 */
 export const GUJI_MARKDOWN_FIELD = 'guji_markdown';
 
@@ -111,18 +119,31 @@ interface ParseResult { nodes: GujiInlineNode[]; end: number }
  * 从 `i` 起解析，直到遇到 `close`（返回其下标为 end）或文本结束。
  * 有 `close` 时：遇换行或到结尾仍未闭合 → 返回 null（调用方把起始记号当字面）。
  */
-function parseSeq(s: string, i: number, close: string | null, inJz: boolean): ParseResult | null {
+function parseSeq(s: string, i: number, close: string | null, inJz: boolean, jzMax: number): ParseResult | null {
     const nodes: GujiInlineNode[] = [];
     let buf = '';
+    // §1「分行」：夹注内**第一个** `|`（含表格格内转义写的 `\|`）是分行点，横排忽略；其后的 `|` 是字面字符
+    let pipeSeen = false;
     const flush = () => {
         if (!buf) return;
-        // §1「分行」：夹注内的 `|` 横排忽略；表格格内转义写的 `\|` 同理
-        const t = inJz ? buf.replace(/\\?\|/g, '') : buf;
+        let t = buf;
+        if (inJz) {
+            t = buf.replace(/\\?\|/g, m => {
+                if (!pipeSeen) { pipeSeen = true; return ''; }
+                return '|';
+            });
+        }
         if (t) nodes.push({ type: 'text', text: t });
         buf = '';
     };
     while (i < s.length) {
         const ch = s[i];
+        // §10 转义：`\<` `\>` 输出尖括号本身，不参与配对
+        if (ch === '\\' && (s[i + 1] === '<' || s[i + 1] === '>')) {
+            buf += s[i + 1];
+            i += 2;
+            continue;
+        }
         if (close !== null) {
             if (ch === close) {
                 flush();
@@ -141,8 +162,9 @@ function parseSeq(s: string, i: number, close: string | null, inJz: boolean): Pa
         if (ch === '⟨') jzClose = '⟩';
         else if (ch === '<' && jzOpens(s, i)) jzClose = '>';
         if (jzClose) {
-            const inner = parseSeq(s, i + 1, jzClose, true);
-            if (inner) {
+            const inner = parseSeq(s, i + 1, jzClose, true, jzMax);
+            // §0.4：`<…>` 内容超长视为未闭合，`<` 按字面（⟨…⟩ 是旧写法，不设限）
+            if (inner && !(ch === '<' && inner.end - (i + 1) > jzMax)) {
                 flush();
                 nodes.push({ type: 'jz', children: inner.nodes });
                 i = inner.end + 1;
@@ -158,8 +180,8 @@ function parseSeq(s: string, i: number, close: string | null, inJz: boolean): Pa
 }
 
 /** 把一段文本解析成行内节点序列（启用 guji-markdown 0.2 的书才调用） */
-export function parseGujiInline(text: string): GujiInlineNode[] {
-    return parseSeq(text, 0, null, false)!.nodes;
+export function parseGujiInline(text: string, opts?: GujiInlineOptions): GujiInlineNode[] {
+    return parseSeq(text, 0, null, false, opts?.jzMaxLength ?? JZ_MAX_LENGTH)!.nodes;
 }
 
 /** 文本里是否可能含本模块认得的记号（快速路径：一个都没有就原样输出） */
