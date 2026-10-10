@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { TextReader } from '../../src/components/TextReader';
 import { ImagePanel, trimRect } from '../../src/components/Reader/ImagePanel';
 import { adaptCharCord } from '../../src/core/guji-char-cord';
@@ -83,6 +83,8 @@ async function setup() {
     );
     await waitFor(() => expect(screen.getByTestId('facsimile-next')).toBeTruthy(), { timeout: 5000 });
     await waitFor(() => expect(view.container.querySelector('[data-page-section]')).not.toBeNull(), { timeout: 5000 });
+    // 正文排版晚到一拍会让 GujiTextViewer 的页追踪 effect 重跑、把页号拉回参考线所在页；先等它安静再操作
+    await act(async () => { await new Promise(r => setTimeout(r, 200)); });
     return view;
 }
 
@@ -179,7 +181,7 @@ describe('L2 · 输入葉码跳转', () => {
     it('箭头翻页后输入框跟着变；翻页与输入互不串', async () => {
         await setup();
         fireEvent.click(screen.getByTestId('facsimile-next'));
-        expect(input().value).toBe('4');
+        await waitFor(() => expect(input().value).toBe('4'), { timeout: 5000 });
         fireEvent.change(input(), { target: { value: '1' } });
         fireEvent.keyDown(input(), { key: 'Enter' });
         expect(wp()).toBe('1');
