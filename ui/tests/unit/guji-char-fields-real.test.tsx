@@ -16,12 +16,17 @@ import { LocaleProvider } from '../../src/i18n';
 const DIR = process.env.BOOK_TEXT_ORIGINAL_DIR;
 const read = (f: string) => JSON.parse(fs.readFileSync(path.join(DIR!, f), 'utf8'));
 
+// 注意：skipIf 只跳过 it，describe 体照样执行——读文件必须放进 it／beforeAll，不能写在体里（没设环境变量时 DIR 是 undefined）
 describe.skipIf(!DIR)('原件真实数据抽样', () => {
-    const vols = ['002', '003'].map(v => ({ v, pages: adaptCharCord(read(`${v}.char.json`), read(`${v}.cord.json`)) }));
+    const loaded = new Map<string, ReturnType<typeof adaptCharCord>>();
+    const volPages = (v: string) => {
+        if (!loaded.has(v)) loaded.set(v, adaptCharCord(read(`${v}.char.json`), read(`${v}.cord.json`)));
+        return loaded.get(v)!;
+    };
 
     it('字段计数与工作包一致', () => {
         let lacuna = 0, solo = 0, raised = 0, blank = 0, lead = 0;
-        for (const { pages } of vols) for (const p of pages) for (const c of p.columns) {
+        for (const pages of ['002', '003'].map(volPages)) for (const p of pages) for (const c of p.columns) {
             if (c.kind === 'blank') blank++;
             if (c.raised) raised++;
             if (c.lead_blank) lead++;
@@ -31,7 +36,7 @@ describe.skipIf(!DIR)('原件真实数据抽样', () => {
     });
 
     it.each(['002', '003'])('卷 %s 整册渲染不报错，DOM 里的新标记数 = 数据里的数', (v) => {
-        const pages = vols.find(x => x.v === v)!.pages;
+        const pages = volPages(v);
         const pageData: any = { page_id: `vol:${v}`, columns: [], pages };
         const { container } = render(
             <LocaleProvider locale="zh-Hant">
