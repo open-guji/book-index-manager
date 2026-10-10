@@ -200,7 +200,7 @@ function useMediaQuery(query: string, ssrDefault: boolean): boolean {
     return match;
 }
 
-function LocaleSwitch() {
+function LocaleSwitch({ onSwitch }: { onSwitch?: (next: 'zh-Hant' | 'zh-Hans') => void }) {
     const ctx = useContext(LocaleContext);
     const { t } = useI18n();
     if (!ctx) return null;
@@ -211,7 +211,11 @@ function LocaleSwitch() {
             className="bim-rd-t"
             title={isHant ? t('common.toHans') : t('common.toHant')}
             aria-label={isHant ? t('common.toHans') : t('common.toHant')}
-            onClick={() => ctx.setLocale(isHant ? 'zh-Hans' : 'zh-Hant')}
+            onClick={() => {
+                const next = isHant ? 'zh-Hans' : 'zh-Hant';
+                ctx.setLocale(next);
+                onSwitch?.(next);
+            }}
         >
             <span className={isHant ? 'bim-rd-on' : 'bim-rd-off'}>{t('common.localeShortHant')}</span>
             <span className="bim-rd-off">｜</span>
@@ -634,7 +638,7 @@ export function ReaderShell({
                         <IconImage />{t('reader.images')}
                     </button>
                     <span className="bim-rd-sep" aria-hidden="true" />
-                    <LocaleSwitch />
+                    <LocaleSwitch onSwitch={next => onPrefsChange({ scriptMode: next === 'zh-Hans' ? 'hans' : 'hant' })} />
                     <span className="bim-rd-sep" aria-hidden="true" />
                     <button
                         type="button"

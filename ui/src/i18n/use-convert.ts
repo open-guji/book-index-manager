@@ -25,11 +25,13 @@ export function useConvert(): ConvertResult {
 
     const cacheRef = useRef(new Map<string, string>());
     const cacheLocaleRef = useRef(locale);
+    const cacheConverterRef = useRef(converter);
 
-    // locale 变化时清缓存
-    if (cacheLocaleRef.current !== locale) {
+    // locale 或转换函数变化时清缓存（阅读器里按字形偏好换转换函数时 locale 不变）
+    if (cacheLocaleRef.current !== locale || cacheConverterRef.current !== converter) {
         cacheRef.current.clear();
         cacheLocaleRef.current = locale;
+        cacheConverterRef.current = converter;
     }
 
     const convert = useCallback((text: string | undefined | null): string => {
