@@ -538,7 +538,7 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 .guji-text-char.is-lacuna { color: ${bim('meta-fg')}; border: 1px dashed currentColor; border-radius: 2px; padding: 0 0.08em; } /* 阙文：虚线框□ */
 .guji-text-char.is-guess { color: ${bim('meta-fg')}; text-decoration: underline dotted; text-underline-offset: 0.2em; } /* 残字：灰字加点线 */
 .guji-text-char.is-zi { border: 1px solid color-mix(in srgb, currentColor 40%, transparent); border-radius: 2px; padding: 0 0.12em; margin: 0 0.05em; } /* 组字：细框，同 .bim-zi */
-.guji-text-char.is-raised { display: inline-block; transform: translateY(-0.2em); } /* 抬头：本列首字高出一格 */
+/* 抬头（is-raised／data-raised）：横排重排里不做位移——原件的“高一格”在重排后只会显成首字偏高；类名和属性保留给结构识别 */
 .guji-text-blank-col { display: inline-block; width: 1em; height: 1px; } /* 空列：一格宽的空位 */
 .bim-rd-badge-warp {
   display: inline-flex;
