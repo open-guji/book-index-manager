@@ -437,7 +437,7 @@ const PageSection = React.memo(function PageSection({
       {pGroup.paragraphs.map((para) => (
         <p key={para.id} className="guji-reflow-paragraph">
           {groupByEntity(para.chars, entityOfChar).map((run, ri) => {
-            const nodes = run.chars.map(({ charData: ch, col, beforePuncts: allBefore, afterPuncts: allPuncts }, ci) => {
+            const nodes = run.chars.map(({ charData: ch, beforePuncts: allBefore, afterPuncts: allPuncts }, ci) => {
               // 专名线不画到首字前、末字后的标点上：实体首字的前置标点、末字的后置标点放到链接外面
               const isFirstOfEntity = !!run.entity && ci === 0;
               const isLastOfEntity = !!run.entity && ci === run.chars.length - 1;
@@ -454,7 +454,6 @@ const PageSection = React.memo(function PageSection({
                     onMouseEnter={() => handlers.enter(ch.id)}
                     onMouseLeave={handlers.leave}
                     className={`guji-text-char${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}`}
-                    title={`[第${pGroup.page}葉·第${col}列·第${ch.slot || ch.pos}字] ${show(ch)}`}
                   >
                     {show(ch)}
                   </span>
