@@ -17,7 +17,19 @@ export interface GujiPageChar {
     sub: string | null;
     /** `[x0, y0, x1, y1]`，canvas 像素；没有字框为 null */
     bbox: [number, number, number, number] | null;
+    /** 以下四项来自 char 的格字段（guji-format spec/02 §4.4），缺省＝不带，行为与旧数据一致 */
+    /** 分道：`solo` 单行小注（推不出必须写）；`jz_r`／`jz_l` 双行夹注，`main` 正文 */
+    lane?: 'main' | 'solo' | 'jz_r' | 'jz_l';
+    /** 阙文：`char` 是 `□` 占位 */
+    lacuna?: true;
+    /** 残字：`char` 是推测的字 */
+    guess?: true;
+    /** 组字：Unicode 未收的字的原形（IDS 串或描述），`char` 是近似字 */
+    zi?: string;
 }
+
+/** 列类别（spec/02 §4.3）：`blank` 空列（无字）、`banxin` 版心列；缺省正文列 */
+export type GujiColumnKind = 'body' | 'banxin' | 'blank';
 
 export interface GujiPageInfo {
     /** 页号（`page.index`），也是字 id 的第一段 */
@@ -26,8 +38,14 @@ export interface GujiPageInfo {
     seq: string;
     width: number;
     height: number;
-    /** 按列分组、列内保持文件里的阅读顺序；`col` 小的在右（竖排从右往左） */
-    columns: { col: number; chars: GujiPageChar[] }[];
+    /** 版心叶次（刻本上的叶码，原样照录，如「一」「十二」）；有则页码处优先显示它 */
+    label?: string;
+    /**
+     * 按列分组、列内保持文件里的阅读顺序；`col` 小的在右（竖排从右往左）。
+     * `raised`（抬头格数）、`lead_blank`（行首空格数）、`kind` 是列的版式字段，缺省＝0／0／正文列；
+     * `kind: 'blank'` 的空列 `chars` 为空，也保留在这里。
+     */
+    columns: { col: number; chars: GujiPageChar[]; kind?: GujiColumnKind; raised?: number; lead_blank?: number }[];
 }
 
 /** 单个字符：恰好一个码点（代理对算一个字） */

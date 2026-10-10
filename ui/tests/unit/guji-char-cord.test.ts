@@ -47,10 +47,12 @@ describe('adaptCharCord · 无字页', () => {
         ],
     }; // 第 2 页 char 里根本没有
 
-    it('cord 带 canvas、char 没有字的页也收：columns 为空，带 seq 与尺寸，按页号排', () => {
+    it('cord 带 canvas、char 没有字的页也收：没有字（至多留 kind: blank 的空列），带 seq 与尺寸，按页号排', () => {
         const pages = adaptCharCord(charBlank, cordBlank);
         expect(pages.map(p => p.page)).toEqual([1, 2, 3, 4]);
-        expect(pages.map(p => p.columns.length > 0)).toEqual([false, false, true, false]);
+        expect(pages.map(p => p.columns.some(c => c.chars.length > 0))).toEqual([false, false, true, false]);
+        // 整页空白（第 4 页）的 blank 空列不丢（overview#517）
+        expect(pages[3].columns).toEqual([{ col: 1, chars: [], kind: 'blank' }]);
         expect(pages[1]).toMatchObject({ page: 2, seq: '0002', width: 4195, height: 2947, columns: [] });
         expect(pages[2].columns[0].chars.map(c => c.id)).toEqual(['3:1:1']);
     });

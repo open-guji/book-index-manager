@@ -21,7 +21,7 @@ export interface PunctEntry {
 
 export interface GujiTextViewerProps {
   pageData: PageWarpData;
-  pages?: { page: number; columns: PageWarpData['columns'] }[];
+  pages?: { page: number; label?: string; columns: PageWarpData['columns'] }[];
   punctuations?: PunctEntry[];
   selectedCharIds: Set<string>;
   hoveredCharId?: string | null;
@@ -145,7 +145,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   // 1. 横排自然段构建 (支持多页流式段落，遵循 guji-markdown reflow 与 guji-punct break 规范)
   const reflowPages = useMemo(() => {
     // 若传入了全卷多页数据，则组织为多页流；否则使用单页数据
-    const allPagesData: { page: number; columns: (typeof pageData.columns) }[] =
+    const allPagesData: { page: number; label?: string; columns: (typeof pageData.columns) }[] =
       pages && pages.length > 0
         ? pages
         : [{ page: parseInt(pageData.page_id.split(':')[1] || '1', 10), columns: pageData.columns }];
@@ -153,24 +153,22 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     // 无字页（只有书影的书脊签、封面签条等）不进正文
     return allPagesData.filter((pData) => pData.columns.some((c) => c.chars.length > 0)).map((pData) => {
       const sortedCols = [...pData.columns].sort((a, b) => a.col - b.col);
-      const paragraphs: {
-        id: string;
-        chars: {
-          charData: (typeof pageData.columns)[0]['chars'][0];
-          col: number;
-          beforePuncts: PunctEntry[];
-          afterPuncts: PunctEntry[];
-        }[];
-      }[] = [];
-
-      let currentChars: {
-        charData: (typeof pageData.columns)[0]['chars'][0];
-        col: number;
-        beforePuncts: PunctEntry[];
-        afterPuncts: PunctEntry[];
-      }[] = [];
+      const paragraphs: ReflowParagraph[] = [];
+      let currentChars: ReflowChar[] = [];
+      // 空列（kind: blank）没有字：记下个数，挂到后面第一个有字的列首字上；页尾的空列记在 trailingBlank
+      let pendingBlank = 0;
 
       for (const col of sortedCols) {
+        if (col.chars.length === 0) {
+          if (col.kind === 'blank') pendingBlank++;
+          continue;
+        }
+        // 列的版式字段（抬头格数、行首空格数、前面的空列）挂在本列首字上；全缺省则不带
+        const start: ReflowColStart | undefined = (col.raised || col.lead_blank || pendingBlank)
+          ? { raised: col.raised, leadBlank: col.lead_blank, blankBefore: pendingBlank }
+          : undefined;
+        pendingBlank = 0;
+        let first = true;
         for (const ch of col.chars) {
           const { before: beforePuncts, after: afterPuncts } = splitPuncts(punctMap.get(ch.id) || []);
           const hasBreak = (punctMap.get(ch.id) || []).some((p) => p.kind === 'break');
@@ -180,7 +178,9 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
             col: col.col,
             beforePuncts,
             afterPuncts,
+            ...(first && start ? { start } : {}),
           });
+          first = false;
 
           // 遇到自然段分段符 (guji-punct 中的 break 标记)
           if (hasBreak) {
@@ -203,6 +203,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       return {
         page: pData.page,
         paragraphs,
+        ...(pData.label ? { label: pData.label } : {}),
+        ...(pendingBlank > 0 ? { trailingBlank: pendingBlank } : {}),
       };
     });
   }, [pages, pageData, punctMap]);
@@ -424,13 +426,23 @@ function useSelectedByPage(selected: ReadonlySet<string>): Map<number, ReadonlyS
   }, [selected]);
 }
 
+/** 列的版式字段，挂在本列首字上（spec/02 §4.3） */
+type ReflowColStart = { raised?: number; leadBlank?: number; blankBefore: number };
+type ReflowChar = { charData: PageWarpData['columns'][0]['chars'][0]; col: number; beforePuncts: PunctEntry[]; afterPuncts: PunctEntry[]; start?: ReflowColStart };
+type ReflowParagraph = { id: string; chars: ReflowChar[] };
 type ReflowPage = {
   page: number;
-  paragraphs: {
-    id: string;
-    chars: { charData: PageWarpData['columns'][0]['chars'][0]; col: number; beforePuncts: PunctEntry[]; afterPuncts: PunctEntry[] }[];
-  }[];
+  /** 版心叶次；有则页码处优先显示 */
+  label?: string;
+  paragraphs: ReflowParagraph[];
+  /** 页尾的空列数 */
+  trailingBlank?: number;
 };
+
+/** 空列：一格宽的空位（不占文本，复制不出字符） */
+function BlankCols({ n }: { n: number }) {
+  return <>{Array.from({ length: n }, (_, i) => <span key={i} className="guji-text-blank-col" aria-hidden="true" data-blank-col="" />)}</>;
+}
 
 /** 一段的字逐个转繁简：整段转换后字数不变就按位取，否则（含多码点字、转换改了字数）退回逐字转换 */
 export function convertChars(chars: string[], convert: (s: string) => string): string[] {
@@ -466,6 +478,7 @@ const PageSection = React.memo(function PageSection({
     return m;
   }, [pGroup, convert]);
   const show = (ch: { id: string; char: string }) => shown.get(ch.id) ?? ch.char;
+  const { t } = useI18n();
   // 外挂标点：按显示偏好改写（引号样式、隐去书名号）；改完为空的不出节点。没传偏好＝原样
   const punct = (p: PunctEntry) => {
     const mark = markOpts ? transformMark(p.mark, markOpts) : p.mark;
@@ -492,15 +505,20 @@ const PageSection = React.memo(function PageSection({
           }}
         >
           <div style={{ flex: 1, height: '1px', background: bim('rule') }} />
-          <span style={{ padding: '0 12px', fontWeight: 500 }}>第 {pGroup.page} 葉</span>
+          {/* 版心叶次（label）优先；没有再用扫描页号 */}
+          <span
+            style={{ padding: '0 12px', fontWeight: 500 }}
+            data-page-label={pGroup.label}
+            title={pGroup.label ? `${pGroup.page}` : undefined}
+          >第 {pGroup.label ?? pGroup.page} 葉</span>
           <div style={{ flex: 1, height: '1px', background: bim('rule') }} />
         </div>
       )}
 
-      {pGroup.paragraphs.map((para) => (
+      {pGroup.paragraphs.map((para, pi) => (
         <p key={para.id} className="guji-reflow-paragraph">
           {groupByEntity(para.chars, entityOfChar).map((run, ri) => {
-            const nodes = run.chars.map(({ charData: ch, beforePuncts: allBefore, afterPuncts: allPuncts }, ci) => {
+            const nodes = run.chars.map(({ charData: ch, beforePuncts: allBefore, afterPuncts: allPuncts, start }, ci) => {
               // 专名线不画到首字前、末字后的标点上：实体首字的前置标点、末字的后置标点放到链接外面
               const isFirstOfEntity = !!run.entity && ci === 0;
               const isLastOfEntity = !!run.entity && ci === run.chars.length - 1;
@@ -508,13 +526,17 @@ const PageSection = React.memo(function PageSection({
               const afterPuncts = isLastOfEntity ? [] : allPuncts;
               return (
                 <React.Fragment key={ch.id}>
+                  {start && start.blankBefore > 0 && <BlankCols n={start.blankBefore} />}
+                  {start?.leadBlank ? <span className="guji-text-lead-blank" aria-hidden="true" data-lead-blank={start.leadBlank} style={{ width: `${start.leadBlank}em` }} /> : null}
                   {beforePuncts.map(punct)}
                   <span
                     data-char-id={ch.id}
                     onClick={() => handlers.click(ch.id)}
                     onMouseEnter={() => handlers.enter(ch.id)}
                     onMouseLeave={handlers.leave}
-                    className={`guji-text-char${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}`}
+                    className={`guji-text-char${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${ch.lacuna ? ' is-lacuna' : ''}${ch.guess ? ' is-guess' : ''}${ch.zi ? ' is-zi' : ''}${start?.raised ? ' is-raised' : ''}`}
+                    data-raised={start?.raised || undefined}
+                    title={ch.lacuna ? t('detail.lacuna') : ch.zi ? t('detail.composedChar', { label: ch.zi }) : ch.guess ? t('reader.charGuess') : undefined}
                   >
                     {show(ch)}
                   </span>
@@ -544,6 +566,7 @@ const PageSection = React.memo(function PageSection({
               </React.Fragment>
             );
           })}
+          {pi === pGroup.paragraphs.length - 1 && pGroup.trailingBlank ? <BlankCols n={pGroup.trailingBlank} /> : null}
         </p>
       ))}
     </section>

@@ -9,10 +9,19 @@ export interface CharGeometry {
   char: string;
   bbox_col: [number, number, number, number]; // [x0, y0, x1, y1] in column local warped px
   sub?: string | null;
+  /** char 的格字段（guji-format spec/02 §4.4），缺省＝不带 */
+  lane?: 'main' | 'solo' | 'jz_r' | 'jz_l';
+  lacuna?: boolean;
+  guess?: boolean;
+  zi?: string;
 }
 
 export interface ColumnGeometry {
   col: number;
+  /** 列类别与版式字段（spec/02 §4.3）：空列 `blank`、抬头格数、行首空格数；缺省＝正文列、0、0 */
+  kind?: 'body' | 'banxin' | 'blank';
+  raised?: number;
+  lead_blank?: number;
   warped_w: number;
   warped_h: number;
   offset_x: number;
