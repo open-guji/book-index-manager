@@ -611,7 +611,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         key: v.key,
         label: textVersionLabel(v),
         optionLabel: convert(textVersionLabel(v)),
-        sourceName: v.source_name ? convert(v.source_name) : undefined,
+        sourceName: isOriginalVersion(v) ? t('reader.originalSource') : v.source_name ? convert(v.source_name) : undefined,
         license: v.license ?? undefined,
         sourceUrl: v.source_url ?? undefined,
         primary: v.key === defaultKey,
@@ -620,6 +620,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     const upstream = safeUpstream(index.source?.upstream);
     // 宿主给的书名是字符串（网站传条目标题，繁体原文）也要跟着繁简走；传的是节点就原样用
     const titleText = (typeof title === 'string' ? convert(title) : title) ?? (index.title ? convert(index.title) : entryTitle ? convert(entryTitle) : undefined);
+    // 顶部标题行：书名·版本（版本名＝底本 edition_label，没有就只写书名）
+    const editionText = version.edition_label ? convert(version.edition_label) : undefined;
     const titleNode = titleText ? (
         <a
             href={buildUrl(id)}
@@ -627,6 +629,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             onClick={onNavigate ? e => { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); onNavigate(id); } : undefined}
         >{titleText}</a>
     ) : undefined;
+    const titleWithEdition = titleNode && editionText ? <>{titleNode}<span className="bim-rd-ed">·{editionText}</span></> : titleNode;
     const byline = authors.length > 0
         ? convert(authors.slice(0, 2).map(a => `${a.dynasty ? `〔${a.dynasty}〕` : ''}${a.name}${` ${a.role || t('reader.defaultRole')}`}`).join('、'))
         : undefined;
@@ -642,13 +645,17 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         : undefined;
     const tables = hasGujiTableNotation(index) || hasGujiMarkdownV02(index);
     const body = md ? md.replace(/^##\s+[^\n]+\n+/, '') : null;
-    const subtitleNode = (typeof subtitle === 'string' ? convert(subtitle) : subtitle) ?? (version.source_name ? convert(version.source_name) : convert(textVersionLabel(version)));
+    const originalVersion = isOriginalVersion(version);
+    const sourceNameShown = originalVersion ? t('reader.originalSource') : version.source_name ? convert(version.source_name) : undefined;
+    // 本站原件版本：来源与版权放在章节名同一行后面（窄屏折到标题下的来源行）；其它版本照旧只写来源名
+    const subtitleNode = (typeof subtitle === 'string' ? convert(subtitle) : subtitle)
+        ?? (originalVersion ? [sourceNameShown, version.license].filter(Boolean).join(' · ') : (sourceNameShown ?? convert(textVersionLabel(version))));
 
     return (
         <ReaderShell
             className={className}
             style={style}
-            title={titleNode}
+            title={titleWithEdition}
             subtitle={subtitleNode}
             byline={byline}
             current={position}
@@ -813,16 +820,17 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             paragraphToggle={canParagraphize(md)}
             allowVertical={allowVertical}
         >
-            {contentLoading && <LoadingDots />}
+            {/* 对读章没有 .txt：getChapter 先 404→null，对读数据（char／cord）还在路上时不是失败，是加载中（overview#513） */}
+            {(contentLoading || (warpLoading && !warpData && !structured && body == null)) && <LoadingDots />}
 
             {!contentLoading && warpData && (
                 <article className="bim-rd-prose" style={{ marginTop: 0 }}>
                     <header style={{ marginBottom: 16 }}>
                         <h1 className="bim-rd-h1">{chapterMeta?.title ? convert(chapterMeta.title) : position}</h1>
-                        {(version.source_name || version.license) && (
-                            <p className="bim-rd-meta">
-                                {version.source_name && convert(version.source_name)}
-                                {version.license && <><span className="bim-rd-dot" />{version.license}</>}
+                        {(sourceNameShown || version.license) && (
+                            <p className="bim-rd-meta bim-rd-meta-src">
+                                {sourceNameShown}
+                                {version.license && <>{sourceNameShown && <span className="bim-rd-dot" />}{version.license}</>}
                             </p>
                         )}
                     </header>
@@ -878,14 +886,15 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                 <>
                     <header>
                         <h1 className="bim-rd-h1">{chapterMeta.title ? convert(chapterMeta.title) : position}</h1>
-                        {(version.source_name || version.license) && (
-                            <p className="bim-rd-meta">
-                                {version.source_name && (
+                        {(sourceNameShown || version.license) && (
+                            <p className="bim-rd-meta bim-rd-meta-src">
+                                {originalVersion && sourceNameShown && <>{sourceNameShown}</>}
+                                {!originalVersion && version.source_name && (
                                     <>{t('reader.textSource')} {version.source_url
                                         ? <a className="bim-rd-link" href={version.source_url} target="_blank" rel="noreferrer">{convert(version.source_name)}</a>
                                         : convert(version.source_name)}</>
                                 )}
-                                {version.source_name && version.license && <span className="bim-rd-dot" />}
+                                {sourceNameShown && version.license && <span className="bim-rd-dot" />}
                                 {version.license}
                             </p>
                         )}
@@ -913,7 +922,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                 </>
             )}
 
-            {!contentLoading && !warpData && !structured && body == null && chapterMeta && <div className="bim-rd-state">{t('reader.chapterFailed')}</div>}
+            {!contentLoading && !warpLoading && !warpData && !structured && body == null && chapterMeta && <div className="bim-rd-state">{t('reader.chapterFailed')}</div>}
 
             {index.references && index.references.length > 0 && (
                 <section className="bim-rd-refs">
@@ -934,6 +943,11 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         </ReaderShell>
     );
 };
+
+/** 本站独立整理的原件版本：manifest 的 is_original，或 source==='original'（只在界面层映射，不改 book-text 数据） */
+export function isOriginalVersion(v: Pick<TextVersion, 'source' | 'is_original'>): boolean {
+    return v.is_original === true || v.source === 'original';
+}
 
 /** 卷头小标题的位置词：有册号以册号为正名（「49冊」），否则「卷3」 */
 function unitPosition(c: TextChapter | null, idx: TextIndex, unit: string, convert: (s: string) => string): string | undefined {
