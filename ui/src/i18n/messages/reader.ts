@@ -97,6 +97,7 @@ export const reader = defineMessages({
     upstream: '上游',
     chapterFailed: '無法加載章節內容',
     references: '參考文獻',
+    entityDetail: '查看詳情 →',
 }, {
     imagesLoading: '加载书影…',
     noImages: '暂无书影',
@@ -183,4 +184,5 @@ export const reader = defineMessages({
     upstream: '上游',
     chapterFailed: '无法加载章节内容',
     references: '参考文献',
+    entityDetail: '查看详情 →',
 });

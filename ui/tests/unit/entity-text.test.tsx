@@ -220,6 +220,7 @@ describe('<EntityText>', () => {
             expect(link.getAttribute('aria-describedby')).toBe(card.id);
 
             fireEvent.mouseLeave(link.parentElement!);
+            await act(async () => { vi.advanceTimersByTime(300); });
             expect(screen.queryByRole('tooltip')).toBeNull();
             fireEvent.mouseEnter(link.parentElement!);
             await act(async () => { vi.advanceTimersByTime(200); });
@@ -236,6 +237,8 @@ describe('<EntityText>', () => {
         await user.tab();
         expect(document.activeElement).toBe(screen.getByRole('link', { name: '劉向' }));
         expect(screen.getByRole('tooltip').textContent).toContain('劉向');
+        await user.tab();   // 卡内的「查看详情」
+        expect(document.activeElement).toBe(screen.getByRole('link', { name: '查看詳情 →' }));
         await user.tab();
         expect(document.activeElement).toBe(screen.getByRole('link', { name: '別録' }));
         await waitFor(() => expect(screen.getByRole('tooltip').textContent).toContain('別錄'));
@@ -264,7 +267,7 @@ describe('<EntityText>', () => {
         const user = userEvent.setup();
         const { unmount } = render(<EntityText text={PUNCTUATED} entities={spans} offsets="plain" />);
         await user.tab();
-        expect(screen.getByRole('tooltip').textContent).toBe('人名劉向');
+        expect(screen.getByRole('tooltip').textContent).toBe('人名劉向查看詳情 →');
         unmount();
 
         const loadSummary = vi.fn(async () => { throw new Error('boom'); });
@@ -281,7 +284,105 @@ describe('<EntityText>', () => {
             </LocaleProvider>,
         );
         await user.tab();
-        await waitFor(() => expect(screen.getByRole('tooltip').textContent).toBe('人名刘向'));
+        await waitFor(() => expect(screen.getByRole('tooltip').textContent).toBe('人名刘向查看详情 →'));
+    });
+});
+
+describe('<EntityText> 悬浮卡（overview#512）', () => {
+    const spans = adaptEntityJson(ENTITY_JSON);
+    const wrapOf = (el: Element) => el.closest('.bim-et-w')!;
+
+    it('整词高亮：悬停多字词，包裹元素整体置 data-active；renderText 切成多段（折行）也在同一包裹内', () => {
+        // 渲染成多个节点，模拟高亮/折行把一个词拆成几段
+        const renderText = (s: string) => <>{[...s].map((c, i) => <b key={i}>{c}</b>)}</>;
+        const { container } = render(
+            <EntityText text={PUNCTUATED} entities={spans} offsets="plain" renderText={renderText} />,
+        );
+        const link = container.querySelector('a.bim-et-person')!;
+        const wrap = wrapOf(link);
+        expect(wrap.hasAttribute('data-active')).toBe(false);
+        fireEvent.mouseEnter(wrap);
+        expect(wrap.hasAttribute('data-active')).toBe(true);
+        expect(wrap.querySelectorAll('b')).toHaveLength(2);   // 劉、向 都在被高亮的包裹里
+        expect(ENTITY_TEXT_CSS).toContain('.bim-et-w[data-active] > .bim-et');
+    });
+
+    it('延迟关闭：移出 250ms 内仍开，进卡不收，出卡后到点才收；移回词也不收', async () => {
+        vi.useFakeTimers();
+        try {
+            render(<EntityText text={PUNCTUATED} entities={spans} offsets="plain" hoverDelayMs={0} />);
+            const wrap = wrapOf(screen.getByRole('link', { name: '劉向' }));
+            fireEvent.mouseEnter(wrap);
+            await act(async () => { vi.advanceTimersByTime(0); });
+            expect(screen.getByRole('tooltip')).toBeTruthy();
+
+            fireEvent.mouseLeave(wrap);
+            await act(async () => { vi.advanceTimersByTime(250); });
+            expect(screen.getByRole('tooltip')).toBeTruthy();       // 250ms 内仍在
+            fireEvent.mouseEnter(wrap);                              // 进卡（卡在包裹内）
+            await act(async () => { vi.advanceTimersByTime(1000); });
+            expect(screen.getByRole('tooltip')).toBeTruthy();       // 进卡后不收
+
+            fireEvent.mouseLeave(wrap);                              // 出卡
+            await act(async () => { vi.advanceTimersByTime(250); });
+            expect(screen.getByRole('tooltip')).toBeTruthy();
+            await act(async () => { vi.advanceTimersByTime(60); });
+            expect(screen.queryByRole('tooltip')).toBeNull();
+            expect(wrap.hasAttribute('data-active')).toBe(false);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it('同一时刻只开一张卡', async () => {
+        vi.useFakeTimers();
+        try {
+            render(<EntityText text={PUNCTUATED} entities={spans} offsets="plain" hoverDelayMs={0} />);
+            const a = wrapOf(screen.getByRole('link', { name: '劉向' }));
+            const b = wrapOf(screen.getByRole('link', { name: '別録' }));
+            fireEvent.mouseEnter(a);
+            await act(async () => { vi.advanceTimersByTime(0); });
+            fireEvent.mouseLeave(a);
+            fireEvent.mouseEnter(b);
+            await act(async () => { vi.advanceTimersByTime(0); });
+            expect(screen.getAllByRole('tooltip')).toHaveLength(1);
+            expect(b.querySelector('[role="tooltip"]')).toBeTruthy();
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it('未收录实体：悬停出卡，只写类别，无详情链接', async () => {
+        vi.useFakeTimers();
+        try {
+            const { container } = render(<EntityText text={PUNCTUATED} entities={spans} offsets="plain" hoverDelayMs={0} />);
+            fireEvent.mouseEnter(wrapOf(container.querySelector('.bim-et-place')!));
+            await act(async () => { vi.advanceTimersByTime(0); });
+            const card = screen.getByRole('tooltip');
+            expect(card.textContent).toBe('地名');
+            expect(card.querySelector('a')).toBeNull();
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it('收录实体：卡内「查看详情 →」用 buildHref，点击走 onNavigate', async () => {
+        const user = userEvent.setup();
+        const onNavigate = vi.fn((_id: string, e: React.MouseEvent) => e.preventDefault());
+        render(
+            <EntityText
+                text={PUNCTUATED} entities={spans} offsets="plain"
+                buildHref={id => `/x/${id}`} onNavigate={onNavigate}
+            />,
+        );
+        await user.tab();
+        const detail = screen.getByRole('link', { name: '查看詳情 →' });
+        expect(detail.getAttribute('href')).toBe('/x/p1abc');
+        await user.tab();                       // 焦点进卡内链接，卡不应收
+        expect(document.activeElement).toBe(detail);
+        expect(screen.getByRole('tooltip')).toBeTruthy();
+        fireEvent.click(detail);
+        expect(onNavigate).toHaveBeenCalledWith('p1abc', expect.anything());
     });
 });
 
