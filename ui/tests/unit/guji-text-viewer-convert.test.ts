@@ -20,8 +20,8 @@ describe('convertChars（对读正文繁简）', () => {
 describe('专名线样式', () => {
     it('地名双线，人名单线，书名波浪线，官职朝代单线', () => {
         expect(ENTITY_TEXT_CSS).toMatch(/\.bim-et-place\s*\{[^}]*double[^}]*3px/);
-        expect(ENTITY_TEXT_CSS).toMatch(/\.bim-et-person,[^{]*\{[^}]*solid/);
-        expect(ENTITY_TEXT_CSS).not.toMatch(/\.bim-et-person,[^{]*\.bim-et-place/);
+        expect(ENTITY_TEXT_CSS).toMatch(/\.bim-et-people,[^{]*\{[^}]*solid/);
+        expect(ENTITY_TEXT_CSS).not.toMatch(/\.bim-et-people,[^{]*\.bim-et-place/);
         expect(ENTITY_TEXT_CSS).toMatch(/\.bim-et-work\s*\{[^}]*wavy/);
     });
 });

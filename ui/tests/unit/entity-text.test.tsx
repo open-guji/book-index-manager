@@ -77,8 +77,8 @@ describe('adaptEntityJson', () => {
     it('按起点排序，丢弃非法区间', () => {
         expect(spans.map(s => s.key)).toEqual(['e0002', 'e0001', 'e0003']);
     });
-    it('类别映射：people→person，work→work，place→place', () => {
-        expect(spans.map(s => s.kind)).toEqual(['person', 'work', 'place']);
+    it('类别映射：people→people（旧 person 也读作 people），work→work，place→place', () => {
+        expect(spans.map(s => s.kind)).toEqual(['people', 'work', 'place']);
     });
     it('matched 取 entity_id，没有就从 href 解析；new_candidate 不给 targetId', () => {
         expect(spans[0].targetId).toBe('p1abc');
@@ -111,7 +111,7 @@ describe('remapPlainOffsets', () => {
 
 describe('segmentEntities', () => {
     const sp = (start: number, end: number, extra: Partial<EntitySpan> = {}): EntitySpan =>
-        ({ key: `k${start}`, kind: 'person', start, end, ...extra });
+        ({ key: `k${start}`, kind: 'people', start, end, ...extra });
 
     it('按区间切成文字 / 实体片段，拼回原文不变', () => {
         const text = '甲乙丙丁戊';
@@ -179,7 +179,7 @@ describe('<EntityText>', () => {
     it('画线：人名直线、书名波浪（补隐藏书名号）、未收录不成链接；文字不丢', () => {
         const { container } = render(<EntityText text={PUNCTUATED} entities={spans} offsets="plain" />);
         expect(container.textContent).toBe(ENTITY_TEXT_CSS + PUNCTUATED);
-        const person = container.querySelector('a.bim-et-person')!;
+        const person = container.querySelector('a.bim-et-people')!;
         expect(person.textContent).toBe('劉向');
         expect(person.getAttribute('href')).toBe('/item/p1abc');
         const work = container.querySelector('a.bim-et-work')!;
@@ -298,7 +298,7 @@ describe('<EntityText> 悬浮卡（overview#512）', () => {
         const { container } = render(
             <EntityText text={PUNCTUATED} entities={spans} offsets="plain" renderText={renderText} />,
         );
-        const link = container.querySelector('a.bim-et-person')!;
+        const link = container.querySelector('a.bim-et-people')!;
         const wrap = wrapOf(link);
         expect(wrap.hasAttribute('data-active')).toBe(false);
         fireEvent.mouseEnter(wrap);

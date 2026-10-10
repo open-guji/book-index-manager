@@ -17,7 +17,7 @@ export const ENTITY_TEXT_CSS = `
   text-decoration-skip-ink: none;
 }
 .bim-et-work { text-decoration-style: wavy; }
-.bim-et-person, .bim-et-office, .bim-et-dynasty, .bim-et-reign, .bim-et-other { text-decoration-style: solid; }
+.bim-et-people, .bim-et-office, .bim-et-dynasty, .bim-et-reign, .bim-et-other { text-decoration-style: solid; }
 .bim-et-nu, a.bim-et-nu:hover, a.bim-et-nu:focus-visible { text-decoration-line: none; }
 .bim-et-place { text-decoration-style: double; text-decoration-thickness: 3px; }
 a.bim-et { cursor: pointer; }

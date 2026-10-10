@@ -111,6 +111,6 @@ describe.skipIf(!existsSync(SAMPLES))('规范样例', () => {
         const ents = adaptEntityJson(read('sample.entity.json'));
         expect(ents.length).toBeGreaterThan(0);
         expect(ents.every(e => e.anchor?.start && e.anchor?.end)).toBe(true);
-        expect(ents.some(e => e.kind === 'person')).toBe(true);
+        expect(ents.some(e => e.kind === 'people')).toBe(true);
     });
 });

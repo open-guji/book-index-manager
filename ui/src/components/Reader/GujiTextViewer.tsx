@@ -15,7 +15,7 @@ export interface PunctEntry {
   anchor: string;
   pre_char?: string;
   mark: string;
-  kind?: 'point' | 'break' | 'range';
+  kind?: 'point' | 'break';
   pos?: 'after' | 'before';
 }
 
