@@ -570,7 +570,7 @@ export function ReaderShell({
                         {title && <b>{title}</b>}
                         {byline && <span className="bim-rd-by">{byline}</span>}
                         {current && <><span className="bim-rd-dot" aria-hidden="true" /><span className="bim-rd-cur">{current}</span></>}
-                        {subtitle && <span>{subtitle}</span>}
+                        {subtitle && <span className="bim-rd-ttl-src">{subtitle}</span>}
                     </p>
                 )}
                 <div className="bim-rd-tools" role="group" aria-label={t('reader.settings')}>

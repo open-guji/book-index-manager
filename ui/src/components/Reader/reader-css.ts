@@ -72,6 +72,7 @@ export const READER_CSS = `
 .bim-rd-ttl b a:hover { color: ${bim('accent')}; text-decoration: underline; text-underline-offset: 4px; }
 .bim-rd-ttl .bim-rd-dot { flex: none; }
 .bim-rd-ttl .bim-rd-dot::before { content: "·"; }
+.bim-rd-ttl b .bim-rd-ed { font-size: inherit; font-weight: inherit; color: inherit; }
 .bim-rd-ttl .bim-rd-cur { color: ${bim('ink')}; flex: none; }
 .bim-rd-chk { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
 .bim-rd-chk input { margin: 0; accent-color: ${bim('accent')}; cursor: pointer; }
