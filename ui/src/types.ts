@@ -17,30 +17,36 @@ export function hasResourceType(entry: { types?: ResourceTypeAtom[] }, atom: Res
 }
 
 /** 整理本文本质量等级 */
-export type TextQualityGrade = 'published' | 'fine' | 'rough' | 'ocr';
+export type TextQualityGrade = 'source' | 'ocr' | 'rough' | 'fine' | 'none' | 'placeholder';
 
 /** enum → 繁体中文 badge 文字 */
 export const TEXT_QUALITY_LABELS: Record<TextQualityGrade, string> = {
-    published: '出版',
-    fine: '精校',
-    rough: '粗校',
+    source: '來源本',
     ocr: '機器識別',
+    rough: '粗校',
+    fine: '精校',
+    none: '無正文',
+    placeholder: '佔位',
 };
 
 /** enum → 错误率判定标准（tooltip 显示） */
 export const TEXT_QUALITY_CRITERIA: Record<TextQualityGrade, string> = {
-    published: '達到出版、學術研究標準，錯誤率在萬分之一以內',
-    fine: '通讀無障礙，錯誤率在百分之一以內',
-    rough: '保證文意基本正確，錯誤率在百分之三以內',
+    source: '照錄來源，未加工',
     ocr: '保持大意和結構，錯誤率在百分之十以內',
+    rough: '保證文意基本正確，錯誤率在百分之三以內',
+    fine: '通讀無障礙，錯誤率在百分之一以內',
+    none: '暫無正文',
+    placeholder: '佔位，尚無正文',
 };
 
 /** enum → 主题色 */
 export const TEXT_QUALITY_COLORS: Record<TextQualityGrade, string> = {
-    published: bim('quality-published'),
+    source: bim('quality-ocr'),
     fine: bim('quality-fine'),
     rough: bim('quality-rough'),
     ocr: bim('quality-ocr'),
+    none: bim('quiet-fg'),
+    placeholder: bim('quiet-fg'),
 };
 
 /** 覆盖信息 */

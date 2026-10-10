@@ -13,7 +13,7 @@
  */
 import type { CollatedEditionIndex, JuanGroup } from '../types';
 
-export type TextKind = 'collated' | 'transcription';
+export type TextKind = 'collated' | 'transcription' | 'self_collated';
 export type ReadingCapability = 'text' | 'facsimile' | 'interactive_warp';
 
 export interface TextVersion {
@@ -28,6 +28,8 @@ export interface TextVersion {
     source?: string;
     /** 本站独立整理的原件版本（manifest 声明；界面层显示「本站独立整理」） */
     is_original?: boolean;
+    /** 版本说明（manifest 的 note，可选） */
+    note?: string;
     source_name?: string;
     source_url?: string | null;
     /** 授权，按份记；阅读器随版本显示 */
@@ -56,6 +58,13 @@ export interface TextChapter {
     /** 该章有同名 json（结构化条目） */
     has_json?: boolean;
     page_title?: string;
+    /** 章级 sidecar 文件名（spec 07 §3.3，只在 self_collated 版本里有）：有这个字段＝有这个文件 */
+    char_file?: string;
+    cord_file?: string;
+    punct_file?: string;
+    entity_file?: string;
+    norm_file?: string;
+    decision_file?: string;
 }
 
 /** 文本的上游来源与授权说明（index.json 的 source.upstream） */
@@ -106,7 +115,7 @@ export interface TextChapterContent {
 // ── key 与章号 ──
 
 /** 合法的版本 key：主版本固定 default；其余 [a-z0-9-]、字母开头、非保留字 */
-export const RESERVED_TEXT_KEYS = ['default', 'manifest', 'fragments', 'sources'] as const;
+export const RESERVED_TEXT_KEYS = ['default', 'manifest', 'fragments', 'sources', 'extra'] as const;
 const KEY_RE = /^[a-z][a-z0-9-]*$/;
 
 export function isTextKey(key: unknown): key is string {
