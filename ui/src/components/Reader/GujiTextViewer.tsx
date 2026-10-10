@@ -1,9 +1,12 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import { PageWarpData } from './GujiWarpCanvas';
 import { bim } from '../../styles/tokens';
 import { EntityMark, useEntitySummaryLoader } from '../EntityText/EntityText';
 import { ENTITY_TEXT_CSS } from '../EntityText/entity-text-css';
 import type { EntitySpan } from '../../core/entity-annotations';
+import { useI18n } from '../../i18n';
+import { PAGE_INDICATOR_Y_RANGE, type BookTitleStyle } from './prefs';
+import { transformMark, type MarkOpts, type QuoteStyle } from './marks';
 import type { EntitySummaryLoader, EntitySummaryTransport } from '../EntityText/summary';
 
 export interface PunctEntry {
@@ -44,6 +47,21 @@ export interface GujiTextViewerProps {
   buildEntityHref?: (id: string) => string;
   /** 站内跳转（宿主在这里 `preventDefault` 后走自己的路由）；不传则按 href 整页跳 */
   onEntityNavigate?: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
+  /** 是否画分叶分割线（「第 N 葉」）；false＝连续阅读，DOM 里不出现分割元素。缺省 true */
+  pageBreaks?: boolean;
+  /**
+   * 页指示头在视口高度的位置（0.1–0.9）。传了（且传了 `onVisiblePageChange`）就在正文左缘画一个可拖的小三角，
+   * 书影对应的页由指示头所在的那一行决定；不传＝不画，参考线仍是视口顶部以下 120px（旧行为）。
+   */
+  pageIndicatorY?: number;
+  /** 指示头拖完（松手）或键盘微调后的新位置，已夹在允许范围内；宿主把它写回偏好 */
+  onPageIndicatorYChange?: (y: number) => void;
+  /** 引号样式（只改显示）。三个显示偏好都不传＝标点原样（旧行为） */
+  quoteStyle?: QuoteStyle;
+  /** 书名标法：`wavy` 画波浪线并隐去《》〈〉；`bracket` 显示书名号、不画波浪线 */
+  bookTitleStyle?: BookTitleStyle;
+  /** 书名是否标注：false＝波浪线与书名号都不标（隐去《》〈〉；书名实体也应由宿主筛掉） */
+  showWorks?: boolean;
 }
 
 const defaultHref = (id: string) => `/item/${encodeURIComponent(id)}`;
@@ -91,6 +109,12 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   loadEntitySummary,
   buildEntityHref,
   onEntityNavigate,
+  pageBreaks = true,
+  pageIndicatorY,
+  onPageIndicatorYChange,
+  quoteStyle,
+  bookTitleStyle,
+  showWorks,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   // 点字／划词之后一小段时间内，滚动不改书影页：以读者点的字所在页为准，免得点在页首时被上一页抢回去
@@ -109,6 +133,14 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     });
     return map;
   }, [punctuations, showPunctuation]);
+
+  // 标点显示：三个显示偏好都没传＝原样（旧行为）；传了任意一个就按 transformMark 改显示
+  const markOpts = useMemo<MarkOpts | null>(() => {
+    if (quoteStyle === undefined && bookTitleStyle === undefined && showWorks === undefined) return null;
+    return { quoteStyle: quoteStyle ?? 'original', hideBookBrackets: bookTitleStyle === 'wavy' || showWorks === false };
+  }, [quoteStyle, bookTitleStyle, showWorks]);
+  // 书名号标法时书名实体不画波浪线（线与号二选一）
+  const plainBooks = bookTitleStyle === 'bracket';
 
   // 1. 横排自然段构建 (支持多页流式段落，遵循 guji-markdown reflow 与 guji-punct break 规范)
   const reflowPages = useMemo(() => {
@@ -286,17 +318,26 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollNonce]);
 
-  // 4. 滚动监听：侦测视口参考线所在的页并通知外层。rAF 节流＋对已排好序的页做二分，每帧只读十来个页的位置
+  // 页指示头：位置（视口高度比例）。拖动中用本地值，松手才通知宿主写偏好
   const hasVisibleCb = !!onVisiblePageChange;
+  const indicatorOn = hasVisibleCb && typeof pageIndicatorY === 'number';
+  const [dragY, setDragY] = useState<number | null>(null);
+  const effectiveY = clampIndicatorY(dragY ?? pageIndicatorY ?? 0);
+  const refYRef = useRef<number | null>(null); // 当前参考线所在的视口高度比例；null＝旧行为（顶部以下 120px）
+  refYRef.current = indicatorOn ? effectiveY : null;
+  const updatePageRef = useRef<() => void>(() => {});
+
+  // 4. 滚动监听：侦测视口参考线（指示头所在行，缺省顶部以下 120px）所在的页并通知外层。
+  //    rAF 节流＋对已排好序的页做二分，每帧只读十来个页的位置
   useEffect(() => {
     if (!hasVisibleCb) return;
     const sections = Array.from(containerRef.current?.querySelectorAll<HTMLElement>('[data-page-section]') ?? []);
     if (sections.length === 0) return;
-    const targetY = 120; // 视口顶部以下 120px
     let raf = 0;
     const update = () => {
       raf = 0;
       if (Date.now() < pageLockUntil.current) return;
+      const targetY = refYRef.current === null ? 120 : refYRef.current * window.innerHeight;
       // 最后一个顶边不低于参考线的页（页是自上而下排的）
       let lo = 0, hi = sections.length - 1;
       while (lo < hi) {
@@ -307,10 +348,13 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       if (!isNaN(pNum)) latest.current.onVisiblePageChange?.(pNum);
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    updatePageRef.current = () => { if (!raf) raf = requestAnimationFrame(update); };
     window.addEventListener('scroll', onScroll, { passive: true });
     update();
-    return () => { window.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); };
+    return () => { window.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); updatePageRef.current = () => {}; };
   }, [hasVisibleCb, reflowPages]);
+  // 指示头挪动（拖动、键盘、偏好变了）：不等滚动，立刻按新参考线重判一次页
+  useEffect(() => { if (indicatorOn) updatePageRef.current(); }, [indicatorOn, effectiveY]);
 
   return (
     <div
@@ -318,12 +362,23 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       className="guji-text-pane-content"
     >
       {hasEntities && <style>{ENTITY_TEXT_CSS}</style>}
+      {indicatorOn && (
+        <PageIndicator
+          y={effectiveY}
+          containerRef={containerRef}
+          onDrag={setDragY}
+          onCommit={(y) => { setDragY(null); onPageIndicatorYChange?.(y); }}
+        />
+      )}
       <div className="guji-text-reflow-view">
         {reflowPages.map((pGroup, idx) => (
           <PageSection
             key={`page-sec-${pGroup.page}`}
             pGroup={pGroup}
             first={idx === 0}
+            pageBreaks={pageBreaks}
+            markOpts={markOpts}
+            plainBooks={plainBooks}
             selected={selectedByPage.get(pGroup.page) ?? NO_SELECTION}
             entityOfChar={entityOfChar}
             entityLoader={entityLoader}
@@ -386,10 +441,13 @@ export function convertChars(chars: string[], convert: (s: string) => string): s
 
 /** 一页正文。memo：翻页、悬停、选中别页的字都不会让它重渲染 */
 const PageSection = React.memo(function PageSection({
-  pGroup, first, selected, entityOfChar, entityLoader, convert, buildHref, handlers,
+  pGroup, first, pageBreaks, markOpts, plainBooks, selected, entityOfChar, entityLoader, convert, buildHref, handlers,
 }: {
   pGroup: ReflowPage;
   first: boolean;
+  pageBreaks: boolean;
+  markOpts: MarkOpts | null;
+  plainBooks: boolean;
   selected: ReadonlySet<string>;
   entityOfChar: Map<string, EntitySpan>;
   entityLoader: ReturnType<typeof useEntitySummaryLoader>;
@@ -408,6 +466,11 @@ const PageSection = React.memo(function PageSection({
     return m;
   }, [pGroup, convert]);
   const show = (ch: { id: string; char: string }) => shown.get(ch.id) ?? ch.char;
+  // 外挂标点：按显示偏好改写（引号样式、隐去书名号）；改完为空的不出节点。没传偏好＝原样
+  const punct = (p: PunctEntry) => {
+    const mark = markOpts ? transformMark(p.mark, markOpts) : p.mark;
+    return mark ? <span key={p.id} className="guji-text-punct" data-punct-id={p.id}>{mark}</span> : null;
+  };
   return (
     <section
       data-page-section={pGroup.page}
@@ -415,7 +478,7 @@ const PageSection = React.memo(function PageSection({
       style={{ position: 'relative', scrollMarginTop: 96 }}
     >
       {/* 页间分隔与页码标牌（首页若无前置内容可紧凑显示） */}
-      {!first && (
+      {!first && pageBreaks && (
         <div
           className="guji-page-divider"
           style={{
@@ -445,9 +508,7 @@ const PageSection = React.memo(function PageSection({
               const afterPuncts = isLastOfEntity ? [] : allPuncts;
               return (
                 <React.Fragment key={ch.id}>
-                  {beforePuncts.map((p) => (
-                    <span key={p.id} className="guji-text-punct" data-punct-id={p.id}>{p.mark}</span>
-                  ))}
+                  {beforePuncts.map(punct)}
                   <span
                     data-char-id={ch.id}
                     onClick={() => handlers.click(ch.id)}
@@ -458,19 +519,13 @@ const PageSection = React.memo(function PageSection({
                     {show(ch)}
                   </span>
                   {/* 外挂注入标点 (不带 data-char-id，对底本坐标完全透明) */}
-                  {afterPuncts.map((p) => (
-                    <span key={p.id} className="guji-text-punct" data-punct-id={p.id}>{p.mark}</span>
-                  ))}
+                  {afterPuncts.map(punct)}
                 </React.Fragment>
               );
             });
             if (!run.entity) return <React.Fragment key={`r${ri}`}>{nodes}</React.Fragment>;
-            const head = run.chars[0].beforePuncts.map((p) => (
-              <span key={p.id} className="guji-text-punct" data-punct-id={p.id}>{p.mark}</span>
-            ));
-            const tail = run.chars[run.chars.length - 1].afterPuncts.map((p) => (
-              <span key={p.id} className="guji-text-punct" data-punct-id={p.id}>{p.mark}</span>
-            ));
+            const head = run.chars[0].beforePuncts.map(punct);
+            const tail = run.chars[run.chars.length - 1].afterPuncts.map(punct);
             return (
               <React.Fragment key={`${run.entity.key}@${ri}`}>
                 {head}
@@ -478,6 +533,7 @@ const PageSection = React.memo(function PageSection({
                   span={run.entity}
                   label={run.chars.map((c) => show(c.charData)).join('')}
                   hasBrackets
+                  plain={plainBooks && run.entity.kind === 'work'}
                   loader={entityLoader}
                   buildHref={buildHref}
                   onNavigate={handlers.navigate}
@@ -493,3 +549,100 @@ const PageSection = React.memo(function PageSection({
     </section>
   );
 });
+
+/** 指示头位置夹在允许范围内，保留三位小数（写进偏好的值不带浮点尾巴） */
+function clampIndicatorY(y: number): number {
+  const [lo, hi] = PAGE_INDICATOR_Y_RANGE;
+  const v = Number.isFinite(y) ? y : 0.33;
+  return Math.round(Math.min(hi, Math.max(lo, v)) * 1000) / 1000;
+}
+
+const INDICATOR_KEY_STEP = 0.02;
+const INDICATOR_SIZE = 16;
+
+/**
+ * 页指示头：固定在视口里、正文左缘外的小三角（▶），指向它所在的那一行。
+ * 书影显示的页码以它所在的行为准。可拖（鼠标、触屏）、可聚焦后用上下键微调（Shift 大步）；
+ * 不盖在正文上，也不挡正文的选字——只有三角本身接收指针。
+ */
+function PageIndicator({ y, containerRef, onDrag, onCommit }: {
+  y: number;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  onDrag: (y: number) => void;
+  onCommit: (y: number) => void;
+}) {
+  const { t } = useI18n();
+  const [left, setLeft] = useState(0);
+  const dragging = useRef(false);
+  const lastY = useRef(y);
+  lastY.current = y;
+
+  // 三角贴着正文栏的左缘；窗口改大小时重算
+  const place = useCallback(() => {
+    const view = containerRef.current?.querySelector<HTMLElement>('.guji-text-reflow-view');
+    const rect = (view ?? containerRef.current)?.getBoundingClientRect();
+    setLeft(Math.max(0, (rect?.left ?? 0) - INDICATOR_SIZE - 2));
+  }, [containerRef]);
+  useLayoutEffect(() => {
+    place();
+    window.addEventListener('resize', place);
+    return () => window.removeEventListener('resize', place);
+  }, [place]);
+
+  const fracOf = (clientY: number) => clampIndicatorY(clientY / Math.max(1, window.innerHeight));
+
+  return (
+    <div
+      role="slider"
+      tabIndex={0}
+      className="guji-page-indicator"
+      aria-label={t('reader.pageIndicator')}
+      aria-orientation="vertical"
+      aria-valuemin={Math.round(PAGE_INDICATOR_Y_RANGE[0] * 100)}
+      aria-valuemax={Math.round(PAGE_INDICATOR_Y_RANGE[1] * 100)}
+      aria-valuenow={Math.round(y * 100)}
+      data-indicator-y={y}
+      style={{
+        position: 'fixed',
+        left,
+        top: `calc(${y * 100}vh - ${INDICATOR_SIZE / 2}px)`,
+        width: INDICATOR_SIZE,
+        height: INDICATOR_SIZE,
+        zIndex: 20,
+        cursor: 'ns-resize',
+        touchAction: 'none', // 触屏上拖三角不滚页面
+        background: bim('accent'),
+        clipPath: 'polygon(0 0, 100% 50%, 0 100%)',
+        outline: 'none',
+      }}
+      onPointerDown={(e) => {
+        dragging.current = true;
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* 无指针捕获的环境照常 */ }
+        e.preventDefault();
+      }}
+      onPointerMove={(e) => {
+        if (!dragging.current) return;
+        const v = fracOf(e.clientY);
+        lastY.current = v;
+        onDrag(v);
+      }}
+      onPointerUp={(e) => {
+        if (!dragging.current) return;
+        dragging.current = false;
+        try { e.currentTarget.releasePointerCapture(e.pointerId); } catch { /* ignore */ }
+        onCommit(fracOf(e.clientY));
+      }}
+      onPointerCancel={() => {
+        if (!dragging.current) return;
+        dragging.current = false;
+        onCommit(lastY.current);
+      }}
+      onKeyDown={(e) => {
+        const dir = e.key === 'ArrowUp' ? -1 : e.key === 'ArrowDown' ? 1 : 0;
+        if (!dir) return;
+        e.preventDefault();
+        onCommit(clampIndicatorY(y + dir * (e.shiftKey ? 5 : 1) * INDICATOR_KEY_STEP));
+      }}
+    />
+  );
+}

@@ -121,6 +121,8 @@ export interface EntityMarkProps {
     label: string;
     /** 正文本身已带书名号，就不再补隐藏的《》 */
     hasBrackets: boolean;
+    /** 不画专名线（书名用书名号标法时：线与号二选一）；缺省画线 */
+    plain?: boolean;
     loader: { owner: object; load: EntitySummaryLoader } | null;
     buildHref: (id: string) => string;
     onNavigate?: EntityTextProps['onNavigate'];
@@ -129,12 +131,12 @@ export interface EntityMarkProps {
 }
 
 export const EntityMark: React.FC<EntityMarkProps> = ({
-    span, label, hasBrackets, loader, buildHref, onNavigate, renderText, hoverDelayMs,
+    span, label, hasBrackets, plain, loader, buildHref, onNavigate, renderText, hoverDelayMs,
 }) => {
     const cardId = useId();
     const [open, setOpen] = useState(false);
     const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const cls = `bim-et bim-et-${span.kind}`;
+    const cls = `bim-et bim-et-${span.kind}${plain ? ' bim-et-nu' : ''}`;
     const brackets = span.kind === 'work' && !hasBrackets;
     const inner = (
         <>
