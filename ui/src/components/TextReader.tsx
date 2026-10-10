@@ -22,6 +22,7 @@ import { matchChapterAcrossVersions, pickTextVersion, textVersionLabel } from '.
 import { useBidUrl } from '../core/bid-url';
 import { bim } from '../styles/tokens';
 import { useI18n } from '../i18n/use-i18n';
+import { ScriptModeScope } from '../i18n/script-scope';
 import { LoadingDots } from './common/LoadingDots';
 import { NoteText } from './common/NoteText';
 import { ReaderShell } from './Reader/ReaderShell';
@@ -191,7 +192,21 @@ function buildToc(idx: TextIndex, matchStates: Record<string, import('./Collated
     return idx.chapters.map(c => leaf(c.file));
 }
 
-export const TextReader: React.FC<TextReaderProps> = ({
+/**
+ * 对外的阅读器：偏好在这一层持有，字形偏好（scriptMode）用 ScriptModeScope 罩住整个阅读器，
+ * 里面凡是取数据文字的地方（useI18n 的 convert）都按「原字／通行繁体／简体」转换（overview#514）。
+ */
+export const TextReader: React.FC<TextReaderProps> = props => {
+    const prefsState = useReaderPrefs();
+    return (
+        <ScriptModeScope mode={prefsState[0].scriptMode}>
+            <TextReaderBody {...props} prefsState={prefsState} />
+        </ScriptModeScope>
+    );
+};
+
+const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof useReaderPrefs> }> = ({
+    prefsState,
     id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate,
     title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical, onReportError, revisedAt, backHref, backLabel,
     resolveWarpData, warpData: warpDataProp, resolveEntities, onEntityNavigate,
@@ -199,7 +214,7 @@ export const TextReader: React.FC<TextReaderProps> = ({
 }) => {
     const { t, convert } = useI18n();
     const api = useMemo(() => createTextApi(transport), [transport]);
-    const [storedPrefs, setPrefs] = useReaderPrefs();
+    const [storedPrefs, setPrefs] = prefsState;
     const buildUrl = useBidUrl();
 
     const onLocationRef = useRef(onLocationChange);

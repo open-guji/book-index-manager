@@ -10,6 +10,7 @@
  */
 import { PROTECTED_TERMS } from './protected-terms';
 import { VARIANT_CHARS } from './variant-chars';
+import { VARIANT_SUPPLEMENT } from './variant-supplement';
 
 export const COMMON_TRADITIONAL_CHARS: string = [
     '錄說語詞議樣書記類傳國經補藝紀編後與間條號為開總種無數據冊頁選時題爲詩萬證學續關東圖資歷來讀館論見鈔別進師輯陳覽寫現應從',
@@ -25,10 +26,10 @@ export const COMMON_TRADITIONAL_CHARS: string = [
 ].join('');
 
 /**
- * 检测用的字集：常见繁体字 ＋ 异体字归一表里的全部异体字（overview#350）。
+ * 检测用的字集：常见繁体字 ＋ 异体字归一表里的全部异体字（overview#350）＋ 手工补漏表里的稀见异体字（overview#514）。
  * 异体字 t2cn 不认，没走归一时会原样漏到简体页面上（如「㫖」「縂」「寳」），一并当残留报出来。
  */
-const CHAR_SET = new Set([...COMMON_TRADITIONAL_CHARS, ...Object.keys(VARIANT_CHARS)]);
+const CHAR_SET = new Set([...COMMON_TRADITIONAL_CHARS, ...Object.keys(VARIANT_CHARS), ...Object.keys(VARIANT_SUPPLEMENT)]);
 
 /**
  * 白名单：整词跳过。默认含保护表（如「曹霑」）与繁简切换按钮（有意用目标字体书写）；调用方可再追加专名。
