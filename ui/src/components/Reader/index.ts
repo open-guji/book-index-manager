@@ -5,7 +5,7 @@ export { ReaderToc } from './ReaderToc';
 export { ImagePanel } from './ImagePanel';
 export { ReaderMdText, renderReaderInline, renderProperNames, canParagraphize } from './ReaderText';
 export { useReaderPrefs, DEFAULT_READER_PREFS, FONT_SIZE_STEPS } from './prefs';
-export type { ReaderPrefs } from './prefs';
+export type { ReaderPrefs, ProperNameMode, QuoteStyle, BookTitleStyle, ReaderScriptMode } from './prefs';
 export { READER_CSS } from './reader-css';
 export { readerVersionOptionLabel, pickReaderVersion } from './versions';
 export type {
