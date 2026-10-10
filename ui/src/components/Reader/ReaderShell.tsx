@@ -82,6 +82,11 @@ export interface ReaderShellProps {
     properNameToggle?: boolean;
     /** 竖排开关（预留，默认不显示） */
     allowVertical?: boolean;
+    /**
+     * 「原字」档是否可选（overview#540）。外来文本（维基／Kanripo 等）没有规范层，「原字」无从区别于来源原样，置灰；
+     * 自校文本（章条目声明了 norm_file）可选。缺省 true＝与改前一致。
+     */
+    origScriptAvailable?: boolean;
 
     /** 正文底部「上一卷 / 下一卷」；默认按目录顺序自动给出 */
     pager?: boolean;
@@ -204,14 +209,14 @@ function useMediaQuery(query: string, ssrDefault: boolean): boolean {
  * 顶栏快捷的字形三态：原｜繁｜简（和设置面板里的 ScriptRow 同一个偏好）。
  * 选繁／简时同步站点 locale；选「原」只设偏好、不动站点 locale。scriptMode 为 null 或已选繁／简时，显示成跟随站点当前的繁／简。
  */
-function ScriptSwitch({ prefs, onPrefsChange }: { prefs: ReaderPrefs; onPrefsChange: (patch: Partial<ReaderPrefs>) => void }) {
+function ScriptSwitch({ prefs, onPrefsChange, origAvailable }: { prefs: ReaderPrefs; onPrefsChange: (patch: Partial<ReaderPrefs>) => void; origAvailable: boolean }) {
     const ctx = useContext(LocaleContext);
     const { t } = useI18n();
     if (!ctx) return null;
     const siteScript: ReaderScriptMode = ctx.locale === 'zh-Hans' ? 'hans' : 'hant';
     const shown: ReaderScriptMode = prefs.scriptMode === 'orig' ? 'orig' : siteScript;
-    const opts: { key: ReaderScriptMode; short: string; title: string }[] = [
-        { key: 'orig', short: t('reader.scriptOrigShort'), title: t('reader.scriptOrig') },
+    const opts: { key: ReaderScriptMode; short: string; title: string; disabled?: boolean }[] = [
+        { key: 'orig', short: t('reader.scriptOrigShort'), title: origAvailable ? t('reader.scriptOrig') : t('reader.scriptOrigUnavailable'), disabled: !origAvailable },
         { key: 'hant', short: t('common.localeShortHant'), title: t('reader.scriptHant') },
         { key: 'hans', short: t('common.localeShortHans'), title: t('reader.scriptHans') },
     ];
@@ -226,7 +231,9 @@ function ScriptSwitch({ prefs, onPrefsChange }: { prefs: ReaderPrefs; onPrefsCha
                         aria-pressed={shown === o.key}
                         title={o.title}
                         aria-label={o.title}
+                        disabled={o.disabled}
                         onClick={() => {
+                            if (o.disabled) return;
                             onPrefsChange({ scriptMode: o.key });
                             if (o.key === 'hant') ctx.setLocale('zh-Hant');
                             else if (o.key === 'hans') ctx.setLocale('zh-Hans');
@@ -242,7 +249,7 @@ function ScriptSwitch({ prefs, onPrefsChange }: { prefs: ReaderPrefs; onPrefsCha
 function SegRow<V extends string>({ label, value, options, onPick, title }: {
     label: string;
     value: V | null;
-    options: ReadonlyArray<{ key: V; label: string; title?: string }>;
+    options: ReadonlyArray<{ key: V; label: string; title?: string; disabled?: boolean }>;
     onPick: (v: V) => void;
     title?: string;
 }) {
@@ -252,7 +259,7 @@ function SegRow<V extends string>({ label, value, options, onPick, title }: {
             <span className="bim-rd-sp-fs">
                 {options.map(o => (
                     <button key={o.key} type="button" className="bim-rd-t" aria-pressed={value === o.key} title={o.title}
-                        onClick={() => onPick(o.key)}>{o.label}</button>
+                        disabled={o.disabled} onClick={() => { if (!o.disabled) onPick(o.key); }}>{o.label}</button>
                 ))}
             </span>
         </div>
@@ -263,7 +270,7 @@ function SegRow<V extends string>({ label, value, options, onPick, title }: {
  * 字形三态：原字／通行繁体／简体。选繁体／简体时照旧同步站点 locale；选原字只设偏好、不动站点 locale。
  * scriptMode 为 null（没选过）或已选繁／简时，显示成跟随站点当前的繁／简。
  */
-function ScriptRow({ prefs, onPrefsChange }: { prefs: ReaderPrefs; onPrefsChange: (patch: Partial<ReaderPrefs>) => void }) {
+function ScriptRow({ prefs, onPrefsChange, origAvailable }: { prefs: ReaderPrefs; onPrefsChange: (patch: Partial<ReaderPrefs>) => void; origAvailable: boolean }) {
     const ctx = useContext(LocaleContext);
     const { t } = useI18n();
     const siteScript: ReaderScriptMode = ctx?.locale === 'zh-Hans' ? 'hans' : 'hant';
@@ -273,7 +280,7 @@ function ScriptRow({ prefs, onPrefsChange }: { prefs: ReaderPrefs; onPrefsChange
             label={t('reader.script')}
             value={shown}
             options={[
-                { key: 'orig', label: t('reader.scriptOrig') },
+                { key: 'orig', label: t('reader.scriptOrig'), title: origAvailable ? undefined : t('reader.scriptOrigUnavailable'), disabled: !origAvailable },
                 { key: 'hant', label: t('reader.scriptHant') },
                 { key: 'hans', label: t('reader.scriptHans') },
             ]}
@@ -316,7 +323,7 @@ export function ReaderShell({
     title, subtitle,
     toc, activeKey, onSelect, tocHeader, tocCaption,
     images, imagesLoading, renderImageOverlay, imagePanel = 'auto',
-    prefs, onPrefsChange, paragraphToggle, properNameToggle = true, allowVertical,
+    prefs, onPrefsChange, paragraphToggle, properNameToggle = true, allowVertical, origScriptAvailable = true,
     byline, current, workLinkToggle, rail, onReportError, revisedAt,
     backHref, backLabel: backLabelProp, bottomBar = true,
     pager = true,
@@ -480,7 +487,7 @@ export function ReaderShell({
                             onClick={() => onPrefsChange({ fontSize: stepFontSize(prefs.fontSize, 1) })}>A+</button>
                     </span>
                 </div>
-                <ScriptRow prefs={prefs} onPrefsChange={onPrefsChange} />
+                <ScriptRow prefs={prefs} onPrefsChange={onPrefsChange} origAvailable={origScriptAvailable} />
                 <SegRow<QuoteStyle>
                     label={t('reader.quoteStyle')}
                     value={prefs.quoteStyle}
@@ -652,7 +659,7 @@ export function ReaderShell({
                         <IconImage />{t('reader.images')}
                     </button>
                     <span className="bim-rd-sep" aria-hidden="true" />
-                    <ScriptSwitch prefs={prefs} onPrefsChange={onPrefsChange} />
+                    <ScriptSwitch prefs={prefs} onPrefsChange={onPrefsChange} origAvailable={origScriptAvailable} />
                     <span className="bim-rd-sep" aria-hidden="true" />
                     <button
                         type="button"
