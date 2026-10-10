@@ -14,24 +14,10 @@ import { normalizeVariants } from '../i18n/variant-chars';
 
 // ── 工具函数 ──
 
-// 兼容旧数据：部分 JSON 仍存 ABCD 字母。数据迁移后可删。
-const LEGACY_GRADE_MAP: Record<string, TextQualityGrade> = {
-    A: 'fine', B: 'rough', C: 'rough', D: 'ocr',
-};
 function normalizeTextQualityGrade(g: unknown): TextQualityGrade | null {
     if (typeof g !== 'string') return null;
-    if (g in TEXT_QUALITY_LABELS) return g as TextQualityGrade;
-    if (g in LEGACY_GRADE_MAP) return LEGACY_GRADE_MAP[g];
-    return null;
+    return Object.prototype.hasOwnProperty.call(TEXT_QUALITY_LABELS, g) ? (g as TextQualityGrade) : null;
 }
-
-/** 兼容繁简两种 type 写法（直齋等繁体整理本用 書/類，多数志书用 书/类）。
- *  规一化到简体后再比对。
- */
-const TYPE_T2S: Record<string, string> = {
-    '書': '书', '類': '类', '結語': '结语', '結语': '结语',
-    '考證': '考证', '詩': '诗',
-};
 
 /**
  * book-text 拆分后整理本数据统一改用英文 type 枚举（book/poem/category/...），
@@ -39,12 +25,13 @@ const TYPE_T2S: Record<string, string> = {
  * 目录统计归零、原文视图完全空白。2026-09-03 补上英文→中文映射。
  * prose（散文/赋）、reconstruction（辑佚复原条目）语义上都是书目条目，
  * 归入「书」；verification 归入「考证」；page_header（页眉，非正文）不映射，
- * 调用处按未知类型过滤掉；comment 是本次新增的独立类型「注释」。
+ * 调用处按未知类型过滤掉；comment 是本次新增的独立类型「注释」；
+ * tally 是志书里的小计行（如「右孝經類凡七家七部」，spec/07），归「小计」。
  */
 const TYPE_EN2CN: Record<string, string> = {
     book: '书', poem: '诗', category: '类', preface: '序',
     verification: '考证', prose: '书', reconstruction: '书',
-    comment: '注释',
+    comment: '注释', tally: '小计',
 };
 
 /** 「底本 {note}」：note 里的「《书名》(网址)」等渲染成链接（overview#359 P2-5）；字典里的前后缀照旧 */
@@ -56,7 +43,7 @@ function baseTextLine(template: string, note: string, convert: (s: string) => st
 
 export function normSectionType(t: unknown): string {
     if (typeof t !== 'string') return '';
-    return TYPE_T2S[t] ?? TYPE_EN2CN[t] ?? t;
+    return TYPE_EN2CN[t] ?? t;
 }
 
 const CN_DIGITS = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
@@ -225,28 +212,6 @@ function sectionTypeLabel(messages: LocaleMessages, normType: string, convert: (
 }
 
 // ── 子组件 ──
-
-/** 将文件名转为显示名 */
-export function juanDisplayName(f: string): string {
-    /*
-     * 卷文件名有两种形态：扁平的 `juan001.json`，与带目录的 `juan/001.json`
-     * （漢書藝文志等即是后者）。原先只按前者剥前缀，`juan/001` 剥掉 `juan`
-     * 还剩 `/001`，读者看到的是「卷/001」——多一条斜杠。
-     * 统一把分隔符去掉再判断。
-     */
-    const name = f.replace('.json', '').replace(/[/\\]/g, '');
-    if (name === 'fulu') return '附錄';
-    if (name.startsWith('juanshou')) {
-        const n = name.replace('juanshou', '');
-        return `卷首${n}`;
-    }
-    if (name.startsWith('juan')) {
-        const n = name.replace('juan', '').replace(/^0+/, '');
-        return `卷${n}`;
-    }
-    // 中文文件名（考证类）：直接去掉扩展名返回
-    return name;
-}
 
 /** 每卷搜索状态：number = match 数；'loading' = 正在加载；undefined = 未触发搜索 */
 export type JuanMatchState = number | 'loading' | undefined;
@@ -1052,7 +1017,7 @@ export function entryHeadingLeveler(): (kind: '类' | '条目') => 'h2' | 'h3' {
  *
  * 只跳过真页眉（书口题名）；长 page_header 其实是正文，见 isPageHeaderContent。
  */
-function CollatedEntries({ sections, onNavigate, inline, workLinks = true }: {
+export function CollatedEntries({ sections, onNavigate, inline, workLinks = true }: {
     sections: CollatedSection[];
     onNavigate?: (id: string) => void;
     inline: (s: string) => React.ReactNode;
@@ -1105,6 +1070,8 @@ function CollatedEntries({ sections, onNavigate, inline, workLinks = true }: {
                         </section>
                     );
                 }
+                // 小计行（「右孝經類凡七家七部」）只有 title、没有 content，原先在正文看法里丢掉
+                if (ty === '小计' && s.title) return <p key={i}>{inline(convert(s.title))}</p>;
                 if (s.content) return <p key={i}>{inline(convert(s.content))}</p>;
                 return null;
             })}

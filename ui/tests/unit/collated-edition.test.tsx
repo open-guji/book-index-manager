@@ -2,32 +2,13 @@
  * 整理本显示的两处回归。
  *
  * 都是「数据形态变了、显示层没跟上」，且都只在特定条目上暴露——
- * 漢書藝文志（d59f23o7ygw2）两样全中，页面上一列英文 `category` 加一排「卷/001」。
+ * 漢書藝文志（d59f23o7ygw2）页面上一列英文 `category`。
+ * 2026-10-10 清退：删旧 ABCD 等级／繁体 type 映射／无调用方的 juanDisplayName，补 tally（小计行）。
  */
+import React from 'react';
 import { describe, expect, it } from 'vitest';
-import { juanDisplayName, normSectionType, isPageHeaderContent, entryHeadingLeveler } from '../../src/components/CollatedEdition';
-
-describe('juanDisplayName：卷文件名 → 显示名', () => {
-    it('带目录的 juan/001.json（漢書藝文志等）', () => {
-        // 原先只剥 `juan` 前缀，剩下 `/001`，读者看到「卷/001」
-        expect(juanDisplayName('juan/001.json')).toBe('卷1');
-        expect(juanDisplayName('juan/012.json')).toBe('卷12');
-    });
-
-    it('扁平的 juan001.json 仍然对', () => {
-        expect(juanDisplayName('juan001.json')).toBe('卷1');
-        expect(juanDisplayName('juan043.json')).toBe('卷43');
-    });
-
-    it('卷首与附录', () => {
-        expect(juanDisplayName('juanshou1.json')).toBe('卷首1');
-        expect(juanDisplayName('fulu.json')).toBe('附錄');
-    });
-
-    it('中文文件名（考证类）原样返回', () => {
-        expect(juanDisplayName('漢書藝文志考證.json')).toBe('漢書藝文志考證');
-    });
-});
+import { render, screen } from '@testing-library/react';
+import { OtherSection, CollatedEntries, normSectionType, isPageHeaderContent, entryHeadingLeveler } from '../../src/components/CollatedEdition';
 
 describe('normSectionType：英文枚举 → 中文', () => {
     it('2026-08 迁移后的英文枚举都能翻译', () => {
@@ -36,6 +17,15 @@ describe('normSectionType：英文枚举 → 中文', () => {
         expect(normSectionType('book')).toBe('书');
         expect(normSectionType('preface')).toBe('序');
         expect(normSectionType('verification')).toBe('考证');
+    });
+
+    it('tally（志书小计行，章 json 里 1,227 条）→ 小计', () => {
+        expect(normSectionType('tally')).toBe('小计');
+    });
+
+    it('繁体 type 写法（書／類）与旧 ABCD 等级的兼容已删：数据里没有，原样返回', () => {
+        expect(normSectionType('書')).toBe('書');
+        expect(normSectionType('類')).toBe('類');
     });
 
     it('已是中文的原样返回，非字符串给空串', () => {
@@ -85,5 +75,29 @@ describe('entryHeadingLeveler：整理本标题不跳级（h1 是卷名），同
 
     it('条目、类、条目：第一个类之前的条目是 h2，之后是 h3', () => {
         expect(run(['条目', '类', '条目'])).toEqual(['h2', 'h2', 'h3']);
+    });
+});
+
+describe('tally（志书小计行）显示', () => {
+    const tally = { type: 'tally', title: '右孝經類凡七家七部', level: 2, content: '' } as never;
+
+    it('字典里有「小计」徽章文字：繁体「小計」、简体「小计」', async () => {
+        const { collated } = await import('../../src/i18n/messages/collated');
+        expect((collated['zh-Hant'].sectionType as Record<string, string>)['小计']).toBe('小計');
+        expect((collated['zh-Hans'].sectionType as Record<string, string>)['小计']).toBe('小计');
+    });
+
+    it('条目看法（OtherSection）：显示小计行原文', () => {
+        render(<OtherSection section={tally} />);
+        expect(screen.getByText('右孝經類凡七家七部')).toBeTruthy();
+    });
+
+    it('正文看法（CollatedEntries）：小计行不再丢；书目条目照常', () => {
+        const sections = [
+            { type: 'book', title: '孝經', book_title: '孝經', content: '' },
+            tally,
+        ] as never;
+        render(<CollatedEntries sections={sections} inline={(s: string) => s} />);
+        expect(screen.getByText('右孝經類凡七家七部')).toBeTruthy();
     });
 });
