@@ -402,7 +402,7 @@ def test_validate_promotions_reports_issues(monkeypatch, capsys, root, tmp_path)
     assert work_files
     p = work_files[0]
     data = json.loads(p.read_text(encoding="utf-8"))
-    data["promoted_to"] = "fakefakefake1"
+    data["_promoted_to"] = "fakefakefake1"
     p.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
     out, _, code = run_cli(monkeypatch, capsys, "validate-promotions", "--root", root)

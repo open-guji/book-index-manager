@@ -512,30 +512,6 @@ def test_validate_detects_missing_tombstone_file(manager: BookIndexManager):
     assert "E02" in [i.code for i in issues]
 
 
-def test_validate_warns_on_legacy_unprefixed_tombstone(manager: BookIndexManager):
-    """E06（warning）：tombstone 还在用无前缀的 promoted_to/promoted_at。
-
-    派生栏一律带 `_` 前缀（SCHEMA.md §記錄之共通欄位）。读取兼容旧名，
-    但要报出来，好让迁移可见——否则写保护、E02/E03 都是"看着在跑"。
-    """
-    draft_id = _save_draft_work(manager, "测试")
-    prod_id = manager.promote_to_official(draft_id)
-
-    # 手工写成无前缀旧名，模拟未迁移的旧墓碑
-    draft_path = manager.storage.find_file_by_id(draft_id)
-    data = json.loads(draft_path.read_text(encoding="utf-8"))
-    data["promoted_to"] = prod_id
-    data["promoted_at"] = "2026-05-13T00:00:00Z"
-    draft_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
-
-    issues = manager.validate_promotions()
-    e06 = [i for i in issues if i.code == "E06"]
-    assert len(e06) == 1
-    assert e06[0].severity == "warning"
-    # 旧名仍能被读到，所以不该再报 E02
-    assert "E02" not in [i.code for i in issues]
-
-
 def test_tombstone_write_protection_reads_promotions_json(manager: BookIndexManager):
     """写保护认 promotions.json（schema-v2 墓碑档无印记）；档上留着旧印记的也认。"""
     draft_id = _save_draft_work(manager, "测试")

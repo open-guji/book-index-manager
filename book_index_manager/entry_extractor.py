@@ -128,8 +128,7 @@ def _extract_juan_count(metadata: Dict[str, Any]) -> int:
 def _extract_resource_flags(metadata: Dict[str, Any]) -> Dict[str, bool]:
     """从 resources 提取 has_text / has_image 标记。
 
-    新格式 resources[].types: ["text", "image"]
-    旧格式 resources[].type: "text" | "image" | "text+image"
+    resources[].types: ["text", "image"]（旧的单值 `type` 写法已不再读，2026-10-11 overview#544）
     """
     has_text = False
     has_image = False
@@ -141,16 +140,10 @@ def _extract_resource_flags(metadata: Dict[str, Any]) -> Dict[str, bool]:
         if not isinstance(r, dict):
             continue
         types_arr = r.get("types")
-        if isinstance(types_arr, list) and types_arr:
+        if isinstance(types_arr, list):
             if "text" in types_arr:
                 has_text = True
             if "image" in types_arr:
-                has_image = True
-        else:
-            rt = r.get("type", "")
-            if rt in ("text", "text+image"):
-                has_text = True
-            if rt in ("image", "text+image"):
                 has_image = True
     return {"has_text": has_text, "has_image": has_image}
 
