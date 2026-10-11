@@ -14,7 +14,6 @@ book-index-manager/
 │   ├── __init__.py           # 公开 API
 │   ├── __main__.py           # CLI 入口 (book-index 命令)
 │   ├── schema.py             # ResourceEntry 定义、校验、URL→ID 提取
-│   ├── migration.py          # 旧格式迁移 (text_resources/image_resources → resources)
 │   ├── storage_base.py       # Storage 抽象接口
 │   ├── storage.py            # 文件系统存储 (save/load/index)；shard_dirs() 三仓共用
 │   ├── storage_github.py     # GitHub 只读后端
@@ -26,7 +25,7 @@ book-index-manager/
 │   ├── config.py             # 配置管理
 │   ├── logger.py             # 日志
 │   └── exceptions.py         # 异常定义
-├── scripts/                  # 批处理脚本（update_has_collated 等）
+├── scripts/                  # 批处理脚本
 ├── tests/                    # pytest（189）
 ├── ui/                       # npm 包 book-index-ui：网站索引页全部 React 组件（详情页在 src/components/detail/）
 └── pyproject.toml            # 包配置

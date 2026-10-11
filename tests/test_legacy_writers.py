@@ -30,12 +30,6 @@ def test_save_item_does_not_migrate_chinese_keys_to_legacy_forms(manager):
     assert "current_location" not in out and "publication_info" not in out
 
 
-def test_save_item_still_migrates_volume_count(manager):
-    out = _saved(manager, {"type": "book", "title": "测试", "volume_count": 4})
-    assert out["juan_count"] == 4
-    assert "volume_count" not in out
-
-
 def test_save_item_keeps_object_volume_count(manager):
     """volume_count 的对象形是 Book 现行字段「册数」，不能被当旧键改写成 juan_count。"""
     vc = {"number": 32, "description": "32冊"}

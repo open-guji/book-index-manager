@@ -50,59 +50,6 @@ def empty_data_root(tmp_path: Path) -> Path:
     return root
 
 
-# ─── update_has_collated.py ───
-
-def test_update_has_collated_empty_root(monkeypatch, capsys, empty_data_root):
-    out, err, code = run_script(monkeypatch, capsys, "update_has_collated", str(empty_data_root))
-    assert code == 0
-
-
-def test_update_has_collated_with_one_collated_work(monkeypatch, capsys, tmp_path):
-    """Work 含 collated_edition/text/ → 索引该 work 应被标 has_collated"""
-    root = tmp_path / "book-index-draft"
-    work_dir = root / "Work" / "1" / "e" / "u"
-    work_dir.mkdir(parents=True)
-
-    bid = "1eujfe7s94veo"
-    (work_dir / f"{bid}-史記.json").write_text(
-        json.dumps({"id": bid, "type": "work", "title": "史記"}, ensure_ascii=False),
-        encoding="utf-8",
-    )
-    # 关键：collated_edition/text/ 目录存在
-    (work_dir / bid / "collated_edition" / "text").mkdir(parents=True)
-    (work_dir / bid / "collated_edition" / "text" / "1.md").write_text("# 卷一\n", encoding="utf-8")
-
-    # index shard 先要存在（脚本读它）
-    shard = root / "index" / "works" / "0.json"
-    shard.parent.mkdir(parents=True)
-    # shardOf("1eujfe7s94veo") 是固定值，但不确定落 0.json — 先建空所有 shard
-    for i in range(16):
-        (root / "index" / "works" / f"{i:x}.json").write_text(
-            json.dumps({bid: {"id": bid, "title": "史記", "type": "Work", "path": f"Work/1/e/u/{bid}-史記.json"}}, ensure_ascii=False),
-            encoding="utf-8",
-        )
-
-    # 已作废（schema-v2）：默认不写
-    _, err, code = run_script(monkeypatch, capsys, "update_has_collated", str(root))
-    assert code == 0
-    assert "已作废" in err
-    for shard_file in (root / "index" / "works").glob("*.json"):
-        assert "has_collated" not in shard_file.read_text(encoding="utf-8")
-
-    # 对迁移前旧库回填：显式 --force-legacy
-    _, _, code = run_script(monkeypatch, capsys, "update_has_collated", str(root), "--force-legacy")
-    assert code == 0
-    # 验证 has_collated 写回了
-    found = False
-    for shard_file in (root / "index" / "works").glob("*.json"):
-        data = json.loads(shard_file.read_text(encoding="utf-8"))
-        for entry in data.values():
-            if entry.get("has_collated"):
-                found = True
-                break
-    assert found, "has_collated should be set on the indexed work"
-
-
 # ─── update_site_stats.py ───
 
 def test_update_site_stats_empty(monkeypatch, capsys, empty_data_root):
