@@ -245,18 +245,11 @@ def test_check_index(monkeypatch, capsys, root):
     assert code == 0
 
 
-# ─── validate-lineage / migrate ───
+# ─── validate-lineage ───
 
 def test_validate_lineage_empty(monkeypatch, capsys, root):
     _, _, code = run_cli(monkeypatch, capsys,
                           "validate-lineage", "--target", "draft", "--root", root)
-    assert code == 0
-
-
-def test_migrate_dry_run(monkeypatch, capsys, root):
-    run_cli(monkeypatch, capsys, "draft", "old", "--type", "book", "--root", root)
-    _, _, code = run_cli(monkeypatch, capsys,
-                          "migrate", "--target", "draft", "--dry-run", "--root", root)
     assert code == 0
 
 

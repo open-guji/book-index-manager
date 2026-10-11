@@ -42,7 +42,6 @@ BookIndexManager (Facade API)
 | Schema 校验 | `schema.py` | `core/schema.ts` |
 | Bid 链接 | `bid_link.py` | `core/bid-link.ts` |
 | 异常 | `exceptions.py` | `core/exceptions.ts` |
-| 迁移 | `migration.py` | — |
 | 配置 | `config.py` | — |
 
 ## Manager API
