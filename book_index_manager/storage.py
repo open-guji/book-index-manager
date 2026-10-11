@@ -337,8 +337,11 @@ class BookIndexStorage:
         两库约 25.6 万条记录顶层中文键实测为 0，代码内无产生中文键的调用方；
         旧实现会写回 role:"author"、字符串形 contained_in、占位 0／空串（legacy.md §五）。
         """
-        # Migrate old English key: volume_count → juan_count
-        if "volume_count" in metadata and "juan_count" not in metadata:
+        # Migrate old English key: volume_count → juan_count。
+        # 只迁旧的标量写法（纯数字／字符串）；对象形 {number, description?} 是 Book 的现行字段「册数」
+        # （schema/book.md volume_count），不是旧键，原样保留（overview#537：正式库 988g63603v 即此形）。
+        if ("volume_count" in metadata and "juan_count" not in metadata
+                and not isinstance(metadata["volume_count"], dict)):
             metadata["juan_count"] = metadata.pop("volume_count")
 
         # Migrate old text_resources/image_resources → unified resources

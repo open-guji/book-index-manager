@@ -36,6 +36,14 @@ def test_save_item_still_migrates_volume_count(manager):
     assert "volume_count" not in out
 
 
+def test_save_item_keeps_object_volume_count(manager):
+    """volume_count 的对象形是 Book 现行字段「册数」，不能被当旧键改写成 juan_count。"""
+    vc = {"number": 32, "description": "32冊"}
+    out = _saved(manager, {"type": "book", "title": "测试", "volume_count": dict(vc)})
+    assert out["volume_count"] == vc
+    assert "juan_count" not in out
+
+
 def test_mark_promoted_removed():
     """记录内写 _promoted_to／_promoted_at 的死代码已删；读侧兼读保留。"""
     from book_index_manager import _utils
