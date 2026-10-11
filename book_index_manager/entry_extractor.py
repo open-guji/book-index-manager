@@ -147,6 +147,7 @@ def _extract_resource_flags(metadata: Dict[str, Any]) -> Dict[str, bool]:
             if "image" in types_arr:
                 has_image = True
         else:
+            # guji-platform 仍写旧 type，见 overview#544，待其改写 types 后删
             rt = r.get("type", "")
             if rt in ("text", "text+image"):
                 has_text = True

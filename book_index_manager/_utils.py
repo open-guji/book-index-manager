@@ -25,33 +25,23 @@ def strip_nulls(obj):
 
 PROMOTED_TO = "_promoted_to"
 PROMOTED_AT = "_promoted_at"
-_LEGACY_PROMOTED_TO = "promoted_to"
-_LEGACY_PROMOTED_AT = "promoted_at"
 
 
 def read_promoted_to(metadata: dict) -> object:
-    """读条目档的 promoted_to，兼容未迁移的无前缀旧名。"""
+    """读条目档的 `_promoted_to`（schema-v2 起条目档不带，权威是 promotions.json）。"""
     if not isinstance(metadata, dict):
         return None
-    return metadata.get(PROMOTED_TO) or metadata.get(_LEGACY_PROMOTED_TO)
+    return metadata.get(PROMOTED_TO)
 
 
 def read_promoted_at(metadata: dict) -> object:
-    """读条目档的 promoted_at，兼容未迁移的无前缀旧名。"""
+    """读条目档的 `_promoted_at`。"""
     if not isinstance(metadata, dict):
         return None
-    return metadata.get(PROMOTED_AT) or metadata.get(_LEGACY_PROMOTED_AT)
-
-
-def has_legacy_promotion_keys(metadata: dict) -> bool:
-    """条目档还在用无前缀旧名（且没有带前缀的新名）——待迁移。"""
-    if not isinstance(metadata, dict):
-        return False
-    legacy = _LEGACY_PROMOTED_TO in metadata or _LEGACY_PROMOTED_AT in metadata
-    return legacy and PROMOTED_TO not in metadata
+    return metadata.get(PROMOTED_AT)
 
 
 def strip_promotion_marks(metadata: dict) -> None:
-    """从 production 副本上摘掉 tombstone 标记（新旧两种写法都摘）。"""
-    for key in (PROMOTED_TO, PROMOTED_AT, _LEGACY_PROMOTED_TO, _LEGACY_PROMOTED_AT):
+    """从 production 副本上摘掉 tombstone 标记。"""
+    for key in (PROMOTED_TO, PROMOTED_AT):
         metadata.pop(key, None)

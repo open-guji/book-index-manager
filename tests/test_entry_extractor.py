@@ -113,6 +113,7 @@ def test_resource_flags_new_format():
 
 
 def test_resource_flags_old_format():
+    # guji-platform 仍写旧 type，见 overview#544；待其改写 types 后连同旧分支一起删
     r = _extract_resource_flags({
         "resources": [{"type": "text+image"}]
     })
@@ -257,7 +258,7 @@ def test_book_entry_keeps_work_id():
 def test_tombstone_entry_keeps_promoted_to():
     """promoted_to 是网站做 draft→production 重定向的依据，抹掉会让重定向失效。"""
     entry = build_index_entry(
-        {"id": "w1", "title": "X", "promoted_to": "d59dh3z6zmyo"},
+        {"id": "w1", "title": "X", "_promoted_to": "d59dh3z6zmyo"},
         BookIndexType.Work,
         "Work/w/1.json",
     )
@@ -277,13 +278,13 @@ def test_entity_tombstone_entry_keeps_promoted_to():
     assert entry["promoted_to"] == "hixhd2h9bdxw"
 
 
-def test_entity_tombstone_accepts_legacy_unprefixed_name():
-    """兼容未迁移的无前缀旧名，与 build_index_entry 同（read_promoted_to）。"""
+def test_entity_tombstone_ignores_unprefixed_name():
+    """无前缀旧名 `promoted_to` 不再读（overview#544）；权威是 `_promoted_to`／promotions.json。"""
     entry = build_entity_index_entry(
         {"primary_name": "X", "promoted_to": "hixhd2h9bdxw"},
         "e1", "Entity/e/1.json",
     )
-    assert entry["promoted_to"] == "hixhd2h9bdxw"
+    assert "promoted_to" not in entry
 
 
 def test_entity_entry_keeps_period():
