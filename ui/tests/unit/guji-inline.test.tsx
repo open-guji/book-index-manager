@@ -124,8 +124,7 @@ describe('夹注分行 <a|b>（§1）', () => {
         expect(c.querySelector('.bim-jiazhu')!.textContent).toBe('孔子也魯人');
         expect(c.textContent).toBe('子曰孔子也魯人');
     });
-    it('⟨…⟩ 与表格格内转义 \\| 同样忽略', () => {
-        expect(plain('甲⟨乙|丙⟩')).toBe('甲（乙丙）');
+    it('与表格格内转义 \\| 同样忽略', () => {
         expect(plain('甲<乙\\|丙>')).toBe('甲（乙丙）');
     });
     it('夹注外的 | 按字面', () => {
@@ -173,7 +172,7 @@ describe('零回归：不启用时与改前逐字一致', () => {
         '太子□{guess=即}位',
         '子曰<孔子也|魯人>',
         '甲<注<再注>>乙',
-        '張敷華⟨字缺⟩介軒集<注>',
+        '張敷華<字缺>介軒集<注>',
     ];
     it.each(samples)('%s', (s) => {
         const a = html(renderInterlinear(s)).innerHTML;
@@ -185,7 +184,7 @@ describe('零回归：不启用时与改前逐字一致', () => {
         expect(a).not.toMatch(/bim-(zi|qw|qz)/);
     });
     it('启用但文本不含任何新写法：输出与不启用逐字一致', () => {
-        const s = '子曰<孔子也>：學而時習之⟨悅也⟩。';
+        const s = '子曰<孔子也>：學而時習之<悅也>。';
         expect(html(renderInterlinear(s, undefined, ON)).innerHTML).toBe(html(renderInterlinear(s)).innerHTML);
         expect(mayHaveGujiInline('無記號正文')).toBe(false);
     });
@@ -293,9 +292,8 @@ describe('夹注长度上限（spec §0.4）', () => {
         const o = { jzMaxLength: 3 };
         expect(gujiInlineToPlain(parseGujiInline('<甲乙丙丁<戊>>', o))).toBe('<甲乙丙丁（戊）>');
     });
-    it('旧 ⟨…⟩ 不设限', () => {
-        const long = '甲'.repeat(5000);
-        expect(plain(`⟨${long}⟩`)).toBe(`（${long}）`);
+    it('旧 ⟨…⟩ 已退役：按字面，不成夹注', () => {
+        expect(plain('甲⟨乙⟩丙')).toBe('甲⟨乙⟩丙');
     });
     it('渲染：选项 jzMaxLength 透传', () => {
         const c = html(renderInterlinear('子曰<孔子也字仲尼>', undefined, { gujiMarkdown: true, jzMaxLength: 3 }));
