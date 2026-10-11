@@ -1,6 +1,6 @@
 /**
  * 阅读页右栏「条目」清单（JuanRail）标题里的夹注标记（overview#546）：
- * `<…>` 与 `⟨…⟩` 都按夹注渲染（小字淡色、括号不见）；没有夹注的标题逐字不变。
+ * `<…>` 按夹注渲染（小字淡色、括号不见；旧 `⟨…⟩` 已退役）；没有夹注的标题逐字不变。
  */
 import React from 'react';
 import { describe, expect, it } from 'vitest';
@@ -21,13 +21,13 @@ const mount = (titles: string[]) =>
     );
 
 describe('JuanRail 条目清单：夹注标记', () => {
-    it('⟨…⟩ 与 <…> 都出夹注节点，文字里没有字面括号', () => {
-        const { container } = mount(['《易杜秘林⟨一作“林秘”⟩》', '《法易<一作“易法”>》']);
+    it('<…> 出夹注节点，文字里没有字面括号', () => {
+        const { container } = mount(['《易杜秘林<一作“林秘”>》', '《法易<一作“易法”>》']);
         const items = [...container.querySelectorAll('.bim-rd-rail-list li a')];
         expect(items).toHaveLength(2);
         for (const a of items) {
             expect(a.querySelectorAll('.bim-jiazhu')).toHaveLength(1);
-            expect(a.textContent).not.toMatch(/[⟨⟩<>]/);
+            expect(a.textContent).not.toMatch(/[<>]/);
         }
         expect(items[0].textContent).toBe('《易杜秘林一作“林秘”》');
         expect(items[0].querySelector('.bim-jiazhu')!.textContent).toBe('一作“林秘”');
@@ -42,7 +42,7 @@ describe('JuanRail 条目清单：夹注标记', () => {
     });
 
     it('book_title 优先于 title，同样走夹注渲染', () => {
-        const j = { title: '類', sections: [{ title: '易', book_title: '易杜秘林⟨一作“林秘”⟩', type: 'book' }] } as never;
+        const j = { title: '類', sections: [{ title: '易', book_title: '易杜秘林<一作“林秘”>', type: 'book' }] } as never;
         const { container } = render(
             <LocaleProvider locale="zh-Hant"><JuanRail juan={j} view="text" onView={() => {}} textHasEntries /></LocaleProvider>,
         );

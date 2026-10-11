@@ -63,10 +63,10 @@ describe('自然段：夹注照常小字、不露记号', () => {
         expect(line.querySelectorAll('p').length).toBeGreaterThan(5);
     });
 
-    it('语录/经传体（⟨…⟩ 与 <…> 混排）', () => {
-        const text = '## 隱公元年\n元年春，王正月。⟨元年者何？君之始年也。⟩\n\n三月，公及邾婁儀父盟于眛。<及者何？與也。>';
+    it('语录/经传体（<…> 夹注）', () => {
+        const text = '## 隱公元年\n元年春，王正月。<元年者何？君之始年也。>\n\n三月，公及邾婁儀父盟于眛。<及者何？與也。>';
         const c = mount(<ReaderMdText text={text} mode="paragraph" />);
-        expect(c.textContent).not.toMatch(/[<>⟨⟩]/);
+        expect(c.textContent).not.toMatch(/[<>]/);
         expect(c.querySelectorAll('.bim-jiazhu')).toHaveLength(2);
     });
 });

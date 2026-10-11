@@ -17,7 +17,7 @@
  * - 跨 n 列：`内容{n}`；跨 r 行：`内容^r`，两者可合写 `内容{n}^r`（`_` 也可带，如 `_^3`）；
  * - 被上方跨行格占住的位置写一个光秃秃的 `^`（续格），**每占一列写一个**，
  *   故每行的格数（含续格、按 colspan 计）应等于总列数；
- * - 格内夹注 `<…>`／`⟨…⟩` 原样留在 `text` 里，由渲染层交给 `renderInterlinear`。
+ * - 格内夹注 `<…>` 原样留在 `text` 里，由渲染层交给 `renderInterlinear`。
  *
  * 只有全文 `index.json` 顶层带 `"table_notation": "guji-table-v1"` 的书才启用（见
  * `hasGujiTableNotation`）；未带标记的书一概不解析，原样渲染，零回归。
@@ -68,7 +68,7 @@ const OPEN_RE = /^:::table(?:\{[^}]*\})?[ \t]*$/;
 const CLOSE_RE = /^:::[ \t]*$/;
 
 /**
- * 按 `|` 切格，但不切夹注 `<…>`／`⟨…⟩` 与组字 `:zi[…]` 里面的 `|`。
+ * 按 `|` 切格，但不切夹注 `<…>` 与组字 `:zi[…]` 里面的 `|`。
  * `<` 的生效条件与 `scanJiazhu` 相同（其后不是 ASCII 字母、`/`、`!`、`?`、`>`、空白），
  * 且须在本行内闭合，否则按字面。
  * `:zi[…]` 的方括号按 `guji-inline` 的 `matchZi` 配对（计数嵌套、`\` 转义跳过）；
@@ -88,8 +88,7 @@ export function splitTableRow(line: string): string[] {
             }
         }
         let close: string | null = null;
-        if (ch === '⟨') close = '⟩';
-        else if (ch === '<') {
+        if (ch === '<') {
             const nxt = line[i + 1];
             if (nxt !== undefined && !/[A-Za-z/!?>\s]/.test(nxt)) close = '>';
         }

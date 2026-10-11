@@ -37,7 +37,7 @@ export type GujiInlineNode =
 export const JZ_MAX_LENGTH = 65536;
 
 export interface GujiInlineOptions {
-    /** 夹注内容长度上限；缺省 `JZ_MAX_LENGTH`。只管 `<…>`，旧 `⟨…⟩` 不设限 */
+    /** 夹注内容长度上限；缺省 `JZ_MAX_LENGTH`。只管 `<…>` */
     jzMaxLength?: number;
 }
 
@@ -164,12 +164,11 @@ function parseSeq(s: string, i: number, close: string | null, inJz: boolean, jzM
             continue;
         }
         let jzClose: string | null = null;
-        if (ch === '⟨') jzClose = '⟩';
-        else if (ch === '<' && jzOpens(s, i)) jzClose = '>';
+        if (ch === '<' && jzOpens(s, i)) jzClose = '>';
         if (jzClose) {
             const inner = parseSeq(s, i + 1, jzClose, true, jzMax);
-            // §0.4：`<…>` 内容超长视为未闭合，`<` 按字面（⟨…⟩ 是旧写法，不设限）
-            if (inner && !(ch === '<' && inner.end - (i + 1) > jzMax)) {
+            // §0.4：`<…>` 内容超长视为未闭合，`<` 按字面
+            if (inner && !(inner.end - (i + 1) > jzMax)) {
                 flush();
                 nodes.push({ type: 'jz', children: inner.nodes });
                 i = inner.end + 1;
@@ -191,7 +190,7 @@ export function parseGujiInline(text: string, opts?: GujiInlineOptions): GujiInl
 
 /** 文本里是否可能含本模块认得的记号（快速路径：一个都没有就原样输出） */
 export function mayHaveGujiInline(text: string): boolean {
-    return /[<⟨□]|\[\[|:zi\[/.test(text);
+    return /[<□]|\[\[|:zi\[/.test(text);
 }
 
 /**

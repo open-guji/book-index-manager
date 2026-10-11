@@ -1,6 +1,6 @@
 /**
  * overview#516 W-B：读者对所有版本按 guji-markdown v0.2 宽松解析（spec 03 §2.1），不再看 `guji_markdown` 声明。
- * 夹注内 `|` 分行、嵌套夹注、旧 `⟨…⟩` 夹注；声明与否渲染逐字节一致。
+ * 夹注内 `|` 分行、嵌套夹注（旧 `⟨…⟩` 已退役）；声明与否渲染逐字节一致。
  */
 import React from 'react';
 import { describe, expect, it, afterEach } from 'vitest';
@@ -18,11 +18,10 @@ async function article(md: string, index: Record<string, unknown> = {}) {
     return container.querySelector('article')!;
 }
 
-// 缩自真实写法：汉志式 <a|b>、嵌套夹注、旧 ⟨⟩
+// 缩自真实写法：汉志式 <a|b>、嵌套夹注
 const CASES = {
     pipe: '## 卷一\n\n易經十二篇。<施孟梁丘三家|經文與費氏同>\n',
     nested: '## 卷一\n\n周易古經十二篇。<注一<再注>後>\n',
-    legacy: '## 卷一\n\n張敷華介軒集⟨字缺安福人⟩\n',
 };
 
 describe('未声明 guji_markdown 的版本', () => {
@@ -40,14 +39,6 @@ describe('未声明 guji_markdown 的版本', () => {
         expect(outer.textContent).toBe('注一再注後');
         expect(outer.querySelectorAll('.bim-jiazhu')).toHaveLength(1);
         expect(a.textContent).not.toMatch(/[<>]/);
-    });
-
-    it('旧 ⟨…⟩ 夹注分支保留', async () => {
-        const a = await article(CASES.legacy);
-        const jz = a.querySelectorAll('.bim-jiazhu');
-        expect(jz).toHaveLength(1);
-        expect(jz[0].textContent).toBe('字缺安福人');
-        expect(a.textContent).not.toMatch(/[⟨⟩]/);
     });
 
     it('没有记号的正文不受影响（<div>、<https://…> 不当夹注）', async () => {
