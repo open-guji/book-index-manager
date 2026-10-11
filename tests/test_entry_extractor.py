@@ -112,11 +112,12 @@ def test_resource_flags_new_format():
     assert r == {"has_text": True, "has_image": True}
 
 
-def test_resource_flags_ignores_old_single_type():
+def test_resource_flags_old_format():
+    # guji-platform 仍写旧 type，见 overview#544；待其改写 types 后连同旧分支一起删
     r = _extract_resource_flags({
         "resources": [{"type": "text+image"}]
     })
-    assert r == {"has_text": False, "has_image": False}
+    assert r == {"has_text": True, "has_image": True}
 
 
 def test_resource_flags_only_text():
