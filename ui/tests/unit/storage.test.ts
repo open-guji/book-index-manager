@@ -285,6 +285,35 @@ describe('BookIndexStorage 索引 shard', () => {
         expect(entries[0].has_image).toBe(true);
     });
 
+    // loadEntries 不透出 promoted_to，直接看落盘的 shard 索引
+    const promotedInShards = (fs: InMemoryFS): Record<string, string | undefined> => {
+        const out: Record<string, string | undefined> = {};
+        for (const [p, text] of fs.files) {
+            if (!/\/index\/works\//.test(p)) continue;
+            for (const e of Object.values<any>(JSON.parse(text))) out[e.title] = e.promoted_to;
+        }
+        return out;
+    };
+
+    it('promoted_to 只认条目档上的 `_promoted_to`；无前缀旧名不再兼容（overview#544）', async () => {
+        const { storage: st, fs } = makeStorage();
+        await st.saveItem('work', WORK_ID_SHIJI, { title: '史記', _promoted_to: 'PROD1' });
+        await st.saveItem('work', WORK_ID_HAN, { title: '漢書', promoted_to: 'PROD2' });
+        const got = promotedInShards(fs);
+        expect(got['史記']).toBe('PROD1');
+        expect(got['漢書']).toBeUndefined();
+    });
+
+    it('rebuildIndex 同样只认 `_promoted_to`', async () => {
+        const { storage: st, fs } = makeStorage();
+        await fs.writeFile(`/ws/book-index-draft/Work/1/e/u/${WORK_ID_SHIJI}-史記.json`, JSON.stringify({ id: WORK_ID_SHIJI, title: '史記', type: 'work', _promoted_to: 'P1' }));
+        await fs.writeFile(`/ws/book-index-draft/Work/1/e/v/${WORK_ID_HAN}-漢書.json`, JSON.stringify({ id: WORK_ID_HAN, title: '漢書', type: 'work', promoted_to: 'P2' }));
+        await st.rebuildIndex('draft');
+        const got = promotedInShards(fs);
+        expect(got['史記']).toBe('P1');
+        expect(got['漢書']).toBeUndefined();
+    });
+
     it('searchEntries 用 rankByRelevance 排序（标题完全匹配 > 部分匹配）', async () => {
         await storage.saveItem('work', WORK_ID_SHIJI, { title: '史記' });
         await storage.saveItem('work', WORK_ID_HAN, { title: '漢書·藝文志' });

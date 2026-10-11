@@ -327,10 +327,8 @@ export class BookIndexStorage {
         if (workId) entry.work_id = workId;
         // 条目档上是 `_promoted_to`（派生栏带底线前缀，SCHEMA.md §記錄之共通欄位）；
         // index 侧不加底线——整个 index 文件都是派生产物，栏再加底线是重复。
-        // 兼容尚未迁移的无前缀旧名。
-        const promotedTo = typeof metadata._promoted_to === 'string'
-            ? metadata._promoted_to
-            : (typeof metadata.promoted_to === 'string' ? metadata.promoted_to : '');
+        // 无前缀旧名 `promoted_to` 的兼容已删（overview#544）。
+        const promotedTo = typeof metadata._promoted_to === 'string' ? metadata._promoted_to : '';
         if (promotedTo) entry.promoted_to = promotedTo;
 
         shardData[idStr] = entry;
@@ -585,9 +583,7 @@ export class BookIndexStorage {
                     if (originalTitle) entry.original_title = originalTitle;
                     const workId = typeof metadata.work_id === 'string' ? metadata.work_id : '';
                     if (workId) entry.work_id = workId;
-                    const promotedTo = typeof metadata._promoted_to === 'string'
-                        ? metadata._promoted_to
-                        : (typeof metadata.promoted_to === 'string' ? metadata.promoted_to : '');
+                    const promotedTo = typeof metadata._promoted_to === 'string' ? metadata._promoted_to : '';
                     if (promotedTo) entry.promoted_to = promotedTo;
 
                     const shardNum = typeKey === 'collections' ? 0 : shardOf(idStr);
