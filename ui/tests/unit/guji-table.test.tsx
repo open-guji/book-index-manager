@@ -137,7 +137,7 @@ describe('parseGujiTable 规则', () => {
     });
 
     it('夹注里的 | 不切格', () => {
-        expect(splitTableRow('甲<注|文> | 乙⟨又|注⟩')).toEqual(['甲<注|文>', '乙⟨又|注⟩']);
+        expect(splitTableRow('甲<注|文> | 乙<又|注>')).toEqual(['甲<注|文>', '乙<又|注>']);
         // 不生效的 `<`（后跟字母）照字面，其后的 | 照切
         expect(splitTableRow('a<b | c>')).toEqual(['a<b', 'c>']);
     });

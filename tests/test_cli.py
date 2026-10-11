@@ -245,18 +245,11 @@ def test_check_index(monkeypatch, capsys, root):
     assert code == 0
 
 
-# ─── validate-lineage / migrate ───
+# ─── validate-lineage ───
 
 def test_validate_lineage_empty(monkeypatch, capsys, root):
     _, _, code = run_cli(monkeypatch, capsys,
                           "validate-lineage", "--target", "draft", "--root", root)
-    assert code == 0
-
-
-def test_migrate_dry_run(monkeypatch, capsys, root):
-    run_cli(monkeypatch, capsys, "draft", "old", "--type", "book", "--root", root)
-    _, _, code = run_cli(monkeypatch, capsys,
-                          "migrate", "--target", "draft", "--dry-run", "--root", root)
     assert code == 0
 
 
@@ -409,7 +402,7 @@ def test_validate_promotions_reports_issues(monkeypatch, capsys, root, tmp_path)
     assert work_files
     p = work_files[0]
     data = json.loads(p.read_text(encoding="utf-8"))
-    data["promoted_to"] = "fakefakefake1"
+    data["_promoted_to"] = "fakefakefake1"
     p.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
     out, _, code = run_cli(monkeypatch, capsys, "validate-promotions", "--root", root)

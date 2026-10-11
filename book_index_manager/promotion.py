@@ -24,7 +24,6 @@ from .id_generator import (
 )
 from .exceptions import BookIndexError
 from ._utils import (
-    has_legacy_promotion_keys,
     read_promoted_to,
     strip_promotion_marks,
 )
@@ -942,17 +941,6 @@ def validate_promotions(storage) -> List[PromotionIssue]:
             promoted_to = read_promoted_to(data)
             if not promoted_to:
                 continue
-            if has_legacy_promotion_keys(data):
-                issues.append(PromotionIssue(
-                    severity="warning", code="E06",
-                    draft_id=data.get("id", ""), production_id=promoted_to,
-                    path=str(json_file),
-                    message=(
-                        f"Tombstone {data.get('id', '')} still uses un-prefixed "
-                        f"promoted_to/promoted_at; derived fields take the `_` prefix "
-                        f"(SCHEMA.md §記錄之共通欄位)"
-                    ),
-                ))
             file_id = data.get("id", "")
             rec = records.get(file_id)
             if rec is None:

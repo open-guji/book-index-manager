@@ -2,8 +2,7 @@
  * 实体标注样式（class 前缀 bim-et-）。颜色一律走 --bim-*，跟随详情页 / 阅读器主题。
  *
  * - 书名（work）：波浪线，与阅读器 `.bim-rd-pn` 同一画法（书名号样式）；
- * - 地名（place）：双线（`3px double`）；
- * - 人名、官职、朝代等：单线专名线；
+ * - 人名、地名、官职、朝代等：单线专名线（地名原为双线，overview#503 改成正常单横线）；
  * - 已收录的实体是链接，悬停 / 聚焦时线条转朱色并弹出摘要卡。
  */
 import { bim } from '../../styles/tokens';
@@ -17,9 +16,8 @@ export const ENTITY_TEXT_CSS = `
   text-decoration-skip-ink: none;
 }
 .bim-et-work { text-decoration-style: wavy; }
-.bim-et-people, .bim-et-office, .bim-et-dynasty, .bim-et-reign, .bim-et-other { text-decoration-style: solid; }
+.bim-et-people, .bim-et-place, .bim-et-office, .bim-et-dynasty, .bim-et-reign, .bim-et-other { text-decoration-style: solid; }
 .bim-et-nu, a.bim-et-nu:hover, a.bim-et-nu:focus-visible { text-decoration-line: none; }
-.bim-et-place { text-decoration-style: double; text-decoration-thickness: 3px; }
 a.bim-et { cursor: pointer; }
 a.bim-et:hover, a.bim-et:focus-visible, .bim-et-w[data-active] > .bim-et { color: ${bim('accent')}; text-decoration-color: ${bim('accent')}; }
 a.bim-et:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: 2px; border-radius: 2px; }

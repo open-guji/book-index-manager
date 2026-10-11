@@ -760,12 +760,10 @@ export function ExpandRow({ open, onToggle, main, action, children }: {
 }
 
 /**
- * 夾注渲染：把 `⟨…⟩` 之內作小字淡色，如古籍排印之小字雙行。
+ * 夾注渲染：把 `<…>` 之內作小字淡色，如古籍排印之小字雙行。
  *
- * 本庫整理本以 `⟨…⟩` 標夾注（見 collate-bibliography SKILL），2026-09-05
- * 已將《宋史藝文志》之 `（（…））` 與《書目答問》之 `{{…}}` 一併歸此。
- * 在此之前網站是**直出標記**的——《史記》頁上「書目答問」條顯示成
- * `…一百三十卷。{{武昌局本，間有依明柯校汪刻本者…}}`。
+ * 本庫整理本以 `<…>` 標夾注（`guji-markdown` spec §1）。舊記法 `⟨…⟩` 已於
+ * 2026-10-11 退役（庫中零命中，overview#525 W‑H），本函數不再認。
  *
  * 不留尖括號：小字加淡色已足以別於正文，此亦 ctext 等古籍站之通例；
  * 留著反而在正文裡多兩個現代符號。
@@ -774,14 +772,8 @@ export function ExpandRow({ open, onToggle, main, action, children }: {
  * 預設原樣返回。**注文與正文分段各過一次 renderText**，故高亮在注裡也管用。
  */
 /**
- * 掃出一行文本裡的夾注，兩種記法都認：
- *
- *   `⟨…⟩`  庫中存量的舊記法（2026-09 之前所有整理本）
- *   `<…>`  `guji-markdown` spec §1 的正規記法（新格式整理本，如 2026-09-14 並入的《漢書藝文志》）
- *
- * **兩種必須並存**：用戶 2026-09-14 定「不做全面返工，逐本隨整理自然轉」，
- * 存量與新本會長期同時在庫裡，UI 只認一種就會把另一種當正文直出
- * （改之前線上正是如此：汉志已換 `<…>`，本函數只認 `⟨…⟩`）。
+ * 掃出一行文本裡的夾注，只認 `guji-markdown` spec §1 的正規記法 `<…>`。
+ * （舊記法 `⟨…⟩` 已於 2026-10-11 退役：庫中零命中，overview#525 W‑H。）
  *
  * `<` 的生效條件照 spec §1 表：其後不得是 ASCII 字母、`/`、`!`、`?`、`>`、空白
  * ——藉此避開 `<div>`、`</div>`、`<!-- -->`、`<?…`、自動連結 `<https://…>`。
@@ -791,23 +783,16 @@ function scanJiazhu(text: string): { start: number; end: number; inner: string }
     const out: { start: number; end: number; inner: string }[] = [];
     for (let i = 0; i < text.length; i++) {
         const ch = text[i];
-        let close: string;
-        if (ch === '\u27e8') {
-            close = '\u27e9';
-        } else if (ch === '<') {
-            const nxt = text[i + 1];
-            // spec §1 生效條件 2
-            if (nxt === undefined || /[A-Za-z/!?>\s]/.test(nxt)) continue;
-            close = '>';
-        } else {
-            continue;
-        }
+        if (ch !== '<') continue;
+        const nxt = text[i + 1];
+        // spec §1 生效條件 2
+        if (nxt === undefined || /[A-Za-z/!?>\s]/.test(nxt)) continue;
+        const close = '>';
         const j = text.indexOf(close, i + 1);
         if (j < 0) continue;                                  // 未閉合 → 按字面（spec §0.3）
         const inner = text.slice(i + 1, j);
         // 跨行不算（spec §0.2 起止記號須同行）。
-        // ⚠️ **空內容照舊消掉**——`⟨⟩` 的既有行為如此（見單測「空注 ⟨⟩ 不炸」），
-        // 不因引入新記法而改動存量行為；`<>` 另由生效條件 2 擋掉（`<` 後為 `>`）。
+        // `<>` 由生效條件 2 擋掉（`<` 後為 `>`）。
         if (inner.includes('\n')) continue;
         out.push({ start: i, end: j + 1, inner });
         i = j;
@@ -914,7 +899,7 @@ export function renderInterlinear(
         if (!mayHaveGujiInline(text)) return renderText(text);
         return renderGujiNodes(parseGujiInline(text, { jzMaxLength: opts.jzMaxLength }), renderText, 0, opts.t ?? getT('zh-Hant'));
     }
-    if (text.indexOf('\u27e8') < 0 && text.indexOf('<') < 0) return renderText(text);
+    if (text.indexOf('<') < 0) return renderText(text);
     const out: React.ReactNode[] = [];
     let last = 0;
     let k = 0;

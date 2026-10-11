@@ -663,6 +663,10 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     const subtitleNode = (typeof subtitle === 'string' ? convert(subtitle) : subtitle)
         ?? (originalVersion ? undefined : (sourceNameShown ?? convert(textVersionLabel(version))));
 
+    // 「原字」档只有自校文本可选（章条目声明了 norm_file，web 在对读数据里带 hasNorm）；外来文本置灰（overview#540）。
+    // 置灰只是不让「选择」原字：存档里已经是 orig 的读者，按钮仍显示按下、正文也确实是原字，状态一致，点「繁」「简」即可离开。
+    const origAvailable = warpData?.hasNorm === true;
+
     return (
         <ReaderShell
             className={className}
@@ -807,6 +811,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             versionSource
             paragraphToggle={canParagraphize(md)}
             allowVertical={allowVertical}
+            origScriptAvailable={origAvailable}
         >
             {/* 对读章没有 .txt：getChapter 先 404→null，对读数据（char／cord）还在路上时不是失败，是加载中（overview#513） */}
             {(contentLoading || (warpLoading && !warpData && !structured && body == null)) && <LoadingDots />}

@@ -1,6 +1,6 @@
 {
   "name": "book-index-ui",
-  "version": "0.53.0",
+  "version": "0.54.2",
   "description": "React components for browsing and editing ancient book index metadata",
   "author": "Li Shaodong",
   "repository": {
@@ -59,7 +59,8 @@
     "test:ui": "vitest --ui",
     "test:e2e": "playwright test",
     "test:e2e:mobile": "playwright test --project=mobile",
-    "test:cls": "node tests/cls/measure.mjs"
+    "test:cls": "node tests/cls/measure.mjs",
+    "test:layout": "playwright test -c tests/layout/playwright.config.ts"
   },
   "peerDependencies": {
     "@dagrejs/dagre": ">=1.0.0",

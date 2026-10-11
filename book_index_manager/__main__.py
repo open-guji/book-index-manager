@@ -15,7 +15,6 @@ from .manager import BookIndexManager
 from .config import AppConfig
 from .logger import setup_logger, logger
 from .exceptions import BookIndexError
-from .migration import migrate_directory
 from ._utils import read_promoted_to
 
 
@@ -742,28 +741,6 @@ class CLIHandler:
             w.writerow(["id", "type", "field", "error"])
             w.writerows(rows)
 
-    def handle_migrate(self):
-        from pathlib import Path
-        target = self.args.target
-        dry_run = self.args.dry_run
-
-        roots = []
-        if target in ["draft", "all"]:
-            roots.append(self.manager.storage.draft_root)
-        if target in ["official", "all"]:
-            roots.append(self.manager.storage.official_root)
-
-        total_files = 0
-        total_migrated = 0
-        for root in roots:
-            count, migrated = migrate_directory(root, dry_run=dry_run)
-            total_files += count
-            total_migrated += migrated
-            print(f"{root.name}: {migrated}/{count} files {'would be ' if dry_run else ''}migrated")
-
-        prefix = "[dry-run] " if dry_run else ""
-        print(f"\n{prefix}Total: {total_migrated}/{total_files} files migrated")
-
 
 def main():
     parent_parser = argparse.ArgumentParser(add_help=False)
@@ -934,12 +911,6 @@ def main():
     p.add_argument("--target", choices=["official", "draft", "all"], default="all")
     p.add_argument("--output", default=None, help="CSV 输出路径（缺省输出到 stdout）")
 
-    # migrate
-    p = subparsers.add_parser("migrate", parents=[parent_parser],
-                              help="Migrate old text_resources/image_resources to unified resources")
-    p.add_argument("--target", choices=["official", "draft", "all"], default="all")
-    p.add_argument("--dry-run", action="store_true", help="Preview changes without writing")
-
     args = parser.parse_args()
     if not args.command:
         parser.print_help()
@@ -962,7 +933,6 @@ def main():
             "add-resource": handler.handle_add_resource,
             "check-index": handler.handle_check_index,
             "validate-lineage": handler.handle_validate_lineage,
-            "migrate": handler.handle_migrate,
             "scan-fields": handler.handle_scan_fields,
             "promote": handler.handle_promote,
             "validate-promotions": handler.handle_validate_promotions,

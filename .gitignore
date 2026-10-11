@@ -13,3 +13,4 @@ book_index_manager/_version.py
 .coverage
 coverage/
 ui/coverage/
+ui/tests/layout/test-results/

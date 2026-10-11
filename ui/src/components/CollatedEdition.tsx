@@ -1443,7 +1443,7 @@ export function JuanRail({ juan, view, onView, textHasEntries }: {
                         <li key={i}>
                             <a href={`#rd-e-${i}`} onClick={e => { e.preventDefault(); jump(i); }}>
                                 <span className={`bim-rd-rail-dot${s.work_id ? ' on' : ''}`} aria-hidden="true" />
-                                <span>{convert(s.book_title || s.title)}</span>
+                                <span>{renderReaderInline(convert(s.book_title || s.title), { t })}</span>
                             </a>
                         </li>
                     ))}

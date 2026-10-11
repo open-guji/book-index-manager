@@ -19,7 +19,7 @@
  * （即 `buildParagraphBlocks` 与「分行」模式产出一致的逐行分块，不合并）。
  * 整行粗体（整理本的条目名）与 `#` 标题同样分节；一章里夹着的散文小节照分行排。
  *
- * 夹注安全：本文件只做字符串拼接，`<…>`／`⟨…⟩` 的扫描与渲染交给调用方
+ * 夹注安全：本文件只做字符串拼接，`<…>` 的扫描与渲染交给调用方
  * （`detail/primitives.tsx` 的 `renderInterlinear`）在拼好的整段字符串上
  * 统一处理——不对拼好的 React 节点二次拼接，跨条边界不会把夾注切两半
  * （夹注起止须同行，`\n`／`　` 都不会跨行，安全）。
@@ -77,7 +77,7 @@ function looksLikeProse(text: string): boolean {
     for (const raw of text.split('\n')) {
         const l = raw.trim();
         if (!l || PAGE_COMMENT_RE.test(l) || matchHeading(l)) continue;
-        const n = l.replace(/<[^<>\n]*>|\u27e8[^\u27e9\n]*\u27e9/g, '').replace(/\s/g, '').length;
+        const n = l.replace(/<[^<>\n]*>/g, '').replace(/\s/g, '').length;
         total += n;
         if (n > PROSE_LINE_CHARS) long += n;
     }

@@ -8,7 +8,6 @@ from typing import Optional, Dict, List, Any
 from .id_generator import BookIndexType, BookIndexStatus, BookIndexIdGenerator, base36_encode, base36_decode, smart_decode
 from .logger import logger
 from .exceptions import StorageError
-from .migration import migrate_metadata
 from .entry_extractor import build_index_entry, build_entity_index_entry
 from .revision_fields import needs_bump
 
@@ -337,12 +336,6 @@ class BookIndexStorage:
         两库约 25.6 万条记录顶层中文键实测为 0，代码内无产生中文键的调用方；
         旧实现会写回 role:"author"、字符串形 contained_in、占位 0／空串（legacy.md §五）。
         """
-        # Migrate old English key: volume_count → juan_count
-        if "volume_count" in metadata and "juan_count" not in metadata:
-            metadata["juan_count"] = metadata.pop("volume_count")
-
-        # Migrate old text_resources/image_resources → unified resources
-        migrate_metadata(metadata)
 
     def update_index_entry(self, root: Path, metadata: dict, type_val: BookIndexType, relative_path: str):
         id_str = metadata.get("id") or metadata.get("ID")
