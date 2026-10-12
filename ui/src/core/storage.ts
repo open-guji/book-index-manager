@@ -57,8 +57,8 @@ export interface IndexFileEntry {
     title: string;
     type: string;
     path: string;
-    author: string;
-    holder: string;
+    author?: string;
+    holder?: string;
     /** 撰人朝代（authors[] 中第一个有朝代者，顶层 dynasty 兜底）——不是刊刻朝代 */
     dynasty?: string;
     /**
@@ -118,6 +118,172 @@ export function firstAuthorDynasty(authors: unknown): string {
         }
     }
     return '';
+}
+
+/**
+ * metadata → index 条目（纯函数）。saveItem 与 rebuildIndex 共用这一份；此前两处各内联一份，
+ * 改一处漏一处（period／loss_status 等就这么丢过）。
+ * 与 Python 端 entry_extractor.build_index_entry 的对拍见 tests/golden/entries.json
+ * （pytest 与 vitest 读同一份，overview#568 B4）。
+ */
+export function buildIndexEntry(
+    metadata: Record<string, unknown>, type: IndexType, relativePath: string,
+): IndexFileEntry {
+    const idStr = (metadata.id as string) || '';
+    // 提取 author / dynasty / role
+    // dynasty（撰人朝代）取 authors[] 中第一个有朝代的作者、顶层字段兜底：
+    // 出土文献按设计 authors 为空而顶层有 dynasty；首位作者朝代空而后位有者也要取到
+    // （overview#496 §六-1）。与 Python 端 entry_extractor.build_index_entry、
+    // book-index build_derived.index_entry 保持一致。注意与卡片 dyn（成书朝代）不同。
+    let author = '';
+    let dynasty = '';
+    let role = '';
+    const authors = metadata.authors;
+    if (Array.isArray(authors) && authors.length > 0) {
+        const first = authors[0];
+        if (typeof first === 'object' && first !== null) {
+            author = (first as any).name || '';
+            role = (first as any).role || '';
+        } else {
+            author = String(first);
+        }
+    } else if (typeof authors === 'string') {
+        author = authors;
+    }
+    dynasty = firstAuthorDynasty(authors) || (typeof metadata.dynasty === 'string' ? metadata.dynasty : '');
+
+    // publication_info.year 不再进索引：它是自由文本，IndexEntry 运行时类型
+    // 从不读它，搜索分片也不带——零消费者。刊刻年代改投影 dating（datingProjection）。
+
+    // 提取 holder
+    let holder = '';
+    const loc = metadata.current_location;
+    if (typeof loc === 'object' && loc !== null) {
+        holder = (loc as any).name || '';
+    } else if (typeof loc === 'string') {
+        holder = loc;
+    }
+
+    // 提取 additional_titles（Work 别名，兼容 string 和 {book_title} 两种格式）
+    const additionalTitles = Array.isArray(metadata.additional_titles)
+        ? (metadata.additional_titles as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
+        : undefined;
+
+    // 提取 attached_texts（Book 附载篇目，兼容 string 和 {book_title} 两种格式）
+    const attachedTexts = Array.isArray(metadata.attached_texts)
+        ? (metadata.attached_texts as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
+        : undefined;
+
+    // 提取 juan_count
+    let juanCount: number | undefined;
+    const jc = metadata.juan_count;
+    if (typeof jc === 'number') {
+        juanCount = jc;
+    } else if (typeof jc === 'object' && jc !== null) {
+        juanCount = (jc as any).number || undefined;
+    }
+
+    // 提取 measure_info（UI 展示用計量文本）
+    const measureInfo = typeof metadata.measure_info === 'string' ? metadata.measure_info : '';
+
+    // 提取资源类型标记（只认 types 数组）
+    let hasText = false;
+    let hasImage = false;
+    const resources = metadata.resources;
+    if (Array.isArray(resources)) {
+        for (const r of resources) {
+            if (typeof r !== 'object' || r === null) continue;
+            const types = (r as any).types;
+            if (Array.isArray(types)) {
+                if (types.includes('text')) hasText = true;
+                if (types.includes('image')) hasImage = true;
+            }
+        }
+    }
+
+    // 空的 author／holder 不写（与 Python 端一致：可选字段仅当有值时出现）
+    const entry: IndexFileEntry = {
+        id: idStr,
+        title: (metadata.title as string) || '未命名',
+        type: TYPE_TO_FOLDER[type],
+        path: relativePath,
+        ...datingProjection(metadata),
+    };
+    if (author) entry.author = author;
+    if (holder) entry.holder = holder;
+    if (additionalTitles && additionalTitles.length > 0) entry.additional_titles = additionalTitles;
+    if (attachedTexts && attachedTexts.length > 0) entry.attached_texts = attachedTexts;
+    if (juanCount) entry.juan_count = juanCount;
+    if (measureInfo) entry.measure_info = measureInfo;
+    const edition = typeof metadata.edition === 'string' ? metadata.edition : '';
+    if (edition) entry.edition = edition;
+    if (hasText) entry.has_text = true;
+    if (hasImage) entry.has_image = true;
+    if (dynasty) entry.dynasty = dynasty;
+    if (role) entry.role = role;
+    // 以下与 Python 端 entry_extractor.build_index_entry 对齐——少写一个，
+    // 这一侧每存一次就把该字段从索引里抹掉一次。
+    const subtype = typeof metadata.subtype === 'string' ? metadata.subtype : '';
+    if (subtype) entry.subtype = subtype;
+    const period = typeof metadata.period === 'string' ? metadata.period : '';
+    if (period) entry.period = period;
+    const lossStatus = typeof metadata.loss_status === 'string' ? metadata.loss_status : '';
+    if (lossStatus) entry.loss_status = lossStatus;
+    const originalTitle = typeof metadata.original_title === 'string' ? metadata.original_title : '';
+    if (originalTitle) entry.original_title = originalTitle;
+    const workId = typeof metadata.work_id === 'string' ? metadata.work_id : '';
+    if (workId) entry.work_id = workId;
+    // 条目档上是 `_promoted_to`（派生栏带底线前缀，SCHEMA.md §記錄之共通欄位）；
+    // index 侧不加底线——整个 index 文件都是派生产物，栏再加底线是重复。
+    // 无前缀旧名 `promoted_to` 的兼容已删（overview#544）。
+    const promotedTo = typeof metadata._promoted_to === 'string' ? metadata._promoted_to : '';
+    if (promotedTo) entry.promoted_to = promotedTo;
+
+    return entry;
+}
+
+/** Entity 的 index 条目（形状与 Book／Work／Collection 不同：无 title，有 primary_name）。 */
+export interface EntityIndexFileEntry {
+    id: string;
+    /** 小写 'entity'——与 Python 端一致，其余类型是 'Book'／'Work'／'Collection' */
+    type: 'entity';
+    subtype: string;
+    primary_name: string;
+    path: string;
+    dynasty?: string;
+    birth_year?: number;
+    death_year?: number;
+    cbdb_id?: number;
+    period?: string;
+    promoted_to?: string;
+}
+
+/**
+ * Entity → index 条目（纯函数），与 Python 端 entry_extractor.build_entity_index_entry 对齐。
+ * 生卒年只读 dates.birth／death（index 键名仍是 birth_year／death_year），不带旧顶层字段回退。
+ * 注意：updateIndexEntry／rebuildIndex 目前不写 Entity 分片（typeKey 与 Python 的 index/entities/
+ * 不一致，本包 TS 写路径从未支持 Entity），本函数只为与 Python 对拍、供将来写路径复用。
+ */
+export function buildEntityIndexEntry(metadata: Record<string, unknown>, relativePath: string): EntityIndexFileEntry {
+    const obj = (v: unknown) => (typeof v === 'object' && v !== null ? v : {}) as Record<string, unknown>;
+    const dates = obj(metadata.dates);
+    const external = obj(metadata.external_ids);
+    const subtype = typeof metadata.subtype === 'string' && metadata.subtype ? metadata.subtype : 'people';
+    const entry: EntityIndexFileEntry = {
+        id: (metadata.id as string) || '',
+        type: 'entity',
+        subtype,
+        primary_name: typeof metadata.primary_name === 'string' ? metadata.primary_name : '',
+        path: relativePath,
+    };
+    if (typeof metadata.dynasty === 'string' && metadata.dynasty) entry.dynasty = metadata.dynasty;
+    if (dates.birth != null) entry.birth_year = dates.birth as number;
+    if (dates.death != null) entry.death_year = dates.death as number;
+    if (external.cbdb_id != null) entry.cbdb_id = external.cbdb_id as number;
+    if (typeof metadata.period === 'string' && metadata.period) entry.period = metadata.period;
+    const promotedTo = typeof metadata._promoted_to === 'string' ? metadata._promoted_to : '';
+    if (promotedTo) entry.promoted_to = promotedTo;
+    return entry;
 }
 
 /**
@@ -223,113 +389,7 @@ export class BookIndexStorage {
         const typeKey = `${type}s`;
         const shardData = await this.loadShard(root, typeKey, idStr);
 
-        // 提取 author / dynasty / role
-        // dynasty（撰人朝代）取 authors[] 中第一个有朝代的作者、顶层字段兜底：
-        // 出土文献按设计 authors 为空而顶层有 dynasty；首位作者朝代空而后位有者也要取到
-        // （overview#496 §六-1）。与 Python 端 entry_extractor.build_index_entry、
-        // book-index build_derived.index_entry 保持一致。注意与卡片 dyn（成书朝代）不同。
-        let author = '';
-        let dynasty = '';
-        let role = '';
-        const authors = metadata.authors;
-        if (Array.isArray(authors) && authors.length > 0) {
-            const first = authors[0];
-            if (typeof first === 'object' && first !== null) {
-                author = (first as any).name || '';
-                role = (first as any).role || '';
-            } else {
-                author = String(first);
-            }
-        } else if (typeof authors === 'string') {
-            author = authors;
-        }
-        dynasty = firstAuthorDynasty(authors) || (typeof metadata.dynasty === 'string' ? metadata.dynasty : '');
-
-        // publication_info.year 不再进索引：它是自由文本，IndexEntry 运行时类型
-        // 从不读它，搜索分片也不带——零消费者。刊刻年代改投影 dating（datingProjection）。
-
-        // 提取 holder
-        let holder = '';
-        const loc = metadata.current_location;
-        if (typeof loc === 'object' && loc !== null) {
-            holder = (loc as any).name || '';
-        } else if (typeof loc === 'string') {
-            holder = loc;
-        }
-
-        // 提取 additional_titles（Work 别名，兼容 string 和 {book_title} 两种格式）
-        const additionalTitles = Array.isArray(metadata.additional_titles)
-            ? (metadata.additional_titles as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
-            : undefined;
-
-        // 提取 attached_texts（Book 附载篇目，兼容 string 和 {book_title} 两种格式）
-        const attachedTexts = Array.isArray(metadata.attached_texts)
-            ? (metadata.attached_texts as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
-            : undefined;
-
-        // 提取 juan_count
-        let juanCount: number | undefined;
-        const jc = metadata.juan_count;
-        if (typeof jc === 'number') {
-            juanCount = jc;
-        } else if (typeof jc === 'object' && jc !== null) {
-            juanCount = (jc as any).number || undefined;
-        }
-
-        // 提取 measure_info（UI 展示用計量文本）
-        const measureInfo = typeof metadata.measure_info === 'string' ? metadata.measure_info : '';
-
-        // 提取资源类型标记（只认 types 数组）
-        let hasText = false;
-        let hasImage = false;
-        const resources = metadata.resources;
-        if (Array.isArray(resources)) {
-            for (const r of resources) {
-                if (typeof r !== 'object' || r === null) continue;
-                const types = (r as any).types;
-                if (Array.isArray(types)) {
-                    if (types.includes('text')) hasText = true;
-                    if (types.includes('image')) hasImage = true;
-                }
-            }
-        }
-
-        const entry: IndexFileEntry = {
-            id: idStr,
-            title: (metadata.title as string) || '未命名',
-            type: TYPE_TO_FOLDER[type],
-            path: relativePath,
-            author,
-            holder,
-            ...datingProjection(metadata),
-        };
-        if (additionalTitles && additionalTitles.length > 0) entry.additional_titles = additionalTitles;
-        if (attachedTexts && attachedTexts.length > 0) entry.attached_texts = attachedTexts;
-        if (juanCount) entry.juan_count = juanCount;
-        if (measureInfo) entry.measure_info = measureInfo;
-        const edition = typeof metadata.edition === 'string' ? metadata.edition : '';
-        if (edition) entry.edition = edition;
-        if (hasText) entry.has_text = true;
-        if (hasImage) entry.has_image = true;
-        if (dynasty) entry.dynasty = dynasty;
-        if (role) entry.role = role;
-        // 以下与 Python 端 entry_extractor.build_index_entry 对齐——少写一个，
-        // 这一侧每存一次就把该字段从索引里抹掉一次。
-        const subtype = typeof metadata.subtype === 'string' ? metadata.subtype : '';
-        if (subtype) entry.subtype = subtype;
-        const period = typeof metadata.period === 'string' ? metadata.period : '';
-        if (period) entry.period = period;
-        const lossStatus = typeof metadata.loss_status === 'string' ? metadata.loss_status : '';
-        if (lossStatus) entry.loss_status = lossStatus;
-        const originalTitle = typeof metadata.original_title === 'string' ? metadata.original_title : '';
-        if (originalTitle) entry.original_title = originalTitle;
-        const workId = typeof metadata.work_id === 'string' ? metadata.work_id : '';
-        if (workId) entry.work_id = workId;
-        // 条目档上是 `_promoted_to`（派生栏带底线前缀，SCHEMA.md §記錄之共通欄位）；
-        // index 侧不加底线——整个 index 文件都是派生产物，栏再加底线是重复。
-        // 无前缀旧名 `promoted_to` 的兼容已删（overview#544）。
-        const promotedTo = typeof metadata._promoted_to === 'string' ? metadata._promoted_to : '';
-        if (promotedTo) entry.promoted_to = promotedTo;
+        const entry = buildIndexEntry(metadata, type, relativePath);
 
         shardData[idStr] = entry;
         await this.saveShard(root, typeKey, idStr, shardData);
@@ -504,87 +564,7 @@ export class BookIndexStorage {
 
                     const relPath = file.substring(root.length + 1);
 
-                    let author = '';
-                    let dynasty = '';
-                    let role = '';
-                    const authors = metadata.authors;
-                    if (Array.isArray(authors) && authors.length > 0) {
-                        const first = authors[0];
-                        if (typeof first === 'object' && first !== null) {
-                            author = (first as any).name || '';
-                            role = (first as any).role || '';
-                        } else {
-                            author = String(first);
-                        }
-                    }
-                    dynasty = firstAuthorDynasty(authors) || (typeof metadata.dynasty === 'string' ? metadata.dynasty : '');
-
-                    const additionalTitles = Array.isArray(metadata.additional_titles)
-                        ? (metadata.additional_titles as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
-                        : undefined;
-
-                    const attachedTexts = Array.isArray(metadata.attached_texts)
-                        ? (metadata.attached_texts as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
-                        : undefined;
-
-                    let juanCount: number | undefined;
-                    const jc = metadata.juan_count;
-                    if (typeof jc === 'number') {
-                        juanCount = jc;
-                    } else if (typeof jc === 'object' && jc !== null) {
-                        juanCount = (jc as any).number || undefined;
-                    }
-
-                    const measureInfo = typeof metadata.measure_info === 'string' ? metadata.measure_info : '';
-
-                    let hasText = false;
-                    let hasImage = false;
-                    const resources = metadata.resources;
-                    if (Array.isArray(resources)) {
-                        for (const r of resources) {
-                            if (typeof r !== 'object' || r === null) continue;
-                            const types = (r as any).types;
-                            if (Array.isArray(types)) {
-                                if (types.includes('text')) hasText = true;
-                                if (types.includes('image')) hasImage = true;
-                            }
-                        }
-                    }
-
-                    const entry: IndexFileEntry = {
-                        id: idStr,
-                        title: (metadata.title as string) || '未命名',
-                        type: typeDir,
-                        path: relPath,
-                        author,
-                        holder: typeof metadata.current_location === 'object' ? ((metadata.current_location as any)?.name || '') : '',
-                        ...datingProjection(metadata),
-                    };
-                    if (additionalTitles && additionalTitles.length > 0) entry.additional_titles = additionalTitles;
-                    if (attachedTexts && attachedTexts.length > 0) entry.attached_texts = attachedTexts;
-                    if (juanCount) entry.juan_count = juanCount;
-                    if (measureInfo) entry.measure_info = measureInfo;
-                    const edition = typeof metadata.edition === 'string' ? metadata.edition : '';
-                    if (edition) entry.edition = edition;
-                    if (hasText) entry.has_text = true;
-                    if (hasImage) entry.has_image = true;
-                    if (dynasty) entry.dynasty = dynasty;
-                    if (role) entry.role = role;
-                    // 以下与保存路径（updateIndexEntry）及 Python 端对齐。此前这条重建
-                    // 路径漏了它们——rebuildIndex 一跑，subtype/period/loss_status/
-                    // original_title/work_id/promoted_to 就从索引里整批消失。
-                    const subtype = typeof metadata.subtype === 'string' ? metadata.subtype : '';
-                    if (subtype) entry.subtype = subtype;
-                    const period = typeof metadata.period === 'string' ? metadata.period : '';
-                    if (period) entry.period = period;
-                    const lossStatus = typeof metadata.loss_status === 'string' ? metadata.loss_status : '';
-                    if (lossStatus) entry.loss_status = lossStatus;
-                    const originalTitle = typeof metadata.original_title === 'string' ? metadata.original_title : '';
-                    if (originalTitle) entry.original_title = originalTitle;
-                    const workId = typeof metadata.work_id === 'string' ? metadata.work_id : '';
-                    if (workId) entry.work_id = workId;
-                    const promotedTo = typeof metadata._promoted_to === 'string' ? metadata._promoted_to : '';
-                    if (promotedTo) entry.promoted_to = promotedTo;
+                    const entry = buildIndexEntry({ ...metadata, id: idStr }, type, relPath);
 
                     const shardNum = typeKey === 'collections' ? 0 : shardOf(idStr);
                     shards[typeKey][shardNum][idStr] = entry;
