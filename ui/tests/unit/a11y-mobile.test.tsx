@@ -139,7 +139,7 @@ describe('A1 搜索结果卡片是真链接', () => {
             />,
         );
         const link = await screen.findByRole('link', { name: /史記/ });
-        expect(link).toHaveAttribute('href', '/book-index?id=w1');
+        expect(link).toHaveAttribute('href', '/item/w1');
         const remove = screen.getByRole('button', { name: '移除' });
         expect(link.contains(remove)).toBe(false);
         fireEvent.click(remove);

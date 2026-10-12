@@ -2,7 +2,7 @@ import React, { createContext, useContext, useMemo } from 'react';
 
 export type BidUrlBuilder = (id: string) => string;
 
-const defaultBuildUrl: BidUrlBuilder = (id) => `/book-index?id=${id}`;
+const defaultBuildUrl: BidUrlBuilder = (id) => `/item/${id}`;
 
 const BidUrlContext = createContext<BidUrlBuilder>(defaultBuildUrl);
 
