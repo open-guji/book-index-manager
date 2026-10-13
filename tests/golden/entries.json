@@ -1,0 +1,386 @@
+[
+  {
+    "name": "book-基本：作者+撰人朝代+刊刻年+双资源+卷数+馆藏",
+    "type": "Book",
+    "record": {
+      "id": "d59f2aaaa001",
+      "type": "book",
+      "title": "水滸傳",
+      "edition": "明嘉靖刻本",
+      "authors": [
+        {
+          "name": "施耐庵",
+          "dynasty": "元",
+          "role": "撰"
+        }
+      ],
+      "dating": {
+        "era": "明",
+        "year": 1550,
+        "year_range": [
+          1540,
+          1560
+        ]
+      },
+      "juan_count": {
+        "number": 100,
+        "description": "一百回"
+      },
+      "measure_info": "一百卷",
+      "current_location": {
+        "name": "國家圖書館"
+      },
+      "resources": [
+        {
+          "types": [
+            "text",
+            "image"
+          ],
+          "url": "https://example.org/a"
+        }
+      ]
+    },
+    "expect_index_entry": {
+      "id": "d59f2aaaa001",
+      "title": "水滸傳",
+      "type": "Book",
+      "path": "Book/0/0/1/d59f2aaaa001-水滸傳.json",
+      "author": "施耐庵",
+      "era": "明",
+      "sort_year": 1550,
+      "holder": "國家圖書館",
+      "dynasty": "元",
+      "role": "撰",
+      "juan_count": 100,
+      "measure_info": "一百卷",
+      "has_text": true,
+      "has_image": true,
+      "edition": "明嘉靖刻本"
+    },
+    "negative": false
+  },
+  {
+    "name": "book-authors 为字符串列表",
+    "type": "Book",
+    "record": {
+      "id": "d59f2aaaa002",
+      "type": "book",
+      "title": "紅樓夢",
+      "authors": [
+        "曹雪芹"
+      ]
+    },
+    "expect_index_entry": {
+      "id": "d59f2aaaa002",
+      "title": "紅樓夢",
+      "type": "Book",
+      "path": "Book/0/0/2/d59f2aaaa002-紅樓夢.json",
+      "author": "曹雪芹"
+    },
+    "negative": false
+  },
+  {
+    "name": "book-首位作者无朝代，后位有朝代则取后位",
+    "type": "Book",
+    "record": {
+      "id": "d59f2aaaa003",
+      "type": "book",
+      "title": "某書",
+      "authors": [
+        {
+          "name": "甲"
+        },
+        {
+          "name": "乙",
+          "dynasty": "唐"
+        }
+      ],
+      "dynasty": "宋"
+    },
+    "expect_index_entry": {
+      "id": "d59f2aaaa003",
+      "title": "某書",
+      "type": "Book",
+      "path": "Book/0/0/3/d59f2aaaa003-某書.json",
+      "author": "甲",
+      "dynasty": "唐"
+    },
+    "negative": false
+  },
+  {
+    "name": "book-authors 为空时顶层 dynasty 兜底（出土文献）",
+    "type": "Book",
+    "record": {
+      "id": "d59f2aaaa004",
+      "type": "book",
+      "title": "清華簡",
+      "authors": [],
+      "dynasty": "戰國"
+    },
+    "expect_index_entry": {
+      "id": "d59f2aaaa004",
+      "title": "清華簡",
+      "type": "Book",
+      "path": "Book/0/0/4/d59f2aaaa004-清華簡.json",
+      "dynasty": "戰國"
+    },
+    "negative": false
+  },
+  {
+    "name": "book-dating 只有区间则 sort_year 取下界",
+    "type": "Book",
+    "record": {
+      "id": "d59f2aaaa005",
+      "type": "book",
+      "title": "某刻本",
+      "dating": {
+        "era": "明",
+        "year_range": [
+          1368,
+          1398
+        ]
+      }
+    },
+    "expect_index_entry": {
+      "id": "d59f2aaaa005",
+      "title": "某刻本",
+      "type": "Book",
+      "path": "Book/0/0/5/d59f2aaaa005-某刻本.json",
+      "era": "明",
+      "sort_year": 1368
+    },
+    "negative": false
+  },
+  {
+    "name": "book-dating 只有朝代则无 sort_year",
+    "type": "Book",
+    "record": {
+      "id": "d59f2aaaa006",
+      "type": "book",
+      "title": "某抄本",
+      "dating": {
+        "era": "清"
+      }
+    },
+    "expect_index_entry": {
+      "id": "d59f2aaaa006",
+      "title": "某抄本",
+      "type": "Book",
+      "path": "Book/0/0/6/d59f2aaaa006-某抄本.json",
+      "era": "清"
+    },
+    "negative": false
+  },
+  {
+    "name": "book-additional_titles／attached_texts 两种形态",
+    "type": "Book",
+    "record": {
+      "id": "d59f2aaaa007",
+      "type": "book",
+      "title": "叢書",
+      "additional_titles": [
+        "別名甲",
+        {
+          "book_title": "別名乙"
+        },
+        {
+          "x": 1
+        },
+        ""
+      ],
+      "attached_texts": [
+        {
+          "book_title": "附一"
+        },
+        "附二"
+      ]
+    },
+    "expect_index_entry": {
+      "id": "d59f2aaaa007",
+      "title": "叢書",
+      "type": "Book",
+      "path": "Book/0/0/7/d59f2aaaa007-叢書.json",
+      "additional_titles": [
+        "別名甲",
+        "別名乙"
+      ],
+      "attached_texts": [
+        "附一",
+        "附二"
+      ]
+    },
+    "negative": false
+  },
+  {
+    "name": "book-current_location 为字符串",
+    "type": "Book",
+    "record": {
+      "id": "d59f2aaaa008",
+      "type": "book",
+      "title": "某書",
+      "current_location": "上海圖書館",
+      "juan_count": 12
+    },
+    "expect_index_entry": {
+      "id": "d59f2aaaa008",
+      "title": "某書",
+      "type": "Book",
+      "path": "Book/0/0/8/d59f2aaaa008-某書.json",
+      "holder": "上海圖書館",
+      "juan_count": 12
+    },
+    "negative": false
+  },
+  {
+    "name": "负例 book-resources 旧单值 type 不再读（#544）",
+    "type": "Book",
+    "record": {
+      "id": "d59f2aaaa009",
+      "type": "book",
+      "title": "某書",
+      "resources": [
+        {
+          "type": "text"
+        },
+        {
+          "type": "image"
+        }
+      ]
+    },
+    "expect_index_entry": {
+      "id": "d59f2aaaa009",
+      "title": "某書",
+      "type": "Book",
+      "path": "Book/0/0/9/d59f2aaaa009-某書.json"
+    },
+    "negative": true
+  },
+  {
+    "name": "负例 book-无前缀 promoted_to 不再读（#544），只认 _promoted_to",
+    "type": "Book",
+    "record": {
+      "id": "d59f2aaaa010",
+      "type": "book",
+      "title": "某書",
+      "promoted_to": "d59f2zzzz999"
+    },
+    "expect_index_entry": {
+      "id": "d59f2aaaa010",
+      "title": "某書",
+      "type": "Book",
+      "path": "Book/0/1/0/d59f2aaaa010-某書.json"
+    },
+    "negative": true
+  },
+  {
+    "name": "work-墓碑 _promoted_to 与 period／loss_status／original_title／subtype",
+    "type": "Work",
+    "record": {
+      "id": "d59f2bbbb001",
+      "type": "work",
+      "title": "某作",
+      "_promoted_to": "d59f2newid001",
+      "period": "先秦",
+      "loss_status": "存",
+      "original_title": "原題",
+      "subtype": "classic"
+    },
+    "expect_index_entry": {
+      "id": "d59f2bbbb001",
+      "title": "某作",
+      "type": "Work",
+      "path": "Work/0/0/1/d59f2bbbb001-某作.json",
+      "subtype": "classic",
+      "period": "先秦",
+      "loss_status": "存",
+      "original_title": "原題",
+      "promoted_to": "d59f2newid001"
+    },
+    "negative": false
+  },
+  {
+    "name": "book-work_id 反向链",
+    "type": "Book",
+    "record": {
+      "id": "d59f2aaaa011",
+      "type": "book",
+      "title": "某書",
+      "work_id": "d59f2bbbb001"
+    },
+    "expect_index_entry": {
+      "id": "d59f2aaaa011",
+      "title": "某書",
+      "type": "Book",
+      "path": "Book/0/1/1/d59f2aaaa011-某書.json",
+      "work_id": "d59f2bbbb001"
+    },
+    "negative": false
+  },
+  {
+    "name": "负例 book-源档旧 has_collated 不透传（待 B4 步骤 6 定）",
+    "type": "Book",
+    "record": {
+      "id": "d59f2aaaa012",
+      "type": "book",
+      "title": "某書",
+      "_has_collated": true
+    },
+    "expect_index_entry": {
+      "id": "d59f2aaaa012",
+      "title": "某書",
+      "type": "Book",
+      "path": "Book/0/1/2/d59f2aaaa012-某書.json"
+    },
+    "negative": true
+  },
+  {
+    "name": "entity-dates.birth／death",
+    "type": "Entity",
+    "record": {
+      "id": "hixhd2h9be38",
+      "type": "entity",
+      "subtype": "people",
+      "primary_name": "蘇軾",
+      "dynasty": "宋",
+      "dates": {
+        "birth": 1037,
+        "death": 1101
+      },
+      "external_ids": {
+        "cbdb_id": 3767
+      }
+    },
+    "expect_index_entry": {
+      "id": "hixhd2h9be38",
+      "type": "entity",
+      "subtype": "people",
+      "primary_name": "蘇軾",
+      "path": "Entity/e/3/8/hixhd2h9be38-蘇軾.json",
+      "dynasty": "宋",
+      "birth_year": 1037,
+      "death_year": 1101,
+      "cbdb_id": 3767
+    },
+    "negative": false
+  },
+  {
+    "name": "负例 entity-旧顶层 birth_year／death_year 不再读（S2 闸后生效）",
+    "type": "Entity",
+    "record": {
+      "id": "hixhd2h9be39",
+      "type": "entity",
+      "subtype": "people",
+      "primary_name": "某人",
+      "birth_year": 1000,
+      "death_year": 1070
+    },
+    "expect_index_entry": {
+      "id": "hixhd2h9be39",
+      "type": "entity",
+      "subtype": "people",
+      "primary_name": "某人",
+      "path": "Entity/e/3/9/hixhd2h9be39-某人.json"
+    },
+    "negative": true
+  }
+]
