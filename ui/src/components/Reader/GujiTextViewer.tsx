@@ -215,11 +215,20 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     // 下一页的页锚点改指它的首字（leadFirstId）。下一页首字带抬头／行首空格／前置空列时是原件的另起一段，不并。
     const mergedOwner = new Map<string, number>();
     if (!pageBreaks) {
+      // 行首空格数有“本书常态”：四庫總目自校本几乎每列都有 lead_blank=2（版框上沿的留白），不是另起一段。
+      // 以全章有字列里出现最多的 lead_blank 为底线，只有比底线多的才算另起一段（overview#527：线上 171/186 页被误判）。
+      const leadCount = new Map<number, number>();
+      for (const pData of allPagesData) for (const col of pData.columns) {
+        if (col.chars.length > 0) leadCount.set(col.lead_blank || 0, (leadCount.get(col.lead_blank || 0) || 0) + 1);
+      }
+      let baseLead = 0;
+      let bestCount = -1;
+      for (const [v, n] of leadCount) if (n > bestCount || (n === bestCount && v < baseLead)) { baseLead = v; bestCount = n; }
       let open: { para: ReflowParagraph; owner: number } | null = null;
       for (const pg of built) {
         const lead = pg.paragraphs[0];
         const s0 = lead?.chars[0]?.start;
-        const startsParagraph = !!s0 && !!(s0.raised || s0.leadBlank || s0.blankBefore);
+        const startsParagraph = !!s0 && !!(s0.raised || (s0.leadBlank || 0) > baseLead || s0.blankBefore);
         const wouldOrphanBlank = pg.paragraphs.length === 1 && !!pg.trailingBlank;
         if (open && lead && !startsParagraph && !wouldOrphanBlank) {
           for (const c of lead.chars) mergedOwner.set(c.charData.id, open.owner);
