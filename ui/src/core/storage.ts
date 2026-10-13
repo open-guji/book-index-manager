@@ -263,6 +263,7 @@ export interface EntityIndexFileEntry {
  * 生卒年只读 dates.birth／death（index 键名仍是 birth_year／death_year），不带旧顶层字段回退。
  * 注意：updateIndexEntry／rebuildIndex 目前不写 Entity 分片（typeKey 与 Python 的 index/entities/
  * 不一致，本包 TS 写路径从未支持 Entity），本函数只为与 Python 对拍、供将来写路径复用。
+ * 【不是写路径】请勿据此把 Entity 写进 index/entities/；新增写路径须另行设计并评审（B4 / overview#568）。
  */
 export function buildEntityIndexEntry(metadata: Record<string, unknown>, relativePath: string): EntityIndexFileEntry {
     const obj = (v: unknown) => (typeof v === 'object' && v !== null ? v : {}) as Record<string, unknown>;
