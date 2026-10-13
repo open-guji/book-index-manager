@@ -67,6 +67,20 @@ describe('分叶分割线关：跨页连续（overview#527）', () => {
         }
     });
 
+    it('关：全章每列都是同一个 lead_blank（版框上沿留白，四庫總目自校本 171/186 页）→ 不是另起一段，照并', () => {
+        const base = { lead_blank: 2 };
+        const { container } = mount([page(3, ['甲', '乙'], base), page(4, ['丙', '丁'], base), page(5, ['戊', '己'], base)], { pageBreaks: false });
+        const ps = paras(container);
+        expect(ps).toHaveLength(1);
+        expect(idsIn(ps[0])).toEqual(['3:1:1', '3:1:2', '4:1:1', '4:1:2', '5:1:1', '5:1:2']);
+    });
+
+    it('关：全章常态 lead_blank=2，某页首列多缩一格（3）→ 原件另起一段，不并', () => {
+        const base = { lead_blank: 2 };
+        const { container } = mount([page(3, ['甲', '乙'], base), page(4, ['丙', '丁'], base), page(5, ['戊', '己'], { lead_blank: 3 }), page(6, ['庚', '辛'], base), page(7, ['壬', '癸'], base)], { pageBreaks: false });
+        expect(paras(container).map(idsIn).map((a) => a.length)).toEqual([4, 6]);
+    });
+
     it('关：连续三页都没有 break → 并成一个 <p>；中间页整页并走也不丢字', () => {
         const { container } = mount([page(3, ['甲']), page(4, ['乙']), page(5, ['丙'])], { pageBreaks: false });
         const ps = paras(container);
