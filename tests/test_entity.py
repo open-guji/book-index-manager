@@ -40,8 +40,7 @@ def _entity_metadata() -> dict:
             {"name": "東坡居士", "type": "號"},
         ],
         "dynasty": "宋",
-        "birth_year": 1037,
-        "death_year": 1101,
+        "dates": {"birth": 1037, "death": 1101},
         "works": [],
         "external_ids": {"cbdb_id": 3767},
     }
