@@ -341,7 +341,7 @@ describe('BookPage / CollectionPage / EntityPage（三栏）', () => {
     it('Entity：别名分类进提要卡，著作表按职任页签筛选', async () => {
         const ent = {
             id: 'e1', type: 'entity', subtype: 'people', title: '孔子', primary_name: '孔子',
-            dynasty: '春秋', birth_year: -551, death_year: -479,
+            dynasty: '春秋', dates: { birth: -551, death: -479 },
             alt_names: [{ name: '仲尼', type: '字' }],
             _works: [{ work_id: 'w1', role: '撰' }, { work_id: 'w2', role: '校' }],
         } as unknown as IndexDetailData;

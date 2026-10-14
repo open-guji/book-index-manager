@@ -710,11 +710,7 @@ export interface EntityDetailData extends BaseDetailData {
     alt_names?: AltName[];
     /** 朝代标签 */
     dynasty?: string;
-    /** 生年（公历） */
-    birth_year?: number;
-    /** 卒年（公历） */
-    death_year?: number;
-    /** 生卒／活动年（2026-09-28 S4）；birth_year／death_year 缺时作回退。basis 仅内部 */
+    /** 生卒／活动年（2026-09-28 S4），生卒只读这里（旧顶层 birth_year／death_year 已删）。basis 仅内部 */
     dates?: EntityDates;
     /** 籍贯（「建州」），人物页提要卡写成「建州人」 */
     native_place?: string;

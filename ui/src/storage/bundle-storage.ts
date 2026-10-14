@@ -437,8 +437,8 @@ export class BundleStorage implements IndexStorage {
                 has_collated: detail.has_collated,
                 subtype: detail.subtype,
                 primary_name: detail.primary_name,
-                birth_year: detail.birth_year,
-                death_year: detail.death_year,
+                birth_year: detail.dates?.birth ?? undefined,
+                death_year: detail.dates?.death ?? undefined,
                 cbdb_id: detail.cbdb_id,
                 ...(redirectedFrom ? { redirected_from: redirectedFrom } : {}),
             };

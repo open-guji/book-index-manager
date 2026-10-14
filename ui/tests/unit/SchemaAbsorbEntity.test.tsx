@@ -1,6 +1,6 @@
 /**
  * overview#283：Entity 新 schema 字段（dates；wikidata_id／viaf_id 类型声明）。
- * birth_year／death_year 优先；缺时回退 dates；basis 不进前台；缺失不崩。
+ * 生卒只读 dates；basis 不进前台；缺失不崩。
  */
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
@@ -20,7 +20,7 @@ function mount(data: Record<string, unknown>) {
 const card = (c: HTMLElement) => c.querySelector('.bim-d-card')?.textContent ?? '';
 
 describe('Entity.dates', () => {
-    it('birth_year／death_year 缺时回退 dates.birth／death；basis 不出现', async () => {
+    it('生卒读 dates.birth／death；basis 不出现', async () => {
         const { container } = mount({ dates: { birth: 557, death: 627, floruit: null, basis: 'INTERNAL-BASIS' } });
         await waitFor(() => expect(card(container)).toContain('557—627'));
         expect(container.textContent).not.toContain('INTERNAL-BASIS');
@@ -33,10 +33,11 @@ describe('Entity.dates', () => {
         await waitFor(() => expect(card(b.container)).toContain('前551—前479'));
     });
 
-    it('birth_year／death_year 优先于 dates', async () => {
-        const { container } = mount({ birth_year: 1130, death_year: 1200, dates: { birth: 1, death: 2 } });
-        await waitFor(() => expect(card(container)).toContain('1130—1200'));
-        expect(card(container)).not.toContain('1—2');
+    it('旧记录只有顶层 birth_year／death_year：不读，显示无生卒年', async () => {
+        const { container } = mount({ birth_year: 1130, death_year: 1200 });
+        await waitFor(() => expect(container.querySelector('.bim-d-card')).not.toBeNull());
+        expect(card(container)).not.toContain('1130');
+        expect(card(container)).not.toContain('1200');
     });
 
     it('生卒皆缺时用 floruit；floruit 为 null、dates 缺失都不崩不显示', async () => {

@@ -211,9 +211,9 @@ export const EntityPage: React.FC<EntityPageProps> = ({
             .map(([k, names]) => ({ label: k, names }));
     }, [data.alt_names, m]);
 
-    // 生卒：birth_year／death_year 优先，缺时回退 dates.birth／death；都缺才用 dates.floruit
-    const birth = data.birth_year ?? data.dates?.birth ?? undefined;
-    const death = data.death_year ?? data.dates?.death ?? undefined;
+    // 生卒只读 dates.birth／death；都缺才用 dates.floruit
+    const birth = data.dates?.birth ?? undefined;
+    const death = data.dates?.death ?? undefined;
     const fl = data.dates?.floruit;
     const life = (birth != null || death != null)
         ? `${yr(birth) || '?'}—${yr(death) || '?'}`
