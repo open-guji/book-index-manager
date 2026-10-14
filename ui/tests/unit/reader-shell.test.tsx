@@ -569,3 +569,30 @@ describe('阅读设置侧栏（overview#463）', () => {
         expect(root.style.getPropertyValue('--bimrd-ff')).toBe('');
     });
 });
+
+describe('正文加载中不画底部翻页卡片（GUJI-181 CLS）', () => {
+    function Shell({ loading }: { loading?: boolean }) {
+        const [prefs, setPrefs] = useState<ReaderPrefs>(DEFAULT_READER_PREFS);
+        return (
+            <LocaleProvider>
+                <ReaderShell title="宋史" toc={FEW} activeKey="002" onSelect={() => {}} prefs={prefs}
+                    onPrefsChange={p => setPrefs(prev => ({ ...prev, ...p }))} contentLoading={loading}>
+                    <p>正文</p>
+                </ReaderShell>
+            </LocaleProvider>
+        );
+    }
+    afterEach(() => { document.body.innerHTML = ''; });
+
+    it('加载中没有 .bim-rd-pager，加载完才出现', () => {
+        const { container, rerender } = render(<Shell loading />);
+        expect(container.querySelector('.bim-rd-pager')).toBeNull();
+        rerender(<Shell loading={false} />);
+        expect(container.querySelector('.bim-rd-pager')).not.toBeNull();
+    });
+
+    it('缺省（不传 contentLoading）与改前一致：翻页卡片照常在', () => {
+        const { container } = render(<Shell />);
+        expect(container.querySelector('.bim-rd-pager')).not.toBeNull();
+    });
+});

@@ -812,6 +812,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             paragraphToggle={canParagraphize(md)}
             allowVertical={allowVertical}
             origScriptAvailable={origAvailable}
+            contentLoading={contentLoading}
         >
             {/* 对读章没有 .txt：getChapter 先 404→null，对读数据（char／cord）还在路上时不是失败，是加载中（overview#513） */}
             {(contentLoading || (warpLoading && !warpData && !structured && body == null)) && <LoadingDots />}
@@ -924,7 +925,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
 
             {!contentLoading && !warpLoading && !warpData && !structured && body == null && chapterMeta && <div className="bim-rd-state">{t('reader.chapterFailed')}</div>}
 
-            {index.references && index.references.length > 0 && (
+            {!contentLoading && index.references && index.references.length > 0 && (
                 <section className="bim-rd-refs">
                     <h2>{t('reader.references')}</h2>
                     <ol>
