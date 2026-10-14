@@ -139,7 +139,7 @@ const COLL_EXTRA = {
 
 const ENTITY = {
     id: 'e1', type: 'entity', subtype: 'people', primary_name: '朱熹', title: '朱熹',
-    dynasty: '南宋', birth_year: 1130, death_year: 1200, native_place: '建州',
+    dynasty: '南宋', dates: { birth: 1130, death: 1200 }, native_place: '建州',
     alt_names: [{ name: '仲晦', type: '字' }, { name: '晦庵', type: '號' }, { name: '文公', type: '諡號' }],
     works: [{ work_id: 'ew1', role: '撰' }, { work_id: 'ew2', role: '編' }],
     external_ids: { cbdb_id: 3257, cbdb_match: 'auto', wikidata_id: 'Q9397' },

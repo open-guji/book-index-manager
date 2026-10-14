@@ -37,8 +37,9 @@ function truncate(text: string | undefined, max = DESC_MAX): string | undefined 
 }
 
 function years(raw: Record<string, unknown>): string | undefined {
-    const b = typeof raw.birth_year === 'number' ? raw.birth_year : undefined;
-    const d = typeof raw.death_year === 'number' ? raw.death_year : undefined;
+    const dates = raw.dates && typeof raw.dates === 'object' ? raw.dates as Record<string, unknown> : {};
+    const b = typeof dates.birth === 'number' ? dates.birth : undefined;
+    const d = typeof dates.death === 'number' ? dates.death : undefined;
     if (b === undefined && d === undefined) return undefined;
     return `${b ?? '?'}–${d ?? '?'}`;
 }

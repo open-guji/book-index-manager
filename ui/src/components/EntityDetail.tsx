@@ -27,7 +27,7 @@ export interface EntityDetailProps {
 
 // ── 工具：判断是否为占位 Entity（信息暂缺）
 function isPlaceholderEntity(d: EntityDetailData): boolean {
-    return !d.dynasty && !d.birth_year && !d.death_year
+    return !d.dynasty && d.dates?.birth == null && d.dates?.death == null
         && (!d.alt_names || d.alt_names.length === 0)
         && !d.description?.text;
 }
@@ -35,7 +35,9 @@ function isPlaceholderEntity(d: EntityDetailData): boolean {
 // ── 子组件：朝代+生卒年角标
 function DynastyAndYears({ data }: { data: EntityDetailData }) {
     const { convert } = useConvert();
-    const { dynasty, birth_year, death_year } = data;
+    const { dynasty } = data;
+    const birth_year = data.dates?.birth ?? undefined;
+    const death_year = data.dates?.death ?? undefined;
     const parts: string[] = [];
     if (dynasty) parts.push(`〔${convert(dynasty)}〕`);
     if (birth_year !== undefined && death_year !== undefined) {

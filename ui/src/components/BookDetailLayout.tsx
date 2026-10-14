@@ -581,8 +581,8 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
             const e = detail as EntityDetailData;
             // 生卒：负数是公元前
             const yr = (n?: number) => n == null ? '' : (n < 0 ? tr('detail.bce', { n: -n }) : String(n));
-            const life = (e.birth_year != null || e.death_year != null)
-                ? `${yr(e.birth_year) || '?'}—${yr(e.death_year) || '?'}`
+            const life = (e.dates?.birth != null || e.dates?.death != null)
+                ? `${yr(e.dates?.birth ?? undefined) || '?'}—${yr(e.dates?.death ?? undefined) || '?'}`
                 : '';
             return {
                 title: convert(e.primary_name || e.title),

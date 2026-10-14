@@ -220,7 +220,7 @@ describe('CollectionPage（B1）', () => {
 
 const ENTITY: IndexDetailData = {
     id: 'e1', type: 'entity', subtype: 'people', primary_name: '朱熹', title: '朱熹',
-    dynasty: '南宋', birth_year: 1130, death_year: 1200, native_place: '建州',
+    dynasty: '南宋', dates: { birth: 1130, death: 1200 }, native_place: '建州',
     alt_names: [
         { name: '仲晦', type: '字' }, { name: '元晦', type: '字' },
         { name: '晦庵', type: '號' }, { name: '文公', type: '諡號' }, { name: '沈郎', type: '小名' },
@@ -300,7 +300,7 @@ describe('EntityPage（B1）', () => {
         await screen.findByText('字仲晦，號晦庵');
         expect(container.querySelector('.bim-d-life-lab')?.textContent).toContain('一生 71 年');
         unmount();
-        const noLife = { ...ENTITY, birth_year: undefined, death_year: undefined } as unknown as IndexDetailData;
+        const noLife = { ...ENTITY, dates: undefined } as unknown as IndexDetailData;
         const r2 = render(<BookDetailLayout {...props(noLife, ENTITY_EXTRA)} />);
         await screen.findByText('字仲晦，號晦庵');
         expect(r2.container.querySelector('.bim-d-life')).toBeNull();

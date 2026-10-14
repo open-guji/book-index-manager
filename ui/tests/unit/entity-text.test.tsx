@@ -142,7 +142,7 @@ describe('summaryFromItem', () => {
     it('人物：取 primary_name、朝代、生卒、籍贯、提要', () => {
         const s = summaryFromItem('p1', {
             type: 'entity', primary_name: '劉向', title: '劉向', dynasty: '西漢',
-            birth_year: -77, death_year: -6, native_place: '沛縣',
+            dates: { birth: -77, death: -6 }, native_place: '沛縣',
             description: { text: '字子政，本名更生。'.repeat(20) },
         });
         expect(s.title).toBe('劉向');
