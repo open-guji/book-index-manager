@@ -78,16 +78,17 @@ def promotions_sharded(root: Path) -> bool:
 
 
 def promotion_source_files(root: Path) -> List[Path]:
-    """对照表的全部源档：整档（若在）＋各分片（按名排序）。"""
+    """对照表的源档：分片形只取各分片（按名排序）；否则取整档（若在）。
+
+    整档与分片不并集读：分片形下根上残留的整档一概不读（`PromotionsStore.save`
+    对两者并存拒写，迁移须先 `split_promotions`）。
+    """
     root = Path(root)
-    out = []
-    legacy = root / PROMOTIONS_FILENAME
-    if legacy.is_file():
-        out.append(legacy)
     d = root / PROMOTIONS_DIRNAME
-    if d.is_dir():
-        out.extend(sorted(p for p in d.glob("*.json") if p.is_file()))
-    return out
+    if promotions_sharded(root):
+        return sorted(p for p in d.glob("*.json") if p.is_file())
+    legacy = root / PROMOTIONS_FILENAME
+    return [legacy] if legacy.is_file() else []
 
 
 def _read_promotions_file(path: Path) -> Dict[str, dict]:
@@ -101,7 +102,7 @@ def _read_promotions_file(path: Path) -> Dict[str, dict]:
 
 
 def load_all_raw(root: Path) -> Dict[str, dict]:
-    """`{草稿id: 原始记录 dict}`，整档与分片两种形状都认（过渡期两者都在时取并集，分片优先）。"""
+    """`{草稿id: 原始记录 dict}`，整档与分片两种形状都认（一次只认其一，见 `promotion_source_files`）。"""
     out: Dict[str, dict] = {}
     for p in promotion_source_files(root):
         out.update(_read_promotions_file(p))

@@ -98,6 +98,17 @@ def test_store_refuses_write_when_both_forms_present(tmp_path: Path):
         store.save()
 
 
+def test_sharded_read_ignores_leftover_legacy_file(tmp_path: Path):
+    """过渡期并集已删：分片形下根上残留的整档不被读入，只认分片。"""
+    _seed_legacy(tmp_path, IDS)
+    (tmp_path / PROMOTIONS_DIRNAME).mkdir()
+    shard = tmp_path / PROMOTIONS_DIRNAME / "xy.json"
+    shard.write_text(json.dumps({"version": 1, "promotions": {
+        "1eeeeeeeeeexy": _rec("pe").to_dict()}}), encoding="utf-8")
+    got = load_all(tmp_path)
+    assert set(got) == {"1eeeeeeeeeexy"}
+
+
 def test_legacy_form_unchanged_without_dir(tmp_path: Path):
     _seed_legacy(tmp_path, IDS)
     store = PromotionsStore(tmp_path)
