@@ -20,7 +20,6 @@ GOLDEN = Path(__file__).parent / "golden" / "entries.json"
 CASES = json.loads(GOLDEN.read_text(encoding="utf-8"))
 
 KNOWN_RED_UNTIL = {
-    "负例 entity-旧顶层 birth_year／death_year 不再读（S2 闸后生效）": "步骤 4（S2 闸）删 entry_extractor 生卒年回退",
     "负例 book-源档旧 has_collated 不透传（待 B4 步骤 6 定）": "步骤 6 定 has_collated 去留后删透传",
 }
 

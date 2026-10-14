@@ -158,14 +158,10 @@ def build_entity_index_entry(metadata: Dict[str, Any], id_str: str, rel_path: st
     subtype = metadata.get("subtype", "people")
     primary_name = metadata.get("primary_name", "")
     dynasty = metadata.get("dynasty", "")
-    # 生卒年取 dates.birth／dates.death，缺则回退 birth_year／death_year（index 键名不变）
+    # 生卒年只读 dates.birth／dates.death（index 键名仍是 birth_year／death_year）
     dates = metadata.get("dates") if isinstance(metadata.get("dates"), dict) else {}
     birth_year = dates.get("birth")
-    if birth_year is None:
-        birth_year = metadata.get("birth_year")
     death_year = dates.get("death")
-    if death_year is None:
-        death_year = metadata.get("death_year")
 
     external = metadata.get("external_ids") or {}
     cbdb_id = external.get("cbdb_id") if isinstance(external, dict) else None

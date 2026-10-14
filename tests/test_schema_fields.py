@@ -206,7 +206,6 @@ def test_dates_bad():
     assert dates_ok({"dates": {"floruit": [1560, 1500]}}) is not None
     assert dates_ok({"dates": {"floruit": [1500]}}) is not None
     assert dates_ok({"dates": {"birth": 1980, "death": 1900}}) is not None
-    assert dates_ok({"dates": {"birth": 1900}, "birth_year": 1901}) is not None
 
 
 def test_validate_entity_fields():
