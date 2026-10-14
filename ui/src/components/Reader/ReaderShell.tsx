@@ -90,6 +90,11 @@ export interface ReaderShellProps {
 
     /** 正文底部「上一卷 / 下一卷」；默认按目录顺序自动给出 */
     pager?: boolean;
+    /**
+     * 正文还在加载：先不画正文底部的翻页卡片。加载点下方只有一行高，翻页卡片会挤进首屏，
+     * 正文一到就被推到几十万像素之外，白白记一次 CLS（GUJI-181）。缺省 false＝与改前一致。
+     */
+    contentLoading?: boolean;
     /** 翻页卡片上的单位字：「上一卷」「下一冊」「下一章」；默认「卷」 */
     pagerUnit?: string;
 
@@ -327,6 +332,7 @@ export function ReaderShell({
     byline, current, workLinkToggle, rail, onReportError, revisedAt,
     backHref, backLabel: backLabelProp, bottomBar = true,
     pager = true,
+    contentLoading = false,
     pagerUnit: pagerUnitProp,
     versions, currentVersionKey, onVersionChange, versionSource = true, keepChapterOnVersionChange = false,
     customImagePanel, toolbarExtra, settingsAnnotate, settingsLayout, isWarpMode,
@@ -762,7 +768,7 @@ export function ReaderShell({
                                 <button type="button" className="bim-rd-rail-report" onMouseDown={e => e.preventDefault()} onClick={reportError}>{t('reader.reportError')}</button>
                             </p>
                         )}
-                        {pager && (prev || next) && (
+                        {pager && !contentLoading && (prev || next) && (
                             <nav className="bim-rd-pager" aria-label={t('reader.pagerNav')}>
                                 {prev ? (
                                     <button type="button" className="bim-rd-pg" onClick={() => handleSelect(prev.key)}>
