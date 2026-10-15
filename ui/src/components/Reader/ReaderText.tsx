@@ -11,6 +11,7 @@
  * 渲染层只管排版，不再逐段调用 convert。
  */
 import React, { useMemo } from 'react';
+import { createMdCursor, mdCursorBlocker, type MdCursor } from '../../core/md-cursor';
 import { renderInterlinear } from '../detail/primitives';
 import type { InterlinearOptions } from '../detail/primitives';
 import { GujiTable } from '../detail/GujiTable';
@@ -23,7 +24,12 @@ import { properNamesOn, type ReaderPrefs } from './prefs';
 import { transformMark, type QuoteStyle } from './marks';
 
 /** 纯文本片段 → 节点（高亮等由调用方注入） */
-export type TextRenderer = (s: string) => React.ReactNode;
+/**
+ * 叶子文本处理。`ctx.mdStart`（可选）＝该叶子首字在章 md（通用换行后）里的码点下标，供全文搜索定位锚点用（F6 步 6）；
+ * 对不上、或整章不可靠（孤立 \r、繁简码点数变了、引号样式非原样、含表格）时不传。老调用方只收 `s` 不受影响。
+ */
+export interface TextRenderCtx { mdStart?: number }
+export type TextRenderer = (s: string, ctx?: TextRenderCtx) => React.ReactNode;
 
 const identity: TextRenderer = s => s;
 
@@ -160,12 +166,15 @@ const indentClass = (text: string): string | undefined => (hasOwnIndent(text) ? 
  * md 正文（不含表格）。`dropTitle` 为真时去掉开头与卷名相同的 `#` 标题——
  * 卷名已经在阅读器的 h1 上了。
  */
-export function ReaderMdBlocks({ text, mode, inline, dropTitle }: {
+export function ReaderMdBlocks({ text, mode, inline, dropTitle, onStart }: {
     text: string;
     mode: ReadingMode;
     inline: (s: string) => React.ReactNode;
     dropTitle?: string;
+    /** 每次渲染开头调一次（锚点游标据此归零，保证按文档顺序重新对齐） */
+    onStart?: () => void;
 }) {
+    onStart?.();
     const clean = stripBlockComments(text);
     const dropped = (level: number, t: string, index: number) =>
         !!dropTitle && index <= 1 && level <= 2 && t.trim() === dropTitle.trim();
@@ -248,12 +257,19 @@ export function ReaderMdText({ text, mode, tables = false, gujiMarkdown = false,
 }) {
     const converted = useConvertedText(text);
     const { t, convert } = useI18n();
-    const inline = (s: string) => renderReaderInline(s, { renderText, properNames, bookMarking, quoteStyle, gujiMarkdown, t });
+    // F6 步 6：给叶子带 mdStart。游标按文档顺序对齐，ReaderMdBlocks 每次渲染开头归零；不可靠的章整章不给
+    let cursor: MdCursor | null = null;
+    const anchorsOk = !!renderText && !mdCursorBlocker(text, converted, !quoteStyle || quoteStyle === 'original');
+    const rt: TextRenderer | undefined = renderText && anchorsOk
+        ? (s) => renderText(s, { mdStart: cursor?.align(s) })
+        : renderText;
+    const startCursor = anchorsOk ? () => { cursor = createMdCursor(text); } : undefined;
+    const inline = (s: string) => renderReaderInline(s, { renderText: rt, properNames, bookMarking, quoteStyle, gujiMarkdown, t });
     const io: InterlinearOptions | undefined = gujiMarkdown ? { gujiMarkdown: true, t } : undefined;
     const title = dropTitle ? convert(dropTitle) : undefined;
 
     if (!tables || converted.indexOf(':::') < 0) {
-        return <ReaderMdBlocks text={converted} mode={mode} inline={inline} dropTitle={title} />;
+        return <ReaderMdBlocks text={converted} mode={mode} inline={inline} dropTitle={title} onStart={startCursor} />;
     }
     return (
         <>
