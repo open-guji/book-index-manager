@@ -714,6 +714,8 @@ export interface EntityDetailData extends BaseDetailData {
     dates?: EntityDates;
     /** 籍贯（「建州」），人物页提要卡写成「建州人」 */
     native_place?: string;
+    /** 籍贯对应的地名 Entity id（GUJI-237，people 可选；旧 `native_place` 自由文本仍保留）。指向 `subtype=place` 的条目，可能是墓碑，读时跟 `merged_into` */
+    native_place_entity_id?: string;
     /** @deprecated 源档已无此字段（署名只在 Work.authors[].entity_id）；详情页读 `_works`。仅旧版 EntityDetail 还读 */
     works?: EntityWorkRef[];
     /** build 产物：著录本专名的作品（Work 卡，`id` 改名 `work_id`，另有 role） */
