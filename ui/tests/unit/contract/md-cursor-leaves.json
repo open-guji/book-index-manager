@@ -1,0 +1,13 @@
+{
+  "note": "GUJI-141 阅读器侧 mock：给定章 md 与叶子序列，断言 createMdCursor(md).align(leaf) 的结果（码点下标，undefined＝对不上）。Ella 侧 mock 可复用同一文件。",
+  "md": "<!-- 说明 -->\n\n# 易類\n\n**《周易注》六卷**\n\n魏尚書郎王弼注，晉韓康伯注《繫辭》。\n\n甲<夾注內容>乙丙丁戊己。",
+  "leaves": [
+    { "s": "易類", "mdStart": 15 },
+    { "s": "《周易注》六卷", "mdStart": 21 },
+    { "s": "魏尚書郎王弼注，晉韓康伯注《繫辭》。", "mdStart": 32 },
+    { "s": "甲", "mdStart": 52 },
+    { "s": "乙丙丁戊己。", "mdStart": 59 },
+    { "s": "乙", "mdStart": null },
+    { "s": "　　", "mdStart": null }
+  ]
+}
