@@ -25,7 +25,7 @@ await page.addInitScript(() => {
         }
     }).observe({ type: 'layout-shift', buffered: true });
 });
-await page.goto(`http://localhost:5199/tests/cls/harness.html?s=${scenario}`, { waitUntil: 'load' });
+await page.goto(`http://localhost:5199/tests/cls/harness.html?s=${scenario}${process.env.QS||''}`, { waitUntil: 'load' });
 await page.waitForTimeout(+waitMs);
 const { shifts, mounted } = await page.evaluate(() => ({ shifts: window.__shifts, mounted: window.__mountedAt }));
 // 只算 SSR 内容挂上之后的位移（挂载前是台子自己的空白帧，不属于组件）
