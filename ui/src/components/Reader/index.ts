@@ -3,6 +3,7 @@ export { ReaderShell, flattenToc } from './ReaderShell';
 export type { ReaderShellProps, PanelState } from './ReaderShell';
 export { ReaderToc } from './ReaderToc';
 export { ImagePanel } from './ImagePanel';
+export type { TextRenderCtx, TextRenderer } from './ReaderText';
 export { ReaderMdText, renderReaderInline, renderProperNames, canParagraphize, bookMarkingOf } from './ReaderText';
 export type { BookMarking } from './ReaderText';
 export { useReaderPrefs, DEFAULT_READER_PREFS, FONT_SIZE_STEPS } from './prefs';
