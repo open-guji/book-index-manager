@@ -12,6 +12,7 @@ import { PageFrame } from '../../src/components/detail/primitives';
 import { ReaderShell } from '../../src/components/Reader/ReaderShell';
 import { DEFAULT_READER_PREFS } from '../../src/components/Reader/prefs';
 import type { ReaderPrefs } from '../../src/components/Reader/prefs';
+import { TextReader } from '../../src/components/TextReader';
 import { BookDetailLayout } from '../../src/components/BookDetailLayout';
 import type { IndexEntry, IndexType } from '../../src/types';
 import shiji from '../unit/fixtures/shiji-work.json';
@@ -83,9 +84,22 @@ function ReadDemo() {
     );
 }
 
+// TextReader：没有书影的书，书影请求有延迟（GUJI-181：栏不该在加载中撑开再收起）。
+// ?imgms=<书影请求耗时>&mdms=<正文到达耗时>，用来扫时序
+const imgMs = +(q.get('imgms') ?? 300);
+const mdMs = +(q.get('mdms') ?? 150);
+const trTransport = {
+    getItem: async () => ({ title: '宋史' }),
+    getTextManifest: async () => ({ id: 'w', versions: [{ key: 'original', kind: 'collated', label: '底本', source: 'collated' }] }),
+    getTextIndex: async () => ({ chapters: READ_TOC.map((t, i) => ({ n: i + 1, file: t.key, title: t.label })) }),
+    getChapter: () => delay(mdMs, { md: Array.from({ length: 24 }, () => PARA.repeat(3)).join('\n\n'), json: null }),
+} as never;
+
 const app = (
     <LocaleProvider locale="zh-Hant">
-        {scenario === 'read' ? (
+        {scenario === 'textreader' ? (
+            <TextReader id="w" transport={trTransport} versionKey="original" chapter="001" resolveImages={() => delay(imgMs, null) as never} />
+        ) : scenario === 'read' ? (
             <ReadDemo />
         ) : scenario === 'work' ? (
             <BookDetailLayout

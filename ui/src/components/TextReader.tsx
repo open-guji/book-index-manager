@@ -701,7 +701,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             activeKey={effectiveChapter ?? null}
             onSelect={handleSelectChapter}
             images={images.images}
-            imagesLoading={images.loading || warpLoading}
+            // 加载中（书影请求或对读 warp 数据）都不撑开书影栏（GUJI-181）：没书影的书会「开 20ms 又收」，
+            // 正文列横移两次（CLS 0.14，线上实测）；有书影的书等拿到图（hasImages）再开，开的次数不变
             renderImageOverlay={renderImageOverlay}
             imagePanel={warpData ? 'open' : imagePanel}
             isWarpMode={!!warpData}
