@@ -23,3 +23,4 @@ export {
     RailUp, descNeedsClamp, LAYOUT_CSS,
 } from './layout';
 export type { RailNavItem, CardFact } from './layout';
+export { SealFigure } from './SealFigure';

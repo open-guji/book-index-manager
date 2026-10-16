@@ -163,6 +163,14 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 .bim-d-card-sub { margin-top: 6px; font-size: 17px; font-weight: 500; color: ${bim('quiet-fg')}; }
 .bim-d-card-byline { margin-top: 8px; font-size: 15px; color: ${bim('ink')}; }
 .bim-d-card-cls { margin-top: 4px; }
+/* 印影图（GUJI-544）：aspect-ratio 先占位，图晚到不抖；失败时整块卸载 */
+.bim-d-seal { margin: 14px 0 0; }
+.bim-d-seal-main { display: block; width: 100%; max-height: 240px; object-fit: contain; aspect-ratio: var(--seal-ar, 1 / 1); }
+.bim-d-seal-thumbs { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.bim-d-seal-thumbs button { padding: 0; border: 1px solid transparent; background: none; cursor: pointer; width: 44px; height: 44px; }
+.bim-d-seal-thumbs button[aria-pressed="true"] { border-color: ${bim('accent')}; }
+.bim-d-seal-thumbs img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.bim-d-seal figcaption { margin-top: 6px; font-size: 12px; color: ${bim('aux-fg')}; line-height: 1.6; }
 .bim-d-card-desc { margin-top: 16px; color: ${bim('quiet-fg')}; line-height: 1.85; font-size: 15px; }
 /* 提要卡顶上的类型小字（版本 / 叢編 / 人物）：四类页长得一样，靠它区分 */
 .bim-d-card-kind { margin-bottom: 6px; font-size: 12px; letter-spacing: .3em; color: ${bim('aux-fg')}; }

@@ -31,6 +31,7 @@ import {
 } from './layout';
 import { bim } from '../../styles/tokens';
 import { measureText, normalizeRole, roleFacets, workClassification, type RoleClass } from '../../core/detail-model';
+import { SealFigure } from './SealFigure';
 import { mapLimit, DETAIL_FETCH_CONCURRENCY } from '../../core/map-limit';
 
 /** 桌面 cap，与作品页版本表同一量级 */
@@ -47,6 +48,8 @@ export interface EntityPageProps {
     back?: React.ReactNode;
     /** 左栏「更多」：切到丛编目录、extraTabs 等其他页面的入口（由 layout 注入） */
     railLinks?: RailLink[];
+    /** 图片资源根（GUJI-544，如 https://data.kaiyuanguji.com/asset/）。不传则不出印影等图 */
+    assetBase?: string;
 }
 
 /** 已解析的作品行 */
@@ -120,7 +123,7 @@ const DYNASTY_SPAN: Record<string, [number, number]> = {
 };
 
 export const EntityPage: React.FC<EntityPageProps> = ({
-    data, transport, onNavigate, renderLink, railTop, back, railLinks,
+    data, transport, onNavigate, renderLink, railTop, back, railLinks, assetBase,
 }) => {
     const { t, convert, messages: m } = useI18n();
     const yr = (n?: number) => fmtYear(n, t);
@@ -291,6 +294,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                     nativePlace ? t('entityPage.nativePlace', { place: convert(nativePlace) }) : '',
                 ]} />
                 {lifeBar}
+                <SealFigure images={data.images} assetBase={assetBase} name={convert(data.primary_name || data.title)} />
             </>}
             description={data.description?.text
                 ? <MarkdownText text={data.description.text} style={{ fontSize: 15, lineHeight: 1.85 }} />

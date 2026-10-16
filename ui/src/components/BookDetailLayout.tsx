@@ -137,6 +137,8 @@ export interface BookDetailLayoutProps {
     onBack?: () => void;
     backLabel?: string;
     renderLink?: RenderLink;
+    /** 实体页印影等图的资源根（透传 EntityPage.assetBase） */
+    assetBase?: string;
 
     // ── 外部钩子 ──
     /** 加载 detail 后的额外加工（如注入 digital_assets） */
@@ -221,6 +223,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
     onBack,
     backLabel,
     renderLink,
+    assetBase,
     enrichDetail,
     getSourceLink,
     readLink,
@@ -720,6 +723,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
                 renderLink={renderLink}
                 railTop={railTop}
                 railLinks={railLinks}
+                assetBase={assetBase}
             />
         );
     };
