@@ -287,11 +287,14 @@ const EntityCard: React.FC<{
             {summary?.description && <span className="bim-et-card-d">{convert(summary.description)}</span>}
             {state.status === 'loading' && <span className="bim-et-card-s">{convert('載入中…')}</span>}
             {state.status === 'error' && <span className="bim-et-card-s">{convert('摘要載入失敗')}</span>}
-            <a
-                className="bim-et-card-a"
-                href={buildHref(entityId)}
-                onClick={onNavigate ? e => onNavigate(entityId, e) : undefined}
-            >{t('reader.entityDetail')}</a>
+            {/* 站上有条目页才放链接：summary 为空（加载中／无条目／失败）一律不放，避免 place/office 点进 404 */}
+            {summary && (
+                <a
+                    className="bim-et-card-a"
+                    href={buildHref(entityId)}
+                    onClick={onNavigate ? e => onNavigate(entityId, e) : undefined}
+                >{t('reader.entityDetail')}</a>
+            )}
         </span>
     );
 };

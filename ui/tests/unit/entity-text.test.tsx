@@ -232,11 +232,15 @@ describe('<EntityText>', () => {
 
     it('键盘：Tab 只停在已收录实体，聚焦即出卡，Esc 收起，失焦收起', async () => {
         const user = userEvent.setup();
-        const transport = makeTransport({ w9xyz: { type: 'work', title: '別錄', authors: [{ name: '劉向' }] } });
+        const transport = makeTransport({
+            p1abc: { type: 'entity', primary_name: '劉向' },
+            w9xyz: { type: 'work', title: '別錄', authors: [{ name: '劉向' }] },
+        });
         render(<EntityText text={PUNCTUATED} entities={spans} offsets="plain" transport={transport} />);
         await user.tab();
         expect(document.activeElement).toBe(screen.getByRole('link', { name: '劉向' }));
         expect(screen.getByRole('tooltip').textContent).toContain('劉向');
+        await screen.findByRole('link', { name: '查看詳情 →' });   // 摘要到了才有链接
         await user.tab();   // 卡内的「查看详情」
         expect(document.activeElement).toBe(screen.getByRole('link', { name: '查看詳情 →' }));
         await user.tab();
@@ -267,20 +271,25 @@ describe('<EntityText>', () => {
         const user = userEvent.setup();
         const { unmount } = render(<EntityText text={PUNCTUATED} entities={spans} offsets="plain" />);
         await user.tab();
-        expect(screen.getByRole('tooltip').textContent).toBe('人名劉向查看詳情 →');
+        expect(screen.getByRole('tooltip').textContent).toBe('人名劉向');
+        expect(screen.getByRole('tooltip').querySelector('a')).toBeNull();   // 无摘要＝无条目，不放详情链接
         unmount();
 
         const loadSummary = vi.fn(async () => { throw new Error('boom'); });
         render(<EntityText text={PUNCTUATED} entities={spans} offsets="plain" loadSummary={loadSummary} />);
         await user.tab();
         await waitFor(() => expect(screen.getByRole('tooltip').textContent).toContain('摘要載入失敗'));
+        expect(screen.getByRole('tooltip').querySelector('a')).toBeNull();
     });
 
     it('简体模式下卡片文字转简', async () => {
         const user = userEvent.setup();
         render(
             <LocaleProvider locale="zh-Hans">
-                <EntityText text={PUNCTUATED} entities={spans} offsets="plain" />
+                <EntityText
+                    text={PUNCTUATED} entities={spans} offsets="plain"
+                    transport={makeTransport({ p1abc: { type: 'entity', primary_name: '劉向' } })}
+                />
             </LocaleProvider>,
         );
         await user.tab();
@@ -366,6 +375,20 @@ describe('<EntityText> 悬浮卡（overview#512）', () => {
         }
     });
 
+    it('详情链接只在条目存在时出现：加载中、查无条目都不放（place/office 无站上条目页，GUJI-522 P9）', async () => {
+        const user = userEvent.setup();
+        let release!: (v: Record<string, unknown> | null) => void;
+        const pending = new Promise<Record<string, unknown> | null>(r => { release = r; });
+        const transport = { getItem: vi.fn(() => pending) };
+        render(<EntityText text={PUNCTUATED} entities={spans} offsets="plain" transport={transport} />);
+        await user.tab();
+        expect(screen.getByRole('tooltip').textContent).toContain('載入中…');
+        expect(screen.getByRole('tooltip').querySelector('a')).toBeNull();      // 加载中
+        await act(async () => { release(null); });                              // 查无条目
+        await waitFor(() => expect(screen.getByRole('tooltip').textContent).not.toContain('載入中…'));
+        expect(screen.getByRole('tooltip').querySelector('a')).toBeNull();
+    });
+
     it('收录实体：卡内「查看详情 →」用 buildHref，点击走 onNavigate', async () => {
         const user = userEvent.setup();
         const onNavigate = vi.fn((_id: string, e: React.MouseEvent) => e.preventDefault());
@@ -373,10 +396,11 @@ describe('<EntityText> 悬浮卡（overview#512）', () => {
             <EntityText
                 text={PUNCTUATED} entities={spans} offsets="plain"
                 buildHref={id => `/x/${id}`} onNavigate={onNavigate}
+                transport={makeTransport({ p1abc: { type: 'entity', primary_name: '劉向' } })}
             />,
         );
         await user.tab();
-        const detail = screen.getByRole('link', { name: '查看詳情 →' });
+        const detail = await screen.findByRole('link', { name: '查看詳情 →' });
         expect(detail.getAttribute('href')).toBe('/x/p1abc');
         await user.tab();                       // 焦点进卡内链接，卡不应收
         expect(document.activeElement).toBe(detail);
