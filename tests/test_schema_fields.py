@@ -110,6 +110,8 @@ def test_validate_work_fields_bad(vocab):
 def test_edition_type_ok():
     assert edition_type_ok("刻本") is True
     assert edition_type_ok("鉛印本") is True
+    assert edition_type_ok("油印本") is True
+    assert edition_type_ok("曬印本") is True
 
 
 def test_edition_type_bad():
