@@ -724,6 +724,20 @@ export interface EntityDetailData extends BaseDetailData {
     external_ids?: ExternalIds;
     /** 是否草稿 */
     isDraft?: boolean;
+    /** 印影等图（GUJI-538／544）：图本体在 book-index-asset，`file` 是仓内相对路径，URL＝资源根＋file */
+    images?: EntityImage[];
+}
+
+/** Entity.images[]：file＋credit＋license 缺一则前端不出图 */
+export interface EntityImage {
+    file: string;
+    credit?: string;
+    license?: string;
+    source_url?: string;
+    note?: string;
+    /** 可选；有则按真实宽高比预留占位 */
+    width?: number;
+    height?: number;
 }
 
 /** Entity.dates：整数（负数为公元前）或 null；floruit=[起,止]，仅生卒皆缺时才有 */

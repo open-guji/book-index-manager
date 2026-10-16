@@ -50,6 +50,10 @@ export const entityPage = defineMessages({
     emptyRole: '該職任下的著作尚未著錄。',
     moreUnit: '種著作',
     cbdbAuto: 'CBDB 為自動匹配，未經人工核對',
+    sealAlt: '{name}印影',
+    imgCredit: '圖像：{credit}',
+    imgLicense: '授權：{license}',
+    imgSource: '來源',
 }, {
     subtype: {
         people: '人物',
@@ -99,4 +103,8 @@ export const entityPage = defineMessages({
     emptyRole: '该职任下的著作尚未著录。',
     moreUnit: '种著作',
     cbdbAuto: 'CBDB 为自动匹配，未经人工核对',
+    sealAlt: '{name}印影',
+    imgCredit: '图像：{credit}',
+    imgLicense: '授权：{license}',
+    imgSource: '来源',
 });
