@@ -25,13 +25,13 @@ class CLIHandler:
         if args.debug:
             setup_logger(level=logging.DEBUG)
 
-        storage_root = args.root or ""
-        if not storage_root:
-            config = AppConfig(args.config)
-            storage_root = config.storage_root
+        # 机器码优先级：--machine-id > 环境变量 BOOK_INDEX_MACHINE_ID / 配置文件 [Storage] machine_id
+        # > 未指定（None → 向 <root>/.machine_ids.json 租约分配最小空闲号，通常是 0）
+        config = AppConfig(args.config)
+        storage_root = args.root or config.storage_root
+        machine_id = getattr(args, "machine_id", None)
+        if machine_id is None:
             machine_id = config.machine_id
-        else:
-            machine_id = 1
 
         if not storage_root:
             print("Error: --root is required or set BOOK_INDEX_STORAGE_ROOT env var", file=sys.stderr)
@@ -742,11 +742,23 @@ class CLIHandler:
             w.writerows(rows)
 
 
+def _machine_id_arg(v):
+    n = int(v)
+    if not 0 <= n <= 2047:
+        raise argparse.ArgumentTypeError("machine id must be between 0 and 2047")
+    return n
+
+
 def main():
     parent_parser = argparse.ArgumentParser(add_help=False)
     parent_parser.add_argument("--config", default=None, help="Config file path")
     parent_parser.add_argument("--root", default=None, help="Storage root directory")
     parent_parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+    parent_parser.add_argument(
+        "--machine-id", type=_machine_id_arg, default=None, metavar="N",
+        help="机器码 0..2047：生成 ID 时写入 machine 位。不给则取环境变量 BOOK_INDEX_MACHINE_ID / 配置文件，"
+             "都没有就租约分配（通常 0）。多人/多机各自生成 ID 时请各用不同号（如你用 0、他用 1），"
+             "显式指定时唯一性由调用方负责")
 
     parser = argparse.ArgumentParser(description="Book Index Manager CLI")
     subparsers = parser.add_subparsers(dest="command", help="Commands")
@@ -756,10 +768,10 @@ def main():
         "gen-id", parents=[parent_parser],
         help="生成新 Snowflake ID（不写文件）",
         description="生成一个新的 Snowflake-base36 ID，用于 work/book/collection/entity。",
-        epilog="示例：book-index gen-id --type work --raw")
+        epilog="示例：book-index gen-id --type work --raw    # 指定机器码：book-index gen-id --type work --machine-id 1 --raw")
     p.add_argument("--status", choices=["official", "draft"], default="draft")
     p.add_argument("--type", choices=["book", "work", "collection", "entity"], default="book")
-    p.add_argument("--raw", action="store_true", help="Print only the Base58 ID")
+    p.add_argument("--raw", action="store_true", help="Print only the base36 ID")
 
     # reindex (deep)
     p = subparsers.add_parser(
