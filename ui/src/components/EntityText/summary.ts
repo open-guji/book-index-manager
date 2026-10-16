@@ -68,7 +68,8 @@ export function summaryFromItem(id: string, raw: Record<string, unknown>): Entit
     const desc = raw.description && typeof raw.description === 'object'
         ? s((raw.description as Record<string, unknown>).text)
         : s(raw.description);
-    return { id, type, title, meta: meta || undefined, description: truncate(desc) };
+    // 已升格的草稿 id：getItem 返回的是升格后的条目，id 用规范 id，链接才不绕 /item 的 308
+    return { id: s(raw.id) ?? id, type, title, meta: meta || undefined, description: truncate(desc) };
 }
 
 /** `getEntry` 返回的索引条目 → 摘要 */

@@ -146,6 +146,7 @@ describe('summaryFromItem', () => {
             description: { text: '字子政，本名更生。'.repeat(20) },
         });
         expect(s.title).toBe('劉向');
+        expect(s.id).toBe('p1');
         expect(s.meta).toBe('西漢 · -77–-6 · 沛縣');
         expect(Array.from(s.description!).length).toBe(121);
         expect(s.description!.endsWith('…')).toBe(true);
@@ -387,6 +388,23 @@ describe('<EntityText> 悬浮卡（overview#512）', () => {
         await act(async () => { release(null); });                              // 查无条目
         await waitFor(() => expect(screen.getByRole('tooltip').textContent).not.toContain('載入中…'));
         expect(screen.getByRole('tooltip').querySelector('a')).toBeNull();
+    });
+
+    it('旧草稿 id 已升格：链接和 onNavigate 用摘要里的规范 id，不走 /item/旧id 的 308（GUJI-522）', async () => {
+        const user = userEvent.setup();
+        const onNavigate = vi.fn((_id: string, e: React.MouseEvent) => e.preventDefault());
+        render(
+            <EntityText
+                text={PUNCTUATED} entities={spans} offsets="plain"
+                buildHref={id => `/item/${id}`} onNavigate={onNavigate}
+                transport={{ getItem: vi.fn(async () => ({ id: 'hcanon9', type: 'entity', primary_name: '揚州府' })) }}
+            />,
+        );
+        await user.tab();
+        const detail = await screen.findByRole('link', { name: '查看詳情 →' });
+        expect(detail.getAttribute('href')).toBe('/item/hcanon9');
+        await user.click(detail);
+        expect(onNavigate.mock.calls[0][0]).toBe('hcanon9');
     });
 
     it('收录实体：卡内「查看详情 →」用 buildHref，点击走 onNavigate', async () => {
