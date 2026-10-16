@@ -1701,6 +1701,8 @@ export function deriveEditionType(book: EraInferable): string {
     const patterns: [RegExp, string][] = [
         [/活字|聚珍/, '活字本'],
         [/石印/, '石印本'],
+        [/油印/, '油印本'],
+        [/曬印|晒印/, '曬印本'],
         [/影印|景印/, '影印本'],
         [/寫本|写本|繕寫|缮写/, '寫本'],
         [/鈔本|抄本/, '抄本'],

@@ -115,7 +115,7 @@ def classification_dir_problems(root, work_ids=None) -> List[str]:
 
 # ---- Book.edition_type ----
 
-EDITION_TYPES = {'刻本', '抄本', '稿本', '活字本', '石印本', '鉛印本', '影印本', '套印本', '拓本', '印刷本', '其他'}
+EDITION_TYPES = {'刻本', '抄本', '稿本', '活字本', '石印本', '鉛印本', '影印本', '套印本', '拓本', '印刷本', '油印本', '曬印本', '其他'}
 
 
 def edition_type_ok(v) -> bool:
