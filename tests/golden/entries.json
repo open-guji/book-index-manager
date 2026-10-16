@@ -317,7 +317,7 @@
     "negative": false
   },
   {
-    "name": "负例 book-源档旧 has_collated 不透传（待 B4 步骤 6 定）",
+    "name": "负例 book-源档旧 has_collated 不透传",
     "type": "Book",
     "record": {
       "id": "d59f2aaaa012",

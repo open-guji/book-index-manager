@@ -207,14 +207,14 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
     其他类型（Book / Collection / Work）输出统一格式：
       {id, title, type, path, [author, era, sort_year, holder, dynasty, role,
        juan_count, measure_info, additional_titles, attached_texts,
-       has_text, has_image, has_collated, edition, subtype, period, loss_status,
+       has_text, has_image, edition, subtype, period, loss_status,
        original_title, work_id, promoted_to]}
 
     可选字段仅当有值时出现（避免索引 shard 充斥空字段）。
     schema-v2：本函数与 book-index `build/build_derived.py` 的 `index_entry()` 逐字对齐
     （键序、取值规则一致，二者生成的 index 逐字节相同）。`promoted_to` 的权威来源是
     promotions.json，由调用方查好传入；`has_text`／`has_image` 只由 resources 推；
-    `has_collated` 取源档 `_has_collated`／`has_collated`（暂留源档，SCHEMA〈十〉例外）。
+    `has_collated` 不再由本函数产出（B4 步骤 6：源档旧值不透传，权威是 book-index build 从 book-text 推）。
     """
     id_str = metadata.get("id") or metadata.get("ID", "")
 
@@ -270,10 +270,6 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
         entry["has_text"] = True
     if flags["has_image"]:
         entry["has_image"] = True
-    # 過渡：只透傳源檔舊值。權威是 book-index build 從 book-text 推的 has_collated（工作包 C）；
-    # 源檔旗標由數據道刪除（工作包 D）後此處自然為空，屆時一併刪（工作包 G）。
-    if metadata.get("_has_collated") or metadata.get("has_collated"):
-        entry["has_collated"] = True
     if edition:
         entry["edition"] = edition
     if subtype:

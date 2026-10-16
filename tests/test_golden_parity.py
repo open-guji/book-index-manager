@@ -19,9 +19,7 @@ from book_index_manager.id_generator import BookIndexType
 GOLDEN = Path(__file__).parent / "golden" / "entries.json"
 CASES = json.loads(GOLDEN.read_text(encoding="utf-8"))
 
-KNOWN_RED_UNTIL = {
-    "负例 book-源档旧 has_collated 不透传（待 B4 步骤 6 定）": "步骤 6 定 has_collated 去留后删透传",
-}
+KNOWN_RED_UNTIL: dict[str, str] = {}
 
 
 def _params():

@@ -371,15 +371,14 @@ def test_index_entry_file_mark_wins_over_param():
     assert entry["promoted_to"] == "fromfile"
 
 
-def test_index_entry_has_collated_from_source_field():
-    """`_has_collated`（SCHEMA〈十〉例外，暂留源档）→ index 的 has_collated，键序在 has_image 之后。"""
-    md = {"id": "w1", "title": "X", "_has_collated": True,
+def test_index_entry_has_collated_not_passed_through():
+    """源档 `_has_collated`／`has_collated` 不再透传到 index（B4 步骤 6）；has_text／has_image 仍由 resources 推。"""
+    md = {"id": "w1", "title": "X", "_has_collated": True, "has_collated": True,
           "resources": [{"types": ["text", "image"]}], "edition": "某本"}
     entry = build_index_entry(md, BookIndexType.Work, "p.json")
-    assert entry["has_collated"] is True
-    keys = list(entry)
-    assert keys.index("has_image") < keys.index("has_collated") < keys.index("edition")
-    assert "has_collated" not in build_index_entry({"id": "w2", "title": "Y"}, BookIndexType.Work, "p.json")
+    assert "has_collated" not in entry
+    assert entry["has_text"] is True and entry["has_image"] is True
+
 
 
 def test_index_entry_has_text_only_from_resources():
