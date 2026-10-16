@@ -69,6 +69,34 @@ def test_gen_id_raw(monkeypatch, capsys, root):
     assert all(c in "0123456789abcdefghijklmnopqrstuvwxyz" for c in bid), bid
 
 
+def _machine_of(monkeypatch, capsys, root, bid):
+    out, _, _ = run_cli(monkeypatch, capsys, "parse-id", "--root", root, bid)
+    return int(re.search(r"Machine ID: (\d+)", out).group(1))
+
+
+def test_gen_id_machine_id_flag(monkeypatch, capsys, root):
+    out, _, code = run_cli(monkeypatch, capsys, "gen-id", "--root", root, "--type", "work",
+                           "--machine-id", "1", "--raw")
+    assert code == 0
+    assert _machine_of(monkeypatch, capsys, root, out.strip()) == 1
+
+
+def test_gen_id_machine_id_default_and_env(monkeypatch, capsys, root):
+    monkeypatch.delenv("BOOK_INDEX_MACHINE_ID", raising=False)
+    out, _, _ = run_cli(monkeypatch, capsys, "gen-id", "--root", root, "--raw")
+    assert _machine_of(monkeypatch, capsys, root, out.strip()) == 0  # 租约分配，空登记表取最小号
+    monkeypatch.setenv("BOOK_INDEX_MACHINE_ID", "7")
+    out, _, _ = run_cli(monkeypatch, capsys, "gen-id", "--root", root, "--raw")
+    assert _machine_of(monkeypatch, capsys, root, out.strip()) == 7
+    out, _, _ = run_cli(monkeypatch, capsys, "gen-id", "--root", root, "--machine-id", "2", "--raw")
+    assert _machine_of(monkeypatch, capsys, root, out.strip()) == 2  # 参数优先于环境变量
+
+
+def test_gen_id_machine_id_out_of_range(monkeypatch, capsys, root):
+    _, err, code = run_cli(monkeypatch, capsys, "gen-id", "--root", root, "--machine-id", "2048")
+    assert code != 0 and "2047" in err
+
+
 def test_gen_id_verbose(monkeypatch, capsys, root):
     out, _, code = run_cli(monkeypatch, capsys, "gen-id", "--root", root, "--type", "book")
     assert code == 0
