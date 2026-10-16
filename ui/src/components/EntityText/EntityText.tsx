@@ -287,12 +287,13 @@ const EntityCard: React.FC<{
             {summary?.description && <span className="bim-et-card-d">{convert(summary.description)}</span>}
             {state.status === 'loading' && <span className="bim-et-card-s">{convert('載入中…')}</span>}
             {state.status === 'error' && <span className="bim-et-card-s">{convert('摘要載入失敗')}</span>}
-            {/* 站上有条目页才放链接：summary 为空（加载中／无条目／失败）一律不放，避免 place/office 点进 404 */}
+            {/* 站上有条目页才放链接：summary 为空（加载中／无条目／失败）一律不放，避免 place/office 点进 404；
+                链接用摘要里的规范 id（旧草稿 id 已升格时，/item/旧id 的 308 经客户端导航会 404，GUJI-522） */}
             {summary && (
                 <a
                     className="bim-et-card-a"
-                    href={buildHref(entityId)}
-                    onClick={onNavigate ? e => onNavigate(entityId, e) : undefined}
+                    href={buildHref(summary.id || entityId)}
+                    onClick={onNavigate ? e => onNavigate(summary.id || entityId, e) : undefined}
                 >{t('reader.entityDetail')}</a>
             )}
         </span>
