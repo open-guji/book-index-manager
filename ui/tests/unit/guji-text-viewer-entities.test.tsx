@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { GujiTextViewer } from '../../src/components/Reader/GujiTextViewer';
 import { adaptEntityJson } from '../../src/core/entity-annotations';
 import { LocaleProvider } from '../../src/i18n';
@@ -59,6 +59,17 @@ describe('GujiTextViewer 实体标注', () => {
         expect(onEntityNavigate).not.toHaveBeenCalled();
         expect(ev).toBe(false); // 默认行为（跳转）被拦下
         fireEvent.click(ch, { detail: 1, ctrlKey: true });
+        expect(onEntityNavigate).toHaveBeenCalledWith('w1abc', expect.anything());
+    });
+
+    it('悬停卡里的「查看详情」：普通点击就进条目页（不被「点字不跳」拦下）', async () => {
+        const onEntityNavigate = vi.fn((_id: string, e: React.MouseEvent) => e.preventDefault());
+        const entityTransport = { getItem: vi.fn(async () => ({ id: 'w1abc', type: 'work', title: '漢書藝文志' })) };
+        const { container } = setup({ onEntityNavigate, entityTransport });
+        const link = container.querySelector('a.bim-et-work') as HTMLAnchorElement;
+        act(() => { link.focus(); });
+        const detail = await screen.findByRole('link', { name: /查看/ });
+        fireEvent.click(detail, { detail: 1 });
         expect(onEntityNavigate).toHaveBeenCalledWith('w1abc', expect.anything());
     });
 });
