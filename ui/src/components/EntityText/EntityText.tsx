@@ -130,6 +130,11 @@ export interface EntityMarkProps {
     loader: { owner: object; load: EntitySummaryLoader } | null;
     buildHref: (id: string) => string;
     onNavigate?: EntityTextProps['onNavigate'];
+    /**
+     * 点卡内「查看详情」；缺省同 `onNavigate`。
+     * 宿主若在 `onNavigate` 里拦下普通点击（如对读正文：点专名里的字只是点字），须另给这个，否则卡内链接点了没反应。
+     */
+    onCardNavigate?: EntityTextProps['onNavigate'];
     renderText: (s: string) => React.ReactNode;
     hoverDelayMs: number;
     /** 移出词或卡片后多久收卡（毫秒）；期间移回词或卡片则不收 */
@@ -140,7 +145,7 @@ export interface EntityMarkProps {
 let openCardCloser: (() => void) | null = null;
 
 export const EntityMark: React.FC<EntityMarkProps> = ({
-    span, label, hasBrackets, plain, loader, buildHref, onNavigate, renderText, hoverDelayMs,
+    span, label, hasBrackets, plain, loader, buildHref, onNavigate, onCardNavigate = onNavigate, renderText, hoverDelayMs,
     closeDelayMs = 280,
 }) => {
     const cardId = useId();
@@ -225,7 +230,7 @@ export const EntityMark: React.FC<EntityMarkProps> = ({
             >
                 {inner}
             </a>
-            {open && <EntityCard id={cardId} entityId={id} span={span} loader={loader} buildHref={buildHref} onNavigate={onNavigate} />}
+            {open && <EntityCard id={cardId} entityId={id} span={span} loader={loader} buildHref={buildHref} onNavigate={onCardNavigate} />}
         </span>
     );
 };

@@ -288,6 +288,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       if (!(keyboard || e.ctrlKey || e.metaKey || e.shiftKey)) { e.preventDefault(); return; }
       latest.current.onEntityNavigate?.(id, e);
     },
+    // 卡内「查看详情」是专门的跳转链接：普通点击就进条目页
+    detail: (id, e) => latest.current.onEntityNavigate?.(id, e),
   }), []);
 
   // 每页只收到落在本页的选中字；没变的页拿到同一个 Set，memo 才挡得住
@@ -463,6 +465,7 @@ interface PageHandlers {
   enter: (id: string) => void;
   leave: () => void;
   navigate: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
+  detail: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 /** 选中字按页分桶；内容没变的页复用上次的 Set（身份不变，memo 的页就不重渲染） */
@@ -625,6 +628,7 @@ const PageSection = React.memo(function PageSection({
                   loader={entityLoader}
                   buildHref={buildHref}
                   onNavigate={handlers.navigate}
+                  onCardNavigate={handlers.detail}
                   renderText={() => nodes}
                   hoverDelayMs={250}
                 />
