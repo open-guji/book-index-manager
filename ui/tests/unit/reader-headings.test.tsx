@@ -13,7 +13,7 @@ import { ReaderToc } from '../../src/components/Reader/ReaderToc';
 import { flattenToc } from '../../src/components/Reader/ReaderShell';
 import { adaptCharCord } from '../../src/core/guji-char-cord';
 import { adaptPunctJson } from '../../src/core/guji-pages';
-import { headingKey, headingsFromPunct, nestHeadings, parseHeadingKey, sanitizeHeadings } from '../../src/core/text-headings';
+import { headingKey, headingLabel, headingsFromPunct, nestHeadings, parseHeadingKey, sanitizeHeadings } from '../../src/core/text-headings';
 import { LocaleProvider } from '../../src/i18n';
 import type { ReaderTocItem } from '../../src/components/Reader/types';
 
@@ -158,11 +158,11 @@ describe('adaptPunctJson：标题符与认不得的类别', () => {
 describe('目录：从标题算、套层级', () => {
     const pages = adaptCharCord({ pages: doc });
 
-    it('headingsFromPunct：只收进目录的标题；label 优先，否则原文带点号与书名号', () => {
+    it('headingsFromPunct：只收进目录的标题；label 优先，否则原文；书目条只留书名、去书名号', () => {
         expect(headingsFromPunct(pages, punct)).toEqual([
             { level: 1, label: '卷二　經部二', anchor: '39:1:1' },
             { level: 2, label: '易類二', anchor: '39:3:1' },
-            { level: 3, label: '《易數鈎隱圖》三卷', anchor: '39:4:1' },
+            { level: 3, label: '易數鈎隱圖', anchor: '39:4:1' },
         ]);
     });
 
@@ -239,7 +239,7 @@ describe('TextReader：册 → 卷 → 標題', () => {
     const cached = [
         { level: 1, label: '卷二　經部二', anchor: '39:1:1' },
         { level: 2, label: '易類二', anchor: '39:3:1' },
-        { level: 3, label: '《易數鈎隱圖》三卷', anchor: '39:4:1' },
+        { level: 3, label: '易數鈎隱圖', anchor: '39:4:1' },
     ];
     const transport = {
         getItem: async () => ({ title: '總目' }),
@@ -295,5 +295,15 @@ describe('TextReader：册 → 卷 → 標題', () => {
         const { container } = mountReader('003');
         await waitFor(() => expect(tocBtn(container, '003#39:1:1')).not.toBeNull(), { timeout: 5000 });
         expect(tocBtn(container, '003#39:1:1')!.textContent).toContain('卷二　經部二');
+    });
+});
+
+describe('headingLabel：目录名化简（与 book-text heading_label 同口径）', () => {
+    it('书目条只留书名（连前缀），去书名号；非书目条只去书名号', () => {
+        expect(headingLabel('《子夏易傳》十一卷内府藏本')).toBe('子夏易傳');
+        expect(headingLabel('新本《鄭氏周易》三卷江蘇巡撫採進本')).toBe('新本鄭氏周易');
+        expect(headingLabel('《某書》不分卷')).toBe('某書');
+        expect(headingLabel('讀《論語》法')).toBe('讀論語法');
+        expect(headingLabel('卷一　經部一')).toBe('卷一　經部一');
     });
 });
