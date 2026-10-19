@@ -735,7 +735,12 @@ describe('measureText / numberToChinese', () => {
         expect(numberToChinese(130)).toBe('一百三十');
         expect(numberToChinese(444)).toBe('四百四十四');
         expect(numberToChinese(2416)).toBe('二千四百一十六');
-        expect(numberToChinese(10000)).toBe('10000');  // 万以上用阿拉伯数字
+        expect(numberToChinese(105)).toBe('一百〇五');
+        expect(numberToChinese(10000)).toBe('一萬');
+        expect(numberToChinese(22877)).toBe('二萬二千八百七十七');  // 永樂大典
+        expect(numberToChinese(20828)).toBe('二萬〇八百二十八');
+        expect(numberToChinese(110000)).toBe('十一萬');
+        expect(numberToChinese(100015)).toBe('十萬〇一十五');
     });
 
     it('无计量返回空串', () => {
