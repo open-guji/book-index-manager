@@ -1115,7 +1115,7 @@ export type LineageRelation =
     | '配补' | '续补' | '影印' | '校注' | '评点' | '续评' | string;
 
 /** 横向关联类型（兄弟本/同源/互校等） */
-export type LineageSiblingRelation = '兄弟本' | '同源' | '互校' | string;
+export type LineageSiblingRelation = '兄弟本' | '同源' | '互校' | '同版' | string;
 
 /** 关系信心等级 */
 export type LineageConfidence = 'certain' | 'consensus' | 'probable' | 'disputed';
@@ -1138,6 +1138,9 @@ export interface LineageDerivation {
 /** Book.lineage.related_to[i] —— 横向兄弟本 */
 export interface LineageSibling {
     book_id: string;
+    /** 新写法（schema/book.md）：对方 Book id；读时 `ref ?? book_id` */
+    ref?: string;
+    ref_type?: string;
     relation: LineageSiblingRelation;
     confidence: LineageConfidence;
     evidence?: string;

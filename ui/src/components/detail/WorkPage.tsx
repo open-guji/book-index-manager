@@ -95,6 +95,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                         current_location: b.current_location,
                         lineage: b.lineage,
                         measure_info: b.measure_info,
+                        summary: firstSentence((raw as { description?: { text?: string } } | null)?.description?.text),
                     }] as const;
                 })
                 .catch(() => [id, { id }] as const),
@@ -126,6 +127,8 @@ export const WorkPage: React.FC<WorkPageProps> = ({
     );
     const visibleRows = showAll ? table.rows : table.rows.slice(0, CAP_VERSIONS);
     const imageCount = table.allRows.filter(r => r.hasImage).length;
+    /** 收在代表行下的同版各部：「共 N 種」按版本计，不按部计 */
+    const copyCount = table.allRows.reduce((n, r) => n + (r.copies?.length ?? 0), 0);
 
     // ── 关联 ──
     // `_related`：已按本条视角取词、带对方现行题名（枢纽的题名由 withHubTitles 补；预取的种子里枢纽没有题名，显示为空）
@@ -286,7 +289,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                     id="versions"
                     title={t('workPage.sec.versions')}
                     meta={<MetaLine items={[
-                        t('workPage.versionsTotal', { n: versionIds.length }),
+                        t('workPage.versionsTotal', { n: versionIds.length - copyCount }),
                         allResolved && imageCount ? t('workPage.versionsWithImage', { n: imageCount }) : '',
                         table.rows.length !== table.allRows.length ? t('workPage.versionsCurrent', { n: table.rows.length }) : '',
                     ]} />}
@@ -436,6 +439,51 @@ function resourceName(it: ResourceEntry, convert: (s: string) => string): string
     return convert((it.url ? getDisplayNameFromUrl(it.url) : undefined) || it.name);
 }
 
+/** 描述首句：去 Markdown 粗体，取到第一个句号，过长截断 */
+function firstSentence(text?: string): string | undefined {
+    if (!text) return undefined;
+    const plain = text.replace(/\*\*/g, '').split(/\n/)[0].trim();
+    const cut = plain.indexOf('。');
+    const s = cut >= 0 ? plain.slice(0, cut + 1) : plain;
+    return s.length > 120 ? `${s.slice(0, 120)}…` : (s || undefined);
+}
+
+/**
+ * 同版组代表行下的「同版另藏」：按藏所归并，每部一条简链，链名用索书号（无则用 id）。
+ * 每部仍是独立 Book，点进去是那一部自己的页面。
+ */
+function SameEditionCopies({ copies, onNavigate, renderLink }: {
+    copies: VersionRow[];
+    onNavigate?: (id: string) => void;
+    renderLink?: RenderLink;
+}) {
+    const { t, convert } = useI18n();
+    const byPlace = new Map<string, VersionRow[]>();
+    for (const c of copies) {
+        const place = c.locationName || (c.holders[0] ? resourceName(c.holders[0], convert) : '') || '';
+        const list = byPlace.get(place) ?? [];
+        list.push(c);
+        byPlace.set(place, list);
+    }
+    return (
+        <span className="bim-d-zt-copies">
+            {t('workPage.sameEditionCopies', { n: copies.length })}
+            {[...byPlace].map(([place, list], gi) => (
+                <React.Fragment key={place || gi}>
+                    {gi > 0 ? '；' : ''}
+                    {place ? `${convert(place)} ` : ''}
+                    {list.map((c, i) => (
+                        <React.Fragment key={c.id}>
+                            {i > 0 ? ' · ' : ''}
+                            <BidLink id={c.id} label={c.callNumber || c.id} onNavigate={onNavigate} renderLink={renderLink} dense />
+                        </React.Fragment>
+                    ))}
+                </React.Fragment>
+            ))}
+        </span>
+    );
+}
+
 /** 版本表一行：版本名（下附卷帙小字）｜年代｜馆藏｜「有影印」色块 */
 function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
     row: VersionRow;
@@ -448,16 +496,15 @@ function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
     const eraLabel = [row.era.era, row.era.reign].filter(Boolean).join(' ');
     const inferred = row.era.source === 'edition';
     const holder = row.holders[0];
-    const holderBase = holder ? resourceName(holder, convert) : (row.locationName ? convert(row.locationName) : '');
-    // 同一版本常有多部藏本（如故宫藏三部殿本），只写馆名几行一模一样；有索书号就补在后面
-    const holderName = holderBase && row.callNumber ? `${holderBase}（${row.callNumber}）` : holderBase;
+    const holderName = holder ? resourceName(holder, convert) : (row.locationName ? convert(row.locationName) : '');
+    const copies = row.copies ?? [];
     const image = row.images[0];
     const imageHref = image ? resourceHref(image) : undefined;
     const imageTitle = row.images.map(r => resourceName(r, convert)).join('、');
 
     return (
-        <tr data-loading={loaded ? undefined : ''}>
-            <td className="bim-d-zt-main">
+        <tr data-loading={loaded ? undefined : ''} className={copies.length ? 'bim-d-zt-group' : undefined}>
+            <td className={copies.length ? 'bim-d-zt-main bim-d-zt-rep' : 'bim-d-zt-main'}>
                 <BidLink
                     id={row.id}
                     label={convert(row.name)}
@@ -469,6 +516,12 @@ function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
                 {measure
                     ? <span className="bim-d-meta">{convert(measure)}</span>
                     : <span className="bim-d-meta" aria-hidden="true">&nbsp;</span>}
+                {copies.length > 0 && row.summary && (
+                    <span className="bim-d-zt-summary">{convert(row.summary)}</span>
+                )}
+                {copies.length > 0 && (
+                    <SameEditionCopies copies={copies} onNavigate={onNavigate} renderLink={renderLink} />
+                )}
             </td>
             <td
                 className={`bim-d-zt-sub bim-d-zt-nowrap${eraLabel ? '' : ' bim-d-zt-blank'}`}
