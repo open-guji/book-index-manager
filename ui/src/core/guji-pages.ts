@@ -63,6 +63,7 @@ const HEADING_MARK = /^#{1,6}$/;
  * `pre_char` 缺省（或 null）即不带；给了但不是单个字符的，整条标点丢弃（不抛错）。
  * 认不得的 `kind` 整条丢弃：不能把它的 `mark` 当普通标点插进正文（spec/04 §六·6）。
  * 标题符（`kind: heading`）只认 `pos: before`、`mark` 为 1～6 个 `#`；`label`／`toc` 只在标题符上保留。
+ * 分段符（`kind: break`）只认锚段末字之后（`pos` 缺省或 `after`），`pos: before` 的整条丢弃。
  */
 export function adaptPunctJson(raw: unknown): { id?: string; anchor: string; mark: string; kind?: PunctKind; pos?: 'after' | 'before'; pre_char?: string; label?: string; toc?: boolean }[] {
     const list: unknown[] = Array.isArray(raw)
@@ -79,6 +80,7 @@ export function adaptPunctJson(raw: unknown): { id?: string; anchor: string; mar
         if (p.kind != null && !PUNCT_KINDS.has(p.kind)) continue;
         if (p.pos != null && p.pos !== 'after' && p.pos !== 'before') continue;
         const entry: ReturnType<typeof adaptPunctJson>[number] = { id: typeof p.id === 'string' ? p.id : undefined, anchor: p.anchor, mark: p.mark, kind: p.kind, pos: p.pos, pre_char: p.pre_char ?? undefined };
+        if (p.kind === 'break' && p.pos === 'before') continue;
         if (p.kind === 'heading') {
             if (p.pos !== 'before' || !HEADING_MARK.test(p.mark)) continue;
             if (typeof p.label === 'string' && p.label.trim()) entry.label = p.label.trim();

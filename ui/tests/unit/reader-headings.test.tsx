@@ -1,7 +1,7 @@
 /**
  * GUJI-240：分卷与各级标题（guji-format spec/04 v0.2 §4.2）。
- * 标题符 kind: heading 锚在标题首字前，标题到下一个分段符为止；分段符可写 pos: before（锚下一段首字）。
- * 改字（补字、换字）不影响标题：标题只认首字格位。
+ * 标题符 kind: heading 锚在标题首字前，标题到下一个分段符为止；分段符只锚段末字之后（pos: before 不认）。
+ * 改字（换字、补字）不影响标题：标题只认首字格位。
  */
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -43,14 +43,14 @@ const page = (n: number, cols: string[]) => ({
 // 四庫總目第 2 册卷二开头的缩样：卷名行、副题、類名、书名行、正文
 const doc = [page(39, ['欽定四庫全書總目卷二', '經部二', '易類二', '易數鈎隱圖三卷', '宋劉牧撰'])];
 const H = (anchor: string, mark: string, extra: Partial<PunctEntry> = {}): PunctEntry => ({ anchor, mark, kind: 'heading', pos: 'before', ...extra });
-const BB = (anchor: string): PunctEntry => ({ anchor, mark: '\n\n', kind: 'break', pos: 'before' });
+const BR = (anchor: string): PunctEntry => ({ anchor, mark: '\n\n', kind: 'break', pos: 'after' });
 const P = (anchor: string, mark: string, pos: 'before' | 'after' = 'after'): PunctEntry => ({ anchor, mark, kind: 'point', pos });
 const punct: PunctEntry[] = [
-    H('39:1:1', '#', { label: '卷二　經部二' }),
-    BB('39:2:1'), H('39:2:1', '#', { toc: false }),
-    BB('39:3:1'), H('39:3:1', '##'),
-    BB('39:4:1'), H('39:4:1', '###'), P('39:4:1', '《', 'before'), P('39:4:5', '》'),
-    BB('39:5:1'), P('39:5:4', '。'),
+    H('39:1:1', '#', { label: '卷二　經部二' }), BR('39:1:10'),
+    H('39:2:1', '#', { toc: false }), BR('39:2:3'),
+    H('39:3:1', '##'), BR('39:3:3'),
+    H('39:4:1', '###'), P('39:4:1', '《', 'before'), P('39:4:5', '》'), BR('39:4:7'),
+    P('39:5:4', '。'), BR('39:5:4'),
 ];
 
 function mount(docPages: any[], punctuations: PunctEntry[], extra: Partial<React.ComponentProps<typeof GujiTextViewer>> = {}) {
@@ -64,7 +64,7 @@ function mount(docPages: any[], punctuations: PunctEntry[], extra: Partial<React
 }
 const textOf = (el: Element) => el.textContent ?? '';
 
-describe('正文：标题段与分段符 pos=before', () => {
+describe('正文：标题段', () => {
     it('标题段排成 h2～h4，级别按 # 个数；正文仍是 <p>', () => {
         const { container } = mount(doc, punct);
         const hs = Array.from(container.querySelectorAll('.guji-reflow-heading'));
@@ -82,19 +82,35 @@ describe('正文：标题段与分段符 pos=before', () => {
         expect(container.textContent).not.toMatch(/\n/);
     });
 
-    it('改字不影响标题：卷名行补一个字、换一个字，标题照旧锚在首字、到下一个分段符为止', () => {
-        const changed = [page(39, ['欽定四庫全書總目卷二一', '經部貳', '易類二', '易數鈎隱圖三卷', '宋劉牧撰'])];
+    it('改字不影响标题：换首字、换末字，标题照旧锚在首字、到分段符为止', () => {
+        const changed = [page(39, ['钦定四庫全書總目卷二', '經部貳', '易類二', '易數鈎隱圖三卷', '宋劉牧撰'])];
         const { container } = mount(changed, punct);
         const hs = Array.from(container.querySelectorAll('.guji-reflow-heading'));
         expect(hs.map(h => h.getAttribute('data-heading-anchor'))).toEqual(['39:1:1', '39:2:1', '39:3:1', '39:4:1']);
-        expect(textOf(hs[0])).toBe('欽定四庫全書總目卷二一');
+        expect(textOf(hs[0])).toBe('钦定四庫全書總目卷二');
         expect(textOf(hs[1])).toBe('經部貳');
     });
 
-    it('分叶线关：下一页首字有 pos=before 分段符时不与上一页末段相并', () => {
+    it('在分段处补字：改字工具把分段符挪到新字上，新字就归进标题', () => {
+        const changed = [page(39, ['欽定四庫全書總目卷二一', '經部二', '易類二', '易數鈎隱圖三卷', '宋劉牧撰'])];
+        const moved = punct.map(p => (p.kind === 'break' && p.anchor === '39:1:10' ? BR('39:1:11') : p));
+        const hs = Array.from(mount(changed, moved).container.querySelectorAll('.guji-reflow-heading'));
+        expect(textOf(hs[0])).toBe('欽定四庫全書總目卷二一');
+        // 分段符没挪：新字自成一段，不算进标题
+        const kept = mount(changed, punct).container;
+        expect(textOf(kept.querySelectorAll('.guji-reflow-heading')[0])).toBe('欽定四庫全書總目卷二');
+    });
+
+    it('分段符 pos=before 不认：不在该字前分段', () => {
+        const { container } = mount([page(3, ['甲乙', '丙丁'])], [{ anchor: '3:2:1', mark: '\n\n', kind: 'break', pos: 'before' }]);
+        expect(container.querySelectorAll('p.guji-reflow-paragraph')).toHaveLength(1);
+    });
+
+    it('分叶线关：下一页首字是标题时不与上一页末段相并', () => {
         const two = [page(3, ['甲乙']), page(4, ['丙丁'])];
-        const { container } = mount(two, [BB('4:1:1')], { pageBreaks: false });
-        expect(container.querySelectorAll('p.guji-reflow-paragraph')).toHaveLength(2);
+        const { container } = mount(two, [H('4:1:1', '#')], { pageBreaks: false });
+        expect(container.querySelectorAll('.guji-reflow-heading')).toHaveLength(1);
+        expect(Array.from(container.querySelectorAll('p.guji-reflow-paragraph')).map(textOf)).toEqual(['甲乙']);
         const merged = mount(two, [], { pageBreaks: false }).container;
         expect(merged.querySelectorAll('p.guji-reflow-paragraph')).toHaveLength(1);
     });
@@ -135,7 +151,7 @@ describe('adaptPunctJson：标题符与认不得的类别', () => {
             { anchor: '1:1:4', mark: '，' },
             { anchor: '1:1:5', mark: '\n\n', kind: 'break', pos: 'before' },
         ]);
-        expect(out.map(p => p.anchor)).toEqual(['1:1:4', '1:1:5']);
+        expect(out.map(p => p.anchor)).toEqual(['1:1:4']);
     });
 });
 
@@ -150,13 +166,15 @@ describe('目录：从标题算、套层级', () => {
         ]);
     });
 
-    it('标题后的分段符写在标题末字之后（pos=after）也认', () => {
-        const after: PunctEntry[] = [H('39:3:1', '##'), { anchor: '39:3:3', mark: '\n\n', kind: 'break', pos: 'after' }];
+    it('标题到分段符为止；pos=before 的分段符不认，标题一直延到下一个标题', () => {
+        const after: PunctEntry[] = [H('39:3:1', '##'), BR('39:3:3')];
         expect(headingsFromPunct(pages, after)).toEqual([{ level: 2, label: '易類二', anchor: '39:3:1' }]);
+        const before: PunctEntry[] = [H('39:3:1', '##'), { anchor: '39:4:1', mark: '\n\n', kind: 'break', pos: 'before' }, H('39:5:1', '##')];
+        expect(headingsFromPunct(pages, before)[0].label).toBe('易類二易數鈎隱圖三卷');
     });
 
     it('没有标题符＝空', () => {
-        expect(headingsFromPunct(pages, [BB('39:2:1')])).toEqual([]);
+        expect(headingsFromPunct(pages, [BR('39:2:3')])).toEqual([]);
         expect(headingsFromPunct(null, punct)).toEqual([]);
     });
 

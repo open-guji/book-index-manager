@@ -199,8 +199,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
           const here = punctMap.get(ch.id) || [];
           const { before: beforePuncts, after: afterPuncts } = splitPuncts(here);
           const hasBreak = here.some((p) => p.kind === 'break' && p.pos !== 'before');
-          // 分段符 pos=before（锚下一段首字）与标题符：在本字之前结束上一段
-          if (here.some((p) => (p.kind === 'break' && p.pos === 'before') || p.kind === 'heading')) {
+          // 标题符：在本字之前结束上一段（分段符只锚段末字之后，pos=before 的不认）
+          if (here.some((p) => p.kind === 'heading')) {
             if (currentChars.length > 0) pushPara();
             else if (paragraphs.length === 0) leadStarts = true;
           }

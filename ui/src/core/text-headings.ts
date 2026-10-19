@@ -2,7 +2,7 @@
  * 分卷与各级标题（guji-format spec/04 v0.2 §4.2；spec/07 §3.3 的 `chapters[].headings`）。
  *
  * 标题符是 punct.json 里 `kind: heading` 的条目：锚在标题首字前，`mark` 的 `#` 个数是级别，
- * 标题到下一个分段符为止。目录有两个来源：
+ * 标题到下一个分段符（锚标题末字之后）为止。目录有两个来源：
  * - 版本 index.json 章条目的 `headings`（book-text 脚本从各册 punct 抽出的缓存），全书目录一次画出；
  * - 没有缓存时，当前打开的这一册从已取到的 char＋punct 现算（`headingsFromPunct`）。
  */
@@ -65,7 +65,7 @@ export function headingsFromPunct(pages: readonly HeadingPage[] | null | undefin
             for (const ch of col.chars) {
                 const here = byAnchor.get(ch.id) ?? [];
                 const head = here.find(p => p.kind === 'heading' && p.pos === 'before' && HEADING_MARK.test(p.mark));
-                if (head || here.some(p => p.kind === 'break' && p.pos === 'before')) close();
+                if (head) close();
                 if (head && head.toc !== false) {
                     const label = head.label?.trim();
                     cur = { h: { level: head.mark.length, label: label ?? '', anchor: ch.id }, text: '', fixed: !!label };
