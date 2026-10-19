@@ -57,7 +57,7 @@ export interface GujiTextViewerProps {
   loadEntitySummary?: EntitySummaryLoader;
   /** 条目链接；默认 `/item/<id>` */
   buildEntityHref?: (id: string) => string;
-  /** 站内跳转（宿主在这里 `preventDefault` 后走自己的路由）；不传则按 href 整页跳 */
+  /** 已不再调用（0.60.0 起条目页一律在新标签页打开，不打断阅读）；保留只为兼容旧宿主 */
   onEntityNavigate?: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
   /** 是否画分叶分割线（「第 N 葉」）；false＝连续阅读，DOM 里不出现分割元素。缺省 true */
   pageBreaks?: boolean;
@@ -304,14 +304,13 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     click: (id) => { pageLockUntil.current = Date.now() + 1200; latest.current.onCharClick?.(id); },
     enter: (id) => latest.current.onCharHover?.(id),
     leave: () => latest.current.onCharHover?.(null),
-    // 点专名里的字＝照常点字（高亮书影），不跳条目；Ctrl／⌘／Shift 点击与键盘回车才进条目页
+    // 点专名里的字＝照常点字（高亮书影），不跳条目。条目页一律在新标签页打开，不打断阅读：
+    // Ctrl／⌘／Shift 点击交给浏览器（新标签／新窗口），键盘回车自己开新标签页
     navigate: (id, e) => {
-      const keyboard = e.detail === 0;
-      if (!(keyboard || e.ctrlKey || e.metaKey || e.shiftKey)) { e.preventDefault(); return; }
-      latest.current.onEntityNavigate?.(id, e);
+      if (e.ctrlKey || e.metaKey || e.shiftKey) return;
+      e.preventDefault();
+      if (e.detail === 0) window.open(e.currentTarget.href, '_blank', 'noopener');
     },
-    // 卡内「查看详情」是专门的跳转链接：普通点击就进条目页
-    detail: (id, e) => latest.current.onEntityNavigate?.(id, e),
   }), []);
 
   // 每页只收到落在本页的选中字；没变的页拿到同一个 Set，memo 才挡得住
@@ -523,7 +522,6 @@ interface PageHandlers {
   enter: (id: string) => void;
   leave: () => void;
   navigate: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
-  detail: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 /** 选中字按页分桶；内容没变的页复用上次的 Set（身份不变，memo 的页就不重渲染） */
@@ -722,7 +720,7 @@ const PageSection = React.memo(function PageSection({
                   loader={entityLoader}
                   buildHref={buildHref}
                   onNavigate={handlers.navigate}
-                  onCardNavigate={handlers.detail}
+                  cardNewTab
                   renderText={() => nodes}
                   hoverDelayMs={250}
                 />
@@ -746,11 +744,13 @@ function clampIndicatorY(y: number): number {
 
 const INDICATOR_KEY_STEP = 0.02;
 const INDICATOR_SIZE = 16;
+/** 箭头与正文框左缘的间距 */
+const INDICATOR_GAP = 4;
 
 /**
- * 页指示头：固定在视口里、正文左缘外的小三角（▶），指向它所在的那一行。
+ * 页指示头：固定在视口里、正文框左缘外的细线箭头（→），指向它所在的那一行。
  * 书影显示的页码以它所在的行为准。可拖（鼠标、触屏）、可聚焦后用上下键微调（Shift 大步）；
- * 不盖在正文上，也不挡正文的选字——只有三角本身接收指针。
+ * 不盖在正文上，也不挡正文的选字——只有箭头本身接收指针。
  */
 function PageIndicator({ y, containerRef, onDrag, onCommit }: {
   y: number;
@@ -761,25 +761,36 @@ function PageIndicator({ y, containerRef, onDrag, onCommit }: {
   const { t } = useI18n();
   const [left, setLeft] = useState(0);
   const dragging = useRef(false);
+  const selfRef = useRef<HTMLDivElement>(null);
   const lastY = useRef(y);
   lastY.current = y;
 
-  // 三角贴着正文栏的左缘；窗口改大小时重算
+  // 箭头放在正文框（阅读器的 .bim-rd-col；单独用时是本组件外框）外面、紧贴左缘。
+  // 书影栏晚一拍才展开、正文框随之右移，所以不只在挂载时量：正文框尺寸一变（ResizeObserver）和窗口改大小都重算
   const place = useCallback(() => {
-    const view = containerRef.current?.querySelector<HTMLElement>('.guji-text-reflow-view');
-    const rect = (view ?? containerRef.current)?.getBoundingClientRect();
-    setLeft(Math.max(0, (rect?.left ?? 0) - INDICATOR_SIZE - 2));
+    // 从箭头自己的节点往上找：子组件的 layout effect 跑在父组件 ref 挂上之前，挂载时 containerRef 还是 null
+    // （旧版因此总量到 0，箭头一直贴在视口最左边）
+    const c = selfRef.current?.parentElement ?? containerRef.current;
+    const box = c?.closest<HTMLElement>('.bim-rd-col') ?? c;
+    const rect = box?.getBoundingClientRect();
+    setLeft(Math.max(0, (rect?.left ?? 0) - INDICATOR_SIZE - INDICATOR_GAP));
   }, [containerRef]);
   useLayoutEffect(() => {
     place();
     window.addEventListener('resize', place);
-    return () => window.removeEventListener('resize', place);
-  }, [place]);
+    const c = selfRef.current?.parentElement ?? containerRef.current;
+    const box = c?.closest<HTMLElement>('.bim-rd-col') ?? c;
+    // 书影栏展开时正文框可能只挪位置、不变大小：看正文栏（.bim-rd-text，宽度会变）而不只看正文框
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => place()) : null;
+    for (const el of [box, c?.closest<HTMLElement>('.bim-rd-text'), c?.closest<HTMLElement>('.bim-rd-body')]) if (el) ro?.observe(el);
+    return () => { window.removeEventListener('resize', place); ro?.disconnect(); };
+  }, [place, containerRef]);
 
   const fracOf = (clientY: number) => clampIndicatorY(clientY / Math.max(1, window.innerHeight));
 
   return (
     <div
+      ref={selfRef}
       role="slider"
       tabIndex={0}
       className="guji-page-indicator"
@@ -797,10 +808,9 @@ function PageIndicator({ y, containerRef, onDrag, onCommit }: {
         height: INDICATOR_SIZE,
         zIndex: 20,
         cursor: 'ns-resize',
-        touchAction: 'none', // 触屏上拖三角不滚页面
-        background: bim('accent'),
-        clipPath: 'polygon(0 0, 100% 50%, 0 100%)',
-        outline: 'none',
+        touchAction: 'none', // 触屏上拖箭头不滚页面
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: bim('meta-fg'),
       }}
       onPointerDown={(e) => {
         dragging.current = true;
@@ -830,6 +840,12 @@ function PageIndicator({ y, containerRef, onDrag, onCommit }: {
         e.preventDefault();
         onCommit(clampIndicatorY(y + dir * (e.shiftKey ? 5 : 1) * INDICATOR_KEY_STEP));
       }}
-    />
+    >
+      {/* 细线箭头 →：指向「书影所示的这一行」；颜色取说明文字的淡色，悬停、聚焦时加深（见 reader-css） */}
+      <svg width={INDICATOR_SIZE} height={INDICATOR_SIZE} viewBox="0 0 16 16" aria-hidden="true" focusable="false"
+        fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 8h11M9 4l4 4-4 4" />
+      </svg>
+    </div>
   );
 }
