@@ -155,6 +155,8 @@ function asCollatedIndex(id: string, idx: TextIndex): CollatedEditionIndex {
 function unitOf(version: TextVersion | undefined, idx: TextIndex | null): string {
     if (idx?.type === 'kaozhen') return '章';
     if (idx?.juan_metadata && Object.values(idx.juan_metadata).some(m => m.vol_label)) return '冊';
+    // 卷在标题符里（heading_levels，GUJI-240）：章就是册，目录写「冊2」而不是「卷2」
+    if (Array.isArray(idx?.heading_levels) && idx.heading_levels.length > 0) return '冊';
     return isCollatedKind(version?.kind) ? '卷' : '章';
 }
 

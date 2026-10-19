@@ -244,7 +244,7 @@ describe('TextReader：册 → 卷 → 標題', () => {
     const transport = {
         getItem: async () => ({ title: '總目' }),
         getTextManifest: async () => ({ id: WORK, versions: [{ key: 'default', kind: 'self_collated', label: '自校本', source: 'original', is_original: true }] }),
-        getTextIndex: async () => ({ chapters: [
+        getTextIndex: async () => ({ heading_levels: ['卷', '類', '書'], chapters: [
             { n: 2, file: '002', title: '經部總敘·易類一至三', char_file: '002.char.json', headings: cached },
             { n: 3, file: '003', title: '易類四至五', char_file: '003.char.json' },
         ] }),
@@ -277,6 +277,8 @@ describe('TextReader：册 → 卷 → 標題', () => {
             await waitFor(() => expect(container.querySelector('.guji-reflow-heading')).not.toBeNull(), { timeout: 5000 });
             expect(tocBtn(container, '002')).not.toBeNull();
             expect(tocBtn(container, '003')).not.toBeNull();
+            // 卷在标题里：章行写册，不写卷
+            expect(tocBtn(container, '002')!.textContent).toContain('冊2');
             const vol = tocBtn(container, '002#39:1:1')!;
             expect(vol.textContent).toContain('卷二');
             fireEvent.click(vol);
