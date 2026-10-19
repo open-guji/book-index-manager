@@ -439,13 +439,17 @@ function resourceName(it: ResourceEntry, convert: (s: string) => string): string
     return convert((it.url ? getDisplayNameFromUrl(it.url) : undefined) || it.name);
 }
 
-/** 描述首句：去 Markdown 粗体，取到第一个句号，过长截断 */
+/**
+ * 代表行的一句介绍：取描述首段的句子；首句以《書名》起首、多半只是复述书名版本时跳过它。
+ * 去 Markdown 粗体；过长截断（界面再按两行截）。
+ */
 function firstSentence(text?: string): string | undefined {
     if (!text) return undefined;
-    const plain = text.replace(/\*\*/g, '').split(/\n/)[0].trim();
-    const cut = plain.indexOf('。');
-    const s = cut >= 0 ? plain.slice(0, cut + 1) : plain;
-    return s.length > 120 ? `${s.slice(0, 120)}…` : (s || undefined);
+    const para = text.replace(/\*\*/g, '').split(/\n/)[0].trim();
+    const sentences = para.match(/[^。]+。?/g) ?? [];
+    const pick = sentences.length > 1 && sentences[0]?.startsWith('《') ? sentences[1] : sentences[0];
+    const s = (pick ?? '').trim();
+    return s ? (s.length > 120 ? `${s.slice(0, 120)}…` : s) : undefined;
 }
 
 /**
@@ -496,8 +500,11 @@ function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
     const eraLabel = [row.era.era, row.era.reign].filter(Boolean).join(' ');
     const inferred = row.era.source === 'edition';
     const holder = row.holders[0];
-    const holderName = holder ? resourceName(holder, convert) : (row.locationName ? convert(row.locationName) : '');
     const copies = row.copies ?? [];
+    // 同版组的代表行：馆藏写藏所（不写资源站名），有索书号时附在下面，和下列各部同一口径
+    const holderName = copies.length && row.locationName
+        ? convert(row.locationName)
+        : holder ? resourceName(holder, convert) : (row.locationName ? convert(row.locationName) : '');
     const image = row.images[0];
     const imageHref = image ? resourceHref(image) : undefined;
     const imageTitle = row.images.map(r => resourceName(r, convert)).join('、');
@@ -532,6 +539,7 @@ function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
             <td className={`bim-d-zt-sub${holderName ? '' : ' bim-d-zt-blank'}`}>
                 {/* 馆藏只写名称不做外链：一行里只留版本名与「有影印」两个点击目标 */}
                 {holderName || (loaded ? <span className="bim-d-zt-empty">—</span> : null)}
+                {copies.length > 0 && row.callNumber && <span className="bim-d-meta" style={{ display: 'block', fontSize: 12 }}>{row.callNumber}</span>}
                 {row.holders.length > 1 && <span className="bim-d-meta"> +{row.holders.length - 1}</span>}
             </td>
             <td className={row.hasImage ? undefined : 'bim-d-zt-blank'} style={{ textAlign: 'right' }}>
