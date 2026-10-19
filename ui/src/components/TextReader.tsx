@@ -40,6 +40,7 @@ import { GujiTextViewer } from './Reader/GujiTextViewer';
 import { ZoomPanBox, type ZoomPanHandle } from './Reader/ZoomPanBox';
 import { useChapterWarpData, type ReaderWarpResolver } from './Reader/useChapterWarpData';
 import { useChapterEntities, type ReaderEntityResolver } from './Reader/useChapterEntities';
+import { headingKey, headingsFromPunct, nestHeadings, parseHeadingKey, sanitizeHeadings, type HeadingNode, type TextHeading } from '../core/text-headings';
 
 /** 当前位置：哪份版本的哪一章。`isDefault` 时网址里不写版本 key（规格 §六） */
 export interface TextLocation {
@@ -47,6 +48,8 @@ export interface TextLocation {
     /** 章 key（三位编号，如 `003`）；目录还没取到时为 null */
     chapter: string | null;
     isDefault: boolean;
+    /** 读者在目录里点了章内标题：标题首字的格位 key（宿主可写进网址的 #）；其余情况不带 */
+    anchor?: string;
 }
 
 /** 位置为什么变：auto＝组件自己纠正（没给章号、章号/版本无效）；chapter＝读者选了章；version＝读者切了版本 */
@@ -62,6 +65,11 @@ export interface TextReaderProps {
     chapter?: string | null;
     /** 版本或章变了：宿主据此改地址（新 URL 见规格 §六） */
     onLocationChange?: (loc: TextLocation, cause: TextLocationCause) => void;
+    /**
+     * 章内位置：格位 key（如网址 `#39:1:1`）。给了（或变了）就在当前章正文到手后滚到该字所在的段，
+     * 用于分享到某篇、某个标题。只用于带逐字数据的自校本
+     */
+    anchor?: string | null;
     /** 点关联条目、工具条书名时回调（不传则书名链接按 href 走） */
     onNavigate?: (id: string) => void;
     /** 工具条上的书名；缺省取条目的标题 */
@@ -147,6 +155,8 @@ function asCollatedIndex(id: string, idx: TextIndex): CollatedEditionIndex {
 function unitOf(version: TextVersion | undefined, idx: TextIndex | null): string {
     if (idx?.type === 'kaozhen') return '章';
     if (idx?.juan_metadata && Object.values(idx.juan_metadata).some(m => m.vol_label)) return '冊';
+    // 卷在标题符里（heading_levels，GUJI-240）：章就是册，目录写「冊2」而不是「卷2」
+    if (Array.isArray(idx?.heading_levels) && idx.heading_levels.length > 0) return '冊';
     return isCollatedKind(version?.kind) ? '卷' : '章';
 }
 
@@ -158,18 +168,36 @@ function chapterLabel(c: TextChapter, unit: string, convert: (s: string) => stri
     return withPosition && !/^[卷冊册章篇回第]/.test(c.title) ? `${pos}　${t}` : t;
 }
 
-/** 目录树：有 juan_groups 按分组，否则平铺 */
-function buildToc(idx: TextIndex, matchStates: Record<string, import('./CollatedEdition').JuanMatchState>, unit: string, convert: (s: string) => string, withPosition: boolean): ReaderTocItem[] {
+/** 章内标题 → 目录项：有下级标题的是可选中的分组 */
+function headingItems(file: string, nodes: HeadingNode[], convert: (s: string) => string): ReaderTocItem[] {
+    return nodes.map(n => ({
+        key: headingKey(file, n.anchor),
+        label: convert(n.label),
+        inChapter: true,
+        ...(n.children.length > 0 ? { selectable: true, children: headingItems(file, n.children, convert) } : {}),
+    }));
+}
+
+/**
+ * 目录树：有 juan_groups 按分组，否则平铺。
+ * 章有标题（`headingsOf` 给出）时，该章是可选中的分组，下面挂卷、各级标题（spec/04 v0.2 §4.2）。
+ */
+function buildToc(
+    idx: TextIndex, matchStates: Record<string, import('./CollatedEdition').JuanMatchState>, unit: string, convert: (s: string) => string, withPosition: boolean,
+    headingsOf: (c: TextChapter) => TextHeading[] = () => [],
+): ReaderTocItem[] {
     const byKey = new Map(idx.chapters.map(c => [c.file, c] as const));
     const hintOf = (ms: import('./CollatedEdition').JuanMatchState): React.ReactNode =>
         ms === 'loading' ? '…' : typeof ms === 'number' && ms > 0 ? ms : undefined;
     const leaf = (f: string, label?: string): ReaderTocItem => {
         const c = byKey.get(f);
+        const hs = c ? headingsOf(c) : [];
         return {
             key: f,
             label: label ?? (c ? chapterLabel(c, unit, convert, withPosition) : f),
             hint: hintOf(matchStates[f]),
             disabled: matchStates[f] === 0,
+            ...(hs.length > 0 ? { selectable: true, children: headingItems(f, nestHeadings(hs), convert) } : {}),
         };
     };
     const groups = idx.juan_groups?.filter(g => g.files.some(f => byKey.has(f)) || g.children?.length);
@@ -208,7 +236,7 @@ export const TextReader: React.FC<TextReaderProps> = props => {
 
 const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof useReaderPrefs> }> = ({
     prefsState,
-    id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate,
+    id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate, anchor: anchorProp,
     title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical, onReportError, revisedAt, backHref, backLabel,
     resolveWarpData, warpData: warpDataProp, resolveEntities, onEntityNavigate,
     className, style,
@@ -246,8 +274,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     const versionKey = version?.key ?? null;
     const activeChapter = chapterControlled ? chapterProp : ownChapter;
 
-    const notify = useCallback((key: string, chapter: string | null, cause: TextLocationCause) => {
-        onLocationRef.current?.({ key, chapter, isDefault: key === defaultKey }, cause);
+    const notify = useCallback((key: string, chapter: string | null, cause: TextLocationCause, anchor?: string) => {
+        onLocationRef.current?.({ key, chapter, isDefault: key === defaultKey, ...(anchor ? { anchor } : {}) }, cause);
     }, [defaultKey]);
 
     // 宿主给的版本 key 不在 manifest 里：回落 default 并通知，让宿主纠正地址
@@ -322,11 +350,36 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         notify(newKey, chapter, 'version');
     }, [manifest, versionKey, loadIndex, chapterMeta, effectiveChapter, versionControlled, chapterControlled, notify]);
 
+    // ── 章内标题：目录点标题、宿主给 anchor → 滚到该段；正文滚动 → 目录高亮当前标题 ──
+    const [pendingAnchor, setPendingAnchor] = useState<{ chapter: string; anchor: string; nonce: number } | null>(null);
+    const [visibleHeading, setVisibleHeading] = useState<{ chapter: string; anchor: string } | null>(null);
+    const anchorNonce = useRef(0);
+    const goToAnchor = useCallback((chapter: string, anchor: string) => {
+        setPendingAnchor({ chapter, anchor, nonce: ++anchorNonce.current });
+        setVisibleHeading({ chapter, anchor });
+    }, []);
+
     const handleSelectChapter = useCallback((ck: string) => {
         if (!versionKey) return;
+        const h = parseHeadingKey(ck);
+        if (h) {
+            goToAnchor(h.chapter, h.anchor);
+            if (!chapterControlled) setOwnChapter(h.chapter);
+            notify(versionKey, h.chapter, 'chapter', h.anchor);
+            return;
+        }
         if (!chapterControlled) setOwnChapter(ck);
         notify(versionKey, ck, 'chapter');
-    }, [versionKey, chapterControlled, notify]);
+    }, [versionKey, chapterControlled, notify, goToAnchor]);
+
+    // 宿主给的章内位置（网址 #格位）：给了或变了才跳一次
+    const lastAnchorProp = useRef<string | null>(null);
+    useEffect(() => {
+        if (!anchorProp || !effectiveChapter || anchorProp === lastAnchorProp.current) return;
+        lastAnchorProp.current = anchorProp;
+        goToAnchor(effectiveChapter, anchorProp);
+    }, [anchorProp, effectiveChapter, goToAnchor]);
+    useEffect(() => { if (!anchorProp) lastAnchorProp.current = null; }, [anchorProp]);
 
     // ── 章内容 ──
     const [content, setContent] = useState<TextChapterContent | null>(null);
@@ -431,6 +484,18 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         setSelectedCharIds(new Set());
         setHoveredCharId(null);
     }, [effectiveChapter, versionKey]);
+
+    // 当前这一册现算的标题（index.json 没有 headings 缓存时用）：对读数据确是这一章的才算
+    const warpIsCurrent = warpStart.key === warpChapterKey && warpStart.started;
+    const liveHeadings = useMemo<TextHeading[]>(
+        () => (warpIsCurrent && warpData ? headingsFromPunct((warpData as any).pages, (warpData as any).punctuations) : []),
+        [warpIsCurrent, warpData],
+    );
+    const headingsOf = useCallback((c: TextChapter): TextHeading[] => {
+        const cached = sanitizeHeadings(c.headings);
+        if (cached.length > 0) return cached;
+        return c.file === effectiveChapter ? liveHeadings : [];
+    }, [effectiveChapter, liveHeadings]);
 
     // 划词或点击字发生跨页或翻页时的处理：总是以选区的第一个字所在的页码作为当前书影显示页
     const handleSelectionUpdate = useCallback((ids: string[]) => {
@@ -617,7 +682,12 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     if (!index) return <ReaderSkeleton className={className} style={style} title={title ?? entryTitle} label={t('reader.tocLoading')} />;
 
     const unit = unitOf(version, index);
-    const toc = buildToc(index, matchStates, unit, convert, isCollated);
+    const toc = buildToc(index, matchStates, unit, convert, isCollated, headingsOf);
+    // 目录高亮：读到的标题（在本章目录里才算），否则当前章
+    const curHeadingKey = visibleHeading && effectiveChapter && visibleHeading.chapter === effectiveChapter
+        ? headingKey(effectiveChapter, visibleHeading.anchor) : null;
+    const tocActiveKey = curHeadingKey && chapterMeta && headingsOf(chapterMeta).some(h => h.anchor === visibleHeading!.anchor)
+        ? curHeadingKey : (effectiveChapter ?? null);
     const readerVersions: ReaderVersion[] = manifest.versions.map(v => ({
         key: v.key,
         label: textVersionLabel(v),
@@ -699,6 +769,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                 />
             ) : undefined}
             activeKey={effectiveChapter ?? null}
+            tocActiveKey={tocActiveKey}
             onSelect={handleSelectChapter}
             images={images.images}
             // 加载中（书影请求或对读 warp 数据）都不撑开书影栏（GUJI-181）：没书影的书会「开 20ms 又收」，
@@ -855,6 +926,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                         onVisiblePageChange={(p) => { if (Date.now() >= navLockUntil.current) setActivePage(p); }}
                         convert={convert}
                         scrollToPage={scrollTarget}
+                        scrollToAnchor={pendingAnchor && pendingAnchor.chapter === effectiveChapter && warpIsCurrent ? pendingAnchor : null}
+                        onVisibleHeadingChange={(a) => setVisibleHeading(a && effectiveChapter ? { chapter: effectiveChapter, anchor: a } : null)}
                         pageBreaks={prefs.pageBreaks}
                         pageIndicatorY={prefs.pageIndicatorY}
                         onPageIndicatorYChange={(y) => setPrefs({ pageIndicatorY: y })}

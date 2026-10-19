@@ -80,8 +80,12 @@ export interface ReaderTocItem {
     hint?: React.ReactNode;
     /** 置灰且不可选（搜索无命中的卷） */
     disabled?: boolean;
-    /** 有 children 即为分组：点标题只展开收起，不选中 */
+    /** 有 children 即为分组：点标题只展开收起，不选中（`selectable` 的分组除外） */
     children?: ReaderTocItem[];
+    /** 分组本身也是一卷（如带标题目录的一册）：点名字选中它，点箭头展开收起；翻卷器把它当一卷 */
+    selectable?: boolean;
+    /** 章内的位置（标题）：可选中，但不算翻卷器的一卷 */
+    inChapter?: boolean;
     /** 分组默认展开 */
     defaultExpanded?: boolean;
 }

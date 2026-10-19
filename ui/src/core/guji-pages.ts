@@ -53,11 +53,19 @@ export interface GujiPageInfo {
 /** 单个字符：恰好一个码点（代理对算一个字） */
 const isSingleChar = (v: unknown): v is string => typeof v === 'string' && Array.from(v).length === 1;
 
+/** 标点条目的类别：point 点号与成对标号／break 分段符／heading 标题符（guji-format spec/04 v0.2 §4.2） */
+export type PunctKind = 'point' | 'break' | 'heading';
+const PUNCT_KINDS: ReadonlySet<string> = new Set(['point', 'break', 'heading']);
+const HEADING_MARK = /^#{1,6}$/;
+
 /**
  * `punct.json`（`{punctuations: [...]}` 或直接数组）→ 标点条目；缺 `anchor`／`mark` 的丢弃。
  * `pre_char` 缺省（或 null）即不带；给了但不是单个字符的，整条标点丢弃（不抛错）。
+ * 认不得的 `kind` 整条丢弃：不能把它的 `mark` 当普通标点插进正文（spec/04 §六·6）。
+ * 标题符（`kind: heading`）只认 `pos: before`、`mark` 为 1～6 个 `#`；`label`／`toc` 只在标题符上保留。
+ * 分段符（`kind: break`）只认锚段末字之后（`pos` 缺省或 `after`），`pos: before` 的整条丢弃。
  */
-export function adaptPunctJson(raw: unknown): { id?: string; anchor: string; mark: string; kind?: 'point' | 'break'; pos?: 'after' | 'before'; pre_char?: string }[] {
+export function adaptPunctJson(raw: unknown): { id?: string; anchor: string; mark: string; kind?: PunctKind; pos?: 'after' | 'before'; pre_char?: string; label?: string; toc?: boolean }[] {
     const list: unknown[] = Array.isArray(raw)
         ? raw
         : raw && typeof raw === 'object' && Array.isArray((raw as { punctuations?: unknown }).punctuations)
@@ -69,7 +77,16 @@ export function adaptPunctJson(raw: unknown): { id?: string; anchor: string; mar
         const p = item as Record<string, any>;
         if (typeof p.anchor !== 'string' || typeof p.mark !== 'string') continue;
         if (p.pre_char != null && !isSingleChar(p.pre_char)) continue;
-        out.push({ id: typeof p.id === 'string' ? p.id : undefined, anchor: p.anchor, mark: p.mark, kind: p.kind, pos: p.pos, pre_char: p.pre_char ?? undefined });
+        if (p.kind != null && !PUNCT_KINDS.has(p.kind)) continue;
+        if (p.pos != null && p.pos !== 'after' && p.pos !== 'before') continue;
+        const entry: ReturnType<typeof adaptPunctJson>[number] = { id: typeof p.id === 'string' ? p.id : undefined, anchor: p.anchor, mark: p.mark, kind: p.kind, pos: p.pos, pre_char: p.pre_char ?? undefined };
+        if (p.kind === 'break' && p.pos === 'before') continue;
+        if (p.kind === 'heading') {
+            if (p.pos !== 'before' || !HEADING_MARK.test(p.mark)) continue;
+            if (typeof p.label === 'string' && p.label.trim()) entry.label = p.label.trim();
+            if (p.toc === false) entry.toc = false;
+        }
+        out.push(entry);
     }
     return out;
 }

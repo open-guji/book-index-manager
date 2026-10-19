@@ -154,6 +154,16 @@ export const READER_CSS = `
 .bim-rd-ti-group { font-weight: 600; color: ${bim('ink')}; }
 .bim-rd-ti-group svg { transition: transform 0.15s; flex: none; align-self: center; }
 .bim-rd-ti-group[aria-expanded="true"] svg { transform: rotate(90deg); }
+.bim-rd-ti-row { display: flex; align-items: flex-start; }
+.bim-rd-ti-row > .bim-rd-ti { flex: 1; min-width: 0; padding-left: 4px; }
+.bim-rd-ti-tw {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 30px; padding: 0; margin: 0; border: 0; border-radius: 4px;
+  background: none; color: ${bim('quiet-fg')}; cursor: pointer;
+}
+.bim-rd-ti-tw:hover { background: ${bim('row-hover-bg')}; color: ${bim('ink')}; }
+.bim-rd-ti-tw svg { transition: transform 0.15s; }
+.bim-rd-ti-tw[aria-expanded="true"] svg { transform: rotate(90deg); }
 
 /* 书影：正文左侧 */
 .bim-rd-img {
@@ -486,6 +496,20 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
   color: ${bim('ink')};
   text-align: justify;
 }
+.guji-reflow-paragraph.guji-reflow-heading {
+  /* 选择器写两个类：压过 .bim-rd-prose h2 之类（0,1,1） */
+  text-indent: 0;
+  text-align: left;
+  font-family: var(--bimrd-ff, var(--bim-font-serif, "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif));
+  color: ${bim('ink')};
+  font-weight: 700;
+  margin: 2rem 0 1rem;
+  scroll-margin-top: 96px;
+}
+.guji-reflow-heading.guji-reflow-h1 { font-size: 1.6rem; letter-spacing: 0.08em; }
+.guji-reflow-heading.guji-reflow-h2 { font-size: 1.4rem; letter-spacing: 0.05em; }
+.guji-reflow-heading.guji-reflow-h3 { font-size: 1.25rem; letter-spacing: 0.02em; margin: 1.6rem 0 0.8rem; }
+.guji-reflow-heading.guji-reflow-h4, .guji-reflow-heading.guji-reflow-h5, .guji-reflow-heading.guji-reflow-h6 { font-size: 1.25rem; letter-spacing: 0.02em; font-weight: 600; margin: 1.4rem 0 0.7rem; }
 .guji-text-scroll-v {
   writing-mode: vertical-rl;
   text-orientation: upright;

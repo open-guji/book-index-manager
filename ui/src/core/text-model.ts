@@ -71,6 +71,11 @@ export interface TextChapter {
     char_file?: string;
     cord_file?: string;
     facsimile_file?: string;
+    /**
+     * 本册目录缓存（original；guji-format spec/07 §3.3）：punct 标题符按读序抽出的 `{level, label, anchor}`。
+     * 由 book-text 脚本生成；用前过 `sanitizeHeadings`
+     */
+    headings?: unknown;
 }
 
 /** 文本的上游来源与授权说明（index.json 的 source.upstream） */
@@ -108,6 +113,8 @@ export interface TextIndex {
         upstream?: TextUpstream;
     };
     version_label?: string;
+    /** original：标题符各级的名字（第 i 项是第 i 级，如 `["卷", "類", "書"]`；spec/07 §3.3） */
+    heading_levels?: string[];
     /** 整理本才有：关联的作品 id（书名链接用） */
     work_id?: string;
 }
