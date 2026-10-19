@@ -89,7 +89,8 @@ async function setup() {
     return view;
 }
 
-beforeEach(() => { localStorage.clear(); });
+// 这几条测的是分叶排版下的书影翻页（jsdom 只给页 section 布局），显式开分叶线（默认 10-19 起关）
+beforeEach(() => { localStorage.clear(); localStorage.setItem('bim-reader-prefs', JSON.stringify({ v: 2, pageBreaks: true })); });
 
 describe('L2 · 页导航下移', () => {
     it('页导航在书影图片（画布）之后，且在同一个书影面板里', async () => {

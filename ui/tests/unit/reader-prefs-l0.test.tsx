@@ -18,7 +18,7 @@ describe('prefs：默认值', () => {
 
     it('新字段默认值与设计表一致', () => {
         expect(DEFAULT_READER_PREFS).toMatchObject({
-            pageBreaks: true, pageIndicatorY: 0.33, bookTitleStyle: 'wavy', showWorks: true,
+            pageBreaks: false, pageIndicatorY: 0.33, bookTitleStyle: 'bracket', showWorks: true,
             properNameMode: null, quoteStyle: 'original', scriptMode: null, preserveMargins: true,
         });
         expect('properNames' in DEFAULT_READER_PREFS).toBe(false);
@@ -56,8 +56,17 @@ describe('prefs：迁移', () => {
         put({ fontSize: 22, readingMode: 'paragraph', workLinks: false, writingMode: 'vertical', fontFamily: 'kai' });
         expect(loadReaderPrefs()).toMatchObject({
             fontSize: 22, readingMode: 'paragraph', workLinks: false, writingMode: 'vertical', fontFamily: 'kai',
-            pageBreaks: true, quoteStyle: 'original', scriptMode: null,
+            pageBreaks: false, quoteStyle: 'original', scriptMode: null,
         });
+    });
+
+    it('无版本号的旧存档：分叶线、书名标法按新默认（旧存档是整包写回的旧默认）；v2 存档照用户选的', () => {
+        put({ pageBreaks: true, bookTitleStyle: 'wavy', fontSize: 20 });
+        expect(loadReaderPrefs()).toMatchObject({ pageBreaks: false, bookTitleStyle: 'bracket', fontSize: 20 });
+        put({ v: 2, pageBreaks: true, bookTitleStyle: 'wavy' });
+        expect(loadReaderPrefs()).toMatchObject({ pageBreaks: true, bookTitleStyle: 'wavy' });
+        saveReaderPrefs(loadReaderPrefs());
+        expect(JSON.parse(localStorage.getItem(KEY)!).v).toBe(2);
     });
 });
 
@@ -151,9 +160,9 @@ describe('设置面板：新条目只绑定偏好', () => {
         fireEvent.click(works);
         expect(lastPrefs.showWorks).toBe(false);
         const g = within(side.getByRole('group', { name: '書名樣式' }));
-        expect(pressed(g.getByRole('button', { name: '波浪線' }))).toBe(true);
-        fireEvent.click(g.getByRole('button', { name: '書名號' }));
-        expect(lastPrefs.bookTitleStyle).toBe('bracket');
+        expect(pressed(g.getByRole('button', { name: '書名號' }))).toBe(true);
+        fireEvent.click(g.getByRole('button', { name: '波浪線' }));
+        expect(lastPrefs.bookTitleStyle).toBe('wavy');
     });
 
     it('引号样式三选一，默认原样', () => {
@@ -171,9 +180,9 @@ describe('设置面板：新条目只绑定偏好', () => {
         const side = openSettings();
         const pb = side.getByRole('checkbox', { name: '顯示分葉分割線' }) as HTMLInputElement;
         const pm = side.getByRole('checkbox', { name: '書影保留空白' }) as HTMLInputElement;
-        expect([pb.checked, pm.checked]).toEqual([true, true]);
+        expect([pb.checked, pm.checked]).toEqual([false, true]);
         fireEvent.click(pb); fireEvent.click(pm);
-        expect([lastPrefs.pageBreaks, lastPrefs.preserveMargins]).toEqual([false, false]);
+        expect([lastPrefs.pageBreaks, lastPrefs.preserveMargins]).toEqual([true, false]);
     });
 
     it('字形三态：scriptMode 为 null 时显示成跟随站点（繁）；选简体同步站点 locale，选原字不动 locale', () => {

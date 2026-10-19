@@ -2,7 +2,7 @@
  * 对读书影翻页（overview#421）：无字页（书脊签、封面签条、空白页）也能翻到，只显示书影；翻到时正文不动。
  */
 import React from 'react';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { TextReader } from '../../src/components/TextReader';
 import { adaptCharCord } from '../../src/core/guji-char-cord';
@@ -33,6 +33,8 @@ beforeAll(() => {
     };
 });
 afterAll(() => { Element.prototype.getBoundingClientRect = realRect; });
+// 这几条测的是分叶排版下的书影翻页（jsdom 只给页 section 布局），显式开分叶线（默认 10-19 起关）
+beforeEach(() => { localStorage.setItem('bim-reader-prefs', JSON.stringify({ v: 2, pageBreaks: true })); });
 
 const WORK = '96mid1ogzk';
 const canvas = (n: string) => ({ id: `https://x/iiif/${WORK}/canvas/03/${n}`, seq: n, width: 1000, height: 1400 });

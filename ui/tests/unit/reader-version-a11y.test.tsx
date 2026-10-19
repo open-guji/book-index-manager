@@ -205,7 +205,7 @@ describe('閱讀器「版本」下拉框（#235）', () => {
         render(<Shell versions={TWO} />);
         const short = document.querySelector('.bim-rd-ver-short')!;
         expect(short.getAttribute('aria-hidden')).toBe('true');
-        const narrow = READER_CSS.slice(READER_CSS.lastIndexOf('@media (max-width: 719px) {'));
+        const narrow = READER_CSS.slice(READER_CSS.indexOf('/* ── 窄屏：书影收起'));
         expect(narrow).toMatch(/\.bim-rd-ver-short \{ display: inline;/);
         expect(narrow).toMatch(/\.bim-rd-ver select \{ position: absolute; inset: 0;[^}]*opacity: 0;/);
         expect(narrow).toMatch(/\.bim-rd-ver \{ min-width: 44px; min-height: 44px;/);

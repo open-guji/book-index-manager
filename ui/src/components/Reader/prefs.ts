@@ -80,9 +80,9 @@ export const DEFAULT_READER_PREFS: ReaderPrefs = {
     writingMode: 'horizontal',
     workLinks: true,
     fontFamily: 'song',
-    pageBreaks: true,
+    pageBreaks: false,
     pageIndicatorY: 0.33,
-    bookTitleStyle: 'wavy',
+    bookTitleStyle: 'bracket',
     showWorks: true,
     quoteStyle: 'original',
     scriptMode: null,
@@ -94,6 +94,8 @@ export const FONT_SIZE_STEPS = [15, 16, 17, 18, 20, 22, 24] as const;
 export const DEFAULT_FONT_SIZE = 18;
 
 const STORAGE_KEY = 'bim-reader-prefs';
+/** 存档格式版本；2＝分页线默认关、书名默认书名号之后的存档 */
+const PREFS_VERSION = 2;
 /** W7 草稿用过的键；读到就迁过来，只读不写 */
 const LEGACY_MODE_KEY = 'bim-reading-mode';
 
@@ -112,10 +114,12 @@ export function loadReaderPrefs(): ReaderPrefs {
         if (p.writingMode === 'vertical') out.writingMode = 'vertical';
         if (p.workLinks === false) out.workLinks = false;
         if (p.fontFamily === 'kai' || p.fontFamily === 'system') out.fontFamily = p.fontFamily;
-        if (p.pageBreaks === false) out.pageBreaks = false;
+        // 分页线、书名标法 2026-10-19 改了默认（不分页、书名号）；旧存档（无 v）里这两项是整包写回的旧默认，不算用户选的
+        const v2 = (p as { v?: unknown }).v === PREFS_VERSION;
+        if (v2 && typeof p.pageBreaks === 'boolean') out.pageBreaks = p.pageBreaks;
         if (typeof p.pageIndicatorY === 'number' && Number.isFinite(p.pageIndicatorY)
             && p.pageIndicatorY >= PAGE_INDICATOR_Y_RANGE[0] && p.pageIndicatorY <= PAGE_INDICATOR_Y_RANGE[1]) out.pageIndicatorY = p.pageIndicatorY;
-        if (p.bookTitleStyle === 'bracket') out.bookTitleStyle = 'bracket';
+        if (v2 && (p.bookTitleStyle === 'wavy' || p.bookTitleStyle === 'bracket')) out.bookTitleStyle = p.bookTitleStyle;
         if (p.showWorks === false) out.showWorks = false;
         if (p.quoteStyle === 'modern' || p.quoteStyle === 'classic') out.quoteStyle = p.quoteStyle;
         if (p.scriptMode === 'orig' || p.scriptMode === 'hant' || p.scriptMode === 'hans') out.scriptMode = p.scriptMode;
@@ -126,7 +130,7 @@ export function loadReaderPrefs(): ReaderPrefs {
 
 export function saveReaderPrefs(p: ReaderPrefs): void {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...p, v: PREFS_VERSION }));
     } catch { /* ignore */ }
 }
 
