@@ -27,10 +27,49 @@ function TocGroup({ item, activeKey, onSelect, tabKey }: {
     onSelect: (key: string) => void;
     tabKey: string | null;
 }) {
+    const { t } = useI18n();
     const hasActive = containsKey(item, activeKey);
     const [expanded, setExpanded] = useState(hasActive || !!item.defaultExpanded);
     useEffect(() => { if (hasActive) setExpanded(true); }, [hasActive]);
     useEffect(() => { if (item.defaultExpanded) setExpanded(true); }, [item.defaultExpanded]);
+    // 可选中的分组（带标题目录的一册、有下级标题的标题）：箭头只展开收起，名字选中并展开
+    if (item.selectable) {
+        return (
+            <li>
+                <div className="bim-rd-ti-row">
+                    <button
+                        type="button"
+                        className="bim-rd-ti-tw"
+                        aria-expanded={expanded}
+                        aria-label={expanded ? t('reader.tocCollapse') : t('reader.tocExpand')}
+                        tabIndex={-1}
+                        onClick={() => setExpanded(e => !e)}
+                    >
+                        <Chevron />
+                    </button>
+                    <button
+                        type="button"
+                        className={`bim-rd-ti${item.inChapter ? '' : ' bim-rd-ti-group'}`}
+                        aria-current={item.key === activeKey ? 'true' : undefined}
+                        disabled={item.disabled}
+                        data-rd-toc-key={item.key}
+                        tabIndex={tabKey === item.key ? 0 : -1}
+                        onClick={() => { setExpanded(true); onSelect(item.key); }}
+                        onKeyDown={e => {
+                            if (e.key === 'ArrowRight' && !expanded) { e.preventDefault(); setExpanded(true); }
+                            else if (e.key === 'ArrowLeft' && expanded) { e.preventDefault(); setExpanded(false); }
+                        }}
+                    >
+                        <span>{item.label}</span>
+                        {item.hint != null && <span className="bim-rd-hint">{item.hint}</span>}
+                    </button>
+                </div>
+                {expanded && (
+                    <TocList items={item.children!} activeKey={activeKey} onSelect={onSelect} tabKey={tabKey} />
+                )}
+            </li>
+        );
+    }
     return (
         <li>
             <button

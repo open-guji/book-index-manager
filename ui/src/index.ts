@@ -156,6 +156,9 @@ export * from './components/Reader';
 export * from './components/EntityText';
 // 对读：punct.json 适配、cord 的 IIIF 册号（旧 pages.json 的 adaptGujiPages 已删，改用 adaptCharCord）
 export { adaptPunctJson, iiifVolumeOf } from './core/guji-pages';
+export type { PunctKind } from './core/guji-pages';
+export { headingsFromPunct, sanitizeHeadings, nestHeadings, headingKey, parseHeadingKey } from './core/text-headings';
+export type { TextHeading, HeadingNode } from './core/text-headings';
 export type { GujiPageInfo, GujiPageChar } from './core/guji-pages';
 // 对读：char／cord（NNN.char.json＋NNN.cord.json，guji-format v0.1）适配
 export { adaptCharCord, adaptNorm, adaptNormDetailed } from './core/guji-char-cord';

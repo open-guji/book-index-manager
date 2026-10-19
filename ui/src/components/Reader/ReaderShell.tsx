@@ -61,6 +61,8 @@ export interface ReaderShellProps {
 
     toc: ReaderTocItem[];
     activeKey: string | null;
+    /** 目录里高亮哪一项；缺省同 `activeKey`。带标题目录时是当前读到的标题，`activeKey` 仍是当前卷（翻卷器用） */
+    tocActiveKey?: string | null;
     onSelect: (key: string) => void;
     /** 目录顶上的附加内容（整理本的跨卷搜索框） */
     tocHeader?: React.ReactNode;
@@ -133,13 +135,15 @@ export interface ReaderShellProps {
     style?: React.CSSProperties;
 }
 
-/** 目录里所有可选的叶子，按阅读顺序 */
+/** 翻卷器的卷：目录里所有可选的叶子（含可选中的分组，不含章内标题），按阅读顺序 */
 export function flattenToc(items: ReaderTocItem[]): ReaderTocItem[] {
     const out: ReaderTocItem[] = [];
     const walk = (list: ReaderTocItem[]) => {
         for (const it of list) {
-            if (it.children && it.children.length > 0) walk(it.children);
-            else out.push(it);
+            if (it.inChapter) continue; // 章内标题不是翻卷单位
+            const group = !!it.children && it.children.length > 0;
+            if (!group || it.selectable) out.push(it);
+            if (group) walk(it.children!);
         }
     };
     walk(items);
@@ -326,7 +330,7 @@ function selectedInText(root: HTMLElement | null): string | undefined {
 
 export function ReaderShell({
     title, subtitle,
-    toc, activeKey, onSelect, tocHeader, tocCaption,
+    toc, activeKey, tocActiveKey, onSelect, tocHeader, tocCaption,
     images, imagesLoading, renderImageOverlay, imagePanel = 'auto',
     prefs, onPrefsChange, paragraphToggle, properNameToggle = true, allowVertical, origScriptAvailable = true,
     byline, current, workLinkToggle, rail, onReportError, revisedAt,
@@ -717,7 +721,7 @@ export function ReaderShell({
                         </div>
                         {tocHeader}
                     </div>
-                    <ReaderToc items={toc} activeKey={activeKey} onSelect={handleSelect} />
+                    <ReaderToc items={toc} activeKey={tocActiveKey !== undefined ? tocActiveKey : activeKey} onSelect={handleSelect} />
                 </div>
                 <div className="bim-rd-scrim" aria-hidden="true" onClick={() => closeDrawer(true)} />
 

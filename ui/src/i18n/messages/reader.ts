@@ -93,6 +93,8 @@ export const reader = defineMessages({
     /** 作者行缺角色时的默认后缀 */
     defaultRole: '撰',
     tocCaption: '目錄 · {n} {unit}',
+    tocExpand: '展開',
+    tocCollapse: '收起',
     searchChapters: '搜索全部章節',
     searchChaptersPlaceholder: '搜索全部章節…',
     searchUnit: '搜索全部{unit}',
@@ -186,6 +188,8 @@ export const reader = defineMessages({
     viewEntry: '查看条目',
     defaultRole: '撰',
     tocCaption: '目录 · {n} {unit}',
+    tocExpand: '展开',
+    tocCollapse: '收起',
     searchChapters: '搜索全部章节',
     searchChaptersPlaceholder: '搜索全部章节…',
     searchUnit: '搜索全部{unit}',

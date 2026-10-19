@@ -15,8 +15,13 @@ export interface PunctEntry {
   anchor: string;
   pre_char?: string;
   mark: string;
-  kind?: 'point' | 'break';
+  /** point 点号与成对标号／break 分段符／heading 标题符（spec/04 v0.2 §4.2） */
+  kind?: 'point' | 'break' | 'heading';
   pos?: 'after' | 'before';
+  /** 只用于标题符：目录名 */
+  label?: string;
+  /** 只用于标题符：false＝正文排成标题但不进目录 */
+  toc?: boolean;
 }
 
 export interface GujiTextViewerProps {
@@ -35,6 +40,13 @@ export interface GujiTextViewerProps {
   convert?: (s: string) => string;
   /** 要求把某页滚到视口顶部（书影翻页时带正文）；`nonce` 变了才触发，同页重复点也会再滚一次 */
   scrollToPage?: { page: number; nonce: number } | null;
+  /**
+   * 要求把某字（格位 key，一般是标题首字）所在的段滚到视口顶部（点目录里的标题）；`nonce` 变了才触发。
+   * 那个字还没渲染出来（换章、数据在路上）就等它出来再滚，每个 nonce 只滚一次。
+   */
+  scrollToAnchor?: { anchor: string; nonce: number } | null;
+  /** 视口参考线所在的标题变了（标题首字的格位 key；参考线在第一个标题之上时为 null）。目录据此高亮当前标题 */
+  onVisibleHeadingChange?: (anchor: string | null) => void;
   /**
    * 实体标注（`adaptEntityJson` 的结果，须带 `anchor`）：按逐字 id 对位，画专名线／书名号，已收录的出摘要卡与条目链接。
    * 不传或空数组＝不画。
@@ -69,10 +81,10 @@ const defaultHref = (id: string) => `/item/${encodeURIComponent(id)}`;
 /** 一段里连续属于同一实体的字归成一组（实体跨段、跨页时按段切开，各段各画各的线） */
 /**
  * 挂在同一个字上的标点按 pos 分前后：pos=before 的在字之前（如《 挂在书名首字前），其余在字之后。
- * 分段符（kind=break）不在此列，由调用方单独处理。
+ * 分段符（kind=break）、标题符（kind=heading）不在此列，由调用方单独处理。
  */
 export function splitPuncts(list: PunctEntry[]): { before: PunctEntry[]; after: PunctEntry[] } {
-  const marks = list.filter((p) => p.kind !== 'break');
+  const marks = list.filter((p) => p.kind == null || p.kind === 'point');
   return { before: marks.filter((p) => p.pos === 'before'), after: marks.filter((p) => p.pos !== 'before') };
 }
 
@@ -104,6 +116,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   onVisiblePageChange,
   convert,
   scrollToPage,
+  scrollToAnchor,
+  onVisibleHeadingChange,
   entities,
   entityTransport,
   loadEntitySummary,
@@ -155,6 +169,18 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       const sortedCols = [...pData.columns].sort((a, b) => a.col - b.col);
       const paragraphs: ReflowParagraph[] = [];
       let currentChars: ReflowChar[] = [];
+      // 段首字带标题符的段是标题（spec/04 v0.2 §4.2：标题到下一个分段符为止）
+      const pushPara = () => {
+        const h = headingOf(punctMap.get(currentChars[0].charData.id));
+        paragraphs.push({
+          id: `para-p${pData.page}-${paragraphs.length}`,
+          chars: currentChars,
+          ...(h ? { heading: { level: h.mark.length, anchor: currentChars[0].charData.id, ...(h.toc === false ? { toc: false } : {}) } } : {}),
+        });
+        currentChars = [];
+      };
+      // 本页第一个字前有分段符或标题符：原件在这里另起一段，分叶线关时不与上一页末段相并
+      let leadStarts = false;
       // 空列（kind: blank）没有字：记下个数，挂到后面第一个有字的列首字上；页尾的空列记在 trailingBlank
       let pendingBlank = 0;
 
@@ -170,8 +196,14 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         pendingBlank = 0;
         let first = true;
         for (const ch of col.chars) {
-          const { before: beforePuncts, after: afterPuncts } = splitPuncts(punctMap.get(ch.id) || []);
-          const hasBreak = (punctMap.get(ch.id) || []).some((p) => p.kind === 'break');
+          const here = punctMap.get(ch.id) || [];
+          const { before: beforePuncts, after: afterPuncts } = splitPuncts(here);
+          const hasBreak = here.some((p) => p.kind === 'break' && p.pos !== 'before');
+          // 分段符 pos=before（锚下一段首字）与标题符：在本字之前结束上一段
+          if (here.some((p) => (p.kind === 'break' && p.pos === 'before') || p.kind === 'heading')) {
+            if (currentChars.length > 0) pushPara();
+            else if (paragraphs.length === 0) leadStarts = true;
+          }
 
           currentChars.push({
             charData: ch,
@@ -183,29 +215,19 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
           first = false;
 
           // 遇到自然段分段符 (guji-punct 中的 break 标记)
-          if (hasBreak) {
-            paragraphs.push({
-              id: `para-p${pData.page}-${paragraphs.length}`,
-              chars: currentChars,
-            });
-            currentChars = [];
-          }
+          if (hasBreak) pushPara();
         }
       }
 
       // 页尾剩下的字没有 break 收尾：句子可能跨页接着写（pageBreaks 关时与下一页首段合并，overview#527）
       const endsOpen = currentChars.length > 0;
-      if (endsOpen) {
-        paragraphs.push({
-          id: `para-p${pData.page}-${paragraphs.length}`,
-          chars: currentChars,
-        });
-      }
+      if (endsOpen) pushPara();
 
       return {
         page: pData.page,
         paragraphs,
         endsOpen,
+        ...(leadStarts ? { leadStarts } : {}),
         ...(pData.label ? { label: pData.label } : {}),
         ...(pendingBlank > 0 ? { trailingBlank: pendingBlank } : {}),
       };
@@ -228,7 +250,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       for (const pg of built) {
         const lead = pg.paragraphs[0];
         const s0 = lead?.chars[0]?.start;
-        const startsParagraph = !!s0 && !!(s0.raised || (s0.leadBlank || 0) > baseLead || s0.blankBefore);
+        const startsParagraph = !!pg.leadStarts || (!!s0 && !!(s0.raised || (s0.leadBlank || 0) > baseLead || s0.blankBefore));
         const wouldOrphanBlank = pg.paragraphs.length === 1 && !!pg.trailingBlank;
         if (open && lead && !startsParagraph && !wouldOrphanBlank) {
           for (const c of lead.chars) mergedOwner.set(c.charData.id, open.owner);
@@ -275,8 +297,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   const hasEntities = entityOfChar.size > 0;
 
   // 回调一律走 ref：每页是 memo 组件，回调身份不变才不会因为外层一次 setState 全卷重渲染（3 万个字）
-  const latest = useRef({ onCharClick, onCharHover, onSelectionChange, onVisiblePageChange, onEntityNavigate });
-  latest.current = { onCharClick, onCharHover, onSelectionChange, onVisiblePageChange, onEntityNavigate };
+  const latest = useRef({ onCharClick, onCharHover, onSelectionChange, onVisiblePageChange, onEntityNavigate, onVisibleHeadingChange });
+  latest.current = { onCharClick, onCharHover, onSelectionChange, onVisiblePageChange, onEntityNavigate, onVisibleHeadingChange };
 
   const handlers = useMemo<PageHandlers>(() => ({
     click: (id) => { pageLockUntil.current = Date.now() + 1200; latest.current.onCharClick?.(id); },
@@ -376,9 +398,24 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollNonce]);
 
+  // 目录点标题 → 正文滚到该段开头，书影跟到该页。字还没渲染出来就等下一次（换章时数据后到）
+  const anchorDone = useRef<number | null>(null);
+  useEffect(() => {
+    if (!scrollToAnchor || anchorDone.current === scrollToAnchor.nonce) return;
+    const c = containerRef.current;
+    const ch = c?.querySelector<HTMLElement>(`span[data-char-id="${cssEscape(scrollToAnchor.anchor)}"]`);
+    if (!ch) return;
+    anchorDone.current = scrollToAnchor.nonce;
+    const block = ch.closest<HTMLElement>('.guji-reflow-paragraph') ?? ch;
+    pageLockUntil.current = Date.now() + 800;
+    block.scrollIntoView({ behavior: 'auto', block: 'start' });
+    const page = parseInt(scrollToAnchor.anchor.split(':')[0], 10);
+    if (!isNaN(page)) latest.current.onVisiblePageChange?.(page);
+  }, [scrollToAnchor, reflowPages]);
+
   // 页指示头：位置（视口高度比例）。拖动中用本地值，松手才通知宿主写偏好
-  const hasVisibleCb = !!onVisiblePageChange;
-  const indicatorOn = hasVisibleCb && typeof pageIndicatorY === 'number';
+  const hasVisibleCb = !!onVisiblePageChange || !!onVisibleHeadingChange;
+  const indicatorOn = !!onVisiblePageChange && typeof pageIndicatorY === 'number';
   const [dragY, setDragY] = useState<number | null>(null);
   const effectiveY = clampIndicatorY(dragY ?? pageIndicatorY ?? 0);
   const refYRef = useRef<number | null>(null); // 当前参考线所在的视口高度比例；null＝旧行为（顶部以下 120px）
@@ -396,10 +433,31 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       if (a) { sections.push(a); sectionPages.push(pg.page); }
     }
     if (sections.length === 0) return;
+    // 标题段（文档序）；视口参考线所在的标题＝最后一个顶边不低于参考线的标题
+    const headings = Array.from(containerRef.current?.querySelectorAll<HTMLElement>('.guji-reflow-heading:not([data-heading-toc="0"])') ?? []);
+    let lastHeading: string | null | undefined;
     let raf = 0;
     const update = () => {
       raf = 0;
       if (Date.now() < pageLockUntil.current) return;
+      if (headings.length > 0 && latest.current.onVisibleHeadingChange) {
+        const y = refYRef.current === null ? 120 : refYRef.current * window.innerHeight;
+        const top0 = headings[0].getBoundingClientRect().top;
+        // 没有布局（jsdom、容器隐藏）时位置全为 0：不判
+        const noLayout = headings.length > 1 && top0 === headings[headings.length - 1].getBoundingClientRect().top;
+        if (!noLayout) {
+          let found: string | null = null;
+          if (top0 <= y) {
+            let a = 0, b = headings.length - 1;
+            while (a < b) {
+              const m = (a + b + 1) >> 1;
+              if (headings[m].getBoundingClientRect().top <= y) a = m; else b = m - 1;
+            }
+            found = headingAnchorOf(headings[a]);
+          }
+          if (found !== lastHeading) { lastHeading = found; latest.current.onVisibleHeadingChange(found); }
+        }
+      }
       // 没有布局（容器被隐藏、display:none、jsdom）时所有页锚点的位置都是 0，二分会选中最后一页，
       // 把读者甩到末页；首尾两页位置相同＝没有可用的位置信息，这一帧不判页
       if (sections.length > 1 && sections[0].getBoundingClientRect().top === sections[sections.length - 1].getBoundingClientRect().top) return;
@@ -493,7 +551,10 @@ function useSelectedByPage(selected: ReadonlySet<string>, mergedOwner: ReadonlyM
 /** 列的版式字段，挂在本列首字上（spec/02 §4.3） */
 type ReflowColStart = { raised?: number; leadBlank?: number; blankBefore: number };
 type ReflowChar = { charData: PageWarpData['columns'][0]['chars'][0]; col: number; beforePuncts: PunctEntry[]; afterPuncts: PunctEntry[]; start?: ReflowColStart };
-type ReflowParagraph = { id: string; chars: ReflowChar[] };
+/** `heading`：本段是标题（段首字带标题符），`level` 是 `#` 的个数，`anchor` 是段首字的格位 key */
+type ReflowParagraph = { id: string; chars: ReflowChar[]; heading?: ReflowHeading };
+/** `toc: false`＝副题行：排成标题，但不进目录、不参与「当前标题」 */
+type ReflowHeading = { level: number; anchor: string; toc?: false };
 type ReflowPage = {
   page: number;
   /** 版心叶次；有则页码处优先显示 */
@@ -505,7 +566,24 @@ type ReflowPage = {
   endsOpen?: boolean;
   /** 本页首段已并入上一页时，本页第一个字的 id（页锚点用它，不用 <section>） */
   leadFirstId?: string;
+  /** 本页第一个字前有分段符（pos=before）或标题符：原件在此另起一段，分叶线关时也不并入上一页末段 */
+  leadStarts?: boolean;
 };
+
+/** 一个字上的标题符（spec/04 v0.2 §4.2）；没有返回 undefined */
+function headingOf(list: PunctEntry[] | undefined): PunctEntry | undefined {
+  return list?.find((p) => p.kind === 'heading' && /^#{1,6}$/.test(p.mark));
+}
+
+/** 标题段元素 → 标题首字的格位 key */
+function headingAnchorOf(el: HTMLElement): string | null {
+  return el.getAttribute('data-heading-anchor');
+}
+
+/** 格位 key 放进属性选择器（key 只含数字、冒号、负号、a／b，仍按 CSS 规则转义以防万一） */
+function cssEscape(v: string): string {
+  return typeof CSS !== 'undefined' && typeof CSS.escape === 'function' ? CSS.escape(v) : v.replace(/["\\]/g, '\\$&');
+}
 
 /** 空列：一格宽的空位（不占文本，复制不出字符） */
 function BlankCols({ n }: { n: number }) {
@@ -517,6 +595,22 @@ export function convertChars(chars: string[], convert: (s: string) => string): s
   const whole = Array.from(convert(chars.join('')));
   if (whole.length === chars.length && chars.every((c) => Array.from(c).length === 1)) return whole;
   return chars.map((c) => convert(c));
+}
+
+/** 一段：普通段是 <p>；标题段是 <h2>～<h6>（第 1 级标题用 h2，h1 留给章名） */
+function ReflowBlock({ heading, children }: { heading?: ReflowHeading; children: React.ReactNode }) {
+  if (!heading) return <p className="guji-reflow-paragraph">{children}</p>;
+  const Tag = `h${Math.min(6, heading.level + 1)}` as 'h2';
+  return (
+    <Tag
+      className={`guji-reflow-paragraph guji-reflow-heading guji-reflow-h${heading.level}`}
+      data-heading-anchor={heading.anchor}
+      data-heading-level={heading.level}
+      data-heading-toc={heading.toc === false ? '0' : undefined}
+    >
+      {children}
+    </Tag>
+  );
 }
 
 /** 一页正文。memo：翻页、悬停、选中别页的字都不会让它重渲染 */
@@ -586,7 +680,7 @@ const PageSection = React.memo(function PageSection({
       )}
 
       {pGroup.paragraphs.map((para, pi) => (
-        <p key={para.id} className="guji-reflow-paragraph">
+        <ReflowBlock key={para.id} heading={para.heading}>
           {groupByEntity(para.chars, entityOfChar).map((run, ri) => {
             const nodes = run.chars.map(({ charData: ch, beforePuncts: allBefore, afterPuncts: allPuncts, start }, ci) => {
               // 专名线不画到首字前、末字后的标点上：实体首字的前置标点、末字的后置标点放到链接外面
@@ -637,7 +731,7 @@ const PageSection = React.memo(function PageSection({
             );
           })}
           {pi === pGroup.paragraphs.length - 1 && pGroup.trailingBlank ? <BlankCols n={pGroup.trailingBlank} /> : null}
-        </p>
+        </ReflowBlock>
       ))}
     </section>
   );
