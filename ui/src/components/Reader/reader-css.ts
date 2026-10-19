@@ -577,5 +577,15 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
   letter-spacing: 0.05em;
   margin-left: 6px;
 }
-`;
 
+/* ── 手机：正文两侧不留白（放在对读、界栏规则之后才压得过它们） ── */
+@media ${READER_NARROW_QUERY} {
+  .bim-rd-text, .bim-rd[data-warp="true"] .bim-rd-text { padding-left: 0; padding-right: 0; }
+  .bim-rd-col, :root[data-layout="boxed"] .bim-rd-col { padding-left: 14px; padding-right: 14px; }
+  :root[data-layout="boxed"] .bim-rd-col { border-left: 0; border-right: 0; }
+  .guji-text-pane-content { padding-left: 0; padding-right: 0; border-radius: 0; }
+}
+/* 页指示三角只为对照书影：书影栏收起或手机上（书影栏不出）都不画 */
+.bim-rd:not([data-img="open"]) .guji-page-indicator { display: none; }
+@media ${READER_NARROW_QUERY} { .guji-page-indicator { display: none; } }
+`;

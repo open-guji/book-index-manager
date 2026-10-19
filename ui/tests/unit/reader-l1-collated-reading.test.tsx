@@ -317,24 +317,24 @@ describe('TextReader 接线：偏好 → 对读正文', () => {
         expect(kinds((await mount()).container)).toEqual(['work']);
     });
 
-    it('分叶分割线：偏好 pageBreaks=false → 没有分割元素；默认有', async () => {
+    it('分叶分割线：默认没有分割元素；偏好 pageBreaks=true → 有', async () => {
         put({ properNameMode: 'full' });
-        expect((await mount()).container.querySelectorAll('.guji-page-divider').length).toBe(1);
-        document.body.innerHTML = '';
-        put({ properNameMode: 'full', pageBreaks: false });
         expect((await mount()).container.querySelectorAll('.guji-page-divider').length).toBe(0);
+        document.body.innerHTML = '';
+        put({ v: 2, properNameMode: 'full', pageBreaks: true });
+        expect((await mount()).container.querySelectorAll('.guji-page-divider').length).toBe(1);
     });
 
-    it('书名标法：默认波浪线隐去《》；偏好 bracket 显示《》且不画线', async () => {
+    it('书名标法：默认书名号显示《》且不画线；偏好 wavy 画波浪线隐去《》', async () => {
         put({ properNameMode: 'full' });
         let c = (await mount()).container;
-        expect(c.textContent).not.toContain('《');
-        expect(c.querySelector('.bim-et-work.bim-et-nu')).toBeNull();
-        document.body.innerHTML = '';
-        put({ properNameMode: 'full', bookTitleStyle: 'bracket' });
-        c = (await mount()).container;
         expect(c.textContent).toContain('《');
         expect(c.querySelector('.bim-et-work.bim-et-nu')).not.toBeNull();
+        document.body.innerHTML = '';
+        put({ v: 2, properNameMode: 'full', bookTitleStyle: 'wavy' });
+        c = (await mount()).container;
+        expect(c.textContent).not.toContain('《');
+        expect(c.querySelector('.bim-et-work.bim-et-nu')).toBeNull();
     });
 
     it('指示头：键盘微调写进偏好（localStorage），刷新（重新挂载）后位置保留', async () => {
