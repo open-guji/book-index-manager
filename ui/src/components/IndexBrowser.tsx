@@ -8,6 +8,7 @@ import { splitHighlightSnippet } from '../core/highlight';
 import { bim } from '../styles/tokens';
 import { TypeMark } from './common/TypeMark';
 import { useBidUrl } from '../core/bid-url';
+import { numberToChinese } from '../core/detail-model';
 import { SearchResults, type ResultTab } from './search/SearchResults';
 import { EMPTY_FILTERS, filtersToParams, type SearchFilters } from '../core/search-filters';
 import {
@@ -813,7 +814,7 @@ const EntryBookCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, get
     const measure = entry.measure_info
         ? convert(entry.measure_info)
         : entry.juan_count != null && entry.juan_count > 0
-            ? `${entry.juan_count}${t.unit.juan}`
+            ? `${numberToChinese(entry.juan_count)}${t.unit.juan}`
             : '';
 
     const allAliases = [...(entry.additional_titles || []), ...(entry.attached_texts || [])];
@@ -1031,7 +1032,7 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, selected, onClick, getConf
                             </span>
                         ) : entry.juan_count != null && entry.juan_count > 0 ? (
                             <span style={{ fontSize: '11px', color: bim('desc-fg') }}>
-                                {entry.juan_count}{t.unit.juan}
+                                {numberToChinese(entry.juan_count)}{t.unit.juan}
                             </span>
                         ) : null}
                     </div>

@@ -24,6 +24,7 @@ import { MarkdownText } from './common/MarkdownText';
 import { useT, useConvert } from '../i18n';
 import { formatTemplate } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
+import { numberToChinese } from '../core/detail-model';
 import { bim } from '../styles/tokens';
 
 /** 已解析的收录关联（ID → 标题 + 册号） */
@@ -53,35 +54,6 @@ export interface IndexDetailProps {
 }
 
 // ── 工具函数 ──
-
-const CHINESE_DIGITS = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
-const CHINESE_UNITS = ['', '十', '百', '千'];
-
-function numberToChinese(n: number): string {
-    if (n <= 0) return '';
-    if (n >= 10000) return String(n); // 万以上直接用阿拉伯数字
-    const str = String(n);
-    const len = str.length;
-    let result = '';
-    let lastWasZero = false;
-    for (let i = 0; i < len; i++) {
-        const digit = parseInt(str[i]);
-        const unitIndex = len - 1 - i;
-        if (digit === 0) {
-            lastWasZero = true;
-        } else {
-            if (lastWasZero && result) result += '〇';
-            lastWasZero = false;
-            // 十位的一可以省略：10→十，11→十一
-            if (digit === 1 && unitIndex === 1 && i === 0) {
-                result += CHINESE_UNITS[unitIndex];
-            } else {
-                result += CHINESE_DIGITS[digit] + CHINESE_UNITS[unitIndex];
-            }
-        }
-    }
-    return result;
-}
 
 // ── 内部子组件 ──
 
