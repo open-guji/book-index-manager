@@ -457,6 +457,29 @@ describe('buildVersionTable', () => {
         expect(t.rows[2].hasImage).toBe(false);
     });
 
+    it('同版各部收进代表行，代表本不在表内时照常单列', () => {
+        const rel = (ref: string) => ({ related_to: [{ ref, book_id: '', relation: '同版', confidence: 'certain' as const }] });
+        const t = buildVersionTable([
+            { id: 'rep', edition: '殿本', resources: [] },
+            { id: 'k2', edition: '殿本', lineage: rel('rep'), resources: [{ id: 'n', name: '故宮', types: ['physical' as const, 'image' as const], url: 'u', metadata: { item_id: 'B2' } }] },
+            { id: 'k1', edition: '殿本', lineage: rel('rep'), resources: [{ id: 'n', name: '故宮', types: ['physical' as const], url: 'u', metadata: { item_id: 'B1' } }] },
+            { id: 'orphan', edition: '粵本', lineage: rel('missing'), resources: [] },
+        ], undefined);
+        expect(t.allRows.map(r => r.id)).toEqual(['rep', 'orphan']);
+        const rep = t.allRows[0];
+        expect(rep.copies?.map(c => c.id)).toEqual(['k1', 'k2']);   // 按索书号排
+        expect(rep.hasImage).toBe(true);                            // 任一部有影印
+    });
+
+    it('馆藏资源有 item_id／call_number 时带出索书号', () => {
+        const t = buildVersionTable([
+            { id: 'c1', edition: '殿本', resources: [{ id: 'npm', name: '故宮', types: ['physical' as const], url: 'u', metadata: { item_id: '故殿012170-012313' } }] },
+            { id: 'c2', edition: '殿本', resources: [{ id: 'x', name: '某館', types: ['physical' as const], url: 'u', metadata: { call_number: ' A123 ' } }] },
+            { id: 'c3', edition: '殿本', resources: [{ id: 'y', name: '某館', types: ['physical' as const], url: 'u' }] },
+        ], undefined);
+        expect(t.rows.map(r => r.callNumber)).toEqual(['故殿012170-012313', 'A123', undefined]);
+    });
+
     it('朝代筛选项按历史顺序，不按出现顺序', () => {
         const t = buildVersionTable(versions, undefined);
         // 百衲本→民國、宋、明、清；历史序应为 宋 明 清 民國

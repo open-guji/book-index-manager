@@ -1146,7 +1146,12 @@ export interface ResolvedVersion {
     publication_info?: BookDetailData['publication_info'];
     current_location?: BookDetailData['current_location'];
     lineage?: BookDetailData['lineage'];
+    /** 描述首句（同版组代表行显示用） */
+    summary?: string;
 }
+
+/** 同版另一部藏本：每部实体书仍是一条 Book，版本表里收到代表行下 */
+export const SAME_EDITION = '同版';
 
 export interface VersionRow {
     id: string;
@@ -1160,6 +1165,14 @@ export interface VersionRow {
     holders: ResourceEntry[];
     /** current_location.name —— 没有 physical 资源时的回退 */
     locationName?: string;
+    /** 首个 physical 资源的索书号／统一编号（metadata.item_id 或 call_number）：同版多部藏本靠它区分 */
+    callNumber?: string;
+    /** 本部以 lineage.related_to「同版」指向的代表本 id */
+    copyOf?: string;
+    /** 代表行：收在其下的同版其余各部（按索书号排） */
+    copies?: VersionRow[];
+    /** 描述首句 */
+    summary?: string;
     /**
      * 排序用年份：确切纪年优先，否则退到朝代起始年。
      * 与 `year` 的区别是它对「宋建安黃善夫家塾刻本」这种只知朝代的
@@ -1192,6 +1205,49 @@ export interface VersionTable {
     hasInferredEra: boolean;
 }
 
+/** 馆藏资源的索书号：故宫等目录写在 metadata.item_id，其余或写 call_number */
+export function holderCallNumber(r?: ResourceEntry): string | undefined {
+    const m = r?.metadata;
+    const v = (m?.item_id || m?.call_number || '').trim();
+    return v || undefined;
+}
+
+/** lineage.related_to 里第一条「同版」所指的代表本 */
+export function sameEditionRep(v: ResolvedVersion): string | undefined {
+    for (const r of v.lineage?.related_to ?? []) {
+        const ref = r.ref ?? r.book_id;
+        if (r.relation === SAME_EDITION && ref && ref !== v.id) return ref;
+    }
+    return undefined;
+}
+
+/**
+ * 同版各部收进代表行：代表本须在表内且自身不是别人的副本，否则该部照常单列。
+ * 组的「有影印」取任一部有影印。
+ */
+export function groupSameEdition(rows: VersionRow[]): VersionRow[] {
+    const byId = new Map(rows.map(r => [r.id, r]));
+    const isRep = (id: string) => { const r = byId.get(id); return !!r && !r.copyOf; };
+    const copies = new Map<string, VersionRow[]>();
+    for (const r of rows) {
+        if (r.copyOf && isRep(r.copyOf)) {
+            const list = copies.get(r.copyOf) ?? [];
+            list.push(r);
+            copies.set(r.copyOf, list);
+        }
+    }
+    if (copies.size === 0) return rows;
+    const out: VersionRow[] = [];
+    for (const r of rows) {
+        if (r.copyOf && isRep(r.copyOf)) continue;
+        const cs = copies.get(r.id);
+        if (!cs) { out.push(r); continue; }
+        const sorted = [...cs].sort((a, b) => (a.callNumber ?? a.id).localeCompare(b.callNumber ?? b.id));
+        out.push({ ...r, copies: sorted, hasImage: r.hasImage || sorted.some(c => c.hasImage) });
+    }
+    return out;
+}
+
 export function buildVersionRow(v: ResolvedVersion, vg?: VersionGraph): VersionRow {
     const resources = v.resources || [];
     const images: ResourceEntry[] = [];
@@ -1211,6 +1267,9 @@ export function buildVersionRow(v: ResolvedVersion, vg?: VersionGraph): VersionR
         images,
         holders,
         locationName: v.current_location?.name,
+        callNumber: holderCallNumber(holders[0]),
+        copyOf: sameEditionRep(v),
+        summary: v.summary,
         important: isCoreVersion(v.id, vg),
         group: vg?.node_groups?.[v.id],
         hasImage: images.length > 0,
@@ -1236,9 +1295,9 @@ export function buildVersionTable(
     opts: VersionTableOptions = {},
 ): VersionTable {
     const excluded = new Set(vg?.excluded_books ?? []);
-    const allRows = versions
+    const allRows = groupSameEdition(versions
         .filter(v => !excluded.has(v.id))
-        .map(v => buildVersionRow(v, vg));
+        .map(v => buildVersionRow(v, vg)));
 
     let rows = allRows;
     if (opts.era) rows = rows.filter(r => r.era.era === opts.era);

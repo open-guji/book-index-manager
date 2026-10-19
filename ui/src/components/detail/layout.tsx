@@ -104,6 +104,13 @@ export const LAYOUT_CSS = `
 .bim-d-zt td.bim-d-zt-main > a:hover { color: ${bim('accent')}; }
 .bim-d-zt td.bim-d-zt-main .bim-d-meta { display: block; margin: -8px 12px 0; padding-bottom: 10px; font-size: 12px; font-weight: 400; }
 .bim-d-zt .bim-d-zt-sub { color: ${bim('quiet-fg')}; font-size: 13px; }
+/* 同版组：代表行左缘一道色条；下附描述首句与「同版另藏」各部的简链（每部仍是独立 Book） */
+.bim-d-zt td.bim-d-zt-main.bim-d-zt-rep { box-shadow: inset 3px 0 0 ${bim('accent')}; }
+.bim-d-zt td.bim-d-zt-main .bim-d-zt-summary { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 0 12px 6px; color: ${bim('quiet-fg')}; font-size: 13px; line-height: 1.6; }
+.bim-d-zt td.bim-d-zt-main .bim-d-zt-copies { display: block; margin: 0 12px; padding-bottom: 10px; font-size: 12px; color: ${bim('aux-fg')}; }
+.bim-d-zt td.bim-d-zt-main .bim-d-zt-copies a { color: ${bim('quiet-fg')}; text-decoration: underline; text-decoration-color: ${bim('aux-fg')}; text-underline-offset: 2px; }
+.bim-d-zt td.bim-d-zt-main .bim-d-zt-copies a:hover { color: ${bim('accent')}; }
+.bim-d-zt-ver tbody tr.bim-d-zt-group { height: auto; }
 .bim-d-zt .bim-d-zt-nowrap { white-space: nowrap; }
 .bim-d-zt .bim-d-zt-empty { color: ${bim('aux-fg')}; }
 /* 版本表：行高先按「有影印」色块那一行的高度占好，解析到的年代、馆藏、色块进来时行不再长高（INT Q3） */
