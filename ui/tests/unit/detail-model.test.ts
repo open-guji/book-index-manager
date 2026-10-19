@@ -457,6 +457,15 @@ describe('buildVersionTable', () => {
         expect(t.rows[2].hasImage).toBe(false);
     });
 
+    it('馆藏资源有 item_id／call_number 时带出索书号', () => {
+        const t = buildVersionTable([
+            { id: 'c1', edition: '殿本', resources: [{ id: 'npm', name: '故宮', types: ['physical' as const], url: 'u', metadata: { item_id: '故殿012170-012313' } }] },
+            { id: 'c2', edition: '殿本', resources: [{ id: 'x', name: '某館', types: ['physical' as const], url: 'u', metadata: { call_number: ' A123 ' } }] },
+            { id: 'c3', edition: '殿本', resources: [{ id: 'y', name: '某館', types: ['physical' as const], url: 'u' }] },
+        ], undefined);
+        expect(t.rows.map(r => r.callNumber)).toEqual(['故殿012170-012313', 'A123', undefined]);
+    });
+
     it('朝代筛选项按历史顺序，不按出现顺序', () => {
         const t = buildVersionTable(versions, undefined);
         // 百衲本→民國、宋、明、清；历史序应为 宋 明 清 民國

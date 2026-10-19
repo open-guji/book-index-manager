@@ -448,7 +448,9 @@ function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
     const eraLabel = [row.era.era, row.era.reign].filter(Boolean).join(' ');
     const inferred = row.era.source === 'edition';
     const holder = row.holders[0];
-    const holderName = holder ? resourceName(holder, convert) : (row.locationName ? convert(row.locationName) : '');
+    const holderBase = holder ? resourceName(holder, convert) : (row.locationName ? convert(row.locationName) : '');
+    // 同一版本常有多部藏本（如故宫藏三部殿本），只写馆名几行一模一样；有索书号就补在后面
+    const holderName = holderBase && row.callNumber ? `${holderBase}（${row.callNumber}）` : holderBase;
     const image = row.images[0];
     const imageHref = image ? resourceHref(image) : undefined;
     const imageTitle = row.images.map(r => resourceName(r, convert)).join('、');

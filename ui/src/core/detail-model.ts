@@ -1160,6 +1160,8 @@ export interface VersionRow {
     holders: ResourceEntry[];
     /** current_location.name —— 没有 physical 资源时的回退 */
     locationName?: string;
+    /** 首个 physical 资源的索书号／统一编号（metadata.item_id 或 call_number）：同版多部藏本靠它区分 */
+    callNumber?: string;
     /**
      * 排序用年份：确切纪年优先，否则退到朝代起始年。
      * 与 `year` 的区别是它对「宋建安黃善夫家塾刻本」这种只知朝代的
@@ -1192,6 +1194,13 @@ export interface VersionTable {
     hasInferredEra: boolean;
 }
 
+/** 馆藏资源的索书号：故宫等目录写在 metadata.item_id，其余或写 call_number */
+export function holderCallNumber(r?: ResourceEntry): string | undefined {
+    const m = r?.metadata;
+    const v = (m?.item_id || m?.call_number || '').trim();
+    return v || undefined;
+}
+
 export function buildVersionRow(v: ResolvedVersion, vg?: VersionGraph): VersionRow {
     const resources = v.resources || [];
     const images: ResourceEntry[] = [];
@@ -1211,6 +1220,7 @@ export function buildVersionRow(v: ResolvedVersion, vg?: VersionGraph): VersionR
         images,
         holders,
         locationName: v.current_location?.name,
+        callNumber: holderCallNumber(holders[0]),
         important: isCoreVersion(v.id, vg),
         group: vg?.node_groups?.[v.id],
         hasImage: images.length > 0,
