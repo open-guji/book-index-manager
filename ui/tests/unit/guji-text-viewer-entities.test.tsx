@@ -49,28 +49,38 @@ describe('GujiTextViewer 实体标注', () => {
         expect(container.querySelector('.bim-et')).toBeNull();
     });
 
-    it('点专名里的字：照常点字，不跳条目；Ctrl 点击才进条目页', () => {
+    it('点专名里的字：照常点字，不跳条目；Ctrl 点击交给浏览器（新标签页），不在本页跳', () => {
         const onCharClick = vi.fn();
         const onEntityNavigate = vi.fn((_id: string, e: React.MouseEvent) => e.preventDefault());
         const { container } = setup({ onCharClick, onEntityNavigate });
         const ch = container.querySelector('[data-char-id="3:1:2"]') as HTMLElement;
         const ev = fireEvent.click(ch, { detail: 1 });
         expect(onCharClick).toHaveBeenCalledWith('3:1:2');
-        expect(onEntityNavigate).not.toHaveBeenCalled();
         expect(ev).toBe(false); // 默认行为（跳转）被拦下
-        fireEvent.click(ch, { detail: 1, ctrlKey: true });
-        expect(onEntityNavigate).toHaveBeenCalledWith('w1abc', expect.anything());
+        expect(fireEvent.click(ch, { detail: 1, ctrlKey: true })).toBe(true); // 浏览器照 Ctrl 点击开新标签页
+        expect(onEntityNavigate).not.toHaveBeenCalled();
     });
 
-    it('悬停卡里的「查看详情」：普通点击就进条目页（不被「点字不跳」拦下）', async () => {
+    it('键盘回车：在新标签页打开条目页，本页不动', () => {
+        const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+        const { container } = setup();
+        const link = container.querySelector('a.bim-et-work') as HTMLAnchorElement;
+        expect(fireEvent.click(link, { detail: 0 })).toBe(false);
+        expect(open).toHaveBeenCalledWith(expect.stringMatching(/\/item\/w1abc$/), '_blank', 'noopener');
+        open.mockRestore();
+    });
+
+    it('悬停卡里的「查看详情」：在新标签页打开，不走本页跳转', async () => {
         const onEntityNavigate = vi.fn((_id: string, e: React.MouseEvent) => e.preventDefault());
         const entityTransport = { getItem: vi.fn(async () => ({ id: 'w1abc', type: 'work', title: '漢書藝文志' })) };
         const { container } = setup({ onEntityNavigate, entityTransport });
         const link = container.querySelector('a.bim-et-work') as HTMLAnchorElement;
         act(() => { link.focus(); });
         const detail = await screen.findByRole('link', { name: /查看/ });
-        fireEvent.click(detail, { detail: 1 });
-        expect(onEntityNavigate).toHaveBeenCalledWith('w1abc', expect.anything());
+        expect(detail.getAttribute('target')).toBe('_blank');
+        expect(detail.getAttribute('rel')).toBe('noopener');
+        expect(fireEvent.click(detail, { detail: 1 })).toBe(true);
+        expect(onEntityNavigate).not.toHaveBeenCalled();
     });
 });
 

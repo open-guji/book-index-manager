@@ -585,7 +585,10 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
   :root[data-layout="boxed"] .bim-rd-col { border-left: 0; border-right: 0; }
   .guji-text-pane-content { padding-left: 0; padding-right: 0; border-radius: 0; }
 }
-/* 页指示三角只为对照书影：书影栏收起或手机上（书影栏不出）都不画 */
+/* 页指示箭头只为对照书影：书影栏收起或手机上（书影栏不出）都不画 */
 .bim-rd:not([data-img="open"]) .guji-page-indicator { display: none; }
+.guji-page-indicator { opacity: 0.55; transition: opacity 0.15s; outline: none; }
+.guji-page-indicator:hover, .guji-page-indicator:focus-visible { opacity: 1; }
+.guji-page-indicator:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: 1px; border-radius: 3px; }
 @media ${READER_NARROW_QUERY} { .guji-page-indicator { display: none; } }
 `;

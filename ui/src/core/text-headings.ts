@@ -33,11 +33,24 @@ export interface HeadingPage {
 }
 
 const HEADING_MARK = /^#{1,6}$/;
+/** 书目条：「[前缀]《书名》N卷…」，卷数起是著录信息（卷数、版本来源），目录只留书名 */
+const BOOK_ENTRY = /^([^《》]*)《([^《》]+)》\s*(?:[〇零一二三四五六七八九十百千]+|不分|無|无)卷/;
+
+/**
+ * 标题原文 → 目录名：书目条只留书名（连前缀，如「新本」）；书名号一律去掉。
+ * 与 book-text `scripts/original_version.py` 的 `heading_label` 同口径。显式 label 不经过这里。
+ */
+export function headingLabel(text: string): string {
+    let t = text.trim();
+    const m = BOOK_ENTRY.exec(t);
+    if (m) t = m[1] + m[2];
+    return t.replace(/[《》〈〉]/g, '').trim();
+}
 const isPoint = (p: HeadingPunct) => p.kind == null || p.kind === 'point';
 
 /**
  * 从一册的字与标点现算目录：只收 `toc` 不为 false 的标题，按读序。
- * 标题原文＝从首字到下一个分段符（或下一个标题符）之间的字，带上其间的点号与成对标号。
+ * 标题原文＝从首字到下一个分段符（或下一个标题符）之间的字，带上其间的点号与成对标号；再经 `headingLabel` 化简。
  */
 export function headingsFromPunct(pages: readonly HeadingPage[] | null | undefined, puncts: readonly HeadingPunct[] | null | undefined): TextHeading[] {
     if (!pages || !puncts || puncts.length === 0) return [];
@@ -54,7 +67,7 @@ export function headingsFromPunct(pages: readonly HeadingPage[] | null | undefin
     let cur: { h: TextHeading; text: string; fixed: boolean } | null = null;
     const close = () => {
         if (cur) {
-            if (!cur.fixed) cur.h.label = cur.text.trim();
+            if (!cur.fixed) cur.h.label = headingLabel(cur.text);
             if (cur.h.label) out.push(cur.h);
         }
         cur = null;

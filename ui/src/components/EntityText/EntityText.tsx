@@ -135,6 +135,8 @@ export interface EntityMarkProps {
      * 宿主若在 `onNavigate` 里拦下普通点击（如对读正文：点专名里的字只是点字），须另给这个，否则卡内链接点了没反应。
      */
     onCardNavigate?: EntityTextProps['onNavigate'];
+    /** 卡内「查看详情」在新标签页打开（阅读正文里用：看条目不打断阅读）；开了就不走 onCardNavigate */
+    cardNewTab?: boolean;
     renderText: (s: string) => React.ReactNode;
     hoverDelayMs: number;
     /** 移出词或卡片后多久收卡（毫秒）；期间移回词或卡片则不收 */
@@ -145,7 +147,7 @@ export interface EntityMarkProps {
 let openCardCloser: (() => void) | null = null;
 
 export const EntityMark: React.FC<EntityMarkProps> = ({
-    span, label, hasBrackets, plain, loader, buildHref, onNavigate, onCardNavigate = onNavigate, renderText, hoverDelayMs,
+    span, label, hasBrackets, plain, loader, buildHref, onNavigate, onCardNavigate = onNavigate, cardNewTab, renderText, hoverDelayMs,
     closeDelayMs = 280,
 }) => {
     const cardId = useId();
@@ -230,7 +232,7 @@ export const EntityMark: React.FC<EntityMarkProps> = ({
             >
                 {inner}
             </a>
-            {open && <EntityCard id={cardId} entityId={id} span={span} loader={loader} buildHref={buildHref} onNavigate={onCardNavigate} />}
+            {open && <EntityCard id={cardId} entityId={id} span={span} loader={loader} buildHref={buildHref} onNavigate={cardNewTab ? undefined : onCardNavigate} newTab={cardNewTab} />}
         </span>
     );
 };
@@ -248,7 +250,8 @@ const EntityCard: React.FC<{
     loader: { owner: object; load: EntitySummaryLoader } | null;
     buildHref: (id: string) => string;
     onNavigate?: EntityTextProps['onNavigate'];
-}> = ({ id, entityId, span, loader, buildHref, onNavigate }) => {
+    newTab?: boolean;
+}> = ({ id, entityId, span, loader, buildHref, onNavigate, newTab }) => {
     const { convert, t } = useI18n();
     const ref = useRef<HTMLSpanElement | null>(null);
     const [align, setAlign] = useState<'start' | 'end'>('start');
@@ -298,6 +301,7 @@ const EntityCard: React.FC<{
                 <a
                     className="bim-et-card-a"
                     href={buildHref(summary.id || entityId)}
+                    {...(newTab ? { target: '_blank', rel: 'noopener' } : {})}
                     onClick={onNavigate ? e => onNavigate(summary.id || entityId, e) : undefined}
                 >{t('reader.entityDetail')}</a>
             )}
