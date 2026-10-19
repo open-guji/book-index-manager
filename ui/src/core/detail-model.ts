@@ -1694,8 +1694,19 @@ const CHINESE_DIGITS = ['〇', '一', '二', '三', '四', '五', '六', '七', 
 const CHINESE_UNITS = ['', '十', '百', '千'];
 
 export function numberToChinese(n: number): string {
-    if (n <= 0) return '';
-    if (n >= 10000) return String(n);
+    if (!Number.isInteger(n) || n <= 0) return '';
+    if (n >= 100000000) return String(n);
+    if (n < 10000) return belowWan(n, true);
+    // 万以上：二萬二千八百七十七；万位后不足千补〇：二萬〇八百二十八
+    const wan = Math.floor(n / 10000);
+    const rest = n % 10000;
+    let result = belowWan(wan, true) + '萬';
+    if (rest > 0) result += (rest < 1000 ? '〇' : '') + belowWan(rest, false);
+    return result;
+}
+
+/** 一万以内转中文；leading 为真时十位的一可省（10→十），用在整串开头 */
+function belowWan(n: number, leading: boolean): string {
     const str = String(n);
     const len = str.length;
     let result = '';
@@ -1708,7 +1719,7 @@ export function numberToChinese(n: number): string {
         } else {
             if (lastWasZero && result) result += '〇';
             lastWasZero = false;
-            if (digit === 1 && unitIndex === 1 && i === 0) {
+            if (leading && digit === 1 && unitIndex === 1 && i === 0) {
                 result += CHINESE_UNITS[unitIndex];
             } else {
                 result += CHINESE_DIGITS[digit] + CHINESE_UNITS[unitIndex];
