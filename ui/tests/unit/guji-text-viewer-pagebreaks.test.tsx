@@ -60,11 +60,24 @@ describe('分叶分割线关：跨页连续（overview#527）', () => {
         expect(paras(container)).toHaveLength(2);
     });
 
-    it('关：下一页首列抬头（raised）或行首空格（lead_blank）是原件另起一段 → 不并', () => {
-        for (const col of [{ raised: 1 }, { lead_blank: 2 }]) {
-            const { container } = mount([page(3, ['甲', '乙']), page(4, ['丙', '丁'], col)], { pageBreaks: false });
-            expect(paras(container)).toHaveLength(2);
+    it('关：下一页首列比上一页多出行首空格（lead_blank）是原件另起一段 → 不并', () => {
+        const { container } = mount([page(3, ['甲', '乙']), page(4, ['丙', '丁'], { lead_blank: 2 })], { pageBreaks: false });
+        expect(paras(container)).toHaveLength(2);
+    });
+
+    it('关：下一页首列抬头（raised）或平抬（比常态缩进高）是敬称提行，句子接着写 → 照并', () => {
+        const base = { lead_blank: 2 };
+        for (const col of [{ raised: 1 }, { lead_blank: 0 }]) {
+            const { container } = mount([page(3, ['甲', '乙'], base), page(4, ['丙', '丁'], base), page(5, ['國', '朝'], col), page(6, ['戊'], base), page(7, ['己'], base)], { pageBreaks: false });
+            expect(paras(container)).toHaveLength(1);
         }
+    });
+
+    it('关：整段低一格（总叙 lead_blank=3，全章常态 2）跨页 → 缩进与上一页末列相同，照并', () => {
+        const base = { lead_blank: 2 };
+        const low = { lead_blank: 3 };
+        const { container } = mount([page(3, ['甲'], base), page(4, ['乙'], base), page(5, ['盡'], low), page(6, ['其'], low), page(7, ['丙'], base), page(8, ['丁'], base)], { pageBreaks: false, punctuations: [brk('4:1:1'), brk('6:1:1')] });
+        expect(paras(container).map(idsIn)).toEqual([['3:1:1', '4:1:1'], ['5:1:1', '6:1:1'], ['7:1:1', '8:1:1']]);
     });
 
     it('关：全章每列都是同一个 lead_blank（版框上沿留白，四庫總目自校本 171/186 页）→ 不是另起一段，照并', () => {
