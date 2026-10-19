@@ -164,6 +164,17 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         ? pages
         : [{ page: parseInt(pageData.page_id.split(':')[1] || '1', 10), columns: pageData.columns }];
 
+    // 行首空格数有“本书常态”：四庫總目自校本几乎每列都有 lead_blank=2（版框上沿的留白），不是另起一段。
+    // 全章有字列里出现最多的 lead_blank 是底线；比底线高（抬头、平抬）的列是敬称提行，不算段落版式（overview#527）。
+    const leadCount = new Map<number, number>();
+    for (const pData of allPagesData) for (const col of pData.columns) {
+      if (col.chars.length > 0 && !col.raised) leadCount.set(col.lead_blank || 0, (leadCount.get(col.lead_blank || 0) || 0) + 1);
+    }
+    let baseLead = 0;
+    let bestCount = -1;
+    for (const [v, n] of leadCount) if (n > bestCount || (n === bestCount && v < baseLead)) { baseLead = v; bestCount = n; }
+    const elevated = (col: { raised?: number; lead_blank?: number }) => !!col.raised || (col.lead_blank || 0) < baseLead;
+
     // 无字页（只有书影的书脊签、封面签条等）不进正文
     const built: ReflowPage[] = allPagesData.filter((pData) => pData.columns.some((c) => c.chars.length > 0)).map((pData) => {
       const sortedCols = [...pData.columns].sort((a, b) => a.col - b.col);
@@ -183,6 +194,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       let leadStarts = false;
       // 空列（kind: blank）没有字：记下个数，挂到后面第一个有字的列首字上；页尾的空列记在 trailingBlank
       let pendingBlank = 0;
+      // 本页最后一个非提行列的行首空格数：下一页首列与它比，缩进相同就是同一段接着写
+      let tailLead: number | undefined;
 
       for (const col of sortedCols) {
         if (col.chars.length === 0) {
@@ -194,6 +207,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
           ? { raised: col.raised, leadBlank: col.lead_blank, blankBefore: pendingBlank }
           : undefined;
         pendingBlank = 0;
+        if (!elevated(col)) tailLead = col.lead_blank || 0;
         let first = true;
         for (const ch of col.chars) {
           const here = punctMap.get(ch.id) || [];
@@ -227,6 +241,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         page: pData.page,
         paragraphs,
         endsOpen,
+        ...(tailLead !== undefined ? { tailLead } : {}),
         ...(leadStarts ? { leadStarts } : {}),
         ...(pData.label ? { label: pData.label } : {}),
         ...(pendingBlank > 0 ? { trailingBlank: pendingBlank } : {}),
@@ -237,20 +252,15 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     // 下一页的页锚点改指它的首字（leadFirstId）。下一页首字带抬头／行首空格／前置空列时是原件的另起一段，不并。
     const mergedOwner = new Map<string, number>();
     if (!pageBreaks) {
-      // 行首空格数有“本书常态”：四庫總目自校本几乎每列都有 lead_blank=2（版框上沿的留白），不是另起一段。
-      // 以全章有字列里出现最多的 lead_blank 为底线，只有比底线多的才算另起一段（overview#527：线上 171/186 页被误判）。
-      const leadCount = new Map<number, number>();
-      for (const pData of allPagesData) for (const col of pData.columns) {
-        if (col.chars.length > 0) leadCount.set(col.lead_blank || 0, (leadCount.get(col.lead_blank || 0) || 0) + 1);
-      }
-      let baseLead = 0;
-      let bestCount = -1;
-      for (const [v, n] of leadCount) if (n > bestCount || (n === bestCount && v < baseLead)) { baseLead = v; bestCount = n; }
-      let open: { para: ReflowParagraph; owner: number } | null = null;
+      // 下一页首列另起一段的版式：前有空列，或比上一页末尾正文列缩得更深（如进入低格的案语）。
+      // 抬头／平抬是敬称提行，句子照常接着写，不算另起一段；缩进与上一页相同（总叙整段低一格）也照并。
+      let open = null as { para: ReflowParagraph; owner: number; tailLead: number } | null;
       for (const pg of built) {
         const lead = pg.paragraphs[0];
         const s0 = lead?.chars[0]?.start;
-        const startsParagraph = !!pg.leadStarts || (!!s0 && !!(s0.raised || (s0.leadBlank || 0) > baseLead || s0.blankBefore));
+        const s0Lead = s0?.leadBlank || 0;
+        const indentStarts = !!s0 && !s0.raised && s0Lead >= baseLead && s0Lead > (open?.tailLead ?? baseLead);
+        const startsParagraph = !!pg.leadStarts || !!s0?.blankBefore || indentStarts;
         const wouldOrphanBlank = pg.paragraphs.length === 1 && !!pg.trailingBlank;
         if (open && lead && !startsParagraph && !wouldOrphanBlank) {
           for (const c of lead.chars) mergedOwner.set(c.charData.id, open.owner);
@@ -260,8 +270,9 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         }
         if (pg.endsOpen && !pg.trailingBlank) {
           const last = pg.paragraphs[pg.paragraphs.length - 1];
-          if (last) open = { para: last, owner: pg.page };
-          // 整页都并走了（pg 没有段）：敞口仍在上一页那一段上，open 不变
+          if (last) open = { para: last, owner: pg.page, tailLead: pg.tailLead ?? open?.tailLead ?? baseLead };
+          // 整页都并走了（pg 没有段）：敞口仍在上一页那一段上，只更新末尾缩进
+          else if (open && pg.tailLead !== undefined) open.tailLead = pg.tailLead;
         } else {
           open = null;
         }
@@ -564,6 +575,8 @@ type ReflowPage = {
   endsOpen?: boolean;
   /** 本页首段已并入上一页时，本页第一个字的 id（页锚点用它，不用 <section>） */
   leadFirstId?: string;
+  /** 本页最后一个非提行（非抬头、非平抬）列的行首空格数 */
+  tailLead?: number;
   /** 本页第一个字前有分段符（pos=before）或标题符：原件在此另起一段，分叶线关时也不并入上一页末段 */
   leadStarts?: boolean;
 };
