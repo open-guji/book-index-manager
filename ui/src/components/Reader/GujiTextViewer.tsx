@@ -278,7 +278,10 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         }
       }
     }
-    return { pages: built, mergedOwner };
+    // 首段并进上一页的页：它的首字 id → 页号（渲染时给那个字标 data-page-start，页锚点一次 querySelectorAll 就能取齐）
+    const pageStarts = new Map<string, number>();
+    for (const pg of built) if (pg.leadFirstId) pageStarts.set(pg.leadFirstId, pg.page);
+    return { pages: built, mergedOwner, pageStarts };
   }, [pages, pageData, punctMap, pageBreaks]);
   const reflowPages = reflow.pages;
   const reflowRef = useRef(reflowPages);
@@ -546,17 +549,23 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   refYRef.current = indicatorOn ? effectiveY : null;
   const updatePageRef = useRef<() => void>(() => {});
 
+  const trackedReflow = useRef<unknown>(null);
   // 4. 滚动监听：侦测视口参考线（指示头所在行，缺省顶部以下 120px）所在的页并通知外层。
   //    rAF 节流＋对已排好序的页做二分，每帧只读十来个页的位置
   useEffect(() => {
     if (!hasVisibleCb) return;
-    // 页锚点一次取齐：逐页 querySelector 是「页数 × DOM 大小」，分批渲染每补一批都要重来一遍（GUJI-632）
+    // 页锚点一次取齐：逐页 querySelector（或按字 id 重建全章字表）是「页数 × DOM 大小」，分批渲染每补一批都要重来一遍（GUJI-632）
     const sectionEls = new Map<string, HTMLElement>();
-    containerRef.current?.querySelectorAll<HTMLElement>('[data-page-section]').forEach((el) => { sectionEls.set(el.getAttribute('data-page-section')!, el); });
+    const startEls = new Map<string, HTMLElement>();
+    containerRef.current?.querySelectorAll<HTMLElement>('[data-page-section],[data-page-start]').forEach((el) => {
+      const sec = el.getAttribute('data-page-section');
+      if (sec !== null) sectionEls.set(sec, el);
+      else startEls.set(el.getAttribute('data-page-start')!, el);
+    });
     const sections: HTMLElement[] = [];
     const sectionPages: number[] = [];
     for (const pg of shownPages) {
-      const a = pg.leadFirstId ? charEl(pg.leadFirstId) : sectionEls.get(String(pg.page)) ?? null;
+      const a = (pg.leadFirstId ? startEls.get(String(pg.page)) : sectionEls.get(String(pg.page))) ?? null;
       if (a) { sections.push(a); sectionPages.push(pg.page); }
     }
     if (sections.length === 0) return;
@@ -600,7 +609,9 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
     updatePageRef.current = () => { if (!raf) raf = requestAnimationFrame(update); };
     window.addEventListener('scroll', onScroll, { passive: true });
-    update();
+    // 换了排版（换章、开关分叶线）当场判一次；只是分批渲染补了一批，就留到下一帧——当场读位置会强制同步排版刚插进来的那批（GUJI-632）
+    if (trackedReflow.current !== reflowPages) { trackedReflow.current = reflowPages; update(); }
+    else onScroll();
     return () => { window.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); updatePageRef.current = () => {}; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasVisibleCb, reflowPages, shownCount]);
@@ -640,6 +651,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
             buildHref={buildEntityHref ?? defaultHref}
             handlers={handlers}
             estHeight={estimateHeight(pageCharCounts[idx] ?? 0, pGroup.paragraphs.length, metrics)}
+            pageStarts={reflow.pageStarts}
           />
         ))}
       </div>
@@ -758,7 +770,7 @@ function ReflowBlock({ heading, children }: { heading?: ReflowHeading; children:
 
 /** 一页正文。memo：翻页、悬停、选中别页的字都不会让它重渲染 */
 const PageSection = React.memo(function PageSection({
-  pGroup, first, pageBreaks, markOpts, plainBooks, selected, entityOfChar, entityLoader, convert, buildHref, handlers, estHeight,
+  pGroup, first, pageBreaks, markOpts, plainBooks, selected, entityOfChar, entityLoader, convert, buildHref, handlers, estHeight, pageStarts,
 }: {
   pGroup: ReflowPage;
   first: boolean;
@@ -773,6 +785,8 @@ const PageSection = React.memo(function PageSection({
   handlers: PageHandlers;
   /** 占位高度估计（px），给 content-visibility 用 */
   estHeight: number;
+  /** 首段并进上一页的页：首字 id → 页号 */
+  pageStarts: ReadonlyMap<string, number>;
 }) {
   // 字 id → 显示字（繁简）。逐段整体转换以保住词组（髮／發 等），长度对不上才退回逐字
   const shown = useMemo(() => {
@@ -839,6 +853,7 @@ const PageSection = React.memo(function PageSection({
                   {beforePuncts.map(punct)}
                   <span
                     data-char-id={ch.id}
+                    data-page-start={pageStarts.get(ch.id)}
                     className={`guji-text-char${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${ch.lacuna ? ' is-lacuna' : ''}${ch.guess ? ' is-guess' : ''}${ch.zi ? ' is-zi' : ''}${start?.raised ? ' is-raised' : ''}`}
                     data-raised={start?.raised || undefined}
                     title={ch.lacuna ? t('detail.lacuna') : ch.zi ? t('detail.composedChar', { label: ch.zi }) : ch.guess ? t('reader.charGuess') : undefined}
