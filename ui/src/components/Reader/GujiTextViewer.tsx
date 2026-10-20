@@ -281,6 +281,64 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     return { pages: built, mergedOwner };
   }, [pages, pageData, punctMap, pageBreaks]);
   const reflowPages = reflow.pages;
+  const reflowRef = useRef(reflowPages);
+  reflowRef.current = reflowPages;
+
+  // ── 分批渲染（GUJI-632）──
+  // 一章动辄 3 万字、近 200 页：一次全挂上，手机上主线程一卡近 10 秒。先渲染开头约 FIRST_BATCH_CHARS 字，
+  // 其余在空闲时每批约 BATCH_CHARS 字往后补；要跳到还没渲染的页（锚点、书影翻页、点书影的字）就先补到那一页。
+  // 字数不到首批的章（单测样例、短章）一次渲染完，与改前一致。
+  const pageCharCounts = useMemo(
+    () => reflowPages.map((pg) => pg.paragraphs.reduce((n, para) => n + para.chars.length, 0)),
+    [reflowPages],
+  );
+  const pagesWithin = useCallback((from: number, budget: number) => {
+    let i = from, sum = 0;
+    while (i < pageCharCounts.length && (i === from || sum + pageCharCounts[i] <= budget)) sum += pageCharCounts[i++];
+    return i;
+  }, [pageCharCounts]);
+  // 同一章（首字与页数相同）宿主重取数据、换标点显隐、分叶线开关时不回到首批，已渲染的页数照旧
+  const chapterSig = `${reflowPages.length}:${reflowPages[0]?.paragraphs[0]?.chars[0]?.charData.id ?? ''}`;
+  const [batch, setBatch] = useState(() => ({ sig: chapterSig, n: pagesWithin(0, FIRST_BATCH_CHARS) }));
+  let shownCount = batch.n;
+  if (batch.sig !== chapterSig) {
+    shownCount = pagesWithin(0, FIRST_BATCH_CHARS);
+    setBatch({ sig: chapterSig, n: shownCount });
+  }
+  shownCount = Math.min(shownCount, reflowPages.length);
+  const allShown = shownCount >= reflowPages.length;
+  useEffect(() => {
+    if (allShown) return;
+    const idle = (cb: () => void) => {
+      const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (h: number) => void };
+      if (w.requestIdleCallback) { const h = w.requestIdleCallback(cb, { timeout: 300 }); return () => w.cancelIdleCallback?.(h); }
+      const t = setTimeout(cb, 16);
+      return () => clearTimeout(t);
+    };
+    return idle(() => setBatch((b) => (b.sig === chapterSig ? { sig: b.sig, n: Math.max(b.n, pagesWithin(b.n, BATCH_CHARS)) } : b)));
+  }, [allShown, shownCount, chapterSig, pagesWithin]);
+  /** 让第 page 页（扫描页号）及其后一页进入渲染；已在渲染范围内就什么也不做 */
+  const ensurePageShown = useCallback((page: number) => {
+    const idx = reflowRef.current.findIndex((pg) => pg.page >= page);
+    const need = (idx < 0 ? reflowRef.current.length : idx) + 2;
+    setBatch((b) => (b.n >= need ? b : { ...b, n: need }));
+  }, []);
+  const shownPages = allShown ? reflowPages : reflowPages.slice(0, shownCount);
+
+  // 每页的占位高度估计（content-visibility: auto 的 contain-intrinsic-size）：屏幕外的页不排版、不绘制，
+  // 滚过一次后浏览器记住真实高度（auto）。行宽、行高挂载后量一次
+  const [metrics, setMetrics] = useState<{ cpl: number; lineH: number }>({ cpl: 30, lineH: 44 });
+  useEffect(() => {
+    const para = containerRef.current?.querySelector<HTMLElement>('.guji-reflow-paragraph');
+    if (!para) return;
+    const cs = getComputedStyle(para);
+    const fs = parseFloat(cs.fontSize);
+    const w = para.clientWidth;
+    if (!(fs > 0) || !(w > 0)) return;
+    const lh = parseFloat(cs.lineHeight);
+    const next = { cpl: Math.max(8, Math.floor(w / fs)), lineH: Math.round(lh > 0 ? lh : fs * 2) };
+    setMetrics((m) => (m.cpl === next.cpl && m.lineH === next.lineH ? m : next));
+  }, [chapterSig]);
 
   // 全卷字序：字 id → 序号（对位实体用）
   const charOrder = useMemo(() => {
@@ -327,15 +385,57 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   // 每页只收到落在本页的选中字；没变的页拿到同一个 Set，memo 才挡得住
   const selectedByPage = useSelectedByPage(selectedCharIds, reflow.mergedOwner);
 
+  // 字 id → 元素：悬停、点书影定位都要按 id 找字，不再每次在 3 万个节点里 querySelector（GUJI-630）。
+  // 懒建；查不到或元素已脱离文档（换章、重排）就重建一次，同一份排版只重建一次
+  // 已渲染的页数也算进「同一份排版」：分批渲染每补一批，DOM 里就多出一批字
+  const shownRef = useRef(shownCount);
+  shownRef.current = shownCount;
+  const charEls = useRef<{ for: unknown; n: number; map: Map<string, HTMLElement> } | null>(null);
+  const charEl = useCallback((id: string): HTMLElement | null => {
+    const cached = charEls.current;
+    const hit = cached?.map.get(id);
+    if (hit && hit.isConnected) return hit;
+    if (cached && cached.for === reflowRef.current && cached.n === shownRef.current && !hit) return null;
+    const c = containerRef.current;
+    if (!c) return null;
+    const map = new Map<string, HTMLElement>();
+    c.querySelectorAll<HTMLElement>('span[data-char-id]').forEach((el) => { map.set(el.getAttribute('data-char-id')!, el); });
+    charEls.current = { for: reflowRef.current, n: shownRef.current, map };
+    return map.get(id) ?? null;
+  }, []);
+
   // 悬停（含从书影那边反过来悬停）：直接改那一个字的 class，不经 React 重渲染
   const hoverEl = useRef<HTMLElement | null>(null);
   useEffect(() => {
     hoverEl.current?.classList.remove('is-hovered');
     hoverEl.current = null;
     if (!hoveredCharId) return;
-    const el = containerRef.current?.querySelector<HTMLElement>(`span[data-char-id="${hoveredCharId}"]`);
+    const el = charEl(hoveredCharId);
     if (el) { el.classList.add('is-hovered'); hoverEl.current = el; }
-  }, [hoveredCharId]);
+  }, [hoveredCharId, charEl]);
+
+  // 字的点击、悬停委托在正文容器上：不给 3 万个字各挂三个回调（GUJI-630）
+  const hoverId = useRef<string | null>(null);
+  const charIdAt = (target: EventTarget | null): string | null => {
+    const el = target instanceof Element ? target.closest('span[data-char-id]') : null;
+    return el && containerRef.current?.contains(el) ? el.getAttribute('data-char-id') : null;
+  };
+  const onContainerClick = (e: React.MouseEvent) => {
+    const id = charIdAt(e.target);
+    if (id) handlers.click(id);
+  };
+  const onContainerOver = (e: React.MouseEvent) => {
+    const id = charIdAt(e.target);
+    if (id === hoverId.current) return;
+    hoverId.current = id;
+    if (id) handlers.enter(id);
+    else handlers.leave();
+  };
+  const onContainerLeave = () => {
+    if (hoverId.current === null) return;
+    hoverId.current = null;
+    handlers.leave();
+  };
 
   // 2. 选区变化监听：只取选区两端的字、按文档序二分，不再逐字问「这个字在不在选区里」（3 万次 containsNode 会卡死）
   useEffect(() => {
@@ -377,16 +477,20 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     return () => { document.removeEventListener('selectionchange', onSel); if (timer) clearTimeout(timer); };
   }, []);
 
-  // 3. 点击底本书影时，自动平滑滚动对应文字到可见区
+  // 3. 点击底本书影时，自动平滑滚动对应文字到可见区（字所在页还没渲染就先补到那一页，渲染出来再滚，每次选中只滚一次）
+  const selScrolled = useRef<ReadonlySet<string> | null>(null);
   useEffect(() => {
-    if (selectedCharIds.size === 1) {
-      const firstId = Array.from(selectedCharIds)[0];
-      const el = containerRef.current?.querySelector(`span[data-char-id="${firstId}"]`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-      }
+    if (selectedCharIds.size !== 1 || selScrolled.current === selectedCharIds) return;
+    const firstId = Array.from(selectedCharIds)[0];
+    const el = charEl(firstId);
+    if (el) {
+      selScrolled.current = selectedCharIds;
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    } else {
+      const page = parseInt(firstId.split(':')[0], 10);
+      if (!isNaN(page)) ensurePageShown(page);
     }
-  }, [selectedCharIds]);
+  }, [selectedCharIds, shownCount, charEl, ensurePageShown]);
 
   /** 页的位置锚点：一般是该页的 <section>；首段并入了上一页（分叶线关）时是该页的第一个字 */
   const pageAnchor = (page: number): HTMLElement | null => {
@@ -399,14 +503,20 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
 
   // 书影翻页 → 正文滚到该页开头。锁住滚动联动，免得滚动途中被上一页抢回书影页
   const scrollNonce = scrollToPage?.nonce;
+  const pageScrollDone = useRef<number | null>(null);
   useEffect(() => {
-    if (!scrollToPage) return;
+    if (!scrollToPage || pageScrollDone.current === scrollToPage.nonce) return;
     const el = pageAnchor(scrollToPage.page);
-    if (!el) return;
+    if (!el) {
+      // 那一页还没渲染（分批渲染）：先补到那一页，下一轮再滚；本章根本没有这一页时什么也不做
+      if (!allShown && reflowPages.some((pg) => pg.page >= scrollToPage.page)) ensurePageShown(scrollToPage.page);
+      return;
+    }
+    pageScrollDone.current = scrollToPage.nonce;
     pageLockUntil.current = Date.now() + 800;
     el.scrollIntoView({ behavior: 'auto', block: 'start' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scrollNonce]);
+  }, [scrollNonce, shownCount]);
 
   // 目录点标题 → 正文滚到该段开头，书影跟到该页。字还没渲染出来就等下一次（换章时数据后到）
   const anchorDone = useRef<number | null>(null);
@@ -414,14 +524,18 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     if (!scrollToAnchor || anchorDone.current === scrollToAnchor.nonce) return;
     const c = containerRef.current;
     const ch = c?.querySelector<HTMLElement>(`span[data-char-id="${cssEscape(scrollToAnchor.anchor)}"]`);
-    if (!ch) return;
+    if (!ch) {
+      const page = parseInt(scrollToAnchor.anchor.split(':')[0], 10);
+      if (!allShown && !isNaN(page)) ensurePageShown(page);
+      return;
+    }
     anchorDone.current = scrollToAnchor.nonce;
     const block = ch.closest<HTMLElement>('.guji-reflow-paragraph') ?? ch;
     pageLockUntil.current = Date.now() + 800;
     block.scrollIntoView({ behavior: 'auto', block: 'start' });
     const page = parseInt(scrollToAnchor.anchor.split(':')[0], 10);
     if (!isNaN(page)) latest.current.onVisiblePageChange?.(page);
-  }, [scrollToAnchor, reflowPages]);
+  }, [scrollToAnchor, reflowPages, shownCount, allShown, ensurePageShown]);
 
   // 页指示头：位置（视口高度比例）。拖动中用本地值，松手才通知宿主写偏好
   const hasVisibleCb = !!onVisiblePageChange || !!onVisibleHeadingChange;
@@ -436,10 +550,13 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   //    rAF 节流＋对已排好序的页做二分，每帧只读十来个页的位置
   useEffect(() => {
     if (!hasVisibleCb) return;
+    // 页锚点一次取齐：逐页 querySelector 是「页数 × DOM 大小」，分批渲染每补一批都要重来一遍（GUJI-632）
+    const sectionEls = new Map<string, HTMLElement>();
+    containerRef.current?.querySelectorAll<HTMLElement>('[data-page-section]').forEach((el) => { sectionEls.set(el.getAttribute('data-page-section')!, el); });
     const sections: HTMLElement[] = [];
     const sectionPages: number[] = [];
-    for (const pg of reflowPages) {
-      const a = pageAnchor(pg.page);
+    for (const pg of shownPages) {
+      const a = pg.leadFirstId ? charEl(pg.leadFirstId) : sectionEls.get(String(pg.page)) ?? null;
       if (a) { sections.push(a); sectionPages.push(pg.page); }
     }
     if (sections.length === 0) return;
@@ -485,7 +602,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     window.addEventListener('scroll', onScroll, { passive: true });
     update();
     return () => { window.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); updatePageRef.current = () => {}; };
-  }, [hasVisibleCb, reflowPages]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasVisibleCb, reflowPages, shownCount]);
   // 指示头挪动（拖动、键盘、偏好变了）：不等滚动，立刻按新参考线重判一次页
   useEffect(() => { if (indicatorOn) updatePageRef.current(); }, [indicatorOn, effectiveY]);
 
@@ -493,6 +611,9 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     <div
       ref={containerRef}
       className="guji-text-pane-content"
+      onClick={onContainerClick}
+      onMouseOver={onContainerOver}
+      onMouseLeave={onContainerLeave}
     >
       {hasEntities && <style>{ENTITY_TEXT_CSS}</style>}
       {indicatorOn && (
@@ -504,7 +625,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         />
       )}
       <div className="guji-text-reflow-view">
-        {reflowPages.map((pGroup, idx) => (
+        {shownPages.map((pGroup, idx) => (
           <PageSection
             key={`page-sec-${pGroup.page}`}
             pGroup={pGroup}
@@ -518,12 +639,23 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
             convert={convert}
             buildHref={buildEntityHref ?? defaultHref}
             handlers={handlers}
+            estHeight={estimateHeight(pageCharCounts[idx] ?? 0, pGroup.paragraphs.length, metrics)}
           />
         ))}
       </div>
     </div>
   );
 };
+
+/** 分批渲染：首批与之后每批大约多少字（GUJI-632）。首批要盖住第一屏（手机上约 4 屏）；每批在 CPU 降速 4–6 倍下约 0.3 秒 */
+const FIRST_BATCH_CHARS = 1800;
+const BATCH_CHARS = 800;
+
+/** 一页的占位高度：字数按每行字数折成行数（每段末行另算一行），加分叶线与段距 */
+function estimateHeight(chars: number, paragraphs: number, m: { cpl: number; lineH: number }): number {
+  const lines = Math.ceil(chars / Math.max(8, m.cpl)) + paragraphs;
+  return Math.round(lines * m.lineH + paragraphs * m.lineH * 0.4 + 64);
+}
 
 const NO_SELECTION: ReadonlySet<string> = new Set();
 const NO_PUNCT: PunctEntry[] = [];
@@ -626,7 +758,7 @@ function ReflowBlock({ heading, children }: { heading?: ReflowHeading; children:
 
 /** 一页正文。memo：翻页、悬停、选中别页的字都不会让它重渲染 */
 const PageSection = React.memo(function PageSection({
-  pGroup, first, pageBreaks, markOpts, plainBooks, selected, entityOfChar, entityLoader, convert, buildHref, handlers,
+  pGroup, first, pageBreaks, markOpts, plainBooks, selected, entityOfChar, entityLoader, convert, buildHref, handlers, estHeight,
 }: {
   pGroup: ReflowPage;
   first: boolean;
@@ -639,6 +771,8 @@ const PageSection = React.memo(function PageSection({
   convert?: (s: string) => string;
   buildHref: (id: string) => string;
   handlers: PageHandlers;
+  /** 占位高度估计（px），给 content-visibility 用 */
+  estHeight: number;
 }) {
   // 字 id → 显示字（繁简）。逐段整体转换以保住词组（髮／發 等），长度对不上才退回逐字
   const shown = useMemo(() => {
@@ -663,7 +797,7 @@ const PageSection = React.memo(function PageSection({
     <section
       data-page-section={pGroup.page}
       className="guji-page-section"
-      style={{ position: 'relative', scrollMarginTop: 96 }}
+      style={{ position: 'relative', scrollMarginTop: 96, contentVisibility: 'auto', containIntrinsicSize: `auto ${estHeight}px` }}
     >
       {/* 页间分隔与页码标牌（首页若无前置内容可紧凑显示） */}
       {!first && pageBreaks && (
@@ -705,9 +839,6 @@ const PageSection = React.memo(function PageSection({
                   {beforePuncts.map(punct)}
                   <span
                     data-char-id={ch.id}
-                    onClick={() => handlers.click(ch.id)}
-                    onMouseEnter={() => handlers.enter(ch.id)}
-                    onMouseLeave={handlers.leave}
                     className={`guji-text-char${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${ch.lacuna ? ' is-lacuna' : ''}${ch.guess ? ' is-guess' : ''}${ch.zi ? ' is-zi' : ''}${start?.raised ? ' is-raised' : ''}`}
                     data-raised={start?.raised || undefined}
                     title={ch.lacuna ? t('detail.lacuna') : ch.zi ? t('detail.composedChar', { label: ch.zi }) : ch.guess ? t('reader.charGuess') : undefined}

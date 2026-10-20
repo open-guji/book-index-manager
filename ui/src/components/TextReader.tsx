@@ -29,6 +29,7 @@ import { ReaderMdText, bookMarkingOf, canParagraphize } from './Reader/ReaderTex
 import { filterEntitiesByMode } from '../core/entity-annotations';
 import { useReaderPrefs } from './Reader/prefs';
 import { useChapterImages } from './Reader/useChapterImages';
+import { createHoverStore, HoverBound } from './Reader/hover-store';
 import type { ReaderImageOverlay, ReaderImageResolver, ReaderResolveContext, ReaderReportContext, ReaderTocItem, ReaderVersion } from './Reader/types';
 import type { JuanCacheEntry, JuanView, WorkLabelCache } from './CollatedEdition';
 import {
@@ -41,6 +42,14 @@ import { ZoomPanBox, type ZoomPanHandle } from './Reader/ZoomPanBox';
 import { useChapterWarpData, type ReaderWarpResolver } from './Reader/useChapterWarpData';
 import { useChapterEntities, type ReaderEntityResolver } from './Reader/useChapterEntities';
 import { headingKey, headingsFromPunct, nestHeadings, parseHeadingKey, sanitizeHeadings, type HeadingNode, type TextHeading } from '../core/text-headings';
+
+/** 对读章：章条目同时声明了逐字文本与像素框（char_file＋cord_file），正文由对读数据排出，版本目录下没有 .txt */
+export function isDuiduChapter(c: Pick<TextChapter, 'char_file' | 'cord_file' | 'has_json'> | null | undefined): boolean {
+    return !!c && !c.has_json && typeof c.char_file === 'string' && !!c.char_file && typeof c.cord_file === 'string' && !!c.cord_file;
+}
+
+/** 正文滚动跨页后，书影等多久（停在这一页）才跟着换 */
+const SCROLL_PAGE_SETTLE_MS = 150;
 
 /** 当前位置：哪份版本的哪一章。`isDefault` 时网址里不写版本 key（规格 §六） */
 export interface TextLocation {
@@ -396,6 +405,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         const seq = ++contentSeq.current;
         const key = `${id}\n${versionKey}\n${chapterMeta.file}`;
         setContent(null);
+        // 对读章（同时声明了 char_file 与 cord_file）的正文来自对读数据，没有 .txt：不发这个必然 404 的请求（GUJI-631）
+        if (isDuiduChapter(chapterMeta)) { setLoadedKey(key); return; }
         api.getChapter(id, versionKey, chapterMeta.file, { json: !!chapterMeta.has_json })
             .then(c => { if (seq === contentSeq.current) setContent(c); })
             .catch(() => { if (seq === contentSeq.current) setContent(null); })
@@ -443,7 +454,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         [entitySpans, properNameMode, prefs.showWorks],
     );
     const [selectedCharIds, setSelectedCharIds] = useState<Set<string>>(new Set());
-    const [hoveredCharId, setHoveredCharId] = useState<string | null>(null);
+    // 悬停的字不进顶层 state（每划过一个字就会重渲染整个阅读器），只有书影画布与正文订阅（GUJI-630）
+    const [hover] = useState(createHoverStore);
     const [showPunctuation, setShowPunctuation] = useState<boolean>(true);
     // 书影保留空白：走阅读偏好（持久化；设置面板里的勾选框与书影区的分段按钮是同一个偏好）
     const preserveMargins = storedPrefs.preserveMargins;
@@ -457,10 +469,11 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         const p = parseInt(w?.page_id?.split(':')[1] ?? '', 10);
         return isNaN(p) ? null : p;
     };
-    // 起始页：带透视的那页，否则本章第一个有字的页（无字页只供翻页，不当起点）
+    // 起始页：本章第一个有字的页（与正文开头同一页；无字页只供翻页，不当起点），没有有字页才取带透视的那页。
+    // 原先先取带透视的那页（卷二第 10 页样张）：一开页就下两张原图档，紧接着正文滚动跟随又换回第 3 页，白下（GUJI-631）
     const firstPageOf = (w: PageWarpData | null | undefined): number => {
         const pages = ((w as any)?.pages ?? []) as GujiPageInfo[];
-        return nativeWarpPage(w) ?? pages.find(p => p.columns.some(c => c.chars.length > 0))?.page ?? pages[0]?.page ?? 1;
+        return pages.find(p => p.columns.some(c => c.chars.length > 0))?.page ?? nativeWarpPage(w) ?? pages[0]?.page ?? 1;
     };
     const [activePage, setActivePage] = useState<number>(() => firstPageOf(warpData));
     // 起始页只在「这一章的对读数据第一次到手」时定，并且在渲染阶段就定下来、不放进 effect：
@@ -482,8 +495,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
 
     useEffect(() => {
         setSelectedCharIds(new Set());
-        setHoveredCharId(null);
-    }, [effectiveChapter, versionKey]);
+        hover.set(null);
+    }, [effectiveChapter, versionKey, hover]);
 
     // 当前这一册现算的标题（index.json 没有 headings 缓存时用）：对读数据确是这一章的才算
     const warpIsCurrent = warpStart.key === warpChapterKey && warpStart.started;
@@ -548,6 +561,25 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     // 此时正文还没滚到新页，会报旧页、把刚设的新页号覆盖掉（页号停在旧页、正文却已滚走）。
     // 正文那边的 800ms 锁要等本次渲染后的滚动 effect 才设，赶不上这一拍。
     const navLockUntil = useRef(0);
+    // 正文滚动跟随的书影页：换页后要停 SCROLL_PAGE_SETTLE_MS 才真的换（快速划过的页不逐页换图）。
+    // 每换一页都要换纹理、重画书影、重渲染阅读器，逐页跟是滚动掉帧的主因之一（GUJI-630）
+    const settle = useRef<{ page: number | null; timer: ReturnType<typeof setTimeout> | null }>({ page: null, timer: null });
+    const handleVisiblePage = useCallback((p: number) => {
+        const s = settle.current;
+        if (p === s.page) return;
+        if (s.timer) { clearTimeout(s.timer); s.timer = null; }
+        s.page = null;
+        if (p === activePageRef.current || Date.now() < navLockUntil.current) return;
+        s.page = p;
+        s.timer = setTimeout(() => {
+            s.timer = null;
+            s.page = null;
+            if (Date.now() < navLockUntil.current || activePageRef.current === p) return;
+            activePageRef.current = p;
+            setActivePage(p);
+        }, SCROLL_PAGE_SETTLE_MS);
+    }, []);
+    useEffect(() => () => { if (settle.current.timer) clearTimeout(settle.current.timer); }, []);
     const goToPage = useCallback((next: number) => {
         if (activePageRef.current === next || !pageInfos.has(next)) return;
         navLockUntil.current = Date.now() + 1000;
@@ -593,10 +625,14 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         else if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); flipPage(1); }
     }, [flipPage]);
 
-    // 预取前后几页的书影：滚动时下一页已在缓存里，不用等网络
+    // 预取前后各一页的书影：滚动时下一页已在缓存里，不用等网络。
+    // 书影栏不可见（手机端收起、尚未展开）时不预取——原先照下照解码，手机首屏白白多十几张图（GUJI-629）
+    const facsimileRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         if (!warpData) return;
-        for (const d of [1, -1, 2, 3]) {
+        const panel = facsimileRef.current;
+        if (!panel || panel.offsetWidth === 0) return;
+        for (const d of [1, -1]) {
             const u = imageUrlOfPage(activePage + d);
             if (u) void loadImage(u);
         }
@@ -672,6 +708,12 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     const [juanView, setJuanView] = useState<JuanView>('text');
     useEffect(() => { setJuanView('text'); }, [effectiveChapter, versionKey]);
 
+    // 目录：只在目录、跨章搜索结果、当前章标题变了时重建（原先每次渲染都重建，滚动换页、悬停都会触发，GUJI-630）
+    const tocMemo = useMemo(
+        () => (index ? buildToc(index, matchStates, unitOf(version, index), convert, isCollated, headingsOf) : []),
+        [index, matchStates, version, convert, isCollated, headingsOf],
+    );
+
     // ── 渲染 ──
     // 文本清单、目录未到（服务端渲染出的首屏也是这一态）：先出书名与正文骨架，不是一行小字（overview#359 P2-8）
     if (manifestState === 'loading') return <ReaderSkeleton className={className} style={style} title={title ?? entryTitle} label={t('reader.loading')} />;
@@ -682,7 +724,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     if (!index) return <ReaderSkeleton className={className} style={style} title={title ?? entryTitle} label={t('reader.tocLoading')} />;
 
     const unit = unitOf(version, index);
-    const toc = buildToc(index, matchStates, unit, convert, isCollated, headingsOf);
+    const toc = tocMemo;
     // 目录高亮：读到的标题（在本章目录里才算），否则当前章
     const curHeadingKey = visibleHeading && effectiveChapter && visibleHeading.chapter === effectiveChapter
         ? headingKey(effectiveChapter, visibleHeading.anchor) : null;
@@ -771,7 +813,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             activeKey={effectiveChapter ?? null}
             tocActiveKey={tocActiveKey}
             onSelect={handleSelectChapter}
-            images={images.images}
+            // 对读章的对读数据还在路上时不先给普通书影：否则书影栏先按第 1 张图（书脊签）显示、下载，对读数据一到又换成画布（GUJI-631）
+            images={isDuiduChapter(chapterMeta) && warpLoading && !warpData ? null : images.images}
             // 加载中（书影请求或对读 warp 数据）都不撑开书影栏（GUJI-181）：没书影的书会「开 20ms 又收」，
             // 正文列横移两次（CLS 0.14，线上实测）；有书影的书等拿到图（hasImages）再开，开的次数不变
             renderImageOverlay={renderImageOverlay}
@@ -779,6 +822,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             isWarpMode={!!warpData}
             customImagePanel={warpData && activePageData ? (
                 <div
+                    ref={facsimileRef}
                     className="bim-fx-panel"
                     data-testid="facsimile-panel"
                     tabIndex={0}
@@ -811,12 +855,14 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                         </div>
                     </div>
                     <ZoomPanBox ref={zoomRef} resetKey={activePage} onScaleChange={setZoomScale} style={{ flex: 1, minHeight: 0 }}>
+                        <HoverBound store={hover}>{(hoveredCharId) => (
                         <GujiWarpCanvas
                             imageUrl={activeImageUrl}
                             pageData={activePageData}
                             selectedCharIds={selectedCharIds}
                             hoveredCharId={hoveredCharId}
                             preserveMargins={preserveMargins}
+                            renderScale={zoomScale}
                             onCharClick={(id) => {
                                 setSelectedCharIds(prev => {
                                     const next = new Set(prev);
@@ -827,8 +873,9 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                                 const el = document.querySelector(`[data-char-id="${id}"]`);
                                 if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                             }}
-                            onCharHover={setHoveredCharId}
+                            onCharHover={hover.set}
                         />
+                        )}</HoverBound>
                     </ZoomPanBox>
                     {/* 页导航在书影图片正下方：箭头点击区 ≥ 40×40（触屏），「第 x 葉」的数字可输入（回车／失焦跳转，越界夹取，非数字还原） */}
                     <div data-testid="facsimile-pager" role="group" aria-label={t('reader.facsimilePager')}
@@ -900,6 +947,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                             </p>
                         )}
                     </header>
+                    <HoverBound store={hover}>{(hoveredCharId) => (
                     <GujiTextViewer
                         pageData={warpData}
                         pages={(warpData as any).pages}
@@ -917,13 +965,13 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                             const pagePart = parseInt(id.split(':')[0], 10);
                             if (!isNaN(pagePart)) setActivePage(pagePart);
                         }}
-                        onCharHover={setHoveredCharId}
+                        onCharHover={hover.set}
                         mode="horizontal"
                         showPunctuation={showPunctuation}
                         entities={drawnEntities}
                         entityTransport={transport}
                         onEntityNavigate={onEntityNavigate}
-                        onVisiblePageChange={(p) => { if (Date.now() >= navLockUntil.current) setActivePage(p); }}
+                        onVisiblePageChange={handleVisiblePage}
                         convert={convert}
                         scrollToPage={scrollTarget}
                         scrollToAnchor={pendingAnchor && pendingAnchor.chapter === effectiveChapter && warpIsCurrent ? pendingAnchor : null}
@@ -935,6 +983,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                         bookTitleStyle={prefs.bookTitleStyle}
                         showWorks={prefs.showWorks}
                     />
+                    )}</HoverBound>
                 </article>
             )}
 

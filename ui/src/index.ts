@@ -142,7 +142,7 @@ export {
     filtersToParams, filtersFromParams, sameFilters,
 } from './core/search-filters';
 export type { SearchFilters, SearchSort, LossStatusKey } from './core/search-filters';
-export { TextReader } from './components/TextReader';
+export { TextReader, isDuiduChapter } from './components/TextReader';
 export type { TextReaderProps, TextLocation, TextLocationCause } from './components/TextReader';
 export { createTextApi } from './core/text-api';
 export type { TextApi } from './core/text-api';
