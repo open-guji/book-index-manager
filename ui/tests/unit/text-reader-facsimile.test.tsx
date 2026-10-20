@@ -254,3 +254,14 @@ describe('TextReader 对读 · 宿主重取数据', () => {
         await waitFor(() => expect(wp()).toBe('3'), { timeout: 5000 });
     });
 });
+
+describe('TextReader 对读 · 宿主没取像素框（GUJI-700）', () => {
+    it('窄屏不取 cord：正文照排，书影栏回落普通书影，不按 0 尺寸画字框（原先坐标全是 NaN／Infinity）', async () => {
+        const images = [3, 4, 6].map(n => ({ pageNo: n, seq: String(n).padStart(4, '0'), url: `u${n}`, hiresUrl: `h${n}`, width: 1000, height: 1400 }));
+        const { container } = render(readerEl(async () => ({ page_id: '', title: '', image_size: [0, 0], total_warped_w: 0, columns: [], pages: adaptCharCord(char), punctuations: [] }), images));
+        await waitFor(() => expect(Array.from(container.querySelectorAll('[data-page-section]')).map(e => e.getAttribute('data-page-section'))).toEqual(['3', '4', '6']), { timeout: 5000 });
+        await act(async () => { await new Promise(r => setTimeout(r, 100)); });
+        expect(screen.queryByTestId('canvas-stub')).toBeNull();
+        expect(screen.queryByTestId('facsimile-panel')).toBeNull();
+    });
+});
