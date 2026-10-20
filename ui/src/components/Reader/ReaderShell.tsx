@@ -573,6 +573,38 @@ export function ReaderShell({
         </div>
     );
 
+    // 书影栏高度按「已吸顶」算（视口高 − 页头 − 工具条）。阅读器上方还有别的东西（宿主的章首横幅等）时，
+    // 页面在顶端那一刻书影栏比吸顶位置低，底部（翻页按钮）会落到视口外。量出「当前比吸顶低多少」写进 --bimrd-img-lead，
+    // 从高度里扣掉；吸顶后为 0。量在动画帧里（挂载当下读位置会强制同步排版整页正文）
+    const imgAsideRef = useRef<HTMLElement>(null);
+    useEffect(() => {
+        const el = imgAsideRef.current;
+        if (!el || !imgOpen) return;
+        let raf = 0;
+        let last = -1;
+        const measure = () => {
+            raf = 0;
+            const stuck = parseFloat(getComputedStyle(el).top);
+            if (!Number.isFinite(stuck)) return;
+            const lead = Math.max(0, Math.round(el.getBoundingClientRect().top - stuck));
+            if (lead !== last) { last = lead; el.style.setProperty('--bimrd-img-lead', `${lead}px`); }
+        };
+        const schedule = () => { if (!raf) raf = requestAnimationFrame(measure); };
+        schedule();
+        window.addEventListener('scroll', schedule, { passive: true });
+        window.addEventListener('resize', schedule);
+        // 上方的横幅可能晚到（宿主异步取完才插），不滚动也要重量：页面整体高度一变就重量
+        const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(schedule) : null;
+        ro?.observe(document.body);
+        return () => {
+            window.removeEventListener('scroll', schedule);
+            window.removeEventListener('resize', schedule);
+            ro?.disconnect();
+            if (raf) cancelAnimationFrame(raf);
+            el.style.removeProperty('--bimrd-img-lead');
+        };
+    }, [imgOpen]);
+
     return (
         <div
             className={['bim-rd', prefs.writingMode === 'vertical' && allowVertical ? 'bim-rd-vertical' : '', className].filter(Boolean).join(' ')}
@@ -725,7 +757,7 @@ export function ReaderShell({
                 </div>
                 <div className="bim-rd-scrim" aria-hidden="true" onClick={() => closeDrawer(true)} />
 
-                <aside className="bim-rd-img" aria-label={t('reader.images')}>
+                <aside className="bim-rd-img" aria-label={t('reader.images')} ref={imgAsideRef}>
                     {imgOpen && (
                         customImagePanel ? customImagePanel : (
                             <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} preserveMargins={prefs.preserveMargins} />

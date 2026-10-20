@@ -169,7 +169,7 @@ export const READER_CSS = `
 .bim-rd-img {
   grid-column: 2;
   position: sticky; top: calc(${TOP} + var(--bimrd-bar-h));
-  width: clamp(300px, 32vw, 560px); height: calc(100vh - ${TOP} - var(--bimrd-bar-h));
+  width: clamp(300px, 32vw, 560px); height: calc(100vh - ${TOP} - var(--bimrd-bar-h) - var(--bimrd-img-lead, 0px));
   padding: 16px 0 16px 20px;
   display: flex; flex-direction: column; gap: 8px;
 }
@@ -180,7 +180,7 @@ export const READER_CSS = `
   display: flex; align-items: center; justify-content: center; overflow: hidden;
 }
 .bim-rd-img-fig { position: relative; margin: 0; max-width: 100%; max-height: 100%; }
-.bim-rd-img-fig img { display: block; max-width: 100%; max-height: calc(100vh - ${TOP} - var(--bimrd-bar-h) - 80px); object-fit: contain; }
+.bim-rd-img-fig img { display: block; max-width: 100%; max-height: calc(100vh - ${TOP} - var(--bimrd-bar-h) - var(--bimrd-img-lead, 0px) - 80px); object-fit: contain; }
 .bim-rd-img-fig svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .bim-rd-img-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px; text-align: center; font-size: 13px; color: ${bim('meta-fg')}; }
 .bim-rd-img-empty b { font-size: 15px; font-weight: 500; color: ${bim('quiet-fg')}; }

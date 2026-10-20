@@ -665,6 +665,9 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         // 没有逐字坐标的老数据：用本册带透视页的版框模板估位（夹注左右各半格）
         const pInfo = (warpData as any).pages?.find((p: any) => p.page === activePage);
         const [tw, th] = warpData.image_size || [2386, 3082];
+        // 既无逐字坐标、也无版框模板（宿主没取像素框，如窄屏不取 cord，GUJI-700）：没法估位，书影栏回落普通书影。
+        // 否则按 0 尺寸折算，字框全是 NaN／Infinity，每次选字重渲染都在控制台报几百条错
+        if (!(tw > 0 && th > 0)) return null;
         const img = imageOfPage(activePage);
         const iw = img?.width ?? tw;
         const ih = img?.height ?? th;
