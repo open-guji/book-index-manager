@@ -554,7 +554,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   //    rAF 节流＋对已排好序的页做二分，每帧只读十来个页的位置
   useEffect(() => {
     if (!hasVisibleCb) return;
-    // 页锚点一次取齐：逐页 querySelector（或按字 id 重建全章字表）是「页数 × DOM 大小」，分批渲染每补一批都要重来一遍（GUJI-632）
+    // 页框（每页的 <section>）与「首段并进上一页」的页的首字，一次取齐：逐页 querySelector 是「页数 × DOM 大小」，
+    // 分批渲染每补一批都要重来一遍（GUJI-632）
     const sectionEls = new Map<string, HTMLElement>();
     const startEls = new Map<string, HTMLElement>();
     containerRef.current?.querySelectorAll<HTMLElement>('[data-page-section],[data-page-start]').forEach((el) => {
@@ -562,49 +563,59 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       if (sec !== null) sectionEls.set(sec, el);
       else startEls.set(el.getAttribute('data-page-start')!, el);
     });
-    const sections: HTMLElement[] = [];
-    const sectionPages: number[] = [];
+    const boxes: HTMLElement[] = [];
+    const boxPages: number[] = [];
     for (const pg of shownPages) {
-      const a = (pg.leadFirstId ? startEls.get(String(pg.page)) : sectionEls.get(String(pg.page))) ?? null;
-      if (a) { sections.push(a); sectionPages.push(pg.page); }
+      const box = sectionEls.get(String(pg.page));
+      if (box) { boxes.push(box); boxPages.push(pg.page); }
     }
-    if (sections.length === 0) return;
-    // 标题段（文档序）；视口参考线所在的标题＝最后一个顶边不低于参考线的标题
-    const headings = Array.from(containerRef.current?.querySelectorAll<HTMLElement>('.guji-reflow-heading:not([data-heading-toc="0"])') ?? []);
+    if (boxes.length === 0) return;
+    // 标题段按所在页框分组（文档序）
+    const boxIndex = new Map(boxes.map((b, i) => [b, i] as const));
+    const headingsBy: HTMLElement[][] = boxes.map(() => []);
+    let headingCount = 0;
+    containerRef.current?.querySelectorAll<HTMLElement>('.guji-reflow-heading:not([data-heading-toc="0"])').forEach((h) => {
+      const i = boxIndex.get(h.closest<HTMLElement>('[data-page-section]')!);
+      if (i !== undefined) { headingsBy[i].push(h); headingCount++; }
+    });
     let lastHeading: string | null | undefined;
     let raf = 0;
+    // 屏幕外页框里的内容被跳过排版（content-visibility: auto），读里面元素（标题、并页首字）的位置会强制当场排版那一页，
+    // 一次滚动帧读十来个就是几十毫秒。所以二分只读页框外框；精确判断只在参考线所在的页框里做——它就在视口里，本来就排好了
     const update = () => {
       raf = 0;
       if (Date.now() < pageLockUntil.current) return;
-      if (headings.length > 0 && latest.current.onVisibleHeadingChange) {
-        const y = refYRef.current === null ? 120 : refYRef.current * window.innerHeight;
-        const top0 = headings[0].getBoundingClientRect().top;
-        // 没有布局（jsdom、容器隐藏）时位置全为 0：不判
-        const noLayout = headings.length > 1 && top0 === headings[headings.length - 1].getBoundingClientRect().top;
-        if (!noLayout) {
-          let found: string | null = null;
-          if (top0 <= y) {
-            let a = 0, b = headings.length - 1;
-            while (a < b) {
-              const m = (a + b + 1) >> 1;
-              if (headings[m].getBoundingClientRect().top <= y) a = m; else b = m - 1;
-            }
-            found = headingAnchorOf(headings[a]);
-          }
-          if (found !== lastHeading) { lastHeading = found; latest.current.onVisibleHeadingChange(found); }
-        }
-      }
-      // 没有布局（容器被隐藏、display:none、jsdom）时所有页锚点的位置都是 0，二分会选中最后一页，
-      // 把读者甩到末页；首尾两页位置相同＝没有可用的位置信息，这一帧不判页
-      if (sections.length > 1 && sections[0].getBoundingClientRect().top === sections[sections.length - 1].getBoundingClientRect().top) return;
-      const targetY = refYRef.current === null ? 120 : refYRef.current * window.innerHeight;
-      // 最后一个顶边不低于参考线的页（页是自上而下排的）
-      let lo = 0, hi = sections.length - 1;
+      const top = (el: HTMLElement) => el.getBoundingClientRect().top;
+      // 没有布局（容器被隐藏、display:none、jsdom）时所有位置都是 0，二分会选中最后一页，把读者甩到末页；
+      // 首尾两页框位置相同＝没有可用的位置信息，这一帧不判
+      if (boxes.length > 1 && top(boxes[0]) === top(boxes[boxes.length - 1])) return;
+      const y = refYRef.current === null ? 120 : refYRef.current * window.innerHeight;
+      // 参考线所在的页框：最后一个顶边不低于参考线的（页是自上而下排的）
+      let lo = 0, hi = boxes.length - 1;
       while (lo < hi) {
         const m = (lo + hi + 1) >> 1;
-        if (sections[m].getBoundingClientRect().top <= targetY) lo = m; else hi = m - 1;
+        if (top(boxes[m]) <= y) lo = m; else hi = m - 1;
       }
-      latest.current.onVisiblePageChange?.(sectionPages[lo]);
+      const aboveAll = top(boxes[0]) > y;
+      // 后面几页的首段并进了这个页框（分叶线关）：它们的首字已过参考线，就算到那一页
+      let page = boxPages[lo];
+      for (let j = lo + 1; j < boxes.length; j++) {
+        const st = startEls.get(String(boxPages[j]));
+        if (!st || !boxes[lo].contains(st) || top(st) > y) break;
+        page = boxPages[j];
+      }
+      if (headingCount > 0 && latest.current.onVisibleHeadingChange) {
+        // 参考线所在的标题＝最后一个顶边不低于参考线的标题：先看本页框，没有就是前面最近一个页框的最后一个标题
+        let found: HTMLElement | null = null;
+        if (!aboveAll) {
+          const here = headingsBy[lo];
+          for (let k = here.length - 1; k >= 0 && !found; k--) if (top(here[k]) <= y) found = here[k];
+          for (let i = lo - 1; i >= 0 && !found; i--) if (headingsBy[i].length > 0) found = headingsBy[i][headingsBy[i].length - 1];
+        }
+        const a = found ? headingAnchorOf(found) : null;
+        if (a !== lastHeading) { lastHeading = a; latest.current.onVisibleHeadingChange(a); }
+      }
+      latest.current.onVisiblePageChange?.(page);
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
     updatePageRef.current = () => { if (!raf) raf = requestAnimationFrame(update); };
