@@ -22,6 +22,8 @@ export interface GujiPageChar {
     lane?: 'main' | 'solo' | 'jz_r' | 'jz_l';
     /** 阙文：`char` 是 `□` 占位 */
     lacuna?: true;
+    /** 阙文格的推测字（char v0.2 `guess_c`，spec/02 §4.6）：只在 `lacuna` 的格上有，`char` 仍是 `□`；阅读器悬停才显示 */
+    guess_c?: string;
     /** 残字：`char` 是推测的字 */
     guess?: true;
     /** 组字：Unicode 未收的字的原形（IDS 串或描述），`char` 是近似字 */

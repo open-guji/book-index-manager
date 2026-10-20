@@ -560,6 +560,7 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 /* 原件字级旁注（guji-format spec/02 §4.3–4.4，overview#517）：缺字段时一个类都不带，渲染与旧版一致 */
 .guji-text-char.is-solo { font-size: 0.8em; opacity: 0.9; } /* 单行小注：和夹注同样缩小，但不是双行 */
 .guji-text-char.is-lacuna { color: ${bim('meta-fg')}; border: 1px dashed currentColor; border-radius: 2px; padding: 0 0.08em; } /* 阙文：虚线框□ */
+.guji-text-char.is-lacuna.has-guess { cursor: help; } /* 阙文带推测字（char v0.2 guess_c）：样式同阙文，悬停出推测字 */
 .guji-text-char.is-guess { color: ${bim('meta-fg')}; text-decoration: underline dotted; text-underline-offset: 0.2em; } /* 残字：灰字加点线 */
 .guji-text-char.is-zi { border: 1px solid color-mix(in srgb, currentColor 40%, transparent); border-radius: 2px; padding: 0 0.12em; margin: 0 0.05em; } /* 组字：细框，同 .bim-zi */
 /* 抬头（is-raised／data-raised）：横排重排里不做位移——原件的“高一格”在重排后只会显成首字偏高；类名和属性保留给结构识别 */
