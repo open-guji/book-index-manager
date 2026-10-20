@@ -329,18 +329,26 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   const shownPages = allShown ? reflowPages : reflowPages.slice(0, shownCount);
 
   // 每页的占位高度估计（content-visibility: auto 的 contain-intrinsic-size）：屏幕外的页不排版、不绘制，
-  // 滚过一次后浏览器记住真实高度（auto）。行宽、行高挂载后量一次
-  const [metrics, setMetrics] = useState<{ cpl: number; lineH: number }>({ cpl: 30, lineH: 44 });
+  // 滚过一次后浏览器记住真实高度（auto）。每页只带自己的字数、段数（不变的 CSS 变量），每行字数与行高挂在容器的
+  // CSS 变量上，由 calc() 折算——量到行宽后改容器变量即可，不重渲染任何一页。
+  // 量在浏览器画完这一帧之后：挂载当下读 clientWidth 会强制同步排版刚提交的整批正文（首帧多出近 100ms，GUJI-632）
   useEffect(() => {
-    const para = containerRef.current?.querySelector<HTMLElement>('.guji-reflow-paragraph');
-    if (!para) return;
-    const cs = getComputedStyle(para);
-    const fs = parseFloat(cs.fontSize);
-    const w = para.clientWidth;
-    if (!(fs > 0) || !(w > 0)) return;
-    const lh = parseFloat(cs.lineHeight);
-    const next = { cpl: Math.max(8, Math.floor(w / fs)), lineH: Math.round(lh > 0 ? lh : fs * 2) };
-    setMetrics((m) => (m.cpl === next.cpl && m.lineH === next.lineH ? m : next));
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const raf = requestAnimationFrame(() => {
+      timer = setTimeout(() => {
+        const c = containerRef.current;
+        const para = c?.querySelector<HTMLElement>('.guji-reflow-paragraph');
+        if (!c || !para) return;
+        const cs = getComputedStyle(para);
+        const fs = parseFloat(cs.fontSize);
+        const w = para.clientWidth;
+        if (!(fs > 0) || !(w > 0)) return;
+        const lh = parseFloat(cs.lineHeight);
+        c.style.setProperty('--gtv-cpl', String(Math.max(8, Math.floor(w / fs))));
+        c.style.setProperty('--gtv-lh', `${Math.round(lh > 0 ? lh : fs * 2)}px`);
+      }, 0);
+    });
+    return () => { cancelAnimationFrame(raf); if (timer) clearTimeout(timer); };
   }, [chapterSig]);
 
   // 全卷字序：字 id → 序号（对位实体用）
@@ -549,7 +557,6 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   refYRef.current = indicatorOn ? effectiveY : null;
   const updatePageRef = useRef<() => void>(() => {});
 
-  const trackedReflow = useRef<unknown>(null);
   // 4. 滚动监听：侦测视口参考线（指示头所在行，缺省顶部以下 120px）所在的页并通知外层。
   //    rAF 节流＋对已排好序的页做二分，每帧只读十来个页的位置
   useEffect(() => {
@@ -620,9 +627,9 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
     updatePageRef.current = () => { if (!raf) raf = requestAnimationFrame(update); };
     window.addEventListener('scroll', onScroll, { passive: true });
-    // 换了排版（换章、开关分叶线）当场判一次；只是分批渲染补了一批，就留到下一帧——当场读位置会强制同步排版刚插进来的那批（GUJI-632）
-    if (trackedReflow.current !== reflowPages) { trackedReflow.current = reflowPages; update(); }
-    else onScroll();
+    // 留到下一帧再判：当场读位置会强制同步排版刚提交的那批正文（换章时是整个首批，近 50ms，GUJI-632）。
+    // 起始书影页已按「第一个有字的页」定好，晚一帧判不影响显示
+    onScroll();
     return () => { window.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); updatePageRef.current = () => {}; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasVisibleCb, reflowPages, shownCount]);
@@ -661,7 +668,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
             convert={convert}
             buildHref={buildEntityHref ?? defaultHref}
             handlers={handlers}
-            estHeight={estimateHeight(pageCharCounts[idx] ?? 0, pGroup.paragraphs.length, metrics)}
+            charCount={pageCharCounts[idx] ?? 0}
             pageStarts={reflow.pageStarts}
           />
         ))}
@@ -674,11 +681,11 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
 const FIRST_BATCH_CHARS = 1800;
 const BATCH_CHARS = 800;
 
-/** 一页的占位高度：字数按每行字数折成行数（每段末行另算一行），加分叶线与段距 */
-function estimateHeight(chars: number, paragraphs: number, m: { cpl: number; lineH: number }): number {
-  const lines = Math.ceil(chars / Math.max(8, m.cpl)) + paragraphs;
-  return Math.round(lines * m.lineH + paragraphs * m.lineH * 0.4 + 64);
-}
+/**
+ * 一页的占位高度（contain-intrinsic-size）：字数 ÷ 每行字数 ＝ 行数，每段末行与段距约 1.4 行，加分叶线 64px。
+ * 本页字数（--gtv-pc）、段数（--gtv-pp）写在 section 上，每行字数（--gtv-cpl）与行高（--gtv-lh）写在正文容器上（量到前用缺省）
+ */
+const INTRINSIC_SIZE = 'auto calc((var(--gtv-pc) / var(--gtv-cpl, 30) + var(--gtv-pp) * 1.4) * var(--gtv-lh, 44px) + 64px)';
 
 const NO_SELECTION: ReadonlySet<string> = new Set();
 const NO_PUNCT: PunctEntry[] = [];
@@ -781,7 +788,7 @@ function ReflowBlock({ heading, children }: { heading?: ReflowHeading; children:
 
 /** 一页正文。memo：翻页、悬停、选中别页的字都不会让它重渲染 */
 const PageSection = React.memo(function PageSection({
-  pGroup, first, pageBreaks, markOpts, plainBooks, selected, entityOfChar, entityLoader, convert, buildHref, handlers, estHeight, pageStarts,
+  pGroup, first, pageBreaks, markOpts, plainBooks, selected, entityOfChar, entityLoader, convert, buildHref, handlers, charCount, pageStarts,
 }: {
   pGroup: ReflowPage;
   first: boolean;
@@ -794,8 +801,8 @@ const PageSection = React.memo(function PageSection({
   convert?: (s: string) => string;
   buildHref: (id: string) => string;
   handlers: PageHandlers;
-  /** 占位高度估计（px），给 content-visibility 用 */
-  estHeight: number;
+  /** 本页字数（占位高度估计用） */
+  charCount: number;
   /** 首段并进上一页的页：首字 id → 页号 */
   pageStarts: ReadonlyMap<string, number>;
 }) {
@@ -822,7 +829,10 @@ const PageSection = React.memo(function PageSection({
     <section
       data-page-section={pGroup.page}
       className="guji-page-section"
-      style={{ position: 'relative', scrollMarginTop: 96, contentVisibility: 'auto', containIntrinsicSize: `auto ${estHeight}px` }}
+      style={{
+        position: 'relative', scrollMarginTop: 96, contentVisibility: 'auto', containIntrinsicSize: INTRINSIC_SIZE,
+        ['--gtv-pc' as string]: charCount, ['--gtv-pp' as string]: pGroup.paragraphs.length,
+      } as React.CSSProperties}
     >
       {/* 页间分隔与页码标牌（首页若无前置内容可紧凑显示） */}
       {!first && pageBreaks && (

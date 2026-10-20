@@ -73,11 +73,12 @@ describe('页指示头（#501 第 2 条）', () => {
     const flush = () => act(async () => { await new Promise((r) => setTimeout(r, 5)); });
     afterEach(() => { rectSpy.mockRestore(); vi.unstubAllGlobals(); });
 
-    it('没传 pageIndicatorY：不画指示头，参考线仍是顶部以下 120px（旧行为）', () => {
+    it('没传 pageIndicatorY：不画指示头，参考线仍是顶部以下 120px（旧行为）', async () => {
         tops['1'] = -300; tops['2'] = 100; tops['3'] = 400;
         const onVisiblePageChange = vi.fn();
         const { container } = viewer({ onVisiblePageChange });
         expect(container.querySelector('.guji-page-indicator')).toBeNull();
+        await flush(); // 页追踪在下一帧判（GUJI-632）
         expect(onVisiblePageChange).toHaveBeenLastCalledWith(2); // 第 2 页顶边 100 ≤ 120，第 3 页 400 > 120
     });
 

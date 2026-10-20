@@ -145,10 +145,11 @@ describe('正文分批渲染（GUJI-632）', () => {
         }
     });
 
-    it('每页 section 带 content-visibility: auto 与占位高度', () => {
+    it('每页 section 带 content-visibility: auto，以及占位高度要用的本页字数、段数（CSS 变量，calc 在真浏览器里验）', () => {
         const { container } = mount();
         const sec = container.querySelector<HTMLElement>('[data-page-section="3"]')!;
         expect(sec.style.contentVisibility).toBe('auto');
-        expect(sec.style.containIntrinsicSize).toMatch(/^auto \d+px$/);
+        expect(sec.style.getPropertyValue('--gtv-pc')).toBe('100');
+        expect(Number(sec.style.getPropertyValue('--gtv-pp'))).toBeGreaterThan(0);
     });
 });

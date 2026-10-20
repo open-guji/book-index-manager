@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { GujiTextViewer } from '../../src/components/Reader/GujiTextViewer';
 import { adaptCharCord } from '../../src/core/guji-char-cord';
 import { LocaleProvider } from '../../src/i18n';
@@ -32,7 +32,8 @@ describe('页追踪：没有布局信息', () => {
         expect(fn).not.toHaveBeenCalled();
     });
 
-    it('有布局：报参考线（顶部以下 120px）所在的页', () => {
+    // 页追踪在挂载后的下一帧判（GUJI-632：当场读位置会强制同步排版首批正文）
+    it('有布局：报参考线（顶部以下 120px）所在的页', async () => {
         // 第 3、4、5 页的顶边分别在 0、1000、2000：参考线 120 落在第 3 页
         Element.prototype.getBoundingClientRect = function (this: Element) {
             const n = parseInt(this.getAttribute('data-page-section') ?? '', 10);
@@ -41,10 +42,10 @@ describe('页追踪：没有布局信息', () => {
         };
         const fn = vi.fn();
         mount(fn);
-        expect(fn).toHaveBeenLastCalledWith(3);
+        await waitFor(() => expect(fn).toHaveBeenLastCalledWith(3));
     });
 
-    it('有布局且第 4 页已滚到参考线上方：报第 4 页', () => {
+    it('有布局且第 4 页已滚到参考线上方：报第 4 页', async () => {
         Element.prototype.getBoundingClientRect = function (this: Element) {
             const n = parseInt(this.getAttribute('data-page-section') ?? '', 10);
             const top = isNaN(n) ? 0 : (n - 4) * 1000 + 100; // 第 4 页顶边在 100（≤120），第 5 页在 1100
@@ -52,6 +53,6 @@ describe('页追踪：没有布局信息', () => {
         };
         const fn = vi.fn();
         mount(fn);
-        expect(fn).toHaveBeenLastCalledWith(4);
+        await waitFor(() => expect(fn).toHaveBeenLastCalledWith(4));
     });
 });

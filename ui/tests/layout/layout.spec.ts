@@ -25,6 +25,19 @@ test.describe('正文重排版式', () => {
         expect(await page.locator('[data-char-id]').count()).toBeGreaterThan(400);
     });
 
+    test('每页 section 的占位高度（content-visibility 用）在真浏览器里算得出来：auto ＋ 正的像素值（GUJI-632）', async ({ page }) => {
+        await open(page);
+        const sizes = await page.$$eval('[data-page-section]', els => els.map(e => {
+            const cs = getComputedStyle(e);
+            return { cv: cs.contentVisibility, cis: cs.containIntrinsicHeight || cs.getPropertyValue('contain-intrinsic-height') };
+        }));
+        for (const s of sizes) {
+            expect(s.cv).toBe('auto');
+            expect(s.cis).toMatch(/^auto \d+(\.\d+)?px$/);
+            expect(parseFloat(s.cis.replace('auto ', ''))).toBeGreaterThan(64);
+        }
+    });
+
     test('换行处无空白：非首行的第一个字贴着段落左缘（行首空格列不渲染成空位）', async ({ page }) => {
         await open(page);
         const bad = await page.$$eval('p.guji-reflow-paragraph', ps => {
