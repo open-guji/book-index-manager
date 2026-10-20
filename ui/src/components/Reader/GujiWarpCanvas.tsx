@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { StripWarpRenderer, StripTransform } from './StripWarpRenderer';
 import { bim } from '../../styles/tokens';
 
@@ -87,11 +87,43 @@ export interface GujiWarpCanvasProps {
   preserveMargins?: boolean;
   onCharClick?: (charId: string) => void;
   onCharHover?: (charId: string | null) => void;
+  /** 外层 CSS 缩放倍数（如 ZoomPanBox 的放大倍数）：放大时画布后备跟着加密，不糊；缺省 1 */
+  renderScale?: number;
+}
+
+const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+
+/** 外框占位图：一张按逻辑尺寸声明宽高的空 SVG，固有尺寸与原先的整幅画布相同 */
+function sizerSrc(w: number, h: number): string {
+  const W = Math.max(1, Math.round(w)), H = Math.max(1, Math.round(h));
+  return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"/>`)}`;
+}
+
+/** 缩放倍数取整到几档，缩放过程中不至于每一帧都重开画布 */
+const SCALE_STEPS = [1, 1.5, 2, 3, 4, 6];
+function stepScale(s: number): number {
+  for (const v of SCALE_STEPS) if (s <= v) return v;
+  return SCALE_STEPS[SCALE_STEPS.length - 1];
+}
+
+/**
+ * 画布后备尺寸：按显示宽度 × 设备像素比（最多 2）× 缩放档开，不超过逻辑尺寸（原图像素）。
+ * 原先直接按原图像素开（2345×3122），桌面只显示 441×587，每次重画多出约 28 倍像素，是滚动掉帧的主因（GUJI-629）。
+ * `cssW` 为 null（还没量到）或 0（画布被隐藏，如手机端书影栏收起）时给 1×1，不占显存。
+ */
+export function backingSize(logicalW: number, logicalH: number, cssW: number | null, dpr: number, renderScale = 1): [number, number] {
+  if (!(logicalW > 0) || !(logicalH > 0)) return [1, 1];
+  if (cssW === null || !(cssW > 0)) return [1, 1];
+  const want = Math.ceil((cssW * Math.min(Math.max(dpr || 1, 1), 2) * stepScale(renderScale)) / 64) * 64;
+  const w = Math.max(1, Math.min(Math.round(logicalW), want));
+  const h = Math.max(1, Math.round((w * logicalH) / logicalW));
+  return [w, h];
 }
 
 /** 书影图片缓存（按 URL）：预取与正式加载共用，翻回已看过的页不再请求、不再解码 */
 const IMAGE_CACHE = new Map<string, Promise<HTMLImageElement | null>>();
-const IMAGE_CACHE_MAX = 24;
+// 每张解码后约 8MB（1200×1600 RGBA）；24 张在手机上近 200MB，收到 8 张（GUJI-629）
+const IMAGE_CACHE_MAX = 8;
 
 export function loadImage(url: string): Promise<HTMLImageElement | null> {
   let p = IMAGE_CACHE.get(url);
@@ -123,8 +155,25 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   preserveMargins = false,
   onCharClick,
   onCharHover,
+  renderScale = 1,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  // 画布外框的显示宽度：null＝还没量到；0＝被隐藏。没有 ResizeObserver 的环境（jsdom）按「可见、满尺寸」走旧行为
+  const hasRO = typeof ResizeObserver !== 'undefined';
+  const [cssW, setCssW] = useState<number | null>(null);
+  useIsoLayoutEffect(() => {
+    const el = wrapperRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[entries.length - 1]?.contentRect.width ?? 0;
+      setCssW((prev) => (prev === w ? prev : w));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  // 不可见时不下图、不建纹理、不画；变可见再补
+  const visible = !hasRO || (cssW !== null && cssW > 0);
   const rendererRef = useRef<StripWarpRenderer | null>(null);
 
   // 纹理缓存
@@ -203,6 +252,10 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   const contentW = totalWarpedW + (banxin ? banxin.total_w : 0);
   const totalDisplayW = crop ? crop.w : contentW + margins.left + margins.right;
   const totalDisplayH = crop ? crop.h : maxWarpedH + margins.top + margins.bottom;
+  const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+  const [backingW, backingH] = hasRO
+    ? backingSize(totalDisplayW, totalDisplayH, cssW, dpr, renderScale)
+    : [Math.round(totalDisplayW), Math.round(totalDisplayH)];
 
   // 统一绘制函数 (单 Context 纯净渲染，杜绝多 Context 驱动冲突与黑屏)
   const draw = useCallback(() => {
@@ -438,7 +491,7 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
 
   // 加载主图（本文）：走共用的图片缓存；新图没到之前不重画，继续显示上一页，免得闪空白
   useEffect(() => {
-    if (!imageUrl) return;
+    if (!imageUrl || !visible) return;
     let active = true;
     loadImage(imageUrl).then((img) => {
       if (!active || !img) return;
@@ -452,12 +505,12 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
       setMainLoaded((n) => n + 1);
     });
     return () => { active = false; };
-  }, [imageUrl]);
+  }, [imageUrl, visible]);
 
   // 加载对偶页图（版心互补）
   const mateUrl = banxin?.mate_image_url;
   useEffect(() => {
-    if (!mateUrl) return;
+    if (!mateUrl || !visible) return;
     let active = true;
     loadImage(mateUrl).then((img) => {
       if (!active || !img) return;
@@ -470,12 +523,12 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
       setMateLoaded((n) => n + 1);
     });
     return () => { active = false; };
-  }, [mateUrl]);
+  }, [mateUrl, visible]);
 
-  // 依赖变化时重新绘制
-  useEffect(() => {
-    draw();
-  }, [draw, mainLoaded, mateLoaded]);
+  // 依赖变化时重新绘制。后备尺寸一变画布就被清空，要在同一帧里补画（layout effect），免得闪一下底色
+  useIsoLayoutEffect(() => {
+    if (visible) draw();
+  }, [draw, mainLoaded, mateLoaded, backingW, backingH, visible]);
 
   // 扁平字格列表
   const flatChars = useMemo(() => {
@@ -506,6 +559,7 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
 
   return (
     <div
+      ref={wrapperRef}
       className="guji-warp-wrapper"
       style={{
         position: 'relative',
@@ -520,11 +574,23 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
       }}
     >
       {/* 唯一的全功能 WebGL 画布 (覆盖四周留白 + 正文 9 列 + 本文版心 + 对偶页半透明版心) */}
+      {/* 占位：按逻辑尺寸（原图像素）撑开外框，排版与原先「画布按原图像素开」时一致；
+          画布后备改按显示尺寸开以后，不能再让画布自己的像素尺寸决定外框大小（否则外框跟着缩成后备那么小） */}
+      <img
+        alt=""
+        aria-hidden="true"
+        data-warp-sizer=""
+        src={sizerSrc(totalDisplayW, totalDisplayH)}
+        style={{ display: 'block', width: '100%', height: '100%', visibility: 'hidden' }}
+      />
       <canvas
         ref={canvasRef}
-        width={totalDisplayW}
-        height={totalDisplayH}
+        width={backingW}
+        height={backingH}
+        data-logical-size={`${Math.floor(totalDisplayW)}x${Math.floor(totalDisplayH)}`}
         style={{
+          position: 'absolute',
+          inset: 0,
           width: '100%',
           height: '100%',
           display: 'block',

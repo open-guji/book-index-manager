@@ -64,10 +64,11 @@ export class StripWarpRenderer {
   private aTexCoordLoc: number;
 
   constructor(canvas: HTMLCanvasElement) {
+    // 不开 antialias／preserveDrawingBuffer：书影是贴图，多重采样没有可见收益；保留缓冲会让每帧多一次整屏拷贝（GUJI-629）
     const gl = canvas.getContext('webgl', {
       alpha: true,
-      antialias: true,
-      preserveDrawingBuffer: true,
+      antialias: false,
+      preserveDrawingBuffer: false,
       premultipliedAlpha: false,
     });
     if (!gl) throw new Error('WebGL not supported');
@@ -105,11 +106,13 @@ export class StripWarpRenderer {
   }
 
   /**
-   * 清屏填充暖纸背景色
+   * 清屏填充暖纸背景色。
+   * 参数是逻辑尺寸（与 strip 坐标同一坐标系）；viewport 取画布实际后备尺寸——后备可以比逻辑尺寸小（按显示尺寸开），
+   * 着色器按 u_resolution 把逻辑坐标映到裁剪空间，与后备像素数无关。
    */
-  public clear(canvasWidth: number, canvasHeight: number) {
+  public clear(_canvasWidth: number, _canvasHeight: number) {
     const gl = this.gl;
-    gl.viewport(0, 0, canvasWidth, canvasHeight);
+    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     gl.clearColor(0.98, 0.97, 0.95, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
   }
@@ -144,7 +147,7 @@ export class StripWarpRenderer {
     if (strips.length === 0) return;
 
     const gl = this.gl;
-    gl.viewport(0, 0, canvasWidth, canvasHeight);
+    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     gl.useProgram(this.program);
     gl.uniform2f(this.uResolutionLoc, canvasWidth, canvasHeight);
     gl.uniform2f(this.uImgResolutionLoc, imgWidth, imgHeight);
