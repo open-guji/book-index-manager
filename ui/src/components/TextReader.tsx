@@ -498,11 +498,14 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         hover.set(null);
     }, [effectiveChapter, versionKey, hover]);
 
-    // 当前这一册现算的标题（index.json 没有 headings 缓存时用）：对读数据确是这一章的才算
+    // 当前这一册现算的标题（index.json 没有 headings 缓存时用）：对读数据确是这一章的才算。
+    // 本章有缓存就不算——整章逐字扫一遍，手机上首帧要多花约 40ms（6× 降速约 240ms）；
+    // 目录（index.json）还没到时也先不算，到了再看要不要（对读数据可能先于目录到）
     const warpIsCurrent = warpStart.key === warpChapterKey && warpStart.started;
+    const needLiveHeadings = !!chapterMeta && sanitizeHeadings(chapterMeta.headings).length === 0;
     const liveHeadings = useMemo<TextHeading[]>(
-        () => (warpIsCurrent && warpData ? headingsFromPunct((warpData as any).pages, (warpData as any).punctuations) : []),
-        [warpIsCurrent, warpData],
+        () => (needLiveHeadings && warpIsCurrent && warpData ? headingsFromPunct((warpData as any).pages, (warpData as any).punctuations) : []),
+        [needLiveHeadings, warpIsCurrent, warpData],
     );
     const headingsOf = useCallback((c: TextChapter): TextHeading[] => {
         const cached = sanitizeHeadings(c.headings);
