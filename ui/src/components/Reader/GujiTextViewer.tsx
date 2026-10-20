@@ -210,11 +210,12 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         if (!elevated(col)) tailLead = col.lead_blank || 0;
         let first = true;
         for (const ch of col.chars) {
-          const here = punctMap.get(ch.id) || [];
-          const { before: beforePuncts, after: afterPuncts } = splitPuncts(here);
-          const hasBreak = here.some((p) => p.kind === 'break' && p.pos !== 'before');
+          // 大多数字不挂标点：共用空数组，不给 3 万个字各建三个数组（手机首帧，GUJI-628 P2）
+          const here = punctMap.get(ch.id);
+          const { before: beforePuncts, after: afterPuncts } = here ? splitPuncts(here) : NO_SPLIT;
+          const hasBreak = !!here && here.some((p) => p.kind === 'break' && p.pos !== 'before');
           // 标题符：在本字之前结束上一段（分段符只锚段末字之后，pos=before 的不认）
-          if (here.some((p) => p.kind === 'heading')) {
+          if (here && here.some((p) => p.kind === 'heading')) {
             if (currentChars.length > 0) pushPara();
             else if (paragraphs.length === 0) leadStarts = true;
           }
@@ -689,6 +690,7 @@ const INTRINSIC_SIZE = 'auto calc((var(--gtv-pc) / var(--gtv-cpl, 30) + var(--gt
 
 const NO_SELECTION: ReadonlySet<string> = new Set();
 const NO_PUNCT: PunctEntry[] = [];
+const NO_SPLIT: { before: PunctEntry[]; after: PunctEntry[] } = { before: NO_PUNCT, after: NO_PUNCT };
 
 interface PageHandlers {
   click: (id: string) => void;
@@ -957,13 +959,15 @@ function PageIndicator({ y, containerRef, onDrag, onCommit }: {
     setLeft(Math.max(0, (rect?.left ?? 0) - INDICATOR_SIZE - INDICATOR_GAP));
   }, [containerRef]);
   useLayoutEffect(() => {
-    place();
     window.addEventListener('resize', place);
     const c = selfRef.current?.parentElement ?? containerRef.current;
     const box = c?.closest<HTMLElement>('.bim-rd-col') ?? c;
     // 书影栏展开时正文框可能只挪位置、不变大小：看正文栏（.bim-rd-text，宽度会变）而不只看正文框
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => place()) : null;
     for (const el of [box, c?.closest<HTMLElement>('.bim-rd-text'), c?.closest<HTMLElement>('.bim-rd-body')]) if (el) ro?.observe(el);
+    // 挂载时不当场量：layout effect 里读位置会在首帧前强制排版刚挂上的整批正文（手机 6× 降速约 280ms）。
+    // ResizeObserver 开始观察后，在浏览器排完这一帧、绘制之前会回调一次，那时量不额外排版，也不闪；没有它才当场量
+    if (!ro) place();
     return () => { window.removeEventListener('resize', place); ro?.disconnect(); };
   }, [place, containerRef]);
 
