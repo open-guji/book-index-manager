@@ -121,7 +121,12 @@ test.describe('书影画布：去空白', () => {
         await page.waitForFunction(() => (window as unknown as { __ready?: boolean }).__ready === true);
         const canvas = page.locator('#host canvas');
         await canvas.waitFor();
-        const d = await canvas.evaluate(c => ({ w: (c as HTMLCanvasElement).width, h: (c as HTMLCanvasElement).height }));
+        // 逻辑尺寸（原图像素坐标系，去空白时是裁切区，取整截断）在 data-logical-size；<canvas width> 是后备尺寸，
+        // 按显示尺寸开（GUJI-629），不再等于逻辑尺寸
+        const d = await canvas.evaluate(c => {
+            const [w, h] = (c.getAttribute('data-logical-size') ?? '0x0').split('x').map(Number);
+            return { w, h, backingW: (c as HTMLCanvasElement).width, backingH: (c as HTMLCanvasElement).height, cssW: c.clientWidth };
+        });
         const meta = await page.evaluate(() => ({
             image: (window as unknown as { __image: { w: number; h: number } }).__image,
             trim: (window as unknown as { __trim: { w: number; h: number } | null }).__trim,
@@ -154,5 +159,12 @@ test.describe('书影画布：去空白', () => {
         expect(trimmed.h, '去空白后高度应变小').toBeLessThan(kept.h);
         // 去空白前后不能一样（「去空白不生效」的回归就是两者相等）
         expect([trimmed.w, trimmed.h]).not.toEqual([kept.w, kept.h]);
+        // 后备尺寸按显示尺寸开：不超过逻辑尺寸、不超过显示宽 × 2（DPR 上限）向上取 64 的倍数，长宽比与逻辑尺寸一致
+        for (const d of [trimmed, kept]) {
+            expect(d.backingW).toBeGreaterThan(1);
+            expect(d.backingW).toBeLessThanOrEqual(d.w + 1);
+            expect(d.backingW).toBeLessThanOrEqual(Math.ceil((d.cssW * 2) / 64) * 64);
+            expect(Math.abs(d.backingH / d.backingW - d.h / d.w)).toBeLessThan(0.01);
+        }
     });
 });

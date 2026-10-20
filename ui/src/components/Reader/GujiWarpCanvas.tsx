@@ -587,7 +587,7 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
         ref={canvasRef}
         width={backingW}
         height={backingH}
-        data-logical-size={`${Math.round(totalDisplayW)}x${Math.round(totalDisplayH)}`}
+        data-logical-size={`${Math.floor(totalDisplayW)}x${Math.floor(totalDisplayH)}`}
         style={{
           position: 'absolute',
           inset: 0,
