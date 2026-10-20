@@ -55,7 +55,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api/feedback': {
-          target: 'https://www.kaiyuanguji.com',
+          target: 'https://www.openguji.com',
           changeOrigin: true,
         },
       },

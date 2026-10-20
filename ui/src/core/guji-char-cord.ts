@@ -12,8 +12,9 @@
  * 无字页（书脊签、封面签条、空白页等：char 里没有格、cord 里有 canvas）也收进页列表，`columns` 里没有字
  * （只可能有 `kind: blank` 的空列）：书影翻页要翻到它们，正文侧不出这些页（阅读器按「有没有字」区分）。
  *
- * char 的版式字段（spec/02 §4.2–4.4：页 `label`；列 `raised`／`lead_blank`／`kind`；格 `lane`／`lacuna`／`guess`／`zi`）
- * 原样带到输出上，缺省不带键——旧数据的输出与改前逐字段一致（overview#517）。
+ * char 的版式字段（spec/02 §4.2–4.4：页 `label`；列 `raised`／`lead_blank`／`kind`；格 `lane`／`lacuna`／`guess`／`zi`，
+ * 以及 v0.2 的 `guess_c`——阙文格的推测字，§4.6）原样带到输出上，缺省不带键——旧数据的输出与改前逐字段一致（overview#517）。
+ * char v0.1、v0.2 两个 `$schema` 都认（本适配器不看 `$schema`）。
  *
  * norm（`NNN.norm.json`，规范层）：人审过的「异体→通行字」，按同一个格位 key 挂到字上（`GujiPageChar.norm`），
  * 是可选的第三个参数；不传、传空表、或某位没有条目时输出与改前逐字段一致（overview#525）。
@@ -30,10 +31,12 @@ const LANES = new Set(['main', 'solo', 'jz_r', 'jz_l']);
 const KINDS = new Set(['body', 'banxin', 'blank']);
 
 /** 格的可选字段（spec/02 §4.4）：只收合法值，缺省不带键——旧数据的输出与改前逐字段一致 */
-function cellExtras(cell: Record<string, any>): Pick<GujiPageChar, 'lane' | 'lacuna' | 'guess' | 'zi'> {
-    const out: Pick<GujiPageChar, 'lane' | 'lacuna' | 'guess' | 'zi'> = {};
+function cellExtras(cell: Record<string, any>): Pick<GujiPageChar, 'lane' | 'lacuna' | 'guess_c' | 'guess' | 'zi'> {
+    const out: Pick<GujiPageChar, 'lane' | 'lacuna' | 'guess_c' | 'guess' | 'zi'> = {};
     if (typeof cell.lane === 'string' && LANES.has(cell.lane) && cell.lane !== 'main') out.lane = cell.lane as GujiPageChar['lane'];
     if (cell.lacuna === true) out.lacuna = true;
+    // 推测字只认阙文格上的（spec/02 §4.6：与 lacuna 同在、与 guess 互斥）；别处出现的按格式不对丢掉
+    if (cell.lacuna === true && cell.guess !== true && typeof cell.guess_c === 'string' && cell.guess_c.trim()) out.guess_c = cell.guess_c.trim();
     if (cell.guess === true) out.guess = true;
     if (typeof cell.zi === 'string' && cell.zi) out.zi = cell.zi;
     return out;

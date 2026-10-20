@@ -12,6 +12,8 @@ export interface CharGeometry {
   /** char 的格字段（guji-format spec/02 §4.4），缺省＝不带 */
   lane?: 'main' | 'solo' | 'jz_r' | 'jz_l';
   lacuna?: boolean;
+  /** 阙文格的推测字（char v0.2 `guess_c`，spec/02 §4.6），只在 `lacuna` 时有 */
+  guess_c?: string;
   guess?: boolean;
   zi?: string;
   /** 规范层（norm.json）：人审过的通行字，恰好一个字；缺省＝该位没有逐位规范（overview#525） */

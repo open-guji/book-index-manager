@@ -1,6 +1,6 @@
 /**
  * overview#517 W-E：原件 char sidecar 的字级／列级／页级旁注字段（guji-format spec/02 §4.2–4.4）。
- * 字：lane(solo)／lacuna／guess／zi；列：raised／lead_blank／kind(blank)；页：label。
+ * 字：lane(solo)／lacuna／guess／zi，char v0.2 的 guess_c（阙文格的推测字，GUJI-717）；列：raised／lead_blank／kind(blank)；页：label。
  * 缺字段 = 旧行为（适配器输出不带新键、阅读器不带新类名）。
  */
 import React from 'react';
@@ -37,6 +37,20 @@ describe('适配器 adaptCharCord：新字段', () => {
             expect('guess' in c).toBe(false);
             expect('zi' in c).toBe(false);
         }
+    });
+
+    it('guess_c（char v0.2）：只在 lacuna 格上带；非阙文格、与 guess 同在、空串都丢掉', () => {
+        const p = adaptCharCord(charDoc([
+            cell('3:1:1', '□', { lacuna: true, guess_c: '一' }),
+            cell('3:1:2', '□', { guess_c: '二' }),
+            cell('3:1:3', '□', { lacuna: true, guess: true, guess_c: '三' }),
+            cell('3:1:4', '□', { lacuna: true, guess_c: '' }),
+            cell('3:1:5', '□', { lacuna: true, guess_c: 5 }),
+        ]));
+        const ch = p[0].columns[0].chars;
+        expect(ch[0]).toMatchObject({ char: '□', lacuna: true, guess_c: '一' });
+        for (const c of ch.slice(1)) expect('guess_c' in c).toBe(false);
+        expect('lacuna' in ch[1]).toBe(false);
     });
 
     it('列 raised／lead_blank／kind；页 label', () => {
@@ -113,6 +127,27 @@ describe('阅读器显示：新字段', () => {
         expect(b.className).not.toMatch(/is-lacuna/); // 刻本上本来就刻着的方框
     });
 
+    it('lacuna＋guess_c：照旧是虚线框 □，悬停提示带推测字（繁／简）', () => {
+        const pages = adaptCharCord(charDoc([cell('3:1:1', '卷'), cell('3:1:2', '□', { lacuna: true, guess_c: '一' })]));
+        const { container } = mount(pages);
+        const a = el(container, '3:1:2');
+        expect(a.classList.contains('is-lacuna')).toBe(true);
+        expect(a.classList.contains('has-guess')).toBe(true);
+        expect(a.classList.contains('is-guess')).toBe(false); // 不是残字的灰字加点线
+        expect(a.textContent).toBe('□');                     // 正文只出 □，推测字不进字流
+        expect(a.getAttribute('title')).toBe('闕文，推測為「一」');
+        expect(a.getAttribute('data-guji-guess')).toBe('一');
+        expect(container.querySelector('p')!.textContent).toBe('卷□');
+
+        const pageData: any = { page_id: 'vol:3', columns: [], pages };
+        const hans = render(
+            <LocaleProvider locale="zh-Hans">
+                <GujiTextViewer pageData={pageData} pages={pages as any} selectedCharIds={new Set()} />
+            </LocaleProvider>,
+        );
+        expect(el(hans.container, '3:1:2').getAttribute('title')).toBe('阙文，推测为「一」');
+    });
+
     it('guess：残字，灰字加标记，带提示', () => {
         const { container } = mount(adaptCharCord(charDoc([cell('3:1:1', '春', { guess: true })])));
         const a = el(container, '3:1:1');
@@ -172,7 +207,7 @@ describe('阅读器显示：新字段', () => {
     it('缺字段 = 旧行为：不带任何新类名／属性／占位', () => {
         const { container } = mount(adaptCharCord(charDoc([cell('3:1:1', '甲'), cell('3:1:2a', '乙'), cell('3:1:2b', '丙')])));
         const html = container.innerHTML;
-        expect(html).not.toMatch(/is-solo|is-lacuna|is-guess|is-zi|is-raised|data-raised|lead-blank|blank-col|data-page-label/);
+        expect(html).not.toMatch(/is-solo|is-lacuna|has-guess|data-guji-guess|is-guess|is-zi|is-raised|data-raised|lead-blank|blank-col|data-page-label/);
         expect(container.querySelector('[title]')).toBeNull();
         expect(el(container, '3:1:2a').classList.contains('is-sub')).toBe(true);
     });
