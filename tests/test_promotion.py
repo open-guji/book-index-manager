@@ -747,6 +747,17 @@ def test_validate_allows_one_to_many_from_production_merge(tmp_path):
         f"併條之一對多不當報 E07，實得 {[(i.code, i.severity) for i in issues]}"
 
 
+def test_validate_allows_one_to_many_with_merged_in(tmp_path):
+    """重出審計（2026-10-21）只在存者上寫 `merged_in`，同樣是並條之痕，E07 不當報。"""
+    issues = _one_to_many_fixture(
+        tmp_path,
+        {"merged_in": [{"id": "d59fxv2qh0jl", "title": "春秋墨說"}],
+         "additional_titles": ["春秋墨說", "春秋墨説"]},
+        ("春秋墨說", "春秋墨説"))
+    assert not [i for i in issues if i.code == "E07"], \
+        f"merged_in 之並條不當報 E07，實得 {[(i.code, i.severity) for i in issues]}"
+
+
 def test_validate_warns_when_merged_but_title_unrelated(tmp_path):
     """有併條之痕，而某條之題不在存者題集內——併是併了，這一條卻像另一回事。
 
