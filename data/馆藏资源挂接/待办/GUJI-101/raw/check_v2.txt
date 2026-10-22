@@ -1,0 +1,10 @@
+# check_v2：查 260980 檔，殘留（ERROR）0 處／0 檔；WARN 18 處；INFO 95 處
+## WARN
+O10	專名	18 處	18 檔	office 簡稱 ≤2
+## INFO
+A1	專名	48 處	47 檔	alt_names／ambiguous
+D2	專名	2 處	2 檔	dynasty 上級／區間
+D3	專名	2 處	2 檔	dates 鍵、整數、無 0 年、period
+P09	專名	38 處	38 檔	place 同名異地／疑重複
+R1	專名	5 處	5 檔	reign 所屬朝代／帝王／唯一／區間
+exit 0

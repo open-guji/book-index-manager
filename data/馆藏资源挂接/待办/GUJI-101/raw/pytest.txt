@@ -1,0 +1,23 @@
+
+==================================== ERRORS ====================================
+________________ ERROR collecting tests/test_rematch_commons.py ________________
+tests/test_rematch_commons.py:12: in <module>
+    spec.loader.exec_module(matcher)
+<frozen importlib._bootstrap_external>:1027: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+.claude/qa/rematch_commons.py:28: in <module>
+    JP = opencc.OpenCC('jp2t')
+         ^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.13/dist-packages/opencc/opencc.py:55: in __init__
+    self._init_dict()
+/usr/local/lib/python3.13/dist-packages/opencc/opencc.py:106: in _init_dict
+    with open(config_file) as f:
+         ^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: '/usr/local/lib/python3.13/dist-packages/opencc/config/jp2t.json'
+=========================== short test summary info ============================
+ERROR tests/test_rematch_commons.py - FileNotFoundError: [Errno 2] No such fi...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 16.55s
+exit 2

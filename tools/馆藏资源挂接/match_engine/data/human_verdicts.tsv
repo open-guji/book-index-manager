@@ -1,0 +1,7 @@
+# 人核定论（source<TAB>record_id<TAB>release|reject<TAB>说明）。release：免 ALT_TITLE_SIBLING 刹车；reject：一律存疑（HUMAN_REJECT）。
+source	record_id	verdict	note
+waseda	i17_00300	release	陸賈新語：Rowan 人核是（题簽「陸賈新語」，兄弟 新語/耿定向 另书）
+waseda	nu09_00941	release	孔子家語王肅注：Rowan 人核是
+waseda	bunko01_01660	reject	楚辞：Rhea 裁决存疑，库内 Work 不唯一（Milo 10-15）
+waseda	bunko06_01057	reject	詠物詩：带合刻标记（Milo 10-15）
+waseda	i17_00188	reject	尚書：站方为孔傳本，候选 尚書注疏 非同书（Rowan 人核否）

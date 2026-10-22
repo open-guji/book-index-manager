@@ -1,0 +1,3 @@
+{"diff_id":"G1","verdict":"adopt","rule":"R-两源","sources":["zhwp-r12","dila-time r5"],"action":"改 dates","note":"两源一致；上游未证"}
+{"diff_id":"G2","verdict":"reject","rule":"R-范围","sources":["政权映射"],"note":"out-of-scope 边疆"}
+{"diff_id":"G3","verdict":"open","rule":"R-两源","sources":["zhwp-r9"]}

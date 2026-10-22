@@ -1,0 +1,13 @@
+# 站：www.digital.archives.go.jp/file/<id>（内閣文庫 B1 样本）。真：curl 200（123–162KB）；假：id 全换 9，curl 404 431B。
+# 浏览器（headless）对真假都返回 CloudFront「The request could not be satisfied」（403），不能作证据，只用 curl。
+pair_id	kind	url	how_fake	http_code	final_url	body_bytes	title	markers	fetched_at
+naikaku-01	real	https://www.digital.archives.go.jp/file/1072006		200	https://www.digital.archives.go.jp/file/1072006	123812	内閣文庫 B1 样本 1072006	curl 200；浏览器（headless）被 CloudFront 403	2026-10-15 02:05:39
+naikaku-01	fake	https://www.digital.archives.go.jp/file/9999999	id 全换为同长 9（1072006→9999999）	404	https://www.digital.archives.go.jp/file/9999999	431	-	curl 404 431B；浏览器 403	2026-10-15 02:05:42
+naikaku-02	real	https://www.digital.archives.go.jp/file/1076363		200	https://www.digital.archives.go.jp/file/1076363	160707	三命通會 (B1 行)	curl 200；浏览器（headless）被 CloudFront 403	2026-10-15 02:05:47
+naikaku-02	fake	https://www.digital.archives.go.jp/file/9999999	id 全换为同长 9（1076363→9999999）	404	https://www.digital.archives.go.jp/file/9999999	431	-	curl 404 431B；浏览器 403	2026-10-15 02:05:49
+naikaku-03	real	https://www.digital.archives.go.jp/file/1071572		200	https://www.digital.archives.go.jp/file/1071572	162193	三國兩晉南北朝文選 (B1 行)	curl 200；浏览器（headless）被 CloudFront 403	2026-10-15 02:05:55
+naikaku-03	fake	https://www.digital.archives.go.jp/file/9999999	id 全换为同长 9（1071572→9999999）	404	https://www.digital.archives.go.jp/file/9999999	431	-	curl 404 431B；浏览器 403	2026-10-15 02:05:58
+naikaku-04	real	https://www.digital.archives.go.jp/file/1073278		200	https://www.digital.archives.go.jp/file/1073278	136212	B1 样本 1073278	curl 200；浏览器（headless）被 CloudFront 403	2026-10-15 02:06:06
+naikaku-04	fake	https://www.digital.archives.go.jp/file/9999999	id 全换为同长 9（1073278→9999999）	404	https://www.digital.archives.go.jp/file/9999999	431	-	curl 404 431B；浏览器 403	2026-10-15 02:06:09
+naikaku-05	real	https://www.digital.archives.go.jp/file/1074188		200	https://www.digital.archives.go.jp/file/1074188	161172	B1 样本 1074188	curl 200；浏览器（headless）被 CloudFront 403	2026-10-15 02:06:19
+naikaku-05	fake	https://www.digital.archives.go.jp/file/9999999	id 全换为同长 9（1074188→9999999）	404	https://www.digital.archives.go.jp/file/9999999	431	-	curl 404 431B；浏览器 403	2026-10-15 02:06:21

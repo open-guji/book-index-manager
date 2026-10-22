@@ -1,0 +1,3 @@
+{"diff_id":"T1","verdict":"adopt","rule":"R-两源","sources":["zhwp-r12"],"action":"改 dates"}
+{"diff_id":"T2","verdict":"adopt","rule":"R-两源","sources":["zhwp-r12","zhwp-cite:紀元編"],"action":"改 dates"}
+{"diff_id":"T3","verdict":"adopt","rule":"R-两源","sources":["zhwp-r12","dila-time r5"]}

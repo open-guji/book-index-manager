@@ -1,0 +1,255 @@
+# GUJI-392 工作清单 v2（Sidney，2026-10-15）：帝王名（年号 ruler.name 去重 373）中 帝王条无生卒 230／疑配错 1／同名异朝代或朝代缺失无匹配条 16／真无 people 条 6，共 253；帝王条已有生卒 120。匹配含 alt_names（庙号条本名在别名，不需新建）。
+帝王名	年号所属朝代	年号起止	现状	帝王条id	疑配错条id	其他同名条id
+乞伏乾歸	西秦	388-412	帝王条无生卒	hixi4watiipg		
+乞伏國仁	西秦	385-388	帝王条无生卒	hixi4watiipf		
+乞伏暮末	西秦	428-431	帝王条无生卒	hixi4watiipi		
+乞伏熾磐	西秦	412-428	帝王条无生卒	hixi4watiiph		
+也孫鐵木兒	元	1324-1328	帝王条无生卒	hixi4wwpzyfi		
+侯景	侯漢	551-552	帝王条无生卒	hixi4wwpzyfc		
+元善見	東魏	534-550	帝王条无生卒	hixi4watiio7		
+元寶炬	西魏	535-551	帝王条无生卒	hixi4watiipm		
+元恪	北魏	500-515	帝王条无生卒	hixhjhtse1ol		hixhd2h9bdyd
+元恭	北魏	531-532	帝王条无生卒	hixi4wwpzygt		hixhd2h9bhnb
+元曄	北魏	530-531	帝王条无生卒	hixi4wwpzygs		
+元朗	北魏	531-532	帝王条无生卒	hixi4wwpzygu		hixhd2h9bhuk;hixhd2h9bf1z;hixhd2h9beo9;hixhd2h9bd0s
+元脩	北魏	532-534	帝王条无生卒	hixi4wwpzygv		
+元詡	北魏	516-528	帝王条无生卒	hixi4wwpzygq		
+冉閔	冉魏	350-352	帝王条无生卒	hixi4wwpzyfm		
+劉保	東漢	126-144	帝王条无生卒	hixi4watiio2		
+劉備	三國蜀	221-223	帝王条无生卒	hixi4wwpzyf7		
+劉劭	南朝宋	453-453	同名异朝代／朝代缺失，无匹配条			hixhinblnm6e
+劉協	東漢	189-220	同名异朝代／朝代缺失，无匹配条			hixhd2h9bp1t
+劉奭	西漢	-48--33	帝王条无生卒	hixhd2h9bhtl		
+劉嬰	西漢	6-8	帝王条无生卒	hixi4watiip7		
+劉子業	南朝宋	465-465	帝王条无生卒	hixhi4fgswso		
+劉守光	大燕（劉守光）	911-913	帝王条无生卒	hixi4w9wfcwq		
+劉彧	南朝宋	465-472	帝王条无生卒	hixhd2h9bnd2		hixhd2h9bi8u
+劉志	東漢	147-167	帝王条无生卒	hixi4watiio5		
+劉承祐	後漢	948-950	帝王条无生卒	hixi4w9wfcxe		
+劉旻	北漢	951-973	帝王条无生卒	hixi4wwpzygd		
+劉昱	南朝宋	473-477	帝王条无生卒	hixi4wwpzyhe		
+劉晟	南漢	943-958	帝王条无生卒	hixi4w9wfcwa		
+劉曜	前趙	318-329	帝王条无生卒	hixi4wwpzyg1		
+劉欣	西漢	-6--1	帝王条无生卒	hixi4watiip5		
+劉武周	定楊（劉武周）	617-620	帝王条无生卒	hixi4w9wfcwz		
+劉淵	前趙	304-310	帝王条无生卒	hixi4wwpzyfz		hixhd2h9bh61
+劉準	南朝宋	477-479	帝王条无生卒	hixi4wwpzyhf		
+劉炳	東漢	145-145	帝王条无生卒	hixi4watiio3		hixhd2h9bh53;hixhd2h9bhru;hixhd2h9bjfv
+劉熙	前趙	328-329	同名异朝代／朝代缺失，无匹配条			hixhd2h9bm89;hixhd2h9bnd5;hixhd2h9bndk
+劉玄	玄漢	23-25	同名异朝代／朝代缺失，无匹配条			hixhd2h9bp5z
+劉玢	南漢	942-942	帝王条无生卒	hixi4w9wfcw9		
+劉盆子	赤眉	25-27	帝王条无生卒	hixi4watiipo		
+劉祜	東漢	107-125	帝王条无生卒	hixi4watiio1		
+劉禪	三國蜀	223-263	帝王条无生卒	hixi4wwpzyf8		
+劉粲	前趙	318-318	帝王条无生卒	hixi4wwpzyg0		
+劉繼元	北漢	974-979	帝王条无生卒	hixi4wwpzyge		
+劉纘	東漢	146-146	帝王条无生卒	hixi4watiio4		
+劉義符	南朝宋	423-424	帝王条无生卒	hixi4wwpzyhd		
+劉義隆	南朝宋	424-453	帝王条无生卒	hixhd2h9bp6u		
+劉聰	前趙	310-318	同名异朝代／朝代缺失，无匹配条			hixhjtdcoo3p
+劉衎	西漢	1-5	帝王条无生卒	hixi4watiip6		
+劉辯	東漢	189-189	帝王条无生卒	hixi4watiio6		
+劉隆	東漢	106-106	帝王条无生卒	hixi4watiio0		
+劉駿	南朝宋	454-464	帝王条无生卒	hixhd2h9bp8m		
+劉驁	西漢	-32--7	帝王条无生卒	hixi4watiip4		
+劉黑闥	漢（劉黑闥）	622-623	帝王条无生卒	hixi4watiioh		
+劉龑	南漢	917-942	帝王条无生卒	hixi4w9wfcw8		
+努爾哈赤	後金	1616-1626	帝王条无生卒	hixi4w9wfcxw		
+史思明	大燕（安祿山）	759-761	帝王条无生卒	hixi4w9wfcws		
+史朝義	大燕（安祿山）	761-762	帝王条无生卒	hixi4w9wfcwt		
+司馬丕	東晉	362-365	帝王条无生卒	hixhjtdhzpc0		
+司馬倫	西晉	301-301	帝王条无生卒	hixi4watiioz		
+司馬德宗	東晉	397-418	帝王条无生卒	hixi4w9wfcyg		
+司馬炎	西晉	265-290	帝王条无生卒	hixi4watiiox		
+司馬熾	西晉	307-313	帝王条无生卒	hixi4watiip0		
+司馬睿	東晉	317-323	帝王条无生卒	hixhk0l824n8		
+司馬聃	東晉	345-361	帝王条无生卒	hixi4w9wfcye		
+司馬衷	西晉	290-306	帝王条无生卒	hixi4watiioy		
+司馬鄴	西晉	313-317	帝王条无生卒	hixi4watiip1		
+吳三桂	吳周	1678-1678	帝王条无生卒	hixi4w9wfcwe		
+吳世璠	吳周	1679-1681	帝王条无生卒	hixi4w9wfcwf		
+呂光	後涼	386-399	帝王条无生卒	hixi4w9wfcxa		
+呂纂	後涼	399-401	帝王条无生卒	hixi4w9wfcxb		
+呂隆	後涼	401-403	帝王条无生卒	hixi4w9wfcxc		
+圖帖睦爾	元	1328-1333	帝王条无生卒	hixi4wwpzyfj		
+塔不煙	西遼	1144-1150	帝王条无生卒	hixi4watiipk		
+妥懽帖睦爾	元	1333-1370	帝王条无生卒	hixi4wwpzyfl		
+姚泓	後秦	416-417	帝王条无生卒	hixi4w9wfcxo		
+姚興	後秦	394-416	帝王条无生卒	hixi4w9wfcxn		hixhjtdj8nid
+姚萇	後秦	384-394	帝王条无生卒	hixi4w9wfcxm		
+孟知祥	後蜀	934-937	帝王条无生卒	hixi4w9wfcxp		
+孫亮	三國吳	252-258	帝王条无生卒	hixi4wwpzyf4		
+孫休	三國吳	258-264	帝王条无生卒	hixi4wwpzyf5		hixhd2h9bn7f
+宇文化及	許（宇文化及）	618-619	帝王条无生卒	hixi4watiipn		
+宇文毓	北周	559-560	帝王条无生卒	hixhjeq2oiyp		
+宇文贇	北周	579-579	帝王条无生卒	hixi4wwpzyg4		
+宇文闡	北周	579-581	帝王条无生卒	hixi4wwpzyg5		
+安慶緒	大燕（安祿山）	757-759	无people条			
+安祿山	大燕（安祿山）	756-757	帝王条无生卒	hixi4w9wfcwr		
+完顏亮	金	1149-1161	帝王条无生卒	hixi4watiiq2		
+完顏亶	金	1138-1149	帝王条无生卒	hixi4watiiq1		
+完顏吳乞買	金	1123-1137	帝王条无生卒	hixi4watiiq0		
+完顏守緒	金	1224-1234	帝王条无生卒	hixi4watiiq7		
+完顏永濟	金	1209-1213	帝王条无生卒	hixi4watiiq5		
+完顏珣	金	1213-1223	帝王条无生卒	hixi4watiiq6		
+完顏璟	金	1190-1208	帝王条无生卒	hixi4watiiq4		
+完顏阿骨打	金	1115-1123	帝王条无生卒	hixi4watiipz		
+完顏雍	金	1161-1189	帝王条无生卒	hixi4watiiq3		
+張士誠	大周	1354-1357	同名异朝代／朝代缺失，无匹配条			hixi5v6pwlxc
+張大豫	前涼	386-387	帝王条无生卒	hixi4wwpzyfq		
+張天錫	前涼	363-376	帝王条无生卒	hixi4wwpzyfp		hixhd2h9bmrt
+張獻忠	大西	1644-1647	帝王条无生卒	hixi4w9wfcwu		
+張玄靚	前涼	357-361	无people条			
+張祚	前涼	354-356	同名异朝代／朝代缺失，无匹配条			hixhd2h9bqgp
+張重華	前涼	346-353	帝王条无生卒	hixhd2h9bnfz		hixhd2h9bfw6
+張駿	前涼	324-345	同名异朝代／朝代缺失，无匹配条			hixhd2h9bqiw
+徐壽輝	天完	1351-1360	帝王条无生卒	hixi4w9wfcwx		
+愛猷識理達臘	北元	1371-1378	帝王条无生卒	hixi4wwpzyg2		
+愛育黎拔力八達	元	1312-1320	帝王条无生卒	hixi4wwpzyfg		
+慕容儁	前燕	349-360	同名异朝代／朝代缺失，无匹配条			hixhjtdcoo3q
+慕容忠	西燕	386-386	帝王条无生卒	hixi4watiipc		
+慕容永	西燕	386-394	帝王条无生卒	hixi4watiipe		
+慕容沖	西燕	385-386	帝王条无生卒	hixi4watiip9		
+慕容泓	西燕	384-385	帝王条无生卒	hixi4watiip8		
+慕容熙	後燕	401-407	帝王条无生卒	hixi4w9wfcxl		
+慕容瑤	西燕	386-386	帝王条无生卒	hixi4watiipd		
+慕容詳	後燕	397-397	帝王条无生卒	hixi4w9wfcxi		
+慕容超	南燕	405-410	帝王条无生卒	hixi4w9wfcwd		
+慕容顗	西燕	386-386	帝王条无生卒	hixi4watiipb		
+慕容麟	後燕	397-398	帝王条无生卒	hixi4w9wfcxh		
+拓跋什翼犍	代	338-376	帝王条无生卒	hixi4wwpzyfb		
+拓跋余	北魏	452-452	帝王条无生卒	hixi4wwpzygm		
+拓跋宏	北魏	471-499	帝王条无生卒	hixhjhtkl43k		
+明玉珍	明夏	1362-1371	帝王条无生卒	hixi4w9wfcyb		
+曹叡	三國魏	227-239	帝王条无生卒	hixhd2h9buqr		
+朱友珪	後梁	913-913	帝王条无生卒	hixi4w9wfcx8		
+朱友貞	後梁	915-923	帝王条无生卒	hixi4w9wfcx9		
+朱泚	漢（朱泚）/秦（朱泚）	783-784	同名异朝代／朝代缺失，无匹配条			hixi5v6qj30g
+朱溫	後梁	907-915	帝王条无生卒	hixi4w9wfcx7		
+朱由崧	南明	1645-1645	帝王条无生卒	hixi4wwpzyhb		
+朱由榔	南明	1647-1662	帝王条无生卒	hixi4wwpzyhc		
+朱粲	楚（朱粲）	618-621	帝王条无生卒	hixi4watiiod		
+朱聿粵	南明	1646-1646	无people条			
+朱載坖	明	1567-1572	帝王条无生卒	hixi4w9wfcy7		
+李世民	唐	627-649	帝王条无生卒	hixhd2h9br1e		
+李乾順	西夏	1086-1139	帝王条无生卒	hixi4watiioq		
+李仁孝	西夏	1140-1193	帝王条无生卒	hixi4watiior		
+李儇	唐	874-888	帝王条无生卒	hixi4w9wfcwn		
+李元昊	西夏	1032-1048	帝王条无生卒	hixi4watiion		
+李勢	成漢	344-347	帝王条无生卒	hixi4w9wfcy2		
+李嗣源	後唐	926-933	帝王条无生卒	hixi4w9wfcx3		
+李壽	成漢	338-343	帝王条无生卒	hixi4w9wfcy1		hixhd2h9big9
+李子通	吳（李子通）	619-621	帝王条无生卒	hixi4w9wfcwg		
+李存勖	後唐	923-926	帝王条无生卒	hixi4w9wfcx2		
+李安全	西夏	1206-1211	帝王条无生卒	hixi4watiiot		
+李密	魏（李密）	617-618	同名异朝代／朝代缺失，无匹配条			hixhd2h9bi9t
+李希烈	楚（李希烈）	784-786	帝王条无生卒	hixi4watiioe		
+李從厚	後唐	934-934	帝王条无生卒	hixi4w9wfcx4		
+李德旺	西夏	1223-1226	帝王条无生卒	hixi4watiiov		
+李恂	西涼	420-421	帝王条无生卒	hixi4watiip3		hixhd2h9bmnm
+李恒	唐	821-824	帝王条无生卒	hixi4w9wfcwl		hixhgyrw4w89
+李旦	唐	684-712	帝王条无生卒	hixhd2h9br66		
+李暠	西涼	400-417	同名异朝代／朝代缺失，无匹配条			hixhd2h9bkby
+李期	成漢	335-338	帝王条无生卒	hixi4w9wfcy0		
+李歆	西涼	417-420	帝王条无生卒	hixi4watiip2		
+李治	唐	650-683	帝王条无生卒	hixi4w9wfcwi		hixhd2h9bh0q
+李淵	唐	618-626	帝王条无生卒	hixi4w9wfcwh		
+李特	成漢	302-303	帝王条无生卒	hixi4w9wfcxy		
+李睍	西夏	1226-1227	帝王条无生卒	hixi4watiiow		
+李秉常	西夏	1068-1085	帝王条无生卒	hixi4watiiop		
+李純祐	西夏	1194-1205	帝王条无生卒	hixi4watiios		
+李自成	大順	1644-1645	帝王条无生卒	hixi4w9wfcwv		
+李諒祚	西夏	1049-1067	帝王条无生卒	hixi4watiioo		
+李豫	唐	763-779	帝王条无生卒	hixi4w9wfcwk		
+李軌	涼（李軌）	617-619	同名异朝代／朝代缺失，无匹配条			hixhd2h9bhs2
+李適	唐	780-805	疑配错(生卒与年号不合)		hixhd2h9bo6s	
+李遵頊	西夏	1211-1223	帝王条无生卒	hixi4watiiou		
+李重茂	唐	710-710	帝王条无生卒	hixi4w9wfcwj		
+李隆基	唐	712-756	帝王条无生卒	hixhd2h9bo6w		
+李雄	成漢	304-334	帝王条无生卒	hixi4w9wfcxz		
+李顯	唐	684-710	帝王条无生卒	hixhd2h9brb9		
+林士弘	楚（林士弘）	617-622	帝王条无生卒	hixi4watiiof		
+桓玄	東晉/桓楚	402-403	帝王条无生卒	hixhd2h9bith		
+梁師都	梁（梁師都）	617-628	帝王条无生卒	hixi4watiio8		
+楊侑	隋	617-618	帝王条无生卒	hixi4watiiqd		
+楊侗	隋	618-619	帝王条无生卒	hixi4watiiqe		
+楊堅	隋	581-604	帝王条无生卒	hixi4watiiqc		
+楊廣	隋	605-618	帝王条无生卒	hixhd2h9bufq		
+楊溥	楊吳	921-937	帝王条无生卒	hixi4watiioc		hixhd2h9bi5x
+楊隆演	楊吳	919-920	帝王条无生卒	hixi4watiiob		
+段業	北涼	397-401	同名异朝代／朝代缺失，无匹配条			hixhjtdq3vgh
+段隨	西燕	386-386	帝王条无生卒	hixi4watiipa		
+沈法興	梁（沈法興）	618-620	帝王条无生卒	hixi4watiio9		
+沮渠無諱	北涼	443-460	帝王条无生卒	hixi4wwpzygc		
+沮渠牧犍	北涼	433-439	无people条			
+沮渠蒙遜	北涼	401-433	帝王条无生卒	hixi4wwpzygb		
+洪秀全	太平天國	1851-1864	同名异朝代／朝代缺失，无匹配条			hixi5v6q7ugw
+海山	元	1308-1311	帝王条无生卒	hixi4wwpzyff		hixhd2h9bcv5
+王世充	鄭（王世充）	619-621	帝王条无生卒	hixi4watiipy		
+王延政	閩	943-945	帝王条无生卒	hixi4watiiqb		
+王延羲	閩	939-944	帝王条无生卒	hixi4watiiqa		
+王建	前蜀	908-918	帝王条无生卒	hixi4wwpzyfy		hixhd2h9bfai
+王昶	閩	935-939	帝王条无生卒	hixi4watiiq9		hixhd2h9bmap;hixhd2h9bcir
+王鏻	閩	933-935	帝王条无生卒	hixi4watiiq8		
+石敬瑭	後晉	936-944	帝王条无生卒	hixi4w9wfcx5		
+石祗	後趙	350-351	帝王条无生卒	hixi4w9wfcxu		
+石虎	後趙	335-349	帝王条无生卒	hixi4w9wfcxt		hixhjxrcmygw
+石重貴	後晉	944-947	帝王条无生卒	hixi4w9wfcx6		
+石鑒	後趙	350-350	帝王条无生卒	hixi4w9wfcxv		
+碩德八剌	元	1321-1323	帝王条无生卒	hixi4wwpzyfh		
+禿髮傉檀	南涼	402-414	帝王条无生卒	hixi4w9wfcw7		
+禿髮利鹿孤	南涼	400-402	帝王条无生卒	hixi4w9wfcw6		
+禿髮烏孤	南涼	397-399	帝王条无生卒	hixi4w9wfcw5		
+竇建德	夏（竇建德）	617-621	帝王条无生卒	hixi4w9wfcwo		
+耶律大石	西遼	1132-1144	帝王条无生卒	hixi4watiipj		
+耶律夷列	西遼	1151-1164	无people条			
+耶律宗真	遼	1031-1055	帝王条无生卒	hixi4watiipv		
+耶律延禧	遼	1101-1125	帝王条无生卒	hixi4watiipx		
+耶律德光	遼	938-947	帝王条无生卒	hixi4watiipq		
+耶律普速完	西遼	1164-1178	帝王条无生卒	hixi4watiipl		
+耶律洪基	遼	1055-1101	帝王条无生卒	hixhd2h9bl2k		
+耶律璟	遼	951-969	帝王条无生卒	hixi4watiips		
+耶律直魯古	西遼	1178-1211	无people条			
+耶律賢	遼	969-983	帝王条无生卒	hixi4watiipt		
+耶律阮	遼	947-951	帝王条无生卒	hixi4watiipr		
+耶律阿保機	遼	916-938	帝王条无生卒	hixi4watiipp		
+耶律隆緒	遼	983-1031	帝王条无生卒	hixi4watiipu		
+脫古思帖木兒	北元	1379-1388	帝王条无生卒	hixi4wwpzyg3		
+苻崇	前秦	394-394	帝王条无生卒	hixi4wwpzyfx		
+蕭方智	南朝梁	555-557	帝王条无生卒	hixi4wwpzyhi		
+蕭昭文	南朝齊	494-494	帝王条无生卒	hixi4w9wfcw2		
+蕭昭業	南朝齊	494-494	帝王条无生卒	hixi4w9wfcw1		
+蕭棟	南朝梁	551-551	帝王条无生卒	hixi4wwpzyhg		
+蕭淵明	南朝梁	555-555	帝王条无生卒	hixi4wwpzyhh		
+蕭琮	西梁	586-587	帝王条无生卒	hixhd2h9bt5l		
+蕭紀	南朝梁	552-553	同名异朝代／朝代缺失，无匹配条			hixhii0hm1ab
+蕭詧	西梁	555-562	帝王条无生卒	hixhiifvzi0z		
+蕭道成	南朝齊	479-482	帝王条无生卒	hixhio73orgp		
+蕭銑	梁（蕭銑）	617-621	帝王条无生卒	hixi4watiioa		
+薛舉	秦（薛舉）	617-618	帝王条无生卒	hixi4watiioj		
+蘭汗	後燕	398-398	帝王条无生卒	hixi4w9wfcxj		
+赫連勃勃	胡夏	407-425	帝王条无生卒	hixi4watiiok		
+赫連定	胡夏	428-431	帝王条无生卒	hixi4watiiom		
+赫連昌	胡夏	425-428	帝王条无生卒	hixi4watiiol		
+趙㬎	南宋	1275-1276	帝王条无生卒	hixi4wwpzyh8		
+趙恆	北宋	998-1022	帝王条无生卒	hixhd2h9be2l		
+趙昰	南宋	1276-1278	帝王条无生卒	hixi4wwpzyh9		
+趙昺	南宋	1278-1279	帝王条无生卒	hixi4wwpzyha		
+輔公祏	宋（輔公祏）	623-624	帝王条无生卒	hixi4w9wfcwy		
+鐵穆耳	元	1295-1307	帝王条无生卒	hixi4wwpzyfe		
+阿速吉八	元	1328-1328	帝王条无生卒	hixi4wwpzyfk		
+陳友諒	大漢	1360-1363	帝王条无生卒	hixi4w9wfcwp		
+陳叔寶	南朝陳	583-589	帝王条无生卒	hixhii3ys742		
+韓林兒	韓宋	1355-1366	帝王条无生卒	hixi4watiiqf		
+馮弘	北燕	431-436	帝王条无生卒	hixi4wwpzygh		
+馮跋	北燕	409-430	帝王条无生卒	hixi4wwpzygg		
+高延宗	北齊	577-577	帝王条无生卒	hixi4wwpzyh1		
+高恆	北齊	577-577	帝王条无生卒	hixi4wwpzyh0		
+高殷	北齊	560-560	帝王条无生卒	hixi4wwpzygx		
+高洋	北齊	550-559	帝王条无生卒	hixi4wwpzygw		
+高湛	北齊	561-565	帝王条无生卒	hixi4wwpzygz		
+高演	北齊	560-561	帝王条无生卒	hixi4wwpzygy		
+高緯	北齊	565-576	帝王条无生卒	hixhjhtp9o8w		
+高開道	燕（高開道）	618-624	帝王条无生卒	hixi4watiioi		
+高雲	北燕	407-409	帝王条无生卒	hixi4wwpzygf		
+黃巢	大齊（黃巢）	878-884	帝王条无生卒	hixi4w9wfcww		

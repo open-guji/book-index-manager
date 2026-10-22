@@ -1,0 +1,14 @@
+{
+ "source": "waseda",
+ "plan_items": 1117,
+ "linked_draft": 0,
+ "item_errors": {},
+ "works_over_cap_after_plan": 0,
+ "works_newly_over_cap": 0,
+ "occupancy_rows": 0,
+ "occupancy": [],
+ "linked_not_found_in_lib": 0,
+ "id_group_same": 0,
+ "full_same": 0,
+ "field_diffs": {}
+}

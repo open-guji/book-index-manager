@@ -1,0 +1,871 @@
+# D-溯源余量（description.sources 为空的朝代／年号）
+# 生成：只读扫描 open-guji/book-index origin/main（b59bb22d3b，#181 之后）；原因列按裁决账 book: 书证归类。
+类别	id	名称	类型	朝代	起讫	裁决账 diff_id
+账内无行（未入裁决账）	hixi1ubjgow0	三國	dynasty	—	220–280	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjgow1	上古	dynasty	—	–	C1-dates-上古
+账内无行（未入裁决账）	hixi1ubjgow2	中華人民共和國	dynasty	—	1949–	—
+账内无行（未入裁决账）	hixi1ubjgow3	中華民國	dynasty	—	1912–	—
+账内无行（未入裁决账）	hixi1ubjgow4	五代	dynasty	—	907–960	—
+账内无行（未入裁决账）	hixi1ubjgow5	侯漢	dynasty	—	551–552	—
+账内无行（未入裁决账）	hixi1ubjgow6	偽齊	dynasty	—	1130–1137	—
+账内有书证但未补（待 D-有账待补）	hixi1ubjgow7	元	dynasty	—	1271–1368	R1-中統 R1-至元(世祖)
+账内无行（未入裁决账）	hixi1ubjgow8	先秦	dynasty	—	-2070–-221	—
+账内无行（未入裁决账）	hixi1ubjgow9	兩漢	dynasty	—	-206–220	—
+账内无行（未入裁决账）	hixi1ubjgowa	北元	dynasty	—	1368–1388	—
+账内无行（未入裁决账）	hixi1ubjgowb	北遼	dynasty	—	1122–1122	—
+账内无行（未入裁决账）	hixi1ubjgowc	十六國	dynasty	—	304–439	—
+账内无行（未入裁决账）	hixi1ubjgowd	十國	dynasty	—	902–979	—
+账内无行（未入裁决账）	hixi1ubjgowe	南北朝	dynasty	—	420–589	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjgowf	南明	dynasty	—	1644–1662	C1-period-南明
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjgowg	吳周	dynasty	—	1678–1681	C1-period-吳周
+账内无行（未入裁决账）	hixi1ubjgowh	吳（李子通）	dynasty	—	619–621	—
+账内无行（未入裁决账）	hixi1ubjgowi	唐	dynasty	—	618–907	—
+账内无行（未入裁决账）	hixi1ubjgowj	夏（竇建德）	dynasty	—	617–621	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjgowk	大周	dynasty	—	1354–1367	C1-period-大周
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjgowl	大漢	dynasty	—	1360–1363	C1-period-大漢
+账内无行（未入裁决账）	hixi1ubjgowm	大燕（劉守光）	dynasty	—	911–913	—
+账内无行（未入裁决账）	hixi1ubjrxfk	大燕（安祿山）	dynasty	—	756–763	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjrxfl	大西	dynasty	—	1644–1647	C1-period-大西
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjrxfm	大順	dynasty	—	1644–1645	C1-period-大順
+账内无行（未入裁决账）	hixi1ubjrxfn	大齊（黃巢）	dynasty	—	880–884	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjrxfo	天完	dynasty	—	1351–1360	C1-period-天完
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjrxfp	太平天國	dynasty	—	1851–1864	C1-period-太平天國
+账内无行（未入裁决账）	hixi1ubjrxfq	宋（輔公祏）	dynasty	—	623–624	—
+账内无行（未入裁决账）	hixi1ubjrxfr	定楊（劉武周）	dynasty	—	617–620	—
+账内无行（未入裁决账）	hixi1ubjrxfs	後金	dynasty	—	1616–1636	—
+账内无行（未入裁决账）	hixi1ubjrxft	新	dynasty	—	9–23	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjrxfu	新羅	dynasty	—	-57–935	C1-period-新羅
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjrxfv	日本	dynasty	—	–	C1-dates-日本 C1-period-日本
+账内无行（未入裁决账）	hixi1ubjrxfw	明	dynasty	—	1368–1644	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjrxfx	明夏	dynasty	—	1362–1371	C1-period-明夏
+账内无行（未入裁决账）	hixi1ubjrxfy	晉	dynasty	—	265–420	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjrxfz	朝鮮	dynasty	—	1392–1897	C1-period-朝鲜
+账内无行（未入裁决账）	hixi1ubjrxg0	桓楚	dynasty	—	403–404	—
+账内无行（未入裁决账）	hixi1ubjrxg1	梁（梁師都）	dynasty	—	617–628	—
+账内无行（未入裁决账）	hixi1ubjrxg2	梁（沈法興）	dynasty	—	618–620	—
+账内无行（未入裁决账）	hixi1ubjrxg3	梁（蕭銑）	dynasty	—	617–621	—
+账内无行（未入裁决账）	hixi1ubjrxg4	楚（朱粲）	dynasty	—	618–621	—
+账内无行（未入裁决账）	hixi1ubjrxg5	楚（李希烈）	dynasty	—	784–786	—
+账内无行（未入裁决账）	hixi1ubjrxg6	楚（林士弘）	dynasty	—	617–622	—
+账内无行（未入裁决账）	hixi1ubjrxg7	武周	dynasty	—	690–705	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubjrxg8	江戶時代	dynasty	—	1603–1868	C1-period-江戶時代
+账内无行（未入裁决账）	hixi1ubjrxg9	涼（李軌）	dynasty	—	617–619	—
+账内无行（未入裁决账）	hixi1ubjrxga	清	dynasty	—	1636–1912	—
+账内无行（未入裁决账）	hixi1ubjrxgb	漢（劉黑闥）	dynasty	—	622–623	—
+账内无行（未入裁决账）	hixi1ubjrxgc	漢（朱泚）	dynasty	—	784–784	—
+账内无行（未入裁决账）	hixi1ubjrxgd	燕（高開道）	dynasty	—	618–624	—
+账内无行（未入裁决账）	hixi1ubjrxge	玄漢	dynasty	—	23–25	—
+账内无行（未入裁决账）	hixi1ubjrxgf	秦	dynasty	—	-221–-207	—
+账内无行（未入裁决账）	hixi1ubjrxgg	秦（朱泚）	dynasty	—	783–784	—
+账内无行（未入裁决账）	hixi1ubjrxgh	秦（薛舉）	dynasty	—	617–618	—
+账内无行（未入裁决账）	hixi1ubjrxgi	蒙古	dynasty	—	1206–1271	—
+账内有书证但未补（待 D-有账待补）	hixi1ubjrxgj	西夏	dynasty	—	1038–1227	R1-顯道
+账内无行（未入裁决账）	hixi1ubjrxgk	西梁	dynasty	—	555–587	—
+账内无行（未入裁决账）	hixi1ubjrxgl	西遼	dynasty	—	1124–1218	—
+账内无行（未入裁决账）	hixi1ubjrxgm	許（宇文化及）	dynasty	—	618–619	—
+账内无行（未入裁决账）	hixi1ubjrxgn	赤眉	dynasty	—	25–27	—
+账内无行（未入裁决账）	hixi1ubjrxgo	趙宋	dynasty	—	960–1279	—
+账内无行（未入裁决账）	hixi1ubjrxgp	遼	dynasty	—	916–1125	—
+账内无行（未入裁决账）	hixi1ubjrxgq	鄭（王世充）	dynasty	—	619–621	—
+账内无行（未入裁决账）	hixi1ubjrxgr	金	dynasty	—	1115–1234	—
+账内无行（未入裁决账）	hixi1ubk35z4	隋	dynasty	—	581–618	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubk35z5	韓宋	dynasty	—	1355–1366	C1-period-韓宋
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubk35z6	高麗	dynasty	—	918–1392	C1-period-高麗
+账内无行（未入裁决账）	hixi1ubk35z7	魏（李密）	dynasty	—	617–618	—
+账内无行（未入裁决账）	hixi1ubk35z8	三國吳	dynasty	—	222–280	—
+账内无行（未入裁决账）	hixi1ubk35z9	三國蜀	dynasty	—	221–263	—
+账内无行（未入裁决账）	hixi1ubk35za	三國魏	dynasty	—	220–265	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubk35zb	上古傳說	dynasty	—	–	C1-dates-上古傳說
+账内无行（未入裁决账）	hixi1ubk35zc	代	dynasty	—	315–376	—
+账内无行（未入裁决账）	hixi1ubk35zd	冉魏	dynasty	—	350–352	—
+账内无行（未入裁决账）	hixi1ubk35ze	前涼	dynasty	—	317–376	—
+账内无行（未入裁决账）	hixi1ubk35zf	前燕	dynasty	—	337–370	—
+账内无行（未入裁决账）	hixi1ubk35zg	前秦	dynasty	—	351–394	—
+账内无行（未入裁决账）	hixi1ubk35zh	前蜀	dynasty	—	907–925	—
+账内无行（未入裁决账）	hixi1ubk35zi	前趙	dynasty	—	304–329	—
+账内无行（未入裁决账）	hixi1ubk35zj	北宋	dynasty	—	960–1127	—
+账内无行（未入裁决账）	hixi1ubk35zk	北朝	dynasty	—	386–581	—
+账内无行（未入裁决账）	hixi1ubk35zl	北涼	dynasty	—	397–439	—
+账内无行（未入裁决账）	hixi1ubk35zm	北漢	dynasty	—	951–979	—
+账内无行（未入裁决账）	hixi1ubk35zn	北燕	dynasty	—	407–436	—
+账内无行（未入裁决账）	hixi1ubk35zo	南唐	dynasty	—	937–975	—
+账内无行（未入裁决账）	hixi1ubk35zp	南宋	dynasty	—	1127–1279	—
+账内无行（未入裁决账）	hixi1ubk35zq	南平	dynasty	—	924–963	—
+账内无行（未入裁决账）	hixi1ubk35zr	南朝	dynasty	—	420–589	—
+账内无行（未入裁决账）	hixi1ubk35zs	南涼	dynasty	—	397–414	—
+账内无行（未入裁决账）	hixi1ubk35zt	南漢	dynasty	—	917–971	—
+账内无行（未入裁决账）	hixi1ubk35zu	南燕	dynasty	—	398–410	—
+账内无行（未入裁决账）	hixi1ubk35zv	吳越	dynasty	—	907–978	—
+账内无行（未入裁决账）	hixi1ubk35zw	商	dynasty	—	-1600–-1046	—
+账内无行（未入裁决账）	hixi1ubk35zx	夏	dynasty	—	-2070–-1600	—
+账内无行（未入裁决账）	hixi1ubk35zy	後周	dynasty	—	951–960	—
+账内无行（未入裁决账）	hixi1ubk35zz	後唐	dynasty	—	923–936	—
+账内无行（未入裁决账）	hixi1ubk3600	後晉	dynasty	—	936–947	—
+账内无行（未入裁决账）	hixi1ubk3601	後梁	dynasty	—	907–923	—
+账内无行（未入裁决账）	hixi1ubk3602	後涼	dynasty	—	386–403	—
+账内无行（未入裁决账）	hixi1ubk3603	後漢	dynasty	—	947–950	—
+账内无行（未入裁决账）	hixi1ubk3604	後燕	dynasty	—	384–407	—
+账内无行（未入裁决账）	hixi1ubk3605	後秦	dynasty	—	384–417	—
+账内无行（未入裁决账）	hixi1ubk3606	後蜀	dynasty	—	934–965	—
+账内无行（未入裁决账）	hixi1ubk3607	後趙	dynasty	—	319–351	—
+账内无行（未入裁决账）	hixi1ubk3608	成漢	dynasty	—	304–347	—
+账内无行（未入裁决账）	hixi1ubkeeio	東周	dynasty	—	-770–-256	—
+账内无行（未入裁决账）	hixi1ubkeeip	東晉	dynasty	—	317–420	—
+账内无行（未入裁决账）	hixi1ubkeeiq	東漢	dynasty	—	25–220	—
+账内无行（未入裁决账）	hixi1ubkeeir	楊吳	dynasty	—	902–937	—
+账内无行（未入裁决账）	hixi1ubkeeis	胡夏	dynasty	—	407–431	—
+账内无行（未入裁决账）	hixi1ubkeeit	西周	dynasty	—	-1046–-771	—
+账内无行（未入裁决账）	hixi1ubkeeiu	西晉	dynasty	—	265–316	—
+账内无行（未入裁决账）	hixi1ubkeeiv	西涼	dynasty	—	400–421	—
+账内无行（未入裁决账）	hixi1ubkeeiw	西漢	dynasty	—	-206–8	—
+账内无行（未入裁决账）	hixi1ubkeeix	西燕	dynasty	—	384–394	—
+账内无行（未入裁决账）	hixi1ubkeeiy	西秦	dynasty	—	385–431	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkeeiz	閩	dynasty	—	909–945	H4-閩
+账内无行（未入裁决账）	hixi1ubkeej0	馬楚	dynasty	—	907–951	—
+账内无行（未入裁决账）	hixi1ubkeej1	北周	dynasty	—	557–581	—
+账内无行（未入裁决账）	hixi1ubkeej2	北魏	dynasty	—	386–534	—
+账内无行（未入裁决账）	hixi1ubkeej3	北齊	dynasty	—	550–577	—
+账内无行（未入裁决账）	hixi1ubkeej4	南朝宋	dynasty	—	420–479	—
+账内无行（未入裁决账）	hixi1ubkeej5	南朝梁	dynasty	—	502–557	—
+账内无行（未入裁决账）	hixi1ubkeej6	南朝陳	dynasty	—	557–589	—
+账内无行（未入裁决账）	hixi1ubkeej7	南朝齊	dynasty	—	479–502	—
+账内无行（未入裁决账）	hixi1ubkeej8	戰國	dynasty	—	-475–-221	—
+账内无行（未入裁决账）	hixi1ubkeej9	春秋	dynasty	—	-770–-476	—
+账内无行（未入裁决账）	hixi1ubkeeja	東魏	dynasty	—	534–550	—
+账内无行（未入裁决账）	hixi1ubkeejb	西魏	dynasty	—	535–556	—
+账内无行（未入裁决账）	hixi1ubkeejc	戰國楚	dynasty	—	-475–-223	—
+账内无行（未入裁决账）	hixi1ubkeejd	戰國趙	dynasty	—	-403–-222	—
+账内无行（未入裁决账）	hixi1ubkeeje	戰國齊	dynasty	—	-386–-221	—
+账内无行（未入裁决账）	hixi1ubkeejf	春秋吳	dynasty	—	-770–-476	—
+账内无行（未入裁决账）	hixi1ubkeejg	春秋晉	dynasty	—	-770–-476	—
+账内无行（未入裁决账）	hixi1ubkeejh	春秋魯	dynasty	—	-770–-476	—
+账内无行（未入裁决账）	hixi1ubkeeji	春秋齊	dynasty	—	-770–-476	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkeejj	建元	reign	西漢	-140–-135	1002 1860 654
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkeejk	元光	reign	西漢	-134–-129	1003 1805 655
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkeejl	元朔	reign	西漢	-128–-123	1004 656
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkeejm	元狩	reign	西漢	-122–-117	1005 657
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkeejn	元鼎	reign	西漢	-116–-111	1006 658
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkeejo	元封	reign	西漢	-110–-105	1007 620
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkeejp	太初	reign	西漢	-104–-101	1008 659
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkeejq	天漢	reign	西漢	-100–-97	1009 1591 660
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkeejr	太始	reign	西漢	-96–-93	1010 661
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkeejs	征和	reign	西漢	-92–-89	1011 662
+账内无行（未入裁决账）	hixi1ubkeejt	後元	reign	西漢	-88–-87	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkeeju	始元	reign	西漢	-86–-81	1012 663
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn28	元鳳	reign	西漢	-80–-75	1013 1592 664
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn29	元平	reign	西漢	-74–-74	1014 665
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2a	本始	reign	西漢	-73–-70	1015 666
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2b	地節	reign	西漢	-69–-66	1016 1593 667
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2c	元康	reign	西漢	-65–-62	1017 668
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2d	神爵	reign	西漢	-61–-58	1018 669
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2e	五鳳	reign	西漢	-57–-54	1019 1594 670
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2f	甘露	reign	西漢	-53–-50	1020 671
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2g	黃龍	reign	西漢	-49–-49	1021 1595 1929 672
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2h	初元	reign	西漢	-48–-44	1022 673
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2i	永光	reign	西漢	-43–-39	1023 1885 674
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2j	建昭	reign	西漢	-38–-34	1024 675
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2k	竟寧	reign	西漢	-33–-33	1025 1596 676
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2l	建始	reign	西漢	-32–-29	677
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2m	河平	reign	西漢	-28–-25	1026 678
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2n	陽朔	reign	西漢	-24–-21	1027 1597 679
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2o	鴻嘉	reign	西漢	-20–-17	1028 1598 680
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2p	永始	reign	西漢	-16–-13	1029 681
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2q	元延	reign	西漢	-12–-9	1030 1808 682
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2r	綏和	reign	西漢	-8–-7	1031 1599 683
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2s	建平	reign	西漢	-6–-3	1032 1862 684
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2t	太初元將	reign	西漢	-5–-5	1033 1600
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2u	元壽	reign	西漢	-2–-1	1034 1601 621
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2v	元始	reign	西漢	1–5	1035 1807 685
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2w	居攝	reign	西漢	6–8	1036 1602 686
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2x	初始	reign	西漢	8–8	1037 687
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2y	始建國	reign	新	9–13	1603 688
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn2z	天鳳	reign	新	14–19	1604 689
+账内无行（未入裁决账）	hixi1ubkpn30	地皇	reign	新	20–23	—
+账内无行（未入裁决账）	hixi1ubkpn31	更始	reign	玄漢	23–25	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn32	建世	reign	赤眉	25–27	958
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn33	建武	reign	東漢	25–56	1038 1865
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn34	建武中元	reign	東漢	56–57	1039 690
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn35	永平	reign	東漢	58–75	1040 691
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn36	建初	reign	東漢	76–84	1041
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn37	元和	reign	東漢	84–87	1042
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn38	章和	reign	東漢	87–88	1043 692
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn39	永元	reign	東漢	89–105	1044
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn3a	元興	reign	東漢	105–105	1045 1605 1809 693
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubkpn3b	延平	reign	東漢	106–106	1046 694
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vls	永初	reign	東漢	107–113	1047 695
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vlt	元初	reign	東漢	114–120	1048
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vlu	永寧	reign	東漢	120–121	1049 1606 1889
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vlv	建光	reign	東漢	121–122	1050 1861
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vlw	延光	reign	東漢	122–125	1051 696
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vlx	永建	reign	東漢	126–132	1052
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vly	陽嘉	reign	東漢	132–135	1053 1607 697
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vlz	永和	reign	東漢	136–141	1054 1886 698
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vm0	漢安	reign	東漢	142–144	1055 1608
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vm1	建康	reign	東漢	144–144	1056 1863 699
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vm2	永憙	reign	東漢	145–145	1057 700
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vm3	本初	reign	東漢	146–146	1058 701
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vm4	建和	reign	東漢	147–149	1059 702
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vm5	和平	reign	東漢	150–150	1060 703
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vm6	元嘉	reign	東漢	151–153	1061 1806
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vm7	永興	reign	東漢	153–155	1062 1609 1896 704
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vm8	永壽	reign	東漢	155–158	1063 1610
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vm9	延熹	reign	東漢	158–167	1064
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vma	永康	reign	東漢	167–167	1065 1890 705
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmb	建寧	reign	東漢	168–172	1066 1611
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmc	熹平	reign	東漢	172–178	1067
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmd	光和	reign	東漢	178–184	1068 706
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vme	中平	reign	東漢	184–189	1069 1796 707
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmf	光熹	reign	東漢	189–189	1070
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmg	昭寧	reign	東漢	189–189	1071 1612
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmh	永漢	reign	東漢	189–189	1072 1613 1894
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmi	初平	reign	東漢	190–193	1073 708
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmj	興平	reign	東漢	194–195	1074 1614 1912 709
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmk	建安	reign	東漢	196–220	1075
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vml	延康	reign	東漢	220–220	1076 1858
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmm	黃初	reign	三國魏	220–226	1077 1615 1928 710
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmn	章武	reign	三國蜀	221–223	1078
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmo	黃武	reign	三國吳	222–229	1079 1616
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmp	建興	reign	三國蜀	223–237	1080 1617 1867 711
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmq	太和	reign	三國魏	227–233	1081 1845
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmr	黃龍	reign	三國吳	229–231	1082 1618 1929 712
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vms	嘉禾	reign	三國吳	232–238	1083
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmt	青龍	reign	三國魏	233–237	1084 1619
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubl0vmu	景初	reign	三國魏	237–239	1085
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45c	延熙	reign	三國蜀	238–257	1086 713
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45d	赤烏	reign	三國吳	238–251	1087
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45e	正始	reign	三國魏	240–249	1879
+账内无行（未入裁决账）	hixi1ublc45f	嘉平	reign	三國魏	249–254	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45g	太元	reign	三國吳	251–252	1088
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45h	建興	reign	三國吳	252–253	1089 1867 714
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45i	神鳳	reign	三國吳	252–252	1090 1620 1905
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45j	五鳳	reign	三國吳	254–256	1091
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45k	正元	reign	三國魏	254–256	1092
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45l	太平	reign	三國吳	256–258	1093 1847
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45m	甘露	reign	三國魏	256–260	1094
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45n	景耀	reign	三國蜀	258–263	1095
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45o	永安	reign	三國吳	258–264	1096 1888
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45p	景元	reign	三國魏	260–264	1097
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45q	炎興	reign	三國蜀	263–263	1098 1621 715
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45r	元興	reign	三國吳	264–265	1099 1622 1809
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45s	咸熙	reign	三國魏	264–265	1100 716
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45t	泰始	reign	西晉	265–274	1101 1898 717
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45u	甘露	reign	三國吳	265–266	1102
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45v	寶鼎	reign	三國吳	266–269	1103 1623
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45w	建衡	reign	三國吳	269–271	1104 718
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45x	鳳凰	reign	三國吳	272–274	1105 1624 1926 719
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45y	咸寧	reign	西晉	275–280	1106
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc45z	天冊	reign	三國吳	275–276	1107 1625
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc460	天璽	reign	三國吳	276–276	1108 1626 720
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc461	天紀	reign	三國吳	277–280	1109 1627
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc462	太康	reign	西晉	280–289	1110 1849 721
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc463	太熙	reign	西晉	290–290	1111
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc464	永熙	reign	西晉	290–290	1112 1895 722
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc465	元康	reign	西晉	291–299	1113 723
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc466	永平	reign	西晉	291–291	1114
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc467	永康	reign	西晉	300–301	1115 1890
+账内无行（未入裁决账）	hixi1ublc468	建始	reign	西晉	301–301	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc469	永寧	reign	西晉	301–302	1116 1628 1889 724
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc46a	太安	reign	西晉	302–303	1117 1846 622
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublc46b	建初	reign	成漢	302–303	1118 618
+账内无行（未入裁决账）	hixi1ublncow	元熙	reign	前趙	304–308	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncox	建武	reign	西晉	304–304	1119 1865
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncoy	建興	reign	成漢	304–306	1120 1629 1867
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncoz	永安	reign	西晉	304–304	1121 1888 725
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncp0	永興	reign	西晉	304–306	1122 1630 1896 726
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncp1	光熙	reign	西晉	306–306	1123 1811 727
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncp2	晏平	reign	成漢	306–310	1124 728
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncp3	永嘉	reign	西晉	307–313	1125 1887
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncp4	永鳳	reign	前趙	308–308	1631 729
+账内无行（未入裁决账）	hixi1ublncp5	河瑞	reign	前趙	309–310	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncp6	光興	reign	前趙	310–311	1632
+账内无行（未入裁决账）	hixi1ublncp7	嘉平	reign	前趙	311–315	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncp8	玉衡	reign	成漢	311–334	1126 730
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncp9	建興	reign	西晉	313–317	1127 1633 1867 731
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpa	建元	reign	前趙	315–315	1860 732
+账内无行（未入裁决账）	hixi1ublncpb	麟嘉	reign	前趙	316–318	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpc	建武	reign	東晉	317–318	1128 1865
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpd	永安	reign	前涼	317–320	1129 1888
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpe	光初	reign	前趙	318–329	1130
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpf	太興	reign	東晉	318–321	1131 733
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpg	漢昌	reign	前趙	318–318	1634
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncph	永元	reign	前涼	320–323	1132 734
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpi	永昌	reign	東晉	322–323	1133 1891
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpj	太寧	reign	東晉	323–326	1134 1635
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpk	太元	reign	前涼	324–345	1135 735
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpl	咸和	reign	東晉	326–335	1136 736
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpm	太和	reign	後趙	328–330	1137 1845
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpn	承光	reign	前趙	328–329	10 1871
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpo	建平	reign	後趙	330–333	1138 1862 737
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpp	延熙	reign	後趙	334–334	1139 738
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpq	咸康	reign	東晉	335–342	1140 739
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpr	建武	reign	後趙	335–348	1141 1865 740
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncps	玉恆	reign	成漢	335–338	1142 1636
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpt	建國	reign	代	338–376	1637
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpu	漢興	reign	成漢	338–343	1143 1638 741
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpv	建元	reign	東晉	343–344	1144 1860 742
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpw	太和	reign	成漢	344–345	1145 1845 743
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpx	永和	reign	東晉	345–356	1146 1886 744
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpy	嘉寧	reign	成漢	346–347	1147 1639
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublncpz	永樂	reign	前涼	346–353	1148 1893 745
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8g	太寧	reign	後趙	349–349	1149 1640 746
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8h	燕元	reign	前燕	349–351	1902
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8i	永寧	reign	後趙	350–351	1150 1889
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8j	永興	reign	冉魏	350–352	1641 1896 959
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8k	青龍	reign	後趙	350–350	1151
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8l	皇始	reign	前秦	351–355	1152 1903
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8m	元璽	reign	前燕	352–357	1153 1642 747
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8n	和平	reign	前涼	354–355	1154
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8o	壽光	reign	前秦	355–357	1155 1643
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8p	太始	reign	前涼	355–356	1156 623
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8q	光壽	reign	前燕	357–360	1157 1644
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8r	升平	reign	東晉	357–361	1158 1874 748
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8s	建元	reign	前涼	357–361	11 1860
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8t	永興	reign	前秦	357–359	1159 1645 1896
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8u	甘露	reign	前秦	359–364	1160 749
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8v	建熙	reign	前燕	360–370	1161 750
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8w	隆和	reign	東晉	362–362	1162 751
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8x	太清	reign	前涼	363–376	1163
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8y	興寧	reign	東晉	363–365	1164 1646
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl8z	建元	reign	前秦	365–385	1165 1860
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl90	太和	reign	東晉	366–371	1166 1845 624
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl91	咸安	reign	東晉	371–372	1167 1813 752
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl92	寧康	reign	東晉	373–375	1168 1647 753
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl93	太元	reign	東晉	376–396	1169 754
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl94	燕元	reign	後燕	384–385	1902 755
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl95	燕興	reign	西燕	384–385	1648 625
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl96	白雀	reign	後秦	384–386	1170
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl97	太安	reign	前秦	385–386	1171 1846
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl98	建義	reign	西秦	385–388	1172 1649 1866
+账内无行（未入裁决账）	hixi1ublyl99	更始	reign	西燕	385–386	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl9a	中興	reign	西燕	386–394	1797
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl9b	太初	reign	前秦	386–394	1173
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl9c	太安	reign	後涼	386–389	1174 1846
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl9d	建初	reign	後秦	386–394	1175
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl9e	建平	reign	西燕	386–386	1862
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl9f	建明	reign	西燕	386–386	1864
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ublyl9g	建武	reign	西燕	386–386	1865
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9ts0	建興	reign	後燕	386–396	1176 1867
+账内无行（未入裁决账）	hixi1ubm9ts1	昌平	reign	西燕	386–386	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9ts2	登國	reign	北魏	386–396	1177 1650
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9ts4	太初	reign	西秦	388–400	1178
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9ts5	麟嘉	reign	後涼	389–395	1179 756
+账内无行（未入裁决账）	hixi1ubm9ts6	延初	reign	前秦	394–394	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9ts7	皇初	reign	後秦	394–399	1180
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9ts8	永康	reign	後燕	396–398	1181 1890
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9ts9	皇始	reign	北魏	396–398	1182 1903 757
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsa	龍飛	reign	後涼	396–399	1183 1933 758
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsb	太初	reign	南涼	397–399	1184 759
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsc	延平	reign	後燕	397–398	1185 760
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsd	建始	reign	後燕	397–397	1186
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tse	神璽	reign	北涼	397–399	1187 1652
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsf	隆安	reign	東晉	397–401	1188 1921 761
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsg	天興	reign	北魏	398–404	1189 1653 1840 762
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsh	建平	reign	後燕	398–399	1190 1862 763
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsi	燕平	reign	南燕	398–399	1191 764
+账内无行（未入裁决账）	hixi1ubm9tsj	青龍	reign	後燕	398–398	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsk	咸寧	reign	後涼	399–401	1192 765
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsl	天璽	reign	北涼	399–401	1193 1654
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsm	弘始	reign	後秦	399–416	1194
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsn	長樂	reign	後燕	399–401	1195
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tso	庚子	reign	西涼	400–404	1196 766
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsp	建和	reign	南涼	400–402	1197
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsq	建平	reign	南燕	400–405	1198 1862
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsr	光始	reign	後燕	401–406	1199 767
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tss	永安	reign	北涼	401–412	1200 1888
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tst	神鼎	reign	後涼	401–403	1201
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsu	元興	reign	東晉	402–404	1202 1655 1809 768
+账内有书证但未补（待 D-有账待补）	hixi1ubm9tsv	大亨	reign	東晉	402–402	1203 769 E-大亨
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsw	弘昌	reign	南涼	402–404	1204
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsx	永始	reign	桓楚	403–403	770 960
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsy	天賜	reign	北魏	404–409	1205 1656 1841
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tsz	太上	reign	南燕	405–410	1206
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tt0	建初	reign	西涼	405–417	1207
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tt1	義熙	reign	東晉	405–418	1208 1657 771
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubm9tt2	建始	reign	後燕	407–407	1209
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2bk	正始	reign	北燕	407–409	1210 1879
+账内无行（未入裁决账）	hixi1ubml2bl	龍昇	reign	胡夏	407–413	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2bm	嘉平	reign	南涼	408–414	1211
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2bn	太平	reign	北燕	409–430	1212 1847 772
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2bo	更始	reign	西秦	409–412	1213
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2bp	永興	reign	北魏	409–413	1214 1658 1896 773
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2bq	永康	reign	西秦	412–419	1215 1890 774
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2br	玄始	reign	北涼	412–428	1216 775
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2bs	鳳翔	reign	胡夏	413–418	1217 1659
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2bt	神瑞	reign	北魏	414–416	1218
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2bu	永和	reign	後秦	416–417	1219 1886
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2bv	泰常	reign	北魏	416–423	1220 776
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2bw	嘉興	reign	西涼	417–420	1221 1660
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2bx	昌武	reign	胡夏	418–419	1222
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2by	元熙	reign	東晉	419–420	1223
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2bz	真興	reign	胡夏	419–425	1224 1904
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2c0	建弘	reign	西秦	420–428	1225 1661
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2c1	永初	reign	南朝宋	420–422	1226 777
+账内无行（未入裁决账）	hixi1ubml2c2	永建	reign	西涼	420–421	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2c3	景平	reign	南朝宋	423–424	1227
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2c4	元嘉	reign	南朝宋	424–453	1228 1806
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2c5	始光	reign	北魏	424–428	1229
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2c6	承光	reign	胡夏	425–428	1230 1871
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2c7	勝光	reign	胡夏	428–431	1231 1662
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2c8	承玄	reign	北涼	428–431	1232 778
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2c9	永弘	reign	西秦	428–431	1233 1663
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2ca	神䴥	reign	北魏	428–431	1234 779
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2cb	太興	reign	北燕	431–436	1235 1664
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2cc	義和	reign	北涼	431–433	1236
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2cd	延和	reign	北魏	432–434	1237 1857 780
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2ce	永和	reign	北涼	433–439	12 1886
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2cf	太延	reign	北魏	435–440	1238
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2cg	太平真君	reign	北魏	440–451	1239
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2ci	正平	reign	北魏	451–452	1241 1880
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2cj	承平	reign	北魏	452–452	1242
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2ck	興安	reign	北魏	452–454	1243 1665
+账内无行（未入裁决账）	hixi1ubml2cl	太初	reign	南朝宋	453–453	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubml2cm	孝建	reign	南朝宋	454–456	1244 781
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwav4	興光	reign	北魏	454–455	1245 1666
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwav5	太安	reign	北魏	455–459	1246 1846 782
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwav6	大明	reign	南朝宋	457–464	1247 783
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwav7	和平	reign	北魏	460–465	1248 784
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwav8	景和	reign	南朝宋	465–465	1249 785
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwav9	永光	reign	南朝宋	465–465	1250 1885
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwava	泰始	reign	南朝宋	465–471	1251 1898 786
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavb	天安	reign	北魏	466–467	1252
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavc	皇興	reign	北魏	467–471	1253 1667
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavd	延興	reign	北魏	471–476	1254 1668 1859
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwave	泰豫	reign	南朝宋	472–472	1255
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavf	元徽	reign	南朝宋	473–477	1256 627
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavg	承明	reign	北魏	476–476	1257 787
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavh	太和	reign	北魏	477–499	1258 1845 788
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavi	昇明	reign	南朝宋	477–479	1259
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavj	建元	reign	南朝齊	479–482	1260 1860 789
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavk	永明	reign	南朝齊	483–493	1261 790
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavl	延興	reign	南朝齊	494–494	1262 1669 1859
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavm	建武	reign	南朝齊	494–498	1263 1865
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavn	隆昌	reign	南朝齊	494–494	1264
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavo	永泰	reign	南朝齊	498–498	1265 791
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavp	永元	reign	南朝齊	499–501	1266
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavq	景明	reign	北魏	500–504	1267
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavr	中興	reign	南朝齊	501–502	1268 1670 1797
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavs	天監	reign	南朝梁	502–519	1269 1671 792
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavt	正始	reign	北魏	504–508	1270 1879
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavu	永平	reign	北魏	508–512	1271
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavv	延昌	reign	北魏	512–515	1272 793
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavw	熙平	reign	北魏	516–518	1273
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavx	神龜	reign	北魏	518–520	1274
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavy	普通	reign	南朝梁	520–527	1275
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwavz	正光	reign	北魏	520–525	1276
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwaw0	孝昌	reign	北魏	525–527	1277 794
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwaw1	大通	reign	南朝梁	527–529	1278 1823
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwaw2	建義	reign	北魏	528–528	1279 1866
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwaw3	武泰	reign	北魏	528–528	1280
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwaw4	永安	reign	北魏	528–530	1281 1888 795
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwaw5	中大通	reign	南朝梁	529–534	1282 796
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwaw6	建明	reign	北魏	530–531	1864
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwaw7	中興	reign	北魏	531–532	1672 1797
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwaw8	普泰	reign	北魏	531–532	628
+账内无行（未入裁决账）	hixi1ubmwaw9	太昌	reign	北魏	532–532	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwawa	永熙	reign	北魏	532–534	1895
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubmwawb	永興	reign	北魏	532–532	1673 1896
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jeo	天平	reign	東魏	534–537	1283 797
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jep	大同	reign	南朝梁	535–546	1284 1818
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jeq	大統	reign	西魏	535–551	1285 1674 798
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jer	元象	reign	東魏	538–539	1286
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jes	興和	reign	東魏	539–542	1287 1675 799
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jet	武定	reign	東魏	543–550	1288 1883
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jeu	中大同	reign	南朝梁	546–547	1289
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jev	太清	reign	南朝梁	547–549	1290 800
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jew	大寶	reign	南朝梁	550–551	1291 1676 1820
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jex	天保	reign	北齊	550–559	1292
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jey	天正	reign	南朝梁	551–551	1293 1835 629
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jez	太始	reign	侯漢	551–552	961
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jf0	天正	reign	南朝梁	552–553	1835
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jf1	承聖	reign	南朝梁	552–554	1294 1872 801
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jf2	大定	reign	西梁	555–562	1819
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jf3	天成	reign	南朝梁	555–555	1295 1831
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jf4	紹泰	reign	南朝梁	555–555	1296 802
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jf5	太平	reign	南朝梁	556–557	1297 1847
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jf6	永定	reign	南朝陳	557–559	1298 803
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jf7	武成	reign	北周	559–560	1299 804
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jf8	乾明	reign	北齊	560–560	1801
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jf9	天嘉	reign	南朝陳	560–566	1300
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfa	皇建	reign	北齊	560–561	1301
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfb	保定	reign	北周	561–565	1302 805
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfc	太寧	reign	北齊	561–562	1303 1677
+账内无行（未入裁决账）	hixi1ubn7jfd	天保	reign	西梁	562–585	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfe	河清	reign	北齊	562–565	1304
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jff	天統	reign	北齊	565–569	1305 1678 1839 806
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfg	天和	reign	北周	566–572	1306
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfh	天康	reign	南朝陳	566–566	1307 1827
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfi	光大	reign	南朝陳	567–568	1308 807
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfj	太建	reign	南朝陳	569–582	1309
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfk	武平	reign	北齊	570–576	1310 1884 808
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfl	建德	reign	北周	572–578	1311
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfm	隆化	reign	北齊	576–576	1312 809
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfn	德昌	reign	北齊	577–577	1313 810
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfo	承光	reign	北齊	577–577	1314 1871
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfp	宣政	reign	北周	578–578	1315 811
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfq	大成	reign	北周	579–579	1316
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfr	大象	reign	北周	579–581	1317 812
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubn7jfs	大定	reign	北周	581–581	1318 1819
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniry8	開皇	reign	隋	581–600	1319 1679 813
+账内无行（未入裁决账）	hixi1ubniry9	至德	reign	南朝陳	583–586	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirya	廣運	reign	西梁	586–587	1680
+账内无行（未入裁决账）	hixi1ubniryb	禎明	reign	南朝陳	587–589	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryc	仁壽	reign	隋	601–604	1320 1681 814
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryd	大業	reign	隋	605–618	1321 1682 815
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirye	丁丑	reign	夏（竇建德）	617–618	962
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryf	天興	reign	定楊（劉武周）	617–620	1683 1840 963
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryg	太平	reign	楚（林士弘）	617–622	1847 630 964
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryh	安樂	reign	涼（李軌）	617–619	1684 965
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryi	永平	reign	魏（李密）	617–618	966
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryj	永隆	reign	梁（梁師都）	617–628	631 967
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryk	秦興	reign	秦（薛舉）	617–618	1685 968
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryl	義寧	reign	隋	617–618	1322 1686
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirym	鳴鳳	reign	梁（蕭銑）	617–621	1687 969
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryn	五鳳	reign	夏（竇建德）	618–621	1688 970
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryo	天壽	reign	許（宇文化及）	618–619	1825 971
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryp	始興	reign	燕（高開道）	618–624	1689 1851 972
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryq	延康	reign	梁（沈法興）	618–620	1858 632 973
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryr	昌達	reign	楚（朱粲）	618–621	633 974
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirys	武德	reign	唐	618–626	1323 816
+账内无行（未入裁决账）	hixi1ubniryt	皇泰	reign	隋	618–619	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryu	明政	reign	吳（李子通）	619–621	975
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryv	開明	reign	鄭（王世充）	619–621	1690 1919 976
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryw	天造	reign	漢（劉黑闥）	622–623	977
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryx	天明	reign	宋（輔公祏）	623–624	1833 978
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryy	貞觀	reign	唐	627–649	1324 817
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubniryz	永徽	reign	唐	650–655	1325 818
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirz0	顯慶	reign	唐	656–661	1326 1691
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirz1	龍朔	reign	唐	661–663	1327 1692 819
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirz2	麟德	reign	唐	664–665	1328 820
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirz3	乾封	reign	唐	666–668	1329
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirz4	總章	reign	唐	668–670	1330
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirz5	咸亨	reign	唐	670–674	1331
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirz6	上元	reign	唐	674–676	1332
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirz7	儀鳳	reign	唐	676–679	1333
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirz8	調露	reign	唐	679–680	1334
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirz9	永隆	reign	唐	680–681	1335
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnirza	開耀	reign	唐	681–682	1336 1693
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0hs	永淳	reign	唐	682–683	1337
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0ht	弘道	reign	唐	683–683	1338 1869 821
+账内有书证但未补（待 D-有账待补）	hixi1ubnu0hu	光宅	reign	唐	684–684	1339 1810 822 E-武周前期
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0hv	嗣聖	reign	唐	684–684	1340 1694 1816
+账内有书证但未补（待 D-有账待补）	hixi1ubnu0hw	文明	reign	唐	684–684	1341 1873 E-武周前期
+账内有书证但未补（待 D-有账待补）	hixi1ubnu0hx	永昌	reign	唐	689–689	1342 1891 E-武周前期
+账内有书证但未补（待 D-有账待补）	hixi1ubnu0hy	載初	reign	唐	689–690	1343 1695 823 E-武周前期
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0hz	天授	reign	武周	690–692	1344 1832
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0i0	如意	reign	武周	692–692	1345
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0i1	長壽	reign	武周	692–694	1346 1696
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0i2	延載	reign	武周	694–694	1347
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0i3	天冊萬歲	reign	武周	695–696	1348
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0i4	證聖	reign	武周	695–695	1349 824
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0i5	萬歲登封	reign	武周	696–696	1350
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0i6	萬歲通天	reign	武周	696–697	1351
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0i7	神功	reign	武周	697–697	1352
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0i8	聖曆	reign	武周	698–700	1353 825
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0i9	久視	reign	武周	700–701	1354
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0ia	大足	reign	武周	701–701	1355
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0ib	長安	reign	武周	701–705	1356 1697 826
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0ic	神龍	reign	唐	705–707	1357 1906
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0id	景龍	reign	唐	707–710	1358 1698 1877
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0ie	唐隆	reign	唐	710–710	1359 1814
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0if	景雲	reign	唐	710–712	1360 1876
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0ig	先天	reign	唐	712–713	1361
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0ih	太極	reign	唐	712–712	1362 1699 1850
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0ii	延和	reign	唐	712–712	1363 1857
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0ij	開元	reign	唐	713–741	1364 1700 827
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0ik	天寶	reign	唐	742–756	1365 1701
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0il	聖武	reign	大燕（安祿山）	756–757	1702 979
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0im	至德	reign	唐	756–758	1366
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0in	載初	reign	大燕（安祿山）	757–759	13
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0io	乾元	reign	唐	758–760	1367
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubnu0ip	應天	reign	大燕（安祿山）	758–759	1703 634 980
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591c	順天	reign	大燕（安祿山）	759–761	1704 1924 981
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591d	上元	reign	唐	760–761	1368
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591e	顯聖	reign	大燕（安祿山）	761–762	1705 828 982
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591f	寶應	reign	唐	762–762	1369 1706 829
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591g	廣德	reign	唐	763–764	1370 1707 1855 830
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591h	永泰	reign	唐	765–766	1371
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591i	大曆	reign	唐	766–779	1372 1822 831
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591j	建中	reign	唐	780–783	1373 832
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591k	應天	reign	秦（朱泚）	783–784	1708 635 983
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591l	天贊	reign	漢（朱泚）	784–784	14 1842
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591m	武成	reign	楚（李希烈）	784–786	984
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591n	興元	reign	唐	784–784	1374 833
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591o	貞元	reign	唐	785–805	1375 1709
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591p	永貞	reign	唐	805–805	1376 1710 834
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591q	元和	reign	唐	806–820	1377 835
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591r	長慶	reign	唐	821–824	1378 836
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591s	寶曆	reign	唐	825–827	1379
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591t	大和	reign	唐	827–835	1380 1711 837
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591u	開成	reign	唐	836–840	1381 838
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591v	會昌	reign	唐	841–846	1382 1712 839
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591w	大中	reign	唐	847–860	1383
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591x	咸通	reign	唐	860–874	1384
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591y	乾符	reign	唐	874–879	1385 840
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo591z	王霸	reign	大齊（黃巢）	878–880	985
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo5920	廣明	reign	唐	880–881	1386 1713
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo5921	金統	reign	大齊（黃巢）	880–884	1714 986
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo5922	中和	reign	唐	881–885	1387
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo5923	光啟	reign	唐	885–888	1388
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo5924	文德	reign	唐	888–888	1389 841
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo5925	龍紀	reign	唐	889–889	1390 1931 842
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo5926	大順	reign	唐	890–891	1391 1715 843
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo5927	景福	reign	唐	892–893	1392 844
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo5928	乾寧	reign	唐	894–898	1393
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo5929	光化	reign	唐	898–901	1394
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubo592a	天復	reign	唐	901–904	1395 1828
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghkw	天祐	reign	唐	904–907	1396 1836
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghkx	開平	reign	後梁	907–911	1397 1918
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghky	天寶	reign	吳越	908–912	1716
+账内无行（未入裁决账）	hixi1uboghkz	武成	reign	前蜀	908–910	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghl0	乾化	reign	後梁	911–915	1398 1798 619
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghl1	應天	reign	大燕（劉守光）	911–913	1717 987
+账内无行（未入裁决账）	hixi1uboghl2	永平	reign	前蜀	911–915	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghl3	鳳曆	reign	後梁	913–913	1399 1927
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghl4	貞明	reign	後梁	915–921	1400 1718 1914
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghl5	神冊	reign	遼	916–922	1401 1719
+账内无行（未入裁决账）	hixi1uboghl6	通正	reign	前蜀	916–916	—
+账内无行（未入裁决账）	hixi1uboghl7	乾亨	reign	南漢	917–925	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghl8	天漢	reign	前蜀	917–917	1720
+账内无行（未入裁决账）	hixi1uboghl9	光天	reign	前蜀	918–918	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghla	乾德	reign	前蜀	919–924	1800
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghlb	武義	reign	楊吳	919–920	1721 845
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghlc	順義	reign	楊吳	921–927	1722
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghld	龍德	reign	後梁	921–923	1402 1723 1930
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghle	天贊	reign	遼	922–926	1403 1724 1842 846
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghlf	同光	reign	後唐	923–926	1404 1812
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghlg	寶大	reign	吳越	924–925	1725
+账内无行（未入裁决账）	hixi1uboghlh	咸康	reign	前蜀	925–925	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghli	白龍	reign	南漢	925–928	1726
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghlj	天成	reign	後唐	926–930	1405 1831
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghlk	天顯	reign	遼	926–938	1406 1727
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghll	寶正	reign	吳越	926–931	1728
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghlm	乾貞	reign	楊吳	927–929	1803
+账内无行（未入裁决账）	hixi1uboghln	大有	reign	南漢	928–942	—
+账内无行（未入裁决账）	hixi1uboghlo	大和	reign	楊吳	929–935	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghlp	長興	reign	後唐	930–933	1407 1729 1916 847
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghlq	龍啟	reign	閩	933–935	1408 1730 636
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghlr	應順	reign	後唐	934–934	1409 1731 1870
+账内无行（未入裁决账）	hixi1uboghls	明德	reign	後蜀	934–937	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghlt	清泰	reign	後唐	934–936	1410 1901 848
+账内无行（未入裁决账）	hixi1uboghlu	天祚	reign	楊吳	935–937	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghlv	永和	reign	閩	935–935	1411 1886 849
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uboghlw	天福	reign	後晉	936–944	1412 1837
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4g	通文	reign	閩	936–939	1413
+账内无行（未入裁决账）	hixi1uborq4h	昇元	reign	南唐	937–943	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4i	廣政	reign	後蜀	938–965	1732
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4j	會同	reign	遼	938–947	1414 1878
+账内无行（未入裁决账）	hixi1uborq4k	永隆	reign	閩	939–944	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4l	光天	reign	南漢	942–942	850
+账内无行（未入裁决账）	hixi1uborq4m	乾和	reign	南漢	943–958	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4n	保大	reign	南唐	943–957	1804
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4o	天德	reign	閩	943–945	1829
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4p	應乾	reign	南漢	943–943	1588
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4q	開運	reign	後晉	944–947	1415 1733 1920 851
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4r	大同	reign	遼	947–947	1416 1818
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4s	天祿	reign	遼	947–951	1417
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4t	天福	reign	後漢	947–948	1418 1837 852
+账内有书证但未补（待 D-有账待补）	hixi1uborq4u	乾祐	reign	後漢	948–950	1419 1802 853 E-乾祐
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4v	乾祐	reign	北漢	951–957	1802 637
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4w	廣順	reign	後周	951–954	1420 1734 1856 854
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4x	應曆	reign	遼	951–969	1421
+账内有书证但未补（待 D-有账待补）	hixi1uborq4y	顯德	reign	後周	954–960	1422 1735 1925 E-顯德
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq4z	天會	reign	北漢	957–973	1423 1736
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq50	中興	reign	南唐	958–958	1737 1797
+账内无行（未入裁决账）	hixi1uborq51	交泰	reign	南唐	958–958	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq52	大寶	reign	南漢	958–971	1820
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq53	建隆	reign	北宋	960–963	1424 1868
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq54	乾德	reign	北宋	963–968	1425 1800
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq55	開寶	reign	北宋	968–976	1426 1738 1917 855
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq56	保寧	reign	遼	969–979	1427
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq57	廣運	reign	北漢	974–979	1739
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq58	太平興國	reign	北宋	976–984	1428 1740 1848 856
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq59	乾亨	reign	遼	979–983	1429
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq5a	統和	reign	遼	983–1012	1430 1741
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq5b	雍熙	reign	北宋	984–987	1431 857
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq5c	端拱	reign	北宋	988–989	1432 858
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq5d	淳化	reign	北宋	990–994	1433 859
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq5e	至道	reign	北宋	995–997	1434 860
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq5f	咸平	reign	北宋	998–1003	1435 861
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq5g	景德	reign	北宋	1004–1007	1436 862
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq5h	大中祥符	reign	北宋	1008–1016	1437 863
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq5i	開泰	reign	遼	1012–1021	1438
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq5j	天禧	reign	北宋	1017–1021	1439 1838 864
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq5k	太平	reign	遼	1021–1031	1440 1847
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1uborq5l	乾興	reign	北宋	1022–1022	1441 1589 865
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yo0	天聖	reign	北宋	1023–1032	1442 1742
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yo1	景福	reign	遼	1031–1032	1443
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yo2	明道	reign	北宋	1032–1033	1444 866
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yo3	重熙	reign	遼	1032–1055	1445
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yo5	廣運	reign	西夏	1034–1036	1447 1744
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yo6	景祐	reign	北宋	1034–1038	1448
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yo7	開運	reign	西夏	1034–1034	1449 1745 1920
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yo8	大慶	reign	西夏	1036–1038	1450 1746 1821
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yo9	天授禮法延祚	reign	西夏	1038–1048	1451 1747 868
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yoa	寶元	reign	北宋	1038–1040	1452 1748
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yob	康定	reign	北宋	1040–1041	1453
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yoc	慶曆	reign	北宋	1041–1048	1454 869
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yod	延嗣寧國	reign	西夏	1049–1049	1749
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yoe	皇祐	reign	北宋	1049–1054	1455
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yof	天祐垂聖	reign	西夏	1050–1052	1750
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yog	福聖承道	reign	西夏	1053–1056	1456 1751 870
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yoh	至和	reign	北宋	1054–1056	1457
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yoi	清寧	reign	遼	1055–1064	1458 1752 871
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yoj	嘉祐	reign	北宋	1056–1063	1459 872
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yok	奲都	reign	西夏	1057–1062	1460 873
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yol	拱化	reign	西夏	1063–1067	1461 874
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yom	治平	reign	北宋	1064–1067	1462 875
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yon	咸雍	reign	遼	1065–1074	1463 876
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yoo	乾道	reign	西夏	1068–1069	1464
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yop	熙寧	reign	北宋	1068–1077	1465 1753 877
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yoq	天賜禮盛國慶	reign	西夏	1069–1074	1466 1754 638
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yor	大安	reign	西夏	1075–1085	1467 639
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yos	大康	reign	遼	1075–1084	1468 878
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yot	元豐	reign	北宋	1078–1085	1469 1755 879
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2you	大安	reign	遼	1085–1094	1470 880
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yov	元祐	reign	北宋	1086–1094	1471
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yow	天安禮定	reign	西夏	1086–1086	1472 1756 640
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yox	天儀治平	reign	西夏	1087–1090	1473 641
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yoy	天祐民安	reign	西夏	1094–1097	642
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yoz	紹聖	reign	北宋	1094–1098	1474
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yp0	壽昌	reign	遼	1095–1101	1475 1757
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yp1	元符	reign	北宋	1098–1100	1476 881
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubp2yp2	永安	reign	西夏	1098–1100	1477 1888 882
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77k	乾統	reign	遼	1101–1110	1478 1590 883
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77l	建中靖國	reign	北宋	1101–1101	1479 1758 884
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77m	貞觀	reign	西夏	1101–1113	1480 885
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77n	崇寧	reign	北宋	1102–1106	1481 1759 886
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77o	大觀	reign	北宋	1107–1110	1482 1760 887
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77p	天慶	reign	遼	1111–1120	1483 1761 1830 888
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77q	政和	reign	北宋	1111–1118	1484
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77r	雍寧	reign	西夏	1114–1118	1485 889
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77s	收國	reign	金	1115–1116	1486 890
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77t	天輔	reign	金	1117–1123	1487 1762
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77u	重和	reign	北宋	1118–1119	1488
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77v	元德	reign	西夏	1119–1126	1489 891
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77w	宣和	reign	北宋	1119–1125	1490 892
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77x	保大	reign	遼	1121–1125	1491 1804
+账内无行（未入裁决账）	hixi1ubpe77y	建福	reign	北遼	1122–1122	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe77z	天會	reign	金	1123–1137	1492 1763 893
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe780	靖康	reign	北宋	1126–1127	1493
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe781	建炎	reign	南宋	1127–1130	1494 894
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe782	正德	reign	西夏	1127–1134	1495 1881 895
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe783	阜昌	reign	偽齊	1130–1137	988
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe784	紹興	reign	南宋	1131–1162	1496 1908 896
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe785	延慶	reign	西遼	1132–1134	643
+账内有书证但未补（待 D-有账待补）	hixi1ubpe786	康國	reign	西遼	1134–1144	644
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe787	大德	reign	西夏	1135–1139	1497 897
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe788	天眷	reign	金	1138–1140	1498 898
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe789	大慶	reign	西夏	1140–1143	1499 1764 1821 899
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78a	皇統	reign	金	1141–1149	1500 900
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78b	人慶	reign	西夏	1144–1148	1501 901
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78c	咸清	reign	西遼	1144–1150	1502
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78d	天德	reign	金	1149–1153	1503 1829 902
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78e	天盛	reign	西夏	1149–1169	1504 903
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78f	紹興	reign	西遼	1151–1164	15 1908
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78g	貞元	reign	金	1153–1156	1505
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78h	正隆	reign	金	1156–1161	1506
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78i	大定	reign	金	1161–1189	1507 1819 904
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78j	隆興	reign	南宋	1163–1164	1508 1923 905
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78k	隆興	reign	西遼	1164–1178	16 1923
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78l	乾道	reign	南宋	1165–1173	1509 906
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78m	乾祐	reign	西夏	1170–1193	1802
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubpe78n	淳熙	reign	南宋	1174–1189	1510 907
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfr4	天禧	reign	西遼	1178–1211	17 1838
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfr5	明昌	reign	金	1190–1196	1511
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfr6	紹熙	reign	南宋	1190–1194	1512 1765 908
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfr7	天慶	reign	西夏	1194–1205	1513 1830 909
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfr8	慶元	reign	南宋	1195–1200	1514 910
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfr9	承安	reign	金	1196–1200	1515 911
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfra	嘉泰	reign	南宋	1201–1204	1516 912
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrb	泰和	reign	金	1201–1208	1517
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrc	開禧	reign	南宋	1205–1207	1518 1766 913
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrd	應天	reign	西夏	1206–1209	1519 914
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfre	嘉定	reign	南宋	1208–1224	1520 915
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrf	大安	reign	金	1209–1211	1521 916
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrg	皇建	reign	西夏	1210–1211	1522
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrh	光定	reign	西夏	1211–1223	1523
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfri	崇慶	reign	金	1212–1213	1524
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrj	至寧	reign	金	1213–1213	1525
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrk	貞祐	reign	金	1213–1217	1526 1767
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrl	興定	reign	金	1217–1222	1527 1911
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrm	元光	reign	金	1222–1223	1528 1805 917
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrn	乾定	reign	西夏	1223–1226	1529 1799
+账内有书证但未补（待 D-有账待补）	hixi1ubppfro	正大	reign	金	1224–1232	1530 645
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrp	寶慶	reign	南宋	1225–1227	1531 1768 1853 918
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrq	寶義	reign	西夏	1226–1227	1532
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrr	紹定	reign	南宋	1228–1233	1533 1769 919
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrs	天興	reign	金	1232–1234	1534 1770 1840
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrt	開興	reign	金	1232–1232	1535
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfru	端平	reign	南宋	1234–1236	1536 920
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrv	嘉熙	reign	南宋	1237–1240	1537 921
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrw	淳祐	reign	南宋	1241–1252	1538 922
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfrx	寶祐	reign	南宋	1253–1258	1539 1771 923
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfry	開慶	reign	南宋	1259–1259	1540 1772 924
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfs0	景定	reign	南宋	1260–1264	1541 1875 925
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubppfs2	咸淳	reign	南宋	1265–1274	1543 926
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0oao	德祐	reign	南宋	1275–1276	1544
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0oap	景炎	reign	南宋	1276–1278	1545
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0oaq	祥興	reign	南宋	1278–1279	1546 1773 1907
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0oar	元貞	reign	元	1295–1297	1547 1774
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0oas	大德	reign	元	1297–1307	1548 927
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0oat	至大	reign	元	1308–1311	1549 928
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0oau	皇慶	reign	元	1312–1313	1550 1775 929
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0oav	延祐	reign	元	1314–1320	1551 930
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0oaw	至治	reign	元	1321–1323	1552 931
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0oax	泰定	reign	元	1324–1328	1553 1899
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0oay	天曆	reign	元	1328–1330	1554 1834
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0oaz	天順	reign	元	1328–1328	1555 1776 1844
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0ob0	致和	reign	元	1328–1328	1556
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0ob1	至順	reign	元	1330–1333	1557 1777 1910 932
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0ob2	元統	reign	元	1333–1335	1558 1778
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0ob3	至元	reign	元	1335–1340	1559 933
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0ob4	至正	reign	元	1341–1370	1560
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0ob5	治平	reign	天完	1351–1356	647 989
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0ob6	天祐	reign	大周	1354–1357	18 1836
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0ob7	龍鳳	reign	韓宋	1355–1366	1779 1934 990
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0ob8	太平	reign	天完	1356–1360	1847 648 991
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0ob9	大義	reign	大漢	1360–1361	1780 649 992
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0oba	德壽	reign	大漢	1361–1363	1781 650 993
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obb	天統	reign	明夏	1362–1366	1782 1839 651 994
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obc	開熙	reign	明夏	1367–1371	1783 995
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obd	洪武	reign	明	1368–1398	1561 1900 934
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obe	宣光	reign	北元	1371–1378	1852
+账内无行（未入裁决账）	hixi1ubq0obf	天元	reign	北元	1379–1388	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obg	建文	reign	明	1399–1402	1562
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obh	永樂	reign	明	1403–1424	1563 1784 1893 935
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obi	洪熙	reign	明	1425–1425	1564 936
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obj	宣德	reign	明	1426–1435	1565 937
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obk	正統	reign	明	1436–1449	1566 1785
+账内无行（未入裁决账）	hixi1ubq0obl	景泰	reign	明	1450–1457	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obm	天順	reign	明	1457–1464	1567 1786 1844 938
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obn	成化	reign	明	1465–1487	1568 939
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obo	弘治	reign	明	1488–1505	1569 940
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obp	正德	reign	明	1506–1521	1570 1881 941
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubq0obq	嘉靖	reign	明	1522–1566	1571 942
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwu8	隆慶	reign	明	1567–1572	1572 1787 943
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwu9	萬曆	reign	明	1573–1620	1573
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwua	天命	reign	後金	1616–1626	944 996
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwub	泰昌	reign	明	1620–1620	1574 945
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwuc	天啟	reign	明	1621–1627	1575 1788 1824 946
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwud	天聰	reign	後金	1627–1636	1789 997
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwue	崇禎	reign	明	1628–1644	1576 1790 1854
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwuf	崇德	reign	清	1636–1643	1577 947
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwug	大順	reign	大西	1644–1647	1791 652 998
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwuh	永昌	reign	大順	1644–1645	1891 999
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwui	順治	reign	清	1644–1661	1578 1792 948
+账内无行（未入裁决账）	hixi1ubqbwuj	弘光	reign	南明	1645–1645	—
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwuk	隆武	reign	南明	1645–1646	1922
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwul	紹武	reign	南明	1646–1646	19
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwum	永曆	reign	南明	1647–1662	1892 653
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwun	康熙	reign	清	1662–1722	1579 949
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwuo	昭武	reign	吳周	1678–1678	1000
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwup	洪化	reign	吳周	1679–1681	1001
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwuq	雍正	reign	清	1723–1735	1580 950
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwur	乾隆	reign	清	1736–1795	1581 951
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwus	嘉慶	reign	清	1796–1820	1582 1793 952
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwut	道光	reign	清	1821–1850	1583 953
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwuu	咸豐	reign	清	1851–1861	1584 1794 954
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwuv	太平天國	reign	太平天國	1851–1864	20
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwuw	同治	reign	清	1862–1874	1585 955
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwux	光緒	reign	清	1875–1908	1586 1795 956
+账内有行，仅 zhwp/DILA 等源，无书证	hixi1ubqbwuy	宣統	reign	清	1909–1911	1587 957

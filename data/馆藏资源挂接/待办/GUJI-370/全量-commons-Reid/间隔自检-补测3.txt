@@ -1,0 +1,1 @@
+commons.wikimedia.org	请求4次	最小间隔=30.448s	PASS

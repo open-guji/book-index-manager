@@ -1,0 +1,12 @@
+# API 模板 https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/<pid>；真 200 JSON，假（pid 全换 9）404 113B。
+pair_id	kind	url	how_fake	http_code	final_url	body_bytes	title	markers	fetched_at
+ndl-01	real	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/2574032		200	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/2574032	153207	全唐詩12函900卷目録12卷	"item"	2026-10-15 01:47:36
+ndl-01	fake	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/9999999	pid 全换为同长 9	404	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/9999999	113	-	404	2026-10-15 01:47:39
+ndl-02	real	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/14487923		200	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/14487923	86468	新刻釋名8卷	"item"	2026-10-15 01:47:39
+ndl-02	fake	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/99999999	pid 全换为同长 9	404	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/99999999	113	-	404	2026-10-15 01:47:41
+ndl-03	real	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/2607831		200	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/2607831	1649	李太白文集36卷	"item"	2026-10-15 01:47:41
+ndl-03	fake	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/9999999	pid 全换为同长 9	404	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/9999999	113	-	404	2026-10-15 01:47:43
+ndl-04	real	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/2534309		200	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/2534309	139797	増註唐賢絶句三體詩法3卷首1卷	"item"	2026-10-15 01:47:43
+ndl-04	fake	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/9999999	pid 全换为同长 9	404	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/9999999	113	-	404	2026-10-15 01:47:46
+ndl-05	real	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/2601422		200	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/2601422	42639	吾學編69卷	"item"	2026-10-15 01:47:46
+ndl-05	fake	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/9999999	pid 全换为同长 9	404	https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/9999999	113	-	404	2026-10-15 01:47:48

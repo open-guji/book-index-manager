@@ -1,0 +1,28 @@
+索引檔缺記錄檔        0
+works 索引漂移        0
+entities 索引漂移     0
+work 側懸空引用       0
+被併旧 id 無墓碑（merged_in[] 之 id 須有 merged_into 指回本 Work 之墓碑檔） 1
+  無墓碑 ('d59f2hqmxn2a', 'd59f2pwthj42')
+相對基線消失之 id（被併須留墓碑檔，不得直接刪） 0 （基線 origin/main：170879 個 Work／Entity id，現有 170879，新增 0）
+墓碑目標不存在或亦為墓碑 0
+墓碑檔不在 index/works 0
+分類類檔不合（classify check） 0
+舊格式殘留（check_v2；--strict 計入 FAIL） 0
+專名子類型不合（dynasty／reign／office／place；ERROR 計入 FAIL） 0  條目數 {'place': 950, 'office': 307, 'reign': 735, 'dynasty': 139}
+專名子類型 WARN（僅報，不入 FAIL） 75
+provenance 形狀不合    0
+edition_type 不在詞表  0
+physical_description 形狀不合 0
+base_edition 形狀不合  0
+entity.dates 不合法 0
+entity.external_ids 不合法 0
+count 形狀不對          0
+todo 形狀不合           0
+review 形狀不合         0
+related_works[].title 漂移（僅報，不入 FAIL） 0
+provenance[].institution 簡體字（僅報，不入 FAIL） 18
+dynasty 與生卒世纪不合（僅報，不入 FAIL） 185
+裁決賬（只增不減）  7328
+FAIL
+exit 1

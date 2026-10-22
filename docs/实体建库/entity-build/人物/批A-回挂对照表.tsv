@@ -1,0 +1,528 @@
+作者名	Work id	Book id	entity_id	置信	依据	同名消歧结论	Entity合入commit	authors_index
+朱爲弼	1exn7ac9kd3i8		hixhd2h9bqzw	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+秦翰才	1exmuvdm6n3m0		hixi5eks7m6o	低	新建，無CBDB；4部	朝代一致	243b6231	0
+袁黃	1exk3equ8239h		hixhd2h9bofd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+釋真諦	1exmuycmjx3pk		hixi5eks7m6p	低	新建，無CBDB；4部	朝代一致	243b6231	1
+陳謐	1exmuvdm6n3ly		hixi5eks7m6q	低	新建，無CBDB；4部	朝代一致	243b6231	0
+勞乃宣	1exmus99mm3gt		hixi5eks7m6d	中	CBDB 61773；6部	朝代一致	243b6231	0
+勞乃宣	1exmv618qi3gk		hixi5eks7m6d	中	CBDB 61773；6部	朝代一致	243b6231	0
+勞乃宣	1exmv618qi3gg		hixi5eks7m6d	中	CBDB 61773；6部	朝代一致	243b6231	0
+甘鵬雲	1exmsmvg3y3uo		hixi5eks7m7c	中	CBDB 72843；3部	朝代一致	243b6231	0
+劉承幹	1exn5hihk03r4		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+釋金剛智	1exmuycmqh34a		hixi5eks7m7d	低	新建，無CBDB；3部	朝代一致	243b6231	0
+鮑東里	1exmuk1qxrbb9		hixi5eks7m7e	低	新建，無CBDB；3部	朝代一致	243b6231	0
+陳階平	1exmug49wjbb6		hixi5eks7m6j	中	CBDB 64583；5部	朝代一致	243b6231	0
+牛鑑	1exn5wv3xvbwg		hixi5eks7m7f	中	CBDB 58671；3部	朝代一致	243b6231	0
+邵章	1exn5hihf0b2c		hixi5eks7m7g	低	新建，無CBDB；3部	朝代一致	243b6231	0
+張元濟	1exmsmvfyyb64		hixi5eks7m6r	中	CBDB 124538；4部	朝代一致	243b6231	0
+陳階平	1exk7g1t3hbt2		hixi5eks7m6j	中	CBDB 64583；5部	朝代一致	243b6231	0
+鄭學川	1exmvgxr06bk3		hixi5eks7m7h	低	新建，無CBDB；3部	朝代一致	243b6231	0
+袁黃	1exn559s2fbpc		hixhd2h9bofd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+林茂春	1exn7ac9r8bgh		hixi5eks7m7i	低	新建，無CBDB；3部	朝代一致	243b6231	0
+張森楷	1exn4xfeclb7o		hixi5eks7m7j	中	CBDB 80905；3部	朝代一致	243b6231	0
+張伯楨	1exmsmvfsebr8		hixi5eks7m6t	低	新建，無CBDB；4部	朝代一致	243b6231	0
+張伯楨	1exmsmvfsebr6		hixi5eks7m6t	低	新建，無CBDB；4部	朝代一致	243b6231	0
+邵懿辰	1exmsmvfsebrc		hixhd2f8wajg	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+張伯楨	1exmsmvfsebra		hixi5eks7m6t	低	新建，無CBDB；4部	朝代一致	243b6231	0
+吳廷燮	1exmurradfb48		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+吳廷燮	1exmurradfb46		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+邵章	1exn6vsn1xq8c		hixi5eks7m7g	低	新建，無CBDB；3部	朝代一致	243b6231	0
+釋金剛智	1exmuycmsnqx0		hixi5eks7m7d	低	新建，無CBDB；3部	朝代一致	243b6231	0
+李澄宇	1exn7ac9h8q2r		hixi5eks7m7l	中	CBDB 78009；3部	朝代一致	243b6231	0
+釋金剛智	1exmvgxqq6q68		hixi5eks7m7d	低	新建，無CBDB；3部	朝代一致	243b6231	0
+釋智周	1exmvgxr21qtj		hixi5eks7m7m	低	新建，無CBDB；3部	朝代一致	243b6231	0
+陳乃乾	1exmu2ta9lqtc		hixi5eks7m6u	低	新建，無CBDB；4部	朝代一致	243b6231	0
+釋如理	1exmvgxr21qtl		hixi5eks7m7n	低	新建，無CBDB；3部	朝代一致	243b6231	0
+劉世珩	1exn6vsndsqva		hixi5eks7m7o	中	CBDB 74966；3部	朝代一致	243b6231	0
+鄧百拙	1exmv9682uqrq		hixi5eks7m7p	低	新建，無CBDB；3部	朝代一致	243b6231	0
+黃大華	1exmurrafaqdi				暂不建（A003）	歧义，勿挂	—	0
+周星詒	1exn5oak5iqdj		hixi5eks7m7q	中	CBDB 83495；3部	朝代一致	243b6231	0
+董康	1exn5oak5iqdc		hixi5eks7m7r	中	CBDB 89417；3部	朝代一致	243b6231	0
+周星詒	1exn5oak5iqdl		hixi5eks7m7q	中	CBDB 83495；3部	朝代一致	243b6231	0
+吳廷燮	1exmurrafaqdr		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+陳玖	1exmui90e48wb		hixi5eks7m7s	低	新建，無CBDB；3部	朝代一致	243b6231	0
+勒保	1exn5wv4c88w2		hixi5eks7m7t	中	CBDB 59382；3部	朝代一致	243b6231	0
+陳玖	1exmui90e48w6		hixi5eks7m7s	低	新建，無CBDB；3部	朝代一致	243b6231	0
+陳玖	1exmui90e48wd		hixi5eks7m7s	低	新建，無CBDB；3部	朝代一致	243b6231	0
+王家璧	1exn559s4x822		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+李盛鐸	1exn636b5g8hs		hixi5eks7m6a	中	CBDB 64512；9部	朝代一致	243b6231	0
+宣哲	1exn5hihmt8n9		hixi5eks7m6v	低	新建，無CBDB；4部	朝代一致	243b6231	0
+張森楷	1exn5cxfwl8na		hixi5eks7m7j	中	CBDB 80905；3部	朝代一致	243b6231	0
+釋法賢	1exmuycmmq8lk		hixi5eks7m7v	低	新建，無CBDB；3部	朝代一致	243b6231	0
+吳煒	1exk0ut83u8lc		hixi5eks7m85	低	新建，無CBDB；3部	朝代一致	243b6231	0
+朱爲弼	1exn7ac9n68eb		hixhd2h9bqzw	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+趙炳麟	1exn5wv3tt8um		hixi5eks7m7w	中	CBDB 84316；3部	朝代一致	243b6231	0
+勞乃宣	1exka4u2nv8r0		hixi5eks7m6d	中	CBDB 61773；6部	朝代一致	243b6231	0
+董康	1exn5oajzl81x		hixi5eks7m7r	中	CBDB 89417；3部	朝代一致	243b6231	0
+劉承幹	1exn5cxg3581s		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+蔣德鈞	1exk9vu3ll81s		hixi5eks7m75	中	CBDB 89724；4部	朝代一致	243b6231	0
+黃本騏	1exn559s4x81u		hixi5eks7m7x	中	CBDB 54695；3部	朝代一致	243b6231	0
+賀忠良	1exmui90qai31		hixi5eks7m6e	低	新建，無CBDB；6部	朝代一致	243b6231	0
+吳鶱	1exkafjqyji83		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+金文錦	1exmv9682ji8a		hixi5eks7m6w	低	新建，無CBDB；4部	朝代一致	243b6231	0
+雅爾圖	1exn6h02bhiiy		hixi5eks7m6x	中	CBDB 57562；4部	朝代一致	243b6231	0
+牛鑑	1exn6h02bhij0		hixi5eks7m7f	中	CBDB 58671；3部	朝代一致	243b6231	0
+王家璧	1exn5wv3zfimm		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+那彦成	1exn5wv3zfimc		hixhd2h9bcoh	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+釋如理	1exmvgxr1qi9v		hixi5eks7m7n	低	新建，無CBDB；3部	朝代一致	243b6231	0
+范迪襄	1exn3mctuiih0		hixi5eks7m7z	中	CBDB 82474；3部	朝代一致	243b6231	0
+釋如理	1exmvgxr1qia3		hixi5eks7m7n	低	新建，無CBDB；3部	朝代一致	243b6231	0
+陳漢章	1exjtw3yax539		hixi5eks7m8v	中	CBDB 81671；3部	朝代一致	243b6231	0
+傅增湘	1exn5oak7e5mq		hixi5eks7m6b	中	CBDB 65564；7部	朝代一致	243b6231	0
+吳廷燮	1exmurrah65mq		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+吳廷燮	1exmurrah65mv		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+傅增湘	1exn5oak7e5ms		hixi5eks7m6b	中	CBDB 65564；7部	朝代一致	243b6231	0
+傅增湘	1exn5oak7e5mu		hixi5eks7m6b	中	CBDB 65564；7部	朝代一致	243b6231	0
+崔應榴	1exk0uacea5ts		hixi5eks7m8a	中	CBDB 88834；3部	朝代一致	243b6231	0
+文悌	1exn3mcu395oj		hixi5eks7m80	中	CBDB 62101；3部	朝代一致	243b6231	0
+潘曾綬	1exn3mcu395oh		hixi5eks7m6k	中	CBDB 91568；5部	朝代一致	243b6231	0
+釋菩提流志	1exmvgxqs25fq		hixi5eks7m81	低	新建，無CBDB；3部	朝代一致	243b6231	0
+喻杰	1exmuedtyq5fk		hixhd2h9bppo	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	1
+李汝嶠	1exn3d2t0i5fu		hixi5eks7m82	中	CBDB 77508；3部	朝代一致	243b6231	0
+陳壽彭	1exmu7h8zb5la		hixi5eks7m83	中	CBDB 54426；3部	朝代一致	243b6231	0
+陸翔	1exmurranewi2		hixi5eks7m6y	低	新建，無CBDB；4部	朝代一致	243b6231	0
+吳廷燮	1exmurranewi6		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+陸翔	1exmurranewi0		hixi5eks7m6y	低	新建，無CBDB；4部	朝代一致	243b6231	0
+陸翔	1exmurranewi4		hixi5eks7m6y	低	新建，無CBDB；4部	朝代一致	243b6231	0
+馬承昭	1exn3d2t06wwa		hixi5eks7m84	低	新建，無CBDB；3部	朝代一致	243b6231	0
+秦翰才	1exn4xfe45wjq		hixi5eks7m6o	低	新建，無CBDB；4部	朝代一致	243b6231	0
+吳煒	1exn6h0281wjw		hixi5eks7m85	低	新建，無CBDB；3部	朝代一致	243b6231	0
+吳廷燮	1exjtw3v83w95		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+陳階平	1exmug49unw28		hixi5eks7m6j	中	CBDB 64583；5部	朝代一致	243b6231	0
+李秉衡	1exmsmvfqiwhw		hixi5eks7m6z	中	CBDB 58901；4部	朝代一致	243b6231	0
+陸翔	1exmurranewhy		hixi5eks7m6y	低	新建，無CBDB；4部	朝代一致	243b6231	0
+王家璧	1exk3ecgvrwn6		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+李繼沆	1exn6vsna1wci		hixi5eks7m86	中	CBDB 77805；3部	朝代一致	243b6231	0
+趙炳麟	1exjosnh30w78		hixi5eks7m7w	中	CBDB 84316；3部	朝代不一致(Work:中華民國/Entity:清)，Elias 勿自动挂	243b6231	0
+趙炳麟	1exjosnh30w7g		hixi5eks7m7w	中	CBDB 84316；3部	朝代不一致(Work:中華民國/Entity:清)，Elias 勿自动挂	243b6231	0
+潘曾綬	1exmvp1ltkw08		hixi5eks7m6k	中	CBDB 91568；5部	朝代一致	243b6231	0
+周亮輔	1exmui90muw41		hixi5eks7m87	低	新建，無CBDB；3部	朝代一致	243b6231	0
+傅增湘	1exn5oak72x3c		hixi5eks7m6b	中	CBDB 65564；7部	朝代一致	243b6231	0
+陳謐	1exn3mctkix3c		hixi5eks7m6q	低	新建，無CBDB；4部	朝代一致	243b6231	0
+趙宗建	1exn3mctwdxq8		hixi5eks7m88	中	CBDB 84286；3部	朝代一致	243b6231	0
+郭傳璞	1exk0uai73x8i		hixi5eks7m8p	低	新建，無CBDB；3部	朝代一致	243b6231	0
+趙宗建	1exk0ts8tbx8r		hixi5eks7m88	中	CBDB 84286；3部	朝代一致	243b6231	0
+潘曾綬	1exn3mcu2xx50		hixi5eks7m6k	中	CBDB 91568；5部	朝代一致	243b6231	0
+吳鶱	1exk3f3vm5xxe		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+釋弘贊	1exmvgxr3lxj6		hixi5eks7m6f	低	新建，無CBDB；6部	朝代一致	243b6231	0
+黃贊湯	1exn6obw99xj4		hixi5eks7m89	中	CBDB 58567；3部	朝代一致	243b6231	0
+葉瀚	1exk0u0ymvxmo		hixi5eks7m78	中	CBDB 73085；4部	朝代一致	243b6231	0
+崔應榴	1exn4xfeg0x6v		hixi5eks7m8a	中	CBDB 88834；3部	朝代一致	243b6231	0
+劉承幹	1exn5oak0ixoq		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+賀忠良	1exmug49texvn		hixi5eks7m6e	低	新建，無CBDB；6部	朝代一致	243b6231	0
+傅在田	1exmug49texvy		hixi5eks7m8b	低	新建，無CBDB；3部	朝代一致	243b6231	0
+葛道殷	1exmug49texvu		hixi5eks7m8c	低	新建，無CBDB；3部	朝代一致	243b6231	1
+勞乃宣	1exmus99ehxc3		hixi5eks7m6d	中	CBDB 61773；6部	朝代一致	243b6231	0
+勞乃宣	1exmus99ehxc5		hixi5eks7m6d	中	CBDB 61773；6部	朝代一致	243b6231	0
+勞乃宣	1exmus99ehxc7		hixi5eks7m6d	中	CBDB 61773；6部	朝代一致	243b6231	0
+朱履中	1exk3ecmbsxsd		hixi5eks7m8z	中	CBDB 74330；3部	朝代一致	243b6231	0
+潘曾綬	1exn3mcu2xx4w		hixi5eks7m6k	中	CBDB 91568；5部	朝代一致	243b6231	0
+潘曾綬	1exn3mcu2xx4y		hixi5eks7m6k	中	CBDB 91568；5部	朝代一致	243b6231	0
+崔應榴	1exmu7h8yzx1t		hixi5eks7m8a	中	CBDB 88834；3部	朝代一致	243b6231	0
+饒敦秩	1exmu7h8yzx1p		hixi5eks7m8d	低	新建，無CBDB；3部	朝代一致	243b6231	0
+袁黃	1exn559rtzx1n		hixhd2h9bofd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	1
+勞乃宣	1exn5wv4baj9j		hixi5eks7m6d	中	CBDB 61773；6部	朝代不一致(Work:清/Entity:中華民國)，Elias 勿自动挂	243b6231	0
+吳廷燮	1exmurrakaj2k		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+雷崶	1exmvp1lvrjt6		hixi5eks7m70	中	CBDB 90710；4部	朝代一致	243b6231	0
+吳鶱	1exmvmsn7ojk4		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+秦錫田	1exmurradqjnv		hixi5eks7m8e	中	CBDB 85766；3部	朝代一致	243b6231	0
+秦錫田	1exmurradqjns		hixi5eks7m8e	中	CBDB 85766；3部	朝代一致	243b6231	0
+黃大華	1exmuk9eifjlv				暂不建（A003）	歧义，勿挂	—	0
+潘承弼	1exn5hihfbjls		hixi5eks7m71	低	新建，無CBDB；4部	朝代一致	243b6231	0
+金文錦	1exmv967pfjeo		hixi5eks7m6w	低	新建，無CBDB；4部	朝代一致	243b6231	0
+顧璜	1exk0e3ikfj0g		hixi5eks7m8l	低	新建，無CBDB；3部	朝代一致	243b6231	0
+張伯楨	1exk0tj9ugjr6		hixi5eks7m6t	低	新建，無CBDB；4部	朝代一致	243b6231	0
+吳鶱	1exjosngtcjd3		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+吳鶱	1exjosngtcjd5		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+吳鶱	1exjosngtcjd9		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+吳鶱	1exjosngtcjd7		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+黃大華	1exmurrahsmq4				暂不建（A003）	歧义，勿挂	—	0
+李秉衡	1exn6tfddwmir		hixi5eks7m6z	中	CBDB 58901；4部	朝代一致	243b6231	0
+王鑒	1exk0tj7wummh				暂不建（A036）	歧义，勿挂	—	0
+趙宗建	1exn5oaj76mmc		hixi5eks7m88	中	CBDB 84286；3部	朝代一致	243b6231	0
+張伯楨	1exk0tj8ltm2r		hixi5eks7m6t	低	新建，無CBDB；4部	朝代一致	243b6231	0
+劉承幹	1exn5hihjdmob		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+劉承幹	1exn5hihjdmo8		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+劉承幹	1exn5hihjdmo6		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+劉承幹	1exn5hihjdmo0		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+劉承幹	1exn5hihjdmo4		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+周星詒	1exk3fcxygmpx		hixi5eks7m7q	中	CBDB 83495；3部	朝代一致	243b6231	0
+章鈺	1exn5oak80mpx		hixi5eks7m6g	中	CBDB 88926；6部	朝代一致	243b6231	0
+袁黃	1exn559rj2m0w		hixhd2h9bofd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+王家璧	1exk0uafuim0y		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+吳廷燮	1exmurraocm4q		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+黃大華	1exmurraocm4t				暂不建（A003）	歧义，勿挂	—	0
+黃大華	1exmurraocm4g				暂不建（A003）	歧义，勿挂	—	0
+王家璧	1exk0uafuim10		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+釋法賢	1exmvgxqpk938		hixi5eks7m7v	低	新建，無CBDB；3部	朝代一致	243b6231	0
+釋智周	1exmvgxr1f9qg		hixi5eks7m7m	低	新建，無CBDB；3部	朝代一致	243b6231	0
+黃大華	1exmuk9ejd98g				暂不建（A003）	歧义，勿挂	—	0
+那彦成	1exn6h01sr9xg		hixhd2h9bcoh	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+周亮輔	1exmui90pz9ji		hixi5eks7m87	低	新建，無CBDB；3部	朝代一致	243b6231	0
+焦勗	1exmui90pz9jc		hixi5eks7m8f	低	新建，無CBDB；3部	朝代一致	243b6231	0
+郭傳璞	1exk0tjben9jc		hixi5eks7m8p	低	新建，無CBDB；3部	朝代一致	243b6231	0
+潘承弼	1exn5oajfx9tv		hixi5eks7m71	低	新建，無CBDB；4部	朝代一致	243b6231	1
+陳乃乾	1exn5hih9p9ts		hixi5eks7m6u	低	新建，無CBDB；4部	朝代一致	243b6231	0
+鄭學川	1exmuycms19ts		hixi5eks7m7h	低	新建，無CBDB；3部	朝代一致	243b6231	0
+釋施護	1exmuycms19tu		hixi5eks7m8g	中	CBDB 53411；3部	朝代一致	243b6231	0
+王仕雲	1exn5cxg1w9vq		hixi5eks7m72	中	CBDB 71487；4部	朝代一致	243b6231	0
+馬承昭	1exmuk1qz09hi		hixi5eks7m84	低	新建，無CBDB；3部	朝代一致	243b6231	0
+陳倬	1exmsmvg079c6		hixi5eks7m8h	低	新建，無CBDB；3部	朝代一致	243b6231	0
+陳倬	1exmsmvg079c4		hixi5eks7m8h	低	新建，無CBDB；3部	朝代一致	243b6231	0
+江志伊	1exn6vsnd69sc		hixi5eks7m6h	中	CBDB 75472；6部	朝代一致	243b6231	0
+鄧百拙	1exmvdwp6p2x8		hixi5eks7m7p	低	新建，無CBDB；3部	朝代一致	243b6231	0
+袁黃	1exmux87x42yt		hixhd2h9bofd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+王仕雲	1exmuk1qxg2ro		hixi5eks7m72	中	CBDB 71487；4部	朝代一致	243b6231	0
+王仕雲	1exmuk1qxg2rl		hixi5eks7m72	中	CBDB 71487；4部	朝代一致	243b6231	0
+吳昌壽	1exmvp1m1p24o		hixi5eks7m8i	中	CBDB 58876；3部	朝代一致	243b6231	0
+陳澹然	1exk1eri0o2ds		hixi5eks7m8q	中	CBDB 82242；3部	朝代一致	243b6231	0
+吳廷燮	1exk3ecg0k6bx		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+吳廷燮	1exk3ecg0k6bs		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+耆英	1exn6h01v969y		hixi5eks7m6i	中	CBDB 57761；6部	朝代一致	243b6231	0
+周懋祺	1exn3mctwp69u		hixi5eks7m8j	低	新建，無CBDB；3部	朝代一致	243b6231	0
+劉世珩	1exn5hihc766e		hixi5eks7m7o	中	CBDB 74966；3部	朝代一致	243b6231	0
+王家璧	1exk0u0yz26ti		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+王家璧	1exk0u0yz26tm		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+江志伊	1exmu7h94m6tk		hixi5eks7m6h	中	CBDB 75472；6部	朝代一致	243b6231	0
+王家璧	1exk0u0yz26tk		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+王家璧	1exk0u0yz26tc		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+王家璧	1exk0u0yz26tg		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+王家璧	1exk0u0yz26te		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+馬承昭	1exmuvdmap6o6		hixi5eks7m84	低	新建，無CBDB；3部	朝代一致	243b6231	0
+羅繼祖	1exn3mctq56v6		hixi5eks7m8k	低	新建，無CBDB；3部	朝代一致	243b6231	0
+黃大華	1exmurramh6v7				暂不建（A003）	歧义，勿挂	—	0
+吳廷燮	1exmurramh6vd		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+范迪襄	1exn5oajbv6rq		hixi5eks7m7z	中	CBDB 82474；3部	朝代一致	243b6231	0
+顧璜	1exn5hih5n6rm		hixi5eks7m8l	低	新建，無CBDB；3部	朝代一致	243b6231	0
+李盛鐸	1exn5oajbv6rm		hixi5eks7m6a	中	CBDB 64512；9部	朝代一致	243b6231	0
+李盛鐸	1exn5oajbv6rk		hixi5eks7m6a	中	CBDB 64512；9部	朝代一致	243b6231	0
+沈桂芬	1exn559rh76rp		hixi5eks7m8m	中	CBDB 59096；3部	朝代一致	243b6231	0
+王鑒	1exk0v7ss76ry				暂不建（A036）	歧义，勿挂	—	0
+雷崶	1exmvp1lsn6di		hixi5eks7m70	中	CBDB 90710；4部	朝代一致	243b6231	0
+雷崶	1exmvp1lsn6dm		hixi5eks7m70	中	CBDB 90710；4部	朝代一致	243b6231	0
+李澄宇	1exk0u10ov6dp		hixi5eks7m7l	中	CBDB 78009；3部	朝代一致	243b6231	0
+吳鶱	1exk3equuj6dc		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+徐樹蘭	1exmuedu0wt8p		hixi5eks7m73	中	CBDB 87010；4部	朝代一致	243b6231	0
+江志伊	1exmuedu0wt8g		hixi5eks7m6h	中	CBDB 75472；6部	朝代一致	243b6231	0
+江志伊	1exmuedu0wt8u		hixi5eks7m6h	中	CBDB 75472；6部	朝代一致	243b6231	0
+黃本騏	1exmurrajctfq		hixi5eks7m7x	中	CBDB 54695；3部	朝代一致	243b6231	0
+釋安清	1exmuycmkutc0		hixi5eks7m74	低	新建，無CBDB；4部	朝代一致	243b6231	0
+王家璧	1exmvp1m1dtlb		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+張元濟	1exn5hihedtzb		hixi5eks7m6r	中	CBDB 124538；4部	朝代一致	243b6231	0
+鄧邦述	1exk9vu5iko3m		hixi5eks7m8r	中	CBDB 60470；3部	朝代一致	243b6231	0
+成蓉鏡	1exmurza5lo8w		hixhd2f8wain	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+牛鑑	1exn5wv4e3o5j		hixi5eks7m7f	中	CBDB 58671；3部	朝代一致	243b6231	0
+朱爲弼	1exn6tfdcnoco		hixhd2h9bqzw	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+釋菩提流志	1exmvgxqrfocg		hixi5eks7m81	低	新建，無CBDB；3部	朝代一致	243b6231	0
+李盛鐸	1exn5higzpog4		hixi5eks7m6a	中	CBDB 64512；9部	朝代一致	243b6231	0
+劉世珩	1exk0v7s3uoe9		hixi5eks7m7o	中	CBDB 74966；3部	朝代一致	243b6231	0
+邵章	1exn6vsmwmozk		hixi5eks7m7g	低	新建，無CBDB；3部	朝代一致	243b6231	0
+喻杰	1exmu7h97qk8y		hixhd2h9bppo	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+蔣德鈞	1exmvh7yosk5h		hixi5eks7m75	中	CBDB 89724；4部	朝代一致	243b6231	0
+蔣德鈞	1exmvh7yosk5p		hixi5eks7m75	中	CBDB 89724；4部	朝代一致	243b6231	0
+江志伊	1exmuedu0lkp0		hixi5eks7m6h	中	CBDB 75472；6部	朝代一致	243b6231	0
+顧蘅	1exmv967uqkna		hixi5eks7m8n	低	新建，無CBDB；3部	朝代一致	243b6231	0
+雅爾圖	1exn6h02a8kci		hixi5eks7m6x	中	CBDB 57562；4部	朝代一致	243b6231	0
+雅爾圖	1exn6h02a8kcn		hixi5eks7m6x	中	CBDB 57562；4部	朝代一致	243b6231	0
+勒保	1exmus754ukg5		hixi5eks7m7t	中	CBDB 59382；3部	朝代一致	243b6231	0
+王鑒	1exn4xfeorke8				暂不建（A036）	歧义，勿挂	—	0
+李澄宇	1exk0u0yd7kss		hixi5eks7m7l	中	CBDB 78009；3部	朝代一致	243b6231	0
+傅以禮	1exmvmsnjjk79		hixi5eks7m6n	中	CBDB 90104；5部	朝代一致	243b6231	0
+邵懿辰	1exn5hih8rk76		hixhd2f8wajg	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+吳鶱	1exk0ut8k2kui		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+劉承幹	1exn5hihjov80		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+釋安清	1exmuycmjlv5w		hixi5eks7m74	低	新建，無CBDB；4部	朝代一致	243b6231	0
+傅增湘	1exn5hih19v5x		hixi5eks7m6b	中	CBDB 65564；7部	朝代一致	243b6231	0
+傅增湘	1exn5hih19v5v		hixi5eks7m6b	中	CBDB 65564；7部	朝代一致	243b6231	0
+傅以禮	1exmsmvfx2vwl		hixi5eks7m6n	中	CBDB 90104；5部	朝代一致	243b6231	0
+耆英	1exn6h01w6vwg		hixi5eks7m6i	中	CBDB 57761；6部	朝代一致	243b6231	0
+伊里布	1exn6h01w6vwg		hixi5eks7m8o	中	CBDB 57380；3部	朝代一致	243b6231	1
+黃大華	1exmurrai3v9l				暂不建（A003）	歧义，勿挂	—	0
+釋真諦	1exmvgxqszv28		hixi5eks7m6p	低	新建，無CBDB；4部	朝代一致	243b6231	0
+喻杰	1exmuedtznv28		hixhd2h9bppo	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	1
+王家璧	1exk0tj7x5v64		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+丁士涵	1exmu2tacevpm		hixi5eks7m76	中	CBDB 70606；4部	朝代一致	243b6231	0
+丁士涵	1exmu2tacevpk		hixi5eks7m76	中	CBDB 70606；4部	朝代一致	243b6231	0
+李繼沆	1exn3d2tdavps		hixi5eks7m86	中	CBDB 77805；3部	朝代一致	243b6231	0
+邵懿辰	1exlbs5iujvnm		hixhd2f8wajg	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+李秉衡	1exn5wv493vgk		hixi5eks7m6z	中	CBDB 58901；4部	朝代一致	243b6231	0
+劉承幹	1exn5hihjov7x		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+劉承幹	1exn5hihjov7m		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+劉承幹	1exn5hihjov7k		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+劉承幹	1exn5hihjov7v		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+劉承幹	1exn5hihjov7p		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+董康	1exn5hihjov7r		hixi5eks7m7r	中	CBDB 89417；3部	朝代一致	243b6231	0
+郭傳璞	1exmvh7yhav44		hixi5eks7m8p	低	新建，無CBDB；3部	朝代一致	243b6231	0
+周懋祺	1exmsmvfonh8g		hixi5eks7m8j	低	新建，無CBDB；3部	朝代一致	243b6231	0
+釋真諦	1exmvgxqpvhmv		hixi5eks7m6p	低	新建，無CBDB；4部	朝代一致	243b6231	0
+宣哲	1exn5hihn4h6q		hixi5eks7m6v	低	新建，無CBDB；4部	朝代一致	243b6231	0
+宣哲	1exn5hihn4h6s		hixi5eks7m6v	低	新建，無CBDB；4部	朝代一致	243b6231	0
+劉承幹	1exn4y0z90h6u		hixi5eks7m69	中	CBDB 511026；14部	朝代一致	243b6231	0
+黃大華	1exmurraezhtz				暂不建（A003）	歧义，勿挂	—	0
+徐樹蘭	1exn636b5rh1c		hixi5eks7m73	中	CBDB 87010；4部	朝代一致	243b6231	0
+鄭學川	1exmuycmoafb9		hixi5eks7m7h	低	新建，無CBDB；3部	朝代一致	243b6231	0
+陳倬	1exk0v7slyfwl		hixi5eks7m8h	低	新建，無CBDB；3部	朝代一致	243b6231	0
+張森楷	1exn5higzefwg		hixi5eks7m7j	中	CBDB 80905；3部	朝代一致	243b6231	0
+王家璧	1exjt3ckfpfk2		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+王家璧	1exjt3ckfpfk0		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+崔應榴	1exmurza5afph		hixi5eks7m8a	中	CBDB 88834；3部	朝代一致	243b6231	0
+甘鵬雲	1exk9vtx51fcw		hixi5eks7m7c	中	CBDB 72843；3部	朝代一致	243b6231	0
+吳廷燮	1exk0uagbdfcw		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+章鈺	1exn5oajulfcy		hixi5eks7m6g	中	CBDB 88926；6部	朝代一致	243b6231	1
+耆英	1exn5wv4dsflx		hixi5eks7m6i	中	CBDB 57761；6部	朝代一致	243b6231	0
+文悌	1exn6h027ffgj		hixi5eks7m80	中	CBDB 62101；3部	朝代一致	243b6231	0
+吳鶱	1exk0ut74kf7o		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+張元濟	1exka4ukgpfy8		hixi5eks7m6r	中	CBDB 124538；4部	朝代一致	243b6231	0
+鄧百拙	1exmvdwp4if40		hixi5eks7m7p	低	新建，無CBDB；3部	朝代一致	243b6231	0
+甘鵬雲	1exk9vtx51fd2		hixi5eks7m7c	中	CBDB 72843；3部	朝代一致	243b6231	0
+趙炳麟	1exk9vtx51fd4		hixi5eks7m7w	中	CBDB 84316；3部	朝代不一致(Work:中華民國/Entity:清)，Elias 勿自动挂	243b6231	0
+釋弘贊	1exmuycmtwp3b		hixi5eks7m6f	低	新建，無CBDB；6部	朝代一致	243b6231	0
+吳鶱	1exn5hihbkp36		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+徐樹蘭	1exn5hihbkp34		hixi5eks7m73	中	CBDB 87010；4部	朝代一致	243b6231	0
+趙炳麟	1exk9vtx43pqe		hixi5eks7m7w	中	CBDB 84316；3部	朝代不一致(Work:中華民國/Entity:清)，Elias 勿自动挂	243b6231	0
+那彦成	1exn6h01ump6v		hixhd2h9bcoh	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+張伯楨	1exmsmvg7dpts		hixi5eks7m6t	低	新建，無CBDB；4部	朝代一致	243b6231	0
+唐炯	1exn4xfe2lpty		hixi5eks7m77	中	CBDB 64185；4部	朝代一致	243b6231	0
+周星詒	1exn5hih50poi		hixi5eks7m7q	中	CBDB 83495；3部	朝代一致	243b6231	0
+黃大華	1exn7ac9nsphe				暂不建（A003）	歧义，勿挂	—	0
+張伯楨	1exjt3cklbpc0		hixi5eks7m6t	低	新建，無CBDB；4部	朝代一致	243b6231	0
+吳廷燮	1exmurralups7		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+陳澹然	1exmui90eqpz8		hixi5eks7m8q	中	CBDB 82242；3部	朝代一致	243b6231	0
+陳階平	1exmui90eqpze		hixi5eks7m6j	中	CBDB 64583；5部	朝代一致	243b6231	0
+鄧邦述	1exn5oak07p4w		hixi5eks7m8r	中	CBDB 60470；3部	朝代一致	243b6231	0
+鄧邦述	1exn5oak07p4y		hixi5eks7m8r	中	CBDB 60470；3部	朝代一致	243b6231	0
+秦錫田	1exk0uafg5p1g		hixi5eks7m8e	中	CBDB 85766；3部	朝代一致	243b6231	0
+圖海	1exn559s6snb9		hixi5eks7m8s	中	CBDB 57336；3部	朝代一致	243b6231	1
+鮑東里	1exn5cxg50nb4		hixi5eks7m7e	低	新建，無CBDB；3部	朝代一致	243b6231	0
+李澄宇	1exmuk1qvkni8		hixi5eks7m7l	中	CBDB 78009；3部	朝代一致	243b6231	0
+范迪襄	1exmuk1qvknig		hixi5eks7m7z	中	CBDB 82474；3部	朝代一致	243b6231	0
+郭傳璞	1exk0u128qnm3		hixi5eks7m8p	低	新建，無CBDB；3部	朝代一致	243b6231	0
+釋施護	1exmuycmv5n9c		hixi5eks7m8g	中	CBDB 53411；3部	朝代一致	243b6231	0
+崔應榴	1exk0u12xpn2f		hixi5eks7m8a	中	CBDB 88834；3部	朝代一致	243b6231	0
+崔應榴	1exk0u12xpn2c		hixi5eks7m8a	中	CBDB 88834；3部	朝代一致	243b6231	0
+崔應榴	1exk0u12xpn2a		hixi5eks7m8a	中	CBDB 88834；3部	朝代一致	243b6231	0
+周亮輔	1exmui90mjnk3		hixi5eks7m87	低	新建，無CBDB；3部	朝代一致	243b6231	0
+圖海	1exn559rhtnuq		hixi5eks7m8s	中	CBDB 57336；3部	朝代一致	243b6231	0
+釋施護	1exmuycmolnuu		hixi5eks7m8g	中	CBDB 53411；3部	朝代一致	243b6231	0
+圖海	1exn559rhtnuu		hixi5eks7m8s	中	CBDB 57336；3部	朝代一致	243b6231	1
+雅爾圖	1exn6tfd7cn44		hixi5eks7m6x	中	CBDB 57562；4部	朝代一致	243b6231	0
+耆英	1exn6h01vvnd1		hixi5eks7m6i	中	CBDB 57761；6部	朝代一致	243b6231	0
+伊里布	1exn6h01vvnd1		hixi5eks7m8o	中	CBDB 57380；3部	朝代一致	243b6231	1
+陳乃乾	1exn5hih1wc8w		hixi5eks7m6u	低	新建，無CBDB；4部	朝代一致	243b6231	0
+釋真諦	1exmuycmk8c8w		hixi5eks7m6p	低	新建，無CBDB；4部	朝代一致	243b6231	0
+羅繼祖	1exmuvdm6yc5q		hixi5eks7m8k	低	新建，無CBDB；3部	朝代一致	243b6231	0
+饒敦秩	1exmuedu0ac5d		hixi5eks7m8d	低	新建，無CBDB；3部	朝代一致	243b6231	0
+葉瀚	1exmuk1r32cjl		hixi5eks7m78	中	CBDB 73085；4部	朝代一致	243b6231	0
+傅以禮	1exn5hih1wc93		hixi5eks7m6n	中	CBDB 90104；5部	朝代一致	243b6231	0
+郭傳璞	1exmvdwp0gc23		hixi5eks7m8p	低	新建，無CBDB；3部	朝代一致	243b6231	1
+吳廷燮	1exmurraiqcct		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+傅增湘	1exn5oak8yccl		hixi5eks7m6b	中	CBDB 65564；7部	朝代一致	243b6231	0
+張國淦	1exn636betcsj		hixi5eks7m8t	低	新建，無CBDB；3部	朝代不一致(Work:清/Entity:None)，Elias 勿自动挂	243b6231	1
+張榜	1exmu2tad1csg		hixi5eks7m8u	低	新建，無CBDB；3部	朝代一致	243b6231	0
+勞乃宣	1exmus99mxc00		hixi5eks7m6d	中	CBDB 61773；6部	朝代一致	243b6231	0
+袁黃	1exk0ut9e1czo		hixhd2h9bofd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+賀忠良	1exmug4a25l3b		hixi5eks7m6e	低	新建，無CBDB；6部	朝代一致	243b6231	0
+葉瀚	1exmuk1r3dl3a		hixi5eks7m78	中	CBDB 73085；4部	朝代一致	243b6231	0
+張元濟	1exmv618e0lq8		hixi5eks7m6r	中	CBDB 124538；4部	朝代一致	243b6231	0
+勞乃宣	1exk0u0xholxh		hixi5eks7m6d	中	CBDB 61773；6部	朝代一致	243b6231	0
+陳漢章	1exn3mctyklje		hixi5eks7m8v	中	CBDB 81671；3部	朝代一致	243b6231	0
+允禵	1exn5wv43hloq		hixi5eks7m8w	中	CBDB 57058；3部	朝代一致	243b6231	0
+允禵	1exn5wv43hloo		hixi5eks7m8w	中	CBDB 57058；3部	朝代一致	243b6231	0
+賀忠良	1exmug49vllok		hixi5eks7m6e	低	新建，無CBDB；6部	朝代一致	243b6231	0
+秦翰才	1exn5oak2plhi		hixi5eks7m6o	低	新建，無CBDB；4部	朝代一致	243b6231	0
+邵懿辰	1exn3d2te8lc8		hixhd2f8wajg	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+張榜	1exmu2tadclc7		hixi5eks7m8u	低	新建，無CBDB；3部	朝代一致	243b6231	0
+勞乃宣	1exmv618wfls2		hixi5eks7m6d	中	CBDB 61773；6部	朝代一致	243b6231	0
+馬承昭	1exjosnh3ylu4		hixi5eks7m84	低	新建，無CBDB；3部	朝代一致	243b6231	0
+顧璜	1exn636awpla8		hixi5eks7m8l	低	新建，無CBDB；3部	朝代一致	243b6231	0
+秦翰才	1exmuvdm0plaa		hixi5eks7m6o	低	新建，無CBDB；4部	朝代一致	243b6231	0
+顧璜	1exn4xfefeg3q		hixi5eks7m8l	低	新建，無CBDB；3部	朝代一致	243b6231	1
+徐樹蘭	1exn5hihb9gjq		hixi5eks7m73	中	CBDB 87010；4部	朝代一致	243b6231	0
+釋弘贊	1exmuycmtlgjt		hixi5eks7m6f	低	新建，無CBDB；6部	朝代一致	243b6231	0
+秦錫田	1exk0uaffughv		hixi5eks7m8e	中	CBDB 85766；3部	朝代一致	243b6231	0
+鄧邦述	1exn5oajzwgli		hixi5eks7m8r	中	CBDB 60470；3部	朝代一致	243b6231	0
+唐炯	1exjrd3dg8glf		hixi5eks7m77	中	CBDB 64185；4部	朝代一致	243b6231	0
+唐炯	1exjrd3dg8glc		hixi5eks7m77	中	CBDB 64185；4部	朝代一致	243b6231	0
+釋弘贊	1exmvgxqkkgec		hixi5eks7m6f	低	新建，無CBDB；6部	朝代一致	243b6231	0
+邵章	1exk3eqvc0gso		hixi5eks7m7g	低	新建，無CBDB；3部	朝代一致	243b6231	0
+傅在田	1exmug49ssgsp		hixi5eks7m8b	低	新建，無CBDB；3部	朝代一致	243b6231	0
+張伯楨	1exjt3ckl0gsu		hixi5eks7m6t	低	新建，無CBDB；4部	朝代一致	243b6231	0
+傅在田	1exmug49ssgsr		hixi5eks7m8b	低	新建，無CBDB；3部	朝代一致	243b6231	0
+黃贊湯	1exn5wv478g76		hixi5eks7m89	中	CBDB 58567；3部	朝代一致	243b6231	0
+鮑東里	1exmuk1r0kg7a		hixi5eks7m7e	低	新建，無CBDB；3部	朝代一致	243b6231	0
+吳廷燮	1exmurrag8g06		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+陳漢章	1exmurrag8g0d		hixi5eks7m8v	中	CBDB 81671；3部	朝代一致	243b6231	0
+章鈺	1exn5oajiqeq2		hixi5eks7m6g	中	CBDB 88926；6部	朝代一致	243b6231	0
+張榜	1exmu2tabsemb		hixi5eks7m8u	低	新建，無CBDB；3部	朝代一致	243b6231	0
+丁士涵	1exmu2tabsemh		hixi5eks7m76	中	CBDB 70606；4部	朝代一致	243b6231	0
+丁士涵	1exmu2tabsemf		hixi5eks7m76	中	CBDB 70606；4部	朝代一致	243b6231	0
+釋安清	1exmuycmize2v		hixi5eks7m74	低	新建，無CBDB；4部	朝代一致	243b6231	0
+陳澹然	1exk0tj8xde6l		hixi5eks7m8q	中	CBDB 82242；3部	朝代一致	243b6231	0
+成蓉鏡	1exmus99f4ef4		hixhd2f8wain	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+曹飛	1exmug49u1ez8		hixi5eks7m79	低	新建，無CBDB；4部	朝代一致	243b6231	0
+曹飛	1exmug49u1ez4		hixi5eks7m79	低	新建，無CBDB；4部	朝代一致	243b6231	0
+賀忠良	1exmug4a0lede		hixi5eks7m6e	低	新建，無CBDB；6部	朝代一致	243b6231	0
+張國淦	1exn5hihfms5c		hixi5eks7m8t	低	新建，無CBDB；3部	朝代一致	243b6231	0
+張國淦	1exn5hihfms5g		hixi5eks7m8t	低	新建，無CBDB；3部	朝代一致	243b6231	0
+趙宗建	1exn4xfe6nsw2		hixi5eks7m88	中	CBDB 84286；3部	朝代一致	243b6231	0
+金文錦	1exmvdwp7msjo		hixi5eks7m6w	低	新建，無CBDB；4部	朝代一致	243b6231	0
+蔣德鈞	1exmvh7yp3sow		hixi5eks7m75	中	CBDB 89724；4部	朝代一致	243b6231	0
+蔣德鈞	1exmvh7yp3soy		hixi5eks7m75	中	CBDB 89724；4部	朝代一致	243b6231	0
+饒敦秩	1exk9vtu5nshz		hixi5eks7m8d	低	新建，無CBDB；3部	朝代一致	243b6231	0
+吳鶱	1exkafjqxlslg		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+吳鶱	1exkafjqxlsle		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+賀忠良	1exmui90pcsgb		hixi5eks7m6e	低	新建，無CBDB；6部	朝代一致	243b6231	0
+李澄宇	1exjt3cl7ssg9		hixi5eks7m7l	中	CBDB 78009；3部	朝代一致	243b6231	0
+葛道殷	1exmui90pcsgf		hixi5eks7m8c	低	新建，無CBDB；3部	朝代一致	243b6231	0
+焦勗	1exmug49x5sec		hixi5eks7m8f	低	新建，無CBDB；3部	朝代一致	243b6231	0
+曹飛	1exmug49x5seg		hixi5eks7m79	低	新建，無CBDB；4部	朝代一致	243b6231	0
+焦勗	1exmug49x5see		hixi5eks7m8f	低	新建，無CBDB；3部	朝代一致	243b6231	0
+唐炯	1exn3mcthps76		hixi5eks7m77	中	CBDB 64185；4部	朝代一致	243b6231	0
+秦錫田	1exmurrae1s74		hixi5eks7m8e	中	CBDB 85766；3部	朝代一致	243b6231	0
+勒保	1exn6h01s4su8		hixi5eks7m7t	中	CBDB 59382；3部	朝代一致	243b6231	0
+成蓉鏡	1exmsmvft0suc		hixhd2f8wain	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+成蓉鏡	1exmsmvft0sua		hixhd2f8wain	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+張榜	1exjujwzabsav		hixi5eks7m8u	低	新建，無CBDB；3部	朝代一致	243b6231	1
+唐炯	1exmsmvg1g7ic		hixi5eks7m77	中	CBDB 64185；4部	朝代一致	243b6231	1
+成蓉鏡	1exmsmvg1g7ig		hixhd2f8wain	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+唐炯	1exmsmvg1g7ie		hixi5eks7m77	中	CBDB 64185；4部	朝代一致	243b6231	0
+釋菩提流志	1exmvgxqqt79i		hixi5eks7m81	低	新建，無CBDB；3部	朝代一致	243b6231	0
+李秉衡	1exn5wv4dh72f		hixi5eks7m6z	中	CBDB 58901；4部	朝代一致	243b6231	0
+金文錦	1exmv9683h7v2		hixi5eks7m6w	低	新建，無CBDB；4部	朝代一致	243b6231	0
+吳廷燮	1exmurrafx7gj		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+郭傳璞	1exn5oak657gn		hixi5eks7m8p	低	新建，無CBDB；3部	朝代一致	243b6231	0
+章鈺	1exjtw3x2a7et		hixi5eks7m6g	中	CBDB 88926；6部	朝代一致	243b6231	0
+章鈺	1exjtw3x2a7ev		hixi5eks7m6g	中	CBDB 88926；6部	朝代一致	243b6231	0
+饒敦秩	1exmu7h8y27eu		hixi5eks7m8d	低	新建，無CBDB；3部	朝代一致	243b6231	0
+王家璧	1exjt3ckfe70q		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+王家璧	1exjt3ckfe70m		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+王家璧	1exjt3ckfe70o		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+王家璧	1exjt3ckfe70k		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+王家璧	1exjt3ckfe70s		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	0
+王鑒	1exkvf1rbf7yd				暂不建（A036）	歧义，勿挂	—	0
+喻杰	1exmu7h93203w		hixhd2h9bppo	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+喻杰	1exmu7h93203k		hixhd2h9bppo	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	1
+黃大華	1exk3ecgav08w				暂不建（A003）	歧义，勿挂	—	0
+嚴懋功	1exmurrakx05i		hixi5eks7m7a	中	CBDB 76354；4部	朝代一致	243b6231	0
+嚴懋功	1exmurrakx05k		hixi5eks7m7a	中	CBDB 76354；4部	朝代一致	243b6231	0
+嚴懋功	1exmurrakx05g		hixi5eks7m7a	中	CBDB 76354；4部	朝代一致	243b6231	0
+嚴懋功	1exmurrakx05e		hixi5eks7m7a	中	CBDB 76354；4部	朝代一致	243b6231	0
+吳廷燮	1exmurrakx05s		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+沈桂芬	1exmvp1lwe0w4		hixi5eks7m8m	中	CBDB 59096；3部	朝代一致	243b6231	0
+耆英	1exn5wv45d0xz		hixi5eks7m6i	中	CBDB 57761；6部	朝代一致	243b6231	0
+伊里布	1exn5wv45d0xz		hixi5eks7m8o	中	CBDB 57380；3部	朝代一致	243b6231	1
+傅以禮	1exn5hihfy0ow		hixi5eks7m6n	中	CBDB 90104；5部	朝代一致	243b6231	0
+趙炳麟	1exn6tfdah0k0		hixi5eks7m7w	中	CBDB 84316；3部	朝代一致	243b6231	0
+錢炘和	1exmu7h8wi0pb		hixi5eks7m8x	中	CBDB 86535；3部	朝代一致	243b6231	0
+錢炘和	1exmu7h8wi0p6		hixi5eks7m8x	中	CBDB 86535；3部	朝代一致	243b6231	0
+潘承弼	1exn5hihfy0p0		hixi5eks7m71	低	新建，無CBDB；4部	朝代一致	243b6231	0
+錢炘和	1exmu7h8wi0p4		hixi5eks7m8x	中	CBDB 86535；3部	朝代一致	243b6231	0
+吳鶱	1exn5higxj0n4		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+傅以禮	1exmus99c00zp		hixi5eks7m6n	中	CBDB 90104；5部	朝代一致	243b6231	0
+釋弘贊	1exmuycmmf01u		hixi5eks7m6f	低	新建，無CBDB；6部	朝代一致	243b6231	0
+顧蘅	1exmv96835zb4		hixi5eks7m8n	低	新建，無CBDB；3部	朝代一致	243b6231	0
+雷崶	1exmvp1lxmz28		hixi5eks7m70	中	CBDB 90710；4部	朝代一致	243b6231	0
+吳鶱	1exmvdwp2mzv0		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+趙宗建	1exk3dt5opzpc		hixi5eks7m88	中	CBDB 84286；3部	朝代一致	243b6231	0
+陳倬	1exk3ecjqgzcy		hixi5eks7m8h	低	新建，無CBDB；3部	朝代一致	243b6231	0
+李盛鐸	1exn5oajguzgi		hixi5eks7m6a	中	CBDB 64512；9部	朝代一致	243b6231	0
+李盛鐸	1exn5oajguzgn		hixi5eks7m6a	中	CBDB 64512；9部	朝代一致	243b6231	0
+李盛鐸	1exn5oajguzgl		hixi5eks7m6a	中	CBDB 64512；9部	朝代一致	243b6231	0
+李盛鐸	1exn5oajguzgg		hixi5eks7m6a	中	CBDB 64512；9部	朝代一致	243b6231	0
+沈桂芬	1exmsoqc58zre		hixi5eks7m8m	中	CBDB 59096；3部	朝代一致	243b6231	0
+葉瀚	1exmuk1qzxz40		hixi5eks7m78	中	CBDB 73085；4部	朝代一致	243b6231	0
+釋法賢	1exmvgxr2czd8		hixi5eks7m7v	低	新建，無CBDB；3部	朝代一致	243b6231	0
+陳倬	1exk3ecjqgzd2		hixi5eks7m8h	低	新建，無CBDB；3部	朝代一致	243b6231	0
+釋智周	1exmvgxr2czd0		hixi5eks7m7m	低	新建，無CBDB；3部	朝代一致	243b6231	0
+李汝嶠	1exn3d2taszdd		hixi5eks7m82	中	CBDB 77508；3部	朝代一致	243b6231	0
+周星詒	1exk3eclmtybm		hixi5eks7m7q	中	CBDB 83495；3部	朝代一致	243b6231	0
+黃大華	1exmurram5ybn				暂不建（A003）	歧义，勿挂	—	0
+李盛鐸	1exn5oajbjy87		hixi5eks7m6a	中	CBDB 64512；9部	朝代一致	243b6231	0
+李澄宇	1exn7ac9hjym8		hixi5eks7m7l	中	CBDB 78009；3部	朝代一致	243b6231	0
+吳煒	1exk0u12jnymk		hixi5eks7m85	低	新建，無CBDB；3部	朝代一致	243b6231	0
+甘鵬雲	1exn5oajtyy9v		hixi5eks7m7c	中	CBDB 72843；3部	朝代一致	243b6231	0
+潘承弼	1exn5higyryti		hixi5eks7m71	低	新建，無CBDB；4部	朝代一致	243b6231	0
+張元濟	1exn5higyrytg		hixi5eks7m6r	中	CBDB 124538；4部	朝代一致	243b6231	0
+張元濟	1exn5higyryte		hixi5eks7m6r	中	CBDB 124538；4部	朝代一致	243b6231	0
+李汝嶠	1exmsmvg14yyv		hixi5eks7m82	中	CBDB 77508；3部	朝代一致	243b6231	0
+章鈺	1exn6vsn28yry		hixi5eks7m6g	中	CBDB 88926；6部	朝代一致	243b6231	0
+吳昌壽	1exn3d2t5hy4o		hixi5eks7m8i	中	CBDB 58876；3部	朝代一致	243b6231	0
+陳謐	1exn4xfe2wydg		hixi5eks7m6q	低	新建，無CBDB；4部	朝代一致	243b6231	0
+宣哲	1exn4xfe2wyde		hixi5eks7m6v	低	新建，無CBDB；4部	朝代一致	243b6231	0
+甘鵬雲	1exk0uadaqubo		hixi5eks7m7c	中	CBDB 72843；3部	朝代一致	243b6231	0
+王仕雲	1exmuk1qx4u83		hixi5eks7m72	中	CBDB 71487；4部	朝代一致	243b6231	0
+陳階平	1exmuk1qx4u8f		hixi5eks7m6j	中	CBDB 64583；5部	朝代一致	243b6231	0
+王鑒	1exmus99mauww				暂不建（A036）	歧义，勿挂	—	0
+江志伊	1exmu7h96sumj		hixi5eks7m6h	中	CBDB 75472；6部	朝代一致	243b6231	0
+吳廷燮	1exmurraonuo0		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+釋弘贊	1exmuycmq5uku		hixi5eks7m6f	低	新建，無CBDB；6部	朝代一致	243b6231	0
+吳煒	1exn3d2t7zuh6		hixi5eks7m85	低	新建，無CBDB；3部	朝代一致	243b6231	0
+陳澹然	1exn6h029aupt		hixi5eks7m8q	中	CBDB 82242；3部	朝代一致	243b6231	0
+黃大華	1exmurrajzaiv				暂不建（A003）	歧义，勿挂	—	0
+張元濟	1exk0ut93faip		hixi5eks7m6r	中	CBDB 124538；4部	朝代一致	243b6231	0
+黃大華	1exmurrajzaiy				暂不建（A003）	歧义，勿挂	—	0
+吳廷燮	1exmurrajzair		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+吳鶱	1exmv967voa9s		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+黃贊湯	1exn6h024makm		hixi5eks7m89	中	CBDB 58567；3部	朝代一致	243b6231	1
+邵懿辰	1exn3kg7e2akl		hixhd2f8wajg	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+陳壽彭	1exmv967p4av4		hixi5eks7m83	中	CBDB 54426；3部	朝代一致	243b6231	0
+陳漢章	1exn5hih35af9		hixi5eks7m8v	中	CBDB 81671；3部	朝代一致	243b6231	0
+吳鶱	1exk0v7sppafa		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+劉世珩	1exn5oaj9daf4		hixi5eks7m7o	中	CBDB 74966；3部	朝代一致	243b6231	0
+陳漢章	1exka4ukkgagw		hixi5eks7m8v	中	CBDB 81671；3部	朝代一致	243b6231	0
+陳漢章	1exka4ukkgagy		hixi5eks7m8v	中	CBDB 81671；3部	朝代一致	243b6231	0
+曹飛	1exmui90jfa4k		hixi5eks7m79	低	新建，無CBDB；4部	朝代一致	243b6231	0
+顧蘅	1exmvdwp2brb8		hixi5eks7m8n	低	新建，無CBDB；3部	朝代一致	243b6231	0
+甘鵬雲	1exn5hih3rri8		hixi5eks7m7c	中	CBDB 72843；3部	朝代一致	243b6231	0
+胡文楷	1exn5oaj9zrih		hixi5eks7m8y	低	新建，無CBDB；3部	朝代一致	243b6231	0
+胡文楷	1exn5oaj9zrif		hixi5eks7m8y	低	新建，無CBDB；3部	朝代一致	243b6231	0
+釋安清	1exmuycmm3rie		hixi5eks7m74	低	新建，無CBDB；4部	朝代一致	243b6231	0
+胡文楷	1exn5oaj9zrid		hixi5eks7m8y	低	新建，無CBDB；3部	朝代一致	243b6231	0
+吳鶱	1exjosngtnrwg		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+陳壽彭	1exmu7h92qrka		hixi5eks7m83	中	CBDB 54426；3部	朝代一致	243b6231	0
+朱履中	1exmv967warcw		hixi5eks7m8z	中	CBDB 74330；3部	朝代一致	243b6231	0
+朱履中	1exmv967warcz		hixi5eks7m8z	中	CBDB 74330；3部	朝代一致	243b6231	0
+張伯楨	1exk9vu3wtrlu		hixi5eks7m6t	低	新建，無CBDB；4部	朝代一致	243b6231	0
+陳澹然	1exn3mctutr0k		hixi5eks7m8q	中	CBDB 82242；3部	朝代一致	243b6231	0
+吳鶱	1exmv967pqrya		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+王家璧	1exk7ghgk2rr9		hixi5eks7m7u	中	CBDB 55667；3部	朝代一致	243b6231	1
+朱履中	1exmv967ward1		hixi5eks7m8z	中	CBDB 74330；3部	朝代一致	243b6231	0
+林茂春	1exn7ac9po4qx		hixi5eks7m7i	低	新建，無CBDB；3部	朝代一致	243b6231	0
+林茂春	1exn7ac9po4qt		hixi5eks7m7i	低	新建，無CBDB；3部	朝代一致	243b6231	0
+釋阿目伽	1exmuycmp84xw		hixi5eks7m90	低	新建，無CBDB；3部	朝代一致	243b6231	0
+李繼沆	1exn3d2tdm498		hixi5eks7m86	中	CBDB 77805；3部	朝代一致	243b6231	0
+吳煒	1exn3d2tdm49c		hixi5eks7m85	低	新建，無CBDB；3部	朝代一致	243b6231	0
+章鈺	1exn559rp04cm		hixi5eks7m6g	中	CBDB 88926；6部	朝代一致	243b6231	0
+章鈺	1exn559rp04ck		hixi5eks7m6g	中	CBDB 88926；6部	朝代一致	243b6231	0
+吳鶱	1exk0ut8cw4cg		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+陳階平	1exmug49uz4lc		hixi5eks7m6j	中	CBDB 64583；5部	朝代一致	243b6231	0
+陳乃乾	1exmsmvfxe4g0		hixi5eks7m6u	低	新建，無CBDB；4部	朝代一致	243b6231	0
+吳鶱	1exkafjqvf4sg		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+葉瀚	1exmuk1r2r406		hixi5eks7m78	中	CBDB 73085；4部	朝代一致	243b6231	0
+趙炳麟	1exn5wv49f40c		hixi5eks7m7w	中	CBDB 84316；3部	朝代一致	243b6231	0
+邵章	1exka4uko74zm		hixi5eks7m7g	低	新建，無CBDB；3部	朝代一致	243b6231	0
+潘曾綬	1exjuyqw574zm		hixi5eks7m6k	中	CBDB 91568；5部	朝代一致	243b6231	0
+黃本騏	1exn559s0v4zu		hixi5eks7m7x	中	CBDB 54695；3部	朝代一致	243b6231	0
+釋阿目伽	1exmuycmp84y3		hixi5eks7m90	低	新建，無CBDB；3部	朝代一致	243b6231	0
+吳廷燮	1exkvf1rdx4ax		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+吳昌壽	1exmvp1lu7d34		hixi5eks7m8i	中	CBDB 58876；3部	朝代一致	243b6231	0
+陳階平	1exjrd3dc6djm		hixi5eks7m6j	中	CBDB 64583；5部	朝代一致	243b6231	0
+允禵	1exn6h028odmq		hixi5eks7m8w	中	CBDB 57058；3部	朝代一致	243b6231	0
+釋阿目伽	1exmuycmpjdhc		hixi5eks7m90	低	新建，無CBDB；3部	朝代一致	243b6231	0
+陳謐	1exmuvdm5pdzm		hixi5eks7m6q	低	新建，無CBDB；4部	朝代一致	243b6231	0
+耆英	1exn6tfddldz6		hixi5eks7m6i	中	CBDB 57761；6部	朝代一致	243b6231	0
+吳鶱	1exmuvdm5pdzf		hixhd2f8wakd	中	库内既有 Entity（异体／别名，Sylvie 抽检#280认定）	异体归一后同人	243b6231	0
+王鑒	1exmus99lodu6				暂不建（A036）	歧义，勿挂	—	0
+陳漢章	1exka4ukk51xe		hixi5eks7m8v	中	CBDB 81671；3部	朝代一致	243b6231	0
+周懋祺	1exmvp1m891j8		hixi5eks7m8j	低	新建，無CBDB；3部	朝代一致	243b6231	0
+王鑒	1exmus99nv1mt				暂不建（A036）	歧义，勿挂	—	0
+葛道殷	1exmus99nv1mr		hixi5eks7m8c	低	新建，無CBDB；3部	朝代一致	243b6231	0
+潘曾綬	1exjtw3vtc16w		hixi5eks7m6k	中	CBDB 91568；5部	朝代一致	243b6231	0
+潘曾綬	1exjtw3vtc16u		hixi5eks7m6k	中	CBDB 91568；5部	朝代一致	243b6231	0
+陳倬	1exn7ac9lm1og		hixi5eks7m8h	低	新建，無CBDB；3部	朝代一致	243b6231	0
+傅增湘	1exjrd3cpe1vu		hixi5eks7m6b	中	CBDB 65564；7部	朝代一致	243b6231	0
+文悌	1exn6h02av1fk		hixi5eks7m80	中	CBDB 62101；3部	朝代一致	243b6231	0
+黃贊湯	1exk0tj8np1c2		hixi5eks7m89	中	CBDB 58567；3部	朝代一致	243b6231	0
+羅繼祖	1exmurrajo1zk		hixi5eks7m8k	低	新建，無CBDB；3部	朝代一致	243b6231	0
+吳廷燮	1exmurrajo1ze		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0
+吳廷燮	1exk0tjbwr11e		hixi5eks7m68	低	新建，無CBDB；17部	朝代一致	243b6231	0

@@ -1,0 +1,38 @@
+{
+ "records": {
+  "Work": 121664,
+  "Book": 203575,
+  "Collection": 22,
+  "Entity": 4518
+ },
+ "entries": 329779,
+ "files_total": 330414,
+ "pages": {
+  "members": 22,
+  "catalog": 608,
+  "related": 0,
+  "lineage": 0
+ },
+ "hubs": 61,
+ "notes": {},
+ "index": {
+  "files": 49,
+  "entries": 329779,
+  "drift_vs_repo_index": {
+   "欄 birth_year": 2,
+   "欄 cbdb_id": 4,
+   "欄 death_year": 1,
+   "欄 dynasty": 34,
+   "欄 merged_into": 5,
+   "欄 period": 7,
+   "記錄有、舊 index 無": 219084
+  }
+ },
+ "self_check_error_count": 0,
+ "fatal": [],
+ "dangling": {},
+ "source_fields": {
+  "unknown_underscore_fields": {}
+ }
+}
+exit 0

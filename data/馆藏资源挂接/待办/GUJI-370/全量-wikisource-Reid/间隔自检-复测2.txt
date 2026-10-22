@@ -1,0 +1,1 @@
+zh.wikisource.org	请求3次	最小间隔=2.000s	PASS

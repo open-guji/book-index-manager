@@ -1,0 +1,63 @@
+# GUJI-392 步骤1 v2（Sidney，2026-10-15）：按 Sylvie #547 审阅改：①李適匹配条生卒与年号不合→移出帝王条；②王莽西漢拾補条标待判；③李昂 hixhgyrw4w8t 朝代为空标朝代缺失；④匹配含 alt_names（庙号／谥号条本名在别名）。基线 book-index main 62e131c 之后。只读。
+帝王名	年号所属朝代	年号起止	people条id	命中方式	条朝代	生	卒	cbdb_id	判定	备注
+元恪	北魏	500-515	hixhjhtse1ol	primary_name	北魏				帝王条（朝代吻合）	
+元恪	北魏	500-515	hixhd2h9bdyd	alt_names	三國吳			33673	同名异人（朝代不合）	
+元恭	北魏	531-532	hixi4wwpzygt	primary_name	北魏				帝王条（朝代吻合）	
+元恭	北魏	531-532	hixhd2h9bhnb	alt_names	清	1613	1673	65939	同名异人（朝代不合）	
+元朗	北魏	531-532	hixi4wwpzygu	primary_name	北魏				帝王条（朝代吻合）	
+元朗	北魏	531-532	hixhd2h9bhuk	alt_names	隋唐	550	630		同名异人（朝代不合）	
+元朗	北魏	531-532	hixhd2h9bf1z	alt_names	明	1506	1573	128402	同名异人（朝代不合）	
+元朗	北魏	531-532	hixhd2h9beo9	alt_names	清	1662	1706	78187	同名异人（朝代不合）	
+元朗	北魏	531-532	hixhd2h9bd0s	alt_names	清	1672	1735	77329	同名异人（朝代不合）	
+劉宏	東漢	168-189	hixhd2h9bgu3	primary_name	東漢	156	189	30265	帝王条（朝代吻合）	
+劉宏	東漢	168-189	hixhi4rs1w5c	primary_name	南朝宋				同名异人（朝代不合）	
+劉宏	東漢	168-189	hixhd2h9bh0t	primary_name	元		1327	110829	同名异人（朝代不合）	
+劉彧	南朝宋	465-472	hixhd2h9bnd2	primary_name	南朝宋			339540	帝王条（朝代吻合）	
+劉彧	南朝宋	465-472	hixhd2h9bi8u	primary_name	晉				同名异人（朝代不合）	
+劉淵	前趙	304-310	hixi4wwpzyfz	primary_name	前趙				帝王条（朝代吻合）	
+劉淵	前趙	304-310	hixhd2h9bh61	primary_name	元	1250	1307	110922	同名异人（朝代不合）	
+劉炳	東漢	145-145	hixi4watiio3	primary_name	東漢				帝王条（朝代吻合）	
+劉炳	東漢	145-145	hixhd2h9bh53	primary_name	元			28567	同名异人（朝代不合）	
+劉炳	東漢	145-145	hixhd2h9bhru	primary_name	明			213967	同名异人（朝代不合）	
+劉炳	東漢	145-145	hixhd2h9bjfv	alt_names	北魏				同名异人（朝代不合）	
+劉熙	前趙	328-329	hixhd2h9bm89	primary_name	明		1420	438885	同名异人（朝代不合）	
+劉熙	前趙	328-329	hixhd2h9bnd5	primary_name	唐				同名异人（朝代不合）	
+劉熙	前趙	328-329	hixhd2h9bndk	primary_name	東漢				同名异人（朝代不合）	
+劉莊	東漢	58-75	hixhd2h9bgte	primary_name	東漢	29	76	24662	帝王条（朝代吻合）	
+劉莊	東漢	58-75	hixhd2h9bnv7	primary_name	南朝宋				同名异人（朝代不合）	
+姚興	後秦	394-416	hixi4w9wfcxn	primary_name	後秦				帝王条（朝代吻合）	
+姚興	後秦	394-416	hixhjtdj8nid	primary_name	晉				同名异人（朝代不合）	
+孫休	三國吳	258-264	hixi4wwpzyf5	primary_name	三國吳				帝王条（朝代吻合）	
+孫休	三國吳	258-264	hixhd2h9bn7f	primary_name	戰國				同名异人（朝代不合）	
+張天錫	前涼	363-376	hixi4wwpzyfp	primary_name	前涼				帝王条（朝代吻合）	
+張天錫	前涼	363-376	hixhd2h9bmrt	primary_name	金			106921	同名异人（朝代不合）	
+張重華	前涼	346-353	hixhd2h9bnfz	primary_name	前涼				帝王条（朝代吻合）	
+張重華	前涼	346-353	hixhd2h9bfw6	primary_name	明			134654	同名异人（朝代不合）	
+李壽	成漢	338-343	hixi4w9wfcy1	primary_name	成漢				帝王条（朝代吻合）	
+李壽	成漢	338-343	hixhd2h9big9	primary_name	唐	577	630	138740	同名异人（朝代不合）	
+李恂	西涼	420-421	hixi4watiip3	primary_name	西涼				帝王条（朝代吻合）	
+李恂	西涼	420-421	hixhd2h9bmnm	primary_name	東漢				同名异人（朝代不合）	
+李恒	唐	821-824	hixi4w9wfcwl	primary_name	唐				帝王条（朝代吻合）	
+李恒	唐	821-824	hixhgyrw4w89	primary_name	明			510661	同名异人（朝代不合）	
+李昂	唐	827-840	hixi5v85erk0	primary_name	唐	808	840	189272	帝王条（朝代吻合）	
+李昂	唐	827-840	hixhgyrw4w8t	primary_name					朝代缺失（无法判，非「不合」）	
+李曄	唐	889-907	hixi5v86ch6o	primary_name	唐	867	904	189298	帝王条（朝代吻合）	
+李曄	唐	889-907	hixhd2h9br6p	primary_name	明				同名异人（朝代不合）	
+李治	唐	650-683	hixi4w9wfcwi	primary_name	唐				帝王条（朝代吻合）	
+李治	唐	650-683	hixhd2h9bh0q	primary_name	元	1192	1279	29228	同名异人（朝代不合）	
+李適	唐	780-805	hixhd2h9bo6s	primary_name	唐	663	711	92999	疑配错（生卒与年号起年不合）	
+楊溥	楊吳	921-937	hixi4watiioc	primary_name	楊吳				帝王条（朝代吻合）	
+楊溥	楊吳	921-937	hixhd2h9bi5x	primary_name	明	1371	1446	66746	同名异人（朝代不合）	
+武則天	唐/武周	684-705	hixi4watiiog	primary_name	唐				帝王条（朝代吻合）	
+武則天	唐/武周	684-705	hixhd2h9bnsp	alt_names	唐	624	705	93663	帝王条（朝代吻合）	
+海山	元	1308-1311	hixi4wwpzyff	primary_name	元				帝王条（朝代吻合）	
+海山	元	1308-1311	hixhd2h9bcv5	alt_names	清	1714	1785	59336	同名异人（朝代不合）	
+王建	前蜀	908-918	hixi4wwpzyfy	primary_name	前蜀				帝王条（朝代吻合）	
+王建	前蜀	908-918	hixhd2h9bfai	primary_name	唐	766		92047	同名异人（朝代不合）	
+王昶	閩	935-939	hixi4watiiq9	primary_name	閩				帝王条（朝代吻合）	
+王昶	閩	935-939	hixhd2h9bmap	primary_name	三國魏			467904	同名异人（朝代不合）	
+王昶	閩	935-939	hixhd2h9bcir	primary_name	清	1724	1806	33556	同名异人（朝代不合）	
+王莽	新	9-23	hixi4w9wfcy3	primary_name	新	-45	23	339519	帝王条（朝代吻合）	
+王莽	新	9-23	hixhkp0y8idg	primary_name	西漢				待判（疑同一人：西漢拾補条，生平未詳）	待判，按用户口径不并；见 ai_note 建议
+石虎	後趙	335-349	hixi4w9wfcxt	primary_name	後趙			31362	帝王条（朝代吻合）	
+石虎	後趙	335-349	hixhjxrcmygw	primary_name	晉				同名异人（朝代不合）	

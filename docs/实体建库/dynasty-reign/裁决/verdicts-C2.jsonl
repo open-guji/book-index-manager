@@ -1,0 +1,1161 @@
+# C2 机械类裁决账 verdicts-C2.jsonl｜差异清单 sha256=b40ff076f114（生成于 book-index@389bb3f483）｜由 scripts/c3_classify.py 批量产出，需判断的见 C2-待判.tsv｜2026-10-12 洛杉矶 Sloane
+{"diff_id": "10", "verdict": "open", "rule": "R-两源", "sources": ["library-only:所有源表均无对应"], "entity_ids": ["hixi1ublncpn"], "note": "库有源无，只记录不动；是否误条或异体待查"}
+{"diff_id": "11", "verdict": "open", "rule": "R-两源", "sources": ["library-only:所有源表均无对应"], "entity_ids": ["hixi1ublyl8s"], "note": "库有源无，只记录不动；是否误条或异体待查"}
+{"diff_id": "12", "verdict": "open", "rule": "R-两源", "sources": ["library-only:所有源表均无对应"], "entity_ids": ["hixi1ubml2ce"], "note": "库有源无，只记录不动；是否误条或异体待查"}
+{"diff_id": "13", "verdict": "open", "rule": "R-两源", "sources": ["library-only:所有源表均无对应"], "entity_ids": ["hixi1ubnu0in"], "note": "库有源无，只记录不动；是否误条或异体待查"}
+{"diff_id": "14", "verdict": "open", "rule": "R-两源", "sources": ["library-only:所有源表均无对应"], "entity_ids": ["hixi1ubo591l"], "note": "库有源无，只记录不动；是否误条或异体待查"}
+{"diff_id": "18", "verdict": "open", "rule": "R-两源", "sources": ["library-only:所有源表均无对应"], "entity_ids": ["hixi1ubq0ob6"], "note": "库有源无，只记录不动；是否误条或异体待查"}
+{"diff_id": "20", "verdict": "open", "rule": "R-两源", "sources": ["library-only:所有源表均无对应"], "entity_ids": ["hixi1ubqbwuv"], "note": "库有源无，只记录不动；是否误条或异体待查"}
+{"diff_id": "183", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:上元（去年號）(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "184", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:上願(梁)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "186", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:中元克復(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "189", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾化(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "190", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾化(閩)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "192", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾德(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "193", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾德(南唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "194", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾德(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "195", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾明(西魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "196", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾祐(楚)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "197", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾祐(北漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "198", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾祐(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "199", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾祐(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "200", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾祐(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "202", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾貞(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "203", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾貞(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "204", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:乾通(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "207", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:保大(楚)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "209", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:元光(前秦)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "210", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元嘉(劉宋)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "211", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:元始(東漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "214", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光宅(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "216", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光熙(前涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "221", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:同光(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "222", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:同光(閩)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "225", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:咸安(前涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "226", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:唐隆(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "227", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:唐隆(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "232", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:嗣聖(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "234", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:垂拱(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "235", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:垂拱(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "236", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:垂拱(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "237", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:大世(隋朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "239", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:大乘(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "251", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:大武(成漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "254", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:大兴(東晉)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "255", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:大通(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "263", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天啟(梁)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "264", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天启(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "267", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天壽(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "274", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天康(東晉)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "275", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天建(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "276", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天復(前蜀)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "277", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天復(後梁)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "278", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天復(後梁)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "285", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天德(梁)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "288", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天成(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "289", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天成(楚)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "290", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天成(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "291", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天成(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "292", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天成(閩)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "293", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天成(閩)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "295", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天授(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "302", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天皇(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "306", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天祐(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "307", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天祐(後梁)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "308", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天祐(吳)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "309", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天祐(吳)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "310", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天福(楚)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "311", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天福(楚)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "312", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天福(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "313", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天福(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "314", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天福(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "315", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天福(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "316", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天福(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "319", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天統(北周)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "320", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天统(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "344", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:太和(漢趙)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "345", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太安(前涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "347", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:太平(南燕)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "348", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:太平(西晉)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "350", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:太平兴国(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "352", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太極(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "353", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:太緣(北涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "355", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:始建(西漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "356", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:始建(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "357", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:始兴(隋朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "358", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:孝基(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "359", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:安太(北齊)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "361", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:定鼎(後燕)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "364", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:宝胜(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "369", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:平赵(漢趙)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "370", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:平都(東魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "372", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:广初(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "373", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:广安(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "377", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:广顺(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "378", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:广顺(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "379", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延和(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "382", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:延兴(後趙)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "383", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建光(後燕)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "384", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建平(北涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "385", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建平(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "386", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建平(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "387", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建平(宋)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "388", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建康(東晉)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "389", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建昌(前秦)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "390", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建明(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "391", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建武(前涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "392", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建武(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "393", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建义(齊)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "394", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建义(宋)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "395", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建興(前涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "396", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建兴(前涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "397", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建貞(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "398", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建隆(南唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "399", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建隆(南唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "400", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建隆(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "401", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建隆(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "402", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建隆(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "404", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:弘道(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "407", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:復漢(新朝及更始)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "413", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:应顺(楚)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "414", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:应顺(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "415", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:应顺(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "418", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:承康(後涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "419", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:承聖(南梁)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "420", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:承陽(北涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "421", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:政通(北周)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "422", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:文明(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "430", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:景定(南漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "432", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:景雲(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "433", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:景龍(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "434", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:更兴(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "435", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:會同(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "436", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:會同(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "438", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:正始(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "439", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:正平(梁)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "440", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:正平(隋朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "441", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:正德(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "442", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:正明(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "447", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:武定(北周)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "448", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:武平(北齊)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "450", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永光(宋)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "452", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永嘉(前涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "453", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永嘉(東漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "455", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永安(前涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "457", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永寧(前涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "458", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永康(前涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "459", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永新(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "460", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永昌(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "469", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永乐(南漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "471", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永漢(梁)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "472", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永熙(後趙)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "475", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永興(前涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "478", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:法輪(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "479", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:泰始(宋)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "487", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:清泰(楚)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "488", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:清泰(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "489", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:清泰(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "492", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:燕元(前燕)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "497", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:白烏(隋朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "498", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:皇始(後涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "500", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:皇武(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "502", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:真王(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "503", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:真興(北涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "504", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:石平(北周)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "505", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:神上(東漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "506", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:神嘉(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "507", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:神平(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "509", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:神獸(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "510", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:神凤(西晉)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "511", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:神龍(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "512", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:神龍(武周)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "518", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:绍汉(曹魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "519", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:緣禾(北涼)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "521", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:罗平(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "524", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:義嘉(宋)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "527", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:聖君(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "529", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:圣明(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "533", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:兴平(齊)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "545", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:贞明(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "546", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:贞明(閩)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "549", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:載初(唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "550", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:载初(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "552", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:通聖(隋朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "554", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:进通(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "560", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:长兴(楚)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "561", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:長興(楚)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "562", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:长兴(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "563", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:长兴(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "564", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:長興(後蜀)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "565", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:长兴(閩)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "566", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:开宝(南唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "567", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:开宝(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "568", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:開平(閩)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "569", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:開明(宋)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "570", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:开运(楚)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "571", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:开运(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "572", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:开运(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "574", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:隆安(東晉)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "577", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:隆緒(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "580", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:顺天(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "587", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:顯原(後趙)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "588", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:显德(南唐)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "589", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:显德(荊南)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "590", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:显德(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "592", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:魯興(北魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "593", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:凤凰(東晉)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "594", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:鳳曆(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "595", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:黃初(東魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "596", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:黃龍(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "597", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:黑龙(前秦)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "598", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:龍升(胡夏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "599", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:龙德(吳越)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "600", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:龙德(閩)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "601", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:龍紀(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "602", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:龙兴(新朝及更始)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "604", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:龙兴(後趙)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "607", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:（中元）(西漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "608", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:（失年號）(西魏)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "609", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:（後元）(西漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "610", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:（後元）(西漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "611", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:（後元）(西漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "613", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:？？(唐朝)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "616", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:？？(東漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "617", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:？？(東漢)"], "note": "库无、仅1源有；无第三独立来源，不入 PR"}
+{"diff_id": "659", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太初(西漢)"], "entity_ids": ["hixi1ubkeejp"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "660", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天漢(西漢)"], "entity_ids": ["hixi1ubkeejq"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "661", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太始(西漢)"], "entity_ids": ["hixi1ubkeejr"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "662", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:征和(西漢)"], "entity_ids": ["hixi1ubkeejs"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "663", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:始元(西漢)", "zhwp-中国年号列表:始元(西漢)"], "entity_ids": ["hixi1ubkeeju"], "action": "不改", "note": "止年差1，库间隔0/1 口径差（两源同向）；起年一致"}
+{"diff_id": "664", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元鳳(西漢)"], "entity_ids": ["hixi1ubkpn28"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "665", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元平(西漢)"], "entity_ids": ["hixi1ubkpn29"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "666", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:本始(西漢)"], "entity_ids": ["hixi1ubkpn2a"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "667", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:地節(西漢)"], "entity_ids": ["hixi1ubkpn2b"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "668", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:元康(西漢)", "zhwp-中国年号列表:元康(西漢)"], "entity_ids": ["hixi1ubkpn2c"], "action": "不改", "note": "止年差1，库间隔0/1 口径差（两源同向）；起年一致"}
+{"diff_id": "669", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:神爵(西漢)"], "entity_ids": ["hixi1ubkpn2d"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "670", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:五鳳(西漢)"], "entity_ids": ["hixi1ubkpn2e"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "671", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:甘露(西漢)"], "entity_ids": ["hixi1ubkpn2f"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "672", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:黃龍(西漢)"], "entity_ids": ["hixi1ubkpn2g"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "673", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:初元(西漢)"], "entity_ids": ["hixi1ubkpn2h"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "674", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永光(西漢)"], "entity_ids": ["hixi1ubkpn2i"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "675", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建昭(西漢)"], "entity_ids": ["hixi1ubkpn2j"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "676", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:竟寧(西漢)"], "entity_ids": ["hixi1ubkpn2k"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "677", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建始(西漢)"], "entity_ids": ["hixi1ubkpn2l"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "678", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:河平(西漢)"], "entity_ids": ["hixi1ubkpn2m"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "679", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:陽朔(西漢)"], "entity_ids": ["hixi1ubkpn2n"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "680", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:鴻嘉(西漢)"], "entity_ids": ["hixi1ubkpn2o"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "681", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永始(西漢)"], "entity_ids": ["hixi1ubkpn2p"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "682", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元延(西漢)"], "entity_ids": ["hixi1ubkpn2q"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "683", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:綏和(西漢)"], "entity_ids": ["hixi1ubkpn2r"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "684", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建平(西漢)"], "entity_ids": ["hixi1ubkpn2s"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "685", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元始(西漢)"], "entity_ids": ["hixi1ubkpn2v"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "686", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:居攝(西漢)"], "entity_ids": ["hixi1ubkpn2w"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "688", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:始建國(新)"], "entity_ids": ["hixi1ubkpn2y"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "689", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天鳳(新)"], "entity_ids": ["hixi1ubkpn2z"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "690", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建武中元(東漢)"], "entity_ids": ["hixi1ubkpn34"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "691", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永平(東漢)"], "entity_ids": ["hixi1ubkpn35"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "692", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:章和(東漢)"], "entity_ids": ["hixi1ubkpn38"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "693", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元興(東漢)"], "entity_ids": ["hixi1ubkpn3a"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "694", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延平(東漢)"], "entity_ids": ["hixi1ubkpn3b"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "695", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永初(東漢)"], "entity_ids": ["hixi1ubl0vls"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "696", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延光(東漢)"], "entity_ids": ["hixi1ubl0vlw"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "697", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:陽嘉(東漢)"], "entity_ids": ["hixi1ubl0vly"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "698", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永和(東漢)"], "entity_ids": ["hixi1ubl0vlz"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "699", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建康(東漢)"], "entity_ids": ["hixi1ubl0vm1"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "700", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永憙(東漢)"], "entity_ids": ["hixi1ubl0vm2"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "701", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:本初(東漢)"], "entity_ids": ["hixi1ubl0vm3"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "702", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建和(東漢)"], "entity_ids": ["hixi1ubl0vm4"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "703", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:和平(東漢)"], "entity_ids": ["hixi1ubl0vm5"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "704", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永兴(東漢)"], "entity_ids": ["hixi1ubl0vm7"], "note": "止年差-1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "705", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永康(東漢)"], "entity_ids": ["hixi1ubl0vma"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "706", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光和(東漢)"], "entity_ids": ["hixi1ubl0vmd"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "708", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:初平(東漢)"], "entity_ids": ["hixi1ubl0vmi"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "709", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:興平(東漢)"], "entity_ids": ["hixi1ubl0vmj"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "710", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:黃初(曹魏)"], "entity_ids": ["hixi1ubl0vmm"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "711", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建興(蜀漢)"], "entity_ids": ["hixi1ubl0vmp"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "712", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:黃龍(孫吳)"], "entity_ids": ["hixi1ubl0vmr"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "713", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延熙(蜀漢)"], "entity_ids": ["hixi1ublc45c"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "714", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建興(孫吳)"], "entity_ids": ["hixi1ublc45h"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "715", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:炎興(蜀漢)"], "entity_ids": ["hixi1ublc45q"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "716", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:咸熙(曹魏)"], "entity_ids": ["hixi1ublc45s"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "718", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建衡(孫吳)"], "entity_ids": ["hixi1ublc45w"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "719", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:鳳凰(孫吳)"], "entity_ids": ["hixi1ublc45x"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "720", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天璽(孫吳)"], "entity_ids": ["hixi1ublc460"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "721", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太康(西晉)"], "entity_ids": ["hixi1ublc462"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "722", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永熙(西晉)"], "entity_ids": ["hixi1ublc464"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "723", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元康(西晉)"], "entity_ids": ["hixi1ublc465"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "724", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永寧(西晉)"], "entity_ids": ["hixi1ublc469"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "725", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永安(西晉)"], "entity_ids": ["hixi1ublncoz"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "727", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光熙(西晉)"], "entity_ids": ["hixi1ublncp1"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "728", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:晏平(成漢)"], "entity_ids": ["hixi1ublncp2"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "729", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永凤(漢趙)"], "entity_ids": ["hixi1ublncp4"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "730", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:玉衡(成漢)"], "entity_ids": ["hixi1ublncp8"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "731", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建興(西晉)"], "entity_ids": ["hixi1ublncp9"], "note": "止年差-1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "732", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建元(漢趙)"], "entity_ids": ["hixi1ublncpa"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "733", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太興(東晉)"], "entity_ids": ["hixi1ublncpf"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "734", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永元(前涼)"], "entity_ids": ["hixi1ublncph"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "735", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太元(前涼)"], "entity_ids": ["hixi1ublncpk"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "736", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:咸和(東晉)"], "entity_ids": ["hixi1ublncpl"], "note": "止年差-1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "737", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建平(後趙)"], "entity_ids": ["hixi1ublncpo"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "738", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延熙(後趙)"], "entity_ids": ["hixi1ublncpp"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "739", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:咸康(東晉)"], "entity_ids": ["hixi1ublncpq"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "740", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建武(後趙)"], "entity_ids": ["hixi1ublncpr"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "741", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:漢興(成漢)"], "entity_ids": ["hixi1ublncpu"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "742", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建元(東晉)"], "entity_ids": ["hixi1ublncpv"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "743", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:太和(成漢)", "zhwp-中国年号列表:太和(成漢)"], "entity_ids": ["hixi1ublncpw"], "action": "不改", "note": "止年差1，库间隔0/1 口径差（两源同向）；起年一致"}
+{"diff_id": "744", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永和(東晉)"], "entity_ids": ["hixi1ublncpx"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "745", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永樂(前涼)"], "entity_ids": ["hixi1ublncpz"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "746", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太寧(後趙)"], "entity_ids": ["hixi1ublyl8g"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "748", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:升平(東晉)"], "entity_ids": ["hixi1ublyl8r"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "749", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:甘露(前秦)"], "entity_ids": ["hixi1ublyl8u"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "750", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建熙(前燕)"], "entity_ids": ["hixi1ublyl8v"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "751", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:隆和(東晉)", "zhwp-中国年号列表:隆和(東晉)"], "entity_ids": ["hixi1ublyl8w"], "action": "不改", "note": "止年差1，库间隔0/1 口径差（两源同向）；起年一致"}
+{"diff_id": "753", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:寧康(東晉)"], "entity_ids": ["hixi1ublyl92"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "754", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太元(東晉)"], "entity_ids": ["hixi1ublyl93"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "755", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:燕元(後燕)"], "entity_ids": ["hixi1ublyl94"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "756", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:麟嘉(後涼)", "zhwp-中国年号列表:麟嘉(後涼)"], "entity_ids": ["hixi1ubm9ts5"], "action": "不改", "note": "止年差1，库间隔0/1 口径差（两源同向）；起年一致"}
+{"diff_id": "757", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:皇始(北魏)"], "entity_ids": ["hixi1ubm9ts9"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "758", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:龍飛(後涼)"], "entity_ids": ["hixi1ubm9tsa"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "759", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太初(南涼)"], "entity_ids": ["hixi1ubm9tsb"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "760", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:延平(後燕)"], "entity_ids": ["hixi1ubm9tsc"], "note": "止年差-1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "761", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:隆安(東晉)"], "entity_ids": ["hixi1ubm9tsf"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "763", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建平(後燕)"], "entity_ids": ["hixi1ubm9tsh"], "note": "止年差-1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "764", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:燕平(南燕)"], "entity_ids": ["hixi1ubm9tsi"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "766", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:庚子(西涼)"], "entity_ids": ["hixi1ubm9tso"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "767", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光始(後燕)"], "entity_ids": ["hixi1ubm9tsr"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "768", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元興(東晉)"], "entity_ids": ["hixi1ubm9tsu"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "769", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:大亨(東晉)", "zhwp-中国年号列表:大亨(東晉)"], "entity_ids": ["hixi1ubm9tsv"], "action": "不改", "note": "止年差1，库间隔0/1 口径差（两源同向）；起年一致"}
+{"diff_id": "770", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永始(東晉)"], "entity_ids": ["hixi1ubm9tsx"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "771", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:義熙(東晉)"], "entity_ids": ["hixi1ubm9tt1"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "772", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太平(北燕)"], "entity_ids": ["hixi1ubml2bn"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "773", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永興(北魏)"], "entity_ids": ["hixi1ubml2bp"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "774", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永康(西秦)"], "entity_ids": ["hixi1ubml2bq"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "775", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:玄始(北涼)"], "entity_ids": ["hixi1ubml2br"], "note": "止年差-1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "776", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:泰常(北魏)"], "entity_ids": ["hixi1ubml2bv"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "777", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永初(劉宋)"], "entity_ids": ["hixi1ubml2c1"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "778", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:承玄(北涼)"], "entity_ids": ["hixi1ubml2c8"], "note": "止年差-1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "779", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:神䴥(北魏)"], "entity_ids": ["hixi1ubml2ca"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "780", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:延和(北魏)", "zhwp-中国年号列表:延和(北魏)"], "entity_ids": ["hixi1ubml2cd"], "action": "不改", "note": "止年差1，库间隔0/1 口径差（两源同向）；起年一致"}
+{"diff_id": "781", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:孝建(劉宋)"], "entity_ids": ["hixi1ubml2cm"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "782", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太安(北魏)"], "entity_ids": ["hixi1ubmwav5"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "783", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大明(劉宋)"], "entity_ids": ["hixi1ubmwav6"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "784", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:和平(北魏)"], "entity_ids": ["hixi1ubmwav7"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "785", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:景和(劉宋)"], "entity_ids": ["hixi1ubmwav8"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "787", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:承明(北魏)"], "entity_ids": ["hixi1ubmwavg"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "788", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太和(北魏)"], "entity_ids": ["hixi1ubmwavh"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "789", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建元(南齊)"], "entity_ids": ["hixi1ubmwavj"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "790", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永明(南齊)"], "entity_ids": ["hixi1ubmwavk"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "791", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永泰(南齊)"], "entity_ids": ["hixi1ubmwavo"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "792", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天監(南梁)"], "entity_ids": ["hixi1ubmwavs"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "793", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延昌(北魏)"], "entity_ids": ["hixi1ubmwavv"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "794", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:孝昌(北魏)", "zhwp-中国年号列表:孝昌(北魏)"], "entity_ids": ["hixi1ubmwaw0"], "action": "不改", "note": "止年差1，库间隔0/1 口径差（两源同向）；起年一致"}
+{"diff_id": "795", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永安(北魏)"], "entity_ids": ["hixi1ubmwaw4"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "796", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:中大通(南梁)"], "entity_ids": ["hixi1ubmwaw5"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "797", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天平(東魏)"], "entity_ids": ["hixi1ubn7jeo"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "798", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大統(西魏)"], "entity_ids": ["hixi1ubn7jeq"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "799", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:興和(東魏)"], "entity_ids": ["hixi1ubn7jes"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "800", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太清(南梁)"], "entity_ids": ["hixi1ubn7jev"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "801", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:承聖(南梁)", "zhwp-中国年号列表:承聖(梁)"], "entity_ids": ["hixi1ubn7jf1"], "action": "不改", "note": "止年差1，库间隔0/1 口径差（两源同向）；起年一致"}
+{"diff_id": "802", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:紹泰(南梁)", "zhwp-中国年号列表:紹泰(梁)"], "entity_ids": ["hixi1ubn7jf4"], "action": "不改", "note": "止年差1，库间隔0/1 口径差（两源同向）；起年一致"}
+{"diff_id": "803", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永定(陳)"], "entity_ids": ["hixi1ubn7jf6"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "805", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:保定(北周)"], "entity_ids": ["hixi1ubn7jfb"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "806", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天統(北齊)"], "entity_ids": ["hixi1ubn7jff"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "808", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:武平(北齊)"], "entity_ids": ["hixi1ubn7jfk"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "811", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:宣政(北周)"], "entity_ids": ["hixi1ubn7jfp"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "812", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:大象(北周)"], "entity_ids": ["hixi1ubn7jfr"], "note": "止年差-1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "813", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:開皇(隋)"], "entity_ids": ["hixi1ubniry8"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "814", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:仁壽(隋)"], "entity_ids": ["hixi1ubniryc"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "815", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大業(隋)"], "entity_ids": ["hixi1ubniryd"], "note": "止年差-1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "816", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:武德(唐)"], "entity_ids": ["hixi1ubnirys"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "817", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:貞觀(唐)"], "entity_ids": ["hixi1ubniryy"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "818", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永徽(唐)"], "entity_ids": ["hixi1ubniryz"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "819", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:龍朔(唐)"], "entity_ids": ["hixi1ubnirz1"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "820", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:麟德(唐)"], "entity_ids": ["hixi1ubnirz2"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "821", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:弘道(唐)"], "entity_ids": ["hixi1ubnu0ht"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "822", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光宅(唐)"], "entity_ids": ["hixi1ubnu0hu"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "826", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:长安(唐朝)"], "entity_ids": ["hixi1ubnu0ib"], "note": "止年差-1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "827", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:開元(唐)"], "entity_ids": ["hixi1ubnu0ij"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "828", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:显圣(唐朝)"], "entity_ids": ["hixi1ubo591e"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "829", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:寶應(唐)", "zhwp-中国年号列表:宝应(唐朝)"], "entity_ids": ["hixi1ubo591f"], "action": "不改", "note": "止年差1，库间隔0/1 口径差（两源同向）；起年一致"}
+{"diff_id": "830", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:廣德(唐)"], "entity_ids": ["hixi1ubo591g"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "831", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大曆(唐)"], "entity_ids": ["hixi1ubo591i"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "832", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建中(唐)"], "entity_ids": ["hixi1ubo591j"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "833", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:興元(唐)"], "entity_ids": ["hixi1ubo591n"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "834", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永貞(唐)"], "entity_ids": ["hixi1ubo591p"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "835", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元和(唐)"], "entity_ids": ["hixi1ubo591q"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "836", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:長慶(唐)"], "entity_ids": ["hixi1ubo591r"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "837", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太和(唐)"], "entity_ids": ["hixi1ubo591t"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "838", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:開成(唐)"], "entity_ids": ["hixi1ubo591u"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "839", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:會昌(唐)"], "entity_ids": ["hixi1ubo591v"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "840", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:乾符(唐)"], "entity_ids": ["hixi1ubo591y"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "841", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:文德(唐)"], "entity_ids": ["hixi1ubo5924"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "842", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:龍紀(唐)"], "entity_ids": ["hixi1ubo5925"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "843", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大順(唐)"], "entity_ids": ["hixi1ubo5926"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "844", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:景福(唐)"], "entity_ids": ["hixi1ubo5927"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "845", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:武义(吳)"], "entity_ids": ["hixi1uboghlb"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "847", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:長興(後唐)", "zhwp-中国年号列表:长兴(後唐)"], "entity_ids": ["hixi1uboghlp"], "action": "不改", "note": "止年差1，库间隔0/1 口径差（两源同向）；起年一致"}
+{"diff_id": "848", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:清泰(後唐)"], "entity_ids": ["hixi1uboghlt"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "849", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永和(閩)"], "entity_ids": ["hixi1uboghlv"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "850", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:光天(南漢)"], "entity_ids": ["hixi1uborq4l"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "851", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:开运(後晉)"], "entity_ids": ["hixi1uborq4q"], "note": "止年差-1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "852", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天福(後漢)"], "entity_ids": ["hixi1uborq4t"], "note": "止年差-1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "853", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:乾祐(後漢)"], "entity_ids": ["hixi1uborq4u"], "note": "止年差+1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "854", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:广顺(後周)"], "entity_ids": ["hixi1uborq4w"], "note": "止年差-1，库间隔0/1 口径差，不动数据；单源不足以 reject，记 open"}
+{"diff_id": "1002", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建元(西漢)"], "entity_ids": ["hixi1ubkeejj"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1003", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元光(西漢)"], "entity_ids": ["hixi1ubkeejk"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1004", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元朔(西漢)"], "entity_ids": ["hixi1ubkeejl"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1005", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元狩(西漢)"], "entity_ids": ["hixi1ubkeejm"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1006", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元鼎(西漢)"], "entity_ids": ["hixi1ubkeejn"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1007", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元封(西漢)"], "entity_ids": ["hixi1ubkeejo"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1008", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太初(西漢)"], "entity_ids": ["hixi1ubkeejp"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1009", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天漢(西漢)"], "entity_ids": ["hixi1ubkeejq"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1010", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太始(西漢)"], "entity_ids": ["hixi1ubkeejr"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1011", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:征和(西漢)"], "entity_ids": ["hixi1ubkeejs"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1012", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:始元(西漢)"], "entity_ids": ["hixi1ubkeeju"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1013", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元鳳(西漢)"], "entity_ids": ["hixi1ubkpn28"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1014", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元平(西漢)"], "entity_ids": ["hixi1ubkpn29"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1015", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:本始(西漢)"], "entity_ids": ["hixi1ubkpn2a"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1016", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:地節(西漢)"], "entity_ids": ["hixi1ubkpn2b"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1017", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元康(西漢)"], "entity_ids": ["hixi1ubkpn2c"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1018", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:神爵(西漢)"], "entity_ids": ["hixi1ubkpn2d"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1019", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:五鳳(西漢)"], "entity_ids": ["hixi1ubkpn2e"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1020", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:甘露(西漢)"], "entity_ids": ["hixi1ubkpn2f"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1021", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:黃龍(西漢)"], "entity_ids": ["hixi1ubkpn2g"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1022", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:初元(西漢)"], "entity_ids": ["hixi1ubkpn2h"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1023", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永光(西漢)"], "entity_ids": ["hixi1ubkpn2i"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1024", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建昭(西漢)"], "entity_ids": ["hixi1ubkpn2j"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1025", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:竟寧(西漢)"], "entity_ids": ["hixi1ubkpn2k"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1026", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:河平(西漢)"], "entity_ids": ["hixi1ubkpn2m"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1027", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:陽朔(西漢)"], "entity_ids": ["hixi1ubkpn2n"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1028", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:鴻嘉(西漢)"], "entity_ids": ["hixi1ubkpn2o"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1029", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永始(西漢)"], "entity_ids": ["hixi1ubkpn2p"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1030", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元延(西漢)"], "entity_ids": ["hixi1ubkpn2q"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1031", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:綏和(西漢)"], "entity_ids": ["hixi1ubkpn2r"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1032", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建平(西漢)"], "entity_ids": ["hixi1ubkpn2s"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1033", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太初元將(西漢)"], "entity_ids": ["hixi1ubkpn2t"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1034", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元壽(西漢)"], "entity_ids": ["hixi1ubkpn2u"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1035", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元始(西漢)"], "entity_ids": ["hixi1ubkpn2v"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1036", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:居攝(西漢)"], "entity_ids": ["hixi1ubkpn2w"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1037", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:初始(西漢)"], "entity_ids": ["hixi1ubkpn2x"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1038", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建武(東漢)"], "entity_ids": ["hixi1ubkpn33"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1039", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建武中元(東漢)"], "entity_ids": ["hixi1ubkpn34"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1040", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永平(東漢)"], "entity_ids": ["hixi1ubkpn35"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1041", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建初(東漢)"], "entity_ids": ["hixi1ubkpn36"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1042", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元和(東漢)"], "entity_ids": ["hixi1ubkpn37"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1043", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:章和(東漢)"], "entity_ids": ["hixi1ubkpn38"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1044", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永元(東漢)"], "entity_ids": ["hixi1ubkpn39"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1045", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元興(東漢)"], "entity_ids": ["hixi1ubkpn3a"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1046", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延平(東漢)"], "entity_ids": ["hixi1ubkpn3b"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1047", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永初(東漢)"], "entity_ids": ["hixi1ubl0vls"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1048", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元初(東漢)"], "entity_ids": ["hixi1ubl0vlt"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1049", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永寧(東漢)"], "entity_ids": ["hixi1ubl0vlu"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1050", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建光(東漢)"], "entity_ids": ["hixi1ubl0vlv"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1051", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延光(東漢)"], "entity_ids": ["hixi1ubl0vlw"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1052", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永建(東漢)"], "entity_ids": ["hixi1ubl0vlx"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1053", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:陽嘉(東漢)"], "entity_ids": ["hixi1ubl0vly"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1054", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永和(東漢)"], "entity_ids": ["hixi1ubl0vlz"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1055", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:漢安(東漢)"], "entity_ids": ["hixi1ubl0vm0"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1056", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建康(東漢)"], "entity_ids": ["hixi1ubl0vm1"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1057", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永憙(東漢)"], "entity_ids": ["hixi1ubl0vm2"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1058", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:本初(東漢)"], "entity_ids": ["hixi1ubl0vm3"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1059", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建和(東漢)"], "entity_ids": ["hixi1ubl0vm4"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1060", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:和平(東漢)"], "entity_ids": ["hixi1ubl0vm5"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1061", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元嘉(東漢)"], "entity_ids": ["hixi1ubl0vm6"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1062", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永興(東漢)"], "entity_ids": ["hixi1ubl0vm7"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1063", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永壽(東漢)"], "entity_ids": ["hixi1ubl0vm8"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1064", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延熹(東漢)"], "entity_ids": ["hixi1ubl0vm9"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1065", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永康(東漢)"], "entity_ids": ["hixi1ubl0vma"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1066", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建寧(東漢)"], "entity_ids": ["hixi1ubl0vmb"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1067", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:熹平(東漢)"], "entity_ids": ["hixi1ubl0vmc"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1068", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光和(東漢)"], "entity_ids": ["hixi1ubl0vmd"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1069", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:中平(東漢)"], "entity_ids": ["hixi1ubl0vme"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1070", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光熹(東漢)"], "entity_ids": ["hixi1ubl0vmf"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1071", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:昭寧(東漢)"], "entity_ids": ["hixi1ubl0vmg"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1072", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永漢(東漢)"], "entity_ids": ["hixi1ubl0vmh"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1073", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:初平(東漢)"], "entity_ids": ["hixi1ubl0vmi"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1074", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:興平(東漢)"], "entity_ids": ["hixi1ubl0vmj"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1075", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建安(東漢)"], "entity_ids": ["hixi1ubl0vmk"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1076", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延康(東漢)"], "entity_ids": ["hixi1ubl0vml"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1077", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:黃初(曹魏)"], "entity_ids": ["hixi1ubl0vmm"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1078", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:章武(蜀漢)"], "entity_ids": ["hixi1ubl0vmn"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1079", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:黃武(孫吳)"], "entity_ids": ["hixi1ubl0vmo"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1080", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建興(蜀漢)"], "entity_ids": ["hixi1ubl0vmp"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1081", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太和(曹魏)"], "entity_ids": ["hixi1ubl0vmq"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1082", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:黃龍(孫吳)"], "entity_ids": ["hixi1ubl0vmr"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1083", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:嘉禾(孫吳)"], "entity_ids": ["hixi1ubl0vms"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1084", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:青龍(曹魏)"], "entity_ids": ["hixi1ubl0vmt"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1085", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:景初(曹魏)"], "entity_ids": ["hixi1ubl0vmu"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1086", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延熙(蜀漢)"], "entity_ids": ["hixi1ublc45c"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1087", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:赤烏(孫吳)"], "entity_ids": ["hixi1ublc45d"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1088", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太元(孫吳)"], "entity_ids": ["hixi1ublc45g"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1089", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建興(孫吳)"], "entity_ids": ["hixi1ublc45h"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1090", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:神鳳(孫吳)"], "entity_ids": ["hixi1ublc45i"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1091", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:五鳳(孫吳)"], "entity_ids": ["hixi1ublc45j"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1092", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:正元(曹魏)"], "entity_ids": ["hixi1ublc45k"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1093", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太平(孫吳)"], "entity_ids": ["hixi1ublc45l"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1094", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:甘露(曹魏)"], "entity_ids": ["hixi1ublc45m"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1095", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:景耀(蜀漢)"], "entity_ids": ["hixi1ublc45n"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1096", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永安(孫吳)"], "entity_ids": ["hixi1ublc45o"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1097", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:景元(曹魏)"], "entity_ids": ["hixi1ublc45p"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1098", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:炎興(蜀漢)"], "entity_ids": ["hixi1ublc45q"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1099", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元興(孫吳)"], "entity_ids": ["hixi1ublc45r"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1100", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:咸熙(曹魏)"], "entity_ids": ["hixi1ublc45s"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1101", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:泰始(西晉)"], "entity_ids": ["hixi1ublc45t"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1102", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:甘露(孫吳)"], "entity_ids": ["hixi1ublc45u"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1103", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:寶鼎(孫吳)"], "entity_ids": ["hixi1ublc45v"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1104", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建衡(孫吳)"], "entity_ids": ["hixi1ublc45w"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1105", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:鳳凰(孫吳)"], "entity_ids": ["hixi1ublc45x"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1106", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:咸寧(西晉)"], "entity_ids": ["hixi1ublc45y"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1107", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天冊(孫吳)"], "entity_ids": ["hixi1ublc45z"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1108", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天璽(孫吳)"], "entity_ids": ["hixi1ublc460"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1109", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天紀(孫吳)"], "entity_ids": ["hixi1ublc461"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1110", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太康(西晉)"], "entity_ids": ["hixi1ublc462"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1111", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太熙(西晉)"], "entity_ids": ["hixi1ublc463"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1112", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永熙(西晉)"], "entity_ids": ["hixi1ublc464"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1113", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元康(西晉)"], "entity_ids": ["hixi1ublc465"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1114", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永平(西晉)"], "entity_ids": ["hixi1ublc466"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1115", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永康(西晉)"], "entity_ids": ["hixi1ublc467"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1116", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永寧(西晉)"], "entity_ids": ["hixi1ublc469"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1117", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太安(西晉)"], "entity_ids": ["hixi1ublc46a"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1118", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建初(成漢)"], "entity_ids": ["hixi1ublc46b"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1119", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建武(西晉)"], "entity_ids": ["hixi1ublncox"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1120", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建興(成漢)"], "entity_ids": ["hixi1ublncoy"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1121", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永安(西晉)"], "entity_ids": ["hixi1ublncoz"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1122", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永興(西晉)"], "entity_ids": ["hixi1ublncp0"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1123", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光熙(西晉)"], "entity_ids": ["hixi1ublncp1"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1124", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:晏平(成漢)"], "entity_ids": ["hixi1ublncp2"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1125", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永嘉(西晉)"], "entity_ids": ["hixi1ublncp3"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1126", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:玉衡(成漢)"], "entity_ids": ["hixi1ublncp8"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1127", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建興(西晉)"], "entity_ids": ["hixi1ublncp9"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1128", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建武(東晉)"], "entity_ids": ["hixi1ublncpc"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1129", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永安(前涼)"], "entity_ids": ["hixi1ublncpd"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1130", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光初(前趙)"], "entity_ids": ["hixi1ublncpe"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1131", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太興(東晉)"], "entity_ids": ["hixi1ublncpf"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1132", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永元(前涼)"], "entity_ids": ["hixi1ublncph"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1133", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永昌(東晉)"], "entity_ids": ["hixi1ublncpi"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1134", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太寧(東晉)"], "entity_ids": ["hixi1ublncpj"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1135", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太元(前涼)"], "entity_ids": ["hixi1ublncpk"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1136", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:咸和(東晉)"], "entity_ids": ["hixi1ublncpl"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1137", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太和(後趙)"], "entity_ids": ["hixi1ublncpm"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1138", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建平(後趙)"], "entity_ids": ["hixi1ublncpo"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1139", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延熙(後趙)"], "entity_ids": ["hixi1ublncpp"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1140", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:咸康(東晉)"], "entity_ids": ["hixi1ublncpq"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1141", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建武(後趙)"], "entity_ids": ["hixi1ublncpr"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1142", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:玉恒(成漢)"], "entity_ids": ["hixi1ublncps"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1143", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:漢興(成漢)"], "entity_ids": ["hixi1ublncpu"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1144", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建元(東晉)"], "entity_ids": ["hixi1ublncpv"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1145", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太和(成漢)"], "entity_ids": ["hixi1ublncpw"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1146", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永和(東晉)"], "entity_ids": ["hixi1ublncpx"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1147", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:嘉寧(成漢)"], "entity_ids": ["hixi1ublncpy"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1148", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永樂(前涼)"], "entity_ids": ["hixi1ublncpz"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1149", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太寧(後趙)"], "entity_ids": ["hixi1ublyl8g"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1150", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永寧(後趙)"], "entity_ids": ["hixi1ublyl8i"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1151", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:青龍(後趙)"], "entity_ids": ["hixi1ublyl8k"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1152", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:皇始(前秦)"], "entity_ids": ["hixi1ublyl8l"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1153", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元璽(前燕)"], "entity_ids": ["hixi1ublyl8m"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1154", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:和平(前涼)"], "entity_ids": ["hixi1ublyl8n"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1155", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:壽光(前秦)"], "entity_ids": ["hixi1ublyl8o"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1156", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太始(前涼)"], "entity_ids": ["hixi1ublyl8p"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1157", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光壽(前燕)"], "entity_ids": ["hixi1ublyl8q"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1158", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:升平(東晉)"], "entity_ids": ["hixi1ublyl8r"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1159", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永興(前秦)"], "entity_ids": ["hixi1ublyl8t"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1160", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:甘露(前秦)"], "entity_ids": ["hixi1ublyl8u"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1161", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建熙(前燕)"], "entity_ids": ["hixi1ublyl8v"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1162", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:隆和(東晉)"], "entity_ids": ["hixi1ublyl8w"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1163", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太清(前涼)"], "entity_ids": ["hixi1ublyl8x"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1164", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:興寧(東晉)"], "entity_ids": ["hixi1ublyl8y"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1165", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建元(前秦)"], "entity_ids": ["hixi1ublyl8z"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1166", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太和(東晉)"], "entity_ids": ["hixi1ublyl90"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1167", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:咸安(東晉)"], "entity_ids": ["hixi1ublyl91"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1168", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:寧康(東晉)"], "entity_ids": ["hixi1ublyl92"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1169", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太元(東晉)"], "entity_ids": ["hixi1ublyl93"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1170", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:白雀(後秦)"], "entity_ids": ["hixi1ublyl96"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1171", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太安(前秦)"], "entity_ids": ["hixi1ublyl97"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1172", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建義(西秦)"], "entity_ids": ["hixi1ublyl98"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1173", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太初(前秦)"], "entity_ids": ["hixi1ublyl9b"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1174", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太安(後涼)"], "entity_ids": ["hixi1ublyl9c"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1175", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建初(後秦)"], "entity_ids": ["hixi1ublyl9d"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1176", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建興(後燕)"], "entity_ids": ["hixi1ubm9ts0"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1177", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:登國(北魏)"], "entity_ids": ["hixi1ubm9ts2"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1178", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太初(西秦)"], "entity_ids": ["hixi1ubm9ts4"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1179", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:麟嘉(後涼)"], "entity_ids": ["hixi1ubm9ts5"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1180", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:皇初(後秦)"], "entity_ids": ["hixi1ubm9ts7"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1181", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永康(後燕)"], "entity_ids": ["hixi1ubm9ts8"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1182", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:皇始(北魏)"], "entity_ids": ["hixi1ubm9ts9"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1183", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:龍飛(後涼)"], "entity_ids": ["hixi1ubm9tsa"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1184", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太初(南涼)"], "entity_ids": ["hixi1ubm9tsb"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1185", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延平(後燕)"], "entity_ids": ["hixi1ubm9tsc"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1186", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建始(後燕)"], "entity_ids": ["hixi1ubm9tsd"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1187", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:神璽(北涼)"], "entity_ids": ["hixi1ubm9tse"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1188", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:隆安(東晉)"], "entity_ids": ["hixi1ubm9tsf"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1189", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天興(北魏)"], "entity_ids": ["hixi1ubm9tsg"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1190", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建平(後燕)"], "entity_ids": ["hixi1ubm9tsh"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1191", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:燕平(南燕)"], "entity_ids": ["hixi1ubm9tsi"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1192", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:咸寧(後涼)"], "entity_ids": ["hixi1ubm9tsk"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1193", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天璽(北涼)"], "entity_ids": ["hixi1ubm9tsl"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1194", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:弘始(後秦)"], "entity_ids": ["hixi1ubm9tsm"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1195", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:長樂(後燕)"], "entity_ids": ["hixi1ubm9tsn"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1196", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:庚子(西涼)"], "entity_ids": ["hixi1ubm9tso"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1197", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建和(南涼)"], "entity_ids": ["hixi1ubm9tsp"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1198", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建平(南燕)"], "entity_ids": ["hixi1ubm9tsq"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1199", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光始(後燕)"], "entity_ids": ["hixi1ubm9tsr"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1200", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永安(北涼)"], "entity_ids": ["hixi1ubm9tss"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1201", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:神鼎(後涼)"], "entity_ids": ["hixi1ubm9tst"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1202", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元興(東晉)"], "entity_ids": ["hixi1ubm9tsu"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1203", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大亨(東晉)", "zhwp-中国年号列表:大亨(東晉)"], "entity_ids": ["hixi1ubm9tsv"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1204", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:弘昌(南涼)"], "entity_ids": ["hixi1ubm9tsw"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1205", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天賜(北魏)"], "entity_ids": ["hixi1ubm9tsy"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1206", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太上(南燕)"], "entity_ids": ["hixi1ubm9tsz"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1207", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建初(西涼)"], "entity_ids": ["hixi1ubm9tt0"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1208", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:義熙(東晉)"], "entity_ids": ["hixi1ubm9tt1"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1209", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建始(後燕)"], "entity_ids": ["hixi1ubm9tt2"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1210", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:正始(北燕)"], "entity_ids": ["hixi1ubml2bk"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1211", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:嘉平(南涼)"], "entity_ids": ["hixi1ubml2bm"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1212", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太平(北燕)"], "entity_ids": ["hixi1ubml2bn"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1213", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:更始(西秦)"], "entity_ids": ["hixi1ubml2bo"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1214", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永興(北魏)"], "entity_ids": ["hixi1ubml2bp"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1215", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永康(西秦)"], "entity_ids": ["hixi1ubml2bq"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1216", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:玄始(北涼)"], "entity_ids": ["hixi1ubml2br"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1217", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:鳳翔(胡夏)"], "entity_ids": ["hixi1ubml2bs"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1218", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:神瑞(北魏)"], "entity_ids": ["hixi1ubml2bt"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1219", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永和(後秦)"], "entity_ids": ["hixi1ubml2bu"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1220", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:泰常(北魏)"], "entity_ids": ["hixi1ubml2bv"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1221", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:嘉興(西涼)"], "entity_ids": ["hixi1ubml2bw"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1222", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:昌武(胡夏)"], "entity_ids": ["hixi1ubml2bx"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1223", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元熙(東晉)"], "entity_ids": ["hixi1ubml2by"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1224", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:真興(胡夏)"], "entity_ids": ["hixi1ubml2bz"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1225", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建宏(西秦)"], "entity_ids": ["hixi1ubml2c0"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1226", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永初(劉宋)"], "entity_ids": ["hixi1ubml2c1"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1227", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:景平(劉宋)"], "entity_ids": ["hixi1ubml2c3"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1228", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元嘉(劉宋)"], "entity_ids": ["hixi1ubml2c4"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1229", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:始光(北魏)"], "entity_ids": ["hixi1ubml2c5"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1230", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:承光(胡夏)"], "entity_ids": ["hixi1ubml2c6"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1231", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:勝光(胡夏)"], "entity_ids": ["hixi1ubml2c7"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1232", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:承玄(北涼)"], "entity_ids": ["hixi1ubml2c8"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1233", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永宏(西秦)"], "entity_ids": ["hixi1ubml2c9"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1234", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:神䴥(北魏)"], "entity_ids": ["hixi1ubml2ca"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1235", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太興(北燕)"], "entity_ids": ["hixi1ubml2cb"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1236", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:義和(北涼)"], "entity_ids": ["hixi1ubml2cc"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1237", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延和(北魏)"], "entity_ids": ["hixi1ubml2cd"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1238", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太延(北魏)"], "entity_ids": ["hixi1ubml2cf"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1239", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太平真君(北魏)"], "entity_ids": ["hixi1ubml2cg"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1240", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:承平(北涼)"], "entity_ids": ["hixi1ubml2ch"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1241", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:正平(北魏)"], "entity_ids": ["hixi1ubml2ci"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1242", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:承平(北魏)"], "entity_ids": ["hixi1ubml2cj"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1243", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:興安(北魏)"], "entity_ids": ["hixi1ubml2ck"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1244", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:孝建(劉宋)"], "entity_ids": ["hixi1ubml2cm"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1245", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:興光(北魏)"], "entity_ids": ["hixi1ubmwav4"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1246", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太安(北魏)"], "entity_ids": ["hixi1ubmwav5"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1247", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大明(劉宋)"], "entity_ids": ["hixi1ubmwav6"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1248", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:和平(北魏)"], "entity_ids": ["hixi1ubmwav7"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1249", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:景和(劉宋)"], "entity_ids": ["hixi1ubmwav8"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1250", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永光(劉宋)"], "entity_ids": ["hixi1ubmwav9"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1251", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:泰始(劉宋)"], "entity_ids": ["hixi1ubmwava"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1252", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天安(北魏)"], "entity_ids": ["hixi1ubmwavb"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1253", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:皇興(北魏)"], "entity_ids": ["hixi1ubmwavc"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1254", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延興(北魏)", "zhwp-中国年号列表:延兴(北魏)"], "entity_ids": ["hixi1ubmwavd"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1255", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:泰豫(劉宋)"], "entity_ids": ["hixi1ubmwave"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1256", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元徽(劉宋)"], "entity_ids": ["hixi1ubmwavf"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1257", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:承明(北魏)", "zhwp-中国年号列表:承明(北魏)"], "entity_ids": ["hixi1ubmwavg"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1258", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太和(北魏)", "zhwp-中国年号列表:太和(北魏)"], "entity_ids": ["hixi1ubmwavh"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1259", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:昇明(劉宋)"], "entity_ids": ["hixi1ubmwavi"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1260", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建元(南齊)"], "entity_ids": ["hixi1ubmwavj"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1261", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永明(南齊)"], "entity_ids": ["hixi1ubmwavk"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1262", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延興(南齊)"], "entity_ids": ["hixi1ubmwavl"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1263", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建武(南齊)"], "entity_ids": ["hixi1ubmwavm"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1264", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:隆昌(南齊)"], "entity_ids": ["hixi1ubmwavn"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1265", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永泰(南齊)"], "entity_ids": ["hixi1ubmwavo"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1266", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永元(南齊)"], "entity_ids": ["hixi1ubmwavp"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1267", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:景明(北魏)"], "entity_ids": ["hixi1ubmwavq"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1268", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:中興(南齊)"], "entity_ids": ["hixi1ubmwavr"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1269", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天監(南梁)"], "entity_ids": ["hixi1ubmwavs"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1270", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:正始(北魏)"], "entity_ids": ["hixi1ubmwavt"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1271", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永平(北魏)"], "entity_ids": ["hixi1ubmwavu"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1272", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延昌(北魏)"], "entity_ids": ["hixi1ubmwavv"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1273", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:熙平(北魏)"], "entity_ids": ["hixi1ubmwavw"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1274", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:神龜(北魏)"], "entity_ids": ["hixi1ubmwavx"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1275", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:普通(南梁)"], "entity_ids": ["hixi1ubmwavy"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1276", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:正光(北魏)"], "entity_ids": ["hixi1ubmwavz"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1277", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:孝昌(北魏)"], "entity_ids": ["hixi1ubmwaw0"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1278", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大通(南梁)"], "entity_ids": ["hixi1ubmwaw1"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1279", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建義(北魏)"], "entity_ids": ["hixi1ubmwaw2"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1280", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:武泰(北魏)"], "entity_ids": ["hixi1ubmwaw3"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1281", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永安(北魏)"], "entity_ids": ["hixi1ubmwaw4"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1282", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:中大通(南梁)"], "entity_ids": ["hixi1ubmwaw5"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1283", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天平(東魏)"], "entity_ids": ["hixi1ubn7jeo"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1284", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大同(南梁)"], "entity_ids": ["hixi1ubn7jep"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1285", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大統(西魏)"], "entity_ids": ["hixi1ubn7jeq"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1286", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元象(東魏)"], "entity_ids": ["hixi1ubn7jer"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1287", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:興和(東魏)"], "entity_ids": ["hixi1ubn7jes"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1288", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:武定(東魏)"], "entity_ids": ["hixi1ubn7jet"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1289", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:中大同(南梁)"], "entity_ids": ["hixi1ubn7jeu"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1290", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太清(南梁)"], "entity_ids": ["hixi1ubn7jev"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1291", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大寶(南梁)"], "entity_ids": ["hixi1ubn7jew"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1292", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天保(北齊)"], "entity_ids": ["hixi1ubn7jex"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1293", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天正(南梁)"], "entity_ids": ["hixi1ubn7jey"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1294", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:承聖(南梁)"], "entity_ids": ["hixi1ubn7jf1"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1295", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天成(南梁)"], "entity_ids": ["hixi1ubn7jf3"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1296", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:紹泰(南梁)"], "entity_ids": ["hixi1ubn7jf4"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1297", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太平(南梁)"], "entity_ids": ["hixi1ubn7jf5"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1298", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永定(陳)"], "entity_ids": ["hixi1ubn7jf6"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1299", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:武成(北周)"], "entity_ids": ["hixi1ubn7jf7"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1300", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天嘉(陳)"], "entity_ids": ["hixi1ubn7jf9"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1301", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:皇建(北齊)"], "entity_ids": ["hixi1ubn7jfa"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1302", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:保定(北周)"], "entity_ids": ["hixi1ubn7jfb"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1303", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太寧(北齊)"], "entity_ids": ["hixi1ubn7jfc"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1304", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:河清(北齊)"], "entity_ids": ["hixi1ubn7jfe"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1305", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天統(北齊)"], "entity_ids": ["hixi1ubn7jff"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1306", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天和(北周)"], "entity_ids": ["hixi1ubn7jfg"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1307", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天康(陳)"], "entity_ids": ["hixi1ubn7jfh"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1308", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光大(陳)"], "entity_ids": ["hixi1ubn7jfi"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1309", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太建(陳)"], "entity_ids": ["hixi1ubn7jfj"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1310", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:武平(北齊)"], "entity_ids": ["hixi1ubn7jfk"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1311", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建德(北周)"], "entity_ids": ["hixi1ubn7jfl"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1312", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:隆化(北齊)"], "entity_ids": ["hixi1ubn7jfm"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1313", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:德昌(北齊)"], "entity_ids": ["hixi1ubn7jfn"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1314", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:承光(北齊)"], "entity_ids": ["hixi1ubn7jfo"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1315", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:宣政(北周)"], "entity_ids": ["hixi1ubn7jfp"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1316", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大成(北周)"], "entity_ids": ["hixi1ubn7jfq"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1317", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大象(北周)"], "entity_ids": ["hixi1ubn7jfr"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1318", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大定(北周)"], "entity_ids": ["hixi1ubn7jfs"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1319", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:開皇(隋)"], "entity_ids": ["hixi1ubniry8"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1320", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:仁壽(隋)"], "entity_ids": ["hixi1ubniryc"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1321", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大業(隋)"], "entity_ids": ["hixi1ubniryd"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1322", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:義寧(隋)"], "entity_ids": ["hixi1ubniryl"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1323", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:武德(唐)"], "entity_ids": ["hixi1ubnirys"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1324", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:貞觀(唐)"], "entity_ids": ["hixi1ubniryy"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1325", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永徽(唐)"], "entity_ids": ["hixi1ubniryz"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1326", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:顯慶(唐)"], "entity_ids": ["hixi1ubnirz0"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1327", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:龍朔(唐)"], "entity_ids": ["hixi1ubnirz1"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1328", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:麟德(唐)"], "entity_ids": ["hixi1ubnirz2"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1329", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:乾封(唐)"], "entity_ids": ["hixi1ubnirz3"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1330", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:總章(唐)"], "entity_ids": ["hixi1ubnirz4"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1331", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:咸亨(唐)"], "entity_ids": ["hixi1ubnirz5"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1332", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:上元(唐)"], "entity_ids": ["hixi1ubnirz6"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1333", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:儀鳳(唐)"], "entity_ids": ["hixi1ubnirz7"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1334", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:調露(唐)"], "entity_ids": ["hixi1ubnirz8"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1335", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永隆(唐)"], "entity_ids": ["hixi1ubnirz9"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1336", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:開耀(唐)"], "entity_ids": ["hixi1ubnirza"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1337", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永淳(唐)"], "entity_ids": ["hixi1ubnu0hs"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1338", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:弘道(唐)"], "entity_ids": ["hixi1ubnu0ht"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1339", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光宅(唐)", "zhwp-中国年号列表:光宅(唐朝)"], "entity_ids": ["hixi1ubnu0hu"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1340", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:嗣聖(唐)"], "entity_ids": ["hixi1ubnu0hv"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1341", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:文明(唐)"], "entity_ids": ["hixi1ubnu0hw"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1342", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永昌(唐)", "zhwp-中国年号列表:永昌(唐朝)"], "entity_ids": ["hixi1ubnu0hx"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1343", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:載初(唐)", "zhwp-中国年号列表:载初(唐朝)"], "entity_ids": ["hixi1ubnu0hy"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1344", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天授(武周)", "zhwp-中国年号列表:天授(唐朝)"], "entity_ids": ["hixi1ubnu0hz"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1345", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:如意(武周)", "zhwp-中国年号列表:如意(唐朝)"], "entity_ids": ["hixi1ubnu0i0"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1346", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:長壽(武周)", "zhwp-中国年号列表:长寿(唐朝)"], "entity_ids": ["hixi1ubnu0i1"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1347", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延載(武周)", "zhwp-中国年号列表:延載(唐朝)"], "entity_ids": ["hixi1ubnu0i2"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1348", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天冊萬歲(武周)", "zhwp-中国年号列表:天冊萬歲(唐朝)"], "entity_ids": ["hixi1ubnu0i3"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1349", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:證聖(武周)", "zhwp-中国年号列表:證聖(唐朝)"], "entity_ids": ["hixi1ubnu0i4"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1350", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:萬歲登封(武周)", "zhwp-中国年号列表:萬歲登封(唐朝)"], "entity_ids": ["hixi1ubnu0i5"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1351", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:萬歲通天(武周)", "zhwp-中国年号列表:萬歲通天(唐朝)"], "entity_ids": ["hixi1ubnu0i6"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1352", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:神功(武周)", "zhwp-中国年号列表:神功(唐朝)"], "entity_ids": ["hixi1ubnu0i7"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1353", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:聖曆(武周)", "zhwp-中国年号列表:聖曆(唐朝)"], "entity_ids": ["hixi1ubnu0i8"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1354", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:久視(武周)", "zhwp-中国年号列表:久視(唐朝)"], "entity_ids": ["hixi1ubnu0i9"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1355", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大足(武周)", "zhwp-中国年号列表:大足(唐朝)"], "entity_ids": ["hixi1ubnu0ia"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1356", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:長安(武周)", "zhwp-中国年号列表:长安(唐朝)"], "entity_ids": ["hixi1ubnu0ib"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1357", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:神龍(唐)", "zhwp-中国年号列表:神龍(唐朝)"], "entity_ids": ["hixi1ubnu0ic"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1358", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:景龍(唐)", "zhwp-中国年号列表:景龙(唐朝)"], "entity_ids": ["hixi1ubnu0id"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1359", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:唐隆(唐)"], "entity_ids": ["hixi1ubnu0ie"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1360", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:景雲(唐)", "zhwp-中国年号列表:景雲(唐朝)"], "entity_ids": ["hixi1ubnu0if"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1361", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:先天(唐)"], "entity_ids": ["hixi1ubnu0ig"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1362", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太極(唐)", "zhwp-中国年号列表:太极(唐朝)"], "entity_ids": ["hixi1ubnu0ih"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1363", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:延和(唐)", "zhwp-中国年号列表:延和(唐朝)"], "entity_ids": ["hixi1ubnu0ii"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1364", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:開元(唐)"], "entity_ids": ["hixi1ubnu0ij"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1365", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天寶(唐)"], "entity_ids": ["hixi1ubnu0ik"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1366", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:至德(唐)"], "entity_ids": ["hixi1ubnu0im"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1367", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:乾元(唐)"], "entity_ids": ["hixi1ubnu0io"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1368", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:上元(唐)"], "entity_ids": ["hixi1ubo591d"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1369", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:寶應(唐)"], "entity_ids": ["hixi1ubo591f"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1370", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:廣德(唐)"], "entity_ids": ["hixi1ubo591g"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1371", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永泰(唐)"], "entity_ids": ["hixi1ubo591h"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1372", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大曆(唐)"], "entity_ids": ["hixi1ubo591i"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1373", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建中(唐)"], "entity_ids": ["hixi1ubo591j"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1374", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:興元(唐)"], "entity_ids": ["hixi1ubo591n"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1375", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:貞元(唐)"], "entity_ids": ["hixi1ubo591o"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1376", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永貞(唐)"], "entity_ids": ["hixi1ubo591p"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1377", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:元和(唐)"], "entity_ids": ["hixi1ubo591q"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1378", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:長慶(唐)"], "entity_ids": ["hixi1ubo591r"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1379", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:寶曆(唐)"], "entity_ids": ["hixi1ubo591s"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1380", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太和(唐)"], "entity_ids": ["hixi1ubo591t"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1381", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:開成(唐)"], "entity_ids": ["hixi1ubo591u"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1382", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:會昌(唐)"], "entity_ids": ["hixi1ubo591v"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1383", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大中(唐)"], "entity_ids": ["hixi1ubo591w"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1384", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:咸通(唐)"], "entity_ids": ["hixi1ubo591x"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1385", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:乾符(唐)"], "entity_ids": ["hixi1ubo591y"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1386", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:廣明(唐)"], "entity_ids": ["hixi1ubo5920"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1387", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:中和(唐)"], "entity_ids": ["hixi1ubo5922"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1388", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光啟(唐)"], "entity_ids": ["hixi1ubo5923"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1389", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:文德(唐)"], "entity_ids": ["hixi1ubo5924"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1390", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:龍紀(唐)"], "entity_ids": ["hixi1ubo5925"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1391", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:大順(唐)"], "entity_ids": ["hixi1ubo5926"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1392", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:景福(唐)"], "entity_ids": ["hixi1ubo5927"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1393", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:乾寧(唐)"], "entity_ids": ["hixi1ubo5928"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1394", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:光化(唐)"], "entity_ids": ["hixi1ubo5929"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1395", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天復(唐)"], "entity_ids": ["hixi1ubo592a"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1396", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天祐(唐)"], "entity_ids": ["hixi1uboghkw"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1397", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:開平(後梁)"], "entity_ids": ["hixi1uboghkx"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1398", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:乾化(後梁)"], "entity_ids": ["hixi1uboghl0"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1399", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:鳳曆(後梁)"], "entity_ids": ["hixi1uboghl3"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1400", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:貞明(後梁)"], "entity_ids": ["hixi1uboghl4"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1402", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:龍德(後梁)"], "entity_ids": ["hixi1uboghld"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1404", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:同光(後唐)"], "entity_ids": ["hixi1uboghlf"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1405", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天成(後唐)"], "entity_ids": ["hixi1uboghlj"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1407", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:長興(後唐)"], "entity_ids": ["hixi1uboghlp"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1408", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:龙启(閩)"], "entity_ids": ["hixi1uboghlq"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1409", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:應順(後唐)"], "entity_ids": ["hixi1uboghlr"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1410", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:清泰(後唐)"], "entity_ids": ["hixi1uboghlt"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1411", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永和(閩)"], "entity_ids": ["hixi1uboghlv"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1412", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天福(後晉)"], "entity_ids": ["hixi1uboghlw"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1413", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:通文(閩)"], "entity_ids": ["hixi1uborq4g"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1415", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:開運(後晉)"], "entity_ids": ["hixi1uborq4q"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1418", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:天福(後漢)"], "entity_ids": ["hixi1uborq4t"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1419", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:乾祐(後漢)", "zhwp-中国年号列表:乾祐(後漢)"], "entity_ids": ["hixi1uborq4u"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1420", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:廣順(後周)"], "entity_ids": ["hixi1uborq4w"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1422", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:顯德(後周)", "zhwp-中国年号列表:显德(後周)"], "entity_ids": ["hixi1uborq4y"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1423", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天会(北漢)"], "entity_ids": ["hixi1uborq4z"], "note": "仅帝王写法不一，ruler.name 不动，转块 E（Sylvie）"}
+{"diff_id": "1588", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:应乾()"], "entity_ids": ["hixi1uborq4p"], "note": "建议补别名 type=異體，仅 zhwp 单源，待第二源"}
+{"diff_id": "1591", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天汉()"], "entity_ids": ["hixi1ubkeejq"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1592", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:元凤()"], "entity_ids": ["hixi1ubkpn28"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1593", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:地节()"], "entity_ids": ["hixi1ubkpn2b"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1594", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:五凤()"], "entity_ids": ["hixi1ubkpn2e"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1595", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:黄龙()"], "entity_ids": ["hixi1ubkpn2g"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1596", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:竟宁()"], "entity_ids": ["hixi1ubkpn2k"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1597", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:阳朔()"], "entity_ids": ["hixi1ubkpn2n"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1598", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:鸿嘉()"], "entity_ids": ["hixi1ubkpn2o"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1599", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:绥和()"], "entity_ids": ["hixi1ubkpn2r"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1600", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:太初元将()"], "entity_ids": ["hixi1ubkpn2t"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1601", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:元寿()"], "entity_ids": ["hixi1ubkpn2u"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1602", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:居摄()"], "entity_ids": ["hixi1ubkpn2w"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1603", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:始建国()"], "entity_ids": ["hixi1ubkpn2y"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1604", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天凤()"], "entity_ids": ["hixi1ubkpn2z"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1605", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:元兴()"], "entity_ids": ["hixi1ubkpn3a"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1606", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永宁()"], "entity_ids": ["hixi1ubl0vlu"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1607", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:阳嘉()"], "entity_ids": ["hixi1ubl0vly"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1608", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:汉安()"], "entity_ids": ["hixi1ubl0vm0"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1609", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永兴()"], "entity_ids": ["hixi1ubl0vm7"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1610", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永寿()"], "entity_ids": ["hixi1ubl0vm8"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1611", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建宁()"], "entity_ids": ["hixi1ubl0vmb"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1612", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:昭宁()"], "entity_ids": ["hixi1ubl0vmg"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1613", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永汉()"], "entity_ids": ["hixi1ubl0vmh"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1614", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:兴平()"], "entity_ids": ["hixi1ubl0vmj"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1615", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:黄初()"], "entity_ids": ["hixi1ubl0vmm"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1616", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:黄武()"], "entity_ids": ["hixi1ubl0vmo"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1617", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建兴()"], "entity_ids": ["hixi1ubl0vmp"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1618", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:黄龙()"], "entity_ids": ["hixi1ubl0vmr"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1619", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:青龙()"], "entity_ids": ["hixi1ubl0vmt"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1620", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:神凤()"], "entity_ids": ["hixi1ublc45i"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1621", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:炎兴()"], "entity_ids": ["hixi1ublc45q"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1622", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:元兴()"], "entity_ids": ["hixi1ublc45r"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1623", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:宝鼎()"], "entity_ids": ["hixi1ublc45v"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1624", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:凤凰()"], "entity_ids": ["hixi1ublc45x"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1625", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天册()"], "entity_ids": ["hixi1ublc45z"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1626", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天玺()"], "entity_ids": ["hixi1ublc460"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1627", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天纪()"], "entity_ids": ["hixi1ublc461"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1628", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永宁()"], "entity_ids": ["hixi1ublc469"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1629", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建兴()"], "entity_ids": ["hixi1ublncoy"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1630", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永兴()"], "entity_ids": ["hixi1ublncp0"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1631", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永凤()"], "entity_ids": ["hixi1ublncp4"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1632", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:光兴()"], "entity_ids": ["hixi1ublncp6"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1633", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建兴()"], "entity_ids": ["hixi1ublncp9"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1634", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:汉昌()"], "entity_ids": ["hixi1ublncpg"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1635", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:太宁()"], "entity_ids": ["hixi1ublncpj"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1636", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:玉恒()", "zhwp-中国年号列表:玉恒()"], "entity_ids": ["hixi1ublncps"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1637", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建国()"], "entity_ids": ["hixi1ublncpt"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1638", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:汉兴()"], "entity_ids": ["hixi1ublncpu"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1639", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:嘉宁()"], "entity_ids": ["hixi1ublncpy"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1640", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:太宁()"], "entity_ids": ["hixi1ublyl8g"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1641", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永兴()"], "entity_ids": ["hixi1ublyl8j"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1642", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:元玺()"], "entity_ids": ["hixi1ublyl8m"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1643", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:寿光()"], "entity_ids": ["hixi1ublyl8o"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1644", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:光寿()"], "entity_ids": ["hixi1ublyl8q"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1645", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永兴()"], "entity_ids": ["hixi1ublyl8t"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1646", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:兴宁()"], "entity_ids": ["hixi1ublyl8y"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1647", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:宁康()"], "entity_ids": ["hixi1ublyl92"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1648", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:燕兴()"], "entity_ids": ["hixi1ublyl95"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1649", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:建义()"], "entity_ids": ["hixi1ublyl98"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1650", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:登国()"], "entity_ids": ["hixi1ubm9ts2"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1651", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:凤凰()"], "entity_ids": ["hixi1ubm9ts3"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1652", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:神玺()"], "entity_ids": ["hixi1ubm9tse"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1653", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天兴()"], "entity_ids": ["hixi1ubm9tsg"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1654", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天玺()"], "entity_ids": ["hixi1ubm9tsl"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1655", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:元兴()"], "entity_ids": ["hixi1ubm9tsu"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1656", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天赐()"], "entity_ids": ["hixi1ubm9tsy"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1657", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:义熙()"], "entity_ids": ["hixi1ubm9tt1"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1658", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永兴()"], "entity_ids": ["hixi1ubml2bp"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1659", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:凤翔()"], "entity_ids": ["hixi1ubml2bs"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1660", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:嘉兴()"], "entity_ids": ["hixi1ubml2bw"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1661", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:建宏()"], "entity_ids": ["hixi1ubml2c0"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1662", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:胜光()"], "entity_ids": ["hixi1ubml2c7"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1663", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:永宏()"], "entity_ids": ["hixi1ubml2c9"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1664", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:太兴()"], "entity_ids": ["hixi1ubml2cb"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1665", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:兴安()"], "entity_ids": ["hixi1ubml2ck"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1666", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:兴光()"], "entity_ids": ["hixi1ubmwav4"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1667", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:皇兴()"], "entity_ids": ["hixi1ubmwavc"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1668", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:延兴()"], "entity_ids": ["hixi1ubmwavd"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1669", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:延兴()"], "entity_ids": ["hixi1ubmwavl"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1670", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:中兴()"], "entity_ids": ["hixi1ubmwavr"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1671", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天监()"], "entity_ids": ["hixi1ubmwavs"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1672", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:中兴()"], "entity_ids": ["hixi1ubmwaw7"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1673", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永兴()"], "entity_ids": ["hixi1ubmwawb"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1674", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:大统()"], "entity_ids": ["hixi1ubn7jeq"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1675", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:兴和()"], "entity_ids": ["hixi1ubn7jes"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1676", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:大宝()"], "entity_ids": ["hixi1ubn7jew"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1677", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:太宁()"], "entity_ids": ["hixi1ubn7jfc"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1678", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天统()"], "entity_ids": ["hixi1ubn7jff"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1679", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:开皇()"], "entity_ids": ["hixi1ubniry8"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1680", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:广运()"], "entity_ids": ["hixi1ubnirya"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1681", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:仁寿()"], "entity_ids": ["hixi1ubniryc"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1682", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:大业()"], "entity_ids": ["hixi1ubniryd"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1683", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天兴()"], "entity_ids": ["hixi1ubniryf"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1684", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:安乐()"], "entity_ids": ["hixi1ubniryh"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1685", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:秦兴()"], "entity_ids": ["hixi1ubniryk"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1686", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:义宁()"], "entity_ids": ["hixi1ubniryl"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1687", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:鸣凤()"], "entity_ids": ["hixi1ubnirym"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1688", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:五凤()"], "entity_ids": ["hixi1ubniryn"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1689", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:始兴()"], "entity_ids": ["hixi1ubniryp"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1690", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:开明()"], "entity_ids": ["hixi1ubniryv"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1691", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:显庆()"], "entity_ids": ["hixi1ubnirz0"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1692", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:龙朔()"], "entity_ids": ["hixi1ubnirz1"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1693", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:开耀()"], "entity_ids": ["hixi1ubnirza"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1694", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:嗣圣()"], "entity_ids": ["hixi1ubnu0hv"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1695", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:载初()"], "entity_ids": ["hixi1ubnu0hy"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1696", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:长寿()"], "entity_ids": ["hixi1ubnu0i1"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1697", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:长安()"], "entity_ids": ["hixi1ubnu0ib"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1698", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:景龙()"], "entity_ids": ["hixi1ubnu0id"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1699", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:太极()"], "entity_ids": ["hixi1ubnu0ih"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1700", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:开元()"], "entity_ids": ["hixi1ubnu0ij"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1701", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天宝()"], "entity_ids": ["hixi1ubnu0ik"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1702", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:圣武()"], "entity_ids": ["hixi1ubnu0il"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1703", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:应天()"], "entity_ids": ["hixi1ubnu0ip"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1704", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:顺天()"], "entity_ids": ["hixi1ubo591c"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1705", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:显圣()"], "entity_ids": ["hixi1ubo591e"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1706", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:宝应()"], "entity_ids": ["hixi1ubo591f"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1707", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:广德()"], "entity_ids": ["hixi1ubo591g"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1708", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:应天()"], "entity_ids": ["hixi1ubo591k"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1709", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:贞元()"], "entity_ids": ["hixi1ubo591o"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1710", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:永贞()"], "entity_ids": ["hixi1ubo591p"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1711", "verdict": "open", "rule": "R-两源", "sources": ["dila-time:太和()"], "entity_ids": ["hixi1ubo591t"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1712", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:会昌()"], "entity_ids": ["hixi1ubo591v"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1713", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:广明()"], "entity_ids": ["hixi1ubo5920"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1714", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:金统()"], "entity_ids": ["hixi1ubo5921"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1715", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:大顺()"], "entity_ids": ["hixi1ubo5926"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1716", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天宝()"], "entity_ids": ["hixi1uboghky"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1717", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:应天()"], "entity_ids": ["hixi1uboghl1"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1718", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:贞明()"], "entity_ids": ["hixi1uboghl4"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1720", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天汉()"], "entity_ids": ["hixi1uboghl8"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1721", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:武义()"], "entity_ids": ["hixi1uboghlb"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1722", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:顺义()"], "entity_ids": ["hixi1uboghlc"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1723", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:龙德()"], "entity_ids": ["hixi1uboghld"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1725", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:宝大()"], "entity_ids": ["hixi1uboghlg"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1726", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:白龙()"], "entity_ids": ["hixi1uboghli"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1728", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:宝正()"], "entity_ids": ["hixi1uboghll"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1729", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:长兴()"], "entity_ids": ["hixi1uboghlp"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1730", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:龙启()"], "entity_ids": ["hixi1uboghlq"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1731", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:应顺()"], "entity_ids": ["hixi1uboghlr"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1732", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:广政()"], "entity_ids": ["hixi1uborq4i"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1733", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:开运()"], "entity_ids": ["hixi1uborq4q"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1734", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:广顺()"], "entity_ids": ["hixi1uborq4w"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1735", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:显德()"], "entity_ids": ["hixi1uborq4y"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1736", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天会()"], "entity_ids": ["hixi1uborq4z"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1737", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:中兴()"], "entity_ids": ["hixi1uborq50"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1739", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:广运()"], "entity_ids": ["hixi1uborq57"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1779", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:龙凤()"], "entity_ids": ["hixi1ubq0ob7"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1780", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:大义()"], "entity_ids": ["hixi1ubq0ob9"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1781", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:德寿()"], "entity_ids": ["hixi1ubq0oba"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1782", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:天统()"], "entity_ids": ["hixi1ubq0obb"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1783", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:开熙()"], "entity_ids": ["hixi1ubq0obc"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1791", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表:大顺()"], "entity_ids": ["hixi1ubqbwug"], "note": "仅简体写法差异，无需动作"}
+{"diff_id": "1796", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:中平(東漢)", "zhwp-中国年号列表:中平(東漢)"], "entity_ids": ["hixi1ubl0vme"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1797", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:中興(南齊)", "zhwp-中国年号列表:中興(西燕)", "zhwp-中国年号列表:中兴(齊)", "zhwp-中国年号列表:中兴(北魏)", "zhwp-中国年号列表:中兴(南唐)", "zhwp-中国年号列表:中兴(清朝)"], "entity_ids": ["hixi1ublyl9a", "hixi1ubmwavr", "hixi1ubmwaw7", "hixi1uborq50"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1798", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:乾化(後梁)", "zhwp-中国年号列表:乾化(後梁)", "zhwp-中国年号列表:乾化(吳越)", "zhwp-中国年号列表:乾化(閩)"], "entity_ids": ["hixi1uboghl0"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1806", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:元嘉(東漢)", "dila-time:元嘉(劉宋)", "zhwp-中国年号列表:元嘉(東漢)", "zhwp-中国年号列表:元嘉(宋)"], "entity_ids": ["hixi1ubl0vm6", "hixi1ubml2c4"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1807", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:元始(西漢)", "zhwp-中国年号列表:元始(西漢)", "zhwp-中国年号列表:元始(東漢)"], "entity_ids": ["hixi1ubkpn2v"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1808", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:元延(西漢)", "zhwp-中国年号列表:元延(西漢)", "zhwp-中国年号列表:元延(西夏)"], "entity_ids": ["hixi1ubkpn2q"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1809", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:元興(東漢)", "dila-time:元興(孫吳)", "dila-time:元興(東晉)", "zhwp-中国年号列表:元兴(東漢)", "zhwp-中国年号列表:元兴(孫吳)", "zhwp-中国年号列表:元兴(東晉)", "zhwp-中国年号列表:元兴(清朝)"], "entity_ids": ["hixi1ubkpn3a", "hixi1ublc45r", "hixi1ubm9tsu"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1810", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:光宅(唐)", "zhwp-中国年号列表:光宅(唐朝)"], "entity_ids": ["hixi1ubnu0hu"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1811", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:光熙(西晉)", "dila-time:光熙(前涼)", "zhwp-中国年号列表:光熙(西晉)"], "entity_ids": ["hixi1ublncp1"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1812", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:同光(後唐)", "zhwp-中国年号列表:同光(後唐)", "zhwp-中国年号列表:同光(閩)", "zhwp-中国年号列表:同光(荊南)"], "entity_ids": ["hixi1uboghlf"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1813", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:咸安(東晉)", "zhwp-中国年号列表:咸安(東晉)", "zhwp-中国年号列表:咸安(前涼)"], "entity_ids": ["hixi1ublyl91"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1814", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:唐隆(唐)", "zhwp-中国年号列表:唐隆(唐朝)"], "entity_ids": ["hixi1ubnu0ie"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1816", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:嗣聖(唐)", "zhwp-中国年号列表:嗣圣(唐朝)"], "entity_ids": ["hixi1ubnu0hv"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1817", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:垂拱(唐)", "zhwp-中国年号列表:垂拱(唐朝)"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1820", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:大寶(南梁)", "zhwp-中国年号列表:大宝(梁)", "zhwp-中国年号列表:大寶(南漢)", "zhwp-中国年号列表:大宝(明朝)"], "entity_ids": ["hixi1ubn7jew", "hixi1uborq52"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1822", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:大曆(唐)", "zhwp-中国年号列表:大曆(唐朝)", "zhwp-中国年号列表:大曆(北宋)"], "entity_ids": ["hixi1ubo591i"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1823", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:大通(南梁)", "zhwp-中国年号列表:大通(梁)", "zhwp-中国年号列表:大通(北魏)"], "entity_ids": ["hixi1ubmwaw1"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1827", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:天康(陳)", "zhwp-中国年号列表:天康(東晉)", "zhwp-中国年号列表:天康(陳)"], "entity_ids": ["hixi1ubn7jfh"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1828", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:天復(唐)", "zhwp-中国年号列表:天復(唐朝)", "zhwp-中国年号列表:天復(後梁)", "zhwp-中国年号列表:天復(前蜀)"], "entity_ids": ["hixi1ubo592a"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1831", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:天成(南梁)", "dila-time:天成(後唐)", "zhwp-中国年号列表:天成(梁)", "zhwp-中国年号列表:天成(唐朝)", "zhwp-中国年号列表:天成(後唐)", "zhwp-中国年号列表:天成(楚)", "zhwp-中国年号列表:天成(閩)", "zhwp-中国年号列表:天成(荊南)"], "entity_ids": ["hixi1ubn7jf3", "hixi1uboghlj"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1832", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:天授(武周)", "zhwp-中国年号列表:天授(北魏)", "zhwp-中国年号列表:天授(唐朝)"], "entity_ids": ["hixi1ubnu0hz"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1835", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:天正(南梁)", "zhwp-中国年号列表:天正(梁)", "zhwp-中国年号列表:天正(金朝)", "zhwp-中国年号列表:天正(清朝)"], "entity_ids": ["hixi1ubn7jey", "hixi1ubn7jf0"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1837", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:天福(後晉)", "dila-time:天福(後漢)", "zhwp-中国年号列表:天福(後晉)", "zhwp-中国年号列表:天福(後漢)", "zhwp-中国年号列表:天福(吳越)", "zhwp-中国年号列表:天福(楚)", "zhwp-中国年号列表:天福(荊南)"], "entity_ids": ["hixi1uboghlw", "hixi1uborq4t"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1839", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:天統(北齊)", "zhwp-中国年号列表:天统(北魏)", "zhwp-中国年号列表:天统(北齊)", "zhwp-中国年号列表:天統(北周)", "zhwp-中国年号列表:天统(金朝)", "zhwp-中国年号列表:天統(金朝)", "zhwp-中国年号列表:天统(元朝)"], "entity_ids": ["hixi1ubn7jff", "hixi1ubq0obb"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1841", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:天賜(北魏)", "zhwp-中国年号列表:天赐(北魏)", "zhwp-中国年号列表:天賜(金朝)"], "entity_ids": ["hixi1ubm9tsy"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1845", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:太和(曹魏)", "dila-time:太和(東晉)", "dila-time:太和(成漢)", "dila-time:太和(後趙)", "dila-time:太和(北魏)", "dila-time:太和(唐)", "zhwp-中国年号列表:太和(曹魏)", "zhwp-中国年号列表:太和(東晉)", "zhwp-中国年号列表:太和(漢趙)", "zhwp-中国年号列表:太和(成漢)", "zhwp-中国年号列表:太和(後趙)", "zhwp-中国年号列表:太和(北魏)"], "entity_ids": ["hixi1ubl0vmq", "hixi1ublncpm", "hixi1ublncpw", "hixi1ublyl90", "hixi1ubmwavh"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1846", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:太安(西晉)", "dila-time:太安(前涼)", "dila-time:太安(前秦)", "dila-time:太安(後涼)", "dila-time:太安(北魏)", "zhwp-中国年号列表:太安(西晉)", "zhwp-中国年号列表:太安(前秦)", "zhwp-中国年号列表:太安(後涼)", "zhwp-中国年号列表:太安(北魏)"], "entity_ids": ["hixi1ublc46a", "hixi1ublyl97", "hixi1ublyl9c", "hixi1ubmwav5"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1849", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:太康(西晉)", "zhwp-中国年号列表:太康(西晉)", "zhwp-中国年号列表:太康(金朝)"], "entity_ids": ["hixi1ublc462"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1850", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:太極(唐)", "zhwp-中国年号列表:太极(唐朝)"], "entity_ids": ["hixi1ubnu0ih"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1855", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:廣德(唐)", "zhwp-中国年号列表:广德(唐朝)", "zhwp-中国年号列表:廣德(清朝)"], "entity_ids": ["hixi1ubo591g"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1856", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:廣順(後周)", "zhwp-中国年号列表:广顺(後周)", "zhwp-中国年号列表:广顺(吳越)", "zhwp-中国年号列表:广顺(荊南)"], "entity_ids": ["hixi1uborq4w"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1857", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:延和(北魏)", "dila-time:延和(唐)", "zhwp-中国年号列表:延和(北魏)", "zhwp-中国年号列表:延和(唐朝)"], "entity_ids": ["hixi1ubml2cd", "hixi1ubnu0ii"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1858", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:延康(東漢)", "zhwp-中国年号列表:延康(東漢)", "zhwp-中国年号列表:延康(唐朝)", "zhwp-中国年号列表:延康(元朝)"], "entity_ids": ["hixi1ubl0vml", "hixi1ubniryq"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1859", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:延興(北魏)", "dila-time:延興(南齊)", "zhwp-中国年号列表:延兴(後趙)", "zhwp-中国年号列表:延兴(齊)", "zhwp-中国年号列表:延兴(北魏)"], "entity_ids": ["hixi1ubmwavd", "hixi1ubmwavl"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1861", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:建光(東漢)", "zhwp-中国年号列表:建光(東漢)", "zhwp-中国年号列表:建光(後燕)"], "entity_ids": ["hixi1ubl0vlv"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1862", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:建平(西漢)", "dila-time:建平(後趙)", "dila-time:建平(後燕)", "dila-time:建平(南燕)", "zhwp-中国年号列表:建平(西漢)", "zhwp-中国年号列表:建平(後趙)", "zhwp-中国年号列表:建平(後燕)", "zhwp-中国年号列表:建平(西燕)", "zhwp-中国年号列表:建平(南燕)", "zhwp-中国年号列表:建平(北涼)", "zhwp-中国年号列表:建平(宋)", "zhwp-中国年号列表:建平(北魏)"], "entity_ids": ["hixi1ubkpn2s", "hixi1ublncpo", "hixi1ublyl9e", "hixi1ubm9tsh", "hixi1ubm9tsq"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1863", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:建康(東漢)", "zhwp-中国年号列表:建康(東漢)", "zhwp-中国年号列表:建康(東晉)"], "entity_ids": ["hixi1ubl0vm1"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1865", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:建武(東漢)", "dila-time:建武(西晉)", "dila-time:建武(東晉)", "dila-time:建武(後趙)", "dila-time:建武(前涼)", "dila-time:建武(南齊)", "zhwp-中国年号列表:建武(東漢)", "zhwp-中国年号列表:建武(西晉)", "zhwp-中国年号列表:建武(東晉)", "zhwp-中国年号列表:建武(後趙)", "zhwp-中国年号列表:建武(西燕)", "zhwp-中国年号列表:建武(齊)", "zhwp-中国年号列表:建武(北魏)"], "entity_ids": ["hixi1ubkpn33", "hixi1ublncox", "hixi1ublncpc", "hixi1ublncpr", "hixi1ublyl9g", "hixi1ubmwavm"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1866", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:建義(西秦)", "dila-time:建義(北魏)", "zhwp-中国年号列表:建义(西秦)", "zhwp-中国年号列表:建义(宋)", "zhwp-中国年号列表:建义(齊)", "zhwp-中国年号列表:建義(北魏)"], "entity_ids": ["hixi1ublyl98", "hixi1ubmwaw2"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1867", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:建興(蜀漢)", "dila-time:建興(孫吳)", "dila-time:建興(西晉)", "dila-time:建興(成漢)", "dila-time:建興(前涼)", "dila-time:建興(後燕)", "zhwp-中国年号列表:建兴(蜀漢)", "zhwp-中国年号列表:建興(孫吳)", "zhwp-中国年号列表:建兴(西晉)", "zhwp-中国年号列表:建兴(成漢)", "zhwp-中国年号列表:建兴(前涼)", "zhwp-中国年号列表:建興(後燕)"], "entity_ids": ["hixi1ubl0vmp", "hixi1ublc45h", "hixi1ublncoy", "hixi1ublncp9", "hixi1ubm9ts0"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1869", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:弘道(唐)", "zhwp-中国年号列表:弘道(唐朝)"], "entity_ids": ["hixi1ubnu0ht"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1870", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:應順(後唐)", "zhwp-中国年号列表:应顺(後唐)", "zhwp-中国年号列表:应顺(吳越)", "zhwp-中国年号列表:应顺(楚)", "zhwp-中国年号列表:应顺(荊南)"], "entity_ids": ["hixi1uboghlr"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1872", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:承聖(南梁)", "zhwp-中国年号列表:承聖(梁)"], "entity_ids": ["hixi1ubn7jf1"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1873", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:文明(唐)", "zhwp-中国年号列表:文明(唐朝)"], "entity_ids": ["hixi1ubnu0hw"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1874", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:升平(東晉)", "dila-time:升平(前涼)", "zhwp-中国年号列表:升平(東晉)", "zhwp-中国年号列表:升平(前涼)"], "entity_ids": ["hixi1ublyl8r"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1876", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:景雲(唐)", "zhwp-中国年号列表:景雲(唐朝)"], "entity_ids": ["hixi1ubnu0if"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1877", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:景龍(唐)", "zhwp-中国年号列表:景龙(唐朝)"], "entity_ids": ["hixi1ubnu0id"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1879", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:正始(北燕)", "dila-time:正始(北魏)", "zhwp-中国年号列表:正始(曹魏)", "zhwp-中国年号列表:正始(北燕)", "zhwp-中国年号列表:正始(北魏)"], "entity_ids": ["hixi1ublc45e", "hixi1ubml2bk", "hixi1ubmwavt"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1880", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:正平(北魏)", "zhwp-中国年号列表:正平(梁)", "zhwp-中国年号列表:正平(北魏)", "zhwp-中国年号列表:正平(隋朝)"], "entity_ids": ["hixi1ubml2ci"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1883", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:武定(東魏)", "zhwp-中国年号列表:武定(東魏)", "zhwp-中国年号列表:武定(北周)"], "entity_ids": ["hixi1ubn7jet"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1884", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:武平(北齊)", "zhwp-中国年号列表:武平(北齊)"], "entity_ids": ["hixi1ubn7jfk"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1885", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:永光(西漢)", "dila-time:永光(劉宋)", "zhwp-中国年号列表:永光(西漢)", "zhwp-中国年号列表:永光(宋)"], "entity_ids": ["hixi1ubkpn2i", "hixi1ubmwav9"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1887", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:永嘉(西晉)", "dila-time:永嘉(前涼)", "zhwp-中国年号列表:永嘉(東漢)", "zhwp-中国年号列表:永嘉(西晉)"], "entity_ids": ["hixi1ublncp3"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1889", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:永寧(東漢)", "dila-time:永寧(西晉)", "dila-time:永寧(後趙)", "dila-time:永寧(前涼)", "zhwp-中国年号列表:永宁(東漢)", "zhwp-中国年号列表:永宁(西晉)", "zhwp-中国年号列表:永寧(後趙)", "zhwp-中国年号列表:永寧(明朝)"], "entity_ids": ["hixi1ubl0vlu", "hixi1ublc469", "hixi1ublyl8i"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1890", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:永康(東漢)", "dila-time:永康(西晉)", "dila-time:永康(前涼)", "dila-time:永康(後燕)", "dila-time:永康(西秦)", "zhwp-中国年号列表:永康(東漢)", "zhwp-中国年号列表:永康(西晉)", "zhwp-中国年号列表:永康(後燕)", "zhwp-中国年号列表:永康(西秦)"], "entity_ids": ["hixi1ubl0vma", "hixi1ublc467", "hixi1ubm9ts8", "hixi1ubml2bq"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1891", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:永昌(東晉)", "dila-time:永昌(唐)", "zhwp-中国年号列表:永昌(東晉)", "zhwp-中国年号列表:永昌(唐朝)", "zhwp-中国年号列表:永昌(明朝)", "zhwp-中国年号列表:永昌(清朝)"], "entity_ids": ["hixi1ublncpi", "hixi1ubnu0hx", "hixi1ubqbwuh"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1894", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:永漢(東漢)", "zhwp-中国年号列表:永汉(東漢)", "zhwp-中国年号列表:永漢(梁)"], "entity_ids": ["hixi1ubl0vmh"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1895", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:永熙(西晉)", "zhwp-中国年号列表:永熙(西晉)", "zhwp-中国年号列表:永熙(後趙)", "zhwp-中国年号列表:永熙(北魏)"], "entity_ids": ["hixi1ublc464", "hixi1ubmwawa"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1896", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:永興(東漢)", "dila-time:永興(西晉)", "dila-time:永興(前涼)", "dila-time:永興(前秦)", "dila-time:永興(北魏)", "zhwp-中国年号列表:永兴(東漢)", "zhwp-中国年号列表:永兴(西晉)", "zhwp-中国年号列表:永兴(後趙)", "zhwp-中国年号列表:永兴(前秦)", "zhwp-中国年号列表:永兴(北魏)", "zhwp-中国年号列表:永兴(明朝)", "zhwp-中国年号列表:永兴(清朝)"], "entity_ids": ["hixi1ubl0vm7", "hixi1ublncp0", "hixi1ublyl8j", "hixi1ublyl8t", "hixi1ubml2bp", "hixi1ubmwawb"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1898", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:泰始(西晉)", "dila-time:泰始(劉宋)", "zhwp-中国年号列表:泰始(西晉)", "zhwp-中国年号列表:泰始(宋)"], "entity_ids": ["hixi1ublc45t", "hixi1ubmwava"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1901", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:清泰(後唐)", "zhwp-中国年号列表:清泰(後唐)", "zhwp-中国年号列表:清泰(吳越)", "zhwp-中国年号列表:清泰(楚)", "zhwp-中国年号列表:清泰(荊南)"], "entity_ids": ["hixi1uboghlt"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1903", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:皇始(前秦)", "dila-time:皇始(北魏)", "zhwp-中国年号列表:皇始(前秦)", "zhwp-中国年号列表:皇始(後涼)", "zhwp-中国年号列表:皇始(北魏)"], "entity_ids": ["hixi1ublyl8l", "hixi1ubm9ts9"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1904", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:真興(胡夏)", "zhwp-中国年号列表:真興(夏)", "zhwp-中国年号列表:真興(北涼)"], "entity_ids": ["hixi1ubml2bz"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1905", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:神鳳(孫吳)", "zhwp-中国年号列表:神凤(孫吳)", "zhwp-中国年号列表:神凤(西晉)"], "entity_ids": ["hixi1ublc45i"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1906", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:神龍(唐)", "dila-time:神龍(武周)", "zhwp-中国年号列表:神龍(唐朝)"], "entity_ids": ["hixi1ubnu0ic"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1912", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:興平(東漢)", "zhwp-中国年号列表:兴平(東漢)", "zhwp-中国年号列表:兴平(齊)"], "entity_ids": ["hixi1ubl0vmj"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1914", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:貞明(後梁)", "zhwp-中国年号列表:贞明(後梁)", "zhwp-中国年号列表:贞明(吳越)", "zhwp-中国年号列表:贞明(閩)"], "entity_ids": ["hixi1uboghl4"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1916", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:長興(後唐)", "zhwp-中国年号列表:长兴(後唐)", "zhwp-中国年号列表:长兴(吳越)", "zhwp-中国年号列表:长兴(楚)", "zhwp-中国年号列表:長興(楚)", "zhwp-中国年号列表:长兴(閩)", "zhwp-中国年号列表:長興(後蜀)", "zhwp-中国年号列表:长兴(荊南)"], "entity_ids": ["hixi1uboghlp"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1918", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:開平(後梁)", "zhwp-中国年号列表:開平(後梁)", "zhwp-中国年号列表:開平(閩)"], "entity_ids": ["hixi1uboghkx"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1921", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:隆安(東晉)", "zhwp-中国年号列表:隆安(東晉)"], "entity_ids": ["hixi1ubm9tsf"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1925", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:顯德(後周)", "zhwp-中国年号列表:显德(後周)", "zhwp-中国年号列表:显德(南唐)", "zhwp-中国年号列表:显德(吳越)", "zhwp-中国年号列表:显德(荊南)"], "entity_ids": ["hixi1uborq4y"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1926", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:鳳凰(孫吳)", "dila-time:鳳凰(前涼)", "zhwp-中国年号列表:凤凰(孫吳)", "zhwp-中国年号列表:凤凰(東晉)", "zhwp-中国年号列表:凤凰(前涼)"], "entity_ids": ["hixi1ublc45x", "hixi1ubm9ts3"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1927", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:鳳曆(後梁)", "zhwp-中国年号列表:鳳曆(後梁)", "zhwp-中国年号列表:鳳曆(吳越)"], "entity_ids": ["hixi1uboghl3"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1928", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:黃初(曹魏)", "zhwp-中国年号列表:黄初(曹魏)", "zhwp-中国年号列表:黃初(東魏)"], "entity_ids": ["hixi1ubl0vmm"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1929", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:黃龍(西漢)", "dila-time:黃龍(孫吳)", "zhwp-中国年号列表:黄龙(西漢)", "zhwp-中国年号列表:黄龙(孫吳)", "zhwp-中国年号列表:黃龍(唐朝)"], "entity_ids": ["hixi1ubkpn2g", "hixi1ubl0vmr"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1930", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:龍德(後梁)", "zhwp-中国年号列表:龙德(後梁)", "zhwp-中国年号列表:龙德(吳越)", "zhwp-中国年号列表:龙德(閩)"], "entity_ids": ["hixi1uboghld"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1931", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:龍紀(唐)", "zhwp-中国年号列表:龍紀(唐朝)"], "entity_ids": ["hixi1ubo5925"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1933", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time:龍飛(後涼)", "zhwp-中国年号列表:龍飛(後涼)", "zhwp-中国年号列表:龍飛(明朝)"], "entity_ids": ["hixi1ubm9tsa"], "action": "不改", "note": "同名分属不同政权，库内各条均在，无悬空库条"}
+{"diff_id": "1", "verdict": "reject", "rule": "R-范围", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：中平 189 为同一年号后段(库 184–189)，源按帝王/年份拆行，非另条"}
+{"diff_id": "2", "verdict": "reject", "rule": "R-范围", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：乾化 913–915 为朱友貞段，库 911–915 已合并三段，非另条"}
+{"diff_id": "3", "verdict": "reject", "rule": "R-范围", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：前涼沿用西晉愍帝建興年号，非自建年号；库体例只收自建（及鳳凰等史载例外），不另立条"}
+{"diff_id": "4", "verdict": "reject", "rule": "R-范围", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同上，前涼沿用建興"}
+{"diff_id": "5", "verdict": "reject", "rule": "R-范围", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同上，前涼沿用建興"}
+{"diff_id": "6", "verdict": "reject", "rule": "R-范围", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同上，前涼沿用建興"}
+{"diff_id": "7", "verdict": "reject", "rule": "R-范围", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：承和 与库北涼永和(433–439，沮渠牧犍)为同一年号异名(魏書作永和，他书作承和)，不另立条；异名待核《魏書》卷九十九、《宋書》，建议入永和 description"}
+{"diff_id": "8", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表", "dila-time"], "note": "out-of-scope（体例/政权口径差）：前涼沿用東晉升平，非自建，不另立条"}
+{"diff_id": "9", "verdict": "reject", "rule": "R-范围", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同上"}
+{"diff_id": "618", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动", "entity_ids": ["hixi1ublc46b"]}
+{"diff_id": "619", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "源按帝王拆段(911–913 朱溫)，库合并 911–915，非误", "entity_ids": ["hixi1uboghl0"]}
+{"diff_id": "620", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动", "entity_ids": ["hixi1ubkeejo"]}
+{"diff_id": "621", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "DILA 终年 \"-2-1\" 为解析/跨零年写法，库 -2～-1 无误(无公元0年)；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubkpn2u"]}
+{"diff_id": "622", "verdict": "reject", "rule": "R-两源", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动", "entity_ids": ["hixi1ublc46a"]}
+{"diff_id": "623", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "DILA 362–363 与库及 zhwp 355–356(張祚)不符，疑 DILA 误挂；库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ublyl8p"]}
+{"diff_id": "624", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "DILA 372 疑误挂咸安；库 366–371 与 zhwp 一致；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ublyl90"]}
+{"diff_id": "625", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ublyl95"]}
+{"diff_id": "626", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "zhwp 止年 287 为笔误(应 387)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubm9ts3"]}
+{"diff_id": "627", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "DILA 477–477 为末段/拆分，库 473–477 与另源一致；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubmwavf"]}
+{"diff_id": "628", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubmwaw8"]}
+{"diff_id": "629", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "天正 蕭棟 551 年一岁；DILA 551–553 混入西梁，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubn7jey"]}
+{"diff_id": "630", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubniryg"]}
+{"diff_id": "631", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubniryj"]}
+{"diff_id": "632", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubniryq"]}
+{"diff_id": "633", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "昌達 618–621 库标\"起止年存疑待人核\"，zhwp 618–619，无第三源；待核《舊唐書》《資治通鑑》；2026-10-13 Sutton 只读核：第三源未核到（旧唐书朱粲传页不可取）；保持 open", "entity_ids": ["hixi1ubniryr"]}
+{"diff_id": "634", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubnu0ip"]}
+{"diff_id": "635", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubo591k"]}
+{"diff_id": "636", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1uboghlq"]}
+{"diff_id": "637", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "zhwp 按帝王拆段(劉旻 951–954、劉鈞 954–956)，库合并为 951–957 (957 改天會，口径差≤1)；另 天會 ruler 库作劉旻、zhwp 作劉鈞 → 转块 E；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1uborq4v"]}
+{"diff_id": "647", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "库1351–1356 与 zhwp 1350–1353 差≥2且单源；待核《明史》《元史》；2026-10-13 Sutton 只读核：《明史》卷一百二十三原文：至正十一年…建元治平 → 起年1351有原文；止年原文不写，保持 open", "entity_ids": ["hixi1ubq0ob5"]}
+{"diff_id": "648", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "库1356–1360 与 zhwp 1354–1356 差≥2且单源；待核；2026-10-13 Sutton 只读核：《明史》/《元史》卷四三均无太平起止年；保持 open", "entity_ids": ["hixi1ubq0ob8"]}
+{"diff_id": "649", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "疑库误：陳友諒大義 1360–1363，库止 1361；zhwp 单源，待核《明史》卷一百二十三；2026-10-13 Sutton 只读核：《明史》卷一百二十三「改元大義」原文不写年；名有据、年无原文，保持 open", "entity_ids": ["hixi1ubq0ob9"]}
+{"diff_id": "650", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "疑库误：陳理德壽 1363–1364，库 1361–1363；zhwp 单源，待核；2026-10-13 Sutton 只读核：《明史》「嗣偽位，改元德壽」原文不写年；保持 open", "entity_ids": ["hixi1ubq0oba"]}
+{"diff_id": "651", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubq0obb"]}
+{"diff_id": "652", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubqbwug"]}
+{"diff_id": "654", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubkeejj"]}
+{"diff_id": "655", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubkeejk"]}
+{"diff_id": "656", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubkeejl"]}
+{"diff_id": "657", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubkeejm"]}
+{"diff_id": "658", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubkeejn"]}
+{"diff_id": "687", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubkpn2x"]}
+{"diff_id": "707", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubl0vme"]}
+{"diff_id": "717", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ublc45t"]}
+{"diff_id": "726", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ublncp0"]}
+{"diff_id": "747", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ublyl8m"]}
+{"diff_id": "752", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ublyl91"]}
+{"diff_id": "762", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubm9tsg"]}
+{"diff_id": "765", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubm9tsk"]}
+{"diff_id": "786", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubmwava"]}
+{"diff_id": "804", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubn7jf7"]}
+{"diff_id": "807", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubn7jfi"]}
+{"diff_id": "809", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubn7jfm"]}
+{"diff_id": "810", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubn7jfn"]}
+{"diff_id": "823", "verdict": "open", "rule": "R-两源", "sources": ["zhwp-中国年号列表"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubnu0hy"]}
+{"diff_id": "824", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubnu0i4"]}
+{"diff_id": "825", "verdict": "open", "rule": "R-两源", "sources": ["dila-time"], "note": "起/止年差≤1，属改元当年记年口径差(库内口径本就混用，裁决不归一)，库不动；单链来源，不足以 reject，记 open（数据不动）", "entity_ids": ["hixi1ubnu0i8"]}
+{"diff_id": "958", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubkpn32"]}
+{"diff_id": "959", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ublyl8j"]}
+{"diff_id": "960", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubm9tsx"]}
+{"diff_id": "961", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubn7jez"]}
+{"diff_id": "962", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubnirye"]}
+{"diff_id": "963", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryf"]}
+{"diff_id": "964", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryg"]}
+{"diff_id": "965", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryh"]}
+{"diff_id": "966", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryi"]}
+{"diff_id": "967", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryj"]}
+{"diff_id": "968", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryk"]}
+{"diff_id": "969", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubnirym"]}
+{"diff_id": "970", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库；帝王写法不一已转块 E", "entity_ids": ["hixi1ubniryn"]}
+{"diff_id": "971", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryo"]}
+{"diff_id": "972", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryp"]}
+{"diff_id": "973", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryq"]}
+{"diff_id": "974", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryr"]}
+{"diff_id": "975", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryu"]}
+{"diff_id": "976", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryv"]}
+{"diff_id": "977", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryw"]}
+{"diff_id": "978", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubniryx"]}
+{"diff_id": "979", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubnu0il"]}
+{"diff_id": "980", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubnu0ip"]}
+{"diff_id": "981", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库；帝王写法不一已转块 E", "entity_ids": ["hixi1ubo591c"]}
+{"diff_id": "982", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubo591e"]}
+{"diff_id": "983", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubo591k"]}
+{"diff_id": "984", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubo591m"]}
+{"diff_id": "985", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubo591z"]}
+{"diff_id": "986", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库；帝王写法不一已转块 E", "entity_ids": ["hixi1ubo5921"]}
+{"diff_id": "987", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1uboghl1"]}
+{"diff_id": "988", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubpe783"]}
+{"diff_id": "989", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubq0ob5"]}
+{"diff_id": "990", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubq0ob7"]}
+{"diff_id": "991", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库；帝王写法不一已转块 E", "entity_ids": ["hixi1ubq0ob8"]}
+{"diff_id": "992", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubq0ob9"]}
+{"diff_id": "993", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库；帝王写法不一已转块 E", "entity_ids": ["hixi1ubq0oba"]}
+{"diff_id": "994", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库；帝王写法不一已转块 E", "entity_ids": ["hixi1ubq0obb"]}
+{"diff_id": "995", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库；帝王写法不一已转块 E", "entity_ids": ["hixi1ubq0obc"]}
+{"diff_id": "998", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库；帝王写法不一已转块 E", "entity_ids": ["hixi1ubqbwug"]}
+{"diff_id": "999", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubqbwuh"]}
+{"diff_id": "1000", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库；帝王写法不一已转块 E", "entity_ids": ["hixi1ubqbwuo"]}
+{"diff_id": "1001", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：源把割据/僭伪政权列在隋唐元明清名下，库独立成政权；政权划分口径差，不改库", "entity_ids": ["hixi1ubqbwup"]}
+{"diff_id": "1801", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1ubn7jf8"]}
+{"diff_id": "1803", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1uboghlm"]}
+{"diff_id": "1825", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1ubniryo"]}
+{"diff_id": "1833", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1ubniryx"]}
+{"diff_id": "1836", "verdict": "reject", "rule": "R-范围", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1uboghkw", "hixi1ubq0ob6"]}
+{"diff_id": "1851", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1ubniryp"]}
+{"diff_id": "1860", "verdict": "reject", "rule": "R-范围", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1ubkeejj", "hixi1ublncpa", "hixi1ublncpv", "hixi1ublyl8s", "hixi1ublyl8z", "hixi1ubmwavj"]}
+{"diff_id": "1864", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1ublyl9f", "hixi1ubmwaw6"]}
+{"diff_id": "1871", "verdict": "reject", "rule": "R-范围", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1ublncpn", "hixi1ubml2c6", "hixi1ubn7jfo"]}
+{"diff_id": "1886", "verdict": "reject", "rule": "R-范围", "sources": ["dila-time", "zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1ubl0vlz", "hixi1ublncpx", "hixi1ubml2bu", "hixi1ubml2ce", "hixi1uboghlv"]}
+{"diff_id": "1902", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1ublyl8h", "hixi1ublyl94"]}
+{"diff_id": "1919", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1ubniryv"]}
+{"diff_id": "1924", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1ubo591c"]}
+{"diff_id": "1934", "verdict": "reject", "rule": "R-范围", "sources": ["zhwp-中国年号列表"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动", "entity_ids": ["hixi1ubq0ob7"]}
+{"diff_id": "1935", "verdict": "reject", "rule": "R-范围", "sources": ["dila-time"], "note": "out-of-scope（体例/政权口径差）：同名异朝，各朝已分条；源侧另政权/他朝同名不入库范围或已有对应条，库不动"}
