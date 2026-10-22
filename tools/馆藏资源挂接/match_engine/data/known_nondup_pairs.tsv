@@ -1,0 +1,7 @@
+# 已知「非重复」Work 对（同题同责任者但各为独立书；来源：Sabine／Selene 攷考疑重复Work对 行13/14、补漏3对 行7，2026-10-15）。
+# 用途：tier.judge 中候选 Work 两两都在本表内时，不报 DUP_WORK_SUSPECT；且若只有一个候选的「主题名」归一键等于记录首个题名键，则取该 Work。
+work_a	work_b	note
+d59f2nkfnqwx	d59f2nj97gub	瀕湖脈學／奇經八脈考：合刻记录触发的误报
+d59f2nkfnqwx	d59f2nj70su9	瀕湖脈學／脈訣考證：同上
+d59f2nj97gub	d59f2nj70su9	奇經八脈考／脈訣考證：同上
+d59f2nj97gub	d59f2nk0ocn6	奇經八脈考×本草綱目：独立著作（本草綱目新校正本仅附刻），Sabine 10-15 授权补入

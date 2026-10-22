@@ -1,0 +1,15 @@
+{
+  "ambiguous_keys": 3868,
+  "key_rows": 68964,
+  "keytable_sha256": "e14c04c93ec5e134cdec4fd84023fcdb8aa21be79e7ec7b4a78039fde0e26a76",
+  "limit_people": 0,
+  "live_entities": 38221,
+  "promoted_dangling": 0,
+  "promoted_rows": 2981,
+  "redirect_rows": 3618,
+  "redirect_sha256": "cc2714599f62878f7123a8afe2761b7b5cf676d107fa4d1c121f7ecd3a4077b5",
+  "script_sha256": "f9fb1ba2a2f2657b1d0b2f2990b586c385f181de066621542d4dc42cdf88e692",
+  "source_commit": "38e8c8e3aeebad96a3a7906c372ea07c52441860",
+  "source_repo": "open-guji/book-index",
+  "subtypes": "all"
+}

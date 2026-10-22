@@ -1,0 +1,12 @@
+# 站：www.wul.waseda.ac.jp kotenseki（静态 HTML）。真：库内抽样 url，curl 200 且浏览器可渲染题名；假：编号段换 9，curl 404 约 239B，浏览器 404 Not Found。
+pair_id	kind	url	how_fake	http_code	final_url	body_bytes	title	markers	fetched_at
+waseda-01	real	https://www.wul.waseda.ac.jp/kotenseki/html/ya09/ya09_00239/index.html		200	https://www.wul.waseda.ac.jp/kotenseki/html/ya09/ya09_00239/index.html	6946	傷寒尚論篇全書 / 喩嘉言 [著] ; 徐忠可 訂	浏览器可渲染题名	2026-10-15 02:04:59
+waseda-01	fake	https://www.wul.waseda.ac.jp/kotenseki/html/ya09/ya09_99999/index.html	末位编号段换为同长 9（00239→99999）	404	https://www.wul.waseda.ac.jp/kotenseki/html/ya09/ya09_99999/index.html	239	-	404 Not Found	2026-10-15 02:05:02
+waseda-02	real	https://www.wul.waseda.ac.jp/kotenseki/html/ro13/ro13_03071/index.html		200	https://www.wul.waseda.ac.jp/kotenseki/html/ro13/ro13_03071/index.html	6804	天民遺言. 巻上,下 / 天民 遺稿 ; 并河永崇 集録	浏览器可渲染题名	2026-10-15 02:05:05
+waseda-02	fake	https://www.wul.waseda.ac.jp/kotenseki/html/ro13/ro13_99999/index.html	末位编号段换为同长 9（03071→99999）	404	https://www.wul.waseda.ac.jp/kotenseki/html/ro13/ro13_99999/index.html	239	-	404 Not Found	2026-10-15 02:05:07
+waseda-03	real	https://www.wul.waseda.ac.jp/kotenseki/html/ro12/ro12_00091/index.html		200	https://www.wul.waseda.ac.jp/kotenseki/html/ro12/ro12_00091/index.html	9197	論語徴集覧. 巻之1-20,附巻 / 何晏 集解 ; 朱熹 集註	浏览器可渲染题名	2026-10-15 02:05:10
+waseda-03	fake	https://www.wul.waseda.ac.jp/kotenseki/html/ro12/ro12_99999/index.html	末位编号段换为同长 9（00091→99999）	404	https://www.wul.waseda.ac.jp/kotenseki/html/ro12/ro12_99999/index.html	239	-	404 Not Found	2026-10-15 02:05:13
+waseda-04	real	https://www.wul.waseda.ac.jp/kotenseki/html/ru05/ru05_02698/index.html		200	https://www.wul.waseda.ac.jp/kotenseki/html/ru05/ru05_02698/index.html	6205	天下一統志. [序目],巻之1-90 / 万安 ほか纂修	浏览器可渲染题名	2026-10-15 02:05:16
+waseda-04	fake	https://www.wul.waseda.ac.jp/kotenseki/html/ru05/ru05_99999/index.html	末位编号段换为同长 9（02698→99999）	404	https://www.wul.waseda.ac.jp/kotenseki/html/ru05/ru05_99999/index.html	239	-	404 Not Found	2026-10-15 02:05:19
+waseda-05	real	https://www.wul.waseda.ac.jp/kotenseki/html/ya09/ya09_00430/index.html		200	https://www.wul.waseda.ac.jp/kotenseki/html/ya09/ya09_00430/index.html	6501	傷寒論斉子伝. 1-6 / 嵐山 著 ; 渥美類長 校	浏览器可渲染题名	2026-10-15 02:05:21
+waseda-05	fake	https://www.wul.waseda.ac.jp/kotenseki/html/ya09/ya09_99999/index.html	末位编号段换为同长 9（00430→99999）	000	https://www.wul.waseda.ac.jp/kotenseki/html/ya09/ya09_99999/index.html	0	-	404 Not Found	2026-10-15 02:05:34

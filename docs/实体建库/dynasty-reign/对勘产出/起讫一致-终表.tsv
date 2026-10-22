@@ -1,0 +1,737 @@
+# 库=/home/user/open-guji/book-index 共 735 条 reign；A严格 277，B口径 263 → ≥2源一致 540（73.5%）；C 160，D 24，E 11
+库id	年号	库起	库止	分级	各源结果	review.status	sources条数	basis(前60字)
+hixi1ubkeejj	建元	-140	-135	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkeejk	元光	-134	-129	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkeejl	元朔	-128	-123	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkeejm	元狩	-122	-117	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkeejn	元鼎	-116	-111	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkeejo	元封	-110	-105	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkeejp	太初	-104	-101	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkeejq	天漢	-100	-97	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkeejr	太始	-96	-93	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkeejs	征和	-92	-89	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkeejt	後元	-88	-87	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkeeju	始元	-86	-81	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn28	元鳳	-80	-75	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn29	元平	-74	-74	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2a	本始	-73	-70	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2b	地節	-69	-66	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2c	元康	-65	-62	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2d	神爵	-61	-58	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2e	五鳳	-57	-54	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2f	甘露	-53	-50	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2g	黃龍	-49	-49	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2h	初元	-48	-44	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2i	永光	-43	-39	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2j	建昭	-38	-34	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2k	竟寧	-33	-33	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2l	建始	-32	-29	C仅1源一致	zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2m	河平	-28	-25	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2n	陽朔	-24	-21	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2o	鴻嘉	-20	-17	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2p	永始	-16	-13	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2q	元延	-12	-9	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2r	綏和	-8	-7	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2s	建平	-6	-3	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2t	太初元將	-5	-5	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2u	元壽	-2	-1	C仅1源一致	dila-time:不一致(-2-1)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2v	元始	1	5	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2w	居攝	6	8	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2x	初始	8	8	C仅1源一致	dila-time:不一致(9-9)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2y	始建國	9	13	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn2z	天鳳	14	19	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn30	地皇	20	23	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn31	更始	23	25	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn32	建世	25	27	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn33	建武	25	56	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn34	建武中元	56	57	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn35	永平	58	75	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn36	建初	76	84	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn37	元和	84	87	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn38	章和	87	88	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn39	永元	89	105	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn3a	元興	105	105	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubkpn3b	延平	106	106	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vls	永初	107	113	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vlt	元初	114	120	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vlu	永寧	120	121	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vlv	建光	121	122	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vlw	延光	122	125	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vlx	永建	126	132	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vly	陽嘉	132	135	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vlz	永和	136	141	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vm0	漢安	142	144	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vm1	建康	144	144	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vm2	永憙	145	145	C仅1源一致	dila-time:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vm3	本初	146	146	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vm4	建和	147	149	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vm5	和平	150	150	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vm6	元嘉	151	153	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vm7	永興	153	155	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(153-154)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vm8	永壽	155	158	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vm9	延熹	158	167	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vma	永康	167	167	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmb	建寧	168	172	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmc	熹平	172	178	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmd	光和	178	184	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vme	中平	184	189	C仅1源一致	dila-time:不一致(185-189)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmf	光熹	189	189	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmg	昭寧	189	189	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmh	永漢	189	189	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmi	初平	190	193	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmj	興平	194	195	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmk	建安	196	220	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vml	延康	220	220	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmm	黃初	220	226	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmn	章武	221	223	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmo	黃武	222	229	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmp	建興	223	237	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmq	太和	227	233	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmr	黃龍	229	231	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vms	嘉禾	232	238	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmt	青龍	233	237	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubl0vmu	景初	237	239	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45c	延熙	238	257	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45d	赤烏	238	251	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45e	正始	240	249	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45f	嘉平	249	254	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45g	太元	251	252	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45h	建興	252	253	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45i	神鳳	252	252	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45j	五鳳	254	256	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45k	正元	254	256	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45l	太平	256	258	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45m	甘露	256	260	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45n	景耀	258	263	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45o	永安	258	264	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45p	景元	260	264	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45q	炎興	263	263	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45r	元興	264	265	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45s	咸熙	264	265	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45t	泰始	265	274	C仅1源一致	dila-time:不一致(266-275)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45u	甘露	265	266	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45v	寶鼎	266	269	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45w	建衡	269	271	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45x	鳳凰	272	274	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45y	咸寧	275	280	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc45z	天冊	275	276	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc460	天璽	276	276	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc461	天紀	277	280	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc462	太康	280	289	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc463	太熙	290	290	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc464	永熙	290	290	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc465	元康	291	299	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc466	永平	291	291	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc467	永康	300	301	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc468	建始	301	301	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc469	永寧	301	302	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc46a	太安	302	303	C仅1源一致	dila-time:不一致(303-304)；zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublc46b	建初	302	303	D有源皆不一致	dila-time:不一致(303-304)；zhwp-中国年号列表:不一致(303-304)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncow	元熙	304	308	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncox	建武	304	304	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncoy	建興	304	306	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncoz	永安	304	304	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncp0	永興	304	306	C仅1源一致	dila-time:不一致(305-306)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncp1	光熙	306	306	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncp2	晏平	306	310	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncp3	永嘉	307	313	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncp4	永鳳	308	308	C仅1源一致	zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncp5	河瑞	309	310	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncp6	光興	310	311	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncp7	嘉平	311	315	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncp8	玉衡	311	334	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncp9	建興	313	317	C仅1源一致	dila-time:不一致(313-316)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpa	建元	315	315	C仅1源一致	zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpb	麟嘉	316	318	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpc	建武	317	318	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpd	永安	317	320	C仅1源一致	dila-time:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpe	光初	318	329	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpf	太興	318	321	C仅1源一致	dila-time:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpg	漢昌	318	318	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncph	永元	320	323	C仅1源一致	dila-time:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpi	永昌	322	323	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpj	太寧	323	326	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpk	太元	324	345	C仅1源一致	dila-time:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpl	咸和	326	335	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(326-334)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpm	太和	328	330	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpn	承光	328	329	E无源匹配		unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpo	建平	330	333	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpp	延熙	334	334	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpq	咸康	335	342	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpr	建武	335	348	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncps	玉恆	335	338	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpt	建國	338	376	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpu	漢興	338	343	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpv	建元	343	344	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpw	太和	344	345	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpx	永和	345	356	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpy	嘉寧	346	347	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublncpz	永樂	346	353	C仅1源一致	dila-time:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8g	太寧	349	349	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8h	燕元	349	351	D有源皆不一致	zhwp-中国年号列表:源缺值	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8i	永寧	350	351	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8j	永興	350	352	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8k	青龍	350	350	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8l	皇始	351	355	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8m	元璽	352	357	C仅1源一致	dila-time:不一致(353-357)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8n	和平	354	355	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8o	壽光	355	357	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8p	太始	355	356	D有源皆不一致	dila-time:不一致(362-363)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8q	光壽	357	360	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8r	升平	357	361	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8s	建元	357	361	E无源匹配		unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8t	永興	357	359	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8u	甘露	359	364	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8v	建熙	360	370	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8w	隆和	362	362	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8x	太清	363	376	C仅1源一致	dila-time:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8y	興寧	363	365	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl8z	建元	365	385	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl90	太和	366	371	C仅1源一致	dila-time:不一致(372-372)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl91	咸安	371	372	C仅1源一致	dila-time:不一致(372-373)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl92	寧康	373	375	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl93	太元	376	396	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl94	燕元	384	385	C仅1源一致	zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl95	燕興	384	385	D有源皆不一致	zhwp-中国年号列表:不一致(384-384)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl96	白雀	384	386	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl97	太安	385	386	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl98	建義	385	388	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl99	更始	385	386	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl9a	中興	386	394	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl9b	太初	386	394	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl9c	太安	386	389	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl9d	建初	386	394	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl9e	建平	386	386	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl9f	建明	386	386	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ublyl9g	建武	386	386	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9ts0	建興	386	396	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9ts1	昌平	386	386	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9ts2	登國	386	396	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9ts3	鳳凰	386	387	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(386-287)	unreviewed	3	通行紀年（P2a 自擬審定）
+hixi1ubm9ts4	太初	388	400	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9ts5	麟嘉	389	395	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9ts6	延初	394	394	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9ts7	皇初	394	399	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9ts8	永康	396	398	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9ts9	皇始	396	398	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsa	龍飛	396	399	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsb	太初	397	399	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsc	延平	397	398	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(397-397)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsd	建始	397	397	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tse	神璽	397	399	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsf	隆安	397	401	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsg	天興	398	404	C仅1源一致	dila-time:不一致(399-404)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsh	建平	398	399	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(398-398)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsi	燕平	398	399	C仅1源一致	dila-time:口径；zhwp-中国年号列表:源缺值	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsj	青龍	398	398	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsk	咸寧	399	401	C仅1源一致	dila-time:不一致(400-401)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsl	天璽	399	401	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsm	弘始	399	416	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsn	長樂	399	401	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tso	庚子	400	404	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsp	建和	400	402	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsq	建平	400	405	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsr	光始	401	406	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tss	永安	401	412	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tst	神鼎	401	403	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsu	元興	402	404	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsv	大亨	402	402	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	1	通行紀年（P2a 自擬審定）
+hixi1ubm9tsw	弘昌	402	404	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsx	永始	403	403	C仅1源一致	zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsy	天賜	404	409	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tsz	太上	405	410	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tt0	建初	405	417	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tt1	義熙	405	418	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubm9tt2	建始	407	407	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bk	正始	407	409	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bl	龍昇	407	413	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bm	嘉平	408	414	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bn	太平	409	430	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bo	更始	409	412	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bp	永興	409	413	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bq	永康	412	419	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2br	玄始	412	428	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(412-427)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bs	鳳翔	413	418	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bt	神瑞	414	416	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bu	永和	416	417	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bv	泰常	416	423	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bw	嘉興	417	420	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bx	昌武	418	419	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2by	元熙	419	420	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2bz	真興	419	425	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2c0	建弘	420	428	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2c1	永初	420	422	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2c2	永建	420	421	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2c3	景平	423	424	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2c4	元嘉	424	453	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2c5	始光	424	428	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2c6	承光	425	428	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2c7	勝光	428	431	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2c8	承玄	428	431	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(428-430)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2c9	永弘	428	431	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2ca	神䴥	428	431	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2cb	太興	431	436	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2cc	義和	431	433	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2cd	延和	432	434	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2ce	永和	433	439	E无源匹配		unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2cf	太延	435	440	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2cg	太平真君	440	451	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2ch	承平	443	460	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	4	通行紀年（P2a 自擬審定）
+hixi1ubml2ci	正平	451	452	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2cj	承平	452	452	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2ck	興安	452	454	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2cl	太初	453	453	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubml2cm	孝建	454	456	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwav4	興光	454	455	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwav5	太安	455	459	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwav6	大明	457	464	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwav7	和平	460	465	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwav8	景和	465	465	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwav9	永光	465	465	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwava	泰始	465	471	C仅1源一致	dila-time:不一致(466-472)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavb	天安	466	467	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavc	皇興	467	471	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavd	延興	471	476	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwave	泰豫	472	472	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavf	元徽	473	477	C仅1源一致	dila-time:不一致(477-477)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavg	承明	476	476	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavh	太和	477	499	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavi	昇明	477	479	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavj	建元	479	482	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavk	永明	483	493	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavl	延興	494	494	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavm	建武	494	498	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavn	隆昌	494	494	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavo	永泰	498	498	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavp	永元	499	501	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavq	景明	500	504	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavr	中興	501	502	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavs	天監	502	519	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavt	正始	504	508	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavu	永平	508	512	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavv	延昌	512	515	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavw	熙平	516	518	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavx	神龜	518	520	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavy	普通	520	527	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwavz	正光	520	525	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwaw0	孝昌	525	527	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwaw1	大通	527	529	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwaw2	建義	528	528	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwaw3	武泰	528	528	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwaw4	永安	528	530	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwaw5	中大通	529	534	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwaw6	建明	530	531	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwaw7	中興	531	532	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwaw8	普泰	531	532	D有源皆不一致	zhwp-中国年号列表:不一致(531-531)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwaw9	太昌	532	532	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwawa	永熙	532	534	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubmwawb	永興	532	532	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jeo	天平	534	537	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jep	大同	535	546	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jeq	大統	535	551	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jer	元象	538	539	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jes	興和	539	542	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jet	武定	543	550	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jeu	中大同	546	547	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jev	太清	547	549	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jew	大寶	550	551	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jex	天保	550	559	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jey	天正	551	551	C仅1源一致	dila-time:不一致(551-553)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jez	太始	551	552	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jf0	天正	552	553	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jf1	承聖	552	554	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jf2	大定	555	562	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jf3	天成	555	555	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jf4	紹泰	555	555	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jf5	太平	556	557	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jf6	永定	557	559	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jf7	武成	559	560	C仅1源一致	dila-time:不一致(560-561)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jf8	乾明	560	560	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jf9	天嘉	560	566	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfa	皇建	560	561	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfb	保定	561	565	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfc	太寧	561	562	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfd	天保	562	585	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfe	河清	562	565	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jff	天統	565	569	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfg	天和	566	572	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfh	天康	566	566	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfi	光大	567	568	C仅1源一致	dila-time:不一致(568-569)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfj	太建	569	582	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfk	武平	570	576	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfl	建德	572	578	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfm	隆化	576	576	C仅1源一致	dila-time:不一致(577-577)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfn	德昌	577	577	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(576-576)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfo	承光	577	577	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfp	宣政	578	578	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfq	大成	579	579	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfr	大象	579	581	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(579-580)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubn7jfs	大定	581	581	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubniry8	開皇	581	600	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubniry9	至德	583	586	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirya	廣運	586	587	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubniryb	禎明	587	589	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubniryc	仁壽	601	604	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubniryd	大業	605	618	C仅1源一致	dila-time:不一致(605-617)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirye	丁丑	617	618	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）；《新唐書》作「建元丁丑」，名較特殊，待人核
+hixi1ubniryf	天興	617	620	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubniryg	太平	617	622	C仅1源一致	zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubniryh	安樂	617	619	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubniryi	永平	617	618	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubniryj	永隆	617	628	D有源皆不一致	zhwp-中国年号列表:不一致(618-628)	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubniryk	秦興	617	618	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubniryl	義寧	617	618	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirym	鳴鳳	617	621	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubniryn	五鳳	618	621	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubniryo	天壽	618	619	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubniryp	始興	618	624	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）；起年存疑，待人核
+hixi1ubniryq	延康	618	620	D有源皆不一致	zhwp-中国年号列表:不一致(619-620)	unreviewed	0	通行紀年（P2c 自擬審定）；止年存疑，待人核
+hixi1ubniryr	昌達	618	621	D有源皆不一致	zhwp-中国年号列表:不一致(618-619)	unreviewed	0	通行紀年（P2c 自擬審定）；起止年存疑，待人核
+hixi1ubnirys	武德	618	626	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubniryt	皇泰	618	619	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubniryu	明政	619	621	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubniryv	開明	619	621	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubniryw	天造	622	623	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubniryx	天明	623	624	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubniryy	貞觀	627	649	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubniryz	永徽	650	655	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirz0	顯慶	656	661	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirz1	龍朔	661	663	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirz2	麟德	664	665	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirz3	乾封	666	668	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirz4	總章	668	670	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirz5	咸亨	670	674	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirz6	上元	674	676	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirz7	儀鳳	676	679	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirz8	調露	679	680	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirz9	永隆	680	681	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnirza	開耀	681	682	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0hs	永淳	682	683	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0ht	弘道	683	683	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0hu	光宅	684	684	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	1	通行紀年（P2a 自擬審定）
+hixi1ubnu0hv	嗣聖	684	684	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0hw	文明	684	684	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	1	通行紀年（P2a 自擬審定）
+hixi1ubnu0hx	永昌	689	689	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	1	通行紀年（P2a 自擬審定）
+hixi1ubnu0hy	載初	689	690	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(690-690)	unreviewed	1	通行紀年（P2a 自擬審定）
+hixi1ubnu0hz	天授	690	692	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0i0	如意	692	692	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0i1	長壽	692	694	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0i2	延載	694	694	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0i3	天冊萬歲	695	696	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0i4	證聖	695	695	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0i5	萬歲登封	696	696	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0i6	萬歲通天	696	697	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0i7	神功	697	697	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0i8	聖曆	698	700	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0i9	久視	700	701	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0ia	大足	701	701	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0ib	長安	701	705	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(701-704)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0ic	神龍	705	707	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0id	景龍	707	710	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0ie	唐隆	710	710	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0if	景雲	710	712	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0ig	先天	712	713	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0ih	太極	712	712	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0ii	延和	712	712	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0ij	開元	713	741	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0ik	天寶	742	756	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0il	聖武	756	757	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubnu0im	至德	756	758	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0in	載初	757	759	E无源匹配		unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubnu0io	乾元	758	760	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubnu0ip	應天	758	759	D有源皆不一致	zhwp-中国年号列表:不一致(759-759)	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubo591c	順天	759	761	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubo591d	上元	760	761	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591e	顯聖	761	762	C仅1源一致	zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2c 自擬審定）；止年存疑（762 末至 763 是否另有年號未能確認），待人核
+hixi1ubo591f	寶應	762	762	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591g	廣德	763	764	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591h	永泰	765	766	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591i	大曆	766	779	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591j	建中	780	783	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591k	應天	783	784	D有源皆不一致	zhwp-中国年号列表:不一致(783-783)	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubo591l	天贊	784	784	E无源匹配		unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubo591m	武成	784	786	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubo591n	興元	784	784	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591o	貞元	785	805	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591p	永貞	805	805	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591q	元和	806	820	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591r	長慶	821	824	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591s	寶曆	825	827	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591t	大和	827	835	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591u	開成	836	840	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591v	會昌	841	846	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591w	大中	847	860	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591x	咸通	860	874	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591y	乾符	874	879	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo591z	王霸	878	880	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）；稱帝前（沖天大將軍時期）所建
+hixi1ubo5920	廣明	880	881	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo5921	金統	880	884	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1ubo5922	中和	881	885	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo5923	光啟	885	888	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo5924	文德	888	888	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo5925	龍紀	889	889	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo5926	大順	890	891	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo5927	景福	892	893	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo5928	乾寧	894	898	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo5929	光化	898	901	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1ubo592a	天復	901	904	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghkw	天祐	904	907	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghkx	開平	907	911	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghky	天寶	908	912	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghkz	武成	908	910	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghl0	乾化	911	915	D有源皆不一致	dila-time:不一致(911-913)；zhwp-中国年号列表:不一致(911-913)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghl1	應天	911	913	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2c 自擬審定）
+hixi1uboghl2	永平	911	915	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghl3	鳳曆	913	913	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghl4	貞明	915	921	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghl5	神冊	916	922	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	取《遼史》通行紀年；CBDB止921，不取
+hixi1uboghl6	通正	916	916	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghl7	乾亨	917	925	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghl8	天漢	917	917	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghl9	光天	918	918	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghla	乾德	919	924	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlb	武義	919	920	C仅1源一致	zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlc	順義	921	927	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghld	龍德	921	923	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghle	天贊	922	926	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	取通行紀年922；DILA起921，不取
+hixi1uboghlf	同光	923	926	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlg	寶大	924	925	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlh	咸康	925	925	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghli	白龍	925	928	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlj	天成	926	930	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlk	天顯	926	938	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	始於太祖，太宗沿用至938；DILA止926僅計太祖期，不取
+hixi1uboghll	寶正	926	931	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlm	乾貞	927	929	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghln	大有	928	942	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlo	大和	929	935	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlp	長興	930	933	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlq	龍啟	933	935	D有源皆不一致	zhwp-中国年号列表:不一致(933-934)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlr	應順	934	934	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghls	明德	934	937	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlt	清泰	934	936	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlu	天祚	935	937	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlv	永和	935	935	C仅1源一致	zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uboghlw	天福	936	944	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4g	通文	936	939	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4h	昇元	937	943	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4i	廣政	938	965	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4j	會同	938	947	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq4k	永隆	939	944	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4l	光天	942	942	C仅1源一致	zhwp-中国年号列表:口径	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4m	乾和	943	958	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4n	保大	943	957	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4o	天德	943	945	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4p	應乾	943	943	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4q	開運	944	947	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(944-946)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4r	大同	947	947	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq4s	天祿	947	951	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq4t	天福	947	948	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(947-947)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4u	乾祐	948	950	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	1	通行紀年（P2a 自擬審定）
+hixi1uborq4v	乾祐	951	957	D有源皆不一致	zhwp-中国年号列表:不一致(951-954)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4w	廣順	951	954	C仅1源一致	dila-time:严格；zhwp-中国年号列表:不一致(951-953)	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq4x	應曆	951	969	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq4y	顯德	954	960	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	1	通行紀年（P2a 自擬審定）
+hixi1uborq4z	天會	957	973	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq50	中興	958	958	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq51	交泰	958	958	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq52	大寶	958	971	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq53	建隆	960	963	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq54	乾德	963	968	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq55	開寶	968	976	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq56	保寧	969	979	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq57	廣運	974	979	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	通行紀年（P2a 自擬審定）
+hixi1uborq58	太平興國	976	984	C仅1源一致	dila-time:不一致(977-984)；zhwp-中国年号列表:严格	unreviewed	0	通行紀年取976（開寶九年十二月改元）；DILA按公曆歲首記977，口徑差
+hixi1uborq59	乾亨	979	983	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	乾亨五年（983）改統和，取983；兩庫止982，不取
+hixi1uborq5a	統和	983	1012	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq5b	雍熙	984	987	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq5c	端拱	988	989	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq5d	淳化	990	994	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq5e	至道	995	997	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq5f	咸平	998	1003	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq5g	景德	1004	1007	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq5h	大中祥符	1008	1016	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq5i	開泰	1012	1021	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq5j	天禧	1017	1021	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1uborq5k	太平	1021	1031	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	太平十一年即1031，取1031；CBDB止1030，不取
+hixi1uborq5l	乾興	1022	1022	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yo0	天聖	1023	1032	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yo1	景福	1031	1032	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	景福二年（1032）改重熙，取1032；CBDB止1031，不取
+hixi1ubp2yo2	明道	1032	1033	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yo3	重熙	1032	1055	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yo4	顯道	1032	1033	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	1	通行紀年；見《宋史》夏國傳上卷485
+hixi1ubp2yo5	廣運	1034	1036	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	取1034–1036；CBDB止1035，不取
+hixi1ubp2yo6	景祐	1034	1038	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yo7	開運	1034	1034	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yo8	大慶	1036	1038	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	取通行紀年；CBDB與之差1年，不取
+hixi1ubp2yo9	天授禮法延祚	1038	1048	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yoa	寶元	1038	1040	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yob	康定	1040	1041	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yoc	慶曆	1041	1048	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yod	延嗣寧國	1049	1049	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	DILA無，據通行紀年
+hixi1ubp2yoe	皇祐	1049	1054	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yof	天祐垂聖	1050	1052	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	DILA無，據通行紀年
+hixi1ubp2yog	福聖承道	1053	1056	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yoh	至和	1054	1056	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yoi	清寧	1055	1064	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yoj	嘉祐	1056	1063	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yok	奲都	1057	1062	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yol	拱化	1063	1067	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	取1063–1067；兩庫止1068為口徑差
+hixi1ubp2yom	治平	1064	1067	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yon	咸雍	1065	1074	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yoo	乾道	1068	1069	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	取通行1068–1069（熙寧元年）；CBDB起1069／1071，DILA 1068–1069，從DILA起年
+hixi1ubp2yop	熙寧	1068	1077	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yoq	天賜禮盛國慶	1069	1074	C仅1源一致	dila-time:口径；zhwp-中国年号列表:不一致(1069-1073)	unreviewed	0	取1069–1074（改元當年記起年，首尾皆計）；起年DILA（1069-01-26）、zhwp皆1069；止年DILA
+hixi1ubp2yor	大安	1075	1085	C仅1源一致	dila-time:口径；zhwp-中国年号列表:不一致(1074-1084)	unreviewed	0	取通行紀年；CBDB起1076，不取
+hixi1ubp2yos	大康	1075	1084	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	CBDB作「太康」，列為異體；起訖與DILA一致
+hixi1ubp2yot	元豐	1078	1085	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2you	大安	1085	1094	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yov	元祐	1086	1094	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yow	天安禮定	1086	1086	B口径	dila-time:严格；zhwp-中国年号列表:口径	unreviewed	0	取1086–1086（改元當年記起年，首尾皆計）；DILA止1086-08、zhwp止1086，兩源一致；原1089無來
+hixi1ubp2yox	天儀治平	1087	1090	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	取1087–1090（改元當年記起年，首尾皆計）；止年DILA（1090-02）、zhwp皆1090；起年zhwp 10
+hixi1ubp2yoy	天祐民安	1094	1097	D有源皆不一致	zhwp-中国年号列表:不一致(1090-1097)	unreviewed	0	兩庫皆無，據通行紀年
+hixi1ubp2yoz	紹聖	1094	1098	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yp0	壽昌	1095	1101	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	壽昌七年（1101）道宗崩，取1101；CBDB止1100，不取
+hixi1ubp2yp1	元符	1098	1100	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubp2yp2	永安	1098	1100	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	取1098–1100；CBDB 1099–1101，不取
+hixi1ubpe77k	乾統	1101	1110	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe77l	建中靖國	1101	1101	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe77m	貞觀	1101	1113	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	取1101–1113；CBDB起1102，不取
+hixi1ubpe77n	崇寧	1102	1106	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe77o	大觀	1107	1110	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe77p	天慶	1111	1120	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe77q	政和	1111	1118	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe77r	雍寧	1114	1118	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	取1114–1118；CBDB起1115，不取
+hixi1ubpe77s	收國	1115	1116	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe77t	天輔	1117	1123	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	天輔七年即1123，取1123；CBDB止1122，不取
+hixi1ubpe77u	重和	1118	1119	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe77v	元德	1119	1126	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	取1119–1126（正德元年1127）；CBDB起1120，不取
+hixi1ubpe77w	宣和	1119	1125	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe77x	保大	1121	1125	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe77y	建福	1122	1122	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	北遼（耶律淳）年號，CBDB無；據通行紀年
+hixi1ubpe77z	天會	1123	1137	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	天會十五年（1137）熙宗改元，取1137；DILA止1135，不取
+hixi1ubpe780	靖康	1126	1127	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe781	建炎	1127	1130	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe782	正德	1127	1134	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe783	阜昌	1130	1137	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	取1130–1137；CBDB 1131–1138，不取；DILA無
+hixi1ubpe784	紹興	1131	1162	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe785	延慶	1132	1134	D有源皆不一致	zhwp-中国年号列表:不一致(1124-1133)	unreviewed	0	西遼紀年有1124／1132兩說，取1132（種子表西遼起年）；DILA無
+hixi1ubpe786	康國	1134	1144	D有源皆不一致	zhwp-中国年号列表:不一致(1134-1143)	unreviewed	1	取通行1134–1144；CBDB止1143，存疑
+hixi1ubpe787	大德	1135	1139	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	通行紀年；參照庫差異：CBDB 1135～1138，不取
+hixi1ubpe788	天眷	1138	1140	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe789	大慶	1140	1143	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	取通行紀年；CBDB與之差1年，不取
+hixi1ubpe78a	皇統	1141	1149	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe78b	人慶	1144	1148	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe78c	咸清	1144	1150	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe78d	天德	1149	1153	C仅1源一致	dila-time:不一致(1150-1153)；zhwp-中国年号列表:严格	unreviewed	0	取1149（海陵弒熙宗年）；DILA起1150，不取
+hixi1ubpe78e	天盛	1149	1169	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	取1149–1169；兩庫止1170為口徑差
+hixi1ubpe78f	紹興	1151	1164	E无源匹配		unreviewed	0	取通行1151–1164；CBDB 1150–1163，存疑
+hixi1ubpe78g	貞元	1153	1156	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	取1153–1156；CBDB止1155，不取
+hixi1ubpe78h	正隆	1156	1161	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe78i	大定	1161	1189	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe78j	隆興	1163	1164	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe78k	隆興	1164	1178	E无源匹配		unreviewed	0	取通行1164–1178；CBDB 1163–1164 與 DILA 1163–1165 皆與西遼世系不合，不取，存疑
+hixi1ubpe78l	乾道	1165	1173	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubpe78m	乾祐	1170	1193	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	取1170–1193；CBDB起1171，不取；DILA無
+hixi1ubpe78n	淳熙	1174	1189	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfr4	天禧	1178	1211	E无源匹配		unreviewed	0	取通行1178–1211；CBDB止1218、DILA止1212含屈出律篡位後，不取，存疑
+hixi1ubppfr5	明昌	1190	1196	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfr6	紹熙	1190	1194	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfr7	天慶	1194	1205	B口径	dila-time:口径；zhwp-中国年号列表:口径	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfr8	慶元	1195	1200	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfr9	承安	1196	1200	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfra	嘉泰	1201	1204	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrb	泰和	1201	1208	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrc	開禧	1205	1207	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrd	應天	1206	1209	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfre	嘉定	1208	1224	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrf	大安	1209	1211	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrg	皇建	1210	1211	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	取1210–1211；CBDB止1210，不取
+hixi1ubppfrh	光定	1211	1223	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	取1211–1223；CBDB止1222，不取
+hixi1ubppfri	崇慶	1212	1213	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	崇慶二年即1213，取1213；CBDB止1212，不取
+hixi1ubppfrj	至寧	1213	1213	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrk	貞祐	1213	1217	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrl	興定	1217	1222	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrm	元光	1222	1223	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrn	乾定	1223	1226	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	取1223–1226；CBDB止1225，不取
+hixi1ubppfro	正大	1224	1232	D有源皆不一致	dila-time:不一致(1224-1234)；zhwp-中国年号列表:不一致(1224-1231)	unreviewed	1	正大九年（1232）改開興，取1232；兩庫止年不一，不取
+hixi1ubppfrp	寶慶	1225	1227	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrq	寶義	1226	1227	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrr	紹定	1228	1233	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrs	天興	1232	1234	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrt	開興	1232	1232	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfru	端平	1234	1236	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrv	嘉熙	1237	1240	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrw	淳祐	1241	1252	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrx	寶祐	1253	1258	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfry	開慶	1259	1259	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfrz	中統	1260	1264	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	1	中統五年（1264）改至元，取1264；CBDB止1263，不取
+hixi1ubppfs0	景定	1260	1264	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubppfs1	至元	1264	1294	C仅1源一致	dila-time:不一致(1271-1295)；zhwp-中国年号列表:严格	unreviewed	1	同朝同名；DILA止1271疑僅計至元八年前，不取
+hixi1ubppfs2	咸淳	1265	1274	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0oao	德祐	1275	1276	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0oap	景炎	1276	1278	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	景炎三年（1278）端宗崩，取1278；CBDB止1277，不取
+hixi1ubq0oaq	祥興	1278	1279	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0oar	元貞	1295	1297	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0oas	大德	1297	1307	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0oat	至大	1308	1311	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0oau	皇慶	1312	1313	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0oav	延祐	1314	1320	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0oaw	至治	1321	1323	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0oax	泰定	1324	1328	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0oay	天曆	1328	1330	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	文宗1328–1330；DILA 1329僅計明宗用天曆，不取
+hixi1ubq0oaz	天順	1328	1328	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	CBDB無；據通行紀年（元天順帝，1328）
+hixi1ubq0ob0	致和	1328	1328	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0ob1	至順	1330	1333	C仅1源一致	dila-time:不一致(1330-1332)；zhwp-中国年号列表:严格	unreviewed	0	取1330–1333；DILA止1332，不取
+hixi1ubq0ob2	元統	1333	1335	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	取1333–1335；CBDB止1334，不取
+hixi1ubq0ob3	至元	1335	1340	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0ob4	至正	1341	1370	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0ob5	治平	1351	1356	D有源皆不一致	zhwp-中国年号列表:不一致(1350-1353)	unreviewed	0	兩庫皆無；徐壽輝天完1351–1356
+hixi1ubq0ob6	天祐	1354	1357	E无源匹配		unreviewed	0	兩庫皆無；張士誠1354–1357
+hixi1ubq0ob7	龍鳳	1355	1366	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	兩庫皆無；韓林兒1355–1366
+hixi1ubq0ob8	太平	1356	1360	D有源皆不一致	zhwp-中国年号列表:不一致(1354-1356)	unreviewed	0	兩庫皆無；天完1356–1360
+hixi1ubq0ob9	大義	1360	1361	D有源皆不一致	zhwp-中国年号列表:不一致(1360-1363)	unreviewed	0	兩庫皆無；陳友諒大漢1360–1361
+hixi1ubq0oba	德壽	1361	1363	D有源皆不一致	zhwp-中国年号列表:不一致(1363-1364)	unreviewed	0	兩庫皆無；陳友諒大漢，嗣君1361–1363
+hixi1ubq0obb	天統	1362	1366	D有源皆不一致	zhwp-中国年号列表:不一致(1363-1366)	unreviewed	0	兩庫皆無；明玉珍1362–1366
+hixi1ubq0obc	開熙	1367	1371	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	兩庫皆無；明玉珍1367–1371
+hixi1ubq0obd	洪武	1368	1398	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0obe	宣光	1371	1378	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	DILA無；據通行紀年（北元昭宗，1371–1378）
+hixi1ubq0obf	天元	1379	1388	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	兩庫皆無；據通行紀年（北元脫古思帖木兒，1379–1388），存疑
+hixi1ubq0obg	建文	1399	1402	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0obh	永樂	1403	1424	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0obi	洪熙	1425	1425	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0obj	宣德	1426	1435	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0obk	正統	1436	1449	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0obl	景泰	1450	1457	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0obm	天順	1457	1464	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0obn	成化	1465	1487	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0obo	弘治	1488	1505	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0obp	正德	1506	1521	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubq0obq	嘉靖	1522	1566	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwu8	隆慶	1567	1572	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwu9	萬曆	1573	1620	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwua	天命	1616	1626	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwub	泰昌	1620	1620	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwuc	天啟	1621	1627	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwud	天聰	1627	1636	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	天聰十年即1636（四月改崇德），取1636；CBDB止1635，不取
+hixi1ubqbwue	崇禎	1628	1644	A严格	dila-time:严格；zhwp-中国年号列表:严格	unreviewed	0	取1628–1644；DILA止1895為已知錯誤
+hixi1ubqbwuf	崇德	1636	1643	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwug	大順	1644	1647	D有源皆不一致	zhwp-中国年号列表:不一致(1644-1646)	unreviewed	0	張獻忠卒於大順三年末（公曆1647年初），取止1647，與CBDB同；DILA無
+hixi1ubqbwuh	永昌	1644	1645	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	DILA無（DILA將689永昌歸唐，此為李自成永昌）；據通行紀年
+hixi1ubqbwui	順治	1644	1661	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwuj	弘光	1645	1645	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	弘光元年即1645（1644年6月即位，次年改元）；CBDB起1644，不取
+hixi1ubqbwuk	隆武	1645	1646	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwul	紹武	1646	1646	E无源匹配		unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwum	永曆	1647	1662	D有源皆不一致	zhwp-中国年号列表:不一致(1647-1661)	unreviewed	0	永曆十六年即1662；CBDB止1661，不取
+hixi1ubqbwun	康熙	1662	1722	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwuo	昭武	1678	1678	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	兩庫皆無；吳三桂1678年稱帝
+hixi1ubqbwup	洪化	1679	1681	C仅1源一致	zhwp-中国年号列表:严格	unreviewed	0	兩庫皆無；吳世璠1679–1681
+hixi1ubqbwuq	雍正	1723	1735	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwur	乾隆	1736	1795	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwus	嘉慶	1796	1820	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwut	道光	1821	1850	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwuu	咸豐	1851	1861	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwuv	太平天國	1851	1864	E无源匹配		unreviewed	0	兩庫皆無；以太平天國自稱之年號計，1851–1864
+hixi1ubqbwuw	同治	1862	1874	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwux	光緒	1875	1908	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi1ubqbwuy	宣統	1909	1911	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	0	库内原有，未经本期复核
+hixi4vtfcgzk	垂拱	685	688	B口径	dila-time:口径；zhwp-中国年号列表:严格	unreviewed	1	通行紀年；見《舊唐書》卷六

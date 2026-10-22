@@ -1,0 +1,6 @@
+共 159442 个候选对  → /tmp/claude-0/-home-user/76db5ba3-26b9-5918-b20a-b30d258fe9fa/scratchpad/gates/dup_work_candidates.tsv
+  S1 同实体（必合）: 3
+  S2 含子串（候选）: 21
+  S3 共≥2字符（人工）: 296
+  S4 仅同朝（弱）: 159070
+  S1.5 同朝同normname（安全）: 52

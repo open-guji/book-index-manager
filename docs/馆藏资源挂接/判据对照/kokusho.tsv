@@ -1,0 +1,12 @@
+# API 模板 https://kokusho.nijl.ac.jp/api/biblioDetail/{bid}；真 200 JSON，假（bid 换 999999999）404 HTML 6586B。
+pair_id	kind	url	how_fake	http_code	final_url	body_bytes	title	markers	fetched_at
+kok-01	real	https://kokusho.nijl.ac.jp/api/biblioDetail/100405640		200	https://kokusho.nijl.ac.jp/api/biblioDetail/100405640	2959	-	"bid"	2026-10-15 01:48:02
+kok-01	fake	https://kokusho.nijl.ac.jp/api/biblioDetail/999999999	bid 全换为同长 9	404	https://kokusho.nijl.ac.jp/api/biblioDetail/999999999	6586	-	404 HTML	2026-10-15 01:48:04
+kok-02	real	https://kokusho.nijl.ac.jp/api/biblioDetail/100405641		200	https://kokusho.nijl.ac.jp/api/biblioDetail/100405641	2959	-	"bid"	2026-10-15 01:48:04
+kok-02	fake	https://kokusho.nijl.ac.jp/api/biblioDetail/999999999	bid 全换为同长 9	404	https://kokusho.nijl.ac.jp/api/biblioDetail/999999999	6586	-	404 HTML	2026-10-15 01:48:07
+kok-03	real	https://kokusho.nijl.ac.jp/api/biblioDetail/100288278		200	https://kokusho.nijl.ac.jp/api/biblioDetail/100288278	3732	1．玉篇零本（ぎょくへんれいほん）（Gyokuhenreihon），外	"bid"	2026-10-15 01:48:07
+kok-03	fake	https://kokusho.nijl.ac.jp/api/biblioDetail/999999999	bid 全换为同长 9	404	https://kokusho.nijl.ac.jp/api/biblioDetail/999999999	6586	-	404 HTML	2026-10-15 01:48:09
+kok-04	real	https://kokusho.nijl.ac.jp/api/biblioDetail/100288535		200	https://kokusho.nijl.ac.jp/api/biblioDetail/100288535	4933	1．孟浩然集（もうこうねんしゅう）（Moukounenshuu），内・尾・見・外・序首	"bid"	2026-10-15 01:48:09
+kok-04	fake	https://kokusho.nijl.ac.jp/api/biblioDetail/999999999	bid 全换为同长 9	404	https://kokusho.nijl.ac.jp/api/biblioDetail/999999999	6586	-	404 HTML	2026-10-15 01:48:12
+kok-05	real	https://kokusho.nijl.ac.jp/api/biblioDetail/100355297		200	https://kokusho.nijl.ac.jp/api/biblioDetail/100355297	3394	1．隋書（ずいしょ）（Zuisho），内	"bid"	2026-10-15 01:48:12
+kok-05	fake	https://kokusho.nijl.ac.jp/api/biblioDetail/999999999	bid 全换为同长 9	404	https://kokusho.nijl.ac.jp/api/biblioDetail/999999999	6586	-	404 HTML	2026-10-15 01:48:15

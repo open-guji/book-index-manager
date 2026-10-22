@@ -1,0 +1,8 @@
+# K13④ 需改 Work 命名的行：写入批必须剔除，等去重线结论（Rhea 提出，Milo 转，2026-10-15）。随去重线结论增删；重出任何写入批（早稲田、E1-nlc 等）时按 site+record_id 过滤。状态：在列＝需剔除；解除＝已可写。
+site	record_id	work_id	站方题名	Work题名	状态	当前是否在已出的表里	备注
+waseda	bunko11_d0050	d59f28mewgeb	管子	管子房玄齡注	在列	否（v2 已因 ALT_TITLE_SIBLING 剔除）	
+waseda	i17_00350	d59f28mewgeb	管子	管子房玄齡注	在列	否（v2 已剔除）	
+waseda	ro13_03014	d59f2hrm7gg1	集注太玄	太玄經集注	在列	是（v2 486 行内）	重出 v2 时剔
+waseda	ro13_00059	d59ezaizgz5s	文始真経	關尹子宋託名本	在列	否（v2 已因 ALT_TITLE_SIBLING 剔除）	若日后放开刹车再按此名单剔
+waseda	i17_00189	d59f28nhx4ap	礼記註疏	禮記正義	在列	否（v2 已因 ALT_TITLE_SIBLING 剔除）	若日后放开刹车再按此名单剔
+waseda	i17_00178	d59f2hthxybm	新定三礼図	三禮圖集注	在列	否（v2 已因 ALT_TITLE_SIBLING 剔除）	若日后放开刹车再按此名单剔

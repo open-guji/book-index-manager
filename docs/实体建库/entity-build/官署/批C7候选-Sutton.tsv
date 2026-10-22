@@ -1,0 +1,28 @@
+# 官署批C7候選（Sutton）｜2026-10-15 洛杉矶
+# 語料：open-guji/book-text 之 Book/g/z/k/96mid1ogzk/default（四庫總目·第2、3册）之 002/003.entity.json 與 char.json；字符全文 ~48K 字，經部前段，命中數偏低，僅作參考。
+# 候選方法：先從全文取以官署通用字（部、寺、監、院、省、府、司、臺、署、局、館、閣、殿、科等）結尾的 2–5 字片段（出現 ≥2），並加 Entity 中 subtype=office 的 tagged span；人工挑出官署語境，再與正式庫＋草稿庫全部 Entity（不限 subtype，按名＋別名）查重。
+# 防重：正式库 /home/user/book-index/Entity＋草稿库 /home/user/open-guji/book-index-draft/Entity（共 41,820 條，含 subtype collective/office/place 等）；升格墓碑以正式库 promotions/ 分片為准（草稿檔不寫 promoted_to）。
+# 注意：本批 6 個高頻名（禮部、吏部、兵部、大理寺、樞密院、翰林院…）在草稿庫中以 subtype=collective 存在，不計入 office 分母，故未列為候選；是否把 collective 機構升為 office 請 Mirren 定。
+# 判定：候選＝需原典任官句再核（C6 方法）；待定＝待 Mirren 定；已有＝不重列；排除＝貼職／版本／非官署。
+序	類別	名稱	朝代（總目語境）	總目命中數	防重結果	建議	語境（總目原句）	說明
+1	已有	禮部	—	11	collective（hixi5dv8bb4b，prod）	已有：library 已有同名 Entity（subtype=collective），不列為候選	見總目原句；C7 不重列	
+2	已有	秘閣	—	5	collective（hixi4uds7aio，prod）	已有：library 已有同名 Entity（subtype=collective），不列為候選	見總目原句；C7 不重列	
+3	已有	兵部	—	6	collective（hixi5dv8bb4c，prod）	已有：library 已有同名 Entity（subtype=collective），不列為候選	見總目原句；C7 不重列	
+4	已有	吏部	—	4	collective（hixi5dv8bb45，prod）	已有：library 已有同名 Entity（subtype=collective），不列為候選	見總目原句；C7 不重列	
+5	已有	大理寺	—	3	collective（hixi5dv802kh，prod）	已有：library 已有同名 Entity（subtype=collective），不列為候選	見總目原句；C7 不重列	
+6	已有	樞密院	—	3	collective（hixi1ubqbwv3，prod）	已有：library 已有同名 Entity（subtype=collective），不列為候選	見總目原句；C7 不重列	
+7	已有	翰林院	—	2	collective（hixi5dv8mjnw，prod）	已有：library 已有同名 Entity（subtype=collective），不列為候選	見總目原句；C7 不重列	
+8	已有	國子監	—	2	collective（hixi4udsij2b，prod）	已有：library 已有同名 Entity（subtype=collective），不列為候選	見總目原句；C7 不重列	
+9	已有	太僕寺	—	2	collective（hixi5dv8bb42，prod）	已有：library 已有同名 Entity（subtype=collective），不列為候選	見總目原句；C7 不重列	
+10	已有	秘書省	—	2	collective（hixi5dv72cxx，prod）	已有：library 已有同名 Entity（subtype=collective），不列為候選	見總目原句；C7 不重列	
+11	已有	工部	—	1	collective（hixi5dv8mjnm，prod）	已有：library 已有同名 Entity（subtype=collective），不列為候選	見總目原句；C7 不重列	
+12	候選	太府寺	宋	1	無	建議：官署，concrete	002 大典本宋丁易東 "仕至朝奉大夫太府寺簿兼樞密院編修官" — 太府寺為宋中央官署	單次命中，需補原典任官句核對
+13	候選	史館	宋	2	無	建議：官署，concrete	002 "爲史館長" "可進史乎" 等，宋趙以夫條；"史館修撰"為職事	2 次命中，語境為宋史館
+14	候選	國史院	宋/元（待定）	2	無	待定：宋（002 "國史院編修"）與元（003 "移翰林國史院勘定"）兩朝語境	002 "官至直秘閣著作郞國史院編修事迹具宋史"；003 "移翰林國史院勘定"	兩朝同名，建議分朝代各建一條，請 Mirren 定
+15	候選	太學	宋	3	無	待定：官學，類別待定（官署 or 學校）	002 "皇祐中游太學"、"主太學"；"太學博士王之望"	學校類，可能不列官署；3 次命中
+16	候選	吏科	明	1	無	建議：官署（六科之一），concrete	003 "官至吏科給事中"	單次命中；屬給事中所屬六科
+17	排除	文淵閣	明	2	無	排除（機構/殿閣，非官署 office）；若入庫應歸 collective 類	002 "明初文淵閣書目"、"文淵閣書目焦竑經籍志"	書目名及藏書處語境，非任官
+18	排除	資政殿	宋	4	無	排除：貼職（資政殿學士／大學士），非官署	002 "資政殿大學士"、"資政殿學士"	4 次命中全為貼職
+19	排除	寶謨閣	宋	2	無	排除：貼職（寶謨閣學士）	002 "官至寶謨閣學士"	2 次命中全為貼職
+20	排除	龍圖閣	宋	1	無	排除：貼職（龍圖閣直學士）	002 "以龍圖閣直學士致仕"	單次，貼職
+21	排除	內府	—	1	無	排除：版本標注（內府藏本），非官署	002 "內府藏本"	版本語境

@@ -1,0 +1,14 @@
+# 早稲田 详情页（write_plan 实用 url：www.wul.waseda.ac.jp/kotenseki/html/<前缀>/<id>/index.html）。真：首批计划随机 6 条；假：id 序号换为 99999。判据：200 且正文含 archive.wul.waseda.ac.jp 入口；假 404。Everett 2026-10-15
+pair_id	kind	url	how_fake	http_code	final_url	body_bytes	title	markers	fetched_at
+waseda-01	real	https://www.wul.waseda.ac.jp/kotenseki/html/ro13/ro13_03037/index.html		200	https://www.wul.waseda.ac.jp/kotenseki/html/ro13/ro13_03037/index.html	5265	-	archive.wul.waseda.ac.jp 入口	2026-10-15 09:03:45
+waseda-01	fake	https://www.wul.waseda.ac.jp/kotenseki/html/ro13/ro13_99999/index.html	id 末尾序号换为 99999	404	https://www.wul.waseda.ac.jp/kotenseki/html/ro13/ro13_99999/index.html	0	-	-	2026-10-15 09:03:47
+waseda-02	real	https://www.wul.waseda.ac.jp/kotenseki/html/bunko11/bunko11_d0104/index.html		200	https://www.wul.waseda.ac.jp/kotenseki/html/bunko11/bunko11_d0104/index.html	5291	-	archive.wul.waseda.ac.jp 入口	2026-10-15 09:03:49
+waseda-02	fake	https://www.wul.waseda.ac.jp/kotenseki/html/bunko11/bunko11_d99999/index.html	id 末尾序号换为 99999	404	https://www.wul.waseda.ac.jp/kotenseki/html/bunko11/bunko11_d99999/index.html	0	-	-	2026-10-15 09:04:24
+waseda-03	real	https://www.wul.waseda.ac.jp/kotenseki/html/bunko11/bunko11_d0050/index.html		200	https://www.wul.waseda.ac.jp/kotenseki/html/bunko11/bunko11_d0050/index.html	6858	-	archive.wul.waseda.ac.jp 入口	2026-10-15 09:04:02
+waseda-03	fake	https://www.wul.waseda.ac.jp/kotenseki/html/bunko11/bunko11_d99999/index.html	id 末尾序号换为 99999	404	https://www.wul.waseda.ac.jp/kotenseki/html/bunko11/bunko11_d99999/index.html	0	-	-	2026-10-15 09:04:04
+waseda-04	real	https://www.wul.waseda.ac.jp/kotenseki/html/he20/he20_01737/index.html		200	https://www.wul.waseda.ac.jp/kotenseki/html/he20/he20_01737/index.html	5929	-	archive.wul.waseda.ac.jp 入口	2026-10-15 09:04:06
+waseda-04	fake	https://www.wul.waseda.ac.jp/kotenseki/html/he20/he20_99999/index.html	id 末尾序号换为 99999	404	https://www.wul.waseda.ac.jp/kotenseki/html/he20/he20_99999/index.html	0	-	-	2026-10-15 09:04:08
+waseda-05	real	https://www.wul.waseda.ac.jp/kotenseki/html/i05/i05_01412/index.html		200	https://www.wul.waseda.ac.jp/kotenseki/html/i05/i05_01412/index.html	5728	-	archive.wul.waseda.ac.jp 入口	2026-10-15 09:04:10
+waseda-05	fake	https://www.wul.waseda.ac.jp/kotenseki/html/i05/i05_99999/index.html	id 末尾序号换为 99999	404	https://www.wul.waseda.ac.jp/kotenseki/html/i05/i05_99999/index.html	0	-	-	2026-10-15 09:04:12
+waseda-06	real	https://www.wul.waseda.ac.jp/kotenseki/html/ri08/ri08_05898/index.html		200	https://www.wul.waseda.ac.jp/kotenseki/html/ri08/ri08_05898/index.html	5680	-	archive.wul.waseda.ac.jp 入口	2026-10-15 09:04:14
+waseda-06	fake	https://www.wul.waseda.ac.jp/kotenseki/html/ri08/ri08_99999/index.html	id 末尾序号换为 99999	404	https://www.wul.waseda.ac.jp/kotenseki/html/ri08/ri08_99999/index.html	0	-	-	2026-10-15 09:04:16

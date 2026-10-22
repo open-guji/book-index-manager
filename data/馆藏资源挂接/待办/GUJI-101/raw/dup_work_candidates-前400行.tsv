@@ -1,0 +1,400 @@
+level	title	wid_a	wid_b	authors_a	authors_b	reason
+1	沽上題襟輯	1exk0e3icbcw7	1exk0ut5qb7ra	查禮(清)	查為仁(清)|查學禮(清)	same entity_id
+1	酔新丰	1exkagh96mubm	1exkagh96mubk	茅維(明)	茅維(明)	same entity_id
+1	長留輯	1exjujwz854i4	1exjujwz8gd1c	孔尚任(清)|劉廷璣(清)	劉廷璣(清)	same entity_id
+2	[浙江东阳]重修刘金氏宗譜	1exnm4k46fuv6	1exnm4k46fuv4	何盈君(清)	何盈(清)	one contains other: 何盈君|何盈
+2	东宫切韵	1exmv618u8xz8	1exmv618u8xz6	日本菅原是善()	菅原是善()	one contains other: 日本菅原是善|菅原是善
+2	仿橘詞	1exjuyqw151xm	1exjuyqw151xo	龔勝(清)	龔勝玉(清)	one contains other: 龔勝|龔勝玉
+2	南巡名勝図說	1exod4o9abqww	1exod4o9a0idk	高晉(清)	高晉紀(清)	one contains other: 高晉|高晉紀
+2	取沪火油法	1exoarjay77k0	1exoarjaxvz0j	得烏特()	日得烏特()	one contains other: 得烏特|日得烏特
+2	問石詞	1exk0v7st4we8	1exk0v7st4wea	鄒祥蘭(清)	鄒祥(清)	one contains other: 鄒祥蘭|鄒祥
+2	正紅旂満洲哈达瓜尔佳氏傢譜	1exnlbixrb2fc	1exnlbixrb2fa	恩齡(清)	瓜爾佳恩齡(清)	one contains other: 恩齡|瓜爾佳恩齡
+2	消愁輯	1exk0v7sz2epx	1exk0v7sz2epv	郭蔣英(清)	蔣英(清)	one contains other: 郭蔣英|蔣英
+2	游唐王山記	1exod4obxud52	1exod4obxud54	世犖(清)	宋世犖(清)	one contains other: 世犖|宋世犖
+2	湘水記	1exocfo8aa4n8	1exocfo8aa4n6	王文清(清)	王文(清)	one contains other: 王文清|王文
+2	片馬状怳	1exod4o9e2lfm	1exod4o9e2lfk	閔德修(清)	閔德(清)	one contains other: 閔德修|閔德
+2	秦封君輯	1exk9vtz1pmva	1exkafjpocdtt	秦瀚(明)	秦瀚先(明)	one contains other: 秦瀚|秦瀚先
+2	竹邻遗稿	1exka4ugvsfls	1exka4ugvsflu	金式(清)	金式玉(清)	one contains other: 金式|金式玉
+2	粤游紀程	1exod4ocdrguf	1exod4ocdrgud	晏端(清)	晏端書(清)	one contains other: 晏端|晏端書
+2	英国水师律例	1exoarjdp5fr4	1exoarjdou77m	德麟極福德()|舒高第(清)|鄭昌棪(清)	德麟()	one contains other: 德麟極福德|德麟
+2	英国水师考	1exoarjdnwhky	1exoarjdou77k	巴那比()|克理()	巴那比克理()	one contains other: 巴那比|巴那比克理
+2	衡阳志	1exod4o7z6ww6	1exod4o7z6ww4	宋剛中(宋)	剛中(宋)	one contains other: 宋剛中|剛中
+2	西药大成	1exoarjcomo75	1exoarjcobfnq	哈來(英)|來拉海得蘭()	海得蘭()	one contains other: 來拉海得蘭|海得蘭
+2	陈輔之詩話	1exjuyo64okjt	1exjuyo64okjr	陳輔(宋)	陳輔之(宋)	one contains other: 陳輔|陳輔之
+2	靖难功臣彔	1exoc6h1x8b9g	1exoc17dxs8p1	朱當(明)	朱當（⿰淚丏）(明)	one contains other: 朱當|朱當（⿰淚丏）
+2	顧山人輯	1exk0e3ibovsw	1exk0ut5qb7r6	顧聖(明)	顧聖之(明)	one contains other: 顧聖|顧聖之
+3	[上海崇明]周氏傢乗	1exnm2h9w7m6k	1exnm2h9wiups	周輝祖(清)	周光祖(清)	≥2 shared chars: 周輝祖|周光祖
+3	[安徽休宁]休宁隆阜戴氏荆墩門傢譜	1exnlo03ubcw2	1exnlo03ubcw4	戴秉清(清)	戴清標(清)	≥2 shared chars: 戴秉清|戴清標
+3	[安徽泾县]泾川朱氏支譜	1exnlmry7dcli	1exnlmry7dclk	朱武考(清)	朱武江(清)	≥2 shared chars: 朱武考|朱武江
+3	[安徽潛山]皖潛程氏続修族譜	1exnlmryfhiq3	1exnlmryfhiq1	程晉勳(清)	程勳繡(清)	≥2 shared chars: 程晉勳|程勳繡
+3	[山东曲阜]孔子世傢譜	1exnm2h9h883s	1exnm2h9h883u	孔昭統(清)	孔昭煥(清)	≥2 shared chars: 孔昭統|孔昭煥
+3	[山东高密]高密单氏傢乗	1exnm2h9bx6va	1exnm2h9c8feo	單可琚(清)	單可瑻(清)	≥2 shared chars: 單可琚|單可瑻
+3	[江囌句容]戴氏宗譜	1exnlygrr8kci	1exnlygrr8kcg	戴立訓(清)	戴本立(清)	≥2 shared chars: 戴立訓|戴本立
+3	[江囌吳县]橘社金氏傢譜	1exnlzhhj0b9d	1exnlzhhip2q4	金孝坤(清)	金孝植(清)	≥2 shared chars: 金孝坤|金孝植
+3	[江囌囌州]洞庭东山万氏宗譜	1exnlygrznz0i	1exnlygrznz0g	萬履佔(清)	萬履成(清)	≥2 shared chars: 萬履佔|萬履成
+3	[江囌如臯]季氏世譜	1exnlygrxhb7k	1exnlygrx62oc	季德庚(清)	季德綸(清)	≥2 shared chars: 季德庚|季德綸
+3	[江囌宜兴]周氏宗譜	1exnlzhhsdfkc	1exnlzhhsdfka	周順春(清)	周鳴春(清)	≥2 shared chars: 周順春|周鳴春
+3	[江囌常州]周氏宗譜	1exnlxhol9szo	1exnlxhol9szs	周繼寶(清)	周鴻寶(清)	≥2 shared chars: 周繼寶|周鴻寶
+3	[江囌常州]毗陵謝氏宗譜	1exnlxhohiyh8	1exnlxhohiyh0	謝達和(清)	謝禮和(清)	≥2 shared chars: 謝達和|謝禮和
+3	[江囌无錫]栄氏宗譜	1exnlzhha9o1x	1exnlzhha9o1v	榮汝棻(清)	榮汝寧(清)	≥2 shared chars: 榮汝棻|榮汝寧
+3	[江囌无錫]栄氏宗譜	1exnlzhha9o1x	1exnlzhha9o1z	榮汝棻(清)	榮汝楫(清)	≥2 shared chars: 榮汝棻|榮汝楫
+3	[江囌无錫]栄氏宗譜	1exnlzhha9o1v	1exnlzhha9o1z	榮汝寧(清)	榮汝楫(清)	≥2 shared chars: 榮汝寧|榮汝楫
+3	[江囌泰兴]延令杨氏重修族譜年表	1exnlygsawiko	1exnlygsawikk	楊春發(清)	楊春山(清)	≥2 shared chars: 楊春發|楊春山
+3	[江囌鎭江]鎭江孔氏合修宗譜	1exnm0hn1lp8g	1exnm0hn1agp6	孔廣宇(清)	孔廣馥(清)	≥2 shared chars: 孔廣宇|孔廣馥
+3	[江西万載]万載排江欧阳氏族譜	1exnm1i6edu6c	1exnm1i6edu6e	歐陽玉書(清)	歐陽文(清)|歐陽韶仁(清)	≥2 shared chars: 歐陽玉書|歐陽文
+3	[江西奉新]新吳王氏宗譜	1exnm0hn5nsaw	1exnm0hn5nsay	王斐文(清)	王林文(清)	≥2 shared chars: 王斐文|王林文
+3	[江西进賢]黃氏大成宗譜	1exnm0hn8s5q8	1exnm0hn8s5qc	黃孔楊(清)	黃孔箕(清)	≥2 shared chars: 黃孔楊|黃孔箕
+3	[河北枣強]王氏傢譜	1exnlryb77sp8	1exnlryb77sp6	王錫麟(清)	王錫常(清)	≥2 shared chars: 王錫麟|王錫常
+3	[浙江上虞]古虞姚氏宗譜	1exnm6hvxc7wi	1exnm6hvxc7wg	姚生桂(清)	姚善生(清)	≥2 shared chars: 姚生桂|姚善生
+3	[浙江上虞]虞邑西乡吕氏宗譜	1exnm7hqxaqys	1exnm7hqxaqyy	呂星月(清)	呂星燦(清)	≥2 shared chars: 呂星月|呂星燦
+3	[浙江东阳]东阳亭塘陈氏宗譜	1exnm4k3vtsec	1exnm4k3vtsee	陳有樟(清)	陳有錫(清)	≥2 shared chars: 陳有樟|陳有錫
+3	[浙江东阳]东阳周氏宗譜	1exnm4k3xdz48	1exnm4k3xdz46	周人謨(清)	周人遜(清)	≥2 shared chars: 周人謨|周人遜
+3	[浙江东阳]东阳周氏宗譜	1exnm4k3xdz42	1exnm4k3xdz40	周邦穎(清)	周邦赴(清)	≥2 shared chars: 周邦穎|周邦赴
+3	[浙江东阳]东阳杞国楼氏宗譜	1exnm4k3v7bbb	1exnm4k3v7bbf	樓元黨(清)	樓元魁(清)	≥2 shared chars: 樓元黨|樓元魁
+3	[浙江东阳]东阳林氏宗譜	1exnm4k3uku86	1exnm4k3uku84	林忠佔(清)	林忠臺(清)	≥2 shared chars: 林忠佔|林忠臺
+3	[浙江东阳]包氏旌义宗譜	1exnm4k3t0nih	1exnm4k3t0nif	包懋德(清)	包懋員(清)	≥2 shared chars: 包懋德|包懋員
+3	[浙江东阳]吳宁仰高张氏宗譜	1exnm4k43xyiw	1exnm4k43xyiu	張能忠(清)	張能英(清)	≥2 shared chars: 張能忠|張能英
+3	[浙江东阳]吳宁洪塘郭氏宗譜	1exnm4k4308w6	1exnm4k4308w4	郭統標(清)	郭統楚(清)	≥2 shared chars: 郭統標|郭統楚
+3	[浙江东阳]岘西杜氏宗譜	1exnm4k456woy	1exnm4k456wp4	杜春潭(清)	杜春元(清)	≥2 shared chars: 杜春潭|杜春元
+3	[浙江东阳]方前张氏宗譜	1exnm4k3xp7nm	1exnm4k3xp7nk	張朱本(清)	張朱變(清)	≥2 shared chars: 張朱本|張朱變
+3	[浙江东阳]校墙曹氏宗譜	1exnm4k45i58i	1exnm4k45i58k	曹元瑤(清)	曹元琳(清)	≥2 shared chars: 曹元瑤|曹元琳
+3	[浙江东阳]泉塘杜氏宗譜	1exnm4k414tmq	1exnm4k414tmo	杜英姿(清)	杜英賢(清)	≥2 shared chars: 杜英姿|杜英賢
+3	[浙江东阳]西朱裘氏宗譜	1exnm4k44972i	1exnm4k44972k	裘忠元(清)	裘忠孫(清)	≥2 shared chars: 裘忠元|裘忠孫
+3	[浙江东阳]西源馬氏宗譜	1exnm4k44972c	1exnm4k44972e	馬懋高(清)	馬懋儼(清)	≥2 shared chars: 馬懋高|馬懋儼
+3	[浙江东阳]西源馬氏宗譜	1exnm4k44972c	1exnm4k44972a	馬懋高(清)	馬懋進(清)	≥2 shared chars: 馬懋高|馬懋進
+3	[浙江东阳]西源馬氏宗譜	1exnm4k44972e	1exnm4k44972a	馬懋儼(清)	馬懋進(清)	≥2 shared chars: 馬懋儼|馬懋進
+3	[浙江义乌]义乌倍磊陈氏宗譜	1exnm8gk6h9fq	1exnm8gk660w5	陳永寀(清)	陳永觀(清)	≥2 shared chars: 陳永寀|陳永觀
+3	[浙江义乌]义乌倍磊陈氏宗譜	1exnm8gk6h9fq	1exnm8gk660w2	陳永寀(清)	陳永渡(清)	≥2 shared chars: 陳永寀|陳永渡
+3	[浙江义乌]义乌倍磊陈氏宗譜	1exnm8gk660w5	1exnm8gk660w2	陳永觀(清)	陳永渡(清)	≥2 shared chars: 陳永觀|陳永渡
+3	[浙江义乌]义乌凰山象山京山陈氏宗譜	1exnm8gk73qiq	1exnm8gk7ez2c	陳世德(清)	陳德修(清)	≥2 shared chars: 陳世德|陳德修
+3	[浙江义乌]义乌凰山象山京山陈氏宗譜	1exnm8gk7ez28	1exnm8gk7ez2c	陳修(清)	陳德修(清)	≥2 shared chars: 陳修|陳德修
+3	[浙江义乌]凤山金氏宗譜	1exnm8gk0uznq	1exnm8gk0uznm	金令士(清)	金美士(清)	≥2 shared chars: 金令士|金美士
+3	[浙江义乌]凤山金氏宗譜	1exnm8gk0uzno	1exnm8gk0uznk	金興宰(清)	金子興(清)	≥2 shared chars: 金興宰|金子興
+3	[浙江义乌]凤林胡氏重修宗譜	1exnm8gk08ikm	1exnm8gk08ikk	胡光旺(清)	胡光順(清)	≥2 shared chars: 胡光旺|胡光順
+3	[浙江义乌]松林駱氏宗譜	1exnm8gk3o4ju	1exnm8gk3zd34	駱祖鴻(清)	駱祖紹(清)	≥2 shared chars: 駱祖鴻|駱祖紹
+3	[浙江义乌]西門朱氏宗譜	1exnm8gk58b9c	1exnm8gk4x2py	朱允坤(清)	朱允鳳(清)	≥2 shared chars: 朱允坤|朱允鳳
+3	[浙江义乌]酥渓蒋氏宗譜	1exnm8gk4almq	1exnm8gk4almu	蔣廷玉(清)	蔣廷菽(清)	≥2 shared chars: 蔣廷玉|蔣廷菽
+3	[浙江仙居]乐安郭氏宗譜	1exnm8gjmtb7q	1exnm8gjmtb7s	郭文玉(清)	郭良文(清)	≥2 shared chars: 郭文玉|郭良文
+3	[浙江余姚]余邑周氏宗譜	1exnmbtgmv7yc	1exnmbtgmv7ya	周志高(清)	周志坤(清)	≥2 shared chars: 周志高|周志坤
+3	[浙江嵊州]剡北喻氏宗譜	1exnm7hrg0zk2	1exnm7hrg0zk0	喻之福(清)	喻之秦(清)	≥2 shared chars: 喻之福|喻之秦
+3	[浙江松阳]三槐王氏宗譜	1exnm7hrlc0sm	1exnm7hrlc0sk	王廷學(清)	王廷許(清)	≥2 shared chars: 王廷學|王廷許
+3	[浙江松阳]驥湖潘氏忠房宗譜	1exnm7hrkeb5s	1exnm7hrkeb5u	潘益仁(清)	潘益森(清)	≥2 shared chars: 潘益仁|潘益森
+3	[浙江桐庐]桐江皇甫氏宗譜	1exnm8gjir85c	1exnm8gjir85e	皇甫惟楨(清)	皇甫慶(清)	≥2 shared chars: 皇甫惟楨|皇甫慶
+3	[浙江桐庐]桐江赤洲厚伦皇甫氏宗譜	1exnm8gjifzls	1exnm8gji4r2g	皇甫學鸞(清)	皇甫世祥(清)	≥2 shared chars: 皇甫學鸞|皇甫世祥
+3	[浙江桐庐]桐江赤洲厚伦皇甫氏宗譜	1exnm8gjifzls	1exnm8gji4r2e	皇甫學鸞(清)	皇甫煓(清)	≥2 shared chars: 皇甫學鸞|皇甫煓
+3	[浙江桐庐]桐江赤洲厚伦皇甫氏宗譜	1exnm8gji4r2g	1exnm8gji4r2e	皇甫世祥(清)	皇甫煓(清)	≥2 shared chars: 皇甫世祥|皇甫煓
+3	[浙江永康]库川胡氏宗譜	1exnmbtgbmoe8	1exnmbtgbmoec	胡廷鴻(清)	胡廷珣(清)	≥2 shared chars: 胡廷鴻|胡廷珣
+3	[浙江浦江]华墙潘氏宗譜	1exnm6hvg6612	1exnm6hvg6616	潘中霖(清)	潘中玉(清)	≥2 shared chars: 潘中霖|潘中玉
+3	[浙江浦江]嵩渓邵氏宗譜	1exnm6hvsywao	1exnm6hvsnnre	邵興琴(清)	邵興璘(清)	≥2 shared chars: 邵興琴|邵興璘
+3	[浙江浦江]沙城陈氏宗譜	1exnm6hvscf7m	1exnm6hvscf7k	陳宗炳(清)	陳宗煌(清)	≥2 shared chars: 陳宗炳|陳宗煌
+3	[浙江浦江]浦阳人峯杨氏宗譜	1exnm6hvoac5n	1exnm6hvoac5l	楊德會(清)	楊德華(清)	≥2 shared chars: 楊德會|楊德華
+3	[浙江浦江]浦阳仙华方氏宗譜	1exnm6hvqs8i2	1exnm6hvqs8i0	方家信(清)	方家拔(清)	≥2 shared chars: 方家信|方家拔
+3	[浙江浦江]浦阳仙华郑氏宗譜	1exnm6hvr3h1i	1exnm6hvr3h1k	鄭祖祿(清)	鄭祖順(清)	≥2 shared chars: 鄭祖祿|鄭祖順
+3	[浙江浦江]浦阳千乗竜池倪氏重修宗譜	1exnm6hvnz3m2	1exnm6hvoac5c	倪憲存(清)	倪憲章(清)	≥2 shared chars: 倪憲存|倪憲章
+3	[浙江浦江]浦阳双渓黃源张氏宗譜	1exnm6hvowt8q	1exnm6hvowt8t	張可濟(清)	張可言(清)	≥2 shared chars: 張可濟|張可言
+3	[浙江浦江]浦阳双渓黃源张氏宗譜	1exnm6hvowt8o	1exnm6hvp81s0	張忠相(清)	張忠庭(清)	≥2 shared chars: 張忠相|張忠庭
+3	[浙江浦江]浦阳和渓石氏宗譜	1exnm6hvlh79n	1exnm6hvlh79l	石端操(清)	石端璐(清)	≥2 shared chars: 石端操|石端璐
+3	[浙江浦江]浦阳季氏宗譜	1exnm6hvmeww0	1exnm6hvm3ocq	季學英(清)	季學祥(清)	≥2 shared chars: 季學英|季學祥
+3	[浙江浦江]浦阳官岩于氏宗譜	1exnm6hvkjhmw	1exnm6hvkjhmu	於君欽(清)	於君扶(清)	≥2 shared chars: 於君欽|於君扶
+3	[浙江浦江]浦阳嵩渓徐氏宗譜	1exnm6hvp81s6	1exnm6hvp81s4	徐一茂(清)	徐一芬(清)	≥2 shared chars: 徐一茂|徐一芬
+3	[浙江浦江]浦阳建渓戴氏宗譜	1exnm6hvmeww8	1exnm6hvmewwc	戴殿慶(清)	戴殿儒(清)	≥2 shared chars: 戴殿慶|戴殿儒
+3	[浙江浦江]浦阳戴氏宗譜	1exnm6hvjx0jk	1exnm6hvjx0jp	戴經訓(清)	戴經海(清)	≥2 shared chars: 戴經訓|戴經海
+3	[浙江浦江]浦阳李渓王氏宗譜	1exnm6hvn1dz8	1exnm6hvn1dza	王效情(清)	王效鑑(清)	≥2 shared chars: 王效情|王效鑑
+3	[浙江浦江]浦阳海塘洪氏宗譜	1exnm6hvkuq68	1exnm6hvkuq6c	洪繼炯(清)	洪繼憲(清)	≥2 shared chars: 洪繼炯|洪繼憲
+3	[浙江浦江]浦阳海塘洪氏宗譜	1exnm6hvkuq68	1exnm6hvkuq6g	洪繼炯(清)	洪繼業(清)	≥2 shared chars: 洪繼炯|洪繼業
+3	[浙江浦江]浦阳海塘洪氏宗譜	1exnm6hvkuq68	1exnm6hvkjhn0	洪繼炯(清)	洪繼炩(清)	≥2 shared chars: 洪繼炯|洪繼炩
+3	[浙江浦江]浦阳海塘洪氏宗譜	1exnm6hvkuq6c	1exnm6hvkuq6g	洪繼憲(清)	洪繼業(清)	≥2 shared chars: 洪繼憲|洪繼業
+3	[浙江浦江]浦阳海塘洪氏宗譜	1exnm6hvkuq6c	1exnm6hvkjhn0	洪繼憲(清)	洪繼炩(清)	≥2 shared chars: 洪繼憲|洪繼炩
+3	[浙江浦江]浦阳海塘洪氏宗譜	1exnm6hvkuq6g	1exnm6hvkjhn0	洪繼業(清)	洪繼炩(清)	≥2 shared chars: 洪繼業|洪繼炩
+3	[浙江浦江]浦阳王氏宗譜	1exnm6hvpuivg	1exnm6hvq5ret	王有志(清)	王有會(清)	≥2 shared chars: 王有志|王有會
+3	[浙江浦江]浦阳董氏宗譜	1exnm6hvk8934	1exnm6hvjx0ju	董宏祝(清)	董宏聚(清)	≥2 shared chars: 董宏祝|董宏聚
+3	[浙江浦江]浦阳董氏宗譜	1exnm6hvk8934	1exnm6hvjx0jr	董宏祝(清)	董宏本(清)	≥2 shared chars: 董宏祝|董宏本
+3	[浙江浦江]浦阳董氏宗譜	1exnm6hvjx0ju	1exnm6hvjx0jr	董宏聚(清)	董宏本(清)	≥2 shared chars: 董宏聚|董宏本
+3	[浙江浦江]浦阳西渓于氏宗譜	1exnm6hvqgzyi	1exnm6hvqgzyk	於賢逵(清)	於賢起(清)	≥2 shared chars: 於賢逵|於賢起
+3	[浙江浦江]浦阳西臯周氏宗譜	1exnm6hvqgzyg	1exnm6hvqgzye	周賢瑆(清)	周賢昀(清)	≥2 shared chars: 周賢瑆|周賢昀
+3	[浙江浦江]浦阳陈氏宗譜	1exnm6hvjajgg	1exnm6hvjls05	陳會雲(清)	陳會威(清)	≥2 shared chars: 陳會雲|陳會威
+3	[浙江浦江]浦阳項氏宗譜	1exnm6hvr3h1m	1exnm6hvr3h1o	項耀琨(清)	項耀璠(清)	≥2 shared chars: 項耀琨|項耀璠
+3	[浙江浦江]深渓义門王氏宗譜文輯	1exnm6hvscf7w	1exnm6hvsnnr8	王志鏌(清)	王志銓(清)	≥2 shared chars: 王志鏌|王志銓
+3	[浙江浦江]球山义門何氏宗譜	1exnm6hvs16o3	1exnm6hvs16o7	何以琦(清)	何以南(清)	≥2 shared chars: 何以琦|何以南
+3	[浙江浦江]竜渓张氏十甲人房宗譜	1exnm6hvh3vnm	1exnm6hvgsn48	張鴻范(清)	張鴻模(清)	≥2 shared chars: 張鴻范|張鴻模
+3	[浙江浦江]竜渓张氏宗譜	1exnm6hvh3vnw	1exnm6hvh3vnu	張時松(清)	張壽松(清)	≥2 shared chars: 張時松|張壽松
+3	[浙江浦江]竜渓张氏宗譜	1exnm6hvhf476	1exnm6hvhf47g	張長春(清)	張鹹春(清)	≥2 shared chars: 張長春|張鹹春
+3	[浙江浦江]隆渓丽水张氏宗譜	1exnm6hvghekq	1exnm6hvgheks	張時勳(清)	張時炩(清)	≥2 shared chars: 張時勳|張時炩
+3	[浙江紹兴]会稽董氏宗譜	1exnm7hr03vuw	1exnm7hr03vuy	董庭焙(清)	董庭煟(清)	≥2 shared chars: 董庭焙|董庭煟
+3	[浙江紹兴]天乐娄氏宗譜	1exnm7hraepsc	1exnm7hrapybk	婁世振(清)	婁世傳(清)	≥2 shared chars: 婁世振|婁世傳
+3	[浙江紹兴]水澄刘氏傢譜	1exnm7hra3h8m	1exnm7hra3h8k	劉大申(清)	劉大觀(清)	≥2 shared chars: 劉大申|劉大觀
+3	[浙江紹兴]稽南郑氏宗譜	1exnm7hr3uqdc	1exnm7hr3jhu2	鄭文蘭(清)	鄭文琪(清)	≥2 shared chars: 鄭文蘭|鄭文琪
+3	[浙江萧山]西河郁氏宗譜	1exnm8gjpmg3m	1exnm8gjpmg3o	鬱九成(清)	鬱九陔(清)	≥2 shared chars: 鬱九成|鬱九陔
+3	[浙江諸暨]太原郭氏宗譜	1exnmcvrjoumi	1exnmcvrjoumg	郭瑞標(清)	郭瑞兆(清)	≥2 shared chars: 郭瑞標|郭瑞兆
+3	[浙江諸暨]暨阳善渓何氏宗譜	1exnmcvrb9fyc	1exnmcvrb9fye	何炳文(清)	何瑞文(清)	≥2 shared chars: 何炳文|何瑞文
+3	[浙江諸暨]暨阳燕山冯氏宗譜	1exnmcvrfy03w	1exnmcvrfy03s	馮士造(清)	馮士行(清)	≥2 shared chars: 馮士造|馮士行
+3	[浙江諸暨]暨阳西何何氏宗譜	1exnmcvrf0ah6	1exnmcvrf0ah4	何學均(清)	何學安(清)	≥2 shared chars: 何學均|何學安
+3	[浙江諸暨]暨阳西安乡西湖阮氏宗譜	1exnmcvrf0ah2	1exnmcvrf0ah0	阮文秀(清)	阮文瑞(清)	≥2 shared chars: 阮文秀|阮文瑞
+3	[浙江諸暨]暨阳高湖方氏宗譜	1exnmbtgshhqe	1exnmbtgshhqa	方文釗(清)	方紹文(清)	≥2 shared chars: 方文釗|方紹文
+3	[浙江諸暨]梅渓馬氏宗譜	1exnmcvrj2djc	1exnmcvrj2dja	馬配福(清)	馬金福(清)	≥2 shared chars: 馬配福|馬金福
+3	[浙江諸暨]花亭黃氏宗譜	1exnmbtgpocug	1exnmbtgpocua	黃中和(清)	黃文中(清)	≥2 shared chars: 黃中和|黃文中
+3	[浙江諸暨]金峯楼氏宗譜	1exnmcvrir4zq	1exnmcvrir4zm	樓茂松(清)	樓德茂(清)	≥2 shared chars: 樓茂松|樓德茂
+3	[浙江諸暨]金峯楼氏宗譜	1exnmcvrir4zm	1exnmcvrir4zo	樓德茂(清)	樓德長(清)	≥2 shared chars: 樓德茂|樓德長
+3	[浙江諸暨]金峯楼氏宗譜	1exnmcvrir4zm	1exnmcvrir4zs	樓德茂(清)	樓德輝(清)	≥2 shared chars: 樓德茂|樓德輝
+3	[浙江諸暨]金峯楼氏宗譜	1exnmcvrir4zo	1exnmcvrir4zs	樓德長(清)	樓德輝(清)	≥2 shared chars: 樓德長|樓德輝
+3	[浙江遂昌]平昌王渓戴氏族譜	1exnm7hrmkyyq	1exnm7hrmkyys	戴長惠(清)	戴長墀(清)	≥2 shared chars: 戴長惠|戴長墀
+3	[浙江金华]凤山洪氏宗譜	1exnm5jhwwwe8	1exnm5jhwwwea	洪肇旭(清)	洪肇康(清)	≥2 shared chars: 洪肇旭|洪肇康
+3	[浙江金华]竜山张氏宗譜	1exnm5jhz3k7c	1exnm5jhz3k7a	張錫鬯(清)	張錫珄(清)	≥2 shared chars: 張錫鬯|張錫珄
+3	[湖南临湘]临湘张氏傢乗	1exnlt9f538qq	1exnlt9f538qo	張秉煜(清)	張秉鑒(清)	≥2 shared chars: 張秉煜|張秉鑒
+3	[湖南宁乡]宁乡欧阳氏族譜	1exnlt9fh9hxm	1exnlt9fh9hxo	歐陽子義(清)	歐陽鏡筠(清)|歐陽永昌(清)	≥2 shared chars: 歐陽子義|歐陽鏡筠
+3	[湖南宁乡]宁邑喻氏続修支譜	1exnlt9fj4x6o	1exnlt9fitonh	喻錫璜(清)	喻錫奉(清)	≥2 shared chars: 喻錫璜|喻錫奉
+3	[湖南宁乡]沩宁古塘基刘氏重修族譜	1exnlubxm3t36	1exnlubxm3t34	劉鉅崧(清)	劉鉅年(清)	≥2 shared chars: 劉鉅崧|劉鉅年
+3	[湖南平江]王氏族譜	1exoci107cikg	1exoci1071a12	王德新(清)	王樹德(清)	≥2 shared chars: 王德新|王樹德
+3	[湖南平江]碧潭余氏族譜	1exnlubxqsd8i	1exnlubxqsd8g	余澤松(清)	余澤江(清)	≥2 shared chars: 余澤松|余澤江
+3	[湖南桂阳]何氏宗譜	1exnlt9evevwm	1exnlt9evevwo	何高才(清)	何高峯(清)	≥2 shared chars: 何高才|何高峯
+3	[湖南沅江]刘氏三修族譜	1exnlwhljbtac	1exnlwhljbtae	劉經佘(清)	劉經濟(清)	≥2 shared chars: 劉經佘|劉經濟
+3	[湖南益阳]益阳郭氏族譜	1exnlwhlfkyrq	1exnlwhlfkyrs	郭修遠(清)	郭修秦(清)	≥2 shared chars: 郭修遠|郭修秦
+3	[湖南邵阳]邵西罗氏二修族譜	1exnlubxya29s	1exnlubxya29u	羅光鈺(清)	羅光琛(清)	≥2 shared chars: 羅光鈺|羅光琛
+3	三省山內風土杂識	1exocfo7xsmx2	1exocfo7xsmx0	嚴如煜(清)	嚴如熤(清)	≥2 shared chars: 嚴如煜|嚴如熤
+3	九河故道考	1exoatfgy73lw	1exnc4qrmsa9u	張亨嘉(清)	張享嘉(清)	≥2 shared chars: 張亨嘉|張享嘉
+3	仏說呪时气病経	1exobwvnu62gz	1exobwvntutxc	釋曇無蘭(晉)	釋竺曇無蘭(晉)	≥2 shared chars: 釋曇無蘭|釋竺曇無蘭
+3	仏說圣曜母陀罗尼経	1exoboy5azgg0	1exoboy5aczcw	釋法賢(宋)	釋法天(宋)	≥2 shared chars: 釋法賢|釋法天
+3	仏說圣観自在菩萨梵讚	1exoboy586bk4	1exoboy58ssn4	釋法天(宋)	釋法賢(宋)	≥2 shared chars: 釋法天|釋法賢
+3	仏說大悲空智金刚大敎王仪軌	1exoboy0pjojm	1exoboy0pjojk	釋施護(宋)	釋法護(宋)	≥2 shared chars: 釋施護|釋法護
+3	仏說希有校量功徳経	1exoboy6oxfcy	1exoboy6oxfd0	釋閣那崛多(隋)	釋闍那崛多(隋)	≥2 shared chars: 釋閣那崛多|釋闍那崛多
+3	仏說徳护長者経	1exoboy1ge39g	1exoboy1hbsw0	釋那連提黎耶舍(隋)	釋那連提耶舍(隋)	≥2 shared chars: 釋那連提黎耶舍|釋那連提耶舍
+3	仏說文殊尸利行経	1exoboy6c4p38	1exoboy6c4p36	釋闍那掘多(隋)	釋豆那掘多(隋)	≥2 shared chars: 釋闍那掘多|釋豆那掘多
+3	仏說月光菩萨経	1exoboy7nw077	1exoboy7nkrno	釋法天(宋)	釋法賢(宋)	≥2 shared chars: 釋法天|釋法賢
+3	仏說未曽有正法経	1exoboy6avqwy	1exoboy6avqx0	釋法賢(宋)	釋法天(宋)	≥2 shared chars: 釋法賢|釋法天
+3	仏說菩萨十住経	1exoboy4kritc	1exoboy4k51q8	釋祇多蜜(晉)	釋祗多蜜(晉)	≥2 shared chars: 釋祇多蜜|釋祗多蜜
+3	余生紀畧	1exnu6bnq524i	1exob168dp7ns	劉壽曾(清)	劉貴曾(清)	≥2 shared chars: 劉壽曾|劉貴曾
+3	使蜀日記	1exod4o9uxerq	1exod4o9uxero	方象瑛(清)	方象豫(清)	≥2 shared chars: 方象瑛|方象豫
+3	使西书畧	1exod4o9v8nb8	1exod4o9v8nba	孫家穀(清)	孫家縠(清)	≥2 shared chars: 孫家穀|孫家縠
+3	元史備忘彔	1exoc6h2hiqki	1exoasxdcxmgy	王先魯(明)	王光魯(明)	≥2 shared chars: 王先魯|王光魯
+3	光緒九年癸未科会試朱卷	1exn8bvb7591k	1exn8bvb40vlu	王人文(清)	王式文(清)	≥2 shared chars: 王人文|王式文
+3	光緒九年癸未科会試朱卷	1exn8bvb8pfrc	1exn8bvb4yl8i	李瀛瑞(清)	李秉瑞(清)	≥2 shared chars: 李瀛瑞|李秉瑞
+3	光緒九年癸未科会試朱卷	1exn8bvb6u0i2	1exn8bvb4c45g	孫崇墉(清)	孫崇緯(清)	≥2 shared chars: 孫崇墉|孫崇緯
+3	光緒二十三年丁酉科山东选抜貢卷	1exn7iursritq	1exn7iursrits	孔繁裕(清)	孔繁淦(清)	≥2 shared chars: 孔繁裕|孔繁淦
+3	光緒二十三年丁酉科江囌选抜貢卷	1exn7iurrtt6y	1exn7iurs51qo	夏仁虎(清)	夏景仁(清)	≥2 shared chars: 夏仁虎|夏景仁
+3	光緒二十四年戊戌科会試朱卷	1exn8bvaxgw7e	1exn8bvawuf48	王廷灼(清)	王廷揚(清)	≥2 shared chars: 王廷灼|王廷揚
+3	光緒二十四年戊戌科会試朱卷	1exn8bvaxgw7e	1exn8bvax5nnu	王廷灼(清)	王廷材(清)	≥2 shared chars: 王廷灼|王廷材
+3	光緒二十四年戊戌科会試朱卷	1exn8bvawuf48	1exn8bvax5nnu	王廷揚(清)	王廷材(清)	≥2 shared chars: 王廷揚|王廷材
+3	光緒二十年甲午恩科会試朱卷	1exn6vsn9qnt4	1exn6vsnad4w0	關冕均(清)	關冕鈞(清)	≥2 shared chars: 關冕均|關冕鈞
+3	光緒二十年甲午科山东乡試朱卷	1exn7iuri5gcg	1exn7iurhu7t4	孔慶鑑(清)	孔慶瓛(清)	≥2 shared chars: 孔慶鑑|孔慶瓛
+3	光緒二十年甲午科江南乡試朱卷	1exn6vsndsqva	1exn7iurgwi6i	劉世珩(清)	劉世瑛(清)	≥2 shared chars: 劉世珩|劉世瑛
+3	光緒二十年甲午科江南乡試朱卷	1exn6vsndsqv4	1exn7iurfnk06	陳宗麟(清)	陳宗彝(清)	≥2 shared chars: 陳宗麟|陳宗彝
+3	光緒二十年甲午科江南乡試朱卷	1exn6vsndhibm	1exn7iurga13e	秦曾源(清)	秦曾潞(清)	≥2 shared chars: 秦曾源|秦曾潞
+3	光緒二十年甲午科江南乡試朱卷	1exn6vsnd69s4	1exn7iurfnk02	費彝訓(清)	費紹訓(清)	≥2 shared chars: 費彝訓|費紹訓
+3	光緒二十年甲午科江南乡試朱卷	1exn7iurfnk00	1exn6vsncjsow	張傳驤(清)	孫傳驤(清)	≥2 shared chars: 張傳驤|孫傳驤
+3	光緒二十年甲午科江南乡試朱卷	1exn7iurga138	1exn7iurga13k	王家枚(清)	王家霖(清)	≥2 shared chars: 王家枚|王家霖
+3	光緒二十年甲午科浙江乡試朱卷	1exn7iurl9ts4	1exn7iurjpn2a	陳熙亮(清)	王熙亮(清)	≥2 shared chars: 陳熙亮|王熙亮
+3	光緒二十年甲午科浙江乡試朱卷	1exn7iurk0vm4	1exn7iurkc45q	沈懋政(清)	王懋政(清)	≥2 shared chars: 沈懋政|王懋政
+3	光緒二十年甲午科浙江乡試朱卷	1exn7iurjpn2q	1exn7iurkncpc	朱鳳翔(清)	朱鳳儀(清)	≥2 shared chars: 朱鳳翔|朱鳳儀
+3	光緒二年丙子科江南乡試朱卷	1exn636b39koy	1exn636b47abr	朱雲生(清)	朱步雲(清)	≥2 shared chars: 朱雲生|朱步雲
+3	光緒二年丙子科河南乡試朱卷	1exn636aztyq5	1exn636aztyq1	蘇毓俊(清)|蘇毓珍(清)	蘇毓溎(清)	≥2 shared chars: 蘇毓俊|蘇毓溎
+3	光緒二年丙子科浙江乡試朱卷	1exn636bd962s	1exn636bc07wk	許承宣(清)	許承家(清)	≥2 shared chars: 許承宣|許承家
+3	光緒二年丙子科湖南乡試朱卷	1exn636b12ww2	1exn636b0rock	劉信徵(清)	劉信申(清)	≥2 shared chars: 劉信徵|劉信申
+3	光緒五年己卯科江南乡試同怀朱卷	1exnkv10ujxu2	1exnkv10ujxu0	胡之鈞(清)	胡之瀛(清)	≥2 shared chars: 胡之鈞|胡之瀛
+3	光緒元年乙亥恩科浙江乡試朱卷	1exnl2s3swft0	1exnl2s3r10ju	鄭鍾祥(清)	杜鍾祥(清)	≥2 shared chars: 鄭鍾祥|杜鍾祥
+3	光緒八年壬午科江南乡試朱卷	1exn4xfeogbur	1exn4xfepe1he	李經方(清)	李經畬(清)	≥2 shared chars: 李經方|李經畬
+3	光緒十一年乙酉科江南乡試朱卷	1exnkv10h4qh6	1exnkv10i2g3k	朱鳳喈(清)	朱鳳書(清)	≥2 shared chars: 朱鳳喈|朱鳳書
+3	光緒十一年乙酉科江南乡試朱卷	1exnkv10jmmtk	1exnkv10hr7k4	孫啓泰(清)	孫泰圻(清)	≥2 shared chars: 孫啓泰|孫泰圻
+3	光緒十一年乙酉科順天乡試朱卷	1exnkv10n28ss	1exnkv10nopvs	王芝田(清)	王芝祥(清)	≥2 shared chars: 王芝田|王芝祥
+3	光緒十七年辛卯正科順天乡試朱卷	1exnkho0otjie	1exnkho0p4s22	李佩文(清)	李佩沆(清)	≥2 shared chars: 李佩文|李佩沆
+3	光緒十七年辛卯科江南乡試朱卷	1exnkho0f56o4	1exnkho0ge4ug	徐善寶(清)	朱寶善(清)	≥2 shared chars: 徐善寶|朱寶善
+3	光緒十七年辛卯科江南乡試朱卷	1exnkho0e7h1o	1exnkho0e7h1c	沈志賢(清)	沈惟賢(清)	≥2 shared chars: 沈志賢|沈惟賢
+3	光緒十七年辛卯科江南乡試朱卷	1exnkho0e7h1g	1exnkho0fgf7k	孫傳檙(清)	孫傳綺(清)	≥2 shared chars: 孫傳檙|孫傳綺
+3	光緒十七年辛卯科江南乡試朱卷	1exnkho0frnr8	1exnkho0ety4g	翁順孫(清)	翁炯孫(清)	≥2 shared chars: 翁順孫|翁炯孫
+3	光緒十七年辛卯科江南乡試朱卷	1exnkho0ge4ue	1exnkho0gpddy	胡嘉銓(清)	鄭嘉銓(清)	≥2 shared chars: 胡嘉銓|鄭嘉銓
+3	光緒十二年丙戌科会試朱卷	1exn8k5y02i2x	1exn8k5xz4sg8	曾謙福(清)	曾福謙(清)	≥2 shared chars: 曾謙福|曾福謙
+3	光緒十五年己丑恩科广西乡試朱卷	1exnkniknvx1k	1exnknikp4v7s	周春元(清)	周贊元(清)	≥2 shared chars: 周春元|周贊元
+3	光緒十五年己丑恩科江南乡試朱卷	1exnknikvdm2u	1exnknikqp1xe	孫寶書(清)	曹寶書(清)	≥2 shared chars: 孫寶書|曹寶書
+3	光緒十五年己丑恩科江南乡試朱卷	1exnknikvouma	1exnknikv2dj6	金文樑(清)	金文翰(清)	≥2 shared chars: 金文樑|金文翰
+3	光緒十五年己丑恩科浙江乡試朱卷	1exnknil6m5mu	1exnknil5og00	汪鵬年(清)	汪康年(清)	≥2 shared chars: 汪鵬年|汪康年
+3	光緒十五年己丑科会試朱卷	1exnkv10btp8o	1exnkv109bswc	鄭熾昌(清)	葉昌熾(清)	≥2 shared chars: 鄭熾昌|葉昌熾
+3	光緒十八年壬辰科会試朱卷	1exn8k5xyibcw	1exn8k5xvdxxi	龔心銘(清)	龔心鑑(清)	≥2 shared chars: 龔心銘|龔心鑑
+3	光緒十八年壬辰科会試朱卷	1exn8k5xvdxxg	1exn8k5xy72tk	周學海(清)	周學銘(清)	≥2 shared chars: 周學海|周學銘
+3	光緒十八年壬辰科会試朱卷	1exn8k5xwbnk8	1exn8k5xxvua1	蔣式惺(清)	蔣式瑆(清)	≥2 shared chars: 蔣式惺|蔣式瑆
+3	光緒十六年庚寅恩科会試朱卷	1exnkho09iww2	1exnkho06ps04	李經畬(清)	李經佘(清)	≥2 shared chars: 李經畬|李經佘
+3	光緒十六年庚寅恩科会試朱卷	1exnkho07c936	1exnkho063ax4	張祖望(清)	張祖祺(清)	≥2 shared chars: 張祖望|張祖祺
+3	光緒十四年戊子科江南乡試朱卷	1exnknikhbxmq	1exnknikgpgjw	劉顯曾(清)	劉富曾(清)	≥2 shared chars: 劉顯曾|劉富曾
+3	光緒十四年戊子科江南乡試朱卷	1exnknikhbxmq	1exnknikgpgjk	劉顯曾(清)	劉法曾(清)	≥2 shared chars: 劉顯曾|劉法曾
+3	光緒十四年戊子科江南乡試朱卷	1exnknikgpgjw	1exnknikgpgjk	劉富曾(清)	劉法曾(清)	≥2 shared chars: 劉富曾|劉法曾
+3	光緒十四年戊子科浙江乡試朱卷	1exnknikkrjly	1exnknikle0oy	朱彭壽(清)	陳彭壽(清)	≥2 shared chars: 朱彭壽|陳彭壽
+3	入法界体性経	1exobwvsecw74	1exobwvsdf6km	釋閣那崛多(隋)	釋闍那崛多(隋)	≥2 shared chars: 釋閣那崛多|釋闍那崛多
+3	公法总論	1exoarj8p1ibo	1exoarj8pnzeo	羅柏村()	羅伯村()	≥2 shared chars: 羅柏村|羅伯村
+3	农学初級	1exoarjal38qo	1exoarjaks078	旦爾恒里()	旦爾恒理()	≥2 shared chars: 旦爾恒里|旦爾恒理
+3	农学初級	1exoarjal38qo	1exoarjaks076	旦爾恒里()	旦爾恒埋()	≥2 shared chars: 旦爾恒里|旦爾恒埋
+3	农学初級	1exoarjaks078	1exoarjaks076	旦爾恒理()	旦爾恒埋()	≥2 shared chars: 旦爾恒理|旦爾恒埋
+3	农学津梁	1exoarjaleha8	1exoarjalehaa	恒里湯納耳()	恒理湯納耳()	≥2 shared chars: 恒里湯納耳|恒理湯納耳
+3	凤凰山記	1exod4o7ggoaq	1exod4o7ggoao	謝楷樹(清)	謝階樹(清)	≥2 shared chars: 謝楷樹|謝階樹
+3	分湖杂咏	1exoatfgmnbia	1exjtw3uzzq4n	吳家騏(清)	吳家琪(清)	≥2 shared chars: 吳家騏|吳家琪
+3	前汉书食貨志注	1exn7j0eu0gsi	1exmuk9ej20p1	劉光蕡(清)	劉光黃(清)	≥2 shared chars: 劉光蕡|劉光黃
+3	化学启懞	1exoarj98e800	1exoarj982zgk	羅斯古()	羅師古()	≥2 shared chars: 羅斯古|羅師古
+3	华山志概	1exod4o846pl4	1exod4o84hy4g	王弘嘉(清)	王宏嘉(清)	≥2 shared chars: 王弘嘉|王宏嘉
+3	南北花旂战紀	1exoarjaiwkxs	1exoarjailce8	希理哈()	希里哈()	≥2 shared chars: 希理哈|希里哈
+3	南北花旂战紀	1exoarjaiwkxs	1exoarjailcea	希理哈()	什理哈()	≥2 shared chars: 希理哈|什理哈
+3	南极新地弁	1exod4o992sqq	1exod4o992sqo	金維賢(清)	金惟賢(清)	≥2 shared chars: 金維賢|金惟賢
+3	参同契経文	1exn9mw74k7wi	1exn9mw74k7wg	魏伯陽(漢)	張伯陽(漢)	≥2 shared chars: 魏伯陽|張伯陽
+3	台阳杂兴	1exod4oa6h6v6	1exod4oa6h6v4	馬清樞(清)	馬樞(清)	≥2 shared chars: 馬清樞|馬樞
+3	史要	1exoasxdcb5dw	1exoasxdcmdxc	任啟運(清)	任啓運(清)	≥2 shared chars: 任啟運|任啓運
+3	同治七年戊辰科会試朱卷	1exns5zfjqio8	1exns5zfh8mbs	徐鼎琛(清)	徐家鼎(清)	≥2 shared chars: 徐鼎琛|徐家鼎
+3	同治三年甲子科湖北乡試朱卷	1exnsbyq3oirw	1exnsbyq3zrb8	劉鳳金(清)	劉鳳書(清)	≥2 shared chars: 劉鳳金|劉鳳書
+3	同治九年庚午科並补元年壬戌恩科江南乡試朱卷	1exns33ruax3i	1exns33rqk2ku	崔國因(清)	崔國幹(清)	≥2 shared chars: 崔國因|崔國幹
+3	同治九年庚午科並补元年壬戌恩科江南乡試朱卷	1exns33rs49am	1exns33ruxe6m	吳其培(清)	吳蔭培(清)	≥2 shared chars: 吳其培|吳蔭培
+3	同治九年庚午科並补元年壬戌恩科江南乡試朱卷	1exns33ro268c	1exns33roonb8	王慶平(清)	王慶善(清)	≥2 shared chars: 王慶平|王慶善
+3	同治九年庚午科並补元年壬戌恩科江南乡試朱卷	1exns33rsfhu8	1exns33roonb4	沈世榮(清)	吳世榮(清)	≥2 shared chars: 沈世榮|吳世榮
+3	同治九年庚午科順天乡試朱卷	1exns4l7hsmx6	1exns4l7i3vgm	張兆鍾(清)	張兆蘭(清)	≥2 shared chars: 張兆鍾|張兆蘭
+3	同治元年壬戌恩科並咸丰十一年辛酉正科山东乡試朱卷	1exnskigvwb9e	1exnskigw7jt4	孔憲苣(清)	孔憲慤(清)	≥2 shared chars: 孔憲苣|孔憲慤
+3	同治元年壬戌恩科並咸丰十一年辛酉正科山东乡試朱卷	1exnskigvwb9e	1exnskigtpngk	孔憲苣(清)	孔憲蘭(清)	≥2 shared chars: 孔憲苣|孔憲蘭
+3	同治元年壬戌恩科並咸丰十一年辛酉正科山东乡試朱卷	1exnskigw7jt4	1exnskigtpngk	孔憲慤(清)	孔憲蘭(清)	≥2 shared chars: 孔憲慤|孔憲蘭
+3	同治元年壬戌恩科並咸丰十一年辛酉正科山东乡試朱卷	1exnskigw7jsy	1exnskigwisco	張蕙圃(清)	張蕙溪(清)	≥2 shared chars: 張蕙圃|張蕙溪
+3	同治元年壬戌恩科並咸丰十一年辛酉正科山东乡試朱卷	1exnskigx59fo	1exnskigtpngq	孫元儒(清)	孫儒卿(清)	≥2 shared chars: 孫元儒|孫儒卿
+3	同治元年壬戌恩科並咸丰十一年辛酉正科山东乡試朱卷	1exnskigx59fu	1exnskigtpngq	孫翰卿(清)	孫儒卿(清)	≥2 shared chars: 孫翰卿|孫儒卿
+3	同治元年壬戌恩科並咸丰十一年辛酉正科山东乡試朱卷	1exnskigvl2pw	1exnskiguylmo	趙毓芝(清)	馬毓芝(清)	≥2 shared chars: 趙毓芝|馬毓芝
+3	同治元年壬戌恩科並咸丰十一年辛酉正科山东乡試朱卷	1exnskigv9u6i	1exnskiguc4jo	李青陽(清)	李之青(清)	≥2 shared chars: 李青陽|李之青
+3	同治元年壬戌恩科並咸丰十一年辛酉正科山东乡試朱卷	1exnskigv9u6g	1exnskigund3e	王師德(清)	王德馨(清)	≥2 shared chars: 王師德|王德馨
+3	同治六年丁卯科並补行三年甲子科浙江乡試朱卷	1exns4l7newow	1exns4l7klrt8	陳光榮(清)	陳榮組(清)	≥2 shared chars: 陳光榮|陳榮組
+3	同治六年丁卯科並补行三年甲子科浙江乡試朱卷	1exns4l7newp2	1exns4l7m5yis	陶方琯(清)	陶方琦(清)	≥2 shared chars: 陶方琯|陶方琦
+3	同治六年丁卯科並补行咸丰十一年辛酉科江南乡試同怀朱卷	1exns4l7o1dsc	1exns4l7o1dsa	李國棠(清)	李國榮(清)	≥2 shared chars: 李國棠|李國榮
+3	同治六年丁卯科广东乡試朱卷	1exns5zfck26g	1exns5zfcvapw	許應鑾(清)	許應鎕(清)	≥2 shared chars: 許應鑾|許應鎕
+3	同治十二年癸酉科浙江乡試朱卷	1exnsg45yfi82	1exnsg460axhi	王師曾(清)	王希曾(清)	≥2 shared chars: 王師曾|王希曾
+3	同治十二年癸酉科浙江乡試朱卷	1exnsg45zogei	1exnsg45zogec	陳德坊(清)	陳德輝(清)	≥2 shared chars: 陳德坊|陳德輝
+3	同治十二年癸酉科湖南乡試朱卷	1exnsbyqa8i6e	1exnsbyq9x9mq	黃傳禮(清)	黃傳祁(清)	≥2 shared chars: 黃傳禮|黃傳祁
+3	同治十二年癸酉科順天乡試朱卷	1exnsg45vxlvs	1exnsg45vb4sm	吳恩慶(清)	吳同慶(清)	≥2 shared chars: 吳恩慶|吳同慶
+3	同治四年乙丑补行咸丰十一年辛酉科並同治元年壬戌恩科浙江乡試朱卷	1exnsi9fgv3ls	1exnsi9fh6c5c	金士瀛(清)	金士準(清)	≥2 shared chars: 金士瀛|金士準
+3	吕宋紀畧	1exod4o90c5j6	1exod4o900wzo	黃可無(清)	黃可垂(清)	≥2 shared chars: 黃可無|黃可垂
+3	周公卿年表	1exmuk9ejohsa	1exmurraonuoc	斯萬同(清)	萬斯同(清)	≥2 shared chars: 斯萬同|萬斯同
+3	咸丰九年己未恩科並补行五年乙卯正科江西乡試朱卷	1exnt7lzk2jnu	1exnt7lzkds7a	郭守訓(清)	郭守臣(清)	≥2 shared chars: 郭守訓|郭守臣
+3	嘉庆四年己未科会試朱卷	1exnmep4bzkzm	1exnmep4bocga	俞恆澤(清)	俞恆潤(清)	≥2 shared chars: 俞恆澤|俞恆潤
+3	四书易简彔	1exo9qnbkh9tw	1exo9qnbkh9ty	劉寶采(清)	劉葆采(清)	≥2 shared chars: 劉寶采|劉葆采
+3	国朝弈匯	1exoaumn1c3y8	1exoaumn10vet	徐德煥(清)	徐德耀(清)	≥2 shared chars: 徐德煥|徐德耀
+3	国民敎育資料	1exoarj8w7ytc	1exoarj8w7yte	峯是三郞(日本)	峯是三郎(日本)	≥2 shared chars: 峯是三郞|峯是三郎
+3	堤积朮弁	1exmus99hxjb4	1exntxhux50qo	蔣維鍾(清)	趙維鍾(清)	≥2 shared chars: 蔣維鍾|趙維鍾
+3	如來方便善巧呪経	1exobwvsfx2ww	1exobwvsfaltu	釋閣那崛多(隋)	釋闍那崛多(隋)	≥2 shared chars: 釋閣那崛多|釋闍那崛多
+3	姑囌竹枝詞	1exoatfgproxu	1exk0e3ie6s5d	袁學瀾(清)	袁景瀾(清)	≥2 shared chars: 袁學瀾|袁景瀾
+3	宋中太乙宫碑銘	1exoatfhhjtai	1exnt37s50vlu	呂卿(宋)	呂惠卿(宋)	≥2 shared chars: 呂卿|呂惠卿
+3	宝星陁罗尼経	1exmuycmsnqww	1exmuycmscidm	釋波羅頗迦羅密多羅(唐)	釋波羅頗密多羅(唐)	≥2 shared chars: 釋波羅頗迦羅密多羅|釋波羅頗密多羅
+3	居士分灯彔	1exobwvq9kiki	1exobwvq9kikk	朱時恩(明)	朱時思(明)	≥2 shared chars: 朱時恩|朱時思
+3	差摩婆帝授記経	1exmvgxqtmc5m	1exmvgxqtmc5o	釋菩提留支(南北朝)	釋菩提流支(南北朝)	≥2 shared chars: 釋菩提留支|釋菩提流支
+3	御制文二輯	1exk3eqty2hvm	1exk3eqty2hvp	愛新覺羅·顒琰()	愛新覺羅·旻寧()	≥2 shared chars: 愛新覺羅·顒琰|愛新覺羅·旻寧
+3	御制詩二輯	1exk3eqtubnd3	1exk3eqtubnd5	愛新覺羅·旻寧()	愛新覺羅·顒琰()	≥2 shared chars: 愛新覺羅·旻寧|愛新覺羅·顒琰
+3	惺斋詩存	1exk0ut9h5qfc	1exk0uaitw8w3	文成燦(清)	成文燦(清)	≥2 shared chars: 文成燦|成文燦
+3	文殊师利所說摩訶般若波罗蜜経	1exobwvu8ufwg	1exobwvu8j7cw	釋曼陁羅仙(梁)	釋曼陀羅仙(梁)	≥2 shared chars: 釋曼陁羅仙|釋曼陀羅仙
+3	日本现时敎育	1exoarjb7vke8	1exoarjb7vkea	吉村寅太郎(日本)	吉村寅太郞(日本)	≥2 shared chars: 吉村寅太郎|吉村寅太郞
+3	春浮园偶彔	1exmsmvg4vthg	1exmsmvg4vthe	蕭士璋(明)	蕭士瑋(明)	≥2 shared chars: 蕭士璋|蕭士瑋
+3	暹罗別記	1exod4ob2be9w	1exod4ob2be9u	季麟光(清)	季麒光(清)	≥2 shared chars: 季麟光|季麒光
+3	松臯文輯	1exjtw3xmvv9g	1exjtw3xmvv9d	毛可際(清)	毛際可(清)	≥2 shared chars: 毛可際|毛際可
+3	柳如是詩	1exk3dt71q8zt	1exk3f3uqmz2e	柳如是(清)	柳是(清)	≥2 shared chars: 柳如是|柳是
+3	氾大通桥記	1exod4o7dnjeu	1exod4o7dyry8	吳錫麟(清)	吳錫麒(清)	≥2 shared chars: 吳錫麟|吳錫麒
+3	江上孤忠彔	1exnmep4hx3b8	1exob167pnxtu	趙曦明(清)	黃明曦(清)	≥2 shared chars: 趙曦明|黃明曦
+3	汽机发軔	1exoarjau54hw	1exoarjaugd1c	美以納百勞那()	美以納白勞那()	≥2 shared chars: 美以納百勞那|美以納白勞那
+3	海军調度要言	1exoarj8xs5j7	1exoarj8y3e2o	孥核甫()	籋核甫()	≥2 shared chars: 孥核甫|籋核甫
+3	游焦山記	1exod4oboshe2	1exod4oboshdy	吳錫祺(清)	吳錫麒(清)	≥2 shared chars: 吳錫祺|吳錫麒
+3	焦山続志	1exod4o8ess1y	1exod4o8f40lc	陳任暘(清)	陳任晹(清)	≥2 shared chars: 陳任暘|陳任晹
+3	犍椎梵讚	1exobwvpaap6q	1exobwvp9zgna	釋法賢(宋)	釋法天(宋)	≥2 shared chars: 釋法賢|釋法天
+3	痘疹伝心彔	1exob2jdm5mo0	1exob2jdlue4n	朱惠民(明)	朱純嘏(清)|朱惠明(明)	≥2 shared chars: 朱惠民|朱惠明
+3	相地探金石法	1exoarjcrft36	1exoarjcrr1mo	喝爾勃特喀挌司()	喝爾勃特喀格司()	≥2 shared chars: 喝爾勃特喀挌司|喝爾勃特喀格司
+3	経籍举要	1exocgvanicqv	1exocgvan747e	龍啟瑞(清)	龍啓瑞(清)	≥2 shared chars: 龍啟瑞|龍啓瑞
+3	綉江輯	1exodb9o7gm4g	1exodb9o75dl0	范樹緱(清)	范樹鍭(清)	≥2 shared chars: 范樹緱|范樹鍭
+3	美水师考	1exoarjadab5u	1exoarjadws8w	巴那比美克理()	巴那比克理()	≥2 shared chars: 巴那比美克理|巴那比克理
+3	脈象統类	1exob2jj34dfm	1exob2jj34dfk	沈金鰲(清)	沈金贅(清)	≥2 shared chars: 沈金鰲|沈金贅
+3	至誼堂实紀	1exnutjf3utj6	1exnutjf3utj4	李鍾凖(清)	李鍾寧(清)	≥2 shared chars: 李鍾凖|李鍾寧
+3	航海述奇	1exod4o7w2jgj	1exod4o7w2jgg	張德彝(清)	張德明(清)	≥2 shared chars: 張德彝|張德明
+3	般若波罗蜜多理趣経大安乐不空三昧眞实金刚菩萨等一十七圣大曼荼罗义述	1exmuycmp84xy	1exmuycmp84y3	釋阿目佉(唐)	釋阿目伽(唐)	≥2 shared chars: 釋阿目佉|釋阿目伽
+3	良方輯要	1exob2ji9s2de	1exob2ji9gttw	周鶴羣(清)	周學羣(清)	≥2 shared chars: 周鶴羣|周學羣
+3	茅山記	1exocfo7r8nif	1exocfo7r8nid	馬士俊(清)	馬世俊(清)	≥2 shared chars: 馬士俊|馬世俊
+3	蠢子医	1exob2jcuoqv6	1exob2jcuoqv4	龍之章(清)	龍子章(清)	≥2 shared chars: 龍之章|龍子章
+3	西川青羊宫碑銘	1exntc1cojqis	1exoatfhm8dfm	樂朋龜(唐)	柴朋龜(唐)	≥2 shared chars: 樂朋龜|柴朋龜
+3	視学提要	1exoarjbof56s	1exoarjboqdq8	吉村寅大郎()	吉村寅太郎()	≥2 shared chars: 吉村寅大郎|吉村寅太郎
+3	覿庵詩鈔	1exjujwzep3wu	1exjt3ckd7j7k	陸典(清)	陸貽典(清)	≥2 shared chars: 陸典|陸貽典
+3	詩鈡	1exoaump14ow0	1exoaump0tgcm	戴橞孫(清)	戴穗孫(清)	≥2 shared chars: 戴橞孫|戴穗孫
+3	諭翰林院	1exn6tfd7cn48	1exn6tfd7cn4a	愛新覺羅·奕詝(清)	愛新覺羅·旻寧(清)	≥2 shared chars: 愛新覺羅·奕詝|愛新覺羅·旻寧
+3	越中百咏	1exk3eqv7bwn8	1exoatfhxgwzk	周晉鑠(清)	周晉鑅(清)	≥2 shared chars: 周晉鑠|周晉鑅
+3	輯字係声	1exo9rkcba6tg	1exo9rkcba6te	王朝恩(清)	王朝思(清)	≥2 shared chars: 王朝恩|王朝思
+3	遂生編	1exobae20jy80	1exobae1ydaf4	莊夔(清)	莊一夔(清)	≥2 shared chars: 莊夔|莊一夔
+3	道光二十九年己酉科浙江乡試朱卷	1exmvp1lowbv0	1exmvp1lp7keg	楊鳳藻(清)	吳鳳藻(清)	≥2 shared chars: 楊鳳藻|吳鳳藻
+3	道光元年辛巳恩科四川乡試朱卷	1exn3mcta835u	1exn3mct9wumi	郭毓端(清)	郭毓龍(清)	≥2 shared chars: 郭毓端|郭毓龍
+3	道光元年辛巳恩科江南乡試朱卷	1exn3mct9adjc	1exn3mct9adjg	吳望曾(清)	許曾望(清)	≥2 shared chars: 吳望曾|許曾望
+3	道光十七年丁酉科山东乡試朱卷	1exn3d2t3xreo	1exn3d2t3xres	孔憲彝(清)	孔憲恭(清)	≥2 shared chars: 孔憲彝|孔憲恭
+3	道光十七年丁酉科浙江乡試朱卷	1exn3d2t4vh1j	1exn3d2t4vh1d	王祖烒(清)	王祖煊(清)	≥2 shared chars: 王祖烒|王祖煊
+3	道光十七年丁酉科浙江选抜貢卷	1exn3d2t64f7m	1exn3d2t6fnr8	朱修之(清)	朱泰修(清)	≥2 shared chars: 朱修之|朱泰修
+3	道光十四年甲午科江南乡試朱卷	1exn3d2t98sn6	1exn3d2t98sne	伍承平(清)	伍承吉(清)	≥2 shared chars: 伍承平|伍承吉
+3	鉄甲丛譚	1exoarjc2s268	1exoarjc2gtms	黎特()	特黎()	≥2 shared chars: 黎特|特黎
+3	閩游偶記	1exod4o94ph52	1exod4o94ph54	吳桭臣(清)	吳振臣(清)	≥2 shared chars: 吳桭臣|吳振臣
+3	陆地战例新选	1exoarja3lybk	1exoarja3lybn	穆尼耶(瑞典)	稽尼耶(瑞典)	≥2 shared chars: 穆尼耶|稽尼耶
+3	黃陶庵稿	1exk0tj8k9fcy	1exk0ut6v7ax4	黃淳燿(明)	黃淳耀(明)	≥2 shared chars: 黃淳燿|黃淳耀
+4	[上海]上海朱氏族譜	1exnm3lq6n0g8	1exnm3lq6n0g6	朱朝坤(清)	朱文烈(清)	same dynasty only
+4	[上海]安定胡氏族譜	1exnm3lq6brwi	1exnm3lq6brwg	胡公藩(清)	胡鵬(清)	same dynasty only
+4	[上海崇明]丁氏傢乗	1exnm2h9t38qq	1exnm2h9t38qo	丁元琳(清)	丁子華(清)	same dynasty only
+4	[上海崇明]吳氏源流宗譜	1exnm2h9vl53c	1exnm2h9vl53a	吳步高(清)	吳會臣(清)	same dynasty only
+4	[上海崇明]周氏傢乗	1exnm2h9w7m6k	1exnm2h9wiupu	周輝祖(清)	周希智(清)	same dynasty only
+4	[上海崇明]周氏傢乗	1exnm2h9wiups	1exnm2h9wiupu	周光祖(清)	周希智(清)	same dynasty only
+4	[上海崇明]姚氏宗譜	1exnm2h9vwdms	1exnm2h9vwdmu	姚廷爵(清)	姚嘉謨(清)	same dynasty only
+4	[上海崇明]宋氏世譜	1exnm2h9uyo06	1exnm2h9uyo04	宋南溪(清)	宋浦(清)	same dynasty only
+4	[上海崇明]张氏宗譜	1exoci10frx8j	1exoci10frx8h	張邦俊(清)	張蘭馨(清)	same dynasty only
+4	[上海崇明]施氏宗譜	1exnm2h9uyo02	1exnm2h9uyo00	施運開(清)	施天發(清)	same dynasty only
+4	[上海崇明]朱氏傢乗	1exnm2h9wiupw	1exnm2h9wiupy	朱廷英(清)	朱學愷(清)	same dynasty only
+4	[上海崇明]殷氏宗譜	1exnm2h9w7m68	1exnm2h9vwdmy	殷上俊(清)	殷北麟(清)	same dynasty only
+4	[上海崇明]沈氏宗譜	1exnm2h9unfgp	1exnm2h9unfgn	沈奕蘧(清)	沈世瑩(清)	same dynasty only
+4	[上海崇明]沈氏宗譜	1exnm2h9unfgp	1exnm2h9unfgr	沈奕蘧(清)	沈以謹(清)	same dynasty only
+4	[上海崇明]沈氏宗譜	1exnm2h9unfgn	1exnm2h9unfgr	沈世瑩(清)	沈以謹(清)	same dynasty only
+4	[上海崇明]王氏宗譜	1exoci10fgop6	1exoci10fgop4	王兆鵬(清)	王聲亮(清)	same dynasty only
+4	[上海崇明]郭氏宗譜	1exnm2h9tehai	1exnm2h9tpptw	郭屏周(清)	郭秀山(清)	same dynasty only
+4	[上海崇明]郭氏宗譜	1exnm2h9tehai	1exnm2h9tppts	郭屏周(清)	郭遵淵(清)|郭遵維(清)	same dynasty only
+4	[上海崇明]郭氏宗譜	1exnm2h9tehai	1exnm2h9tpptu	郭屏周(清)	郭上達(清)	same dynasty only
+4	[上海崇明]郭氏宗譜	1exnm2h9tpptw	1exnm2h9tppts	郭秀山(清)	郭遵淵(清)|郭遵維(清)	same dynasty only
+4	[上海崇明]郭氏宗譜	1exnm2h9tpptw	1exnm2h9tpptu	郭秀山(清)	郭上達(清)	same dynasty only
+4	[上海崇明]郭氏宗譜	1exnm2h9tppts	1exnm2h9tpptu	郭遵淵(清)|郭遵維(清)	郭上達(清)	same dynasty only
+4	[上海崇明]重修杜氏宗譜	1exnm2h9w7m6c	1exnm2h9w7m6e	杜韞康(清)	杜文華(清)	same dynasty only
+4	[上海崇明]陆氏大宗世譜	1exnm2h9uc6wy	1exnm2h9uc6x0	陸運濤(清)	陸菊亭(清)	same dynasty only
+4	[上海崇明]陈氏宗譜	1exnm2h9sgrnq	1exnm2h9sgrns	陳步梯(清)	陳瓚(清)	same dynasty only
+4	[上海崇明]陶氏宗譜	1exnm2h9vl534	1exnm2h9v9wjm	陶茂森(清)	陶懷德(清)	same dynasty only
+4	[上海崇明]陶氏宗譜	1exnm2h9vl534	1exnm2h9v9wjk	陶茂森(清)	陶士華(清)	same dynasty only
+4	[上海崇明]陶氏宗譜	1exnm2h9v9wjm	1exnm2h9v9wjk	陶懷德(清)	陶士華(清)	same dynasty only
+4	[上海崇明]顧氏匯輯宗譜	1exnm2h9tehac	1exnm2h9tehae	顧一元(清)	顧肇遠(清)	same dynasty only
+4	[上海崇明]顧氏匯輯宗譜	1exnm2h9tehac	1exnm2h9tehaa	顧一元(清)	顧增範(清)	same dynasty only
+4	[上海崇明]顧氏匯輯宗譜	1exnm2h9tehae	1exnm2h9tehaa	顧肇遠(清)	顧增範(清)	same dynasty only
+4	[上海崇明]魯国郡郁氏譜	1exnm2h9uc6ww	1exnm2h9u0ydn	鬱兆培(清)	鬱士仁(清)	same dynasty only
+4	[上海崇明]黃氏傢乗	1exnm2h9tppty	1exnm2h9tppu2	黃堉(清)|黃綺(清)	黃文才(清)	same dynasty only
+4	[上海崇明]黃氏傢乗	1exnm2h9tppty	1exnm2h9tppu0	黃堉(清)|黃綺(清)	黃心傳(清)	same dynasty only
+4	[上海崇明]黃氏傢乗	1exnm2h9tppu2	1exnm2h9tppu0	黃文才(清)	黃心傳(清)	same dynasty only
+4	[上海松江]吳氏宗譜	1exnm3lq5e29u	1exnm3lq5patc	吳士超(清)	吳應芝(清)	same dynasty only
+4	[上海金山]枫泾沈氏支譜	1exnm2h9xgkci	1exnm2h9xgkck	沈步垣(清)	沈蓉城(清)	same dynasty only
+4	[乾隆]上犹县志	1exo5a9sg17gi	1exo5a9sg17gg	方求義(清)	蔡泰均(清)|賈文召(清)	same dynasty only
+4	[乾隆]南昌县志	1exo5a9s38h6r	1exo5a9s3jpq8	蔡正笏(清)|顧錫鬯(清)	徐午(清)|萬廷蘭(清)	same dynasty only
+4	[乾隆]合州志	1exo53mfkhpmq	1exo53mfkhpms	宋錦(清)|劉桐(清)	周澄(清)|張乃孚(清)	same dynasty only
+4	[乾隆]吉水县志	1exo53mfmd4w2	1exo53mfmd4w4	廖恆(清)|申發祥(清)	黃世成(清)|米嘉績(清)	same dynasty only
+4	[乾隆]婺源县志	1exo5a9szdx4w	1exo5a9sz2olc	彭家桂(清)|張圖南(清)	俞雲耕(清)|潘繼善(清)	same dynasty only
+4	[乾隆]宜良县志	1exo5a9tedb7p	1exo5a9teojr4	李淳(清)	王誦芬(清)	same dynasty only
+4	[乾隆]建昌府志	1exo53mfmzlz9	1exo53mfmzlz7	姚文光(清)|周宣猷(清)	黃祐(清)|嚴潔(清)|孟炤(清)	same dynasty only
+4	[云南保山]戈氏傢乗	1exnm3lqi6sjp	1exnm3lqi6sjr	戈尚志(清)	戈靖(清)	same dynasty only
+4	[云南大理]周李合譜	1exnm3lqii139	1exnm3lqii136	周燮(清)	李召棠(清)	same dynasty only
+4	[光緒]临潼县続志	1exnsowxmi6mf	1exnsowxmi6md	譚麐(清)|施劭(清)	安守和(清)|楊彥(清)	same dynasty only
+4	[光緒]云竜州志	1exo3oofgrqps	1exo3oofggi6e	楊文奎(清)|張德霈(清)	胡程章(清)	same dynasty only
+4	[北京]李氏近房宗譜	1exnlo045jwg2	1exnlo045jwg4	李延強(清)	李長申(清)	same dynasty only
+4	[北京大兴]大兴邵氏宗譜	1exnlo044xfcw	1exnlo044xfcy	邵自昌(清)	邵綬名(清)	same dynasty only
+4	[同治]安仁县志	1exo5i9fv124i	1exo5i9fv124g	張景垣(清)|侯材驥(清)|張鵬(清)	朱潼(清)|徐彥楠(清)|劉兆傑(清)	same dynasty only
+4	[同治]安福县志	1exo5i9fuptkw	1exo5i9fuel1f	周立瀛(清)|姚濬昌(清)	姜大定(清)|尹襲澍(清)	same dynasty only
+4	[嘉庆]瓜洲志	1exo3oogjsem9	1exo3oogjsemc	王養度(清)|馮錦(清)|吳耆德(清)	卞萃文(清)|王豫(清)	same dynasty only
+4	[嘉庆]直隶桂阳州志	1exo3yc7bwoow	1exo3yc7blg5g	曹昌(清)|袁成烈(清)	邵玘(清)|盧世昌(清)|張宏燧(清)	same dynasty only
+4	[嘉庆]茶陵州志	1exo3oogeslxe	1exo3oogf3ugw	譚良治(清)|瑞徵(清)|鄧奉時(清)	甘慶增(清)|彭康(清)|朱怡滋(清)|趙國宣(清)	same dynasty only
+4	[四川中江]唐氏族譜	1exnm3lqfow7c	1exnm3lqfow7e	唐尚友(清)	唐迪瑔(清)	same dynasty only
+4	[四川仁壽]李氏宗譜	1exnm3lqdi8ei	1exnm3lqdtgxs	李光鈺(清)|李文生(清)	李時英(清)	same dynasty only
+4	[四川內江]陈氏傢乗	1exnm3lqckirq	1exnm3lqckiro	陳錫政(清)	陳象環(清)	same dynasty only
+4	[四川双流]周氏宗譜	1exnm3lqefy12	1exnm3lqefy14	周維新(清)	周翊廷(清)	same dynasty only
+4	[四川新都]廖氏族譜	1exoci10h0veq	1exoci10h0veo	廖玉湘(清)	廖國銘(清)	same dynasty only
+4	[四川简阳]李氏族譜	1exoci10geebm	1exoci10geebk	李國雲(清)	李鬱文(清)|李德宣(清)	same dynasty only
+4	[四川資阳]杨氏宗譜	1exnm3lqgmlts	1exnm3lqgmltu	楊堂吉(清)	楊恆卓(清)	same dynasty only
+4	[天津]続修天津徐氏傢譜	1exnm3lqhvk09	1exnm3lqhvk07	徐世昌(清)	徐墀(清)	same dynasty only
+4	[安徽]新安程氏世譜正宗	1exnlo042qrk2	1exnlo042qrk0	程浩明(清)	程瑞鳳(清)	same dynasty only
+4	[安徽]新安程氏統宗补正図纂	1exnlo043203q	1exnlo043203m	程肇(清)	程尚龍(清)	same dynasty only
+4	[安徽]新安程氏統宗补正図纂	1exnlo043203q	1exnlo043203o	程肇(清)	程士培(清)	same dynasty only
+4	[安徽]新安程氏統宗补正図纂	1exnlo043203q	1exnlo043203k	程肇(清)	程公惠(清)	same dynasty only
+4	[安徽]新安程氏統宗补正図纂	1exnlo043203q	1exnlo042qrk9	程肇(清)	程之康(清)	same dynasty only
+4	[安徽]新安程氏統宗补正図纂	1exnlo043203m	1exnlo043203o	程尚龍(清)	程士培(清)	same dynasty only
+4	[安徽]新安程氏統宗补正図纂	1exnlo043203m	1exnlo043203k	程尚龍(清)	程公惠(清)	same dynasty only
+4	[安徽]新安程氏統宗补正図纂	1exnlo043203m	1exnlo042qrk9	程尚龍(清)	程之康(清)	same dynasty only
+4	[安徽]新安程氏統宗补正図纂	1exnlo043203o	1exnlo043203k	程士培(清)	程公惠(清)	same dynasty only
+4	[安徽]新安程氏統宗补正図纂	1exnlo043203o	1exnlo042qrk9	程士培(清)	程之康(清)	same dynasty only
+4	[安徽]新安程氏統宗补正図纂	1exnlo043203k	1exnlo042qrk9	程公惠(清)	程之康(清)	same dynasty only
+4	[安徽]汪氏統宗正脈	1exnlo040vcao	1exnlo040vcas	汪進(清)|汪鴻傳(明)|汪仲魯(明)	汪廷楨(清)	same dynasty only
+4	[安徽]汪氏統宗正脈	1exnlo040vcao	1exnlo040vcau	汪進(清)|汪鴻傳(明)|汪仲魯(明)	汪純宗(清)	same dynasty only
+4	[安徽]汪氏統宗正脈	1exnlo040vcas	1exnlo040vcau	汪廷楨(清)	汪純宗(清)	same dynasty only
+4	[安徽休宁]休宁厚田吳氏重修宗譜	1exnlo03tovt4	1exnlo03u04cg	吳瑗(清)	吳騫(清)	same dynasty only
+4	[安徽休宁]休宁徐氏族譜	1exnlo03vkb2h	1exnlo03vkb2e	徐道鳴(清)	徐天樞(清)	same dynasty only

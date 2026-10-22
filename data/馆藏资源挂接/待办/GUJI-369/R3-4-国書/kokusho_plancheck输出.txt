@@ -1,0 +1,24 @@
+{
+ "source": "kokusho",
+ "plan_items": 9,
+ "linked_draft": 2433,
+ "item_errors": {},
+ "works_over_cap_after_plan": 0,
+ "works_newly_over_cap": 0,
+ "occupancy_rows": 0,
+ "occupancy": [],
+ "linked_not_found_in_lib": 26,
+ "id_group_same": 2407,
+ "full_same": 2284,
+ "field_diffs": {
+  "label": 123
+ }
+}
+(('d59f2mtabls2', 'kokusho-100252234'), ['label'], {'kokusho_bid': '100252234', 'edition': '写 天明４', 'holder': '東北大図', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/100252234/manifest'}, {'kokusho_bid': '100252234', 'holder': '東北大図', 'edition': '写 天明４', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/100252234/manifest'}, '國書·東北大図藏写 天明４（摘抄／局部）', '國書·東北大図藏写 天明４')
+(('d59f2nen53pe', 'kokusho-300084529'), ['label'], {'kokusho_bid': '300084529', 'edition': '刊', 'holder': '東経大三橋', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/300084529/manifest'}, {'kokusho_bid': '300084529', 'holder': '東経大三橋', 'edition': '刊', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/300084529/manifest'}, '國書·東経大三橋藏刊（摘抄／局部）', '國書·東経大三橋藏刊')
+(('d59fsdw4a2va', 'kokusho-100394393'), ['label'], {'kokusho_bid': '100394393', 'edition': '刊 文政７', 'holder': '立命館西園寺', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/100394393/manifest'}, {'kokusho_bid': '100394393', 'holder': '立命館西園寺', 'edition': '刊 文政７', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/100394393/manifest'}, '國書藏本：刊 文政７（立命館西園寺）', '國書·立命館西園寺藏刊 文政７')
+(('d59fsdjm5vk1', 'kokusho-100288540'), ['label'], {'kokusho_bid': '100288540', 'edition': '刊 文化７', 'holder': '藝大図脇本', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/100288540/manifest'}, {'kokusho_bid': '100288540', 'holder': '藝大図脇本', 'edition': '刊 文化７', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/100288540/manifest'}, '國書藏本：刊 文化７（藝大図脇本）', '國書·藝大図脇本藏刊 文化７')
+(('d59fsfdzc9aa', 'kokusho-100097842'), ['label'], {'kokusho_bid': '100097842', 'edition': '刊', 'holder': '岐阜市図', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/100097842/manifest'}, {'kokusho_bid': '100097842', 'holder': '岐阜市図', 'edition': '刊', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/100097842/manifest'}, '國書藏本：刊（岐阜市図）', '國書·岐阜市図藏刊')
+(('d59fsfdzc9aa', 'kokusho-200012274'), ['label'], {'kokusho_bid': '200012274', 'edition': '刊', 'holder': '国文研日本漢詩文', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/200012274/manifest'}, {'kokusho_bid': '200012274', 'holder': '国文研日本漢詩文', 'edition': '刊', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/200012274/manifest'}, '國書藏本：刊（国文研日本漢詩文）', '國書·国文研日本漢詩文藏刊')
+(('d59fs7pqxzpj', 'kokusho-100288445'), ['label'], {'kokusho_bid': '100288445', 'edition': '刊 文化８', 'holder': '藝大図脇本', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/100288445/manifest'}, {'kokusho_bid': '100288445', 'holder': '藝大図脇本', 'edition': '刊 文化８', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/100288445/manifest'}, '國書藏本：刊 文化８（藝大図脇本）', '國書·藝大図脇本藏刊 文化８')
+(('d59fs7pqxzpj', 'kokusho-200012249'), ['label'], {'kokusho_bid': '200012249', 'edition': '刊 文化８', 'holder': '国文研日本漢詩文', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/200012249/manifest'}, {'kokusho_bid': '200012249', 'holder': '国文研日本漢詩文', 'edition': '刊 文化８', 'iiif_manifest': 'https://kokusho.nijl.ac.jp/biblio/200012249/manifest'}, '國書藏本：刊 文化８（国文研日本漢詩文）', '國書·国文研日本漢詩文藏刊 文化８')

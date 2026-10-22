@@ -1,0 +1,2 @@
+dl.ndl.go.jp	请求0次	最小间隔=n/a	PASS
+kokusho.nijl.ac.jp	请求1659次	最小间隔=2.000s	PASS

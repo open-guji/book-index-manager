@@ -1,0 +1,3 @@
+记录：{'work': 121664, 'book': 203575, 'collection': 22, 'entity': 4518, 'schemes': 1, 'tree': 1, 'members': 586}
+ERROR 0　WARN 0　INFO 0
+exit 0

@@ -1,0 +1,40 @@
+keeper id	keeper 名	被并 id	被并名	依据	风险标记	处理
+hixhd2h9bv3r	宇文邕	hixhd2h9biu8	周武帝	keeper有CBDB 31773；周武帝2部Work=北周武帝	低
+hixi5v85erk0	李昂	hixhd2h9bpo1	唐文宗	keeper有CBDB 189272；唐文宗《尚書君臣事迹圖》sui-tang，唐文宗即李昂(808-840)	中:易与非帝王李昂混——库内另有 hixhgyrw4w8t 李昂(无朝代)是别人，不并；且与此前定"keeper=唐文宗"相反，按新口径(仅一方有CBDB)应以李昂为keeper，请Elias按新口径
+hixi4watiiqc	楊堅	hixhd2h9bufr	隋高祖	双方无CBDB，取通行本名；隋高祖1部Work	低
+hixhjht6jfnk	蕭賾	hixhjac0jksh	齊武帝	keeper有CBDB 34005；齊武帝=蕭賾(南朝齊)	低
+hixhd2h9bl2k	遼道宗	hixi4watiipw	耶律洪基	双方无CBDB(CBDB 搜耶律洪基仅命中其妃蕭坦思,非本人)；Mirren 复核口径:都无才取廟號条→keeper=遼道宗，耶律洪基入 alt_names	灰区(2026-10-14 按 Mirren 复核由耶律洪基改为遼道宗)
+hixi4wwpzygl	拓跋燾	hixhjhthgqo2	太武帝	keeper有CBDB 31007；太武帝(北魏)	低
+hixhjhtkl43k	孝文帝	hixi4wwpzygp	拓跋宏	双方无CBDB，取通行称谓孝文帝，拓跋宏入alt_names	灰区(keeper为被动方，需把需求单本名条的年号等信息带入)
+hixi4wwpzygk	拓跋嗣	hixhjhatet50	明元帝	keeper有CBDB 31006	低
+hixi4wwpzygj	拓跋珪	hixhjhthgqo1	道武帝	keeper有CBDB 31005；生年371	低
+hixhd2h9bpbr	司馬紹	hixhjtcxe1hc	晋明帝	keeper有CBDB 30903；晋明帝《毛詩圖》晉	低
+hixhd2h9bpbr	司馬紹	hixhjxro6qki	明帝(晉)	《明帝集》晉=晉明帝集	中:称谓"明帝"无前缀，Elias并前核该Work朝代为晉
+hixhjtdhzpc0	司馬丕	hixhjtd5tg5c	晋哀帝	keeper有CBDB 30908	低
+hixhd2h9bgd5	朱元璋	hixhd2h9bqtw	明 太祖(带空格)	keeper有CBDB 30148；0 Work	低
+hixhd2h9bgd5	朱元璋	hixhgyrw4w1c	明太祖	同上；1部《祖訓》	低
+hixhd2h9bgd5	朱元璋	hixho5puw1g5	明太祖	同上；0 Work	低
+hixhd2h9bgd3	朱高熾	hixhd2h9bqtx	明仁宗	keeper有CBDB 30152	低
+hixhd2h9bgh5	朱瞻基	hixhgyrw4w1d	明宣宗	keeper有CBDB 30153；2部	低
+hixhd2h9bgh5	朱瞻基	hixhd2h9bjv8	宣宗皇帝(明)	同上；6部，朝代明	低
+hixhd2h9bgia	朱見深	hixhd2h9bqu1	明憲宗	keeper有CBDB 30156	低
+hixhd2h9bgll	朱棣	hixhd2h9bjq9	成祖文皇帝	keeper有CBDB 30151；成祖文皇帝=朱棣	低
+hixhd2h9bv54	朱祁鈺	hixhd2h9bn32	景皇帝(明)	keeper有CBDB 30155；景皇帝=景泰帝	低
+hixhd2f8wal1	蕭綱	hixhd2h9bk8h	梁簡文帝	keeper有CBDB 33251；4部	低
+hixhd2h9bhg1	蕭繹	hixhd2h9bkm2	梁元帝	keeper有CBDB 33252；7部	低
+hixhd2h9bhg1	蕭繹	hixhd2h9bsp8	粱元帝	異體字(粱/梁)；1部	低
+hixhd2h9bgte	劉莊	hixhd2h9brzu	漢明帝	keeper有CBDB 24662(東漢)；漢明帝《畫贊》	低:库内另有 hixhd2h9bnv7 劉莊(南朝宋)是另一人，勿混
+hixhd2h9bhxe	曹操	hixhd2h9bko3	魏武帝	keeper有CBDB 30257；魏武帝《兵法捷要》《魏武帝兵法》等=曹操	中:魏武帝是追尊帝号，曹操非在位皇帝，Mirren口径下按同人并，不单列帝王条
+hixhd2h9bnd2	劉彧	hixhd2h9bq1g	宋明帝	keeper有CBDB 339540；该keeper已含《宋明帝集》等同人作品	低:库内 hixhd2h9bi8u 劉彧(晉，《劉彧集》)是别人，不并
+hixhd2h9bufq	隋煬帝	hixhd2h9brk2	楊廣	双方无CBDB，取通行谥号隋煬帝(2部)	灰区；并前核hixhd2h9brk2的Work
+hixhd2h9buqr	魏明帝	hixhd2h9bkoa	曹叡	双方无CBDB，取通行谥号魏明帝(1部)	灰区；并前核hixhd2h9bkoa的Work
+hixhjeq2oiyp	周明帝	hixhd2h9bq04	宇文毓	双方无CBDB，取通行谥号周明帝(3部)	灰区；并前核hixhd2h9bq04的Work
+hixhd2h9btm1	趙頊	hixhd2h9bq1q	宋神宗	keeper有CBDB 9006	低
+hixhd2h9bhj6	趙禎	hixhd2h9bjsh	仁宗皇帝(趙宋)	keeper有CBDB 9004	中:"仁宗皇帝"朝代标趙宋，并前核Work非明仁宗
+hixi4wwpzyg7	趙炅	hixhd2h9bq0z	宋太宗	keeper有CBDB 9002(939)；宋太宗《棋圖》北宋	低(原待核已定:库内本名为趙炅)
+hixhd2h9bny3	司馬昭	hixhjxro6qkh	文帝(晉)	双方无CBDB，取本名条；"文帝集"晉，与司馬昭条已有《晉文帝集》同名	中:称谓"文帝"无前缀
+hixhjtdjv4lf	晉宣帝	hixhjvgyx9mo	宣帝(晉)	两条均为"宣帝集"(晉)，同一人(司馬懿追尊)，无司馬懿本名条	低:仅称谓条之间互并；司馬懿本名条不存在，不新建
+hixi4wwpzyfe	鐵穆耳	hixhgyrw4vy6	成宗(无朝代)	keeper有CBDB 134481	待核:成宗仅著《實録》无朝代，不确定是元成宗，不并	待证·不并(Elias 10-14)：《實録》千頃堂著錄題「成宗實録」、撰人「暢師文修」，「成宗」是解析把書名切進撰人，非鐵穆耳著；并了會錯認鐵穆耳為作者。真問題在 Work(d59f6eonm6f6)題/撰人，已報 Mirren；孤立核查(Elias 10-14)：Entity「成宗」hixhgyrw4vy6 非本轮新建，系 2026-09-09 CBDB auto_create 遗留（merge_history 记「同人同书重出·纯冗余并條」），仅有 primary_name，无朝代／生卒／cbdb_id；是否「误切撰人」产物：从 #409 前千頃堂「實録」条的撰人解析看是，但此 Entity 早于该条存在；现除自身档、index/entities/7.json 分片及 d59f2gl4de6a 的 ai_note 文字外，Work／Book／Entity／classification 无任何文件引用（含 merged_in，d59f6eonm6f6 墓碑亦不含）→处置：保留孤立，不删（Mirren 10-14 定）
+hixhd2h9br0b	朱祐杬	hixhgyrw4x7w	興獻皇帝	興獻皇帝=朱祐杬(嘉靖帝生父)，《恩紀詩集》明	待核:keeper无朝代且双方无CBDB；追尊帝号，先不并	已判并(Elias 10-14)：興獻皇帝＝朱祐杬史實同一人，《恩紀詩集》七卷與《恩記詩集》七卷同書互證；book-index PR 待 Sylvie 全查（另：兩 Work 恩紀/恩記 同書待 Work 并，已報）
+		hixhd2h9bm3n	尹帝	《圍棋賦》南朝梁	待核:疑碎片，无对应帝王，不动	待证·不并(Elias 10-14)：《圍棋賦》梁「尹帝」無對應帝王，疑碎片或「武帝」之訛，無證據不硬并
+		hixhd2h9bhwt	黃帝	上古，21部	不动:无重出	不动(Elias 10-14)：黃帝無重出
