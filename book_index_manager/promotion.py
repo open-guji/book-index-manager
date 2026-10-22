@@ -1022,8 +1022,10 @@ def _drop_nulls(v):
 
 
 def _merge_marks(data: dict) -> bool:
-    """此條是否帶並條之痕。頂層 `merged_from`，或 indexed_by 之節上的同名欄。"""
-    if data.get("merged_from"):
+    """此條是否帶並條之痕。頂層 `merged_from`／`merged_in`，或 indexed_by 之節上的 `merged_from`。
+
+    `merged_in` 是現行並條工具（重出審計）寫在存者上的賬，與 `merged_from` 同為並條證據。"""
+    if data.get("merged_from") or data.get("merged_in"):
         return True
     for entry in data.get("indexed_by") or []:
         if isinstance(entry, dict) and entry.get("merged_from"):
