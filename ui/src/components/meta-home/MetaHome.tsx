@@ -400,7 +400,7 @@ export function MetaOnlineSites({ sites }: { sites: MetaSite[] }) {
 /** 存佚四档（标签与说明在字典 metaHome.loss／lossNote） */
 const LOSS_KEYS = ['extant', 'partially_extant', 'lost', 'unknown'] as const;
 
-/** 数据与授权：数据规模 8 项、按存佚检索 4 个入口、CC0 授权与数据版本 */
+/** 数据与授权：数据规模 8 项、按存佚检索 4 个入口、CC BY-SA 4.0 授权与数据版本 */
 export function MetaDataLicense({ stats, links, version, repoUrl, downloadHref }: {
     stats: MetaHomeSections['stats'];
     links?: Partial<MetaHomeLinks>;
@@ -447,7 +447,7 @@ export function MetaDataLicense({ stats, links, version, repoUrl, downloadHref }
                 </div>
             )}
             <div className="bim-mh-lic">
-                <p><span className="bim-mh-cc0">CC0</span>{t('metaHome.license')}</p>
+                <p><span className="bim-mh-cc0">CC BY-SA 4.0</span>{t('metaHome.license')}</p>
                 <p>{t('metaHome.repo')}{repoUrl ? <a href={repoUrl}><code>book-index</code></a> : <code>book-index</code>}{t('metaHome.repoNote')}</p>
                 {version && <p>{t('metaHome.version')}<code>{version}</code></p>}
                 {downloadHref && <p><a href={downloadHref}>{t('metaHome.download')}</a></p>}
