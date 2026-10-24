@@ -56,6 +56,8 @@ export interface PageWarpData {
   total_warped_w: number;
   columns: ColumnGeometry[];
   banxin?: BanxinData;
+  /** 本页的插图块（图列，char v0.3）：书影栏画虚线框。`box` 是 cord `marks.figure` 的框 `[x0,y0,x1,y1]`，canvas 像素 */
+  figBlocks?: { id: string; box: [number, number, number, number] }[];
   /** 本章声明了规范层（norm_file，哪怕是空表）＝自校文本，「原字」档可选；缺省＝外来文本，原字档置灰（overview#540） */
   hasNorm?: boolean;
 }
@@ -78,6 +80,13 @@ export function fullImageTrimRect(pageData: PageWarpData): { x: number; y: numbe
       x1 = Math.max(x1, col.offset_x + c); y1 = Math.max(y1, d);
     }
   }
+  // 插图块（图列）的框也在内：不然只画图的区域会被裁掉
+  for (const b of pageData.figBlocks ?? []) {
+    const [a, c, d, e] = b.box;
+    if (![a, c, d, e].every(Number.isFinite) || !(d > a) || !(e > c)) continue;
+    x0 = Math.min(x0, a); y0 = Math.min(y0, c);
+    x1 = Math.max(x1, d); y1 = Math.max(y1, e);
+  }
   if (!(x1 > x0) || !(y1 > y0)) return null;
   const pad = Math.min(W, H) * 0.03;
   const x = Math.min(W, Math.max(0, x0 - pad)), y = Math.min(H, Math.max(0, y0 - pad));
@@ -95,6 +104,10 @@ export interface GujiWarpCanvasProps {
   preserveMargins?: boolean;
   onCharClick?: (charId: string) => void;
   onCharHover?: (charId: string | null) => void;
+  /** 当前选中的插图块（图 id，点正文里的插图块选中）：实线加重显示 */
+  selectedFigBlock?: string | null;
+  /** 点书影栏上的插图块虚线框 */
+  onFigBlockClick?: (figId: string) => void;
   /** 外层 CSS 缩放倍数（如 ZoomPanBox 的放大倍数）：放大时画布后备跟着加密，不糊；缺省 1 */
   renderScale?: number;
 }
@@ -163,6 +176,8 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   preserveMargins = false,
   onCharClick,
   onCharHover,
+  selectedFigBlock,
+  onFigBlockClick,
   renderScale = 1,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -538,6 +553,12 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
     if (visible) draw();
   }, [draw, mainLoaded, mateLoaded, backingW, backingH, visible]);
 
+  // 插图块虚线框（canvas 像素 → 与字格同一坐标系）
+  const figBlockRects = useMemo(() => (pageData.figBlocks ?? []).map((b) => {
+    const [x0, y0, x1, y1] = b.box;
+    return { id: b.id, x: margins.left + x0 - (crop?.x ?? 0), y: margins.top + y0 - (crop?.y ?? 0), w: Math.max(x1 - x0, 1), h: Math.max(y1 - y0, 1) };
+  }), [pageData, margins, crop]);
+
   // 扁平字格列表
   const flatChars = useMemo(() => {
     const list: {
@@ -652,6 +673,27 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
               onMouseLeave={() => onCharHover?.(null)}
             >
               <title>{item.char}</title>
+            </rect>
+          );
+        })}
+
+        {/* 1b. 插图块：虚线框，点一下选中（正文里对应的插图块不滚动，只在书影上标出） */}
+        {figBlockRects.map((b) => {
+          const on = selectedFigBlock === b.id;
+          return (
+            <rect
+              key={`fig-${b.id}`}
+              data-fig-block={b.id}
+              data-selected={on ? 'true' : undefined}
+              x={b.x} y={b.y} width={b.w} height={b.h}
+              fill={on ? bim('warp-sel-bg') : 'transparent'}
+              stroke={on ? bim('warp-sel-stroke') : bim('warp-hover-stroke')}
+              strokeWidth={on ? 3.5 : 2}
+              strokeDasharray={on ? undefined : '10 8'}
+              style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+              onClick={() => onFigBlockClick?.(b.id)}
+            >
+              <title>{b.id}</title>
             </rect>
           );
         })}

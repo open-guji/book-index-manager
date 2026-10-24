@@ -454,6 +454,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         [entitySpans, properNameMode, prefs.showWorks],
     );
     const [selectedCharIds, setSelectedCharIds] = useState<Set<string>>(new Set());
+    // 点正文里的插图块：选中它（图 id），书影栏标出原框；选了字就清掉
+    const [selectedFig, setSelectedFig] = useState<string | null>(null);
     // 悬停的字不进顶层 state（每划过一个字就会重渲染整个阅读器），只有书影画布与正文订阅（GUJI-630）
     const [hover] = useState(createHoverStore);
     const [showPunctuation, setShowPunctuation] = useState<boolean>(true);
@@ -663,6 +665,10 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                         bbox_col: ch.bbox ?? [0, 0, 0, 0],
                     })),
                 }],
+                // 插图块（图列）的框：书影栏画虚线框
+                ...(info.columns.some(c => c.kind === 'figure' && c.figBox)
+                    ? { figBlocks: info.columns.filter(c => c.kind === 'figure' && c.figBox).map(c => ({ id: c.fig!, box: c.figBox! })) }
+                    : {}),
             };
         }
         // 没有逐字坐标的老数据：用本册带透视页的版框模板估位（夹注左右各半格）
@@ -869,7 +875,10 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                             hoveredCharId={hoveredCharId}
                             preserveMargins={preserveMargins}
                             renderScale={zoomScale}
+                            selectedFigBlock={selectedFig}
+                            onFigBlockClick={(fig) => setSelectedFig(fig)}
                             onCharClick={(id) => {
+                                setSelectedFig(null);
                                 setSelectedCharIds(prev => {
                                     const next = new Set(prev);
                                     if (next.has(id)) next.delete(id);
@@ -961,7 +970,11 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                         selectedCharIds={selectedCharIds}
                         hoveredCharId={hoveredCharId}
                         onSelectionChange={handleSelectionUpdate}
+                        figures={(warpData as any).figures}
+                        figUrl={(warpData as any).figUrl}
+                        onFigureBlockClick={({ page, fig }) => { setSelectedCharIds(new Set()); setSelectedFig(fig); setActivePage(page); }}
                         onCharClick={(id) => {
+                            setSelectedFig(null);
                             setSelectedCharIds(prev => {
                                 const next = new Set(prev);
                                 if (next.has(id)) next.delete(id);
