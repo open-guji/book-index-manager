@@ -49,7 +49,8 @@ jobs:
   # 若因字体让容差不稳，把失败日志贴 #526，由 ui 侧调 harness，不要放宽断言。
   ui-layout:
     name: layout (ui/, real Chromium)
-    runs-on: ubuntu-latest
+    # 钉 24.04：ubuntu-latest 换成 26.04 后 Playwright 1.59 装不上 Chromium（"does not support chromium on ubuntu26.04-x64"，10-24）
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4

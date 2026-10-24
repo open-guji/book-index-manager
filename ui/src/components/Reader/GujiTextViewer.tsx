@@ -8,6 +8,8 @@ import { useI18n } from '../../i18n';
 import { PAGE_INDICATOR_Y_RANGE, type BookTitleStyle } from './prefs';
 import { transformMark, type MarkOpts, type QuoteStyle } from './marks';
 import type { EntitySummaryLoader, EntitySummaryTransport } from '../EntityText/summary';
+import type { GujiFigure } from '../../core/guji-pages';
+import { FigBlock, FigCell, copyTextWithFigures } from './GujiFigureParts';
 
 export interface PunctEntry {
   /** 缺省时按 `<anchor>#<序号>` 补 */
@@ -74,6 +76,15 @@ export interface GujiTextViewerProps {
   bookTitleStyle?: BookTitleStyle;
   /** 书名是否标注：false＝波浪线与书名号都不标（隐去《》〈〉；书名实体也应由宿主筛掉） */
   showWorks?: boolean;
+  /**
+   * 本章的图（`adaptFig(fig.json)` 的结果，spec/09）：图片格 `fig` 与图列按图 id 查说明与文件。不传＝所有图都取不到，显示 `〔图：…〕` 标签。
+   * 宿主要传稳定引用（useMemo），每页是 memo 组件，身份一变整卷重渲染。
+   */
+  figures?: ReadonlyMap<string, GujiFigure>;
+  /** 图片文件地址：入参是 fig.json 里的 `file`（相对版本目录），出参是可直接放进 <img src> 的 URL。不传＝取不到图 */
+  figUrl?: (file: string) => string;
+  /** 点击插图块（宿主据此把书影栏翻到该页、标出原框）；`box` 是 cord `marks.figure` 的框 `[x0,y0,x1,y1]`，没有 cord 时缺省 */
+  onFigureBlockClick?: (info: { page: number; fig: string; box?: [number, number, number, number] }) => void;
 }
 
 const defaultHref = (id: string) => `/item/${encodeURIComponent(id)}`;
@@ -129,6 +140,9 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   quoteStyle,
   bookTitleStyle,
   showWorks,
+  figures,
+  figUrl,
+  onFigureBlockClick,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   // 点字／划词之后一小段时间内，滚动不改书影页：以读者点的字所在页为准，免得点在页首时被上一页抢回去
@@ -176,7 +190,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     const elevated = (col: { raised?: number; lead_blank?: number }) => !!col.raised || (col.lead_blank || 0) < baseLead;
 
     // 无字页（只有书影的书脊签、封面签条等）不进正文
-    const built: ReflowPage[] = allPagesData.filter((pData) => pData.columns.some((c) => c.chars.length > 0)).map((pData) => {
+    // 只有图列的页（整页插图）也进正文
+    const built: ReflowPage[] = allPagesData.filter((pData) => pData.columns.some((c) => c.chars.length > 0 || c.kind === 'figure')).map((pData) => {
       const sortedCols = [...pData.columns].sort((a, b) => a.col - b.col);
       const paragraphs: ReflowParagraph[] = [];
       let currentChars: ReflowChar[] = [];
@@ -196,8 +211,18 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       let pendingBlank = 0;
       // 本页最后一个非提行列的行首空格数：下一页首列与它比，缩进相同就是同一段接着写
       let tailLead: number | undefined;
+      // 插图块（图列）：正文在这里断开，块插在第 before 段之前
+      const blocks: ReflowFigBlock[] = [];
 
       for (const col of sortedCols) {
+        if (col.kind === 'figure' && col.fig) {
+          if (currentChars.length > 0) pushPara();
+          // 本页第一样东西就是图：原件在此另起一段，分叶线关时也不并入上一页末段
+          else if (paragraphs.length === 0) leadStarts = true;
+          blocks.push({ before: paragraphs.length, fig: col.fig, ...(col.figBox ? { box: col.figBox } : {}) });
+          pendingBlank = 0;
+          continue;
+        }
         if (col.chars.length === 0) {
           if (col.kind === 'blank') pendingBlank++;
           continue;
@@ -246,6 +271,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         ...(leadStarts ? { leadStarts } : {}),
         ...(pData.label ? { label: pData.label } : {}),
         ...(pendingBlank > 0 ? { trailingBlank: pendingBlank } : {}),
+        ...(blocks.length > 0 ? { blocks } : {}),
       };
     });
     // 分叶分割线关＝连续阅读：页尾无 break 收尾的末段与下一页首段并成一段，句子跨页不断（overview#527）。
@@ -268,6 +294,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
           open.para.chars = open.para.chars.concat(lead.chars);
           pg.leadFirstId = lead.chars[0].charData.id;
           pg.paragraphs = pg.paragraphs.slice(1);
+          if (pg.blocks) pg.blocks = pg.blocks.map((b) => ({ ...b, before: b.before - 1 }));
         }
         if (pg.endsOpen && !pg.trailingBlank) {
           const last = pg.paragraphs[pg.paragraphs.length - 1];
@@ -378,8 +405,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   const hasEntities = entityOfChar.size > 0;
 
   // 回调一律走 ref：每页是 memo 组件，回调身份不变才不会因为外层一次 setState 全卷重渲染（3 万个字）
-  const latest = useRef({ onCharClick, onCharHover, onSelectionChange, onVisiblePageChange, onEntityNavigate, onVisibleHeadingChange });
-  latest.current = { onCharClick, onCharHover, onSelectionChange, onVisiblePageChange, onEntityNavigate, onVisibleHeadingChange };
+  const latest = useRef({ onCharClick, onCharHover, onSelectionChange, onVisiblePageChange, onEntityNavigate, onVisibleHeadingChange, onFigureBlockClick });
+  latest.current = { onCharClick, onCharHover, onSelectionChange, onVisiblePageChange, onEntityNavigate, onVisibleHeadingChange, onFigureBlockClick };
 
   const handlers = useMemo<PageHandlers>(() => ({
     click: (id) => { pageLockUntil.current = Date.now() + 1200; latest.current.onCharClick?.(id); },
@@ -387,6 +414,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     leave: () => latest.current.onCharHover?.(null),
     // 点专名里的字＝照常点字（高亮书影），不跳条目。条目页一律在新标签页打开，不打断阅读：
     // Ctrl／⌘／Shift 点击交给浏览器（新标签／新窗口），键盘回车自己开新标签页
+    figBlock: (info) => latest.current.onFigureBlockClick?.(info),
     navigate: (id, e) => {
       if (e.ctrlKey || e.metaKey || e.shiftKey) return;
       e.preventDefault();
@@ -443,6 +471,15 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     if (id) handlers.enter(id);
     else handlers.leave();
   };
+  // 选区里有图：复制得 `〔图：说明〕`；没有图一律走浏览器原生复制（不改旧行为）
+  const onContainerCopy = (e: React.ClipboardEvent) => {
+    const sel = typeof window !== 'undefined' ? window.getSelection() : null;
+    if (!sel || sel.isCollapsed || sel.rangeCount === 0) return;
+    const text = copyTextWithFigures(sel.getRangeAt(0));
+    if (text === null) return;
+    e.clipboardData.setData('text/plain', text);
+    e.preventDefault();
+  };
   const onContainerLeave = () => {
     if (hoverId.current === null) return;
     hoverId.current = null;
@@ -465,7 +502,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       const spans = container.querySelectorAll<HTMLElement>('span[data-char-id]');
       // 探针点用字的文本节点起点 (text,0)，不能用 (span,0)：浏览器拖选的端点落在文本节点里，
       // (span,0) 在树序上早于 (text,0)，会让选区起点所在的首字被判成「在选区之前」而漏掉（overview#528）。
-      const probe = (el: HTMLElement): Node => el.firstChild ?? el;
+      // 图片格的字在 .guji-fig-glyph 里（多一层），一路取到第一个文本节点
+      const probe = (el: HTMLElement): Node => { let n: Node = el; while (n.nodeType !== 3 && n.firstChild) n = n.firstChild; return n; };
       // 第一个起点不早于选区起点的字
       let lo = 0, hi = spans.length;
       while (lo < hi) { const m = (lo + hi) >> 1; if (range.comparePoint(probe(spans[m]), 0) < 0) lo = m + 1; else hi = m; }
@@ -644,6 +682,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       onClick={onContainerClick}
       onMouseOver={onContainerOver}
       onMouseLeave={onContainerLeave}
+      onCopy={onContainerCopy}
     >
       {hasEntities && <style>{ENTITY_TEXT_CSS}</style>}
       {indicatorOn && (
@@ -671,6 +710,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
             handlers={handlers}
             charCount={pageCharCounts[idx] ?? 0}
             pageStarts={reflow.pageStarts}
+            figures={figures}
+            figUrl={figUrl}
           />
         ))}
       </div>
@@ -697,6 +738,7 @@ interface PageHandlers {
   enter: (id: string) => void;
   leave: () => void;
   navigate: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
+  figBlock: (info: { page: number; fig: string; box?: [number, number, number, number] }) => void;
 }
 
 /** 选中字按页分桶；内容没变的页复用上次的 Set（身份不变，memo 的页就不重渲染） */
@@ -726,6 +768,8 @@ type ReflowColStart = { raised?: number; leadBlank?: number; blankBefore: number
 type ReflowChar = { charData: PageWarpData['columns'][0]['chars'][0]; col: number; beforePuncts: PunctEntry[]; afterPuncts: PunctEntry[]; start?: ReflowColStart };
 /** `heading`：本段是标题（段首字带标题符），`level` 是 `#` 的个数，`anchor` 是段首字的格位 key */
 type ReflowParagraph = { id: string; chars: ReflowChar[]; heading?: ReflowHeading };
+/** 插图块（图列）：排在第 `before` 段之前；`before` 等于段数就在页尾 */
+type ReflowFigBlock = { before: number; fig: string; box?: [number, number, number, number] };
 /** `toc: false`＝副题行：排成标题，但不进目录、不参与「当前标题」 */
 type ReflowHeading = { level: number; anchor: string; toc?: false };
 type ReflowPage = {
@@ -733,6 +777,8 @@ type ReflowPage = {
   /** 版心叶次；有则页码处优先显示 */
   label?: string;
   paragraphs: ReflowParagraph[];
+  /** 本页的插图块，按读序 */
+  blocks?: ReflowFigBlock[];
   /** 页尾的空列数 */
   trailingBlank?: number;
   /** 页尾剩下的字没有 break 收尾（句子可能跨页） */
@@ -790,7 +836,7 @@ function ReflowBlock({ heading, children }: { heading?: ReflowHeading; children:
 
 /** 一页正文。memo：翻页、悬停、选中别页的字都不会让它重渲染 */
 const PageSection = React.memo(function PageSection({
-  pGroup, first, pageBreaks, markOpts, plainBooks, selected, entityOfChar, entityLoader, convert, buildHref, handlers, charCount, pageStarts,
+  pGroup, first, pageBreaks, markOpts, plainBooks, selected, entityOfChar, entityLoader, convert, buildHref, handlers, charCount, pageStarts, figures, figUrl,
 }: {
   pGroup: ReflowPage;
   first: boolean;
@@ -807,6 +853,8 @@ const PageSection = React.memo(function PageSection({
   charCount: number;
   /** 首段并进上一页的页：首字 id → 页号 */
   pageStarts: ReadonlyMap<string, number>;
+  figures?: ReadonlyMap<string, GujiFigure>;
+  figUrl?: (file: string) => string;
 }) {
   // 字 id → 显示字（繁简）。逐段整体转换以保住词组（髮／發 等），长度对不上才退回逐字
   const shown = useMemo(() => {
@@ -815,8 +863,9 @@ const PageSection = React.memo(function PageSection({
     for (const para of pGroup.paragraphs) {
       // 规范层（overview#525）：有 convert（通行繁體／簡體档）时，该位有人审过的 norm 就先用它代替原字，再整段转换；
       // 没有 convert＝原字档，忽略 norm。该位没有 norm 条目时与改前完全一致（照旧走 convert 里的全局异体字表）
-      const chars = convertChars(para.chars.map((c) => c.charData.norm ?? c.charData.char), convert);
-      para.chars.forEach((c, i) => m.set(c.charData.id, chars[i]));
+      const chars = convertChars(para.chars.map((c) => (c.charData.fig ? c.charData.char : c.charData.norm ?? c.charData.char)), convert);
+      // 图片格是 □ 占位：繁简转换不碰
+      para.chars.forEach((c, i) => m.set(c.charData.id, c.charData.fig ? c.charData.char : chars[i]));
     }
     return m;
   }, [pGroup, convert]);
@@ -827,6 +876,10 @@ const PageSection = React.memo(function PageSection({
     const mark = markOpts ? transformMark(p.mark, markOpts) : p.mark;
     return mark ? <span key={p.id} className="guji-text-punct" data-punct-id={p.id}>{mark}</span> : null;
   };
+  const figBlocksAt = (before: number) => pGroup.blocks?.map((b, bi) => b.before === before && (
+    <FigBlock key={`fig-${b.fig}-${bi}`} fig={b.fig} info={figures?.get(b.fig)} figUrl={figUrl}
+      onClick={() => handlers.figBlock({ page: pGroup.page, fig: b.fig, ...(b.box ? { box: b.box } : {}) })} />
+  ));
   return (
     <section
       data-page-section={pGroup.page}
@@ -862,7 +915,9 @@ const PageSection = React.memo(function PageSection({
       )}
 
       {pGroup.paragraphs.map((para, pi) => (
-        <ReflowBlock key={para.id} heading={para.heading}>
+        <React.Fragment key={para.id}>
+        {figBlocksAt(pi)}
+        <ReflowBlock heading={para.heading}>
           {groupByEntity(para.chars, entityOfChar).map((run, ri) => {
             const nodes = run.chars.map(({ charData: ch, beforePuncts: allBefore, afterPuncts: allPuncts, start }, ci) => {
               // 专名线不画到首字前、末字后的标点上：实体首字的前置标点、末字的后置标点放到链接外面
@@ -870,11 +925,18 @@ const PageSection = React.memo(function PageSection({
               const isLastOfEntity = !!run.entity && ci === run.chars.length - 1;
               const beforePuncts = isFirstOfEntity ? [] : allBefore;
               const afterPuncts = isLastOfEntity ? [] : allPuncts;
+              const figCont = !!ch.fig && ci > 0 && run.chars[ci - 1].charData.fig === ch.fig;
+              let figCells = 1;
+              if (ch.fig && !figCont) while (run.chars[ci + figCells]?.charData.fig === ch.fig) figCells++;
+              const cls = `guji-text-char${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${start?.raised ? ' is-raised' : ''}`;
               return (
                 <React.Fragment key={ch.id}>
                   {start && start.blankBefore > 0 && <BlankCols n={start.blankBefore} />}
                   {beforePuncts.map(punct)}
-                  <span
+                  {ch.fig ? (
+                    <FigCell id={ch.id} fig={ch.fig} info={figures?.get(ch.fig)} figUrl={figUrl} cells={figCells} cont={figCont}
+                      className={cls} pageStart={pageStarts.get(ch.id)}>{show(ch)}</FigCell>
+                  ) : <span
                     data-char-id={ch.id}
                     data-page-start={pageStarts.get(ch.id)}
                     className={`guji-text-char${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${ch.lacuna ? ' is-lacuna' : ''}${ch.lacuna && ch.guess_c ? ' has-guess' : ''}${ch.guess ? ' is-guess' : ''}${ch.zi ? ' is-zi' : ''}${start?.raised ? ' is-raised' : ''}`}
@@ -883,7 +945,7 @@ const PageSection = React.memo(function PageSection({
                     title={ch.lacuna ? (ch.guess_c ? t('reader.lacunaGuess', { guess: convert ? convert(ch.guess_c) : ch.guess_c }) : t('detail.lacuna')) : ch.zi ? t('detail.composedChar', { label: ch.zi }) : ch.guess ? t('reader.charGuess') : undefined}
                   >
                     {show(ch)}
-                  </span>
+                  </span>}
                   {/* 外挂注入标点 (不带 data-char-id，对底本坐标完全透明) */}
                   {afterPuncts.map(punct)}
                 </React.Fragment>
@@ -913,7 +975,9 @@ const PageSection = React.memo(function PageSection({
           })}
           {pi === pGroup.paragraphs.length - 1 && pGroup.trailingBlank ? <BlankCols n={pGroup.trailingBlank} /> : null}
         </ReflowBlock>
+        </React.Fragment>
       ))}
+      {figBlocksAt(pGroup.paragraphs.length)}
     </section>
   );
 });
