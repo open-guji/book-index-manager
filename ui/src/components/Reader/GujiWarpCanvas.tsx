@@ -18,12 +18,18 @@ export interface CharGeometry {
   zi?: string;
   /** 规范层（norm.json）：人审过的通行字，恰好一个字；缺省＝该位没有逐位规范（overview#525） */
   norm?: string;
+  /** 图片格（char v0.3 `fig`，spec/02 §4.7）：值是同章 fig.json 里的图 id；`char` 是 `□` */
+  fig?: string;
 }
 
 export interface ColumnGeometry {
   col: number;
   /** 列类别与版式字段（spec/02 §4.3）：空列 `blank`、抬头格数、行首空格数；缺省＝正文列、0、0 */
-  kind?: 'body' | 'banxin' | 'blank';
+  kind?: 'body' | 'banxin' | 'blank' | 'figure';
+  /** 图列（`kind: 'figure'`，插图块）：占几列、图 id、cord 里的框 `[x0,y0,x1,y1]` */
+  span?: number;
+  fig?: string;
+  figBox?: [number, number, number, number];
   raised?: number;
   lead_blank?: number;
   warped_w: number;

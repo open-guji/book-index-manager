@@ -159,9 +159,9 @@ export { adaptPunctJson, iiifVolumeOf } from './core/guji-pages';
 export type { PunctKind } from './core/guji-pages';
 export { headingsFromPunct, sanitizeHeadings, nestHeadings, headingKey, parseHeadingKey } from './core/text-headings';
 export type { TextHeading, HeadingNode } from './core/text-headings';
-export type { GujiPageInfo, GujiPageChar } from './core/guji-pages';
+export type { GujiPageInfo, GujiPageChar, GujiFigure } from './core/guji-pages';
 // 对读：char／cord（NNN.char.json＋NNN.cord.json，guji-format v0.1）适配
-export { adaptCharCord, adaptNorm, adaptNormDetailed } from './core/guji-char-cord';
+export { adaptCharCord, adaptFig, adaptNorm, adaptNormDetailed } from './core/guji-char-cord';
 export type { NormAdapted } from './core/guji-char-cord';
 export { buildParagraphBlocks, detectGenre } from './core/paragraphize';
 export type { ReadingMode, ReadingGenre, ParagraphBlock } from './core/paragraphize';

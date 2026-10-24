@@ -563,6 +563,24 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 .guji-text-char.is-lacuna.has-guess { cursor: help; } /* 阙文带推测字（char v0.2 guess_c）：样式同阙文，悬停出推测字 */
 .guji-text-char.is-guess { color: ${bim('meta-fg')}; text-decoration: underline dotted; text-underline-offset: 0.2em; } /* 残字：灰字加点线 */
 .guji-text-char.is-zi { border: 1px solid color-mix(in srgb, currentColor 40%, transparent); border-radius: 2px; padding: 0 0.12em; margin: 0 0.05em; } /* 组字：细框，同 .bim-zi */
+/* 图片格（char v0.3 fig，spec/02 §4.7）：一字宽（连占 n 格宽 n 字）的内嵌图，缩到一字高内、居中；原字 □ 透明保留（选区、复制仍按格位） */
+.guji-text-char.is-fig { position: relative; display: inline-block; width: calc(var(--guji-fig-n, 1) * 1em); height: 1em; vertical-align: -0.12em; text-align: center; }
+.guji-text-char.is-fig.is-fig-cont { width: 0; overflow: hidden; }
+.guji-text-char.is-fig .guji-fig-glyph { color: transparent; }
+.guji-fig-img { position: absolute; inset: 0; margin: auto; max-width: 100%; max-height: 100%; width: auto; height: auto; user-select: none; }
+.guji-fig-img.is-svg { background-color: currentColor; -webkit-mask: var(--guji-fig-src) center / contain no-repeat; mask: var(--guji-fig-src) center / contain no-repeat; width: 100%; height: 100%; }
+/* 取不到图：显示 〔图：说明〕 小标签，不显示裸 □ */
+.guji-text-char.is-fig.is-fig-missing { width: auto; height: auto; vertical-align: baseline; }
+.guji-text-char.is-fig.is-fig-missing .guji-fig-glyph { display: none; }
+.guji-fig-missing { color: ${bim('meta-fg')}; font-size: 0.7em; border: 1px dashed currentColor; border-radius: 2px; padding: 0 0.3em; white-space: nowrap; }
+/* 插图块（char v0.3 图列）：占满正文栏，最大高度一屏，下附说明 */
+.guji-fig-block { display: block; margin: 1.2em 0; text-align: center; }
+.guji-fig-block .guji-fig-img.is-block { position: static; display: inline-block; max-width: 100%; max-height: 90vh; margin: 0 auto; }
+.guji-fig-block .guji-fig-img.is-svg { position: static; display: inline-block; width: min(100%, 40em); height: auto; }
+.guji-fig-caption { margin-top: 0.4em; color: ${bim('meta-fg')}; font-size: 0.8em; }
+.guji-fig-block .guji-fig-missing { display: inline-block; padding: 1em 2em; }
+/* 夜间：刻本黑字白底的像素图反色；SVG 已用 currentColor。站点还没有夜间主题，约定宿主在 <html> 上设 data-color-scheme="dark"（或 data-theme="night"） */
+:root[data-color-scheme="dark"] .guji-fig-img[data-raster], :root[data-theme="night"] .guji-fig-img[data-raster] { filter: invert(1) hue-rotate(180deg); }
 /* 抬头（is-raised／data-raised）：横排重排里不做位移——原件的“高一格”在重排后只会显成首字偏高；类名和属性保留给结构识别 */
 .guji-text-blank-col { display: inline-block; width: 1em; height: 1px; } /* 空列：一格宽的空位 */
 .bim-rd-badge-warp {

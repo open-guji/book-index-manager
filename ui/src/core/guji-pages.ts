@@ -30,10 +30,25 @@ export interface GujiPageChar {
     zi?: string;
     /** 规范层（norm.json）：人审过的「异体→通行字」，恰好一个字、且与 `char` 不同；缺省＝该位没有逐位规范（overview#525） */
     norm?: string;
+    /** 图片格（char v0.3 `fig`，spec/02 §4.7）：本格是图不是字，值是同章 fig.json 里的图 id；`char` 仍是 `□`。连续同 id 的格是同一张图 */
+    fig?: string;
 }
 
-/** 列类别（spec/02 §4.3）：`blank` 空列（无字）、`banxin` 版心列；缺省正文列 */
-export type GujiColumnKind = 'body' | 'banxin' | 'blank';
+/** 列类别（spec/02 §4.3、§4.7）：`blank` 空列（无字）、`banxin` 版心列、`figure` 图列（插图块，无字）；缺省正文列 */
+export type GujiColumnKind = 'body' | 'banxin' | 'blank' | 'figure';
+
+/** 同章 fig.json（spec/09）里的一张图，阅读器要用的部分 */
+export interface GujiFigure {
+    id: string;
+    kind: 'inline' | 'block';
+    /** 说明文字：悬停、读屏、复制都用它 */
+    alt: string;
+    /** 相对版本目录的图片文件，如 `fig/005/f148-2-14.png` */
+    file: string;
+    mime: string;
+    width: number;
+    height: number;
+}
 
 export interface GujiPageInfo {
     /** 页号（`page.index`），也是字 id 的第一段 */
@@ -49,7 +64,17 @@ export interface GujiPageInfo {
      * `raised`（抬头格数）、`lead_blank`（行首空格数）、`kind` 是列的版式字段，缺省＝0／0／正文列；
      * `kind: 'blank'` 的空列 `chars` 为空，也保留在这里。
      */
-    columns: { col: number; chars: GujiPageChar[]; kind?: GujiColumnKind; raised?: number; lead_blank?: number }[];
+    columns: {
+        col: number;
+        chars: GujiPageChar[];
+        kind?: GujiColumnKind;
+        raised?: number;
+        lead_blank?: number;
+        /** 图列（`kind: 'figure'`，插图块）：占几列、指向的图 id、cord `marks.figure` 的框 `[x0,y0,x1,y1]`（有 cord 且对得上才带） */
+        span?: number;
+        fig?: string;
+        figBox?: [number, number, number, number];
+    }[];
 }
 
 /** 单个字符：恰好一个码点（代理对算一个字） */
