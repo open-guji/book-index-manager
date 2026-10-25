@@ -42,6 +42,20 @@ a.bim-et:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: 2p
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
   margin-top: 4px; color: ${bim('body-fg')};
 }
+.bim-et-multi { cursor: pointer; outline: none; }
+.bim-et-multi:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: 2px; border-radius: 2px; }
+.bim-et-multi:hover, .bim-et-multi:focus-visible { color: ${bim('accent')}; text-decoration-color: ${bim('accent')}; }
+.bim-et-card-multi { width: min(340px, 86vw); max-width: none; max-height: min(60vh, 420px); overflow-y: auto; padding: 8px 12px 4px; }
+.bim-et-row { display: block; padding: 8px 0 6px; border-top: 1px solid ${bim('rule')}; }
+.bim-et-card-k + .bim-et-row { margin-top: 4px; }
+.bim-et-row-t { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.bim-et-row-p { font-family: ${bim('font-serif')}; color: ${bim('accent')}; font-size: 13px; }
+.bim-et-row-k { font-size: 11px; letter-spacing: 0.1em; color: ${bim('label-fg')}; }
+.bim-et-dense .bim-et-row { display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 8px; padding: 6px 0; }
+.bim-et-dense .bim-et-row-t { flex: 0 0 auto; }
+.bim-et-dense .bim-et-card-d { display: none; }
+.bim-et-dense .bim-et-card-a { margin: 0 0 0 auto; }
+.bim-et-card-d2 { -webkit-line-clamp: 2; }
 .bim-et-card-s { display: block; color: ${bim('hint-fg')}; }
 .bim-et-card-a { display: block; margin-top: 6px; color: ${bim('accent')}; text-decoration: none; }
 .bim-et-card-a:hover, .bim-et-card-a:focus-visible { text-decoration: underline; }
