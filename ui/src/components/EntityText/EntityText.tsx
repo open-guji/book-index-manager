@@ -168,7 +168,10 @@ export const EntityMark: React.FC<EntityMarkProps> = ({
     const clearOpen = () => { if (openTimer.current) { clearTimeout(openTimer.current); openTimer.current = null; } };
     const clearClose = () => { if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; } };
 
+    /** 点按／回车打开的卡「钉住」：不随鼠标移出（含触屏模拟的 mouseleave）收起，点词外、Esc、焦点离开才收 */
+    const pinned = useRef(false);
     const closeNow = useCallback(() => {
+        pinned.current = false;
         clearOpen(); clearClose();
         setOpen(false); setActive(false);
         if (openCardCloser === closeNow) openCardCloser = null;
@@ -193,8 +196,18 @@ export const EntityMark: React.FC<EntityMarkProps> = ({
     /** 移出：延迟收卡 */
     const leave = useCallback(() => {
         clearOpen(); clearClose();
+        if (pinned.current) return;
         closeTimer.current = setTimeout(closeNow, closeDelayMs);
     }, [closeNow, closeDelayMs]);
+
+    const wrapRef = useRef<HTMLSpanElement | null>(null);
+    useEffect(() => {
+        if (!open || !span.targets) return;
+        // 触屏没有 mouseleave：点词外任意处收卡（鼠标移出走 leave 的延迟收卡，不受影响）
+        const away = (e: PointerEvent) => { if (!wrapRef.current?.contains(e.target as Node | null)) closeNow(); };
+        document.addEventListener('pointerdown', away);
+        return () => document.removeEventListener('pointerdown', away);
+    }, [open, span.targets, closeNow]);
 
     const hasLink = !!span.targetId;
     const id = span.targetId;
@@ -210,6 +223,30 @@ export const EntityMark: React.FC<EntityMarkProps> = ({
         },
         onKeyDown: (e: React.KeyboardEvent) => { if (e.key === 'Escape' && open) { e.stopPropagation(); closeNow(); } },
     };
+
+    // 合称（matched_multi）：整个词不是单一链接，悬停／聚焦／点按出一张列出各条目的卡
+    if (span.targets) {
+        return (
+            <span {...wrapProps} ref={wrapRef}>
+                <span
+                    className={`${cls} bim-et-multi`}
+                    role="button"
+                    tabIndex={0}
+                    aria-haspopup="true"
+                    aria-expanded={open}
+                    aria-controls={open ? cardId : undefined}
+                    onFocus={() => enter(0)}
+                    onClick={() => { clearClose(); pinned.current = true; setActive(true); openCard(); }}
+                    onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (open) closeNow(); else { pinned.current = true; setActive(true); openCard(); } }
+                    }}
+                >
+                    {inner}
+                </span>
+                {open && <EntityMultiCard id={cardId} span={span} loader={loader} buildHref={buildHref} onNavigate={cardNewTab ? undefined : onCardNavigate} newTab={cardNewTab} />}
+            </span>
+        );
+    }
 
     if (!hasLink || !id) {
         return (
@@ -308,3 +345,88 @@ const EntityCard: React.FC<{
         </span>
     );
 };
+
+/**
+ * 合称卡：头部「合稱 · N 條」，下面每个条目一行（类别随条目、名称、一行附注、两行提要、各自的「查看详情」）。
+ * 超过 3 个条目（六朝）收成紧凑行：名称、附注、链接同一行，不出提要。
+ * 行序＝`targets[]` 序；有 `part` 的行前缀「正 →」，指明这段字对应哪个条目。行多时卡内滚动，不撑破视口。
+ */
+const EntityMultiCard: React.FC<{
+    id: string;
+    span: EntitySpan;
+    loader: { owner: object; load: EntitySummaryLoader } | null;
+    buildHref: (id: string) => string;
+    onNavigate?: EntityTextProps['onNavigate'];
+    newTab?: boolean;
+}> = ({ id, span, loader, buildHref, onNavigate, newTab }) => {
+    const { convert } = useI18n();
+    const ref = useRef<HTMLSpanElement | null>(null);
+    // 卡片定宽（≤340px）：词靠右时往左挪，保证整张卡落在视口内（左右各留 8px）；只在打开时量一次
+    const [shift, setShift] = useState(0);
+    useIsoLayoutEffect(() => {
+        const el = ref.current;
+        if (!el || typeof window === 'undefined') return;
+        const r = el.getBoundingClientRect();
+        if (!r.width) return;
+        const vw = document.documentElement.clientWidth || window.innerWidth;
+        setShift(Math.max(8 - r.left, Math.min(0, vw - 8 - r.right)));
+    }, []);
+    const targets = span.targets ?? [];
+    return (
+        <span ref={ref} id={id} role="group" aria-label={convert(`合稱，${targets.length} 條`)} className={`bim-et-card bim-et-card-multi${targets.length > 3 ? " bim-et-dense" : ""}`} style={shift ? { left: shift } : undefined}>
+            <span className="bim-et-card-k">{convert('合稱')} · {convert(`${targets.length} 條`)}</span>
+            {targets.map(t => (
+                <MultiRow key={t.id} target={t} kind={span.kind} loader={loader} buildHref={buildHref} onNavigate={onNavigate} newTab={newTab} />
+            ))}
+        </span>
+    );
+};
+
+const MultiRow: React.FC<{
+    target: NonNullable<EntitySpan['targets']>[number];
+    kind: EntityKind;
+    loader: { owner: object; load: EntitySummaryLoader } | null;
+    buildHref: (id: string) => string;
+    onNavigate?: EntityTextProps['onNavigate'];
+    newTab?: boolean;
+}> = ({ target, kind, loader, buildHref, onNavigate, newTab }) => {
+    const { convert, t } = useI18n();
+    const [state, setState] = useState<CardState>(loader ? { status: 'loading' } : { status: 'ready', summary: null });
+    useEffect(() => {
+        if (!loader) return;
+        let cancelled = false;
+        setState({ status: 'loading' });
+        cachedSummary(loader.owner, loader.load, target.id)
+            .then(summary => { if (!cancelled) setState({ status: 'ready', summary }); })
+            .catch(() => { if (!cancelled) setState({ status: 'error' }); });
+        return () => { cancelled = true; };
+    }, [loader, target.id]);
+    const summary = state.status === 'ready' ? state.summary : null;
+    // 加载中／失败先用 entity.json 带的规范名，卡片不空
+    const title = summary?.title ?? target.canonicalName ?? target.id;
+    return (
+        <span className="bim-et-row" data-entity-id={target.id}>
+            <span className="bim-et-row-t">
+                {target.part && <span className="bim-et-row-p">{renderPart(target.part, convert)}</span>}
+                <span className="bim-et-card-t">{convert(title)}</span>
+                {/* 摘要里能分出具体类型（人／朝代…）前，行内只有总类别；kind 取合称整体的类别 */}
+                <span className="bim-et-row-k">{convert(KIND_LABEL[kind])}</span>
+            </span>
+            {summary?.meta && <span className="bim-et-card-m">{convert(summary.meta)}</span>}
+            {summary?.description && <span className="bim-et-card-d bim-et-card-d2">{convert(summary.description)}</span>}
+            {state.status === 'loading' && <span className="bim-et-card-s">{convert('載入中…')}</span>}
+            {state.status === 'error' && <span className="bim-et-card-s">{convert('摘要載入失敗')}</span>}
+            {summary && (
+                <a
+                    className="bim-et-card-a"
+                    href={buildHref(summary.id || target.id)}
+                    {...(newTab ? { target: '_blank', rel: 'noopener' } : {})}
+                    onClick={onNavigate ? e => onNavigate(summary.id || target.id, e) : undefined}
+                >{t('reader.entityDetail')}</a>
+            )}
+        </span>
+    );
+};
+
+/** 「正」→「正 →」：part 是正文里的字，简体模式下一起转 */
+const renderPart = (part: string, convert: (s: string) => string) => `${convert(part)} →`;

@@ -465,3 +465,71 @@ describe('adaptEntityJson：span 可选（guji-format spec/05），定位靠 anc
         expect(remapPlainOffsets('史記史記', spans).map(s => s.key)).toEqual(['z', 'y']);
     });
 });
+
+describe('合称 matched_multi（book-text#244）', () => {
+    const MULTI = {
+        entities: [
+            {
+                id: 'e1', type: 'reign', text: '正嘉', anchor: { start: '1:1:1', end: '1:1:2' },
+                target: {
+                    status: 'matched_multi', canonical_name: '正德＋嘉靖',
+                    targets: [
+                        { part: '正', entity_id: 'r1', canonical_name: '正德', href: 'book-index://Entity/r1' },
+                        { part: '嘉', entity_id: 'r2', canonical_name: '嘉靖', href: 'book-index://Entity/r2' },
+                    ],
+                },
+            },
+            {
+                id: 'e2', type: 'people', text: '二程', anchor: { start: '1:1:3', end: '1:1:4' },
+                target: { status: 'matched_multi', targets: [{ entity_id: 'p1', href: 'book-index://Entity/p1' }] },
+            },
+        ],
+    };
+
+    it('适配：≥2 项有效才成合称，targetId 恒空；不足 2 项当未链接', () => {
+        const [a, b] = adaptEntityJson(MULTI);
+        expect(a.targetId).toBeUndefined();
+        expect(a.targets).toEqual([
+            { id: 'r1', canonicalName: '正德', part: '正' },
+            { id: 'r2', canonicalName: '嘉靖', part: '嘉' },
+        ]);
+        expect(b.targets).toBeUndefined();
+        expect(b.targetId).toBeUndefined();
+    });
+
+    it('EntityText 里点按合称：卡里两行、两个独立链接', async () => {
+        const transport = makeTransport({
+            r1: { type: 'entity', primary_name: '正德', dynasty: '明' },
+            r2: { type: 'entity', primary_name: '嘉靖', dynasty: '明' },
+        });
+        const span: EntitySpan = {
+            key: 'e1', kind: 'reign', start: 0, end: 2, text: '正嘉',
+            targets: [{ id: 'r1', canonicalName: '正德', part: '正' }, { id: 'r2', canonicalName: '嘉靖', part: '嘉' }],
+        };
+        const { container } = render(<EntityText text="正嘉間" entities={[span]} transport={transport} injectStyles={false} />);
+        const word = screen.getByRole('button', { name: '正嘉' });
+        expect(container.querySelector('a.bim-et')).toBeNull();
+        fireEvent.click(word);
+        const card = screen.getByRole('group');
+        expect(card.textContent).toContain('合稱');
+        await act(async () => { await Promise.resolve(); await Promise.resolve(); });
+        const links = Array.from(card.querySelectorAll('a'));
+        expect(links.map(a => a.getAttribute('href'))).toEqual(['/item/r1', '/item/r2']);
+        expect(card.textContent).toContain('正 →');
+        fireEvent.pointerDown(document.body);
+        expect(screen.queryByRole('group')).toBeNull();
+    });
+
+    it('键盘：Enter 开、Esc 收', () => {
+        const span: EntitySpan = {
+            key: 'e1', kind: 'people', start: 0, end: 2, text: '二程',
+            targets: [{ id: 'p1', canonicalName: '程顥' }, { id: 'p2', canonicalName: '程頤' }],
+        };
+        render(<EntityText text="二程" entities={[span]} injectStyles={false} />);
+        const word = screen.getByRole('button', { name: '二程' });
+        fireEvent.keyDown(word, { key: 'Enter' });
+        expect(screen.getByRole('group').textContent).toContain('程顥');
+        fireEvent.keyDown(word, { key: 'Escape' });
+        expect(screen.queryByRole('group')).toBeNull();
+    });
+});

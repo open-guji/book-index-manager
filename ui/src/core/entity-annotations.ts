@@ -56,6 +56,12 @@ export interface EntitySpan {
     targetId?: string;
     /** 条目规范名（卡片标题的后备） */
     canonicalName?: string;
+    /**
+     * 合称（`target.status = "matched_multi"`，book-text#244）：一个区间对应两个以上条目（正嘉、二程、六朝）。
+     * 有它时 `targetId` 一定为空——整个区间不是单一链接，悬停／点按出一张列出各条目的卡片。
+     * `part` 是该条目对应区间里的哪段字（可选，按字拆不开的合称不写）。
+     */
+    targets?: Array<{ id: string; canonicalName?: string; part?: string }>;
     /** 置信度 0–1（顶层 `confidence`；缺失时回退用 `target.confidence`） */
     confidence?: number;
     /** `target.confidence`（0–1）：对已匹配目标的把握 */
@@ -136,6 +142,23 @@ function candidatesOf(ambiguous: unknown): EntitySpan['candidates'] {
     return out;
 }
 
+/**
+ * `target.targets[]`（matched_multi）→ 合称的各条目。至少 2 项有效才算合称；
+ * 项里认不出 id 的丢掉，剩不足 2 项就整个当作未链接（与旧读取方对 matched_multi 的处理一致，不会只链第一个）。
+ */
+function multiTargetsOf(target: Record<string, unknown>): EntitySpan['targets'] {
+    if (!Array.isArray(target.targets)) return undefined;
+    const out: NonNullable<EntitySpan['targets']> = [];
+    for (const t of target.targets) {
+        if (!t || typeof t !== 'object' || Array.isArray(t)) continue;
+        const o = t as Record<string, unknown>;
+        const id = bookIndexUriToId(str(o.entity_id)) ?? bookIndexUriToId(str(o.href));
+        if (!id) continue;
+        out.push({ id, ...(str(o.canonical_name) ? { canonicalName: str(o.canonical_name) } : {}), ...(str(o.part) ? { part: str(o.part) } : {}) });
+    }
+    return out.length >= 2 ? out : undefined;
+}
+
 /** 有偏移的区间（按偏移切分用） */
 type OffsetSpan = EntitySpan & { start: number; end: number };
 const hasOffsets = (s: EntitySpan): s is OffsetSpan => s.start !== undefined && s.end !== undefined;
@@ -171,6 +194,7 @@ export function adaptEntityJson(raw: unknown): EntitySpan[] {
             ? (bookIndexUriToId(str(target.entity_id)) ?? bookIndexUriToId(str(target.href)) ?? undefined)
             : undefined;
         const targetConfidence = num(target.confidence);
+        const targets = status === 'matched_multi' ? multiTargetsOf(target) : undefined;
         const candidates = candidatesOf(e.ambiguous);
         out.push({
             ...(aStart && aEnd ? { anchor: { start: aStart, end: aEnd } } : {}),
@@ -180,6 +204,7 @@ export function adaptEntityJson(raw: unknown): EntitySpan[] {
             text: str(e.text),
             targetId,
             canonicalName: str(target.canonical_name),
+            ...(targets ? { targets } : {}),
             confidence: num(e.confidence) ?? targetConfidence,
             ...(targetConfidence !== undefined ? { targetConfidence } : {}),
             ...(str(target.level) !== undefined ? { targetLevel: str(target.level) } : {}),
