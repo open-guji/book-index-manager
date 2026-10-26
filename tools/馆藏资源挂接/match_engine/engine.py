@@ -24,6 +24,7 @@ import groups                               # noqa: E402
 import tier                                 # noqa: E402
 import workindex                            # noqa: E402
 import writeplan                            # noqa: E402
+from tier import JPC1                        # noqa: E402  A9：C1 日本诸馆第二批（adapters/jpc1.py）
 
 COLS = ['source', 'source_record_id', 'group_key', 'tier', 'work_id', 'work_title', 'lib_title', 'lib_author', 'lib_version', 'url',
         'image_url', 'has_image', 'existing_res', 'already_linked', 'excluded', 'reason_codes', 'reasons_text', 'candidates', 'evidence',
@@ -68,7 +69,7 @@ def run(source, works_root, data_root, out, overview_root=None, limit=None, keys
         j = tier.judge(r, wi, pol)
         rows.append(dict(rec=r, tier=j.tier, work_id=j.work_id, codes=list(j.codes), cands=j.candidates, ev=j.evidence,
                          group_key=r['group_key']))
-    n_split = groups.apply_group_split(rows, source, groups.load_whitelist(overview_root, plan_dir)) if source == 'kokusho' else 0
+    n_split = groups.apply_group_split(rows, source, groups.load_whitelist(overview_root, plan_dir)) if source in ('kokusho',) + JPC1 else 0
     n_plan = n_drop = 0
     for x in rows:
         wid = x['work_id']
@@ -131,7 +132,7 @@ def run(source, works_root, data_root, out, overview_root=None, limit=None, keys
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    ap.add_argument('--source', required=True, choices=['nlc', 'kokusho', 'ndl', 'naikaku', 'waseda', 'bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb'])
+    ap.add_argument('--source', required=True, choices=['nlc', 'kokusho', 'ndl', 'naikaku', 'waseda', 'bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb'] + list(JPC1))
     ap.add_argument('--works-root', default=roots.book_index(), help='正式库根；缺省 $BOOK_INDEX 或 ../book-index')
     ap.add_argument('--data-root', default=roots.library_data(), help='library_data 根；缺省 $BOOK_INDEX_JSON/library_data 或 ../book_index_json/library_data')
     ap.add_argument('--out', required=True)

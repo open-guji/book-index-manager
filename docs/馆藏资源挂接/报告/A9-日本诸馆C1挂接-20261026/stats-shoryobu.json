@@ -1,0 +1,34 @@
+{
+ "source": "shoryobu",
+ "n": 7030,
+ "tiers": {
+  "无": 1709,
+  "存疑": 3217,
+  "确定": 2104
+ },
+ "codes": {
+  "T_EXACT": 2107,
+  "A_EQ": 2107,
+  "W_UNIQUE": 2107,
+  "ERA_OK": 2107,
+  "T_MISS": 1709,
+  "COLLECTION": 1597,
+  "A_DIFF": 1357,
+  "MULTI_WORK": 882,
+  "A_MISSING": 752,
+  "T_AUTHOR_NEAR": 319,
+  "DUP_WORK_SUSPECT": 179,
+  "T_FUZZY": 126,
+  "LOCAL_PART": 96,
+  "ALT_TITLE_SIBLING": 85,
+  "ERA_CONFLICT": 77,
+  "JUAN_GAP": 75,
+  "A_ALIAS_ONLY": 74,
+  "A_SECONDARY_ONLY": 42,
+  "GROUP_SPLIT": 3,
+  "HUMAN_REJECT": 1
+ },
+ "group_split_groups": 1,
+ "write_plan": 30,
+ "cap_dropped": 0
+}

@@ -64,9 +64,12 @@ class WorkIndex:
 # --------------------------------------------------------------------------- 读盘
 # 资源项里站方记录号所在的 metadata 键（口径 K 的 metadata_keys；site_id 见 SITE_OF_SOURCE）
 RECORD_KEY = {'nlc': 'nlc_fid', 'kokusho': 'kokusho_bid', 'ndl': 'ndl_record', 'nat-archives-jp': 'naikaku_file_id', 'waseda': 'waseda_id',
-              **{s: s + '_record' for s in ('bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb')}}
+              **{s: s + '_record' for s in ('bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb')},
+              'utokyo-da': 'utokyo_record', 'ioc-shanben': 'ioc_nu', 'shoryobu': 'shoryobu_id', 'keio': 'keio_record', 'arc-ritsumei': 'arc_record',
+              'nagoya-u': 'nagoya_record'}
 SITE_OF_SOURCE = {'nlc': 'nlc', 'kokusho': 'kokusho', 'ndl': 'ndl', 'naikaku': 'nat-archives-jp', 'waseda': 'waseda',
-                  **{s: s for s in ('bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb')}}
+                  **{s: s for s in ('bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb')},
+                  'utokyo': 'utokyo-da', 'ioc': 'ioc-shanben', 'shoryobu': 'shoryobu', 'keio': 'keio', 'arc': 'arc-ritsumei', 'nagoya': 'nagoya-u'}
 
 
 def iter_work_files(root):

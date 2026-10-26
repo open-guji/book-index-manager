@@ -1,0 +1,29 @@
+{
+ "source": "utokyo",
+ "n": 1949,
+ "tiers": {
+  "确定": 149,
+  "无": 1508,
+  "存疑": 292
+ },
+ "codes": {
+  "T_MISS": 1508,
+  "T_EXACT": 149,
+  "A_EQ": 149,
+  "W_UNIQUE": 149,
+  "ERA_OK": 149,
+  "LOCAL_PART": 94,
+  "A_MISSING": 75,
+  "COLLECTION": 74,
+  "A_DIFF": 72,
+  "MULTI_WORK": 57,
+  "T_AUTHOR_NEAR": 36,
+  "MULTI_TITLE": 12,
+  "T_FUZZY": 6,
+  "A_SECONDARY_ONLY": 1,
+  "ALT_TITLE_SIBLING": 1
+ },
+ "group_split_groups": 0,
+ "write_plan": 15,
+ "cap_dropped": 0
+}

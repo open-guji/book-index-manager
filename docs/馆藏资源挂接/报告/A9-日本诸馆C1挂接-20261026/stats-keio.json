@@ -1,0 +1,33 @@
+{
+ "source": "keio",
+ "n": 1648,
+ "tiers": {
+  "无": 417,
+  "存疑": 712,
+  "确定": 519
+ },
+ "codes": {
+  "T_EXACT": 519,
+  "A_EQ": 519,
+  "W_UNIQUE": 519,
+  "ERA_OK": 519,
+  "T_MISS": 417,
+  "A_MISSING": 399,
+  "MULTI_WORK": 340,
+  "MULTI_TITLE": 195,
+  "DUP_WORK_SUSPECT": 101,
+  "LOCAL_PART": 100,
+  "A_DIFF": 79,
+  "T_AUTHOR_NEAR": 44,
+  "COLLECTION": 39,
+  "JUAN_GAP": 13,
+  "A_SECONDARY_ONLY": 13,
+  "ALT_TITLE_SIBLING": 8,
+  "T_FUZZY": 4,
+  "ERA_CONFLICT": 4,
+  "CAP_DROPPED": 1
+ },
+ "group_split_groups": 0,
+ "write_plan": 48,
+ "cap_dropped": 1
+}
