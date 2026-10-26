@@ -29,7 +29,7 @@ def parse(raw):
     if not s:
         return [], False
     out, unsure, dyn = [], False, None
-    for seg in re.split(r'\s{2,}|　+', s):
+    for seg in re.split(r'\s{2,}|　+|@@@', s):
         seg = seg.strip()
         if not seg:
             continue
