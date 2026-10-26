@@ -97,11 +97,19 @@ def test_dead_confirmed():
     assert r['status'] == 'dead' and waits == [600] and '二次确认' in r['reason']
 
 
-def test_shidianguji_always_unknown_no_network():
-    f = fake_web({})
-    for s, u in (('shidianguji', 'https://www.shidianguji.com/book/1'),):
-        assert K.check_one(s, u, None, f, K.Cache(), sleep=NOSLEEP)['status'] == 'unknown'
-    assert not f.calls
+def test_shidianguji_judged_by_rendered_landing():
+    # draft#690（10-16）起识典按 headless 渲染后的落点判（link_audit.judge_shidianguji），不再一律 unknown；
+    # fetch 须返回 (200, 最终 URL, 可见文字)。
+    u = 'https://www.shidianguji.com/book/SK0389'
+    ok = lambda x: (200, x + '/chapter/1', '正' * 900)
+    assert K.check_one('shidianguji', u, None, ok, K.Cache(), sleep=NOSLEEP)['status'] == 'ok'
+    gone = lambda x: (200, 'https://www.shidianguji.com/?page_from=404_page', '首页' * 4000)
+    assert K.check_one('shidianguji', u, None, gone, K.Cache(), gap=0, sleep=NOSLEEP)['status'] == 'dead'
+    calls = []
+    def shell(x):
+        calls.append(x); return 200, x, '加载中'
+    assert K.check_one('shidianguji', u, None, shell, K.Cache(), sleep=NOSLEEP)['status'] == 'unknown'
+    assert len(calls) == 1          # 识典 unknown 不走退避重试
 
 
 def test_cache_hit_no_network_and_persist(tmp_path):

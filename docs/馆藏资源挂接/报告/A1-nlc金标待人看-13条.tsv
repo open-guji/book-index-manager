@@ -1,0 +1,14 @@
+engine	half	source_record_id	gold_label	gold_work	tier	work	result	lib_title	new_codes
+new	dev	412000003583	异		确定	d59fy0zoi7sw	manual	程氏續考古編	T_EXACT;A_EQ;W_UNIQUE;ERA_OK
+new	val	411999015151	异		确定	d59fymby0w75	manual	王黃州小畜外集	T_EXACT;A_EQ;W_UNIQUE;ERA_OK
+new	val	002318797	存疑		确定	d59fyt6cy29u	manual	偃師金石遺文記   二卷	T_EXACT;A_EQ;W_UNIQUE;ERA_OK
+new	val	411999012430	存疑		确定	d59fssmyvzt1	manual	韓文鈔	T_EXACT;A_EQ;W_UNIQUE;ERA_OK
+new	val	411999007806	异		确定	d59fxxcz6tc1	manual	杜工部五言律詩	T_EXACT;A_EQ;W_UNIQUE;ERA_OK
+new	val	411999026594	异		确定	d59fxrnmaio0	manual	夢幻居畫學簡明	T_EXACT;A_EQ;W_UNIQUE;ERA_OK
+new	dev	412000000680	异		确定	d59fymbs3dvk	manual	後村先生大全集	T_EXACT;A_EQ;W_UNIQUE;ERA_OK
+new	val	411999016072	异		确定	d59fxwya3o5c	manual	蔡中郎文集	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;CAP_DROPPED
+new	dev	411999021263	存疑		确定	d59fxrn6deyo	manual	赤壁賦	T_EXACT;A_EQ;W_UNIQUE;ERA_OK
+new	val	411999027556	存疑		确定	d59fyh80fsw1	manual	七頌堂詩集	T_EXACT;A_EQ;W_UNIQUE;ERA_OK
+new	dev	412000001223	存疑		确定	d59fxybz0lq8	manual	黎陽王太傅詩選	T_EXACT;A_EQ;W_UNIQUE;ERA_OK
+new	val	412000002483	存疑		确定	d59fxvl8lfy9	manual	鄭氏周易	T_EXACT;A_EQ;W_UNIQUE;ERA_OK
+new	val	411999023212	存疑		确定	d59fxwvbyvwh	manual	漢魏詩紀	T_EXACT;A_EQ;W_UNIQUE;ERA_OK

@@ -18,6 +18,7 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import era                                  # noqa: E402
+import roots                                # noqa: E402
 import exclusions                           # noqa: E402
 import groups                               # noqa: E402
 import tier                                 # noqa: E402
@@ -127,10 +128,10 @@ def run(source, works_root, data_root, out, overview_root=None, limit=None, keys
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('--source', required=True, choices=['nlc', 'kokusho', 'ndl', 'naikaku', 'waseda'])
-    ap.add_argument('--works-root', required=True)
-    ap.add_argument('--data-root', required=True)
+    ap.add_argument('--works-root', default=roots.book_index(), help='正式库根；缺省 $BOOK_INDEX 或 ../book-index')
+    ap.add_argument('--data-root', default=roots.library_data(), help='library_data 根；缺省 $BOOK_INDEX_JSON/library_data 或 ../book_index_json/library_data')
     ap.add_argument('--out', required=True)
-    ap.add_argument('--overview-root')
+    ap.add_argument('--overview-root', default=roots.overview(), help='缺省 $OVERVIEW_ROOT 或 ../overview')
     ap.add_argument('--ledger-dir', help='古籍目录进度台账根（ledger.json 所在）；缺省 <overview-root>/项目进展/古籍目录/进度')
     ap.add_argument('--plan-dir', help='放 dupx-同题异作者清单.tsv／合刻组白名单.tsv 的目录；缺省 <overview-root>/项目进展/馆藏资源挂接/计划')
     ap.add_argument('--mapping', help='政权映射.tsv；缺省 <overview-root>/项目进展/朝代年号录入/政权映射.tsv')
@@ -140,6 +141,8 @@ if __name__ == '__main__':
     ap.add_argument('--alias', action='store_true', help='R1-E1 实验：对该源开 Entity 别名（nlc 用）')
     ap.add_argument('--annot-release', help='放行 WASEDA_ANNOT_SUSPECT 的 Work id 文件（每行一个）')
     a = ap.parse_args()
+    if not a.works_root or not a.data_root:
+        ap.error('找不到 book-index 或 library_data：用 --works-root／--data-root 或环境变量 BOOK_INDEX／BOOK_INDEX_JSON')
     rel = {l.split()[0] for l in open(a.annot_release, encoding='utf-8') if l.strip()} if a.annot_release else None
     c = run(a.source, a.works_root, a.data_root, a.out, a.overview_root, a.limit, a.keys, a.emit_write_plan, a.alias, rel, a.ledger_dir, a.plan_dir, a.mapping)
     n = sum(c.values())

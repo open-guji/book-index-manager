@@ -1,13 +1,17 @@
 """块 D 步 6：新引擎 vs 旧匹配表（同一 Work 基线下重跑的旧表）端到端回归 + 金标评估。
 python3 regress.py --source nlc --new DIR/matches.tsv --old 旧表.tsv [--gold gold/nlc.tsv] [--out DIR]
 输出：回归摘要（stdout，json）、DIR/{new_confirmed_not_old.tsv, lost_confirmed.tsv, transitions.tsv, gold_eval.tsv}
-金标按 sha1(source_record_id) 奇偶分两半：偶＝开发半（步 2–4 允许看），奇＝验证半（步 6 的主指标）。"""
+金标按 sha1(source_record_id) 奇偶分两半：偶＝开发半（步 2–4 允许看），奇＝验证半（步 6 的主指标）。
+给 --works-root 时，金标 work_id 若已被并（merged_into／promoted_to）先沿链换成现 keeper 再比（去重并条后金标仍可用）。"""
 import argparse
 import collections
 import csv
 import hashlib
 import json
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 
 def read(path):
@@ -18,6 +22,28 @@ def half(rid):
     return 'dev' if int(hashlib.sha1(rid.encode()).hexdigest(), 16) % 2 == 0 else 'val'
 
 
+def remap_gold(gold, works_root):
+    """金标 work_id → 现 keeper（沿 merged_into／promoted_to 链）。返回 (新金标, 换了几条)。"""
+    import glob
+    nxt = {}
+    for f in glob.iglob(os.path.join(works_root, 'Work', '*', '*', '*', '*.json')):
+        d = json.load(open(f, encoding='utf-8'))
+        t = d.get('merged_into') or d.get('promoted_to')
+        if t:
+            nxt[d['id']] = t
+    out, n = [], 0
+    for r in gold:
+        w, seen = r.get('work_id'), set()
+        while w in nxt and w not in seen:
+            seen.add(w)
+            w = nxt[w]
+        if w != r.get('work_id'):
+            n += 1
+            r = dict(r, work_id=w)
+        out.append(r)
+    return out, n
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--source', required=True)
@@ -25,6 +51,7 @@ def main():
     ap.add_argument('--old', required=True)
     ap.add_argument('--gold')
     ap.add_argument('--out', required=True)
+    ap.add_argument('--works-root', help='正式库根：金标 work_id 沿 merged_into 链换成现 keeper')
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     new = {r['source_record_id']: r for r in read(a.new)}
@@ -60,6 +87,8 @@ def main():
     summ['new_confirmed_not_old_by_old_tier'] = dict(collections.Counter(old[k]['tier'] for k in gained))
     if a.gold:
         g = read(a.gold)
+        if a.works_root:
+            g, summ['gold_work_remapped'] = remap_gold(g, a.works_root)
         ev = collections.Counter()
         rows = []
         for r in g:

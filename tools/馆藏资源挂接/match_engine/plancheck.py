@@ -11,6 +11,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import workindex  # noqa: E402
 import exclusions  # noqa: E402
+import roots  # noqa: E402
 
 TYPES = {'image', 'text', 'physical', 'catalog', 'annotated'}
 SITE = {'nlc': 'nlc', 'kokusho': 'kokusho', 'ndl': 'ndl', 'naikaku': 'nat-archives-jp', 'waseda': 'waseda'}
@@ -40,7 +41,7 @@ def check_item(it, groups):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--source', required=True)
-    ap.add_argument('--works-root', required=True)
+    ap.add_argument('--works-root', default=roots.book_index(), help='缺省 $BOOK_INDEX 或 ../book-index')
     ap.add_argument('--dir', required=True)
     ap.add_argument('--verify-content', action='store_true', help='对 write_plan 链接做内容判据（Reid link_audit.judge），有 dead 则退出码 2')
     ap.add_argument('--sample', type=int, default=150, help='内容判据抽样条数（默认 150，分层，种子固定）；--all 全量')
@@ -50,7 +51,7 @@ def main():
     ap.add_argument('--offline', action='store_true', help='只读缓存，不联网')
     ap.add_argument('--min-interval', type=float, default=2.0)
     ap.add_argument('--confirm-gap', type=int, default=600, help='dead 二次确认间隔秒')
-    ap.add_argument('--overview-root', default=os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..')), help='读 R2/R3/R7 台账的 overview 根（默认本脚本所在仓）')
+    ap.add_argument('--overview-root', default=roots.overview(), help='读 R2/R3/R7 台账的 overview 根（缺省 $OVERVIEW_ROOT 或 ../overview）')
     ap.add_argument('--ledger-dir', help='古籍目录进度台账根；缺省按 --overview-root')
     ap.add_argument('--plan-dir', help='放 dupx-同题异作者清单.tsv 的目录；缺省按 --overview-root')
     ap.add_argument('--data-root', help='library_data 根；kokusho 时用于国書责任者闸（authorgate）')

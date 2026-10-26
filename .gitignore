@@ -14,3 +14,6 @@ book_index_manager/_version.py
 coverage/
 ui/coverage/
 ui/tests/layout/test-results/
+
+# 馆藏资源挂接：本机派生的朝代键表等缓存
+tools/馆藏资源挂接/.cache/
