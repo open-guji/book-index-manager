@@ -1,5 +1,5 @@
 """把确定档 write_plan.jsonl 写进 book-index 工作树（R3 副本：write_plan_apply.py 加 naikaku/waseda 站名与 R3 ai_note）。
-    python3 write_plan_apply.py --root <book-index> --plan <write_plan.jsonl> --revised-at 2026-10-13 [--write]
+    python3 write_plan_apply_r3.py --root <book-index> --plan <write_plan.jsonl> --revised-at 2026-10-13 [--tag R3] [--basis 出处] [--write]
 默认只演练。只改 resources／resource_groups／revision／revised_at／ai_note；已有 resources 逐项不变（只在末尾追加）；
 幂等：同 group 或同 url 已在则跳过；Work 不存在／已并（merged_into）跳过；同来源藏本写后超 3 个则跳过；全部跳过项列出，不静默。
 """
@@ -18,6 +18,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--root', required=True); ap.add_argument('--plan', required=True)
     ap.add_argument('--revised-at', required=True); ap.add_argument('--write', action='store_true')
+    ap.add_argument('--tag', default='R3', help='ai_note 里的批次名')
+    ap.add_argument('--basis', default='overview 馆藏资源挂接/计划/R3-首批核对报告-Rowan.md', help='ai_note 里的依据出处')
     a = ap.parse_args()
     idx = {}
     for sub in ('Work', 'Book'):   # Book 级行（plan 里 work_id 填 Book id，attach_level=book）
@@ -53,7 +55,7 @@ def main():
             continue
         d['resource_groups'] = rg
         d['revision'] = bump(d.get('revision')); d['revised_at'] = a.revised_at
-        note = a.revised_at + ' R3 馆藏挂接：按确定档补挂 ' + '、'.join('%s %d 条' % (SITE[s], n) for s, n in n_add.items()) + '（影像）。依据见 overview 馆藏资源挂接/计划/R3-首批核对报告-Rowan.md。'
+        note = a.revised_at + ' ' + a.tag + ' 馆藏挂接：按确定档补挂 ' + '、'.join('%s %d 条' % (SITE[s], n) for s, n in n_add.items()) + '（影像）。依据见 ' + a.basis + '。'
         d['ai_note'] = ((d.get('ai_note') or '') + '\n\n' + note).strip()
         diff = {k for k in set(d) | set(before) if d.get(k) != before.get(k)}
         assert diff <= ALLOWED, (wid, diff)
