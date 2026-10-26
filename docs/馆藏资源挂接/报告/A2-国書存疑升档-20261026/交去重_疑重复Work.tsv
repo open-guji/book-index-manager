@@ -1,0 +1,1084 @@
+record_id	国書题名	国書著者	原因码	候选Work
+100315116	易簡方	王／碩 撰	DUP_WORK_SUSPECT	d59fxzhp2pz5,d59f2hqardvl,d59f2hrpn2f4
+100317217	易簡方	王／碩 撰	DUP_WORK_SUSPECT	d59fxzhp2pz5,d59f2hqardvl,d59f2hrpn2f4
+100315117	（校訂）易簡方	王／碩 撰	DUP_WORK_SUSPECT	d59fxzhp2pz5,d59f2hqardvl,d59f2hrpn2f4
+100381933	醫學原理	石山／汪／機(汪／機) 撰	DUP_WORK_SUSPECT	d59f6espe03p,d59fxzhbca2o
+300096829	醫學指南捷徑六書	徐／春甫	DUP_WORK_SUSPECT	d59f6eqx3479,d59fxy309ede
+100079287	溯洄集	王／履 撰	DUP_WORK_SUSPECT	d59fxzhr9ds0,d59f2mo5ucqq,d59f6eqw5ekj
+100252785	編輯傷寒心法要訣	呉／謙	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fxqwz28zm
+100394520	一切經音義	玄応 撰	DUP_WORK_SUSPECT	d59fykwyws1s,d59fyhlwi0ox,d59f28ks7u9u
+300099134	宋版一切経音義第二／大般涅槃経ノ部	玄応 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fykwyws1s,d59fyhlwi0ox,d59f28ks7u9u
+100384307	渭南文集	陸／游 撰	DUP_WORK_SUSPECT	d59f2hq62tqa,d59fyy4ewa2p,d59fyy4qrapt
+100386087	陸放翁全集	陸／游 撰	DUP_WORK_SUSPECT;COLLECTION	d59f2hq62tqa,d59fyy4ewa2p,d59fyy4qrapt,d59fsfw5wwec
+100232433	南北経験医方大成	孫／允賢 撰	DUP_WORK_SUSPECT	d59fxzh0q7lu,d59f2goezkld
+100232434	南北経験医方大成	孫／允賢 撰	DUP_WORK_SUSPECT	d59fxzh0q7lu,d59f2goezkld
+100316398	南北経験医方大成	孫／允賢 撰	DUP_WORK_SUSPECT	d59fxzh0q7lu,d59f2goezkld
+100049189	新增説文韻府羣玉	陰／時夫 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f6entc5q8,d59f6epcl5vn,d59f2glspwjk,d59fy1263bpd
+100385694	新増説文韻府羣玉	陰／時夫 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f6entc5q8,d59f6epcl5vn,d59f2glspwjk,d59fy1263bpd
+100453609	新増説文韻府羣玉	陰／時夫 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f6entc5q8,d59f6epcl5vn,d59f2glspwjk,d59fy1263bpd
+100072396	增續會通韻府群玉	陰／時夫 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f6entc5q8,d59f6epcl5vn,d59f2glspwjk,d59fxwmxtc75
+100108613	易學啓蒙	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyykfqby8,d59f2heqct8g,d59f2gkwvp4x,d59fy5p2b0u8
+100174866	易學啓蒙	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyykfqby8,d59f2heqct8g,d59f2gkwvp4x,d59fy5p2b0u8
+100452694	易學啓蒙	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyykfqby8,d59f2heqct8g,d59f2gkwvp4x,d59fy5p2b0u8
+300097748	易學啓蒙	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyykfqby8,d59f2heqct8g,d59f2gkwvp4x,d59fy5p2b0u8
+100425042	焦氏易林	焦／延寿 撰	DUP_WORK_SUSPECT	d59f207o9q80,d59f28503xmr,d59f284xx9tw,d59f9uwttou8,d59f2prl9fk1,d59f208rae4g,d59f2pruxsea,d59f9c10u03p
+100193331	弇州山人四部稿	王／世貞 撰	DUP_WORK_SUSPECT	d59f2njg2ozm,d59f2njkg0e8
+100193332	弇州山人四部稿選	王／世貞 撰	DUP_WORK_SUSPECT	d59f2njg2ozm,d59f2njkg0e8,d59f2nkpnbwh
+300092352	袁太史時文	袁／枚／簡斎(袁／枚) 著	DUP_WORK_SUSPECT	d59fyyj31b7k,d59fyw9oajgg,d59fyyj65on4,d59fyw9ols01,d59fyvqh74ea
+100109171	簷曝雜記	趙／翼 撰	DUP_WORK_SUSPECT	d59fy5b429ds,d59fyznc1erm,d59fyzmx20oy
+100354253	簷曝雜記	趙／翼 撰	DUP_WORK_SUSPECT	d59fy5b429ds,d59fyznc1erm,d59fyzmx20oy
+100454265	簷曝雜記	趙／翼 撰	DUP_WORK_SUSPECT	d59fy5b429ds,d59fyznc1erm,d59fyzmx20oy
+100236026	圜容較義	利瑪竇(リメトウ) 授	DUP_WORK_SUSPECT;A_MISSING	d59fy8511jwi,d59fzb7rj9j5,d59fy1j67oxu,d59fxu49opa8,d59f2nki5n9e,d59f6ejdinlu,d59fy84nxl34,d59fy8503u9s
+100378214	十七史蒙求	王／令 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2q19xiiq,d59fy122npqa,d59f2q5qopvl,d59fy121q03k
+100244541	楚辭／楚辭音	王／逸	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f2evufbb8,d59fz8j2h81t,d59fy1hlei2o,d59fry9i9w5c,d59fyyrlvxmo,d59fxvb74j5t,d59fyfa2njls,d59f7v5zmm87
+100141718	甌北詩鈔七言古五	趙／翼 撰	DUP_WORK_SUSPECT	d59fyzmxd98g,d59f2noc4f0h,d59fyzndwu0x
+100385377	唐王右丞詩集	王／維 撰	DUP_WORK_SUSPECT	d59f2ps7qiv6,d59f28lxqeis
+100105228	唐王右丞詩集	王／維 撰	DUP_WORK_SUSPECT	d59f2ps7qiv6,d59f28lxqeis
+300097005	温疫方論	呉／有性 撰	DUP_WORK_SUSPECT	d59fy3x2ci69,d59fxzgz60w1
+100146751	温疫論	呉／有性 撰	DUP_WORK_SUSPECT	d59fy3x2ci69,d59fxzgz60w1
+100210303	温疫論	呉／有性 撰	DUP_WORK_SUSPECT	d59fy3x2ci69,d59fxzgz60w1
+100335517	温疫論	呉／有性 撰	DUP_WORK_SUSPECT	d59fy3x2ci69,d59fxzgz60w1
+100339632	温疫論	呉／有性 撰	DUP_WORK_SUSPECT	d59fy3x2ci69,d59fxzgz60w1
+100410618	温疫論	呉／有性 撰	DUP_WORK_SUSPECT	d59fy3x2ci69,d59fxzgz60w1
+300096793	温疫論	呉／有性 撰	DUP_WORK_SUSPECT	d59fy3x2ci69,d59fxzgz60w1
+300096817	温疫論	呉／有性 撰	DUP_WORK_SUSPECT	d59fy3x2ci69,d59fxzgz60w1
+300139836	温疫論	呉／有性 撰	DUP_WORK_SUSPECT	d59fy3x2ci69,d59fxzgz60w1
+100317233	（醒医大書）瘟疫論	呉／有性 撰	DUP_WORK_SUSPECT	d59fy3x2ci69,d59fxzgz60w1,d59f2nkpyku8
+100265182	新増格古要論	雲間／曹昭(曹昭)	DUP_WORK_SUSPECT	d59f2nfxcc1s,d59fy0zt6ry9,d59f2njcbu9t
+100237046	加減乗除釈	焦／循	DUP_WORK_SUSPECT;A_MISSING	d59fy1i1y2v5,d59fz25tapkw,d59fz3bul729,d59f2njhmrcy
+100237555	夏小正輯註	范／家相 撰	DUP_WORK_SUSPECT	d59fyxlv7o5d,d59f2n9fjh8i,d59f2nv3wr9c
+100237552	夏小正正義	王／筠 撰	DUP_WORK_SUSPECT	d59fyzneujnl,d59f2n9icm4h,d59fywbpnf28,d59fyznmyps0,d59fyxmvf75t
+100355305	括地志	李／泰 等 撰	DUP_WORK_SUSPECT	d59f28m8npj4,d59f28j4wr2k
+100355336	寰宇訪碑錄校勘記／補寰宇訪碑錄校勘記	劉／声木 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxuquiqrl,d59fyzpvsohs,d59fxuqutzb4,d59fyzptx98h,d59fxu9q11xc
+200013970	汗簡	郭／忠恕 撰	DUP_WORK_SUSPECT	d59fxwgdimma,d59f2hteiccg
+300096040	漢官舊儀	衛／宏 撰	DUP_WORK_SUSPECT	d59fy3sis2rk,d59f208afksg
+200020022	管子	房／玄齢 注	DUP_WORK_SUSPECT;A_MISSING	d59fz7gb6bk0,d59fyyizwxs0,d59fyyj9wj5s,d59fymc159mp,d59fxwz0y2v4,d59fyzqzr20w,d59fyaxmw2rk,d59fy1y7sfeo
+100452772	管子全書	房／玄齢 注	DUP_WORK_SUSPECT;A_MISSING;COLLECTION	d59fz7gb6bk0,d59fyyizwxs0,d59fyyj9wj5s,d59fymc159mp,d59fxwz0y2v4,d59fyzqzr20w,d59fyaxmw2rk,d59fy1y7sfeo
+100453430	韓文	韓／愈 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fz4bqvny8,d59f28k2xm9v,d59fyzmpvk75
+100097843	昌黎詩集	韓／愈 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fz4bqvny8,d59fxv9a5341
+100384296	昌黎先生集	韓／愈 撰	DUP_WORK_SUSPECT	d59fz4bqvny8,d59fyf90vtvk,d59f28kpepdu
+200019099	漢書	班／固 撰	DUP_WORK_SUSPECT;A_MISSING	d59f9nmkaqdi,d59f1iqd854w,d59f2845ioe9,d59f28mlgft3,d59f24mkop38,d59f24mkop35,d59f24mkop39,d59f24mkop37
+300095348	漢書	班／固 撰	DUP_WORK_SUSPECT;A_MISSING	d59f9nmkaqdi,d59f1iqd854w,d59f2845ioe9,d59f28mlgft3,d59f24mkop38,d59f24mkop35,d59f24mkop39,d59f24mkop37
+300120234	前漢書	班／固 撰	DUP_WORK_SUSPECT;A_MISSING	d59f9nmkaqdi,d59f1iqd854w,d59f2845ioe9,d59f28mlgft3,d59f24mkop38,d59f24mkop35,d59f24mkop39,d59f24mkop37
+100355340	陔餘叢考	趙／翼 撰	DUP_WORK_SUSPECT	d59fyzmwfjlu,d59fyzncnvuo,d59f2nl66sqo
+300075814	學古編	吾丘／衍(吾／衍) 撰	DUP_WORK_SUSPECT	d59fxroa0jy9,d59f2gom6135
+200035648	沉歸愚詩鈔	沈／徳潜	DUP_WORK_SUSPECT	d59fz06kdq0y,d59f2mus0f7m,d59fyzakva4i
+300096069	教女遺規	陳／弘謀 輯	DUP_WORK_SUSPECT;A_MISSING	d59fyza0w3cw,d59f2myhx88y,d59fy1i2kjy8,d59fyu8bu41t
+100079090	金匱要略	張／機 撰	DUP_WORK_SUSPECT	d59f23jjpk3k,d59f2myqnvgg
+100231305	金匱要畧	張／機 撰	DUP_WORK_SUSPECT	d59f23jjpk3k,d59f2myqnvgg
+100231314	金匱要畧	張／機 撰	DUP_WORK_SUSPECT	d59f23jjpk3k,d59f2myqnvgg
+100231315	金匱要畧	張／機 撰	DUP_WORK_SUSPECT	d59f23jjpk3k,d59f2myqnvgg
+100231316	金匱要畧	張／機 撰	DUP_WORK_SUSPECT	d59f23jjpk3k,d59f2myqnvgg
+100310981	金匱要略	張／機 撰	DUP_WORK_SUSPECT	d59f23jjpk3k,d59f2myqnvgg
+100315385	金匱要略	張／機 撰	DUP_WORK_SUSPECT	d59f23jjpk3k,d59f2myqnvgg
+100347020	金匱要畧	張／機 撰	DUP_WORK_SUSPECT	d59f23jjpk3k,d59f2myqnvgg
+100347021	金匱要略	張／機 撰	DUP_WORK_SUSPECT	d59f23jjpk3k,d59f2myqnvgg
+300091689	金匱要略	張／機 撰	DUP_WORK_SUSPECT	d59f23jjpk3k,d59f2myqnvgg
+300097034	金匱要畧	張／機 撰	DUP_WORK_SUSPECT	d59f23jjpk3k,d59f2myqnvgg
+100317265	金匱要略方論	張／機 撰	DUP_WORK_SUSPECT	d59f23jjpk3k,d59f2myqnvgg
+100385520	今言	鄭／暁	DUP_WORK_SUSPECT	d59fz3cevmdc,d59fxv35562p,d59f2nka1gxu
+100355312	鳳麓小志／東城志略／金陵物産風土志	陳／作霖 撰	DUP_WORK_SUSPECT;COLLECTION;MULTI_TITLE	d59fyn6ja58g,d59fytr13och,d59fyt26hog0
+100269671	王機微義	徐／用誠 著	DUP_WORK_SUSPECT	d59fy3wu8c1u,d59f6ejx6lts,d59f2njfrg8w
+100317263	玉機微義	徐／用誠 著	DUP_WORK_SUSPECT	d59fy3wu8c1u,d59f6ejx6lts,d59f2njfrg8w
+300096870	玉機微義	徐／用誠 著	DUP_WORK_SUSPECT	d59fy3wu8c1u,d59f6ejx6lts,d59f2njfrg8w
+300120260	玉機微義	徐／用誠 著	DUP_WORK_SUSPECT	d59fy3wu8c1u,d59f6ejx6lts,d59f2njfrg8w
+100452729	儀禮	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fysi2b3lu,d59fyu8ie3gg,d59f205fqi2o,d59f98qpkw06,d59fyh7ktxq8,d59fy3ozf94w,d59fz4bq96v5,d59f28np3ksj
+100093166	儀禮	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fysi2b3lu,d59fyu8ie3gg,d59f205fqi2o,d59f98qpkw06,d59fyh7ktxq8,d59fy3ozf94w,d59fz4bq96v5,d59f28np3ksj
+100112153	儀禮	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fysi2b3lu,d59fyu8ie3gg,d59f205fqi2o,d59f98qpkw06,d59fyh7ktxq8,d59fy3ozf94w,d59fz4bq96v5,d59f28np3ksj
+100141731	儀禮	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fysi2b3lu,d59fyu8ie3gg,d59f205fqi2o,d59f98qpkw06,d59fyh7ktxq8,d59fy3ozf94w,d59fz4bq96v5,d59f28np3ksj
+100149848	儀禮	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fysi2b3lu,d59fyu8ie3gg,d59f205fqi2o,d59f98qpkw06,d59fyh7ktxq8,d59fy3ozf94w,d59fz4bq96v5,d59f28np3ksj
+100381128	儀礼／１７巻	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fysi2b3lu,d59fyu8ie3gg,d59f205fqi2o,d59f98qpkw06,d59fyh7ktxq8,d59fy3ozf94w,d59fz4bq96v5,d59f28np3ksj
+100385297	儀礼鄭注	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fysi2b3lu,d59fyu8ie3gg,d59f205fqi2o,d59f98qpkw06,d59fyh7ktxq8,d59fy3ozf94w,d59fz4bq96v5,d59f28np3ksj
+100112168	空同子	李／夢陽 撰	DUP_WORK_SUSPECT	d59f2njxjzeo,d59f2nenggec
+100452779	空同子	李／夢陽 撰	DUP_WORK_SUSPECT	d59f2njxjzeo,d59f2nenggec
+100200633	荊楚歳時記	宗／懍 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2pw8kmwy,d59f990cos90,d59f286xpurm
+100355621	荊楚歳時記	宗／懍 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2pw8kmwy,d59f990cos90,d59f286xpurm
+100389909	荊楚歳時記	宗／懍 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2pw8kmwy,d59f990cos90,d59f286xpurm
+100405648	荊楚歳時記１卷	宗／懍 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2pw8kmwy,d59f990cos90,d59f286xpurm
+200014769	荊楚歳時記	宗／懍 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2pw8kmwy,d59f990cos90,d59f286xpurm
+200014770	荊楚歳時記	宗／懍 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2pw8kmwy,d59f990cos90,d59f286xpurm
+200043331	荊楚歳時記	宗／懍 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2pw8kmwy,d59f990cos90,d59f286xpurm
+200020540	劒南詩鈔	陸／游 著	DUP_WORK_SUSPECT	d59fxywkoge8,d59fyid32ubk
+300091704	験方新編	鮑／相璈 編輯	DUP_WORK_SUSPECT	d59fy0gx0ohs,d59fy0731khs,d59fxxpyshds,d59fxxpuqebl
+100148747	藝苑巵言	王／世貞 撰	DUP_WORK_SUSPECT	d59fyy8bo9hd,d59fxxcpight,d59fyy854a2q
+100190710	芸苑巵言	王／世貞 撰	DUP_WORK_SUSPECT	d59fyy8bo9hd,d59fxxcpight,d59fyy854a2q
+100392087	新刊外科正宗	陳／実功 撰	DUP_WORK_SUSPECT	d59fy3wylnnl,d59f2nhxg5qb
+300097093	新刊外科正宗	陳／実功 撰	DUP_WORK_SUSPECT	d59fy3wylnnl,d59f2nhxg5qb
+300097100	新刊外科正宗	陳／実功 撰	DUP_WORK_SUSPECT	d59fy3wylnnl,d59f2nhxg5qb
+300139834	新刊外科正宗	陳／実功 撰	DUP_WORK_SUSPECT	d59fy3wylnnl,d59f2nhxg5qb
+300096881	原機啓微集	倪／維徳 著	DUP_WORK_SUSPECT	d59fxzi8ffnk,d59f2njrxp8h,d59fy04n0nb4
+100288016	遵生八牋／増補	高／濂 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fxyueyj9e,d59f2njk4rnk
+100215711	古逸詩載	麻／三衡 撰	DUP_WORK_SUSPECT	d59fxxd96ept,d59fy02n7zls
+200020708	孝經	司馬／光 指解	DUP_WORK_SUSPECT;A_MISSING	d59fz7nettdt,d59fyfen5ptu,d59f2hr6acqo,d59f2hegd7uo,d59fxwpvxyio,d59fygw6o45c,d59f27xdf3ls,d59fxxkvk3y9
+100419521	孝経一巻／即孝経指解	司馬／光 指解	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fz7nettdt,d59fyfen5ptu,d59f2hr6acqo,d59f2hegd7uo,d59fxwpvxyio,d59fygw6o45c,d59f27xdf3ls,d59fxxkvk3y9
+100058948	孝經	鄭／玄 註	DUP_WORK_SUSPECT;A_MISSING	d59fxu4rh88x,d59f27xdf3ls,d59fxxkvk3y9,d59f24mh9343,d59fxx7wwbuo,d59fyzqb3b41,d59f9uwa5qmd,d59fyjblqq69
+100355292	孝經	鄭／玄 註	DUP_WORK_SUSPECT;A_MISSING	d59fxu4rh88x,d59f27xdf3ls,d59fxxkvk3y9,d59f24mh9343,d59fxx7wwbuo,d59fyzqb3b41,d59f9uwa5qmd,d59fyjblqq69
+100060361	恆言録	銭／大昕 撰	DUP_WORK_SUSPECT	d59f2nl8dgjl,d59fytq17dvk
+300086140	標題句解孔子家語	王／粛 注	DUP_WORK_SUSPECT;A_MISSING	d59f2pqvcqv6,d59fy0hy5wxs,d59f27t9gm4h,d59fy10srtvm,d59fy10srtvk,d59fy10srtvl,d59fy9x36t4w,d59fxsy4yoe9
+300096999	絳雪園古方選註	王／晋三 註	DUP_WORK_SUSPECT	d59f2mfv48w0,d59fxz2m91c0
+100354756	高僧傳初集	慧皎 撰	DUP_WORK_SUSPECT	d59f2860xxq9,d59f285j5erm,d59f28jm2sy0,d59f2njcbu2o,d59f99gqnapx,d59f286ulhc0
+100222459	新雕皇朝類苑	江／少虞 撰	DUP_WORK_SUSPECT	d59fy0zwxmgy,d59f2hpf8f0j
+100078660	國語	韋／昭 解	DUP_WORK_SUSPECT;A_MISSING	d59fz7o9qb5t,d59fz8izzbpd,d59ezahlu8sg,d59fz9fo5iio,d59fyro87if5,d59fygwqyjgh,d59fy3rrb6yp,d59fyv4bcow1
+100385514	国語	韋／昭 解	DUP_WORK_SUSPECT;A_MISSING	d59fz7o9qb5t,d59fz8izzbpd,d59ezahlu8sg,d59fz9fo5iio,d59fyro87if5,d59fygwqyjgh,d59fy3rrb6yp,d59fyv4bcow1
+100419300	国語	韋／昭 解	DUP_WORK_SUSPECT;A_MISSING	d59fz7o9qb5t,d59fz8izzbpd,d59ezahlu8sg,d59fz9fo5iio,d59fyro87if5,d59fygwqyjgh,d59fy3rrb6yp,d59fyv4bcow1
+300075913	國語	韋／昭 解	DUP_WORK_SUSPECT;A_MISSING	d59fz7o9qb5t,d59fz8izzbpd,d59ezahlu8sg,d59fz9fo5iio,d59fyro87if5,d59fygwqyjgh,d59fy3rrb6yp,d59fyv4bcow1
+300119102	国語巻一一～一六	韋／昭 解	DUP_WORK_SUSPECT;A_MISSING	d59fz7o9qb5t,d59fz8izzbpd,d59ezahlu8sg,d59fz9fo5iio,d59fyro87if5,d59fygwqyjgh,d59fy3rrb6yp,d59fyv4bcow1
+100160862	重刻國語	韋／昭 解	DUP_WORK_SUSPECT;A_MISSING	d59fz7o9qb5t,d59fz8izzbpd,d59ezahlu8sg,d59fz9fo5iio,d59fyro87if5,d59fygwqyjgh,d59fy3rrb6yp,d59fyv4bcow1
+100205212	天聖明道本	韋／昭 解	DUP_WORK_SUSPECT;A_MISSING	d59fz7o9qb5t,d59fz8izzbpd,d59ezahlu8sg,d59fz9fo5iio,d59fyro87if5,d59fygwqyjgh,d59fy3rrb6yp,d59fyv4bcow1
+300000763	古今諺	楊／慎	DUP_WORK_SUSPECT	d59f6efusb2a,d59f2hey5qtf,d59f2niya5mo,d59fyxb6n9c2,d59fyivdpo8x
+100205211	古今注	崔／豹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fkwn2jocn,d59fy5b1vlkx,d59f27uklg5f,d59f9uwxvrwk,d59fyfczjdoh
+300086298	古今注	崔／豹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fkwn2jocn,d59fy5b1vlkx,d59f27uklg5f,d59f9uwxvrwk,d59fyfczjdoh
+300123043	古今注	崔／豹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fkwn2jocn,d59fy5b1vlkx,d59f27uklg5f,d59f9uwxvrwk,d59fyfczjdoh
+100420969	古今風謠	楊／慎 撰( 巻一 )	DUP_WORK_SUSPECT	d59f2ni9b6de,d59fy033rke9,d59fyiv83egx,d59f6esiu0p0,d59fyxb7kyyp
+100237430	弧三角平視法	陳／澧 撰	DUP_WORK_SUSPECT	d59fxrvk7vnl,d59fyiw9jvuo,d59fyxe7kyyo
+100181991	詩紀	馮／惟訥 撰	DUP_WORK_SUSPECT	d59f2njx8qo3,d59fxzrpwvls,d59f2nk0zl6p
+300086564	孟子	趙／岐	DUP_WORK_SUSPECT;A_MISSING	d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w,d59fy2cntq0x,d59fy2cntq0y
+100060348	東萊先生古文關鍵	呂／祖謙 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2ptbdo1t,d59fy3slwg74,d59f2hrjpk3k
+100095550	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100108614	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100136908	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100148696	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100160879	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100160880	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100160913	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100239826	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100380748	孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100436351	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100436355	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100449518	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100455106	孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+200013968	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+200015379	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+300049292	孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+300052149	孝經	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100380721	孝經／一卷	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+200043483	孝經／孔子傳	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419520	孝経／即足利本古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419504	孝経／即古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419505	孝経／即古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419506	孝経／即古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419507	孝経／即古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419508	孝経／即古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419509	孝経／即重刻古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419510	孝経／即重刻古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419511	孝経／即重刻古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419512	孝経／即重刻古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419513	孝経／即重刻古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419514	孝経／即重刻古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419515	孝経／即重刻古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419516	孝経／即重刻古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100419519	孝経／即重刻古文孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100371489	〔古文〕孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100371490	〔古文〕孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100371491	〔古文〕孝経	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59f27xdf3ls
+100393209	古文孝経孔氏伝	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59fyghr981u
+100423958	古文孝経孔氏伝	孔／安国 註 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59fxwgckwzn,d59fyvpsum0w,d59fyvpsum0x,d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fyvpsjdhc,d59fyghr981u
+100164663	參訂劉向列女傳	劉／向 撰	DUP_WORK_SUSPECT	d59fxu42i8sh,d59f2071hekg
+300098291	參訂劉向列女傳	劉／向 撰	DUP_WORK_SUSPECT	d59fxu42i8sh,d59f2071hekg
+100065437	新刻古列女傳	劉／向 撰	DUP_WORK_SUSPECT	d59fxu42i8sh,d59f2071hekg
+100149006	新刻古列女傳	劉／向 撰	DUP_WORK_SUSPECT	d59fxu42i8sh,d59f2071hekg
+100288736	新刻古列女傳	劉／向 撰	DUP_WORK_SUSPECT	d59fxu42i8sh,d59f2071hekg
+100376065	新刻古列女伝	劉／向 撰	DUP_WORK_SUSPECT	d59fxu42i8sh,d59f2071hekg
+100376073	新刻古列女伝	劉／向 撰	DUP_WORK_SUSPECT	d59fxu42i8sh,d59f2071hekg
+200015155	新刻古列女傳	劉／向 撰	DUP_WORK_SUSPECT	d59fxu42i8sh,d59f2071hekg
+200015158	新刻古列女傳	劉／向 撰	DUP_WORK_SUSPECT	d59fxu42i8sh,d59f2071hekg
+300052635	新刻古列女傳	劉／向 撰	DUP_WORK_SUSPECT	d59fxu42i8sh,d59f2071hekg
+300083876	標註／劉向列女傳	劉／向 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fxu42i8sh,d59f2071hekg
+100174841	劉向列女傳	劉／向 撰	DUP_WORK_SUSPECT	d59fxu42i8sh,d59f2071hekg
+100209421	劉向列女伝	劉／向 撰	DUP_WORK_SUSPECT	d59fxu42i8sh,d59f2071hekg
+300099141	劉向列女伝	劉／向 撰	DUP_WORK_SUSPECT	d59fxu42i8sh,d59f2071hekg
+100183244	金剛頂瑜伽経十八會指帰	不空 訳	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fye16cw74
+100183240	金剛頂瑜伽三十七尊出生義	不空 訳	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fye19si69
+100407657	金剛頂瑜伽三十七尊出生義	不空 訳	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fye19si69
+200011926	金剛頂瑜伽三十七尊出生義	不空 訳	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fye19si69
+200011927	金剛頂瑜伽三十七尊出生義	不空 訳	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fye19si69
+100079157	後漢書	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100131942	後漢書	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100151912	後漢書	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+200015551	後漢書	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+200019100	後漢書	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+300095349	後漢書	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100383383	後漢書雕題	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403730	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403731	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403732	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403733	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403734	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403735	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403736	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403737	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403738	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403739	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403740	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403741	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403742	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403743	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403744	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403745	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403746	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403747	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403748	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403749	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403750	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403751	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403752	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403753	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403754	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403755	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403756	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403757	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403758	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403759	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403760	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403761	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100403762	後漢書　１２０卷	范／曄	DUP_WORK_SUSPECT;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f283xpqtf,d59f27xxpiwy,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100050379	五雜組	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+100060590	五雜組	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+100072183	五雜組	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+100112286	五雜組	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+100125228	五雜組	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+100173878	五雜組	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+100338872	五雜組	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+100375348	五雑組	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+100449472	五雜組	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+200020559	五雜組	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+300096567	五雜組	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+100200636	五雑組（事部欠）	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+100354292	五雜組	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+300001252	五雜組	謝／肇淛 撰	DUP_WORK_SUSPECT	d59fxwyij2tc,d59f2nkblnur
+100384448	左逸	王／世貞 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyy8bzi0w,d59fxw1k229u,d59fyiu8icjl,d59fyy861zpc,d59f2ng39ude,d59f2ndeiade
+100441935	左逸	王／世貞 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyy8bzi0w,d59fxw1k229u,d59fyiu8icjl,d59fyy861zpc,d59f2ng39ude,d59f2ndeiade
+100443607	左逸	王／世貞 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyy8bzi0w,d59fxw1k229u,d59fyiu8icjl,d59fyy861zpc,d59f2ng39ude,d59f2ndeiade
+100452721	左傳杜解補正	顧／炎武 撰	DUP_WORK_SUSPECT;A_MISSING	d59fywb7uw3l,d59f2mam9o8w,d59fz3dl0npc,d59fxw1jfl6o,d59fz3dfedxd,d59fyu8hgdts
+100095542	左傳杜觧補正	顧／炎武 撰	DUP_WORK_SUSPECT;A_MISSING	d59fywb7uw3l,d59f2mam9o8w,d59fz3dl0npc,d59fxw1jfl6o,d59fz3dfedxd,d59fyu8hgdts
+100386091	山谷詩集注	黄／庭堅 撰	DUP_WORK_SUSPECT	d59f2hs0vlz6,d59f2hpdzgu8
+100405568	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405569	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405570	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405571	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405572	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405573	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405574	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405575	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405576	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405577	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405578	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405579	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405580	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405581	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405582	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405583	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405584	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405585	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405586	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405587	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405588	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405589	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405590	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405591	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405592	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405593	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405594	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405595	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405596	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405597	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405598	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405599	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405600	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405601	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405602	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405603	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405604	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405605	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405606	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100405607	三國志６５卷	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+300095350	三國志	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+300098185	三國志（魏書／蜀書／呉書）	陳／寿 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4,d59f27upwhdu
+100288529	纂圖附音増廣古注千字文	李／邏 注	DUP_WORK_SUSPECT	d59fxwp95mv4,d59f2hsya03l
+300104048	千字文註	李／邏 注	DUP_WORK_SUSPECT	d59fxwp95mv4,d59f2hsya03l,d59fxwpke6f6,d59fxuhsbocg
+100453549	箋註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2htkr37l
+200035818	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+100027056	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+100027058	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+100097868	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+100152316	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+100221650	増註唐賢絶句三体詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+100354250	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+100385349	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+100388764	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200013986	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200013987	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200014068	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200014069	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200014071	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200015263	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025515	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025517	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025518	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025519	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025520	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025526	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025527	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025528	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025539	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025540	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025541	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025542	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025543	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025545	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025546	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025547	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025548	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025549	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025550	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025552	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025553	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025554	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025555	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025556	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025557	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025558	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025559	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025560	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025565	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025566	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025567	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025568	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025569	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025573	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025583	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025584	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025585	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025587	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025588	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025590	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025591	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025595	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025598	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025602	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025605	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025617	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025618	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025619	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025620	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025621	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025622	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025640	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025641	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025642	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+200025643	增註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+300086147	増註唐賢絶句三体詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+300095030	増註唐賢絶句三體詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+300118848	増註唐賢絶句三体詩法	周／弼 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2ht8w2kg
+100234733	原本直指算法統宗	程／大位 撰	DUP_WORK_SUSPECT	d59f2ngxv3sw,d59fy1gqt8u8
+100236562	原本直指算法統宗	程／大位 撰	DUP_WORK_SUSPECT	d59f2ngxv3sw,d59fy1gqt8u8
+100237244	原本直指算法統宗	程／大位 撰	DUP_WORK_SUSPECT	d59f2ngxv3sw,d59fy1gqt8u8
+100237485	原本直指算法統宗	程／大位 撰	DUP_WORK_SUSPECT	d59f2ngxv3sw,d59fy1gqt8u8
+100237486	原本直指算法統宗	程／大位 撰	DUP_WORK_SUSPECT	d59f2ngxv3sw,d59fy1gqt8u8
+100238286	原本直指算法統宗	程／大位 撰	DUP_WORK_SUSPECT	d59f2ngxv3sw,d59fy1gqt8u8
+100241321	原本直指算法統宗	程／大位 撰	DUP_WORK_SUSPECT	d59f2ngxv3sw,d59fy1gqt8u8
+100257270	原本直指算法統宗	程／大位 撰	DUP_WORK_SUSPECT	d59f2ngxv3sw,d59fy1gqt8u8
+200016101	增廣詩韻合璧	湯／文潞 輯	DUP_WORK_SUSPECT	d59fxyglpfk0,d59fxwlwzc3k,d59fxwpntse8,d59fxwmx6v42,d59fxyglpfk1
+100288537	矢音集	沈／徳潜 撰	DUP_WORK_SUSPECT	d59fz06lxwqo,d59f2nntpeyo,d59fyzaizuv6
+100230879	詩経	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxw0y7g8x,d59fxword3wg,d59fxxkk0buo,d59fxwfg48ht,d59fxwfg48hu,d59f20am36dc,d59ezak9zc3k,d59fynxakcn4
+100343936	詩経	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxw0y7g8x,d59fxword3wg,d59fxxkk0buo,d59fxwfg48ht,d59fxwfg48hu,d59f20am36dc,d59ezak9zc3k,d59fynxakcn4
+100300739	詩経集伝	朱／熹 撰	DUP_WORK_SUSPECT	d59fxw0y7g8x,d59f2hujefi9
+100419380	詩経八巻／即詩経集註	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxw0y7g8x,d59fxword3wg,d59fxxkk0buo,d59fxwfg48ht,d59fxwfg48hu,d59f20am36dc,d59ezak9zc3k,d59fynxakcn4
+100112163	禽經	張／華 注	DUP_WORK_SUSPECT;A_MISSING	d59f6esgncw0,d59fz15cpczk,d59fydks33ep,d59fypgk73ep,d59fyr04fbwh,d59fyn4cmbr5,d59fyn48k8oy,d59fydhhgx6p
+100384297	止齋先生文集	陳／傅良 撰	DUP_WORK_SUSPECT	d59f2htmb9xc,d59f2hpx0xz4
+100452641	改正四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100436362	改正四書集註／新刻改正	朱／熹 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100436363	改正四書集註／新刻改正	朱／熹 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+300097782	寛政改正四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100244831	監本四書	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+300097785	弘化再刻四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+300097771	校點四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100436359	校點四書／文久新刻	朱／熹 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100449516	小松板四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100419382	〔（小松板）四書章句集註〕	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl,d59f2q19xipt
+100242511	〔再校重刻〕四書	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl,d59f2nhyp3pe,d59f2q6knif6,d59f2ggbr5s2,d59f2ghitwqq
+200015419	四子書	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100242516	〔四書〕	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100436028	四書	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl,d59f2nhyp3pe,d59f2q6knif6,d59f2ggbr5s2,d59f2ghitwqq
+100182071	四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100287528	四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100414285	四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100423989	四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100425294	四書（集註）	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl,d59f2nhyp3pe,d59f2q6knif6,d59f2ggbr5s2,d59f2ghitwqq
+100436360	四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+200021501	四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+200042574	四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+300000449	四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+300000450	四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+300092505	四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+300097774	四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100436364	四書集注／小松板校正	朱／熹 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+300091479	〔四書章句集註〕	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100096630	首書四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100436361	首書四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100244011	蕉園首書四書	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100147135	新點／四書集註	朱／熹 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+300097775	大方四書集註	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100419399	大学章句一巻中庸章句一巻論語集註十巻孟子集註十四巻即〔四書章句集注〕	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100093183	羅山訓點／四書集註	朱／熹 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+200035629	林家正本／四書集註	朱／熹 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100436366	倭板四書	朱／熹 撰	DUP_WORK_SUSPECT	d59fyh8622o0,d59fxw1wjk00,d59f2hry2h34,d59fxwouspvl
+100155517	四書集註大全	胡／広 等 奉勅輯	DUP_WORK_SUSPECT;COLLECTION	d59f2njloykh,d59fxwpr9edd
+100160939	四書集註大全	胡／広 等 奉勅輯	DUP_WORK_SUSPECT;COLLECTION	d59f2njloykh,d59fxwpr9edd
+100452675	四書蒙引	蔡／清 著	DUP_WORK_SUSPECT	d59fxw25lfr5,d59f2njjiarm
+300000451	四書蒙引	蔡／清 著	DUP_WORK_SUSPECT	d59fxw25lfr5,d59f2njjiarm
+100453214	資治通鑑綱目	南／軒 撰	DUP_WORK_SUSPECT	d59f2njs8xs1,d59f2hucj7k1,d59fxz40i60w
+300091735	東垣先生此事難知集	王／好古 撰	DUP_WORK_SUSPECT	d59fytlnvwg2,d59f2gijcoaq,d59fxz1ksk5d,d59fxz1juuio,d59f2j4z9gxs
+100232411	東垣先生此事難知集	王／好古 撰	DUP_WORK_SUSPECT	d59fytlnvwg2,d59f2gijcoaq,d59fxz1ksk5d,d59fxz1juuio,d59f2j4z9gxs
+100441758	詩伝	胡／広 等 奉勅撰	DUP_WORK_SUSPECT;A_MISSING;COLLECTION	d59fxxkj2m80,d59f2njg2ozk,d59f2nkrtzpd,d59f9nmifb48,d59fybdkm8zk,d59f2ncxc8ap,d59f23nuui2r,d59f2he2bjer
+100300655	指南後録／附吟嘯集	文／天祥 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fz4wu0oox,d59f2hm5jy81
+200022609	指南錄	文／天祥 撰	DUP_WORK_SUSPECT	d59fz4wubx8g,d59fsevuy9z4
+100215707	文天祥指南録	文／天祥 撰	DUP_WORK_SUSPECT	d59fz4wubx8g,d59fsevuy9z4
+100384303	司馬文正公詩集	司馬／光 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fxwv5ewhs
+100160395	釋迦如来成道記	王／勃 撰	DUP_WORK_SUSPECT	d59fyex6t1q8,d59fyfi4by80
+100354752	釋迦如來成道記	王／勃 撰	DUP_WORK_SUSPECT	d59fyex6t1q8,d59fyfi4by80
+100236821	釈輪	焦／循 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy1iisw76,d59fz3bv7o5d,d59f2njhxzwh,d59fz25s1reo
+300090330	周易	王／弼	DUP_WORK_SUSPECT;A_MISSING	d59f283vj30j,d59f283vj30k,d59f283vubk2,d59f283vubk0,d59f2q88wbgh,d59fz13e5q80,d59f2q8z48hs,d59f24mckiz3
+200041411	周易	王／弼 注	DUP_WORK_SUSPECT;A_MISSING	d59f283vj30j,d59f283vj30k,d59f283vubk2,d59f283vubk0,d59f2q88wbgh,d59fz13e5q80,d59f2q8z48hs,d59f24mckiz3
+200008282	東萊呂氏周易音訓	呂／祖謙 撰	DUP_WORK_SUSPECT	d59fxvjmujgh,d59fyq7t9yps,d59f2hpz7ls0
+200011915	周易經傳	程／頤 撰	DUP_WORK_SUSPECT	d59f2hptwkjm,d59f2nd6pclf,d59fxvlbeku9,d59f2hqwarcy
+200042599	周易經傳	程／頤 撰	DUP_WORK_SUSPECT	d59f2hptwkjm,d59f2nd6pclf,d59fxvlbeku9,d59f2hqwarcy
+100212573	周易經傳	程／頤 撰	DUP_WORK_SUSPECT	d59f2hptwkjm,d59f2nd6pclf,d59fxvlbeku9,d59f2hqwarcy
+100452686	周易經傳	程／頤 撰	DUP_WORK_SUSPECT	d59f2hptwkjm,d59f2nd6pclf,d59fxvlbeku9,d59f2hqwarcy
+100385298	周礼	鄭／玄 註	DUP_WORK_SUSPECT;A_MISSING	d59fyroi73sy,d59fz9fp385c,d59fxx7su8sh,d59fy3s8h8u9,d59f24mckiyq,d59f24mckiyo,d59f24mckiyp,d59fxygrmxvk
+100378064	周礼	鄭／玄 註	DUP_WORK_SUSPECT;A_MISSING	d59fyroi73sy,d59fz9fp385c,d59fxx7su8sh,d59fy3s8h8u9,d59f24mckiyq,d59f24mckiyo,d59f24mckiyp,d59fxygrmxvk
+100437875	周禮	鄭／玄 註	DUP_WORK_SUSPECT;A_MISSING	d59fyroi73sy,d59fz9fp385c,d59fxx7su8sh,d59fy3s8h8u9,d59f24mckiyq,d59f24mckiyo,d59f24mckiyp,d59fxygrmxvk
+100452718	周禮	鄭／玄 註	DUP_WORK_SUSPECT;A_MISSING	d59fyroi73sy,d59fz9fp385c,d59fxx7su8sh,d59fy3s8h8u9,d59f24mckiyq,d59f24mckiyo,d59f24mckiyp,d59fxygrmxvk
+200021367	周禮	鄭／玄 註	DUP_WORK_SUSPECT;A_MISSING	d59fyroi73sy,d59fz9fp385c,d59fxx7su8sh,d59fy3s8h8u9,d59f24mckiyq,d59f24mckiyo,d59f24mckiyp,d59fxygrmxvk
+200021424	周禮	鄭／玄 註	DUP_WORK_SUSPECT;A_MISSING	d59fyroi73sy,d59fz9fp385c,d59fxx7su8sh,d59fy3s8h8u9,d59f24mckiyq,d59f24mckiyo,d59f24mckiyp,d59fxygrmxvk
+300097759	周禮	鄭／玄 註	DUP_WORK_SUSPECT;A_MISSING	d59fyroi73sy,d59fz9fp385c,d59fxx7su8sh,d59fy3s8h8u9,d59f24mckiyq,d59f24mckiyo,d59f24mckiyp,d59fxygrmxvk
+100381129	周礼／６巻	鄭／玄 註	DUP_WORK_SUSPECT;A_MISSING	d59fyroi73sy,d59fz9fp385c,d59fxx7su8sh,d59fy3s8h8u9,d59f24mckiyq,d59f24mckiyo,d59f24mckiyp,d59fxygrmxvk
+100109266	周禮	鄭／玄 註	DUP_WORK_SUSPECT;A_MISSING	d59fyaxn7bb6,d59fxwp6nqir,d59fyfdw02kg,d59f28np3ksk,d59fz7o0zny8,d59fygwml7up,d59fy9x3i1oi,d59f2nfmf11d
+100237384	春秋春王正月考	張／以寧 述	DUP_WORK_SUSPECT	d59f2nklwhs3,d59fy3omxreo
+300097763	春秋春王正月考	張／以寧 述	DUP_WORK_SUSPECT	d59f2nklwhs3,d59fy3omxreo
+100239510	春秋春王正月考／春秋春王正月考辨疑	張／以寧 述	DUP_WORK_SUSPECT;MULTI_TITLE	d59f2nklwhs3,d59fy3omxreo,d59fy3ra5534
+100385299	春秋左氏伝	杜／預 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hd81ipv,d59f27x4ogeb,d59fyh854d1d,d59ezak6jq4g,d59f27xfaiv7,d59f208oh98g,d59fxwgae96o,d59fxw1di2v6
+100109260	公羊傳	何／休 学	DUP_WORK_SUSPECT;A_MISSING	d59fyzr1b8qo,d59fxw15dwqq,d59fxw15dwqr,d59fxx8352pu,d59f24mlb66b,d59f1ioj1tz4,d59f205iuvi8,d59fyro9rp4w
+100160984	公羊傳	何／休 学	DUP_WORK_SUSPECT;A_MISSING	d59fyzr1b8qo,d59fxw15dwqq,d59fxw15dwqr,d59fxx8352pu,d59f24mlb66b,d59f1ioj1tz4,d59f205iuvi8,d59fyro9rp4w
+100452715	公羊傳	何／休 学	DUP_WORK_SUSPECT;A_MISSING	d59fyzr1b8qo,d59fxw15dwqq,d59fxw15dwqr,d59fxx8352pu,d59f24mlb66b,d59f1ioj1tz4,d59f205iuvi8,d59fyro9rp4w
+300097761	公羊傳	何／休 学	DUP_WORK_SUSPECT;A_MISSING	d59fyzr1b8qo,d59fxw15dwqq,d59fxw15dwqr,d59fxx8352pu,d59f24mlb66b,d59f1ioj1tz4,d59f205iuvi8,d59fyro9rp4w
+300115857	公羊傳	何／休 学	DUP_WORK_SUSPECT;A_MISSING	d59fyzr1b8qo,d59fxw15dwqq,d59fxw15dwqr,d59fxx8352pu,d59f24mlb66b,d59f1ioj1tz4,d59f205iuvi8,d59fyro9rp4w
+100065334	春秋公羊傳	何／休 学	DUP_WORK_SUSPECT;A_MISSING	d59fyzr1b8qo,d59fxw15dwqq,d59fxw15dwqr,d59fxx8352pu,d59f24mlb66b,d59f1ioj1tz4,d59f205iuvi8,d59fyro9rp4w
+100209406	春秋左氏伝	杜／預 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyzmp9341,d59ezak6jq4g,d59f2nd4tx50,d59fz4bpbh8h,d59fxw1cvls2,d59fxwga30n5,d59fxw1d6ubk,d59fxw1d6ubl
+100410880	春秋左氏伝	杜／預 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyzmp9341,d59ezak6jq4g,d59f2nd4tx50,d59fz4bpbh8h,d59fxw1cvls2,d59fxwga30n5,d59fxw1d6ubk,d59fxw1d6ubl
+100240756	春秋左傳屬事	傅／遜 纂・註評	DUP_WORK_SUSPECT	d59f6esdu806,d59f2nl17403
+100060582	春秋左傳註疏	杜／預 註	DUP_WORK_SUSPECT	d59fyff59hc0,d59fxwpca0aq,d59f28nf3zeq
+100452705	春秋左傳註疏	杜／預 註	DUP_WORK_SUSPECT	d59fyff59hc0,d59fxwpca0aq,d59f28nf3zeq
+100079089	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100132215	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100146459	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100246760	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100268741	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100306662	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100311000	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100317312	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100317313	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100339776	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100452152	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100452153	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100452154	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100452155	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100452158	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100452159	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100452161	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100456632	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+300097027	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+300107794	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+300139832	傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100310987	傷寒論／（翻刻宋板傷寒論）	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100210302	小刻／傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100210293	宋板傷寒論	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100456508	病脈證并治	張／仲景(張／機) 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+100436396	小學	朱／熹 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2nu17bwh,d59f2mf30w00,d59fy1ixsa9u,d59f9nmkaqdc,d59fyiw0t8n4,d59f2pycqj28,d59fyivsp2iq,d59fy1ix5t6p
+300094480	小學纂註	朱／熹 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2nu17bwh,d59f2mf30w00,d59fy1ixsa9u
+100222454	小学史断	南宮／靖一 撰	DUP_WORK_SUSPECT	d59f6epiio74,d59f2hpd1r7k
+100424148	小學史斷	南宮／靖一 撰	DUP_WORK_SUSPECT	d59f6epiio74,d59f2hpd1r7k
+100288108	松壺畫贅	銭／杜 撰	DUP_WORK_SUSPECT	d59f2mtpazur,d59f2nkblji9
+100288109	松壺畫贅	銭／杜 撰	DUP_WORK_SUSPECT	d59f2mtpazur,d59f2nkblji9
+100095557	尚書註疏	孔／穎達 等 疏	DUP_WORK_SUSPECT;A_MISSING	d59f28mpiiv9,d59f28noh3pc,d59fygwi7w8x,d59fyfdzqx36,d59fyiuwjmdd,d59fz7nwxkw0,d59fyh7g5dkw,d59fyaxlyd4w
+100386055	（付釈音）尚書注疏	孔／穎達 等 疏	DUP_WORK_SUSPECT;A_MISSING	d59f28mpiiv9,d59f28noh3pc,d59fygwi7w8x,d59fyfdzqx36,d59fyiuwjmdd,d59fz7nwxkw0,d59fyh7g5dkw,d59fyaxlyd4w
+100441886	小倉山房尺牘	袁／枚 撰	DUP_WORK_SUSPECT	d59fyyj7emtc,d59fyw9p8935,d59fyvqig2kg,d59fsezxckqp,d59fyw9n1la8,d59fyyj57z0g
+300092340	小倉山房尺牘	袁／枚 撰	DUP_WORK_SUSPECT	d59fyyj7emtc,d59fyw9p8935,d59fyvqig2kg,d59fsezxckqp,d59fyw9n1la8,d59fyyj57z0g
+100245388	雜病證治類方	王／肯堂 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy04sbojl,d59fxzt8jkzk,d59f6eow1l37,d59fy04n0nb6,d59f2njbe4ua
+100245387	雜病證治類方	王／肯堂 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy04sbojl,d59fxzt8jkzk,d59f6eow1l37,d59fy04n0nb6,d59f2njbe4ua
+100252765	傷寒證治準繩目錄	王／肯堂 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy04sbojl,d59fxzt8jkzk,d59f6eow1l37
+300091781	証治準縄	王／肯堂 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy04sbojl,d59fxzt8jkzk,d59f6eow1l37
+300096757	證治準繩	王／肯堂 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy04sbojl,d59fxzt8jkzk,d59f6eow1l37
+300096946	證治準繩	王／肯堂 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy04sbojl,d59fxzt8jkzk,d59f6eow1l37
+300096985	證治準繩	王／肯堂 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy04sbojl,d59fxzt8jkzk,d59f6eow1l37
+100261006	證治準縄正骨法	王／肯堂 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy04sbojl,d59fxzt8jkzk,d59f6eow1l37
+100241710	準繩	王／肯堂 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy04sbojl,d59fxzt8jkzk,d59f6eow1l37
+100244756	瘍醫準繩	王／肯堂 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy04sbojl,d59fxzt8jkzk,d59f6eow1l37,d59fy045jcw1,d59f2njfrg8y
+100244828	幼科證治準繩	王／肯堂 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy04sbojl,d59fxzt8jkzk,d59f6eow1l37,d59fy04m2xoi,d59f6efnam13
+100244840	幼科證治準繩	王／肯堂 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy04sbojl,d59fxzt8jkzk,d59f6eow1l37,d59fy04m2xoi,d59f6efnam13
+100290458	勝鬘経（胎内納入経の内）	求那跋陀羅 訳	DUP_WORK_SUSPECT	d59f7z475rew,d59fyhjxbwu9,d59f9c13ydj4
+100076781	申學士校正古本官板書經大全	胡／広 等 奉勅撰	DUP_WORK_SUSPECT;COLLECTION	d59fxs5xjmyo,d59fyfefcs8w,d59fxvjzn9q9
+100287523	蜀典	張／澍 撰	DUP_WORK_SUSPECT	d59fymak2xvl,d59f2nekbytd
+200013426	京本音釋註解書言故事大全	胡／継宗 撰	DUP_WORK_SUSPECT;COLLECTION	d59fy12218n4,d59fy11ylmo0
+200015409	京本音釋註解書言故事大全	胡／継宗 撰	DUP_WORK_SUSPECT;COLLECTION	d59fy12218n4,d59fy11ylmo0
+100160577	京本音釋註解書言故事大全	胡／継宗 撰	DUP_WORK_SUSPECT;COLLECTION	d59fy12218n4,d59fy11ylmo0
+100346168	京本音釋註解書言故事大全	胡／継宗 撰	DUP_WORK_SUSPECT;COLLECTION	d59fy12218n4,d59fy11ylmo0
+100095553	書	呉／澄 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxx7uefi8,d59f2gogjrb5,d59f24map3pc,d59fyx0mg3cx,d59fkwn6aiv6,d59fkwn6aiv7,d59fz6ddmww2,d59f2q4rewow
+100379252	書蔡氏伝輯録纂註	董／鼎 撰	DUP_WORK_SUSPECT	d59f2j53bk02,d59f2j4vtuyp
+100217365	鄭氏一百廿図詩	鄭／思肖 撰	DUP_WORK_SUSPECT	d59fxw1ruw3l,d59fy3szy4n5
+100136101	書目答問	張／之洞 撰	DUP_WORK_SUSPECT	d59fz070atq8,d59f2nfowtfm
+100257181	輶軒書目	張／之洞 撰	DUP_WORK_SUSPECT	d59fz070atq8,d59f2nfowtfm
+100181976	西山心經	真／徳秀 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxplfv8cg,d59fy112g6pu,d59fycs0dp1d,d59f2hpwegw0,d59fyjbmd79d,d59fz3dvxypt,d59fyirqxa81
+100437743	（新刻）聽雨紀談	都／穆 撰	DUP_WORK_SUSPECT	d59f2nf32bcw,d59fy1xgy0ow
+100369401	宋鄭所南先生心史	鄭／思肖 撰	DUP_WORK_SUSPECT	d59f2gfms6bl,d59f2hgelm2q
+100067498	新序	劉／向 撰	DUP_WORK_SUSPECT	d59fyiuu1q0y,d59fy3r20yyo,d59f1iqjs4jk
+100155859	新序	劉／向 撰	DUP_WORK_SUSPECT	d59fyiuu1q0y,d59fy3r20yyo,d59f1iqjs4jk
+100160924	新序	劉／向 撰	DUP_WORK_SUSPECT	d59fyiuu1q0y,d59fy3r20yyo,d59f1iqjs4jk
+100419807	新序	劉／向 撰	DUP_WORK_SUSPECT	d59fyiuu1q0y,d59fy3r20yyo,d59f1iqjs4jk
+100436393	新序	劉／向 撰	DUP_WORK_SUSPECT	d59fyiuu1q0y,d59fy3r20yyo,d59f1iqjs4jk
+100452774	新序	劉／向 撰	DUP_WORK_SUSPECT	d59fyiuu1q0y,d59fy3r20yyo,d59f1iqjs4jk
+300098284	新序	劉／向 撰	DUP_WORK_SUSPECT	d59fyiuu1q0y,d59fy3r20yyo,d59f1iqjs4jk
+300092344	新齊諧	袁／随園(袁／枚)	DUP_WORK_SUSPECT	d59fyfdhn56p,d59fyyj2q2o0,d59fyw9lsn40,d59fyvqhicxs,d59fyyj5ug3k,d59fyw9ols00
+100453029	三禮圖	聶／崇義 註	DUP_WORK_SUSPECT	d59fxvk8dwxt,d59f2hthxybm,d59f23noaioh,d59fkwmysttu,d59f2nl8dkht,d59f28kxivid,d59fyh4o9fk1,d59f24lq3fup
+100437877	新定三礼図	聶／崇義 註	DUP_WORK_SUSPECT	d59fxvk8dwxt,d59f2hthxybm
+200014040	新定三禮圖	聶／崇義 註	DUP_WORK_SUSPECT	d59fxvk8dwxt,d59f2hthxybm
+200020711	新定三禮圖	聶／崇義 註	DUP_WORK_SUSPECT	d59fxvk8dwxt,d59f2hthxybm
+200021347	新定三禮圖	聶／崇義 註	DUP_WORK_SUSPECT	d59fxvk8dwxt,d59f2hthxybm
+200021348	新定三禮圖	聶／崇義 註	DUP_WORK_SUSPECT	d59fxvk8dwxt,d59f2hthxybm
+300139528	新定三禮圖	聶／崇義 註	DUP_WORK_SUSPECT	d59fxvk8dwxt,d59f2hthxybm
+100132138	新定／三禮冕服圖	聶／崇義 註	DUP_WORK_SUSPECT;MULTI_TITLE	d59fxvk8dwxt,d59f2hthxybm
+100251831	算学啓蒙	朱／世傑 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy1gpvj7l,d59fy1gq6rr4,d59fy1gobchu,d59f2pycfapu
+100222491	新編算学啓蒙	朱／世傑 撰	DUP_WORK_SUSPECT	d59fy1gpvj7l,d59fy1gq6rr4
+100228316	新編算学啓蒙	朱／世傑 撰	DUP_WORK_SUSPECT	d59fy1gpvj7l,d59fy1gq6rr4
+100228413	新編算学啓蒙	朱／世傑 撰	DUP_WORK_SUSPECT	d59fy1gpvj7l,d59fy1gq6rr4
+100301505	新編筭學啓蒙	朱／世傑 撰	DUP_WORK_SUSPECT	d59fy1gpvj7l,d59fy1gq6rr4
+100365282	筭学啓蒙	朱／世傑 撰	DUP_WORK_SUSPECT	d59fy1gpvj7l,d59fy1gq6rr4
+100410794	新編算学啓蒙	朱／世傑 撰	DUP_WORK_SUSPECT	d59fy1gpvj7l,d59fy1gq6rr4
+100240592	新編筭學啓蒙／３巻	朱／世傑 撰	DUP_WORK_SUSPECT	d59fy1gpvj7l,d59fy1gq6rr4
+200031338	十一家註孫子	吉／天保 撰	DUP_WORK_SUSPECT	d59f2hm5jy80,d59fy1gwqr5u
+100315685	（新刊）十四経絡発揮	滑／寿 撰	DUP_WORK_SUSPECT	d59f2gmt8o3l,d59f2gfeo074
+100410699	十四經絡發揮	滑／寿 撰	DUP_WORK_SUSPECT	d59f2gmt8o3l,d59f2gfeo074
+300096070	從政遺規	陳／弘謀 輯	DUP_WORK_SUSPECT;A_MISSING	d59fyza17bwh,d59f2myhx88x,d59fyu8crtog,d59fy1jf9kox
+300097195	壽親養老新書抜書	陳／直 撰( 巻之一 )	DUP_WORK_SUSPECT	d59f2gj6rh1d,d59f2htbdywx
+300097201	新刊醫林状元壽世保元	龔／廷賢 撰	DUP_WORK_SUSPECT	d59fxzg0iold,d59f2ngz4269
+100178246	纂圖互注荀子	楊／倞 注	DUP_WORK_SUSPECT;A_MISSING	d59fz7o6lxq9,d59fyu8m4xz4,d59fy3spyj9d,d59fyvpygjr5,d59fyzr0dj41,d59fyi3mu9z6,d59fz9fnu9z6,d59fz8j0ak8w
+100385313	荀子	楊／倞 注	DUP_WORK_SUSPECT;A_MISSING	d59fz7o6lxq9,d59fyu8m4xz4,d59fy3spyj9d,d59fyvpygjr5,d59fyzr0dj41,d59fyi3mu9z6,d59fz9fnu9z6,d59fz8j0ak8w
+100193344	水滸後傳	陳／忱 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy7ri3cao,d59f2ngcy7er,d59fxrwrx4aq
+100338076	水滸後伝	陳／忱 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy7ri3cao,d59f2ngcy7er,d59fxrwrx4aq
+100389113	水滸後傳	陳／忱 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy7ri3cao,d59f2ngcy7er,d59fxrwrx4aq
+100160760	隨園詩話	袁／枚 撰	DUP_WORK_SUSPECT	d59fyyj4a9dt,d59fyw9nctts,d59fyw9pjhmp,d59fyyj5j7k0,d59f2ns89ywx,d59fyvqi4u0x
+200012241	随園詩話	袁／枚 撰	DUP_WORK_SUSPECT	d59fyyj4a9dt,d59fyw9nctts,d59fyw9pjhmp,d59fyyj5j7k0,d59f2ns89ywx,d59fyvqi4u0x
+300092338	隨園詩話	袁／枚 撰	DUP_WORK_SUSPECT	d59fyyj4a9dt,d59fyw9nctts,d59fyw9pjhmp,d59fyyj5j7k0,d59f2ns89ywx,d59fyvqi4u0x
+300001154	隨園隨筆	袁／枚／子才(袁／枚) 撰	DUP_WORK_SUSPECT	d59fyyj6s5q8,d59f2nlcfjlt,d59fyw9p8934,d59fyyj57z0h,d59fyvqi4u0w,d59fyw9nzaww
+300092339	隨園隨筆	袁／枚／子才(袁／枚) 撰	DUP_WORK_SUSPECT	d59fyyj6s5q8,d59f2nlcfjlt,d59fyw9p8934,d59fyyj57z0h,d59fyvqi4u0w,d59fyw9nzaww
+100355297	隋書	魏／徴 等 奉勅撰	DUP_WORK_SUSPECT	d59f28npetc3,d59fy9xbaz9c
+200020748	隋書	魏／徴 等 奉勅撰	DUP_WORK_SUSPECT	d59f28npetc3,d59fy9xbaz9c
+300095358	隋書	魏／徴 等 奉勅撰	DUP_WORK_SUSPECT	d59f28npetc3,d59fy9xbaz9c
+300106920	西湖佳話	墨浪子 編	DUP_WORK_SUSPECT	d59f2mpb1og1,d59fxrwysc8x
+100236884	西算新法直解	馮／桂芬	DUP_WORK_SUSPECT;A_MISSING	d59f2njfg3k1,d59fy1ivlmgw,d59fy1xlbcap
+100237561	西算新法直解	馮／桂芬	DUP_WORK_SUSPECT;A_MISSING	d59f2njfg3k1,d59fy1ivlmgw,d59fy1xlbcap
+100237614	西算新法直解	馮／桂芬	DUP_WORK_SUSPECT;A_MISSING	d59f2njfg3k1,d59fy1ivlmgw,d59fy1xlbcap
+100160726	新刻性理大全	胡／広 等 奉勅撰	DUP_WORK_SUSPECT;COLLECTION	d59f2nk6luyq,d59f2nk01vcz
+100452794	新刻性理大全	胡／広 等 奉勅撰	DUP_WORK_SUSPECT;COLLECTION	d59f2nk6luyq,d59f2nk01vcz
+100141699	醫案	孫／一奎	DUP_WORK_SUSPECT;A_MISSING	d59f2nk1m22q,d59fxzs0ucxt,d59f2ndmb7r6,d59fy04a7x1d,d59f2ni4mm0w,d59fy049wohs,d59fy049a7eo,d59f6eq1vdvk
+100338079	後赤壁賦	蘇／軾	DUP_WORK_SUSPECT	d59fxr3nq876,d59fyfaeik8x,d59fxrn6deyo,d59fxrncxede,d59f2hou0a2o
+100354678	石林燕語	葉／夢得 撰	DUP_WORK_SUSPECT	d59f2hull3b4,d59fy106x7up
+100454501	世説新語補	何／良俊 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy1xdtn9e,d59fy1078ge8,d59f2nkkcao0,d59fy1ij44qo
+100095692	浙江通志	薛／応旂	DUP_WORK_SUSPECT	d59f2n6dz6ki,d59fymae5fk1,d59f2ndarfur,d59f2mdaerk0
+100338783	従政名言	薛／瑄 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyznj7v9d,d59fyx1x9csg,d59f2ndl29ds
+100231285	蒒文清公／從政名言	薛／瑄 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fyznj7v9d,d59fyx1x9csg,d59f2ndl29ds
+300091733	山海経	郭／璞	DUP_WORK_SUSPECT;A_MISSING	d59fz7o5o83l,d59fz8j2h81s,d59fz13ppibl,d59fz1484idc,d59fye9x054w,d59fye9x054y,d59fygwbz5ds,d59fyaxlbw1t
+100112280	山海經	郭／璞	DUP_WORK_SUSPECT;A_MISSING	d59fz7o5o83l,d59fz8j2h81s,d59fz13ppibl,d59fz1484idc,d59fye9x054w,d59fye9x054y,d59fygwbz5ds,d59fyaxlbw1t
+100200630	山海経	郭／璞	DUP_WORK_SUSPECT;A_MISSING	d59fz7o5o83l,d59fz8j2h81s,d59fz13ppibl,d59fz1484idc,d59fye9x054w,d59fye9x054y,d59fygwbz5ds,d59fyaxlbw1t
+100356044	山海經	郭／璞	DUP_WORK_SUSPECT;A_MISSING	d59fz7o5o83l,d59fz8j2h81s,d59fz13ppibl,d59fz1484idc,d59fye9x054w,d59fye9x054y,d59fygwbz5ds,d59fyaxlbw1t
+100453119	山海經	郭／璞	DUP_WORK_SUSPECT;A_MISSING	d59fz7o5o83l,d59fz8j2h81s,d59fz13ppibl,d59fz1484idc,d59fye9x054w,d59fye9x054y,d59fygwbz5ds,d59fyaxlbw1t
+200013470	山海經	郭／璞	DUP_WORK_SUSPECT;A_MISSING	d59fz7o5o83l,d59fz8j2h81s,d59fz13ppibl,d59fz1484idc,d59fye9x054w,d59fye9x054y,d59fygwbz5ds,d59fyaxlbw1t
+300098383	山海經	郭／璞	DUP_WORK_SUSPECT;A_MISSING	d59fz7o5o83l,d59fz8j2h81s,d59fz13ppibl,d59fz1484idc,d59fye9x054w,d59fye9x054y,d59fygwbz5ds,d59fyaxlbw1t
+100105174	泉志	洪／遵 撰	DUP_WORK_SUSPECT	d59fyt6ei8zk,d59fypg5ixvk,d59f2hlpblz6
+100172622	泉志	洪／遵 撰	DUP_WORK_SUSPECT	d59fyt6ei8zk,d59fypg5ixvk,d59f2hlpblz6
+100175023	禪源諸詮集	宗密 撰	DUP_WORK_SUSPECT	d59f28ldfz7l,d59fxwchd4ao,d59f28jykao7,d59fyky6ark2
+100447696	禪源諸詮集都序	宗密 撰	DUP_WORK_SUSPECT	d59f28ldfz7l,d59fxwchd4ao
+200012791	禪源諸詮集都序	宗密 撰	DUP_WORK_SUSPECT	d59f28ldfz7l,d59fxwchd4ao
+300090377	禪源諸詮集都序	宗密 撰	DUP_WORK_SUSPECT	d59f28ldfz7l,d59fxwchd4ao
+200015604	宋詩別裁	張／景星 等 編	DUP_WORK_SUSPECT	d59f2mo3cgea,d59fxwusm681,d59fs7f56rd1
+300000975	搜神記／搜神後記	干／宝 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxrwthb0g,d59f9uwz4q2p,d59fyja8f8cg,d59f27x76cqs,d59f27x842de
+100221663	滄溟先生尺牘	李／攀竜	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fsabj4r28
+100338565	滄溟先生尺牘	李／攀竜	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fsabj4r28
+100419393	滄溟先生尺牘	李／攀竜	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fsabj4r28
+100453502	滄溟先生尺牘	李／攀竜	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fsabj4r28
+300050653	滄溟先生尺牘	李／攀竜	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fsabj4r28
+300094964	滄溟先生尺牘	李／攀竜	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fsabj4r28
+100354735	慶元府雪竇明覺大師祖英集	重顕 撰	DUP_WORK_SUSPECT	d59f2hublhxe,d59fsvg015ab
+100448189	慶元府雪竇明覺大師祖英集	重顕 撰	DUP_WORK_SUSPECT	d59f2hublhxe,d59fsvg015ab
+200011930	慶元府雪竇明覺大師祖英集	重顕 撰	DUP_WORK_SUSPECT	d59f2hublhxe,d59fsvg015ab
+200022520	慶元府雪竇明覺大師祖英集	重顕 撰	DUP_WORK_SUSPECT	d59f2hublhxe,d59fsvg015ab
+100160581	慶元府雪竇明覺大師祖英集	重顕 撰	DUP_WORK_SUSPECT	d59f2hublhxe,d59fsvg015ab
+100256343	測量法義	利瑪竇(リメトウ) 口訳	DUP_WORK_SUSPECT;A_MISSING	d59fy3ormbk1,d59fzb7rj9j4,d59f2nkte6te,d59fz73kmvi9,d59fz73lkl4x,d59fxu49dgqp,d59fz0o3uuip,d59f6eje54ow
+100151712	黄石公素書	張／商英 注	DUP_WORK_SUSPECT;A_MISSING	d59fyfcwq8sg,d59fy1im8i69,d59fybbfimtc,d59fz892998h,d59fyvqq8o3k,d59fyd66qozk,d59fyrokdrlt,d59f1mpdh4ao
+100388760	黄石公素書	張／商英 注	DUP_WORK_SUSPECT;A_MISSING	d59fyfcwq8sg,d59fy1im8i69,d59fybbfimtc,d59fz892998h,d59fyvqq8o3k,d59fyd66qozk,d59fyrokdrlt,d59f1mpdh4ao
+100452976	黄石公素書	張／商英 注	DUP_WORK_SUSPECT;A_MISSING	d59fyfcwq8sg,d59fy1im8i69,d59fybbfimtc,d59fz892998h,d59fyvqq8o3k,d59fyd66qozk,d59fyrokdrlt,d59f1mpdh4ao
+300048411	黄石公素書	張／商英 注	DUP_WORK_SUSPECT;A_MISSING	d59fyfcwq8sg,d59fy1im8i69,d59fybbfimtc,d59fz892998h,d59fyvqq8o3k,d59fyd66qozk,d59fyrokdrlt,d59f1mpdh4ao
+100105232	楚辭	王／逸 撰	DUP_WORK_SUSPECT;A_MISSING	d59f206bkphc,d59f2mi6rugw,d59f2evufbb8,d59fz8j2h81t,d59fy1hlei2o,d59fry9i9w5c,d59fyyrlvxmo,d59fxvb74j5t
+100244529	楚辭	王／逸 撰	DUP_WORK_SUSPECT;A_MISSING	d59f206bkphc,d59f2mi6rugw,d59f2evufbb8,d59fz8j2h81t,d59fy1hlei2o,d59fry9i9w5c,d59fyyrlvxmo,d59fxvb74j5t
+100244531	楚辭	洪／興祖 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxzr76n0g,d59f2hr0cuf4,d59f2evufbb8,d59fz8j2h81t,d59fy1hlei2o,d59fry9i9w5c,d59fyyrlvxmo,d59fxvb74j5t
+100369257	官刻増廣太平和劑局方	陳／師文	DUP_WORK_SUSPECT	d59fy3s0d2ps,d59fxzidqgw1
+100252570	增廣太平惠民和劑局方	陳／師文	DUP_WORK_SUSPECT	d59fy3s0d2ps,d59fxzidqgw1
+300096911	増廣太平惠民和劑局方	陳／師文	DUP_WORK_SUSPECT	d59fy3s0d2ps,d59fxzidqgw1
+100252574	增廣太平惠民和劑局方方目	陳／師文	DUP_WORK_SUSPECT	d59fy3s0d2ps,d59fxzidqgw1
+100268950	増広太平和剤局方	陳／師文	DUP_WORK_SUSPECT	d59fy3s0d2ps,d59fxzidqgw1
+100382737	増廣太平和劑圖經本草藥性總論（題簽増廣太平和劑局方）	陳／師文	DUP_WORK_SUSPECT	d59fy3s0d2ps,d59fxzidqgw1
+100076780	揚子太玄經	揚／雄 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyxdjuxog,d59f206yo9og,d59f27st89vn,d59f2hrm7gg1,d59f24lxwdfq,d59f24lxwdfo,d59f24lxwdfk,d59f24lxwdfp
+100190730	楊子太玄経	揚／雄 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyxdjuxog,d59f206yo9og,d59f27st89vn,d59f2hrm7gg1,d59f24lxwdfq,d59f24lxwdfo,d59f24lxwdfk,d59f24lxwdfp
+100452783	揚子太玄經	揚／雄 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyxdjuxog,d59f206yo9og,d59f27st89vn,d59f2hrm7gg1,d59f24lxwdfq,d59f24lxwdfo,d59f24lxwdfk,d59f24lxwdfp
+100385278	揚子太玄経	揚／雄 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyxdjuxog,d59f206yo9og,d59f27st89vn,d59f2hrm7gg1,d59f24lxwdfq,d59f24lxwdfo,d59f24lxwdfk,d59f24lxwdfp
+300097189	泰定養生主論畧方	王珪	DUP_WORK_SUSPECT	d59f2hropcsi,d59f2giiq77k
+100382616	泰定養生拔粹	王珪	DUP_WORK_SUSPECT	d59f2hropcsi,d59f2giiq77k
+100088651	丹桂籍	顔／正 輯	DUP_WORK_SUSPECT	d59fykw2g3k1,d59fxwdr905d
+200014000	真西山讀書記乙集上大學衍義	真／徳秀 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyutuwcu8,d59fyutq7sow,d59f2huhj08y,d59fyutl8002,d59fy118oxkz
+300086602	延徳本大学	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+300084150	再版改正大学	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100408842	集註補訂大學	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+300119074	新刻改正大学章句	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100424787	新刻改正／大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+300119072	新板改正大学章句道春点	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100093184	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100093186	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100112533	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100112534	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100127387	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100148693	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100149810	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100149831	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100149839	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100155531	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100160925	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100244925	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100339108	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100392175	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+200015420	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+200020685	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+200021500	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+200035788	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+200035789	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+300097794	大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100190821	大学朱熹章句	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100386062	大学抄	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100088624	大學章句	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100149804	大學章句	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100386061	大学章句	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100414111	大学章句	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100449485	大學章句	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100454529	大学章句	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+300084647	大学章句	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+300090306	大學章句	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+300119073	大学章句	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+300119075	大学章句	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+300119071	大学章句道春点	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100443738	大學（新注大學章句）（平假名付）	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+300139531	大學（改正四書集註）	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100095563	大學／朱熹章句	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100436368	大學／新刻改正	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100424710	大学／大学章句	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100424711	大学／大学章句	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100452652	訂正新刻大學後藤點	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100393683	天保校正大学／道春点	朱／熹 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+300084151	文化再刻　大学	朱／熹 撰	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100353177	琉球板／大學	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc,d59fxw1pd3i8,d59fxwgb0q9t,d59fxwgb0q9s,d59fxwgb0q9u,d59fxw1m8q2q
+100443764	大學平假名附	朱／熹	DUP_WORK_SUSPECT	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc
+100093187	大學或問	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyfe6m51d,d59f2hjvgjcx,d59fxwgae96p,d59fxx8bvpxd,d59fyykf3uv4
+100223771	大学或問	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyfe6m51d,d59f2hjvgjcx,d59fxwgae96p,d59fxx8bvpxd,d59fyykf3uv4
+100392176	大學或問	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyfe6m51d,d59f2hjvgjcx,d59fxwgae96p,d59fxx8bvpxd,d59fyykf3uv4
+100436053	大学或問	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyfe6m51d,d59f2hjvgjcx,d59fxwgae96p,d59fxx8bvpxd,d59fyykf3uv4
+100436369	大學或問	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyfe6m51d,d59f2hjvgjcx,d59fxwgae96p,d59fxx8bvpxd,d59fyykf3uv4
+300069070	大學或問	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyfe6m51d,d59f2hjvgjcx,d59fxwgae96p,d59fxx8bvpxd,d59fyykf3uv4
+200043812	玉篇	陳／彭年 等 奉勅重修	DUP_WORK_SUSPECT;A_MISSING	d59fxx8b98u9,d59fy3of4tts,d59f2hskusqq,d59f286uwpvl
+100231616	大廣益會玉篇	陳／彭年 等 奉勅重修	DUP_WORK_SUSPECT;A_MISSING	d59fxx8b98u9,d59fy3of4tts,d59f2hskusqq
+100353793	大廣益會玉篇	陳／彭年 等 奉勅重修	DUP_WORK_SUSPECT;A_MISSING	d59fxx8b98u9,d59fy3of4tts,d59f2hskusqq
+100353794	大廣益會玉篇	陳／彭年 等 奉勅重修	DUP_WORK_SUSPECT;A_MISSING	d59fxx8b98u9,d59fy3of4tts,d59f2hskusqq
+100385488	大広益会玉篇	陳／彭年 等 奉勅重修	DUP_WORK_SUSPECT;A_MISSING	d59fxx8b98u9,d59fy3of4tts,d59f2hskusqq
+300094007	大乗起信論	馬鳴 造	DUP_WORK_SUSPECT;A_MISSING	d59g2foxbpj4,d59fyh384um8,d59f2q4z7u9s
+300093973	大乘起信論纂註	馬鳴 造	DUP_WORK_SUSPECT	d59f2pvex3b5,d59fyh3cterk
+300093995	大乗起信論疏	法蔵 述	DUP_WORK_SUSPECT	d59fyja4d5a9,d59f2q1mf0g2,d59fykxn9af4
+100183118	僧史畧	賛寧 撰	DUP_WORK_SUSPECT	d59f2hgf835v,d59f2hiepfk0
+100183119	僧史畧	賛寧 撰	DUP_WORK_SUSPECT	d59f2hgf835v,d59f2hiepfk0
+100354613	大方廣圓覺脩多羅了義經	仏陀多羅 訳	DUP_WORK_SUSPECT	d59f28m73itg,d59fynyc0y69
+300097760	大戴禮記補注	阮／元 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyh2z2x34,d59f2n9gsfep,d59f2n9fups1,d59fyz5frlkw
+100447191	畜徳録	陳／沂 撰	DUP_WORK_SUSPECT	d59f2nh7up6o,d59f2nu2ga2o,d59fyxlz9r7l
+300086319	汝南圃史	周／文華	DUP_WORK_SUSPECT;COLLECTION	d59fxqv4kp34,d59f2neoe5tu
+100078896	茶史	劉／源長 撰	DUP_WORK_SUSPECT	d59fy11btb0g,d59f2mgl0xz4,d59fy1jebv28
+100441081	茶史	劉／源長 撰	DUP_WORK_SUSPECT	d59fy11btb0g,d59f2mgl0xz4,d59fy1jebv28
+100441135	茶史	劉／源長 撰	DUP_WORK_SUSPECT	d59fy11btb0g,d59f2mgl0xz4,d59fy1jebv28
+100299725	忠義水滸伝／和刻本	羅／本 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fxry3ofep,d59f2nksrpj4
+100299726	忠義水滸伝／和刻本	羅／本 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fxry3ofep,d59f2nksrpj4
+100237243	中西算学集要	周／毓英 述	DUP_WORK_SUSPECT	d59fxwle93i8,d59fy1xxhlhe
+100215709	賈島長江集	賈／島	DUP_WORK_SUSPECT	d59fy3rvoikh,d59f2pyn1ddt
+100115813	賈浪仙長江集	賈／島	DUP_WORK_SUSPECT	d59fy3rvoikh,d59f28jxbchs
+200012230	賈浪仙長江集	賈／島	DUP_WORK_SUSPECT	d59fy3rvoikh,d59f28jxbchs
+300097150	類證陳氏小兒痘疹方論	陳／文中 撰	DUP_WORK_SUSPECT	d59fxz1ev1tt,d59f2j4rrrwh
+100425087	通書	周／敦頤 編	DUP_WORK_SUSPECT;A_MISSING	d59fy10ye3nn,d59fy10ypc74,d59f2gkbysqq,d59f2gg2pa0y,d59fy1irury8,d59fyyk1oni8,d59fyq7s10jl
+300097747	通書	周／敦頤 編	DUP_WORK_SUSPECT;A_MISSING	d59fy10ye3nn,d59fy10ypc74,d59f2gkbysqq,d59f2gg2pa0y,d59fy1irury8,d59fyyk1oni8,d59fyq7s10jl
+100455477	官版／読書分年日程	程／端礼 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fxu3m9wjk,d59f2gpvqoe8
+100415094	読書分年日程	程／端礼 撰	DUP_WORK_SUSPECT	d59fxu3m9wjk,d59f2gpvqoe8
+100237696	暦学会通	薛／鳳祚	DUP_WORK_SUSPECT	d59f2mg3jnk0,d59fy1ybuigw,d59fxwkc658g,d59fy1ybj9xe,d59fy1ybj9xd,d59fy1x7w4xv
+100237697	暦学会通	薛／鳳祚	DUP_WORK_SUSPECT	d59f2mg3jnk0,d59fy1ybuigw,d59fxwkc658g,d59fy1ybj9xe,d59fy1ybj9xd,d59fy1x7w4xv
+100241559	暦學会通	薛／鳳祚	DUP_WORK_SUSPECT	d59f2mg3jnk0,d59fy1ybuigw,d59fxwkc658g,d59fy1ybj9xe,d59fy1ybj9xd,d59fy1x7w4xv
+100241560	暦學會通正集	薛／鳳祚	DUP_WORK_SUSPECT	d59f2mg3jnk0,d59f2nipjegx
+100237050	天元一釈	焦／循	DUP_WORK_SUSPECT;A_MISSING	d59fz3bv7o5c,d59f2nj9il8g,d59fz25tly4g,d59fy1ir8av4
+100257315	天元一釈	焦／循	DUP_WORK_SUSPECT;A_MISSING	d59fz3bv7o5c,d59f2nj9il8g,d59fz25tly4g,d59fy1ir8av4
+100145821	天台四教儀	諦観 撰	DUP_WORK_SUSPECT	d59fyjt0j8xs,d59fyfb4feo1
+100227227	天台四教儀	諦観 撰	DUP_WORK_SUSPECT	d59fyjt0j8xs,d59fyfb4feo1
+100354636	天台四敎儀	諦観 撰	DUP_WORK_SUSPECT	d59fyjt0j8xs,d59fyfb4feo1
+100386013	天台四教儀	諦観 撰	DUP_WORK_SUSPECT	d59fyjt0j8xs,d59fyfb4feo1
+200020753	天台四教儀	諦観 撰	DUP_WORK_SUSPECT	d59fyjt0j8xs,d59fyfb4feo1
+300093803	天台四教儀	諦観 撰	DUP_WORK_SUSPECT	d59fyjt0j8xs,d59fyfb4feo1
+100257292	中西天文算学精蘊	陳／松	DUP_WORK_SUSPECT	d59fxwkoyvia,d59fxyc8p4ox
+300096061	傳習録／朱子晩年定論／陽明先生詠學詩	陽明先生(王／守仁)	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f2ng7n668,d59fyutrrzep,d59fyutkaadc,d59fyuto14w1,d59f6eqlukn9,d59fyt84xpmq
+100127157	陶靖節集	陶／潜 撰	DUP_WORK_SUSPECT	d59f27x68n42,d59fy0o6wlxd,d59f27x4d7up
+100127158	陶靖節集	陶／潜 撰	DUP_WORK_SUSPECT	d59f27x68n42,d59fy0o6wlxd,d59f27x4d7up
+100389771	陶靖節集	陶／潜 撰	DUP_WORK_SUSPECT	d59f27x68n42,d59fy0o6wlxd,d59f27x4d7up
+100453429	陶靖節集	陶／潜 撰	DUP_WORK_SUSPECT	d59f27x68n42,d59fy0o6wlxd,d59f27x4d7up
+300095022	陶靖節集	陶／潜 撰	DUP_WORK_SUSPECT	d59f27x68n42,d59fy0o6wlxd,d59f27x4d7up
+300106293	陶靖節集	陶／潜 撰	DUP_WORK_SUSPECT	d59f27x68n42,d59fy0o6wlxd,d59f27x4d7up
+300118899	陶靖節集	陶／潜 撰	DUP_WORK_SUSPECT	d59f27x68n42,d59fy0o6wlxd,d59f27x4d7up
+200012692	桃花扇傳奇	孔／尚任 撰	DUP_WORK_SUSPECT	d59fxru3ru9t,d59f2n1f47b6,d59f2mwc74zm
+100155539	東萊先生音註唐鑑	范／祖禹 撰	DUP_WORK_SUSPECT	d59f2hpi1jwg,d59f2hkqd14x,d59f2hrkyi9s
+100160906	東萊先生音註唐鑑	范／祖禹 撰	DUP_WORK_SUSPECT	d59f2hpi1jwg,d59f2hkqd14x,d59f2hrkyi9s
+100453227	東莱先生音註唐鑑	范／祖禹 撰	DUP_WORK_SUSPECT	d59f2hpi1jwg,d59f2hkqd14x,d59f2hrkyi9s
+200014046	東莱先生音註唐鑑	范／祖禹 撰	DUP_WORK_SUSPECT	d59f2hpi1jwg,d59f2hkqd14x,d59f2hrkyi9s
+200022570	東萊先生音註唐鑑	范／祖禹 撰	DUP_WORK_SUSPECT	d59f2hpi1jwg,d59f2hkqd14x,d59f2hrkyi9s
+100190575	唐荊川先生文集	唐／順之 撰	DUP_WORK_SUSPECT	d59fyuadth4w,d59g24d8rsw0
+100453230	唐書	欧陽／脩 撰	DUP_WORK_SUSPECT	d59f28leoxdu,d59f2gcpwfsx,d59f2hq4in0g,d59fyro7l1c1
+100386099	東坡詩集	蘇／軾 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fyzb4j8cg,d59fxvbd21hd
+300090310	東萊先生左氏博議	呂／祖謙 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2q7w3l6o,d59fy3quuigw
+200015381	呂東萊先生左氏博議	呂／祖謙 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2q7w3l6o,d59fxw1h8xds
+100160857	呂東萊先生左氏博議	呂／祖謙 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2q7w3l6o,d59fxw1h8xds
+100447404	故唐律疏議	長孫／無忌 等 撰	DUP_WORK_SUSPECT	d59f2ni8dgqr,d59f28lxqeiq,d59f28m3z5ds
+300098397	故唐律疏議	長孫／無忌 等 撰	DUP_WORK_SUSPECT	d59f2ni8dgqr,d59f28lxqeiq,d59f28m3z5ds
+300096058	薛文清公策目	薛／瑄 撰	DUP_WORK_SUSPECT	d59fywcq6874,d59fyzniwmpt,d59fyfa3whs0,d59f2njzfe9v
+100452804	讀書録	薛／瑄 撰	DUP_WORK_SUSPECT	d59fywcq6874,d59fyzniwmpt,d59fyfa3whs0,d59f2njzfe9v
+200021521	集千家註杜工部詩集	杜／甫 撰	DUP_WORK_SUSPECT	d59f28m1h91f,d59fyicuc740,d59fxwyzdw5c,d59f28ljdhj6
+100386098	（集千家註批点）杜工部詩集	杜／甫 撰	DUP_WORK_SUSPECT	d59f28m1h91f,d59fyicuc740,d59fxwtr5p1c
+100097840	杜工部集	杜／甫 撰	DUP_WORK_SUSPECT	d59f28m1h91f,d59fyicuc740
+100452841	讀朱隨筆	陸／隴其 撰	DUP_WORK_SUSPECT	d59fyvpxuept,d59fyvpuesqp,d59f2meyysxs
+100452842	讀禮志疑	陸／隴其 撰	DUP_WORK_SUSPECT	d59f2ma95pfk,d59fyvpy5n9e,d59fyvpt5ukg
+100339641	内科新説	合信(ホブソン‐／ベンジャミン) 著	DUP_WORK_SUSPECT	d59fxxvsv6rl,d59fy1hfgzr6
+100348180	内科新説	合信(ホブソン‐／ベンジャミン) 著	DUP_WORK_SUSPECT	d59fxxvsv6rl,d59fy1hfgzr6
+100456512	内科新説	合信(ホブソン‐／ベンジャミン) 著	DUP_WORK_SUSPECT	d59fxxvsv6rl,d59fy1hfgzr6
+300056036	内科新説	合信(ホブソン‐／ベンジャミン) 著	DUP_WORK_SUSPECT	d59fxxvsv6rl,d59fy1hfgzr6
+100266343	弁惑論	李／杲 撰	DUP_WORK_SUSPECT	d59f2j514w74,d59f2gd572f6,d59fyj7jcfep,d59f2j4tn75s
+100424987	張南軒集／［摘抄］	張／栻 撰	DUP_WORK_SUSPECT;LOCAL_PART	d59f2hpr3fnn,d59fz6bwkkjl
+300093494	涅槃玄義發源機要	智円 述	DUP_WORK_SUSPECT;A_MISSING	d59fyjqdbv9d,d59f2q9huh34,d59fygn5q41s
+100060352	白氏長慶集	白／居易 撰	DUP_WORK_SUSPECT	d59fyiuvx5a8,d59f28jcpon4,d59f28mlrock
+100105226	白氏長慶集	白／居易 撰	DUP_WORK_SUSPECT	d59fyiuvx5a8,d59f28jcpon4,d59f28mlrock
+100386100	白氏長慶集	白／居易 撰	DUP_WORK_SUSPECT	d59fyiuvx5a8,d59f28jcpon4,d59f28mlrock
+200020631	白氏長慶集	白／居易 撰	DUP_WORK_SUSPECT	d59fyiuvx5a8,d59f28jcpon4,d59f28mlrock
+300098153	白氏長慶集	白／居易 撰	DUP_WORK_SUSPECT	d59fyiuvx5a8,d59f28jcpon4,d59f28mlrock
+100224565	白石道人詩集	姜／夔 撰	DUP_WORK_SUSPECT	d59fywdy6iv5,d59fyx090w00,d59fyx0lidq8
+300081366	鄭板橋集	鄭／燮	DUP_WORK_SUSPECT	d59fxywuzabl,d59fxyambkzk
+200020793	新鐫梅竹蘭菊四譜	黄／鳳池 輯	DUP_WORK_SUSPECT	d59fxq0mfuo3,d59fxqi4nzep
+100288230	筆史	梁／同書 撰	DUP_WORK_SUSPECT	d59fyxlpwmwx,d59f2nu59eyp,d59f2ngmxsld,d59fywbbls75
+100288231	筆史	梁／同書 撰	DUP_WORK_SUSPECT	d59fyxlpwmwx,d59f2nu59eyp,d59f2ngmxsld,d59fywbbls75
+100212611	檀弓	謝／枋得 批点	DUP_WORK_SUSPECT;A_MISSING	d59f2hlmih35,d59fxv1qkq9s,d59fxwow1o1s,d59fyzmpvk74,d59fxwpstl34,d59fyzr0ornk
+100335648	彙輯薛氏内科醫案	薛／己 著	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fxst0hfk1
+300096960	彙輯薛氏内科醫案	薛／己 著	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fxst0hfk1
+100355320	皕宋樓藏書志	陸／心源 撰	DUP_WORK_SUSPECT	d59fxy3ncvsx,d59f2nfn1e68
+100454918	元版飜刻／千金方	孫／思邈 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59f28ltd2x0,d59f28m5jc3l,d59f2psgsem9
+100452272	重刊孫眞人備急千金要方	孫／思邈 撰	DUP_WORK_SUSPECT	d59f28ltd2x0,d59f28lozrb7
+100452925	重刊孫眞人備急千金要方	孫／思邈 撰	DUP_WORK_SUSPECT	d59f28ltd2x0,d59f28lozrb7
+300096755	重刊孫眞人備急千金要方	孫／思邈 撰	DUP_WORK_SUSPECT	d59f28ltd2x0,d59f28lozrb7
+100231696	千金方	孫／思邈 撰	DUP_WORK_SUSPECT	d59f28ltd2x0,d59f28m5jc3l,d59f2psgsem9
+100146754	孫眞人備急千金要方	孫／思邈 撰	DUP_WORK_SUSPECT	d59f28ltd2x0,d59fxzf26ku9,d59f28lozrb7
+300051120	孫眞人備急千金要方	孫／思邈 撰	DUP_WORK_SUSPECT	d59f28ltd2x0,d59fxzf26ku9,d59f28lozrb7
+300097065	孫眞人備急千金要方	孫／思邈 撰	DUP_WORK_SUSPECT	d59f28ltd2x0,d59fxzf26ku9,d59f28lozrb7
+100234862	微積溯源	華里司(ハリス‐／ウィリアム) 輯	DUP_WORK_SUSPECT	d59fy1xi6yv4,d59fxxx58yyo
+100174863	風俗通	応／劭 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy1jhg8ht,d59fyiuuzfnm,d59f208tsagw,d59fyrol08ox,d59f2q0t2osh
+300106541	風俗通	応／劭 撰	DUP_WORK_SUSPECT;A_MISSING	d59fy1jhg8ht,d59fyiuuzfnm,d59f208tsagw,d59fyrol08ox,d59f2q0t2osh
+100436392	風俗通義	応／劭 撰	DUP_WORK_SUSPECT	d59fy1jhg8ht,d59fyiuuzfnm,d59f208tsagw
+100453124	風俗通義	応／劭 撰	DUP_WORK_SUSPECT	d59fy1jhg8ht,d59fyiuuzfnm,d59f208tsagw
+100454525	風俗通義	応／劭 撰	DUP_WORK_SUSPECT	d59fy1jhg8ht,d59fyiuuzfnm,d59f208tsagw
+200014049	風俗通義	応／劭 撰	DUP_WORK_SUSPECT	d59fy1jhg8ht,d59fyiuuzfnm,d59f208tsagw
+300091933	風俗通義	応／劭 撰	DUP_WORK_SUSPECT	d59fy1jhg8ht,d59fyiuuzfnm,d59f208tsagw
+100076791	毛詩註疏	孔／穎達 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyroi73sw,d59f2hrp0lc1,d59fyshzt79e,d59fxygp51j6,d59fxw0wn9j5,d59fxwfe8t8h,d59fxwfe8t8g,d59fy9xbxgcg
+100095538	毛詩註疏	孔／穎達 撰	DUP_WORK_SUSPECT;A_MISSING	d59fyroi73sw,d59f2hrp0lc1,d59fyshzt79e,d59fxygp51j6,d59fxw0wn9j5,d59fxwfe8t8h,d59fxwfe8t8g,d59fy9xbxgcg
+300097133	三刻太醫院補註婦人良方大全	陳／自明 編	DUP_WORK_SUSPECT;COLLECTION	d59f2hg0jxmp,d59fxzgc2gox
+300097123	新編婦人大全良方	陳／自明 編	DUP_WORK_SUSPECT;COLLECTION	d59f2hg0jxmp,d59fxzgc2gox,d59f2hq05beq
+100308890	太醫院校註婦人良方大全	陳／自明 編	DUP_WORK_SUSPECT;COLLECTION	d59f2hg0jxmp,d59fxzgc2gox
+100392169	太醫院校註婦人良方大全	陳／自明 編	DUP_WORK_SUSPECT;COLLECTION	d59f2hg0jxmp,d59fxzgc2gox
+300051119	太醫院校註婦人良方大全	陳／自明 編	DUP_WORK_SUSPECT;COLLECTION	d59f2hg0jxmp,d59fxzgc2gox
+300118879	太医院校註婦人良方大全巻二～二四	陳／自明 編	DUP_WORK_SUSPECT;COLLECTION	d59f2hg0jxmp,d59fxzgc2gox
+300097126	婦人良方	陳／自明 編	DUP_WORK_SUSPECT	d59f2hg0jxmp,d59fxzgc2gox
+300091842	婦人良方大全	陳／自明 編	DUP_WORK_SUSPECT;COLLECTION	d59f2hg0jxmp,d59fxzgc2gox
+100160457	佛法金湯編	心泰 撰	DUP_WORK_SUSPECT	d59fyv4caeio,d59f2gfybyf4
+300092677	佛法金湯編	心泰 撰	DUP_WORK_SUSPECT	d59fyv4caeio,d59f2gfybyf4
+300053448	仏母大孔雀明王経	不空 訳	DUP_WORK_SUSPECT	d59fxuegrtvk,d59fykxagk5c
+100288495	文章軌範	謝／枋得 撰	DUP_WORK_SUSPECT	d59fz4wv9mv5,d59f2hqcy1oj
+300106362	文則	陳／騤 撰	DUP_WORK_SUSPECT	d59fyyryonwh,d59fyko5ge81,d59f2hplsef4,d59fxrrmhywx
+100453461	文體明辯	徐／師曾 撰	DUP_WORK_SUSPECT	d59f2njoi3gj,d59fxzqr9jb5
+300094903	文體明辯	徐／師曾 撰	DUP_WORK_SUSPECT	d59f2njoi3gj,d59fxzqr9jb5
+100232006	文中子中說	王／通 撰	DUP_WORK_SUSPECT;A_MISSING	d59f28l0n8xx,d59fy1xj4ohu,d59fyfcemha8,d59fz7g8znr4,d59fy1itq77m,d59f28jptngg
+100424979	文中子中説	王／通 撰	DUP_WORK_SUSPECT;A_MISSING	d59f28l0n8xx,d59fy1xj4ohu,d59fyfcemha8,d59fz7g8znr4,d59fy1itq77m,d59f28jptngg
+100452763	文中子中説	王／通 撰	DUP_WORK_SUSPECT;A_MISSING	d59f28l0n8xx,d59fy1xj4ohu,d59fyfcemha8,d59fz7g8znr4,d59fy1itq77m,d59f28jptngg
+200020026	文中子中説	王／通 撰	DUP_WORK_SUSPECT;A_MISSING	d59f28l0n8xx,d59fy1xj4ohu,d59fyfcemha8,d59fz7g8znr4,d59fy1itq77m,d59f28jptngg
+100231300	洴澼百金方	袁／宮桂 撰	DUP_WORK_SUSPECT	d59f2nhmiqkg,d59f2mt2twqq,d59fy5bbjyf6
+100176638	駢字分箋	程／際盛 編	DUP_WORK_SUSPECT	d59f2navo3y9,d59fz06s6p6q,d59f2mrk7doi
+100122761	歴代帝王法帖釋文	劉／次荘 撰	DUP_WORK_SUSPECT	d59f2ntypfk1,d59f2hi1wpab,d59f2hucug3l,d59fxrniuwow,d59fxrni8fls
+100317374	保嬰金鏡録	薛／己 註	DUP_WORK_SUSPECT;A_MISSING	d59fxqw5pxxc,d59fxzrjd2io,d59fxzrj1tz4
+100317375	保嬰金鏡録	薛／己 註	DUP_WORK_SUSPECT;A_MISSING	d59fxqw5pxxc,d59fxzrjd2io,d59fxzrj1tz4
+100317376	保嬰金鏡録	薛／己 註	DUP_WORK_SUSPECT;A_MISSING	d59fxqw5pxxc,d59fxzrjd2io,d59fxzrj1tz4
+100348281	保嬰金鏡録	薛／己 註	DUP_WORK_SUSPECT;A_MISSING	d59fxqw5pxxc,d59fxzrjd2io,d59fxzrj1tz4
+100317377	保嬰撮要	薛／鎧 集	DUP_WORK_SUSPECT	d59f6elc2adg,d59f2nej34lf
+100391739	保嬰撮要	薛／鎧 集	DUP_WORK_SUSPECT	d59f6elc2adg,d59f2nej34lf
+300097144	保嬰撮要	薛／鎧 集	DUP_WORK_SUSPECT	d59f6elc2adg,d59f2nej34lf
+100115607	墨池瑣録	楊／慎 撰	DUP_WORK_SUSPECT	d59f2nhy2n0i,d59fyiv83egw,d59f2njdw16p
+100261907	墨池瑣録	楊／慎 撰	DUP_WORK_SUSPECT	d59f2nhy2n0i,d59fyiv83egw,d59f2njdw16p
+300097233	墨池瑣録	楊／慎 撰	DUP_WORK_SUSPECT	d59f2nhy2n0i,d59fyiv83egw,d59f2njdw16p
+300092974	菩薩戒經	玄奘 訳	DUP_WORK_SUSPECT;A_MISSING	d59fyeug622o,d59fyhiy23gg,d59f9nmw5r0r
+100417546	梵網経菩薩戒	鳩摩羅什 訳	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fy6mfg8w1
+100161199	梵網經盧舎那佛説心地法門品菩薩戒本	鳩摩羅什 訳	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fy6me7aps
+100386014	摩訶止観	智顗 撰	DUP_WORK_SUSPECT	d59f28jxml1g,d59fyly9gge8
+200025630	摩訶止観	智顗 撰	DUP_WORK_SUSPECT	d59f28jxml1g,d59fyly9gge8
+100315957	新刻万氏家伝広嗣紀要	万／全 著	DUP_WORK_SUSPECT	d59fxzglfkzl,d59fxypz51c0,d59fxzhb11j5
+200014004	宋洪魏公進萬首唐人絶句	洪／邁 編	DUP_WORK_SUSPECT;A_MISSING	d59fyfdwbb41,d59f2py24gzk,d59fs7f491q8
+100387142	脉訣刊誤集解	戴／起宗 撰	DUP_WORK_SUSPECT	d59fxt6c96gx,d59f2gpvqoea,d59fxz3k9wjk
+100452810	明儒學案	黄／宗羲 撰	DUP_WORK_SUSPECT	d59fyutgjfuo,d59f2mcmzytc
+100424978	明儒学案摘抄	黄／宗羲 撰	DUP_WORK_SUSPECT	d59fyutgjfuo,d59f2mcmzytc
+100079173	標題徐状元補注蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ogat2ps
+100096544	標題徐状元補注蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ogat2ps
+100136002	標題徐状元補注蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ogat2ps
+100151713	標題徐状元補注蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ogat2ps
+100232793	標題徐状元補注蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ogat2ps
+100339746	標題徐状元補注蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ogat2ps
+100453234	標題徐状元補注蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ogat2ps
+200035810	標題徐狀元補注蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ogat2ps
+300086144	標題徐状元補注蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ogat2ps
+300118828	標題徐状元補注蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ogat2ps
+100065485	標題徐状元補注蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ogat2ps
+100314496	附音増廣古註蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ofqinls
+100314497	附音増廣古註蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ofqinls
+100314498	附音増廣古註蒙求	李／瀚 撰	DUP_WORK_SUSPECT	d59f2gconhmp,d59f2ofqinls
+100338856	孟浩然詩集	孟／浩然 撰	DUP_WORK_SUSPECT	d59fxyacn85d,d59f28lqv6kh,d59f28jlgbus
+100288535	孟浩然集	孟／浩然 撰	DUP_WORK_SUSPECT	d59fxyacn85d,d59f28lqv6kh
+100455238	新校正道春点／孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100088635	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100088636	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100095579	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100148697	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100149803	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100149833	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100160926	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100160927	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100220186	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100223768	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100227300	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100244408	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100300740	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100301959	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100343928	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100387209	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100391705	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100414114	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100414473	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100436374	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100436377	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100449661	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+200013454	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+200015423	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+200020688	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+200035794	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+200035795	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+200035796	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+200035797	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+300050632	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+300050633	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+300084153	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+300084154	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+300084155	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+300089559	孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100436379	孟子／安政新刻	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100436373	孟子／改正訓點	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+300139534	孟子（改正四書集註）	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100436365	孟子／嘉永再刻	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100436376	孟子／再版改正	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100095580	孟子／朱熹集註	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100095581	孟子／朱熹集註	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100436378	孟子／新刻改正	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100436380	孟子／新刻改正	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100436375	孟子／新板校正	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100245925	孟子／道春點	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100424730	孟子／孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100386065	（頼批）孟子	朱／熹 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxwomojr6,d59f2hgl5lhd,d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w
+100242688	毛詩重言	王／筠 撰	DUP_WORK_SUSPECT	d59f2mqdr3sx,d59fyznmc8ox,d59fyzne82kh,d59fxwfdxkox,d59fyxmvqfpd,d59fywboegw1
+100097852	毛詩	鄭／玄 箋	DUP_WORK_SUSPECT;A_MISSING	d59f2ndivlkw,d59fysi2b3lt,d59f27ywo3r7,d59fxxka0qgw,d59fz13fpwxs,d59f24mit9tt,d59f24mit9ts,d59f24mit9tu
+100109258	毛詩	鄭／玄 箋	DUP_WORK_SUSPECT;A_MISSING	d59f2ndivlkw,d59fysi2b3lt,d59f27ywo3r7,d59fxxka0qgw,d59fz13fpwxs,d59f24mit9tt,d59f24mit9ts,d59f24mit9tu
+100149852	毛詩	鄭／玄 箋	DUP_WORK_SUSPECT;A_MISSING	d59f2ndivlkw,d59fysi2b3lt,d59f27ywo3r7,d59fxxka0qgw,d59fz13fpwxs,d59f24mit9tt,d59f24mit9ts,d59f24mit9tu
+100160858	毛詩	鄭／玄 箋	DUP_WORK_SUSPECT;A_MISSING	d59f2ndivlkw,d59fysi2b3lt,d59f27ywo3r7,d59fxxka0qgw,d59fz13fpwxs,d59f24mit9tt,d59f24mit9ts,d59f24mit9tu
+100386057	毛詩	鄭／玄 箋	DUP_WORK_SUSPECT;A_MISSING	d59f2ndivlkw,d59fysi2b3lt,d59f27ywo3r7,d59fxxka0qgw,d59fz13fpwxs,d59f24mit9tt,d59f24mit9ts,d59f24mit9tu
+300086154	毛詩	鄭／玄 箋	DUP_WORK_SUSPECT;A_MISSING	d59f2ndivlkw,d59fysi2b3lt,d59f27ywo3r7,d59fxxka0qgw,d59fz13fpwxs,d59f24mit9tt,d59f24mit9ts,d59f24mit9tu
+300094020	脩華嚴奥旨妄盡還源觀	法蔵 撰	DUP_WORK_SUSPECT;A_MISSING	d59fymcgfxmo,d59f2pw3ku81,d59fyfdfrrpc
+200011872	脩華厳奥旨妄盡還源観	法蔵 撰	DUP_WORK_SUSPECT;A_MISSING	d59fymcgfxmo,d59f2pw3ku81,d59fyfdfrrpc
+100355343	文選正文	蕭／統 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2870u874,d59f28nmlog0,d59fz4bqkfep,d59fyff40lq9,d59f286t1ama
+200020529	文選正文	蕭／統 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2870u874,d59f28nmlog0,d59fz4bqkfep,d59fyff40lq9,d59f286t1ama
+200035520	文選正文	蕭／統 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2870u874,d59f28nmlog0,d59fz4bqkfep,d59fyff40lq9,d59f286t1ama
+100453463	文選	蕭／統 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2870u874,d59f28nmlog0,d59fz4bqkfep,d59fyff40lq9,d59f286t1ama
+100338065	文選	蕭／統 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2870u874,d59f28nmlog0,d59fz4bqkfep,d59fyff40lq9,d59f286t1ama
+100389292	文選	蕭／統 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2870u874,d59f28nmlog0,d59fz4bqkfep,d59fyff40lq9,d59f286t1ama
+300086456	文選	蕭／統 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2870u874,d59f28nmlog0,d59fz4bqkfep,d59fyff40lq9,d59f286t1ama
+100190141	六臣注文選	蕭／統 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2870u874,d59f28nmlog0,d59fz4bqkfep,d59fyff40lq9,d59f286t1ama,d59fyfegwyyp
+200014056	陳眉公重訂野客叢書	王／楙 撰	DUP_WORK_SUSPECT;COLLECTION	d59f2hus52pt,d59f6eprvsht,d59fyzpxcv7k
+200020563	陳眉公重訂野客叢書	王／楙 撰	DUP_WORK_SUSPECT;COLLECTION	d59f2hus52pt,d59f6eprvsht,d59fyzpxcv7k
+100257179	輶軒語	張／之洞 撰	DUP_WORK_SUSPECT	d59fz06z1vk1,d59fy1xr8um8
+100222487	算法通変本末	楊／輝	DUP_WORK_SUSPECT	d59f2hr289oh,d59fy1gqi0ao,d59fy3phu96o
+100072418	輶軒使者絶代語釋別國方言	揚／雄 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2nduqm83,d59fyi3m7sw2,d59f24m877cw,d59fxw0o7uv6
+100449648	輶軒使者絶代語釋別國方言	揚／雄 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2nduqm83,d59fyi3m7sw2,d59f24m877cw,d59fxw0o7uv6
+100452766	輶軒使者絶代語釋別國方言	揚／雄 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2nduqm83,d59fyi3m7sw2,d59f24m877cw,d59fxw0o7uv6
+100385326	陽明文録	陽明先生(王／守仁)	DUP_WORK_SUSPECT	d59f2njt6nlu,d59f6eq8fdaf
+100363789	音註校正五經	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100363790	音註校正五經	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100363791	音註校正五經	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100363792	音註校正五經	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100405614	音註五經	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100405615	音註五經	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100405616	音註五經	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100405617	音註五經	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100190107	改正音訓／礼記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100209405	改正音訓／礼記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100442115	学記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100442132	学記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+300119096	校定音訓礼記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+300119098	校定音訓礼記改点巻一・四	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+300119137	校定音訓礼記巻二～四	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100190116	校定音訓／礼記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100442130	大学	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100093167	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100093168	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100093170	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100093171	礼記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100147116	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100149835	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100149860	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100149861	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100149862	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100149863	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100149864	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100160865	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100160866	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100174828	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100230854	礼記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100381130	礼記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100386058	礼記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100414381	礼記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100452710	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100454278	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+200020646	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+300050629	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+300092513	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+300094472	禮記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+300139221	礼記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+300119159	礼記正文曲札上第一～明堂位第一四	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+300119155	礼記道春点	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100093169	禮記篇	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+300139548	礼記（改正音訓五經）	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100424727	礼記／校定音訓礼記	鄭／玄 注	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fxw0vebcx,d59f1iofm800,d59fycrp55hc,d59fxw2crw8y,d59fyzqhyj29,d59f24mit9u0,d59fxwojk6bm,d59fz4bq96v4
+100243950	禮記集説	陳／浩 撰	DUP_WORK_SUSPECT;A_MISSING	d59fxx8nfi0w,d59f2gjkhwxu,d59fxwojvev5,d59f2hr3h7uo,d59f2gonez9d,d59fxw2d34sh,d59fxw2dedc0,d59f2he891qd
+100354665	羅湖野錄	暁瑩 輯	DUP_WORK_SUSPECT	d59fylyae60w,d59f2htz4076
+300094273	羅湖野録	暁瑩 輯	DUP_WORK_SUSPECT	d59fylyae60w,d59f2htz4076
+100452824	新語	陸／賈 撰	DUP_WORK_SUSPECT;A_MISSING	d59f1ir76xa8,d59f6ep3uio6,d59fxwz2i9kw,d59fy1iznpj5
+300096974	診家正眼／本草通玄／病機沙篆	李／中梓 著	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59fy04r2qdc,d59fy04qg9a9,d59f2ni58z5u,d59fy04rdywx,d59f2ng2ym0x,d59f2ni5k7pc
+100231583	李翰林集	李／白	DUP_WORK_SUSPECT	d59f28jme1hj,d59f28jau9dt
+100314876	（劉涓子）鬼遺方	劉／涓子	DUP_WORK_SUSPECT;A_MISSING	d59f9uwqpbeu,d59f286ua8si,d59f285xtkao,d59fxz26bxmp
+100317751	蕺山先生人譜	劉／宗周 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fy1y9cm4g
+100452837	人譜類記	劉／宗周 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fy1yfwlj5
+100067461	人譜類記	劉／宗周 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fy1yfwlj5
+100127265	人譜類記	劉／宗周 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fy1yfwlj5
+200014053	人譜類記	劉／宗周 撰	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fy1yfwlj5
+100447925	龍舒増廣淨土文	王／日休 撰	DUP_WORK_SUSPECT	d59fyeg3vjls,d59fyeg6ooht
+100354728	龍舒增廣淨土文／坿／龍舒直音	王／日休 撰	DUP_WORK_SUSPECT;MULTI_TITLE	d59fyeg3vjls,d59fyeg6ooht
+100237664	麐史暦準	黄／炳垕	DUP_WORK_SUSPECT	d59fyzobxp8g,d59fxt3f277k
+100146576	隷續	洪／适 撰	DUP_WORK_SUSPECT	d59f2hkld8g3,d59f2hq7brwi
+100238829	聖寿万年暦	朱／載堉 撰	DUP_WORK_SUSPECT;A_MISSING	d59f6ssrrvbj,d59fxxki4wle,d59f2njfg7pe
+100237271	暦象本要	李／光地 撰	DUP_WORK_SUSPECT	d59f2nir3l6p,d59fyqw8lgxu,d59f2mtkb75u
+100238275	暦象本要	李／光地 撰	DUP_WORK_SUSPECT	d59f2nir3l6p,d59fyqw8lgxu,d59f2mtkb75u
+200015299	紹運圖	諸葛／深 撰	DUP_WORK_SUSPECT	d59fxsfy2q69,d59f2q9t30u9,d59f2ogat340
+100093202	老子道徳眞經	王／弼 注	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f1ire258g,d59fy05z36yp,d59ezkx8dt6o,d59fy3pi5hq8,d59fy1x7w4xt,d59fyzmpkbnk,d59fywb43xmo,d59fyxdw16v4
+100095604	老子道徳眞經	王／弼 注	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f1ire258g,d59fy05z36yp,d59ezkx8dt6o,d59fy3pi5hq8,d59fy1x7w4xt,d59fyzmpkbnk,d59fywb43xmo,d59fyxdw16v4
+100112539	老子道徳眞經	王／弼 注	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f1ire258g,d59fy05z36yp,d59ezkx8dt6o,d59fy3pi5hq8,d59fy1x7w4xt,d59fyzmpkbnk,d59fywb43xmo,d59fyxdw16v4
+100127284	老子道徳眞經	王／弼 注	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f1ire258g,d59fy05z36yp,d59ezkx8dt6o,d59fy3pi5hq8,d59fy1x7w4xt,d59fyzmpkbnk,d59fywb43xmo,d59fyxdw16v4
+100146940	老子道徳眞經	王／弼 注	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f1ire258g,d59fy05z36yp,d59ezkx8dt6o,d59fy3pi5hq8,d59fy1x7w4xt,d59fyzmpkbnk,d59fywb43xmo,d59fyxdw16v4
+100190803	老子道徳真経	王／弼 注	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f1ire258g,d59fy05z36yp,d59ezkx8dt6o,d59fy3pi5hq8,d59fy1x7w4xt,d59fyzmpkbnk,d59fywb43xmo,d59fyxdw16v4
+300094468	論語義疏	何／晏 注	DUP_WORK_SUSPECT	d59f2842pjia,d59f98exombu,d59f284wzk75,d59fxw1shgxu,d59f283zwemb,d59f28430s1t,d59f24mgxukh,d59f284rdaf5
+100452656	論語集解義疏	何／晏 注	DUP_WORK_SUSPECT;A_MISSING	d59f2842pjia,d59f98exombu,d59f284wzk75,d59fxw1shgxu,d59f283zwemb,d59f28430s1t,d59f24mgxukh,d59f284rdaf5
+200020714	論語集解義疏	何／晏 注	DUP_WORK_SUSPECT;A_MISSING	d59f2842pjia,d59f98exombu,d59f284wzk75,d59fxw1shgxu,d59f283zwemb,d59f28430s1t,d59f24mgxukh,d59f284rdaf5
+300096066	論語集解義疏	何／晏 注	DUP_WORK_SUSPECT;A_MISSING	d59f2842pjia,d59f98exombu,d59f284wzk75,d59fxw1shgxu,d59f283zwemb,d59f28430s1t,d59f24mgxukh,d59f284rdaf5
+100416303	［藤堂家］論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+100065031	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+100174822	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+100178228	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+100245279	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+100338985	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+100371350	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+100371351	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+100385308	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+100385310	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+100419420	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+100442574	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+200015797	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+200021346	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+200043321	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+300086367	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+300090726	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+300097805	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+300097812	論語	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+100227520	論語（正平版）	何／晏 撰 ／ 伝	DUP_WORK_SUSPECT;A_MISSING	d59f2hcyd5vm,d59f2hdggxdx,d59f2psd1jpe,d59f2hddcjyb,d59f27yai96o,d59fxz4cd6o0,d59f2hd0jtok,d59f2hcoot1c
+100455240	大字新版／論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100455239	新校正道春点／論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100227291	新校正／道春点／論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100353179	琉球板／論語／下	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100353178	琉球板／論語／上	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100088634	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100093213	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100095574	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100112527	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100112528	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100112545	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100127139	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100141673	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100148695	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100148700	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100149805	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100149812	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100149834	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100160778	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100160852	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100160928	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100160929	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100161129	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100176654	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100178229	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100230925	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100245281	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100245924	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100301958	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100339117	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100355287	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100391724	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100419400	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100447201	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+200013455	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+200015422	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+200020687	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+200021309	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+200035791	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+200035792	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+200035793	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+300048412	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+300097811	論語	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100215777	論語（星山堂改点）	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100227965	論語（抜粋）	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+300139533	論語（改正四書集註）	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100095572	論語／朱熹集註	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100095573	論語／朱熹集註	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100424712	論語／論	朱／熹 集註	DUP_WORK_SUSPECT;A_MISSING;MULTI_TITLE	d59f27yib6rl,d59f9s1beo75,d59f27y1rlz6,d59fxwpael1d,d59f2hfxqsqo,d59f9c0ua0p0,d59fxx7e639c,d59fxx7e639e
+100452811	論語或問	朱／熹 撰	DUP_WORK_SUSPECT	d59fyykff3ep,d59f2hk899mp
+300094477	論語或問	朱／熹 撰	DUP_WORK_SUSPECT	d59fyykff3ep,d59f2hk899mp
+100193327	淮海集	秦／観 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hupbxtu,d59f6esj598l,d59f2gnniosg,d59fz3cphou9,d59fyf94bfuo
+300098152	淮海集	秦／観 撰	DUP_WORK_SUSPECT;A_MISSING	d59f2hupbxtu,d59f6esj598l,d59f2gnniosg,d59fz3cphou9,d59fyf94bfuo
