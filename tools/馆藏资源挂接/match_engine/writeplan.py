@@ -29,6 +29,19 @@ SITES = {
     'onb': dict(id='onb', name='奧地利國家圖書館 Austrian Books Online', short_name='奧地利國圖', prefix='onb-', label='奧地利國家圖書館藏本：{edition}'),
 }
 EURO = ('bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb')
+SITES.update({
+    # A9（C1 日本诸馆第二批，2026-10-26）：group＝前缀＋写入单位（藏本）号；metadata 记录号键见 workindex.RECORD_KEY
+    'utokyo': dict(id='utokyo-da', name='東京大学デジタルアーカイブポータル', short_name='東大', prefix='utokyo-', label='東大藏本{edition}'),
+    'ioc': dict(id='ioc-shanben', name='東京大學東洋文化研究所 漢籍善本全文影像資料庫', short_name='東文研', prefix='ioc-', label='東文研藏本{edition}'),
+    'shoryobu': dict(id='shoryobu', name='宮内庁書陵部 図書寮文庫', short_name='書陵部', prefix='shoryobu-', label='書陵部藏本{edition}'),
+    'keio': dict(id='keio', name='慶應義塾図書館 漢籍コレクション', short_name='慶應', prefix='keio-', label='慶應藏本{edition}'),
+    'arc': dict(id='arc-ritsumei', name='立命館大学アート・リサーチセンター 古典籍ポータル', short_name='立命館ARC', prefix='arc-', label='立命館ARC·{holder}藏本{edition}'),
+    'nagoya': dict(id='nagoya-u', name='名古屋大学附属図書館 古典籍', short_name='名大', prefix='nagoya-', label='名大藏本{edition}'),
+})
+ARC_HOLDER = {'UCLA': 'UCLA', 'Art Institute of Chicago': '芝加哥藝術博物館', 'Berkeley': '加州大學柏克萊分校', 'Leiden': '萊頓民族學博物館',
+              'British Museum': '大英博物館', 'MRAH': '布魯塞爾藝術歷史博物館', 'Marega': '梵蒂岡 Marega 文庫', 'arc_ritsumeikan': '立命館'}
+JPC1 = ('utokyo', 'ioc', 'shoryobu', 'keio', 'arc', 'nagoya')
+_JPC1_KEY = dict(utokyo='utokyo_record', ioc='ioc_nu', shoryobu='shoryobu_id', keio='keio_record', arc='arc_record', nagoya='nagoya_record')
 VAGUE_EDITION = {'', '刊', '写', '寫', '刻', '抄', '鈔'}
 
 
@@ -44,6 +57,18 @@ def _waseda_edition(v):
             parts.append(seg)
     v = ' : '.join(parts)
     return v
+
+
+def _jpc1_edition(rec):
+    v = unicodedata.normalize('NFKC', rec.get('version_raw') or '').strip()
+    v = re.sub(r'\[出版者不明\]\s*', '', v)
+    return re.sub(r'\s+', ' ', v).strip()
+
+
+def _jpc1_unit_id(source, rec):
+    """写入单位号（进 group）：单位代表记录的记录号（書陵部＝多册书总条），去掉站方库名前缀。"""
+    rid = (rec.get('extra') or {}).get('unit_record') or rec['source_record_id']
+    return re.sub(r'^(?:keioobjecthub|arc_books|THERS_da|utokyo_da)-', '', rid)
 
 
 def _pid(rec):
@@ -102,6 +127,21 @@ def make_item(source, rec, types=('image',)):
         url = url.replace('http://', 'https://', 1)
         if ex.get('set_size', 1) > 1:
             md['volume_count'] = ex['set_size']
+    elif source in JPC1:
+        ex = rec.get('extra') or {}
+        rid = _jpc1_unit_id(source, rec)
+        md = {_JPC1_KEY[source]: ex.get('unit_record') or rec['source_record_id']}
+        url = ex.get('unit_url') or rec['url']
+        edition = _jpc1_edition(rec)
+        if ex.get('call_no') or ex.get('holding_id'):
+            md['call_no'] = ex.get('call_no') or ex.get('holding_id')
+        if source == 'keio':
+            url = re.sub(r'^http://', 'https://', url)
+        if source == 'ioc' and ex.get('series'):
+            ex = dict(ex, edition_label=f"：《{ex['series']}》所收本" + (f"（{edition}）" if edition else ''))
+            rec = dict(rec, extra=ex)
+        if source == 'arc' and ex.get('provider'):
+            md['holder'] = next((v for k, v in ARC_HOLDER.items() if k in ex['provider']), ex['provider'])
     else:
         rid = _pid(rec)
         if not rid:
@@ -111,7 +151,7 @@ def make_item(source, rec, types=('image',)):
     if not rid or (source != 'waseda' and not rec.get('has_image')):
         return None
     md['edition'] = edition
-    if source in ('kokusho', 'naikaku'):
+    if source in ('kokusho', 'naikaku') or source in JPC1 and re.search(r'/manifest(?:\.json)?$', rec.get('image_url') or ''):
         md['iiif_manifest'] = rec['image_url']
     if source == 'naikaku':
         md['extent'] = (rec.get('extra') or {}).get('extent', '')
@@ -121,7 +161,7 @@ def make_item(source, rec, types=('image',)):
     if source in EURO and md.get('volume_count'):
         item['details'] = f'多冊本，站方分 {md["volume_count"]} 條著錄；此處鏈接其中排序最前一條（{rid}），其餘各冊見站方'
     ex = rec.get('extra') or {}
-    if source == 'waseda' and edition:
+    if (source == 'waseda' or source in JPC1) and edition:
         edition = '：' + edition
     label = s['label'].format(edition=ex.get('edition_label') or edition, holder=md.get('holder', ''),
                               req=unicodedata.normalize('NFKC', ex.get('request_no', '')).replace('－', '-'), extent=ex.get('extent', ''))
@@ -154,7 +194,7 @@ def build(source, rows, existing=None):
             made = make_item(source, x['rec'])
             if made is None:
                 continue
-            if source == 'waseda' or source in EURO:        # 匹配单位是记录、写入单位是顶层册／整套：同 Work 同组只留排序最前的一条
+            if source == 'waseda' or source in EURO + JPC1:   # 匹配单位是记录、写入单位是顶层册／整套／藏本：同 Work 同组只留排序最前的一条
                 if made[1] in seen_grp:
                     continue
                 seen_grp.add(made[1])

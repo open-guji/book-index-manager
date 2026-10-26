@@ -5,3 +5,8 @@ waseda	nu09_00941	release	孔子家語王肅注：Rowan 人核是
 waseda	bunko01_01660	reject	楚辞：Rhea 裁决存疑，库内 Work 不唯一（Milo 10-15）
 waseda	bunko06_01057	reject	詠物詩：带合刻标记（Milo 10-15）
 waseda	i17_00188	reject	尚書：站方为孔傳本，候选 尚書注疏 非同书（Rowan 人核否）
+ioc	140500	reject	說文解字段注：库内「說文解字」Work 著者为段玉裁注／徐灝箋（实为注箋），不能挂（A9 盲检 10-26）
+shoryobu	1000044580000	reject	李白詩：新井白石抄录本，选抄非全集（A9 盲检）
+arc	arc_books-AIC_R01_3_13_0Nr040a	reject	梅竹蘭菊四譜：八種畫譜之一种，仅凭附加题名命中「黃氏畫譜」，属全书之一部（A9 盲检）
+arc	arc_books-AIC_R01_3_13_0Nr050a	reject	木本花鳥譜：同上（A9 盲检）
+arc	arc_books-AIC_R01_3_13_0Nr060a	reject	草本花詩譜：同上（A9 盲检）

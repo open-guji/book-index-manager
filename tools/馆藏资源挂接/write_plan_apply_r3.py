@@ -7,8 +7,8 @@ import argparse, collections, json, os, sys
 
 ALLOWED = {'resources', 'resource_groups', 'revision', 'revised_at', 'ai_note'}
 SITE = {'nlc': '國圖', 'ncltw': '臺灣國圖', 'kokusho': '國書', 'ndl': 'NDL', 'naikaku': '內閣文庫', 'waseda': '早稲田',
-        'bnf': '法國國圖', 'bsb': '巴伐利亞', 'sbb': '柏林國圖', 'loc': '美國國會', 'cudl': '劍橋', 'onb': '奧地利國圖'}   # A8 欧美六馆
-
+        'bnf': '法國國圖', 'bsb': '巴伐利亞', 'sbb': '柏林國圖', 'loc': '美國國會', 'cudl': '劍橋', 'onb': '奧地利國圖',   # A8 欧美六馆
+        'utokyo': '東大', 'ioc': '東文研', 'shoryobu': '書陵部', 'keio': '慶應', 'arc': '立命館ARC', 'nagoya': '名大'}
 
 def bump(rev):
     a, b, _ = (rev or '1.0.0').split('.')

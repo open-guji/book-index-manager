@@ -17,7 +17,7 @@ os.chdir(BI)
 import mintid
 mintid.LANE_MACHINE.setdefault('resA2', 2047)
 PERIOD = authors.PERIOD
-REF = 'book-index-manager docs/馆藏资源挂接/报告/A7-NDL新书建条-20261026.md'
+REF = os.environ.get('REF') or 'book-index-manager docs/馆藏资源挂接/报告/A7-NDL新书建条-20261026.md'
 
 _t = open(J).read()
 rows = json.loads(_t) if _t.lstrip().startswith('[') else [json.loads(l) for l in _t.splitlines() if l.strip()]

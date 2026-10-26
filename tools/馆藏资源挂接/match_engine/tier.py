@@ -19,6 +19,7 @@ from titleparse import (COLL_BASE, COLL_EXT, PREF, LOCAL_PART, SUPPLEMENT, suppl
 
 CONFIRMED, DOUBT, NONE = '确定', '存疑', '无'
 EURO = ('bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb')
+JPC1 = ('utokyo', 'ioc', 'shoryobu', 'keio', 'arc', 'nagoya')     # A9：C1 日本诸馆第二批
 
 CODES_SUFFICIENT = ('T_EXACT', 'A_EQ', 'W_UNIQUE', 'ERA_OK')
 CODES_DOUBT = ('T_FUZZY', 'T_AUTHOR_NEAR', 'A_MISSING', 'A_DIFF', 'A_ALIAS_ONLY', 'ERA_CONFLICT', 'ERA_VERSION_EARLIER',
@@ -73,6 +74,9 @@ class Policy:
         'waseda': Profile(jp=True, style='parsed', coll=COLL_EXT, alias=True, shi_strip=True, multi_mode='segs', alt_sibling_brake=True),   # R1-E5：只出三档表
         **{s: Profile(jp=False, style='parsed', coll=COLL_EXT, alias=True, shi_strip=True, multi_mode='segs', alt_sibling_brake=True,
                       lead_brake=True, pinyin=True) for s in EURO},   # A8 欧美六馆
+        # A9（C1 日本诸馆第二批）：同早稲田口径；站方責任表述多含注疏校者，开首位责任者刹车（lead_brake）
+        **{s: Profile(jp=True, style='parsed', coll=COLL_EXT, alias=True, shi_strip=True, multi_mode='segs', lead_brake=True, alt_sibling_brake=True)
+           for s in JPC1},
     })
 
     def profile(self, source):

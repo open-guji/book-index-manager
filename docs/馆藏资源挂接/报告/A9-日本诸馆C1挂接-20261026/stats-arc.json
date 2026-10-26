@@ -1,0 +1,31 @@
+{
+ "source": "arc",
+ "n": 407,
+ "tiers": {
+  "无": 198,
+  "存疑": 153,
+  "确定": 56
+ },
+ "codes": {
+  "T_MISS": 198,
+  "A_MISSING": 61,
+  "T_EXACT": 59,
+  "A_EQ": 59,
+  "W_UNIQUE": 59,
+  "ERA_OK": 59,
+  "A_DIFF": 56,
+  "MULTI_WORK": 45,
+  "ERA_CONFLICT": 15,
+  "COLLECTION": 11,
+  "DUP_WORK_SUSPECT": 8,
+  "A_SECONDARY_ONLY": 7,
+  "HUMAN_REJECT": 3,
+  "CAP_DROPPED": 3,
+  "GROUP_SPLIT": 3,
+  "T_AUTHOR_NEAR": 2,
+  "T_FUZZY": 1
+ },
+ "group_split_groups": 1,
+ "write_plan": 14,
+ "cap_dropped": 3
+}

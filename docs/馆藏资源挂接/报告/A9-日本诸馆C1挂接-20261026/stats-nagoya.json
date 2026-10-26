@@ -1,0 +1,33 @@
+{
+ "source": "nagoya",
+ "n": 5094,
+ "tiers": {
+  "存疑": 2086,
+  "无": 978,
+  "确定": 2030
+ },
+ "codes": {
+  "T_EXACT": 2030,
+  "A_EQ": 2030,
+  "W_UNIQUE": 2030,
+  "ERA_OK": 2030,
+  "T_MISS": 978,
+  "MULTI_WORK": 693,
+  "A_MISSING": 678,
+  "A_DIFF": 432,
+  "MULTI_TITLE": 400,
+  "T_AUTHOR_NEAR": 314,
+  "COLLECTION": 229,
+  "DUP_WORK_SUSPECT": 225,
+  "A_SECONDARY_ONLY": 73,
+  "ERA_CONFLICT": 69,
+  "JUAN_GAP": 48,
+  "ALT_TITLE_SIBLING": 40,
+  "A_ALIAS_ONLY": 40,
+  "LOCAL_PART": 27,
+  "T_FUZZY": 21
+ },
+ "group_split_groups": 0,
+ "write_plan": 23,
+ "cap_dropped": 0
+}
