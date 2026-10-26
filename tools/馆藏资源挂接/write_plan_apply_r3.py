@@ -8,7 +8,8 @@ import argparse, collections, json, os, sys
 ALLOWED = {'resources', 'resource_groups', 'revision', 'revised_at', 'ai_note'}
 SITE = {'nlc': '國圖', 'ncltw': '臺灣國圖', 'nom': '越南漢喃', 'korcis': '韓國國中', 'kokusho': '國書', 'ndl': 'NDL', 'naikaku': '內閣文庫', 'waseda': '早稲田',
         'bnf': '法國國圖', 'bsb': '巴伐利亞', 'sbb': '柏林國圖', 'loc': '美國國會', 'cudl': '劍橋', 'onb': '奧地利國圖',   # A8 欧美六馆
-        'utokyo': '東大', 'ioc': '東文研', 'shoryobu': '書陵部', 'keio': '慶應', 'arc': '立命館ARC', 'nagoya': '名大'}
+        'utokyo': '東大', 'ioc': '東文研', 'shoryobu': '書陵部', 'keio': '慶應', 'arc': '立命館ARC', 'nagoya': '名大',
+        'shlib': '上圖'}   # A6续 上图 Book 层书目页（catalog）
 
 def bump(rev):
     a, b, _ = (rev or '1.0.0').split('.')
@@ -20,6 +21,7 @@ def main():
     ap.add_argument('--root', required=True); ap.add_argument('--plan', required=True)
     ap.add_argument('--revised-at', required=True); ap.add_argument('--write', action='store_true')
     ap.add_argument('--tag', default='R3', help='ai_note 里的批次名')
+    ap.add_argument('--kind', default='影像', help='ai_note 里括注的资源性质，如 影像／书目页')
     ap.add_argument('--basis', default='overview 馆藏资源挂接/计划/R3-首批核对报告-Rowan.md', help='ai_note 里的依据出处')
     a = ap.parse_args()
     idx = {}
@@ -56,7 +58,7 @@ def main():
             continue
         d['resource_groups'] = rg
         d['revision'] = bump(d.get('revision')); d['revised_at'] = a.revised_at
-        note = a.revised_at + ' ' + a.tag + ' 馆藏挂接：按确定档补挂 ' + '、'.join('%s %d 条' % (SITE[s], n) for s, n in n_add.items()) + '（影像）。依据见 ' + a.basis + '。'
+        note = a.revised_at + ' ' + a.tag + ' 馆藏挂接：按确定档补挂 ' + '、'.join('%s %d 条' % (SITE[s], n) for s, n in n_add.items()) + '（' + a.kind + '）。依据见 ' + a.basis + '。'
         d['ai_note'] = ((d.get('ai_note') or '') + '\n\n' + note).strip()
         diff = {k for k in set(d) | set(before) if d.get(k) != before.get(k)}
         assert diff <= ALLOWED, (wid, diff)
