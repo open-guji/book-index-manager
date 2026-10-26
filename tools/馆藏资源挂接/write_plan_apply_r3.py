@@ -9,7 +9,7 @@ ALLOWED = {'resources', 'resource_groups', 'revision', 'revised_at', 'ai_note'}
 SITE = {'nlc': '國圖', 'ncltw': '臺灣國圖', 'nom': '越南漢喃', 'korcis': '韓國國中', 'kokusho': '國書', 'ndl': 'NDL', 'naikaku': '內閣文庫', 'waseda': '早稲田',
         'bnf': '法國國圖', 'bsb': '巴伐利亞', 'sbb': '柏林國圖', 'loc': '美國國會', 'cudl': '劍橋', 'onb': '奧地利國圖',   # A8 欧美六馆
         'utokyo': '東大', 'ioc': '東文研', 'shoryobu': '書陵部', 'keio': '慶應', 'arc': '立命館ARC', 'nagoya': '名大',
-        'shlib': '上圖'}   # A6续 上图 Book 层书目页（catalog）
+        'shlib': '上圖', 'zinbun-toho': '京大人文研東方'}   # A6续 上图 Book 层书目页（catalog）
 
 def bump(rev):
     a, b, _ = (rev or '1.0.0').split('.')

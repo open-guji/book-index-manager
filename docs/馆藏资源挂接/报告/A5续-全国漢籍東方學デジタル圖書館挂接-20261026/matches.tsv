@@ -1,0 +1,703 @@
+source_id	tier	code	work_id	work_title	work_authors	via	cand_n	cands	title	author
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A029menu.html	存疑	S_NOAUTH_WORK_MULTI				title	5	d59f2m8kwwld,d59fy1jb7hmo,d59fyfds981t,d59fygwqc2dc,d59fz7o36br4	周易筮述八卷	淸王弘撰撰　乾隆五十八年朝坂蕭氏滋德堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A027menu.html	确定	T1_ENT	d59f28mpiiv9	尚書正義	唐孔穎達撰	title	1	d59f28mpiiv9	尚書正義二十卷	漢孔安國傳　唐孔穎達等疏　弘化四年熊本藩時習館用足利學校藏南宋本景刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A065menu.html	存疑	S_NOAUTH_REC_MULTI				title	11	d59f27yb4q9u,d59f28457fuo,d59f28mx07wm,d59f2gct0t8j,d59f2hcumbd0,d59f2nd2c0zm	周易集解	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A046menu.html	存疑	S_AUTHOR_NEAR	d59f2nf4b9j7	尚書譜	明梅鷟撰	title	3	d59f2nf4b9j7,d59f2nthjdoh,d59fxwfu5wxt	尚書譜五卷	清梅鴛撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A048menu.html	无	N_NOTITLE					0		古文尚書冤詞補正不分卷	淸周春撰　民國二十七年徐征鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A050menu.html	确定	T1	d59f2mqsf9c3	古文尚書條辨	清梁上國撰	title	1	d59f2mqsf9c3	古文尚書條辨五卷	淸梁上國撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A049menu.html	确定	T1	d59fxs61ahhe	書序答問	清王詠霓撰	title	1	d59fxs61ahhe	書序答問一卷	淸王詠霓撰　刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A044menu.html	存疑	S_NOAUTH_WORK_MULTI				title	21	d59f20am36dc,d59f24mfdnv2,d59f24mii1af,d59f24mit9ts,d59f24mit9tt,d59f24mit9tu	毛詩二十卷	日本鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A042menu.html	无	N_NOTITLE					0		新鐫鄒臣虎先生詩經翼註講意不分卷	明鄒之麟撰   刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A068menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f1iqgnr40,d59fy1hw0kjl	韓詩外傳十卷補逸一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A069menu.html	存疑	S_NOAUTH_REC_MULTI				title	7	d59f2ma45wqp,d59f2mr4wr29,d59f2nd0rugx,d59f2ntjq1hd,d59f2ntk1a0w,d59fxw2eyk1u	禮説十四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A064menu.html	无	N_NOTITLE					0		周禮正義殘	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A070menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f2n9cqccg,d59f2nav1mv6	釋服二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A053menu.html	存疑	S_NOAUTH_REC	d59fxwfphcsi	律呂新書淺釋	宋蔡元定撰	title	1	d59fxwfphcsi	律呂新書淺釋	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A055menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f24mb0c8y,d59f27x5axhe	春秋釋例十五卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A017menu.html	确定	T1	d59f2htcy5mo	附釋音春秋左傳注疏	西晉杜預注	title	2	d59f2htcy5mo,d59fyro5pm2p	附釋音春秋左傳註疏六十卷	晉杜預注　唐陸德明音義　唐孔穎達等疏　宋刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A018menu.html	无	N_AUTHOR_DIFF	d59fxv1igk5e	監本附音春秋公羊注疏	佚名撰	title	1	d59fxv1igk5e	監本附音春秋公羊註疏二十八卷	漢何休學　唐陸德明音義　□闕名疏　宋刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A019menu.html	确定	T1	d59f2huglam8	監本附音春秋穀梁傳注疏	東晉范寧集解	title	1	d59f2huglam8	監本附音春秋穀梁傳註疏二十卷	晉范甯集解　唐陸德明音義　唐楊士勛疏　宋刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A037menu.html	确定	T1	d59fxygnkutd	春秋解	宋胡銓撰	title	22	d59f2hcoot1d,d59f2hctdd6t,d59f2hdhpvk4,d59f2hdu7da9,d59f2heb26m8,d59f2heg1zb5	春秋解十五卷	宋胡銓撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A056menu.html	存疑	S_NOAUTH_REC_MULTI				title	110	d59f1iopaku8,d59f23nq5xxi,d59f23nrew3l,d59f23nu80zt,d59f24me4pot,d59f24me4pou	論語十卷坿南宗論語考異一卷天文板論語考	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A015menu.html	无	N_NOTITLE					0		論語零片	魏何晏集解　舊鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A071menu.html	存疑	S_NOAUTH_REC	d59f2na7blkx	論語古訓	清陳鱣撰	title	1	d59f2na7blkx	論語古訓十卷坿一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A066menu.html	存疑	S_NOAUTH_REC	d59fxrcpansw	論語發疑	清顧成章撰	title	1	d59fxrcpansw	論語發疑	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A057menu.html	存疑	S_NOAUTH_REC_MULTI				title	3	d59f2hry2h34,d59f2htvoe80,d59fxwgbbytc	大學章句一卷中庸章句一卷論語集註十卷孟子集註十四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A041menu.html	存疑	S_COMBINED	d59f2nhzmtqa	大學億	明王道撰	title	1	d59f2nhzmtqa	大學億二卷釋疑一卷	明王道撰 中御門資煕鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A067menu.html	无	N_NOTITLE					0		四書集註直解	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A058menu.html	存疑	S_NOAUTH_REC_MULTI				title	5	d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fxwgckwzn,d59fyvpsjdhc	古文孝經一卷坿附錄一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A074menu.html	无	N_NOTITLE					0		駮五經異義疏證十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A051menu.html	存疑	S_NOAUTH_REC	d59fxv26htz4	七經偶記	清汪德鉞撰	title	1	d59fxv26htz4	七經偶記	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A043menu.html	无	N_NOTITLE					0		同文囮雅六卷	□雲厓居士撰   鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A030menu.html	存疑	S_MULTI				title	4	d59f2068rklc,d59f24m8tog4,d59f2q5rmfia,d59fxwou68si	說文解字十五卷	漢許愼撰　宋徐鉉等奉敕校定　虞山毛氏汲古閣刊第四次修改本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A020menu.html	存疑	S_MULTI				title	4	d59f2068rklc,d59f24m8tog4,d59f2q5rmfia,d59fxwou68si	說文解字十五卷	漢許愼撰　宋徐鉉等奉敕校定　據汲古閣本重刊　有惠棟席世昌校語席淏識語圖記
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A038menu.html	存疑	S_MULTI				title	4	d59f2068rklc,d59f24m8tog4,d59f2q5rmfia,d59fxwou68si	說文解字十五卷	漢許愼撰　宋徐鉉等奉敕校定　乾隆三十八年大興朱氏椒華吟舫據汲古閣本重刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A024menu.html	存疑	S_NOAUTH_WORK_MULTI				title	4	d59f2068rklc,d59f24m8tog4,d59f2q5rmfia,d59fxwou68si	說文解字十五卷坿汲古閣說文解字校記一卷	光緒七年淮南書局據汲古閣第四次樣本重刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A054menu.html	存疑	S_NOAUTH_WORK_MULTI				title	4	d59f2068rklc,d59f24m8tog4,d59f2q5rmfia,d59fxwou68si	說文解字	[經-Ⅹ-2-8]
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A052menu.html	存疑	S_NOAUTH_WORK_MULTI				title	4	d59f2068rklc,d59f24m8tog4,d59f2q5rmfia,d59fxwou68si	說文解字	[經-Ⅹ-2-9]
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A028menu.html	存疑	S_MULTI				title	4	d59f2068rklc,d59f24m8tog4,d59f2q5rmfia,d59fxwou68si	說文解字十五卷坿通檢十四卷末一卷	漢許愼撰　宋徐鉉等奉敕校定　通檢　淸黎永椿撰　同治十二年番禺陳昌治校刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A025menu.html	存疑	S_MULTI				title	4	d59f2068rklc,d59f24m8tog4,d59f2q5rmfia,d59fxwou68si	說文解字十五卷坿說文部首一卷	漢許愼撰　宋徐鉉等奉敕校定 部首　淸丁艮善輯　光緒七年日照丁氏據汲古閣舊藏宋監本重校刊  部首 光緒十年刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A047menu.html	确定	T1	d59f2gcieqrm	說文解字繫傳	徐鍇撰	title	2	d59f2gcieqrm,d59f2puo2osh	說文解字繫傳四十卷	南唐徐鍇撰　道光十九年壽陽祁氏據景宋鈔本重刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A039menu.html	存疑	S_COMBINED	d59f2gcieqrm	說文解字繫傳	徐鍇撰	title	2	d59f2gcieqrm,d59f2puo2osh	說文解字繫傳四十卷坿校勘記三卷	南唐徐鍇撰　校勘記　淸祁寯藻撰　道光十九年壽陽祁氏據景宋鈔本重刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A045menu.html	确定	T1	d59fxw0nwmbl	許氏說文解字五音韻譜	宋李燾撰；漢許慎撰	title	1	d59fxw0nwmbl	許氏說文解字五音韻譜十二卷	宋李燾撰　嘉靖十一年孫氏刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A023menu.html	确定-别名	T1_ALIAS	d59f2hugwj5s	重刊說文解字五音韻譜	南宋李燾重編	alias	1	d59f2hugwj5s	說文解字五音韻譜十二卷	宋李燾撰　萬曆二十六年崇川陳大科白狼書社刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A016menu.html	确定	T1	d59fxw0nwmbl	許氏說文解字五音韻譜	宋李燾撰；漢許慎撰	title	1	d59fxw0nwmbl	重刊許氏說文解字五音韻譜十二卷	宋李燾撰　天啓七年世裕堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A072menu.html	存疑	S_NOAUTH_REC	d59f2nazq70g	說文段注訂補	清王紹蘭撰	title	1	d59f2nazq70g	説文段注訂補十四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A073menu.html	存疑	S_NOAUTH_REC_MULTI				title	3	d59f2nb5188x,d59fxxkp04jl,d59fyyrhim0x	説文辨疑一卷條記一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A040menu.html	存疑	S_COMBINED	d59f2j5992bk	改併五音類聚四聲篇	金韓道昭撰	title	1	d59f2j5992bk	改併五音類聚四聲篇十五卷五音集韻十五卷坿新編經史正音切韻指南一卷新編篇韻貫珠集八卷直指玉鑰匙門法一卷	金韓道昭撰 切韻指南 元劉鑑撰 篇韻貫珠集 明釋眞空撰　　正德十年刊本  切韻指南 正德十一年刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A033menu.html	存疑	S_NOAUTH_WORK_MULTI				title	3	d59fxu2sxo1s,d59fy5qb99mq,d59fywz7vta8	三字經一卷	瑞凝堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A022menu.html	无	N_NOTITLE					0		増修互註禮部韻略殘一卷	宋闕名撰　宋毛晃增注　男毛居正重增刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A031menu.html	无	N_NOTITLE					0		高郵王氏父子論韻文稿不分卷	淸王念孫王引之同撰　昭和十一年東方文化學院京都研究所據北平人文科學研究所藏本重鈔
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A032menu.html	无	N_NOTITLE					0		直音彙韻一卷	明闕名輯　明刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A026menu.html	无	N_NOTITLE					0		歙江氏二十一部諧聲表一卷入聲表凡例一卷坿句容陳氏十九部諧聲孳生述一卷	淸江有誥撰　十九部諧聲孳生述　淸陳立撰　江都李祖望半畝園鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A021menu.html	确定	T1	d59fxujedtdu	英語集全	清唐廷樞撰	title	1	d59fxujedtdu	英語集全六卷	淸唐廷樞撰　同治元年廣東刊本　緯經堂藏板
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B001menu.html	无	N_NOTITLE					0		漢書零片	漢班固撰　唐顏師古注　宋刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B004menu.html	存疑	S_MULTI				title	22	d59f27tbyigy,d59f27xspq81,d59f27xspq82,d59f27xxpiwy,d59f27y9vs3l,d59f283pwt8g	後漢書九十卷坿續漢志三十卷	劉宋范曄撰　唐李賢注　續志　晉司馬彪撰　梁劉昭注　宋刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B048menu.html	无	N_NOTITLE					0		史記正義佚文不分卷	日本瀧川龜太郎輯　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B168menu.html	无	N_NOTITLE					0		史記訂補八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B169menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f2nbop6gy,d59fyt7e3awx	漢書地理志校注二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B170menu.html	存疑	S_NOAUTH_REC	d59f2nbsg0zl	三國志辨疑	清錢大昭撰	title	1	d59f2nbsg0zl	三國志辨疑三卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B171menu.html	存疑	S_NOAUTH_REC	d59f2nc2fmdc	通鑑注商	清趙紹祖注	title	1	d59f2nc2fmdc	通鑑注商十八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B161menu.html	无	N_NOTITLE					0		少備通鑑節要五十卷外紀四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B107menu.html	无	N_NOTITLE					0		新刊補遺標題論策綱鑑全備精要二十卷	明郭子章蘇濬同輯　萬曆二十年余秀峯刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B167menu.html	存疑	S_NOAUTH_REC	d59f2hrkyi9s	東萊先生音注唐鑑	北宋范祖禹撰	title	1	d59f2hrkyi9s	東萊先生音註唐鑑	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B013menu.html	确定	T1	d59f2hs74cu9	皇朝編年備要	趙宋陳均撰	title	1	d59f2hs74cu9	皇朝編年備要三十卷	宋陳均撰　淸白草廬鈔本　有馬玉堂圖記
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B073menu.html	确定	T1	d59f2hrhiwap	三朝北盟會編	南宋徐夢莘撰	title	1	d59f2hrhiwap	三朝北盟會編二百五十卷	宋徐夢莘撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B148menu.html	存疑	S_NOAUTH_REC_MULTI				title	22	d59f1iky4tmo,d59fxplghpfk,d59fxs7lha81,d59fy03bkhz4,d59fy1xcvxmq,d59fy3pw7668	山海經十八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B172menu.html	存疑	S_NOAUTH_REC_MULTI				title	3	d59f2074ajgg,d59fxwz1vshs,d59fy3s1ascg	東觀漢記二十四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B005menu.html	无	N_NOTITLE					0		金史補不分卷	淸杭世駿輯　鈔本　有繆荃孫圖記
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B028menu.html	存疑	S_NOAUTH_WORK	d59fyzo5dou9	宗室王公章京世襲爵秩册		title	1	d59fyzo5dou9	宗室王公章京世襲爵秩册	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B006menu.html	无	N_NOTITLE					0		淸史天文志不分卷	鄧傑臣王崇源同撰　淸史館鈔本　有柯劭忞識語
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B022menu.html	无	N_NOTITLE					0		儒林公議不分卷	宋田況撰　鈔本　有曹溶古林武進盛氏所藏圖記
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B134menu.html	无	N_NOTITLE					0		牙帖執照九種	咸豐宣統閒
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B050menu.html	无	N_NOTITLE					0		行文底檔	淸宣統中官撰　宣統二年至六年八年至十三年鈔
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B074menu.html	确定	T1	d59f2htwm3up	唐大詔令集	北宋宋敏求編	title	1	d59f2htwm3up	唐大詔令集一百三十卷	宋宋敏求輯　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B149menu.html	无	N_NOTITLE					0		六諭衍義一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B180menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f2njj7281,d59fyv57tddt	皇明詔令二十一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B007menu.html	无	N_NOTITLE					0		國朝諸臣奏議殘二十六卷	宋趙汝愚輯　宋刊　大德元統閒福州路補刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B173menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f2hs4xp1d,d59f2ntru7lt	孔子編年四卷孟子編年四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B018menu.html	无	N_NOTITLE					0		孫文定公行述一卷	淸宋維中輯   道光二十一年 春園宋氏也足山房鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B021menu.html	无	N_NOTITLE					0		楊忠武公行述一卷坿楊時齋宮保中外勤勞錄一卷	淸楊國佐楊國楨同撰 勤勞錄　淸楊芳撰　道光二十一年春園宋氏也足山房鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B017menu.html	无	N_AUTHOR_DIFF				title	2	d59fyeri1ekh,d59fyericn41	明状元圖考三卷	明顧祖訓輯　漢陽葉氏平安館刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B174menu.html	存疑	S_NOAUTH_REC	d59fyngwx9fl	鄭大司農蔡中郎年譜合表	清林春溥編	title	1	d59fyngwx9fl	鄭大司農蔡中郎年譜合表一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B150menu.html	存疑	S_NOAUTH_REC	d59f28mcek1v	元和郡縣誌	唐李吉甫撰	title	1	d59f28mcek1v	元和郡縣志四十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B176menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f2hpd1r7l,d59fybagvaio	九域志十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B029menu.html	确定	T1	d59f2gp07pj4	廣輿圖	元朱思本撰	title	3	d59f2gp07pj4,d59f6eiconie,d59f6eiczw20	廣輿圖二卷	元朱思本原本　明羅洪先補訂　刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B027menu.html	确定	T1	d59f2ne5cooz	今古輿地圖	明吳國輔撰	title	1	d59f2ne5cooz	今古輿地圖三卷	明沈定之呉國輔等撰　崇禎十一年山陰呉氏刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B105menu.html	无	N_NOTITLE					0		欽定大淸一統志殘九十五卷表一卷	淸乾隆二十九年　敕撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B008menu.html	确定	T1	d59f6ejckxz6	榮河縣志	明宋綱撰	title	5	d59f2n4kfchu,d59f2n6245xc,d59f6ejckxz6,d59fyoax9jia,d59fyp04zn5s	榮河縣志二卷	明宋綱纂修　據嘉靖十七年本鈔
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B009menu.html	确定	T1	d59fyozsi5fk	[崇禎]郾城縣志	明李豫纂；明李振聲修	title	7	d59f2mz77g8y,d59f6em4gvt3,d59fynqv9n29,d59fynrjaww1,d59fyo9li8e9,d59fyod21x4y	郾城縣志十二卷	明李振聲修　明李豫等纂　崇禎十年刊本　有山本信有圖記
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B136menu.html	存疑	S_COMBINED	d59f2ncweiv8	廣東通志	明黄佐撰	title	7	d59f2msesmwy,d59f2n196ozl,d59f2n6elnnk,d59f2ncweiv8,d59f2nhw77k0,d59f6eoj8uti	廣東通志七十卷闕卷第五十四至第五十六	明談愷修 明黃佐等纂   嘉靖三十九年序刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B106menu.html	存疑	S_COMBINED	d59f2ndwasxw	廣西通志	明林富纂	title	11	d59f2mdbyy9s,d59f2n6elnnl,d59f2n6v58g0,d59f2n6v58g1,d59f2nczu4n7,d59f2ndwasxw	廣西通志六十卷闕卷第十六至第二十一第二十八第二十九	明林富修 明黃佐等纂　嘉靖十一年刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B137menu.html	确定	T1	d59f2nen53pe	海國圖志	清魏源撰	title	1	d59f2nen53pe	海國圖志五十卷	淸魏源撰   道光二十四年邵陽魏氏古微堂活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B177menu.html	存疑	S_NOAUTH_REC	d59fyt59axa9	水經注疏要删	清楊守敬撰	title	1	d59fyt59axa9	水經注疏要删四十卷補遺一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B178menu.html	存疑	S_NOAUTH_REC	d59g1qb43jgk	水經註疏要刪補遺		title	1	d59g1qb43jgk	水經注疏要删補遺四十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B010menu.html	确定	T1	d59f2msijhfk	水經注疏	清楊守敬撰	title	1	d59f2msijhfk	水經注疏四十卷	淸楊守敬熊會貞同撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B147menu.html	存疑	S_NOAUTH_REC	d59fypy4x535	問水漫錄	清盛百二輯	title	1	d59fypy4x535	問水漫録	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B139menu.html	无	N_NOTITLE					0		常熟名勝古蹟古物調査表	闕名撰   鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B046menu.html	无	N_NOTITLE					0		京都至伊吾廬行程日記不分卷	淸□麟撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B157menu.html	存疑	S_NOAUTH_REC	d59f2hr2uqrl	宋朝事實	趙宋李攸撰	title	1	d59f2hr2uqrl	宋朝事實二十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B051menu.html	无	N_NOTITLE					0		憲法比例徵四卷	戴澤撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B135menu.html	无	N_NOTITLE					0		政治叢書提要四卷	淸闕名撰  光緒宣統閒內府鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B019menu.html	确定	T1	d59fxsnu4oow	文公家禮會通	明湯鐸撰	title	1	d59fxsnu4oow	文公家禮會通十卷	明湯鐸輯　景泰元年金陵湯氏執中堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B049menu.html	无	N_NOTITLE					0		租簿道光三年四年	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B030menu.html	无	N_NOTITLE					0		租簿道光十一年至十五年	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B031menu.html	无	N_NOTITLE					0		租簿道光十六年至二十年	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B032menu.html	无	N_NOTITLE					0		租簿同治元年至五年	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B033menu.html	无	N_NOTITLE					0		租簿同治十二年至光緒三年	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B034menu.html	无	N_NOTITLE					0		租簿光緒四年至八年	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B035menu.html	无	N_NOTITLE					0		租簿光緒九年至十三年	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B036menu.html	无	N_NOTITLE					0		入厫同治六年夏麥入厫光緒四年入厫光緒十七年入厫光緒二十年入厫	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B037menu.html	无	N_NOTITLE					0		租數光緒四年至六年八年十五年十七年	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B038menu.html	无	N_NOTITLE					0		租簿光緒十九年至二十年	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B039menu.html	无	N_NOTITLE					0		二七淸粮底本	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B040menu.html	无	N_NOTITLE					0		美字上節田號坵名册	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B041menu.html	无	N_NOTITLE					0		大糧各處取租册檔雍正七年坿大糧各頊庄頭差銀册檔雍正七年十一年	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B042menu.html	无	N_NOTITLE					0		漕白寔徵册光緒二十七年三十年地漕定徵册光緒二十七年	鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B043menu.html	无	N_NOTITLE					0		錢穀精騎不分卷	淸闕名撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B044menu.html	无	N_NOTITLE					0		湖北全省征收錢粮漕米數目淸册不分卷	淸闕名撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B045menu.html	无	N_NOTITLE					0		全省倉穀數目不分卷	淸闕名撰　道光中鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B024menu.html	无	N_NOTITLE					0		楚境長江水師全卷章程不分卷	淸闕名撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B011menu.html	存疑	S_COMBINED	d59f28lxqeiq	唐律疏義	唐長孫無忌奉敕撰	title	2	d59f28lxqeiq,d59f2ni8dgqr	唐律疏義三十卷坿釋文	唐長孫無忌等奉敕撰　釋文　元王元亮撰　鈔本　有莫祥芝莫棠圖記
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B182menu.html	无	N_NOTITLE					0		大明律講解三十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B016menu.html	无	N_NOTITLE					0		陵工事宜淸册不分卷	淸闕名撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B002menu.html	确定	T1	d59f2htm01du	直齋書錄解題	南宋陳振孫撰	title	1	d59f2htm01du	直齋書錄解題二十二卷	宋陳振孫撰　元程棨批注　乾隆三十八年序武英殿活字印本　有盧文弨識語呉騫陳鱣識語圖記
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B179menu.html	存疑	S_NOAUTH_REC	d59fyt4xfwn5	天一閣見存書目	清薛福成撰	title	1	d59fyt4xfwn5	天一閣見存書目四卷首一卷末一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B023menu.html	无	N_NOTITLE					0		澹庵書目四卷	淸忻寶華撰　光緒三十三年自序嘉興忻氏不暇嬾齋鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B014menu.html	确定	T1	d59f6em95fya	徐氏家藏書目	徐𤊹撰	title	3	d59f2ng4isxu,d59f6em95fya,d59fyv5qjlz4	徐氏家藏書目四卷四卷	明徐𤊹撰　光緒十七年江陰繆氏藝風堂鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B020menu.html	无	N_NOTITLE					0		絳雲樓書目不分卷	淸錢謙益撰　淸陳景雲注　鈔本　有呉翌鳳圖記
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B071menu.html	确定	T1	d59fxr8es9oj	木犀軒收藏舊本書目	清李盛鐸撰	title	1	d59fxr8es9oj	木犀軒收藏舊本書目四卷	李盛鐸撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B104menu.html	无	N_NOTITLE					0		嘉業藏書樓宋本書目一卷	淸劉承幹撰　昭和十二年本所鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B072menu.html	无	N_NOTITLE					0		宋元書景不分卷	淸繆荃孫輯　宣統三年江陰繆氏刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B047menu.html	无	N_NOTITLE					0		淸閨秀藝文略五卷	單士釐撰　手稾本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B003menu.html	无	N_NOTITLE					0		淸儀閣所藏古器物文十册	淸張廷濟撰　手稾本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B142menu.html	无	N_NOTITLE					0		陳乾藏吉金文字一卷	淸陳乾輯   拓本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B143menu.html	无	N_NOTITLE					0		殷禮足徵齋藏三代文字一卷	徐乃昌輯   拓本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B140menu.html	无	N_NOTITLE					0		澂秋館藏器搨本不分卷	淸陳寶琛輯   拓本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B141menu.html	无	N_NOTITLE					0		弘齋藏三代吉金文字不分卷	□闕名輯   拓本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B025menu.html	存疑	S_MULTI				title	3	d59f2hlpblz6,d59fypg5ixvk,d59fyt6ei8zk	泉志十五卷補遺錄一卷	宋洪遵撰　補遺錄　淸高翰伯輯　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B144menu.html	无	N_NOTITLE					0		龜甲獸骨拓片一卷	王富晉輯   民國中冀王氏拓本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B026menu.html	无	N_NOTITLE					0		咸豐朝行用官票	□闕名輯
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B158menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f2msv0z5u,d59fyv4vn474	金石學錄四卷補一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B159menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fyn5zxfk0,d59fyrmybn5s	金石原起説考補一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B160menu.html	无	N_NOTITLE					0		北宋石經補考一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B012menu.html	无	N_NOTITLE					0		精刻補註評解綱鑑歴朝捷錄十卷首一卷坿國朝捷錄四卷中興偉畧一卷闕元朝捷錄	明顧充撰　明黄道周增訂　國朝捷錄　明李良翰鍾惺同撰　中興偉畧　明馮夢龍輯　余氏尊古堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B138menu.html	无	N_NOTITLE					0		楊鐵崖文集二卷卽史義拾遺	元楊維禎撰   漱雲樓刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B146menu.html	无	N_NOTITLE					0		尚書六體遺範十五卷	淸金象乾撰　刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C051menu.html	存疑	S_NOAUTH_REC_MULTI				title	17	d59ezahp9urk,d59f28n3k7ba,d59fy115kk5c,d59fy115kk5d,d59fy1j1udc0,d59fy3spyj9d	荀子十巻首一巻	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C053menu.html	存疑	S_NOAUTH_REC	d59fy10pyozl	晦菴先生語錄類要	宋葉士龍輯	title	1	d59fy10pyozl	晦菴先生語錄類要十八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C042menu.html	无	N_NOTITLE					0		合刻宋明四先生語録	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C010menu.html	存疑	S_MULTI				title	2	d59f2mcmzytc,d59fyutgjfuo	明儒學案六十二卷師說一卷	淸黄宗羲撰　道光元年會稽莫氏刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C057menu.html	存疑	S_NOAUTH_REC	d59f2mgo5beo	日知錄之餘	清顧炎武撰	title	1	d59f2mgo5beo	日知錄之餘四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C050menu.html	存疑	S_NOAUTH_REC	d59f2mqfmj2a	札樸	清桂馥撰	title	1	d59f2mqfmj2a	札樸十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C052menu.html	存疑	S_NOAUTH_REC	d59f2mqfmj2a	札樸	清桂馥撰	title	1	d59f2mqfmj2a	札樸十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C032menu.html	确定	T1	d59f2nec7wn5	三一子	明程德良撰	title	1	d59f2nec7wn5	三一子三卷	明程德良撰　萬曆二十八年自序刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C043menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f2hm5jy80,d59fy1gwqr5u	十一家註孫子三卷坿十家註孫子遺說一卷孫子今譯	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C001menu.html	存疑	S_MULTI				title	2	d59f2nl3ds01,d59fyfecjncx	江南經畧八卷	明鄭若曾撰　嘉靖四十五年序刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C054menu.html	存疑	S_NOAUTH_REC_MULTI				title	3	d59f2nkzboxv,d59fy1i1mubk,d59fz72vco3k	紀效新書十八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C047menu.html	存疑	S_NOAUTH_REC_MULTI				title	3	d59f2nkeesqp,d59fy1gz8ni9,d59fyv7u31fl	武備志二百四十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C058menu.html	存疑	S_NOAUTH_REC	d59f2nhs50ch	管子地員篇注	清王紹蘭注	title	1	d59f2nhs50ch	管子地員篇注四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C048menu.html	存疑	S_NOAUTH_REC	d59fxp7t69du	治蝗書	清陳崇砥撰	title	1	d59fxp7t69du	治蝗書	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C044menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f2nkeq134,d59f2nl82cci	救荒本草	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C045menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxypq35kw,d59fxzfj1e6a	傷寒論淺註方論合編六卷首一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C002menu.html	无	N_AUTHOR_DIFF	d59fxu3tgfls	大明嘉靖二十年歲次辛丑大統曆	佚名撰	title	1	d59fxu3tgfls	大明嘉靖二十年歳次辛丑大統曆一卷	明刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C038menu.html	确定	T1	d59f2gol8bgg	天原發微	宋末元初鮑雲龍撰	title	1	d59f2gol8bgg	天原發微五卷	宋鮑雲龍撰   明刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C029menu.html	存疑	S_NOAUTH_WORK_MULTI				title	2	d59f6etx385c,d59fy1j5wge9	玉髓眞經三十卷後卷二十一卷	宋張洞玄撰　 坿 錄　宋闕名輯　宋劉允中注　宋蔡季通發揮　嘉靖二十九年陳少嶽刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C003menu.html	确定	T1	d59f286ws54w	靈台秘苑	北周庾季才撰	title	1	d59f286ws54w	靈臺秘苑十五卷	北周庾季才原本　宋于大吉等奉敕重修　鈔本　有蔣鳳藻柯逢時圖記　周星詒識語
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C004menu.html	无	N_NOTITLE					0		大唐開元占經殘三卷	唐瞿曇悉達等奉敕撰　淸徐有壬校　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C005menu.html	无	N_AUTHOR_DIFF				title	3	d59f28ji0pvm,d59fxu37ltkx,d59fy11kv6rk	觀象玩占四十九卷	□闕名撰　明呉士安沕穆齋鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C006menu.html	无	N_NOTITLE					0		二十八宿總論不分卷	□闕名撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C040menu.html	存疑	S_NOAUTH_REC	d59f2mt3rmdd	卜歲恆言	清吳鵠撰	title	1	d59f2mt3rmdd	卜歳恆言	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C021menu.html	无	N_NOTITLE					0		𧻰日曆書不分卷目錄一卷	□闕名撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C007menu.html	无	N_NOTITLE					0		大唐陰陽書殘一卷	日本鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C008menu.html	确定	T1	d59fyt6ikc1s	集古印譜	明甘暘撰	title	5	d59f2gft0x6p,d59f2ne3shz6,d59f2nfbhqf5,d59fyt6ikc1s,d59fyv4w9la8	集古印譜四卷首一卷	明甘暘撰　刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C015menu.html	确定	T1	d59fxqifwiyp	學山堂印譜	明張灝輯	title	1	d59fxqifwiyp	學山堂印譜八卷	明張灝輯　崇禎四年鈐印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C011menu.html	无	N_NOTITLE					0		明印式不分卷	□闕名撰　民國九年嘉善曹氏據江安傅氏藏鈔本鈔
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C025menu.html	确定	T1	d59fxq6en4zk	錦囊印林	清汪啓淑輯	title	1	d59fxq6en4zk	錦囊印林四卷	淸汪啓淑輯　鈐本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C041menu.html	存疑	S_NOAUTH_REC	d59fxupyzrwh	古印集存	清崔鴻圖輯	title	1	d59fxupyzrwh	古印集存	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C026menu.html	无	N_NOTITLE					0		奉天舊印一卷	闕名輯   民國三年鈐本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C022menu.html	无	N_NOTITLE					0		製茶景全圖一卷	幼亭氏繪
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C046menu.html	存疑	S_NOAUTH_REC	d59f2nl24poh	墨子閒詁	清孫詒讓撰	title	1	d59f2nl24poh	墨子閒詁十五卷目錄一卷附錄一卷後語二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C039menu.html	确定	T1	d59f23noaiof	呂氏春秋高誘注	東漢高誘注	title	7	d59ezkwuylts,d59f23noaiof,d59fy03abjsx,d59fy1iazym8,d59fyfe9qigx,d59fymbuwirl	呂氏春秋二十六卷	漢高誘注　明雲閒宋邦乂等校刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C049menu.html	存疑	S_NOAUTH_REC	d59fxydcyqrm	鈍硯巵言	清錢綺撰	title	1	d59fxydcyqrm	鈍硯巵言	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C037menu.html	无	N_NOTITLE					0		容齋一筆十六卷二筆十六卷三筆十六卷四筆十六卷五筆十卷	宋洪邁撰　明刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C036menu.html	确定	T1	d59f2hr1lsld	鶴林玉露	南宋羅大經撰	title	2	d59f2hr1lsld,d59f6ejuophc	鶴林玉露十七卷	宋羅大經撰   敦古齋刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C059menu.html	存疑	S_NOAUTH_REC	d59f2mgqn7r4	池北偶談	清王士禎撰	title	1	d59f2mgqn7r4	池北偶談二十六卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C033menu.html	存疑	S_COMBINED	d59f28jf7kzp	群書治要	唐魏徵等奉敕編	title	1	d59f28jf7kzp	羣書治要五十卷原闕卷第四第十三第二十	唐魏徵等奉敕輯　弘化三年紀藩活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C031menu.html	无	N_AUTHOR_DIFF	d59f2ogat2ps	標題徐狀元補注蒙求	五代李瀚撰	title	1	d59f2ogat2ps	標題徐狀元補注蒙求三卷	日本活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C020menu.html	存疑	S_COMBINED	d59fy1247wg1	新箋決科古今源流至論前集	宋林駉撰；宋黃履翁撰	title	1	d59fy1247wg1	新箋決科古今源流至論前集十卷後集十卷	宋林駉撰　弘治二年梅隱書堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C055menu.html	无	N_NOTITLE					0		新鐫詳解丘瓊山故事成語必讀成語考一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C018menu.html	无	N_NOTITLE					0		新鍥正譌訓解標類書言故事大全四卷	明胡繼宗撰　明李廷機校釋　余雲波刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C019menu.html	无	N_NOTITLE					0		增補幼學須知雜字大全三卷首一卷	明闕名輯　戊午歳瑯嬛閣刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C035menu.html	无	N_NOTITLE					0		欽定古今圖書集成殘三卷存山川典卷第二十三第二十四考工典卷第五十三有闕葉	淸康煕中敕撰  活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C012menu.html	无	N_NOTITLE					0		永樂大典殘二卷	明解縉等奉敕輯　隆慶中呂鳴瑒鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C017menu.html	无	N_NOTITLE					0		大般若波羅蜜多經殘一卷	唐釋玄奘奉詔譯　金刊本　趙城廣勝寺金版大藏經之一
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C014menu.html	无	N_NOTITLE					0		西夏文大方廣佛華嚴經殘五卷	元活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C013menu.html	无	N_NOTITLE					0		西夏文大方廣佛華嚴經殘一卷	元活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C016menu.html	确定	T1	d59fyhie2wow	妙臂菩薩所問經	宋釋法天譯	title	3	d59f2pxkn6de,d59fyhie2wow,d59fyjq65erl	妙臂菩薩所問經四卷	宋釋法天奉詔譯　金刊本　趙城廣勝寺金版大藏經之一
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C009menu.html	确定	T1	d59f285j5erm	高僧傳	南朝梁釋慧皎撰	title	5	d59f285j5erm,d59f2860xxq9,d59f28jm2sy0,d59f2njcbu2o,d59f99gqnapx	高僧傳十四卷	梁釋慧皎撰　元刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C056menu.html	无	N_NOTITLE					0		水陸無遮平等齋儀撮要一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C028menu.html	无	N_NOTITLE					0		隆興佛敎編年通論殘六卷存卷第三至第五第二十一至第二十三	宋釋祖琇撰　日本刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C030menu.html	无	N_NOTITLE					0		祖庭事苑八卷	宋釋善卿撰　日本活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D152menu.html	存疑	S_NOAUTH_WORK_MULTI				title	26	d59f209xqo00,d59f27wgyf41,d59f2evufbb8,d59f2hscqmm8,d59f7v5zmm87,d59fajc42yv9	楚辭二卷	明閔齊伋校   烏程閔氏刊本 三色套印
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D012menu.html	确定	T1	d59f205a48ao	漢蔡中郎集	東漢蔡邕撰	title	1	d59f205a48ao	蔡中郎集十九卷十九卷	漢蔡邕撰　淸嚴可均校輯　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D169menu.html	存疑	S_NOAUTH_REC	d59fsabp29du	曹集詮評	三國曹植撰	title	1	d59fsabp29du	曹集詮評十卷逸文一卷坿魏陳思王年譜一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D155menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f2q4oajnl,d59fy5p2m9dt	諸葛忠武侯文集	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D058menu.html	确定	T1	d59f28kehedk	高常侍集	唐高適撰	title	1	d59f28kehedk	高常侍集二卷	唐高適撰　海陽汪應臯刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D063menu.html	无	N_NOTITLE					0		杜工部詩通十六卷	明張綖撰   隆慶六年男張守中刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D060menu.html	存疑	S_COMBINED	d59fsa887c3r	白樂天文集	唐白居易撰	title	1	d59fsa887c3r	白樂天文集三十五卷坿年譜一卷	唐白居易撰 年譜　淸汪立名撰　餘姚馮氏萍實盦據正德十四年鳳陽郭氏刊本鈔
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D053menu.html	无	N_NOTITLE					0		樊川文集夾註四卷外集夾註一卷坿添註	□闕名撰　朝鮮刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D064menu.html	确定	T1	d59f2hs8ojk0	晞髮集	宋末元初謝翱撰	title	2	d59f2hs8ojk0,d59fy1irjda9	晞髮集十卷	宋謝翱撰 明張蔚然徐𤊹同訂  萬曆四十六年長溪郭氏刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D015menu.html	确定	T1	d59f2gog8irm	玉斗山人集	元王奕舊題撰	title	1	d59f2gog8irm	玉斗山人集三卷附錄一卷	元王奕撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D014menu.html	无	N_NOTITLE					0		巴西文集不分卷不分卷	元鄧文原撰　鈔本　有歙鮑氏知不足齋圖記
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D051menu.html	确定	T1	d59f2nkpc3k1	龍谿王先生全集	明王畿撰	title	1	d59f2nkpc3k1	龍谿王先生全集二十卷	明王畿撰　明刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D016menu.html	无	N_NOTITLE					0		笥河學士詩集二十八卷	淸朱筠撰　大興朱氏椒花吟舫鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D017menu.html	无	N_NOTITLE					0		笥河文集稿本不分卷	淸朱筠撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D002menu.html	无	N_AUTHOR_DIFF	d59fsf1d5yx1	嶰谷集	清朱元律撰	title	1	d59fsf1d5yx1	嶰谷集一卷不知名殘稿一卷	淸朱筠撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D162menu.html	无	N_NOTITLE					0		崔東壁先生知非集一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D004menu.html	无	N_NOTITLE					0		未之思軒襍箸不分卷	淸朱錫庚撰　大興朱氏椒花吟舫鈔本　有武億李威呉鼒陳希曾朱文翰内藤虎次郎識語
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D052menu.html	无	N_NOTITLE					0		竟無小品一卷	歐陽漸撰　手稿本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D160menu.html	存疑	S_NOAUTH_REC_MULTI				title	5	d59f286t1ama,d59f2870u874,d59f28nmlog0,d59fyff40lq9,d59fz4bqkfep	文選六十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D059menu.html	确定	T1	d59f286x3doh	六家文選	南朝梁蕭統編	title	2	d59f286x3doh,d59f28jin6yt	六家文選六十卷	梁蕭統輯 唐呂延濟劉良張銑李周翰呂向李善注　嘉靖十三年至二十八年吳郡袁氏嘉趣堂用宋蜀本景刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D055menu.html	确定	T1	d59f2870u874	文選	南朝梁蕭統輯	title	5	d59f286t1ama,d59f2870u874,d59f28nmlog0,d59fyff40lq9,d59fz4bqkfep	文選六十卷	梁蕭統輯　唐李善呂延濟劉良張銑李周翰呂向注　寛永二年據直江氏活字印本重活字印
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D166menu.html	存疑	S_NOAUTH_REC	d59f2nqpc7b5	文選古字通疏證	清薛傳均注	title	1	d59f2nqpc7b5	文選古字通疏證六卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D164menu.html	存疑	S_NOAUTH_REC	d59f28kbo9he	又玄集	唐韋莊撰	title	1	d59f28kbo9he	又玄集三巻	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D167menu.html	存疑	S_NOAUTH_REC	d59f2nkga7sz	唐詩品彙	明高棅編	title	1	d59f2nkga7sz	唐詩品彙九十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D158menu.html	存疑	S_NOAUTH_REC	d59fs7rsarcy	西江詩派韓饒二集	清沈曾植編	title	1	d59fs7rsarcy	西江詩派韓饒二集	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D156menu.html	存疑	S_NOAUTH_REC	d59f2nqriv41	金文雅	清莊仲方編	title	1	d59f2nqriv41	金文雅	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D157menu.html	存疑	S_NOAUTH_REC	d59fs7ppp1j4	海陵文徵	清夏荃輯	title	1	d59fs7ppp1j4	海陵文徵	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D168menu.html	无	N_NOTITLE					0		詳說古文眞寶大全後集十卷坿文章軌範七卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D018menu.html	无	N_NOTITLE					0		近代名人尺牘不分卷	□闕名輯　手簡本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D165menu.html	存疑	S_NOAUTH_REC	d59f286w5o1u	文心雕龍	南朝梁劉勰撰	title	1	d59f286w5o1u	文心雕龍十巻	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D153menu.html	存疑	S_NOAUTH_REC	d59fxvbkjqiq	曝書亭詞拾遺	清朱彝尊撰	title	1	d59fxvbkjqiq	曝書亭詞拾遺	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D154menu.html	存疑	S_NOAUTH_REC	d59fz24x59mo	遯盦樂府	民國張爾田撰	title	1	d59fz24x59mo	遯盦樂府	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D057menu.html	确定	T1	d59f2nlfk16p	牡丹亭還魂記	明湯顯祖撰	title	1	d59f2nlfk16p	牡丹亭還魂記二卷	明湯顯祖撰　萬曆中懷德堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D062menu.html	确定	T1	d59fryqt0buv	西湖扇傳奇	清丁耀亢撰	title	1	d59fryqt0buv	西湖扇傳奇二卷	淸丁耀亢撰　刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D005menu.html	无	N_AUTHOR_DIFF	d59fryq68075	混元敎弘陽中華寶經	明韓太湖撰	title	1	d59fryq68075	弘陽嘆世經二卷	明闕名撰　刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D019menu.html	存疑	S_MULTI				title	2	d59fxrsdnm69,d59fxztgnq4g	弘陽後續燃燈天華寶卷三卷	明淸虛道人　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D151menu.html	无	N_NOTITLE					0		玉連環全傳十卷	□闕名撰   鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D065menu.html	确定	T1	d59fxrxancw0	新刻按鑑編纂開闢衍繹通俗志傳	明周遊撰	title	1	d59fxrxancw0	新刻按鑑編纂開闢衍繹通俗志傳六卷	明周游撰 明王黌釋   崇禎八年序古吳麟瑞堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D161menu.html	存疑	S_NOAUTH_REC	d59fxpqcuvib	新刻批評繡像平山冷燕	佚名撰	title	1	d59fxpqcuvib	新刻批評繍像平山冷燕	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D054menu.html	无	N_NOTITLE					0		新編繡像畫圖緣小傳十六囘	淸闕名撰   刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D056menu.html	无	N_NOTITLE					0		鐫像古本西遊證道書一百囘	明吳承恩撰 淸汪象旭箋評 淸黃太鴻印正  西陵汪氏蜩寄刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D159menu.html	存疑	S_NOAUTH_REC	d59fy7r4zdhc	新刻鍾伯敬先生批評封神演義	明許仲琳撰	title	1	d59fy7r4zdhc	新刻鍾伯敬先生批評封神演義十九卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D050menu.html	无	N_NOTITLE					0		三祥報二十四卷	淸陶炳南撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D163menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f2njzqmtd,d59fxu9bz6yo	西遊記	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E160menu.html	无	N_NOTITLE					0		晁氏三先生集	宋黃汝嘉輯   嘉靖三十三年裔孫黃瑮寶文堂據慶元五年刊本　東吳重刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E161menu.html	无	N_NOTITLE					0		郭氏佚書六種	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/R001menu.html	确定	T1	d59f2hs822gx	五代史纂誤	北宋吳縝撰	title	1	d59f2hs822gx	五代史纂誤三卷	宋吳縝撰   武英殿聚珍版本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/R002menu.html	无	N_AUTHOR_DIFF	d59f2nj8kzr6	古質疑	明鄭賡唐撰	title	1	d59f2nj8kzr6	攷古質疑六卷	宋葉大慶撰   武英殿聚珍版本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M007menu.html	存疑	S_MULTI				title	87	d59ezajwvda8,d59f20a3cxs0,d59f23npupdw,d59f24mckiys,d59f24mckiyt,d59f24mckiyu	孟子十四卷	漢趙岐注　日本活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M001menu.html	确定	T1	d59f21ep59mo	古文孝經	西漢孔安國傳	title	5	d59f21ep59mo,d59f24mjqzgo,d59fxwfzgy6a,d59fxwgckwzn,d59fyvpsjdhc	古文孝經一卷	漢孔安國傳　日本活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M002menu.html	确定	T1	d59f28ln4c1s	大唐西域記	唐釋玄奘釋	title	1	d59f28ln4c1s	大唐西域記十二卷	唐釋玄奘奉敕譯　唐釋辯機撰　日本鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M056menu.html	确定	T1	d59fxuqs0uf4	化度寺碑考	清翁方綱撰	title	1	d59fxuqs0uf4	化度寺碑考一卷	淸翁方綱撰　嘉慶二年門人李彥章鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M003menu.html	无	N_NOTITLE					0		眞西山讀書記乙集上大學衍義殘三卷	宋眞德秀撰　朝鮮銅活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M052menu.html	确定	T1	d59f2nky2qrn	方氏墨譜	明方于魯撰	title	1	d59f2nky2qrn	方氏墨譜六卷首一卷	明方于魯撰　萬曆十六年序刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M008menu.html	无	N_NOTITLE					0		新刊鶴林玉露六卷二集六卷三集六卷	宋羅大經撰　日本活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M029menu.html	无	N_AUTHOR_DIFF				title	3	d59f2glspwjk,d59f6entc5q8,d59f6epcl5vn	韻府羣玉二十卷	宋陰時夫陰中夫同撰　元東山秀岩書堂刊本　卷第十五用日本刊本補配
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M082menu.html	无	N_NOTITLE					0		稽古彙編十卷	明林光華撰   萬曆五年序活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M058menu.html	存疑	S_MULTI				title	6	d59f27x7hla8,d59f2myracjk,d59f2pzqd9fm,d59fyh6joqo0,d59fyjpt1fy8,d59fyk5zi9kx	金剛般若波羅蜜經一卷	姚秦釋鳩摩羅什譯　宋張卽之書　文永七年刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M010menu.html	存疑	S_MULTI				title	6	d59f27x7hla8,d59f2myracjk,d59f2pzqd9fm,d59fyh6joqo0,d59fyjpt1fy8,d59fyk5zi9kx	金剛般若波羅蜜經一卷	姚秦釋鳩摩羅什奉詔譯　唐釋慧能解　日本刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M019menu.html	存疑	S_MULTI				title	6	d59f27x7hla8,d59f2myracjk,d59f2pzqd9fm,d59fyh6joqo0,d59fyjpt1fy8,d59fyk5zi9kx	金剛般若波羅蜜經一卷坿持誦金剛經感應事跡一卷	姚秦釋鳩摩羅什奉詔譯　感應事跡　□闕名撰　朝鮮刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M021menu.html	无	N_AUTHOR_DIFF	d59fyh6lvegx	金剛般若波羅蜜經註解	後秦釋鳩摩羅什譯	title	1	d59fyh6lvegx	金剛般若波羅蜜經註解一卷般若波羅蜜多心經註解一卷	明釋宗泐等撰　應永二十七年南禪雲臥據洪武十一年釋宗泐等刊本重刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M083menu.html	无	N_AUTHOR_DIFF				title	2	d59fyjsx3myo,d59fz74v52io	十七家解註金剛經四卷	宋潘舜龍等輯   萬曆元年刊本  板存三山復初庵
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M057menu.html	无	N_NOTITLE					0		科註妙法蓮華經七卷	元徐行善撰　元釋必昇校　日本刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M085menu.html	无	N_NOTITLE					0		大方廣佛華嚴經卷第七	晉釋佛陀跋陀羅等譯   貞治三年比丘光信刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M087menu.html	存疑	S_COMBINED	d59fykwox6o1	大方廣佛華嚴經	唐釋般若譯	title	7	d59f28n54e10,d59f2n83gxkx,d59f2pyx0yde,d59f9nmwgzk1,d59fyh3kxkw0,d59fyh3lk1z5	大方廣佛華嚴經八十卷普賢行願品一卷	唐釋實叉難陁譯 普賢行顧品 唐釋般若奉詔譯　嘉靖三十年大隆善寺重刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M043menu.html	无	N_NOTITLE					0		大乘華嚴經略策一卷入法界十八問答一卷華嚴講主自問自答一卷	唐釋澄觀撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M036menu.html	确定	T1	d59fxyb9qj29	大聖文殊師利菩薩佛刹功德莊嚴經	唐釋不空譯	title	1	d59fxyb9qj29	大聖文殊師利菩薩佛刹功德莊嚴經三卷	唐釋不空奉詔釋　大治五年沙門運覺鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M086menu.html	存疑	S_COMBINED	d59f27x5axhf	大般涅槃經	北涼曇無讖譯	title	6	d59f27x5axhf,d59f7z49cf7s,d59f9nmw5r0n,d59f9s1frzt2,d59fyk7hibk2,d59g2foxbpj7	大般涅槃經四十卷坿後分二卷	北涼釋曇無讖奉詔譯 後分 唐若那跋陀羅等譯  嘉靖三十六年重刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M044menu.html	存疑	S_AUTHOR_NEAR	d59fyh49lbsw	地藏菩薩本願經	唐釋實叉難陀譯	title	4	d59f2qa1ifpe,d59fyh49lbsw,d59fyh4d0xs1,d59fyjb152bk	地藏菩薩本願經二卷	唐釋寶叉難陀譯　日本刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M048menu.html	存疑	S_COMBINED	d59fyh5g1log	佛說盂蘭盆經	晉釋竺法護譯	title	1	d59fyh5g1log	佛說盂蘭盆經一卷坿疏科分一卷	晉釋竺法護奉詔譯　 坿 錄　宋釋元照撰　日本刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M037menu.html	确定	T1	d59fy8liqyo0	佛說慢法經	晉釋法炬譯	title	1	d59fy8liqyo0	佛說慢法經一卷	晉釋法炬譯　日本鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M028menu.html	存疑	S_NOAUTH_WORK_MULTI				title	2	d59f2pusg000,d59fyjq311c0	楞伽阿跋多羅寶經四卷	劉宋釋求那跋陀羅譯　宋刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M049menu.html	确定	T1	d59f7z47gzy8	相續解脱地波羅蜜了義經	求那跋陀羅譯	title	1	d59f7z47gzy8	相續解脱地波羅蜜了義經一卷	劉宋釋求那跋陀羅譯　元刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M046menu.html	确定	T1	d59fy802hurk	佛說解節經	陳釋真諦譯	title	1	d59fy802hurk	佛說解節經一卷	陳釋眞諦譯　宋刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M080menu.html	无	N_NOTITLE					0		無所有菩薩經殘一卷存卷第四	隋釋闍那崛多等譯   宋刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M030menu.html	确定	T1	d59fyblb1zb4	佛說浴像功德經	唐釋寶思惟譯	title	1	d59fyblb1zb4	佛說浴像功德經一卷	唐釋寶思惟譯　日本鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M065menu.html	无	N_NOTITLE					0		大方廣圓覺略疏注經四卷	唐釋宗密撰　寛永三年活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M027menu.html	存疑	S_COMBINED	d59fy7y7p2io	佛說大自在天子因地經	宋釋施護譯	title	1	d59fy7y7p2io	佛說大自在天子因地經一卷佛說如意摩尼陀羅經一卷	宋釋施護譯　金刊本　趙城廣勝寺金版大藏經之一
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M009menu.html	确定	T1	d59fydyu2tj5	廣大寶樓閣善住祕密陀羅尼經	唐釋菩提流志譯	title	1	d59fydyu2tj5	廣大寶樓閣善住秘密陀羅尼經三卷	唐釋菩提流志譯　元刊本　至正中印
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M013menu.html	无	N_NOTITLE					0		金剛頂瑜伽中略出念誦經殘一卷	唐釋金剛智譯　康平二年釋念慶鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M017menu.html	无	N_NOTITLE					0		金剛頂一切如來眞實大乘現證大教王經殘一卷	唐釋不空譯　日本鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M070menu.html	存疑	S_MULTI				title	3	d59fy8nupssg,d59fy8nvnif5,d59fy8nvyqyo	佛說聖觀自在菩薩梵讚一卷佛一百八名讚一卷佛說布施經一卷佛說聖曜母陀羅尼經一卷	劉宋釋法賢奉詔譯　元刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M045menu.html	无	N_AUTHOR_DIFF				title	2	d59f2pup0dtu,d59fyjr3v1fk	四分戒本一卷	姚秦釋伽陀耶舍譯　元亨二年寓泉涌寺幹緣比丘會源刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M042menu.html	存疑	S_NOAUTH_WORK	d59f2q8o6y2o	解脫戒本經		title	1	d59f2q8o6y2o	解脱戒本經一卷	後魏釋瞿曇般若流支譯　宋刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M024menu.html	确定	T1	d59fyfc17bpc	五分比丘尼戒本	南朝宋釋佛陀什譯；南朝梁釋明徽集	title	1	d59fyfc17bpc	五分比丘尼戒本一卷	梁釋明徽撰　元刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M041menu.html	确定	T1	d59fyjsyntoh	四分比丘戒本	唐釋懷素集；後秦釋佛陀耶舍集	title	1	d59fyjsyntoh	四分比丘戒本一卷	唐釋懷素輯　元刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M032menu.html	无	N_NOTITLE					0		阿毗曇甘露味論二卷	魏闕名譯　金刊本　趙城廣勝寺金版大藏經之一
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M071menu.html	无	N_NOTITLE					0		阿毗曇毗婆沙論殘二卷存卷第四十一第七十四	北涼釋浮陀跋摩釋道泰同譯　元刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M022menu.html	无	N_NOTITLE					0		雜阿毗曇心論殘一卷	劉宋釋僧伽跋摩等譯　金刊本　趙城廣勝寺金版大藏經之一
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M072menu.html	无	N_NOTITLE					0		阿毗達磨品類足論殘十卷存卷第一至第十	唐釋玄奘譯　高麗國大藏都監奉敕刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M059menu.html	存疑	S_NOAUTH_WORK	d59f2q1rq1hc	大乗阿毗達磨集論		title	1	d59f2q1rq1hc	大乘阿毗達磨集論七卷	唐釋玄奘譯　高麗國大藏都監奉敕刊本　卷第七第四至第十八紙　大正二年松本文三郎補鈔
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M033menu.html	无	N_NOTITLE					0		觀所綠論釋一卷坿音釋	唐釋義淨譯　元刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M004menu.html	确定	T1	d59fyhkmm4u9	隨相論	南朝陳釋真諦譯；天竺德慧撰	title	2	d59f2q2nk8oy,d59fyhkmm4u9	随相論一卷	陳釋眞諦譯　金刊本　趙城廣勝寺金版大藏經之一
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M038menu.html	确定	T1	d59g2foxbpj4	大乘起信論	陳釋真諦譯；天竺馬鳴撰	title	3	d59f2q4z7u9s,d59fyh384um8,d59g2foxbpj4	大乘起信論一卷	陳釋眞諦譯　宋刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M039menu.html	确定	T1	d59g2foxbpj4	大乘起信論	陳釋真諦譯；天竺馬鳴撰	title	3	d59f2q4z7u9s,d59fyh384um8,d59g2foxbpj4	大乘起信論一卷	陳釋眞諦譯　日本鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M020menu.html	确定	T1	d59g2foxbpj4	大乘起信論	陳釋真諦譯；天竺馬鳴撰	title	3	d59f2q4z7u9s,d59fyh384um8,d59g2foxbpj4	大乘起信論一卷	陳釋眞諦譯　高麗大藏都監奉敕刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M040menu.html	确定	T1	d59g2foxbpj4	大乘起信論	陳釋真諦譯；天竺馬鳴撰	title	3	d59f2q4z7u9s,d59fyh384um8,d59g2foxbpj4	大乘起信論一卷	陳釋眞諦譯　永德元年大傳法院阿觀刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M068menu.html	确定	T1	d59fykxn9af4	大乘起信論疏	唐釋法藏撰；唐釋宗密輯	title	2	d59f2q1mf0g2,d59fykxn9af4	大乘起信論疏二卷	唐釋法藏撰　慶長十七年洛陽飯田久左衞門勝家活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M073menu.html	无	N_AUTHOR_DIFF	d59f2hgdz4zk	肇論中吳集解	東晉僧肇撰	title	1	d59f2hgdz4zk	肇論中吳集解三卷	宋釋淨源撰　刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M074menu.html	无	N_NOTITLE					0		白花道場發願文略解	高麗刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M090menu.html	无	N_NOTITLE					0		白花道場發願文略解	高麗刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M060menu.html	无	N_NOTITLE					0		十不二門文心解一卷	宋釋仁岳述　日本活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M025menu.html	无	N_NOTITLE					0		請觀世音菩薩消伏毒害陀羅尼三昧儀一卷	宋釋遵式撰　日本闕名注　日本鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M063menu.html	存疑	S_MULTI				title	2	d59fyfb4feo1,d59fyjt0j8xs	天台四教儀一卷	高麗釋諦觀撰　活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M050menu.html	无	N_NOTITLE					0		佛說焰口經天地冥陽水陸儀文卷下	□仔虁撰　建文三年朝鮮刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M089menu.html	无	N_NOTITLE					0		略諸經論念佛法門往生淨土集殘一卷存卷第一卽慈悲集慈愍集坿重編龍舒淨土文殘卷存卷第六第一第二葉	唐釋慧日撰　重編龍舒淨土文 宋王日休撰  高麗刊  昭和中印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M061menu.html	无	N_NOTITLE					0		達磨三論達摩大師血脈論一卷悟性論一卷破相論一卷	梁菩提達磨撰　日本活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M054menu.html	确定	T1	d59fyefx0bnk	六祖大師法寶壇經	唐釋慧能撰；唐釋法海輯	title	1	d59fyefx0bnk	六祖大師灋寶壇經一卷	唐釋慧能撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M051menu.html	无	N_AUTHOR_DIFF				title	2	d59f2hgbh8n6,d59f2hhfqupv	證道歌一卷	唐釋玄覺撰　元趙孟頫書　嘉靖十年慶尚道永川地公山本寺刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M062menu.html	无	N_AUTHOR_DIFF	d59fyg4wyt4x	雲門匡真禪師廣錄	五代釋文偃撰；宋守堅輯	title	1	d59fyg4wyt4x	雲門匡眞禪師廣錄三卷	宋釋守堅集　慶長十八年洛陽宗鐵活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M075menu.html	无	N_NOTITLE					0		宗鏡錄殘一卷存卷第四十七	宋釋延壽撰   宋刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M067menu.html	确定	T1	d59fygmt8mbk	佛果圜悟禪師碧巖錄	宋釋重顯頌古；宋釋克勤評唱	title	1	d59fygmt8mbk	佛果圜悟禪師碧巖錄十卷	宋釋重顯頌古　宋釋克勤評唱　京都妙心禪寺正眼菴刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M011menu.html	存疑	S_AUTHOR_NEAR	d59fxxsxjm68	大慧普覺禪師書	宋釋宗杲撰；宋黃文昌輯	title	1	d59fxxsxjm68	大慧普覺禅師書二卷	宋釋宋杲撰　宋釋慧然錄　日本刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M018menu.html	确定	T1	d59fxxswx535	大慧普覺禪師普說	宋釋宗杲撰	title	2	d59fxxswx535,d59fxxsx8dmo	大慧普覺禅師普說一卷	宋釋宗杲撰　宋釋慧然錄　宋黄文昌重輯　日本刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M006menu.html	无	N_NOTITLE					0		住鼎州梁山廓庵和尚十牛圖一卷坿入衆日用一卷	宋釋皓昇撰　入衆日用　宋釋宗壽撰　日本刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M015menu.html	无	N_NOTITLE					0		密庵禅師語錄一卷	宋釋咸傑撰　宋釋崇岳了悟等輯　日本刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M014menu.html	无	N_NOTITLE					0		破庵語錄一卷	宋釋圓照等輯　應安三年刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M023menu.html	无	N_NOTITLE					0		開山護國仁王禪寺語錄一卷	宋釋慧開撰　日本刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M016menu.html	无	N_AUTHOR_DIFF	d59fye24p14w	枯崖和尚漫錄	宋釋枯崖撰	title	1	d59fye24p14w	枯崖和尚漫錄三卷	宋釋圓悟撰　日本刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M047menu.html	确定	T1	d59f37cydous	迦葉結經	東漢安世高譯	title	1	d59f37cydous	迦葉結經一卷	漢釋安世高譯　乙卯歳伊勢常明寺宗存活字印本　宗存版大藏經之一
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M005menu.html	存疑	S_NOAUTH_WORK	d59f2pvhezgi	大慈恩寺三藏法師傳		title	1	d59f2pvhezgi	大慈恩寺三藏法師傳十卷	唐釋慧立撰　唐釋彥悰箋　承元四年鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M076menu.html	无	N_NOTITLE					0		歷代三寶紀殘八卷存卷第三第五至第七第九第十第十四第十五	隋費長房撰   紹興十八年福州開元禪寺刊本　開元寺版大藏經之一
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M081menu.html	无	N_NOTITLE					0		歷代三寶紀殘一卷卷第三	隋費長房撰   明刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M026menu.html	确定	T1	d59f28jiyfid	大唐西域求法高僧傳	唐釋義淨撰	title	1	d59f28jiyfid	大唐西域求法高僧傳二卷	唐釋義淨撰　紹興十八年福州開元禪寺刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M064menu.html	无	N_AUTHOR_DIFF	d59f2hiwhyir	傳法正宗記	北宋契嵩撰	title	1	d59f2hiwhyir	傳法正宗記十二卷	宋釋契嵩撰　寛永七年活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M066menu.html	无	N_NOTITLE					0		五家正宗贊不分卷	宋釋紹曇撰　慶長十三年西京花園一枝軒活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M069menu.html	无	N_NOTITLE					0		續集古今佛道論衡一卷	唐釋智昇撰　日本活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M077menu.html	无	N_NOTITLE					0		南海寄歸內法傳殘一卷存卷第二	唐釋義淨撰   紹興十八年福州開元禪寺刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M031menu.html	存疑	S_COMBINED	d59f2hgf835v	大宋僧史略	北宋釋贊寧撰	title	1	d59f2hgf835v	大宋僧史略三卷坿紹興朝旨改正僧道班列文字一集一卷	宋釋贊寧撰　 坿錄　宋闕名輯　日本刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M055menu.html	无	N_AUTHOR_DIFF	d59fxubs09hc	藏乘法數	元釋西菴輯	title	1	d59fxubs09hc	藏乘法數一卷	元釋可遂輯　日本刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M053menu.html	确定	T1	d59g2j5j78qq	賢首諸乘法數	明釋行深撰	title	1	d59g2j5j78qq	賢首諸乘法數十卷	明釋行深輯　朝鮮刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M078menu.html	无	N_NOTITLE					0		出三藏記集殘十三卷存卷第一第三至第六第八至第十五	梁釋僧佑撰   紹興十八年福洲開元禪寺刊本　開元寺版大藏經之一
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M079menu.html	无	N_NOTITLE					0		開元釋敎錄殘十三卷存卷第一第三第六第八第十一至第十四第十六至第二十	唐釋智昇撰   紹興十八年福州開元禪寺刊本　開元寺版大藏經之一
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M012menu.html	确定	T1	d59f28m8yy2v	南華真經注疏	西晉郭象注	title	2	d59f28m8yy2v,d59fyu8mg6iq	南華眞經注疏十卷	晉郭象注 唐成玄英疏   遵義黎氏用宋刊本景刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M034menu.html	存疑	S_NOAUTH_WORK_MULTI				title	2	d59fy2k49url,d59fyissdrep	太上三元賜福赦罪解厄消災延生保命妙經一卷	□闕名撰　刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M035menu.html	无	N_AUTHOR_DIFF	d59fy1b7ckxt	九天應元雷聲普化天尊玉樞寶經	佚名撰	title	1	d59fy1b7ckxt	九天應元雷聲普化天尊玉樞寶經一卷	□闕名撰  　萬曆四十七年刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M088menu.html	无	N_AUTHOR_DIFF				title	2	d59fy1zbqs5d,d59fykx6ppmp	太上感應篇經傳一卷	明闕名撰   活字印本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N014menu.html	无	N_NOTITLE					0		滿文太祖高皇帝本紀書	淸闕名撰　嘉慶二十四年鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N017menu.html	存疑	S_COMBINED	d59f2nbyorup	元史譯文證補	清洪鈞撰	title	1	d59f2nbyorup	元史譯文證補三十卷原闕卷七第八第十三第十六第十七第十九至二十一第二十五第二十八	淸洪鈞撰　光緒二十三年元和陸氏刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N009menu.html	确定	T1	d59f2pt7bksh	蒙古源流	蒙古小徹辰薩囊撰	title	2	d59f2pt7bksh,d59fyv4j5mgy	欽定蒙古源流八卷	蒙古小徹辰薩囊台吉撰　乾隆四十二年敕譯　刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N003menu.html	存疑	S_COMBINED	d59fyvqd4pa8	校正元親征錄	清何秋濤撰	title	2	d59fy3r7n8qo,d59fyvqd4pa8	校正元親征錄一卷坿刊誤一卷	元闕名撰　淸何秋濤校正　刊誤　淸沈曾植等撰　光緒二十年桐盧袁氏小漚巢刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N006menu.html	确定	T1	d59f2ms1oo3l	夷氛聞記	清梁廷柟撰	title	1	d59f2ms1oo3l	夷氛聞記五卷	淸梁廷枏撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N004menu.html	确定	T1	d59f2hute0w2	黑韃事略	南宋彭大雅撰	title	1	d59f2hute0w2	黒韃事略一卷	宋彭大雅徐霆同撰　上虞羅氏舊藏鈔本　内藤虎次郎手校
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N018menu.html	确定	T1	d59f2njeii9s	孤樹裒談	明李默撰	title	2	d59f2njeii9s,d59f6efxlfy8	孤樹裒談十卷	明李默撰   刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N011menu.html	无	N_NOTITLE					0		皇輿圖不分卷	淸闕名撰　刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N005menu.html	无	N_NOTITLE					0		蒙古遊牧記殘六卷	淸張穆撰　淸何秋濤補　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N012menu.html	无	N_NOTITLE					0		西域瑣談四卷	淸七十一撰   鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N023menu.html	无	N_AUTHOR_DIFF	d59fyfe3hrls	欽定河源紀畧	清紀昀纂	title	1	d59fyfe3hrls	河源紀略十卷	淸乾隆四十七年敕撰　刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N001menu.html	无	N_NOTITLE					0		光緒八九二年南路分界日記圖說一卷	淸沙克都林札布撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N007menu.html	无	N_NOTITLE					0		沿途日記不分卷	淸闕名撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N010menu.html	无	N_NOTITLE					0		衞藏驛程記一卷	淸孫毓麒撰　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N008menu.html	存疑	S_AUTHOR_NEAR	d59f2ngvoft0	塞語	明尹耕撰	title	1	d59f2ngvoft0	塞語一卷	明尹畊撰　隆慶六年成都高氏刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N002menu.html	无	N_NOTITLE					0		滿漢並香集四卷	淸錢書撰　淸尚玉章譯　鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N016menu.html	确定	T1	d59fxu6x77y8	滿漢西廂記	元王德信撰	title	1	d59fxu6x77y8	滿漢西廂記四卷	元王德信撰　淸闕名譯　康熙四十九年刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N015menu.html	无	N_NOTITLE					0		滿文金甁梅一百囘	明笑笑生撰　淸闕名譯　康熙四十七年序刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N019menu.html	无	N_NOTITLE					0		定西記不分卷	淸巴忠撰   乾隆五十四年序刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N022menu.html	确定	T1	d59fyn4lcyyq	裔乘	明楊一葵撰	title	1	d59fyn4lcyyq	裔乘八卷	明楊一葵撰   萬曆四十三年序刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N021menu.html	确定	T1	d59fyt7w72f4	祕書志	元商企翁撰；元王士點撰	title	1	d59fyt7w72f4	秘書志十一卷	元王士點商企翁同撰   鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N020menu.html	确定	T1	d59f2n4t5zpc	定武敷文	清清高宗撰	title	1	d59f2n4t5zpc	定武敷文一卷	淸高宗愛新覺羅弘曆撰   刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E001menu.html	无	N_NOTITLE					0		佛學手稿	章炳麟手稿
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/W001menu.html	无	N_NOTITLE					0		佛國暦象編五卷	釋圓通撰　釋智轂校
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/W002menu.html	无	N_NOTITLE					0		原古處、白圭、采蘋小傳及詩鈔	山田新一郎編　鈴木虎雄選
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A001menu.html	无	N_NOTITLE					0		周易兼義九坿略例一卷音義一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A002menu.html	存疑	S_NOAUTH_REC_MULTI				title	6	d59f28mpiiv9,d59f28noh3pc,d59fy9xa2134,d59fyfdzqx36,d59fyh7g5dkw,d59fyiuwjmdd	尚書註疏二十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A003menu.html	存疑	S_NOAUTH_REC_MULTI				title	5	d59f28ngzeo1,d59fxw0wn9j5,d59fxwfe8t8g,d59fxwfe8t8h,d59fy9xbxgcg	毛詩註疏二十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A004menu.html	存疑	S_NOAUTH_REC_MULTI				title	5	d59f28np3ksk,d59f2nfmf11d,d59fxwp6nqir,d59fy9x3i1oi,d59fyfdw02kg	周禮註疏四十二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A005menu.html	存疑	S_NOAUTH_REC_MULTI				title	5	d59f28np3ksj,d59fxwp1cpaa,d59fy9x3ta80,d59fyfezn7k2,d59fyro60um8	儀禮註疏十七卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A006menu.html	存疑	S_NOAUTH_REC_MULTI				title	3	d59f28nhx4ap,d59fy9x105c1,d59fyiutqhhe	禮記註疏六十三卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A007menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f28nf3zeq,d59fxwpca0aq	春秋左傳註疏六十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A008menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f28nosc90,d59fyfet385d	春秋公羊傳註疏二十八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A009menu.html	存疑	S_NOAUTH_REC	d59f28nosc91	春秋穀梁注疏	東晉范寧集解	title	1	d59f28nosc91	春秋穀梁註疏二十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A010menu.html	存疑	S_NOAUTH_REC_MULTI				title	4	d59f2hqvd1qa,d59f2q0e3b42,d59fxw1t3y0y,d59fxxk8gjr6	論語註疏解經二十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A011menu.html	存疑	S_NOAUTH_REC_MULTI				title	7	d59f28noh3ph,d59f2nux1jb5,d59f2prigb2a,d59fxwg1nlz4,d59fxwg1nlz5,d59fxz4ahreo	孝經正義九卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A035menu.html	确定	T1	d59fxvkbtiww	春秋公羊注疏	唐陸德明音義；唐徐彥疏	title	2	d59f28nosc90,d59fxvkbtiww	春秋公羊註疏二十八卷	漢何休學 唐陸德明音義 □闕名疏　　崇禎七年刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A036menu.html	确定	T1	d59f2hqvd1qa	論語注疏解經	三國魏何晏集解；北宋邢昺疏	title	4	d59f2hqvd1qa,d59f2q0e3b42,d59fxw1t3y0y,d59fxxk8gjr6	論語註疏解經二十卷	魏何晏集解 宋邢昺疏　　崇禎十年刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A060menu.html	确定	T1	d59fycszc9vk	六書古微	民國葉德輝撰	title	1	d59fycszc9vk	六書古微十卷	葉德輝 撰 民國五年 刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A061menu.html	存疑	S_COMBINED	d59fycsx5m2o	說文讀若字考	民國葉德輝撰	title	1	d59fycsx5m2o	說文讀若字考七卷說文讀同字考一卷	葉德輝 撰 民國十二年 刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A062menu.html	确定	T1	d59fycsuyy9s	同聲假借字考	民國葉德輝撰	title	1	d59fycsuyy9s	同聲假借字考二卷	葉德輝 撰 民國十二年 刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A063menu.html	无	N_NOTITLE					0		說文籀文攷證一卷說籀一卷坿補遺一卷	葉德輝 撰 姪葉啓勳 撰補遺 民國十九年 刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B076menu.html	无	N_NOTITLE					0		滕縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B081menu.html	无	N_NOTITLE					0		汶上縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B096menu.html	无	N_NOTITLE					0		青州府地輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B075menu.html	无	N_NOTITLE					0		益都縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B093menu.html	无	N_NOTITLE					0		博山縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B094menu.html	无	N_NOTITLE					0		昌樂縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B095menu.html	无	N_NOTITLE					0		臨胊縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B102menu.html	无	N_NOTITLE					0		棲霞縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B103menu.html	无	N_NOTITLE					0		招遠縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B145menu.html	无	N_NOTITLE					0		山東海陽縣全境輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B100menu.html	无	N_NOTITLE					0		濰縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B078menu.html	无	N_NOTITLE					0		膠州直隸州輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B089menu.html	无	N_NOTITLE					0		靑城縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B085menu.html	无	N_NOTITLE					0		平陰縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B091menu.html	无	N_NOTITLE					0		城武縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B097menu.html	无	N_NOTITLE					0		濮州輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B090menu.html	无	N_NOTITLE					0		范縣黄河南北兩堤曁金堤高寛丈尺綿長里敷情形圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B099menu.html	无	N_NOTITLE					0		□……□送黄河隄隄埝情形圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B086menu.html	无	N_NOTITLE					0		金郷縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B101menu.html	无	N_NOTITLE					0		魚臺縣輿圖	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B152menu.html	存疑	S_NOAUTH_REC	d59fyrobbvuq	歷代地理志韻編今釋	清李兆洛撰；清馬貞榆撰	title	1	d59fyrobbvuq	歷代地理志韻編今釋二十卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B153menu.html	存疑	S_NOAUTH_REC_MULTI				title	3	d59f2n6bsirl,d59f2ndmmc5e,d59fyv884pvk	皇朝輿地韻編二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B154menu.html	确定	T1	d59fyt5ex729	歷代地理沿革圖	清六嚴撰	title	3	d59f2ndlzv28,d59fyt5ex729,d59fyv82ton5	歷代地理沿革圖一卷	淸 六嚴 撰 淸 馬徵麟 增輯
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B155menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f2mqh6ps2,d59fyv884pvl	皇朝一統輿圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B156menu.html	无	N_AUTHOR_DIFF				title	2	d59f2ncex43l,d59fyv87708w	紀元編三卷末一卷	淸 六承如 錄
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B119menu.html	无	N_NOTITLE					0		滕縣造送憲綱清册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B120menu.html	无	N_NOTITLE					0		調署兗州府汶上縣造送憲綱册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B124menu.html	无	N_NOTITLE					0		靑州府益都縣造送憲綱條日事件清册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B125menu.html	无	N_NOTITLE					0		靑州府博山縣呈送憲綱清册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B126menu.html	无	N_NOTITLE					0		同知銜靑州府博山縣知縣璥璐履歴一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B123menu.html	无	N_NOTITLE					0		代理靑州府臨胊縣造送憲綱履歷淸册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B127menu.html	无	N_NOTITLE					0		登州府棲霞縣造送憲綱事宜册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B128menu.html	无	N_NOTITLE					0		署理登州府棲霞縣造送憲綱事宜册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B129menu.html	无	N_NOTITLE					0		登州府招遠縣造送縣內憲綱事宜册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B122menu.html	无	N_NOTITLE					0		萊州府平度州造送憲綱册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B130menu.html	无	N_NOTITLE					0		萊州府平度州造送□圖册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B121menu.html	无	N_NOTITLE					0		萊州府濰縣呈送郷官册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B111menu.html	无	N_NOTITLE					0		代理膠州直隷州憲綱册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B112menu.html	无	N_NOTITLE					0		候補知府代理膠州直隷州知州姚贊元履歷一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B115menu.html	无	N_NOTITLE					0		曹州府造送憲綱册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B114menu.html	无	N_NOTITLE					0		曹州府城武縣憲綱一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B116menu.html	无	N_NOTITLE					0		曹州府城武縣憲綱一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B117menu.html	无	N_NOTITLE					0		鉅野縣造送憲綱清册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B118menu.html	无	N_NOTITLE					0		鄆城縣憲綱册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B131menu.html	无	N_NOTITLE					0		署理曹州府濮州知州蒋茲履歷一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B113menu.html	无	N_NOTITLE					0		臨淸直隷州武城縣呈憲綱册一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B053menu.html	无	N_NOTITLE					0		山東曹州府濮州現行簡明賦役全書一卷	光緒三十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B056menu.html	无	N_NOTITLE					0		山東登州府招遠縣現行簡明賦役全書一卷	光緒三十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B057menu.html	无	N_NOTITLE					0		山東登州府棲霞縣現行簡明賦役全書一卷	光緒三十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B058menu.html	无	N_NOTITLE					0		山東膠州直隸州收併各衞所現行賦役全書一卷	光緒三十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B059menu.html	无	N_NOTITLE					0		山東靑州府臨胊縣現行簡明賦役全書一卷	光緒三十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B060menu.html	无	N_NOTITLE					0		靑州府昌樂縣現行簡明賦役全書一卷	光緒三十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B061menu.html	无	N_NOTITLE					0		山東曹州府城武縣現行簡明賦役全書一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B062menu.html	无	N_NOTITLE					0		山東曹州府鄆城縣現行簡明賦役全書一卷	光緒三十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B063menu.html	无	N_NOTITLE					0		山東武定府靑城縣現行簡明賦役全書一卷	光緒三十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B064menu.html	无	N_NOTITLE					0		山東靑州府益都縣現行簡明賦役全書一卷	光緒三十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B065menu.html	无	N_NOTITLE					0		山東膠州直隸州現行簡明賦役全書一卷	光緒三十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B066menu.html	存疑	S_NOAUTH_WORK	d59fyycifwg2	山東泰安府平陰縣現行簡明賦役全書		title	1	d59fyycifwg2	山東泰安府平陰縣現行簡明賦役全書一卷	光緒三十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B067menu.html	存疑	S_NOAUTH_WORK	d59fyycjdm2o	山東萊州府濰縣現行簡明賦役全書		title	1	d59fyycjdm2o	山東萊州府濰縣現行簡明賦役全書一卷	光緒二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B068menu.html	无	N_NOTITLE					0		山東兗州府汶上縣現行簡明賦役全書一卷	光緒二十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B069menu.html	无	N_NOTITLE					0		山東濟寧直隸州金郷縣簡明賦役全書一卷	光緒二十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B070menu.html	无	N_NOTITLE					0		山東濟寧直隸州魚臺縣現行簡明賦役全書一卷	光緒二十二年分
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B163menu.html	存疑	S_NOAUTH_REC	d59f2gooz5z6	金石例	元潘昂霄撰	title	1	d59f2gooz5z6	金石例	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B164menu.html	存疑	S_NOAUTH_REC	d59f2njpr1fm	墓銘舉例	明王行撰	title	1	d59f2njpr1fm	墓銘舉例	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B165menu.html	存疑	S_NOAUTH_REC	d59f2mod0t8i	金石要例	清黃宗羲撰	title	1	d59f2mod0t8i	金石要例	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu01.html	确定	T1	d59f286tcj5s	鼎錄	南朝陳虞荔舊題撰	title	1	d59f286tcj5s	鼎錄一卷	梁虞荔撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu02.html	确定	T1	d59fxwydja4g	刀劍錄	南北朝陶弘景撰	title	1	d59fxwydja4g	刀劍錄一卷	梁陶弘景撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu03.html	无	N_AUTHOR_DIFF	d59f2hpelxxd	硯史	北宋米芾撰	title	1	d59f2hpelxxd	研史一卷宋米芾撰畫鑒一卷	元湯垕撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu05.html	存疑	S_NOAUTH_WORK_MULTI				title	6	d59f2nkrtvr4,d59fxrm8nsaq,d59fxwye5r7k,d59fy1iisw77,d59fye9wdo1s,d59fz73fn2tc	石譜一卷	宋杜綰撰明
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu06.html	无	N_AUTHOR_DIFF				title	2	d59fxv3s8q9s,d59fy1hy7280	甁史二卷明袁宏道撰奕律一卷	明王思任撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu08.html	确定	T1	d59f2hj9x5vl	王氏蘭譜	趙宋王貴學撰	title	1	d59f2hj9x5vl	王氏蘭譜一卷	宋王貴學撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu09.html	无	N_AUTHOR_DIFF				title	2	d59f2ni4bdhc,d59f6ekp9ypx	茗笈二卷品藻一卷明屠本畯撰香國二卷	明毛晉撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu11.html	无	N_AUTHOR_DIFF				title	2	d59f2nfp85xd,d59fy0773ncw	采菊襍咏一卷	明馬宏衜撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu01.html	无	N_NOTITLE					0		方壺外史序文・目次	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu02.html	无	N_NOTITLE					0		無上玉皇心印妙經測疏一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu03.html	存疑	S_NOAUTH_REC	d59f6ejgbshz	陰符經測疏	陸長庚撰	title	1	d59f6ejgbshz	陰符經測疏三卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu04.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxycjxngg,d59fyj98u6f5	老子道德經玄覽二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu05.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxyyho1s1,d59fyjp5064h	周易參同契測疏三卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu06.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxwddik8y,d59fyj7jywhs	參同契口義三卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu07.html	无	N_NOTITLE					0		悟眞篇詩小序一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu08.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f6eq4oiro,d59fyj7npr0g	崔公入藥鏡測疏一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu09.html	无	N_NOTITLE					0		純陽呂公百字碑測疏一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu10.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxzsuhvk1,d59fyjpozcw1	紫陽眞人金丹四百字測疏一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu11.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxyd63i0x,d59fyj9lbo5d	龍眉子金丹印證詩測疏一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu12.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxyf1tzwh,d59fyja26hhc	丘長春眞人靑天歌測疏一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu13.html	无	N_NOTITLE					0		玄膚論一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu14.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f6eq4oirl,d59fyj8u60w1	金丹就正篇一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu15.html	存疑	S_NOAUTH_REC_MULTI				title	3	d59f6eq4oirp,d59fxybw7m68,d59fyj8salmq	金丹大旨圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D061menu01.html	无	N_NOTITLE					0		李卓吾評選方正學集十一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D061menu02.html	存疑	S_NOAUTH_REC	d59fssn0g6ip	李卓吾評選楊椒山集	明楊繼盛撰	title	1	d59fssn0g6ip	李卓吾評選楊椒山集五卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D061menu03.html	无	N_NOTITLE					0		李卓吾評選于節闇集九卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D101Amenu.html	无	N_NOTITLE					0		太平趙素貞寶卷二卷□闕名撰	民國二十四年五版本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D102Amenu.html	无	N_NOTITLE					0		繪圖玉帶記寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D103Amenu.html	无	N_NOTITLE					0		趙五娘琵琶記寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D104Amenu.html	无	N_NOTITLE					0		新出繪圖雙玉燕寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D105Amenu.html	无	N_NOTITLE					0		繪圖天仙寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D106Amenu.html	无	N_NOTITLE					0		繪圖顧鼎臣雙玉玦寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D107Amenu.html	无	N_NOTITLE					0		新編合同記寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D108Amenu.html	无	N_NOTITLE					0		孝燈寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D109Amenu.html	无	N_NOTITLE					0		八寶雙鸞釵寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D110Amenu.html	无	N_NOTITLE					0		河南開封府花枷良願龍圖寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D111Amenu.html	无	N_NOTITLE					0		新編果報錄寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D112Amenu.html	存疑	S_NOAUTH_REC	d59fs72ip8g4	李三娘磨房寶卷	佚名撰	title	1	d59fs72ip8g4	李三娘磨房寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D113Amenu.html	存疑	S_NOAUTH_REC	d59fryrxl6h3	湖廣荆州府永慶縣修行梅氏花閷寶卷	佚名撰	title	1	d59fryrxl6h3	湖廣荊州府永慶縣修行梅氏花閷寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D114Amenu.html	无	N_NOTITLE					0		後珍珠塔麒麟豹二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D115Amenu.html	无	N_NOTITLE					0		新刻黃糠寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D117Amenu.html	无	N_NOTITLE					0		繡像碧玉簪寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D118menu.html	无	N_NOTITLE					0		新刻洛陽橋寶卷一卷卽受生寶卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D119Amenu.html	无	N_NOTITLE					0		雌雄盃寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D120Amenu.html	无	N_NOTITLE					0		新編白鶴圖寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D121Amenu.html	无	N_NOTITLE					0		新編殺子報寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D122Amenu.html	无	N_NOTITLE					0		繡像雙貴圖寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D123Amenu.html	无	N_NOTITLE					0		繪圖雙蘭英寶卷二卷卽雙金花大團圓□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D124Amenu.html	无	N_NOTITLE					0		蝴蝶杯寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D125Amenu.html	无	N_NOTITLE					0		新編徐子建雙蝴蝶寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D126Amenu.html	存疑	S_NOAUTH_REC	d59fxzpwoa2p	真修寶卷	佚名撰	title	1	d59fxzpwoa2p	眞修寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D127Amenu.html	无	N_NOTITLE					0		烏金記寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D128Amenu.html	无	N_NOTITLE					0		新編倭袍寶卷二卷□塵影室撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D129Amenu.html	无	N_NOTITLE					0		新編南樓寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D130Amenu.html	无	N_NOTITLE					0		繪圖十美圖寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D131Amenu.html	无	N_NOTITLE					0		繪圖姉妹花寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D132Amenu.html	无	N_NOTITLE					0		繪圖現世報養媳婦寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D133Amenu.html	无	N_NOTITLE					0		浙江杭州府錢塘縣白蛇寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D134Amenu.html	存疑	S_NOAUTH_REC	d59fs70r0tmv	新刻說唱金鳳寶卷	佚名撰	title	1	d59fs70r0tmv	新刻說唱金鳳寶卷二卷卽龍鳳銷寶卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D135Amenu.html	无	N_NOTITLE					0		繪圖竇娥寶卷二卷卽六月雪寶卷陳潤身撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D136Amenu.html	无	N_NOTITLE					0		正本雙珠鳳奇緣竇卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D137Amenu.html	无	N_NOTITLE					0		繪圖蘇鳳英藥茶記寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D138Amenu.html	无	N_NOTITLE					0		蘭英寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D139Amenu.html	无	N_NOTITLE					0		繪圖新編龍鳳配寶卷二卷□醉痴生撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D140Amenu.html	无	N_NOTITLE					0		落金扇寶卷二卷卽王龍鬦寶□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D141Amenu.html	无	N_NOTITLE					0		繡像蜜蜂記寶卷二卷陳潤身撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D142Amenu.html	存疑	S_NOAUTH_REC	d59fs7ctj5s5	浙江嘉興府秀水縣刺心寶卷	佚名撰	title	1	d59fs7ctj5s5	浙江嘉興府秀水縣刺心寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D143Amenu.html	无	N_NOTITLE					0		太華山紫金鎮兩世修行劉香寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D144Amenu.html	无	N_NOTITLE					0		小董永賣身寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D145Amenu.html	无	N_NOTITLE					0		百花台雙恩寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D146Amenu.html	无	N_NOTITLE					0		繪圖玉連環寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D147menu.html	无	N_NOTITLE					0		繪圖囘郎寶卷一卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D148Amenu.html	无	N_NOTITLE					0		繪圖珍珠塔寶卷二卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D149Amenu.html	无	N_NOTITLE					0		大明嘉靖江蘇蘇州府玉蜻蜒寶卷二卷卽瑞珠寶卷□闕名撰	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D020menu.html	无	N_NOTITLE					0		夜吊秋喜殘一卷存卷中	□闕名撰　廣州富桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D021menu.html	无	N_NOTITLE					0		廢鐵生光一卷	□闕名撰　廣州守經堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D022menu.html	存疑	S_NOAUTH_WORK_MULTI				title	2	d59f2q4h42kg,d59fxxcv4q9t	賣油郎二卷	□闕名撰　廣州丹柱堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D023menu.html	无	N_NOTITLE					0		新出狡婦疴難全套三卷	□闕名撰　廣州富桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D024menu.html	无	N_NOTITLE					0		重訂山伯訪友三卷	□闕名撰　廣州五桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D025menu.html	无	N_NOTITLE					0		青樓河調疏粧臺一卷	□闕名撰　廣州富桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D026menu.html	无	N_NOTITLE					0		新琵琶行一卷	□闕名撰　廣州富桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D027menu.html	无	N_NOTITLE					0		陳姑自盡一卷	□闕名撰　廣州富桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D028menu.html	无	N_AUTHOR_DIFF	d59fxt0d6hvk	重臺分別	佚名撰	title	1	d59fxt0d6hvk	重臺分別四卷	□闕名撰　廣州富桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D029menu.html	无	N_NOTITLE					0		人壽年出頭五卷	□闕名撰　廣州富桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D030menu.html	无	N_NOTITLE					0		大快活開廳一卷	□闕名撰　廣州醉經堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D031menu.html	无	N_NOTITLE					0		特別打天九歌一卷	□闕名撰　廣州以文堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D032menu.html	无	N_NOTITLE					0		新出龍舟歌明皇遊月殿一卷	□闕名撰　廣州以文堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D033menu.html	无	N_NOTITLE					0		生祭李彥貴全本二卷	□闕名撰　道光二十年廣州德文堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D034menu.html	无	N_NOTITLE					0		新刻燈花記全本二卷	□闕名撰　廣州丹柱堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D035menu.html	无	N_AUTHOR_DIFF	d59fs70hyxvm	新刻琥珀鳳釵柳希雲全本南音	佚名撰	title	1	d59fs70hyxvm	新刻琥珀鳳釵柳希雲全本南音六卷	□闕名撰　刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D036menu.html	无	N_AUTHOR_DIFF	d59fs70hnpc5	新刻後續琥珀鳳釵柳希雲全本南音	佚名撰	title	1	d59fs70hnpc5	新刻後續琥珀鳳釵柳希雲全本南音六卷	□闕名撰　刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D037menu.html	无	N_NOTITLE					0		新玉蕭琴記南音二卷	□闕名撰　同治八年廣州右經堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D038menu.html	无	N_NOTITLE					0		百花宮主點將全本二卷	□闕名撰　廣州五經堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D039menu.html	无	N_NOTITLE					0		新選背解紅羅全本六卷	□闕名撰　廣州富桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D041menu.html	无	N_NOTITLE					0		新本百八鐘三卷	□闕名撰　廣州五桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D042menu.html	无	N_NOTITLE					0		新出龍舟歌西蓬擊掌一卷	□闕名撰　廣州五桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D043menu.html	无	N_NOTITLE					0		新出龍舟歌貂嬋拜月一卷	□闕名撰　廣州富桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D044menu.html	无	N_NOTITLE					0		三星二卷	□闕名撰　廣州富桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D045menu.html	无	N_NOTITLE					0		新出龍舟歌關倫賣妹一卷	□闕名撰　廣州富桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D046menu.html	无	N_NOTITLE					0		新出龍舟歌麓金橋問卦一卷	□闕名撰　廣州富桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D047menu.html	无	N_NOTITLE					0		新出龍舟歌瑞蘭許愿一卷	□闕名撰　廣州富桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D048menu.html	无	N_NOTITLE					0		新送王蕭琴全本初集四卷二集四卷	□闕名撰　廣州五桂堂刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E163menu.html	确定	T1	d59fxz2wv11d	周易集解	清孫星衍撰	title	11	d59f27yb4q9u,d59f28457fuo,d59f28mx07wm,d59f2gct0t8j,d59f2hcumbd0,d59f2nd2c0zm	周易集解十卷	淸 孫星衍 撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E164menu.html	确定	T1	d59f28mxbgg2	周易口訣義	唐史徴撰	title	1	d59f28mxbgg2	周易口訣義六卷	唐 史徵 撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E165menu.html	存疑	S_NOAUTH_WORK_MULTI				title	5	d59f2gctyiv6,d59f2ps2fhmq,d59f2q54ivwg,d59fxxktooow,d59fxz2x69kw	夏小正傳二卷	淸 孫星衍 校
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E166menu.html	确定	T1	d59f2nawal1d	急就章考異	清孫星衍撰	title	2	d59f2nawal1d,d59fyiw6qqyo	急就章考異一卷	淸 孫星衍 撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E167menu.html	存疑	S_COMBINED	d59f28l5ya6e	王無功集	唐王績撰	title	1	d59f28l5ya6e	王無功集三卷東皐子集補遺二卷	唐 王績 撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E169menu.html	存疑	S_COMBINED	d59fywb1x9ts	覆校穆天子傳	清翟云升校	title	2	d59fxsh47uo1,d59fywb1x9ts	覆校穆天子傳六卷補遺一卷	晉 郭璞 注 淸 翟云升 校 道光十二年 刊
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E170menu.html	确定	T1	d59fxp8dgoow	校正古今人表	清翟云升撰	title	1	d59fxp8dgoow	校正古今人表九卷	漢 班固 撰 唐 顏師古 注 淸 翟云升 校
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E171menu.html	确定	T1	d59f2mtlvdvk	焦氏易林校略	翟云升撰	title	1	d59f2mtlvdvk	焦氏易林校略十六卷	淸 翟云升 撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E002menu.html	无	N_NOTITLE					0		江南製造局譯書彙刻目録册	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E003menu.html	存疑	S_NOAUTH_REC	d59fxxwignb6	埏紘外乘	嚴良勛譯；林樂知譯	title	1	d59fxxwignb6	埏紘外乘二十五卷續編二卷補遺一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E004menu.html	存疑	S_NOAUTH_REC	d59fxt0rjkzl	俄國新志	陔勒低撰	title	1	d59fxt0rjkzl	俄國新志八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E005menu.html	存疑	S_NOAUTH_REC	d59fxt0zyznl	法國新志	傅紹蘭口譯；該勒低輯	title	1	d59fxt0zyznl	法國新志四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E006menu.html	存疑	S_NOAUTH_REC	d59fxxiiyv41	美國憲法纂釋	海麗生撰	title	1	d59fxxiiyv41	美國憲法纂釋二十一卷憲法一卷續增憲法一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E007menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fy0z8l43k,d59fy0z8l43l	歐洲東方交涉記十二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E008menu.html	存疑	S_NOAUTH_REC	d59fxxy1pngh	英俄印度交涉書	清馬文撰	title	1	d59fxxy1pngh	英俄印度交涉書一卷續編一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E009menu.html	存疑	S_NOAUTH_REC	d59fxxi8o16p	列國歲計政要	麥丁富得力撰	title	1	d59fxxi8o16p	列國歲計政要十二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E010menu.html	存疑	S_NOAUTH_REC	d59fxxhdrjeq	國政貿易相關書	法拉撰	title	1	d59fxxhdrjeq	國政貿易相關書二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E011menu.html	存疑	S_NOAUTH_REC	d59fxsz3x98i	保富述要	布來德撰	title	1	d59fxsz3x98i	保富述要一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E012menu.html	无	N_NOTITLE					0		列國陸軍制不分卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E013menu.html	存疑	S_NOAUTH_REC	d59fxxx9makh	西國陸軍制考畧	柯里撰	title	1	d59fxxx9makh	西國陸軍制考略八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E014menu.html	存疑	S_NOAUTH_REC	d59fxxxs1am8	行軍指要	哈密撰	title	1	d59fxxxs1am8	行軍指要六卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E015menu.html	存疑	S_NOAUTH_REC	d59fxxi9ai9s	臨陣管見	斯拉弗司撰	title	1	d59fxxi9ai9s	臨陣管見九卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E016menu.html	存疑	S_NOAUTH_REC	d59fxxy1eewx	營城揭要	儲意比撰	title	1	d59fxxy1eewx	營城揭要二卷附圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E017menu.html	存疑	S_NOAUTH_REC	d59fxxy4u0w0	營壘圖說	伯里牙芒撰	title	1	d59fxxy4u0w0	營壘圖說一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E018menu.html	存疑	S_NOAUTH_REC	d59fxzr5xuyo	開地道轟藥法	傅蘭雅口譯	title	1	d59fxzr5xuyo	開地道轟藥法三卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E019menu.html	存疑	S_NOAUTH_REC	d59fxzr9dgxs	水師章程	林樂知口譯	title	1	d59fxzr9dgxs	水師章程十四卷續編六卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E020menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxxws505f,d59fy1xercw1	水師操練十八卷附一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E021menu.html	存疑	S_NOAUTH_REC	d59fxxws505e	水師保身法	勒羅阿撰	title	1	d59fxxws505e	水師保身法一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E022menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxxiauozm,d59fy1ycgzk0	輪船布陣十二卷首一卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E023menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxxi1st8h,d59fy1x60poi	考試司機七卷首一卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E024menu.html	存疑	S_NOAUTH_REC	d59fxsza603l	兵船汽機	息尼德撰	title	1	d59fxsza603l	兵船汽機六卷附一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E025menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxxi241s2,d59fy1x6by82	克虜伯礮說四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E026menu.html	存疑	S_NOAUTH_REC	d59fy1x6by80	克虜伯礮操法	金楷理口譯	title	1	d59fy1x6by80	克虜伯礮操法四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E027menu.html	存疑	S_NOAUTH_REC	d59fxxi241s0	克虜伯船礮操法	清李鳳苞譯；金楷理譯	title	1	d59fxxi241s0	克虜伯船礮操法一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E028menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fy0zkg4qq,d59fy0zkrda8	克虜伯礮表八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E029menu.html	存疑	S_NOAUTH_REC	d59fxzr693ia	克虜伯礮準心法	金楷理口譯	title	1	d59fxzr693ia	克虜伯礮準心法一卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E030menu.html	存疑	S_NOAUTH_REC	d59fxzr6kc1t	克虜伯腰箍礮說	金楷理口譯	title	1	d59fxzr6kc1t	克虜伯腰箍礮說一卷附圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E031menu.html	存疑	S_NOAUTH_REC	d59fy1x6by81	克虜伯礮架說	金楷理口譯	title	1	d59fy1x6by81	克虜伯礮架說一卷附圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E032menu.html	存疑	S_NOAUTH_REC	d59fxxi241s1	克虜伯螺繩礮架說	金楷理譯；清李鳳苞譯	title	1	d59fxxi241s1	克虜伯螺繩礮架說一卷附圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E033menu.html	存疑	S_NOAUTH_REC	d59fxzr693i9	克虜伯礮彈造法	金楷理口譯	title	1	d59fxzr693i9	克虜伯礮彈造法二卷附圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E034menu.html	存疑	S_NOAUTH_REC	d59fxxh9pgch	攻守礮法	清李鳳苞譯；金楷理譯	title	1	d59fxxh9pgch	攻守礮法一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E035menu.html	存疑	S_NOAUTH_REC	d59fxszbey9s	餅藥造法	金楷理口譯	title	1	d59fxszbey9s	餅藥造法一卷附圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E036menu.html	存疑	S_NOAUTH_REC	d59fxt1n2juo	格林礮操法	傅蘭克今撰	title	1	d59fxt1n2juo	格林礮操法一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E037menu.html	存疑	S_NOAUTH_REC	d59fxxi3o8ht	喇叭吹法	金楷理譯	title	1	d59fxxi3o8ht	喇叭吹法一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E038menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxxygdszm,d59fy1xvxerk	製火藥法三卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E039menu.html	存疑	S_NOAUTH_REC	d59fxsz5hfy9	爆藥記要	清舒高第口譯	title	1	d59fxsz5hfy9	爆藥記要六卷附圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E040menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxqvhdfcx,d59fxsz9jj0h	兵船礮法六卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E041menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxxhe2ry9,d59fy1x1ne2p	海防新論十八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E042menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f2ne78000,d59fy1h5hedd	海道圖說十五卷長江圖說一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E043menu.html	存疑	S_NOAUTH_REC	d59fxxhgkoao	航海章程	弗蘭克林纂	title	1	d59fxxhgkoao	航海章程一卷初議紀録一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E044menu.html	存疑	S_NOAUTH_REC	d59fxxhfy77m	航海簡法	那麗撰	title	1	d59fxxhfy77m	航海簡法四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E045menu.html	存疑	S_NOAUTH_REC	d59fxzrb8w74	行海要術	金楷理口譯	title	1	d59fxzrb8w74	行海要術四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E046menu.html	存疑	S_NOAUTH_REC	d59fxxy97chu	禦風要術	白爾特撰	title	1	d59fxxy97chu	御風要術三卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E047menu.html	存疑	S_NOAUTH_REC	d59fxxhep91c	海塘輯要	馬立德撰；韋更斯撰	title	1	d59fxxhep91c	海塘輯要十卷釋一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E048menu.html	存疑	S_NOAUTH_REC	d59fxxiinmkh	美國鐵路匯考	柯理撰	title	1	d59fxxiinmkh	美國鐵路彙考十三卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E049menu.html	存疑	S_NOAUTH_REC	d59fxxwzmp6p	鐵路紀要	清潘松譯；柯理編	title	1	d59fxxwzmp6p	鐵路紀要三卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E050menu.html	存疑	S_NOAUTH_REC	d59fxxwtp6v5	算式集要	哈司韋輯	title	1	d59fxxwtp6v5	算式集要四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E051menu.html	存疑	S_NOAUTH_REC	d59fxxwtp6v6	算式解法	好敦司開奈利撰	title	1	d59fxxwtp6v6	算式解法十四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E052menu.html	存疑	S_NOAUTH_REC	d59fxxwr7aiq	數學理	棣麼甘撰	title	1	d59fxxwr7aiq	數學理九卷附一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E053menu.html	存疑	S_NOAUTH_REC	d59fxxwhixoh	三角數理	傅蘭雅口譯；海麻士輯	title	1	d59fxxwhixoh	三角數理十二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E054menu.html	存疑	S_NOAUTH_REC_MULTI				title	3	d59f2q32uvb4,d59fy1h565ts,d59fy1h565tt	代數術二十五卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E055menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxxx58yyo,d59fy1xi6yv4	微積溯源八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E056menu.html	存疑	S_NOAUTH_REC	d59fy07g5j41	代數微積拾級	羅密士撰	title	1	d59fy07g5j41	代數微積拾級十八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E057menu.html	存疑	S_NOAUTH_REC	d59fxrv1svlu	代數難題解法	倫德輯；傅蘭雅譯	title	1	d59fxrv1svlu	代數難題解法十六卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E058menu.html	存疑	S_NOAUTH_REC	d59fxxwwtkap	談天	侯失勒撰	title	1	d59fxxwwtkap	談天十八卷附表一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E059menu.html	存疑	S_NOAUTH_REC	d59fxszgeqyp	測候叢談	金楷理口譯	title	1	d59fxszgeqyp	測候叢談四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E060menu.html	存疑	S_NOAUTH_REC	d59fxszg3if5	測地繪圖	富路瑪撰	title	1	d59fxszg3if5	測地繪圖十一卷附一卷表一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E061menu.html	存疑	S_NOAUTH_REC	d59fxxhodlvl	繪地法原	金楷理譯	title	1	d59fxxhodlvl	繪地法原一卷附表一卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E062menu.html	存疑	S_NOAUTH_REC	d59fxxyarj7l	運規約指	傅蘭雅譯；白起德輯	title	1	d59fxxyarj7l	運規約指三卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E063menu.html	存疑	S_NOAUTH_REC	d59fxxw360ox	器象顯真	清徐建寅編；傅蘭雅譯；白力蓋輯	title	1	d59fxxw360ox	器象顯眞四卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E064menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fy0zdkwsh,d59fy0zdkwsi	行軍測繪十一卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E065menu.html	存疑	S_NOAUTH_REC	d59fxszhcgle	測繪海圖全法	華爾敦撰	title	1	d59fxszhcgle	測繪海圖全法八卷附一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E066menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxxh7isjl,d59fy1ji2pkx	格致啓蒙四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E067menu.html	存疑	S_NOAUTH_REC	d59fxxh7u135	格致小引	赫施賚撰	title	1	d59fxxh7u135	格致小引一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E068menu.html	存疑	S_NOAUTH_REC	d59fxxx7qvb4	物理學上編	日本飯盛挺造撰	title	1	d59fxxx7qvb4	物理學上編四卷中編四卷下編四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E069menu.html	存疑	S_NOAUTH_REC	d59fxxx7qvb6	物體遇熱改易記	瓦特斯輯；傅蘭雅譯	title	1	d59fxxx7qvb6	物體遇熱改易記四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E070menu.html	存疑	S_NOAUTH_REC_MULTI				title	3	d59fy0z7negy,d59fy0z7yn0g,d59fy0z7yn0h	農學初級一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E071menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxxvv1ukg,d59fy1xae1a8	農務化學問答二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E072menu.html	存疑	S_NOAUTH_REC	d59fxxvvd341	農務土質論	金福蘭格令希蘭撰	title	1	d59fxxvvd341	農務土質論三卷圖說一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E073menu.html	存疑	S_NOAUTH_REC	d59fxxvuqm0x	農務化學簡法	固來納撰	title	1	d59fxxvuqm0x	農務化學簡法三卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E074menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fy0z7yn0i,d59fy0z89vk0	農學津梁一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E075menu.html	存疑	S_NOAUTH_REC	d59fxxxyla0w	意大里蠶書	丹吐魯撰	title	1	d59fxxxyla0w	意大里蠶書一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E076menu.html	存疑	S_NOAUTH_REC	d59fxxvvobnl	農學理說	以德懷特福利斯撰	title	1	d59fxxvvobnl	農學理說二卷表一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E077menu.html	存疑	S_NOAUTH_REC	d59fxxvv1ukh	農務全書上編	施妥縷撰	title	1	d59fxxvv1ukh	農務全書上編十六卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E078menu.html	存疑	S_NOAUTH_REC	d59fxsz3m0ox	寶藏興焉	費而奔撰	title	1	d59fxsz3m0ox	寶藏興焉十二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E079menu.html	存疑	S_NOAUTH_REC	d59fxt0bmha9	地學淺釋	雷俠兒撰	title	1	d59fxt0bmha9	地學淺釋三十八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E080menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fy0zd9o8x,d59fy0zdkwsg	相地探金石法四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E081menu.html	存疑	S_NOAUTH_REC	d59fxxhxqq6a	金石識別	代那撰；美國瑪高溫口譯；清華蘅芳筆述	title	1	d59fxxhxqq6a	金石識別十二卷表一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E082menu.html	存疑	S_NOAUTH_REC	d59fxxi3czya	礦學考質上編	奧斯彭撰	title	1	d59fxxi3czya	礦學考質上編五卷下編五卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E083menu.html	存疑	S_NOAUTH_REC	d59fxxwwtkao	探礦取金	密拉撰	title	1	d59fxxwwtkao	探礦取金六卷續編一卷附編一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E084menu.html	存疑	S_NOAUTH_REC	d59fxxw5cohs	求礦指南	安德孫撰	title	1	d59fxxw5cohs	求礦指南十卷附一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E085menu.html	无	N_NOTITLE					0		銀鑛指南一卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E086menu.html	存疑	S_NOAUTH_REC	d59f2mui0tts	冶金錄	阿發滿撰	title	1	d59f2mui0tts	冶金録三卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E087menu.html	存疑	S_NOAUTH_REC	d59fxxi7f30g	煉鋼要言	清徐家寶譯	title	1	d59fxxi7f30g	鍊鋼要言一卷附録一卷附圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E088menu.html	存疑	S_NOAUTH_REC	d59fxxhyzoci	井礦工程	傅蘭雅口譯；白爾捺輯	title	1	d59fxxhyzoci	井礦工程三卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E089menu.html	存疑	S_NOAUTH_REC	d59fxxi16c5e	開煤要法	士密德輯；傅蘭雅口譯	title	1	d59fxxi16c5e	開煤要法十二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E090menu.html	存疑	S_NOAUTH_REC	d59fxxi1st8g	考工記要	瑪體生撰	title	1	d59fxxi1st8g	考工記要十七卷附圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E091menu.html	存疑	S_NOAUTH_REC	d59fxxhw6jgh	金工敎範	康潑吞撰	title	1	d59fxxhw6jgh	金工教範一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E092menu.html	存疑	S_NOAUTH_REC	d59fxt5ps35u	籌金論畧	司布勒村撰	title	1	d59fxt5ps35u	鑄金論畧六卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E093menu.html	存疑	S_NOAUTH_REC	d59fxxyg2kg2	製羼金法	日本橋本奇策撰	title	1	d59fxxyg2kg2	製羼金法二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E094menu.html	存疑	S_NOAUTH_REC	d59fy0z97l6p	取濾火油法	日得烏特撰	title	1	d59fy0z97l6p	取濾火油法一卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E095menu.html	存疑	S_NOAUTH_REC	d59fxxybp8ua	造洋漆法	日本田原良純撰	title	1	d59fxxybp8ua	造洋漆法一卷續編一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E096menu.html	存疑	S_NOAUTH_REC	d59fxxycy70h	照相鏤板印圖法	貝列尼撰	title	1	d59fxxycy70h	照相鏤板印圖法一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E097menu.html	存疑	S_NOAUTH_REC	d59fxxxg69z6	西藝知新	諾格德撰	title	1	d59fxxxg69z6	西藝知新二十二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E098menu.html	存疑	S_NOAUTH_REC	d59fxxygp1j4	製機理法	覺顯祿斯撰	title	1	d59fxxygp1j4	製機理法八卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E099menu.html	存疑	S_NOAUTH_REC	d59fxxw2jjls	汽機必以	蒲而捺撰	title	1	d59fxxw2jjls	汽機必以十二卷首一卷附一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E100menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fy0z8wcn4,d59fy0z8wcn5	汽機發軔九卷表一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E101menu.html	存疑	S_NOAUTH_REC	d59fxxw360ow	汽機新制	白爾格撰	title	1	d59fxxw360ow	汽機新制八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E102menu.html	存疑	S_NOAUTH_REC	d59fxxwll0qq	聲學	田大里撰	title	1	d59fxxwll0qq	聲學八卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E103menu.html	存疑	S_NOAUTH_REC	d59fxxhb9n29	光學	田大里輯；金楷理口譯	title	1	d59fxxhb9n29	光學二卷視學諸器圖說一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E104menu.html	存疑	S_NOAUTH_REC	d59fxxhkbite	化學分原	蒲陸山撰	title	1	d59fxxhkbite	化學分原八卷表一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E105menu.html	存疑	S_NOAUTH_REC	d59fxxhkxzwg	化學鑒原	韋而司撰	title	1	d59fxxhkxzwg	化學鑑原六卷續編二十四卷補編六卷附一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E106menu.html	存疑	S_NOAUTH_REC	d59fxxhl98g0	化學考質	富里西尼烏司撰	title	1	d59fxxhl98g0	化學考質八卷表二卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E107menu.html	存疑	S_NOAUTH_REC	d59fxxhm6y2q	化學求數	富里西尼烏司撰	title	1	d59fxxhm6y2q	化學求數十五卷附表一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E108menu.html	存疑	S_NOAUTH_REC	d59fxt0fokch	電學	瑙挨德撰	title	1	d59fxt0fokch	電學十卷首一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E109menu.html	存疑	S_NOAUTH_REC	d59fxt0fdbsw	電學綱目	傅蘭雅口譯；田大里輯	title	1	d59fxt0fdbsw	電學綱目一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E110menu.html	存疑	S_NOAUTH_REC	d59fxxx0vncw	通物電光	莫耳登撰	title	1	d59fxxx0vncw	通物電光四卷附圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E111menu.html	存疑	S_NOAUTH_REC	d59fxxx823uo	無線電報	克爾撰	title	1	d59fxxx823uo	無線電報一卷補編一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E112menu.html	无	N_NOTITLE					0		電氣鍍䤼一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E113menu.html	存疑	S_NOAUTH_REC	d59fxt0e4dmo	電氣鍍金畧法	華特撰	title	1	d59fxt0e4dmo	電氣鍍金略法一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E114menu.html	存疑	S_NOAUTH_REC	d59fy0zcyfpd	西藥大成	英哈來撰；來拉海得蘭撰	title	1	d59fy0zcyfpd	西藥大成十卷首一卷藥品中西名目表一卷補編六卷首一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E115menu.html	存疑	S_NOAUTH_REC	d59fxxwgl81u	儒門醫學	海得蘭撰	title	1	d59fxxwgl81u	儒門醫學四卷附一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E116menu.html	存疑	S_NOAUTH_REC	d59fy0hzq3nl	内科理法前編	虎伯撰	title	1	d59fy0hzq3nl	内科理法前編六卷後編十卷附一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E117menu.html	存疑	S_NOAUTH_REC	d59fxxhq914w	濟急法	舍白辣撰	title	1	d59fxxhq914w	濟急法一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E118menu.html	存疑	S_NOAUTH_REC	d59fxsz4uyv4	保全生命論	古蘭肥勒撰	title	1	d59fxsz4uyv4	保全生命論一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E119menu.html	存疑	S_NOAUTH_REC	d59fxt125ngg	法律醫學	弗里愛撰	title	1	d59fxt125ngg	法律醫學二十四卷首一卷附一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E120menu.html	存疑	S_NOAUTH_REC_MULTI				title	3	d59fxxh9e7sx,d59fxxh9e7sy,d59fy02i86ww	公法總論一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E121menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxt5mch6p,d59fy1y6ups3	各國交涉公法論十六卷校勘記一卷中西紀年一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E122menu.html	存疑	S_NOAUTH_REC	d59fxt1jbpc2	各國交涉便法論	傅蘭雅譯	title	1	d59fxt1jbpc2	各國交涉便法論六卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E123menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59f2muh3474,d59fyt7f10jk	佐治芻言一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E124menu.html	存疑	S_NOAUTH_REC	d59fxt02klj5	德國陸軍考	歐盟撰	title	1	d59fxt02klj5	德國陸軍考四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E125menu.html	存疑	S_NOAUTH_REC	d59fy0zeimf4	英國水師律例	德麟撰	title	1	d59fy0zeimf4	英國水師律例四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E126menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxt0j46bk,d59fy1hp5cle	東方時局論略一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E127menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fxxhee0hs,d59fxxhee0ht	海軍調度要言三卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E128menu.html	存疑	S_NOAUTH_REC	d59fxxw3shs0	前敵須知	克利賴撰	title	1	d59fxxw3shs0	前敵須知四卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E129menu.html	存疑	S_NOAUTH_REC	d59fxxy20w02	營工要覽	傅蘭雅譯；清汪振聲譯	title	1	d59fxxy20w02	營工要覽四卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E130menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fy0zcbym8,d59fy0zcbym9	鐵甲叢譚五卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E131menu.html	存疑	S_NOAUTH_REC	d59fxxwrtrlu	水雷祕要	史理孟撰	title	1	d59fxxwrtrlu	水雷秘要五卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E132menu.html	存疑	S_NOAUTH_REC	d59fxyccfz7l	子藥准則	清丁以文撰	title	1	d59fxyccfz7l	子藥準則一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E133menu.html	存疑	S_NOAUTH_REC	d59fxxvzf66a	礮法求新	清鄭昌棪譯	title	1	d59fxxvzf66a	礮法求新六卷附編一卷補編一卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E134menu.html	存疑	S_NOAUTH_REC_MULTI				title	2	d59fy0zl2lts,d59fy0zl2ltt	礮乘新法三卷圖一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E173menu.html	确定	T1	d59f2n1wwq9s	潯谿紀事詩	清范鍇撰	title	1	d59f2n1wwq9s	潯谿紀事詩二卷	淸 范鍇 撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E174menu.html	确定	T1	d59fyu7ssmww	[道光]南潯鎮志	清范來庚纂	title	2	d59f2ndtssn4,d59fyu7ssmww	南潯鎮志十卷	淸 范來庚 撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E175menu.html	无	N_NOTITLE					0		朱文肅公詩集不分卷集一卷	明 朱國禎 撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E176menu.html	确定	T1	d59fyu7shedd	劫餘雜識	清李光霽撰	title	1	d59fyu7shedd	劫餘雜識一卷	淸 李光霽 撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E177menu.html	确定	T1	d59fsifcrpc5	山傭遺詩	清蔣文勳撰	title	1	d59fsifcrpc5	山傭遺詩一卷	蔣文勳 撰
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E179menu.html	确定	T1	d59fyu7tf400	范氏記私史事	清范韓撰	title	1	d59fyu7tf400	范氏記私史事一卷	淸 范韓 撰 劉氏嘉業堂藏舊鈔本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E180menu.html	无	N_NOTITLE					0		前身集不分卷	淸 黃周星 撰 劉氏嘉業堂藏稿本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E181menu.html	确定	T1	d59fyu7shede	南潛日記	清董說撰	title	1	d59fyu7shede	南潛日記二卷	淸 董說 撰 劉氏嘉業堂藏稿本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E182menu.html	确定	T1	d59fsdzqg1dt	兼山續草	清董思撰	title	2	d59fsdzqg1dt,d59fyu7t3vgg	兼山續草一卷	淸 董思 撰 張氏適園藏稿本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E183menu.html	存疑	S_AUTHOR_NEAR	d59fsdhgr0ua	古壁叢鈔	清溫曰鑑撰	title	1	d59fsdhgr0ua	古壁叢鈔一卷	淸 温日鑑 輯 據張氏適園藏原刊本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E184menu.html	无	N_NOTITLE					0		堅匏盦集二卷	淸 劉錦藻 撰 稿本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E185menu.html	确定	T1	d59fsfhs277m	一浮漚齋詩選	清沈焜撰	title	1	d59fsfhs277m	一浮漚齋詩選三卷	沈焜 撰 稿本
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/Q001menu01.html	存疑	S_NOAUTH_REC	d59f28mlrock	白氏長慶集	唐白居易撰	title	1	d59f28mlrock	白氏長慶集七十一卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N013menu1.html	无	N_NOTITLE					0		大清太祖承天廣運聖德神功肇紀立極仁孝睿武弘文定業高皇帝實録不分卷	
+http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N013menu2.html	无	N_NOTITLE					0		大清太宗應天興國弘德彰武寛温仁聖睿孝隆道顯功文皇帝實録六十五卷	
