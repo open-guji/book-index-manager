@@ -66,10 +66,10 @@ class WorkIndex:
 RECORD_KEY = {'nlc': 'nlc_fid', 'ncl-tw': 'ncltw_bookno', 'nlk': 'korcis_rec_key', 'kokusho': 'kokusho_bid', 'ndl': 'ndl_record', 'nat-archives-jp': 'naikaku_file_id', 'waseda': 'waseda_id',
               **{s: s + '_record' for s in ('bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb')},
               'utokyo-da': 'utokyo_record', 'ioc-shanben': 'ioc_nu', 'shoryobu': 'shoryobu_id', 'keio': 'keio_record', 'arc-ritsumei': 'arc_record',
-              'nagoya-u': 'nagoya_record'}
+              'nagoya-u': 'nagoya_record', 'kyoto-rmda': 'kyoto_record'}
 SITE_OF_SOURCE = {'nlc': 'nlc', 'ncltw': 'ncl-tw', 'korcis': 'nlk', 'kokusho': 'kokusho', 'ndl': 'ndl', 'naikaku': 'nat-archives-jp', 'waseda': 'waseda',
                   **{s: s for s in ('bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb')},
-                  'utokyo': 'utokyo-da', 'ioc': 'ioc-shanben', 'shoryobu': 'shoryobu', 'keio': 'keio', 'arc': 'arc-ritsumei', 'nagoya': 'nagoya-u'}
+                  'utokyo': 'utokyo-da', 'ioc': 'ioc-shanben', 'shoryobu': 'shoryobu', 'keio': 'keio', 'arc': 'arc-ritsumei', 'nagoya': 'nagoya-u', 'kyoto': 'kyoto-rmda'}
 
 
 def iter_work_files(root):

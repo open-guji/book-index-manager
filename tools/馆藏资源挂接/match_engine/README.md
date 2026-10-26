@@ -41,4 +41,4 @@ T_EXACT（题名全等）∧ A_EQ（责任者相合）∧ W_UNIQUE（唯一 Work
 6. 写 `tests/`（适配器解析、每个降级码的用例），跑 `pytest`；在 #583 贴数字，让 E 块独立跑一遍、`matches.tsv` diff 为空。
 
 ## 约定与红线
-不改 schema；匹配表等大文件不进仓；凭据不进仓；只写确定档，存疑不写。已有适配器：nlc／ncltw（C3 台湾国图古籍影像，记录号＝書號，url＝按書號 GET 检索）／korcis（C3 韩国 KORCIS，只取有原文影像且国中互联网公开者，url＝按国中控制号 GET 检索，见 `docs/馆藏资源挂接/报告/C3-KORCIS挂接-20261026.md`）／kokusho／ndl／naikaku／waseda；欧美六馆 bnf／bsb／sbb／loc／cudl／onb 共用 `adapters/euro.py`（A8，见 `docs/馆藏资源挂接/报告/A8-欧美六馆挂接-20261026.md`）；另有 `authorgate`（责任者闸）、`plancheck`（写计划校验与占用检查，K9 每 Work 最多 3 条藏本）。
+不改 schema；匹配表等大文件不进仓；凭据不进仓；只写确定档，存疑不写。已有适配器：nlc／ncltw（C3 台湾国图古籍影像，记录号＝書號，url＝按書號 GET 检索）／korcis（C3 韩国 KORCIS，只取有原文影像且国中互联网公开者，url＝按国中控制号 GET 检索，见 `docs/馆藏资源挂接/报告/C3-KORCIS挂接-20261026.md`）／kokusho／ndl／naikaku／waseda；日本诸馆 utokyo／ioc／shoryobu／keio／arc／nagoya／kyoto 共用 `adapters/jpc1.py`（A9，见 `docs/馆藏资源挂接/报告/A9-日本诸馆C1挂接-20261026.md`、`A9续-京大贵重挂接-20261026.md`）；欧美六馆 bnf／bsb／sbb／loc／cudl／onb 共用 `adapters/euro.py`（A8，见 `docs/馆藏资源挂接/报告/A8-欧美六馆挂接-20261026.md`）；另有 `authorgate`（责任者闸）、`plancheck`（写计划校验与占用检查，K9 每 Work 最多 3 条藏本）。

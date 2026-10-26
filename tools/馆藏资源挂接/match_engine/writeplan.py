@@ -40,11 +40,12 @@ SITES.update({
     'keio': dict(id='keio', name='慶應義塾図書館 漢籍コレクション', short_name='慶應', prefix='keio-', label='慶應藏本{edition}'),
     'arc': dict(id='arc-ritsumei', name='立命館大学アート・リサーチセンター 古典籍ポータル', short_name='立命館ARC', prefix='arc-', label='立命館ARC·{holder}藏本{edition}'),
     'nagoya': dict(id='nagoya-u', name='名古屋大学附属図書館 古典籍', short_name='名大', prefix='nagoya-', label='名大藏本{edition}'),
+    'kyoto': dict(id='kyoto-rmda', name='京都大学貴重資料デジタルアーカイブ', short_name='京大', prefix='kyoto-', label='京大藏本{edition}'),   # A9续
 })
 ARC_HOLDER = {'UCLA': 'UCLA', 'Art Institute of Chicago': '芝加哥藝術博物館', 'Berkeley': '加州大學柏克萊分校', 'Leiden': '萊頓民族學博物館',
               'British Museum': '大英博物館', 'MRAH': '布魯塞爾藝術歷史博物館', 'Marega': '梵蒂岡 Marega 文庫', 'arc_ritsumeikan': '立命館'}
-JPC1 = ('utokyo', 'ioc', 'shoryobu', 'keio', 'arc', 'nagoya')
-_JPC1_KEY = dict(utokyo='utokyo_record', ioc='ioc_nu', shoryobu='shoryobu_id', keio='keio_record', arc='arc_record', nagoya='nagoya_record')
+JPC1 = ('utokyo', 'ioc', 'shoryobu', 'keio', 'arc', 'nagoya', 'kyoto')
+_JPC1_KEY = dict(utokyo='utokyo_record', ioc='ioc_nu', shoryobu='shoryobu_id', keio='keio_record', arc='arc_record', nagoya='nagoya_record', kyoto='kyoto_record')
 VAGUE_EDITION = {'', '刊', '写', '寫', '刻', '抄', '鈔'}
 
 

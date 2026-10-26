@@ -1,0 +1,35 @@
+{
+ "source": "kyoto",
+ "n": 809,
+ "tiers": {
+  "存疑": 431,
+  "无": 261,
+  "确定": 117
+ },
+ "codes": {
+  "A_MISSING": 271,
+  "T_MISS": 260,
+  "MULTI_WORK": 220,
+  "T_EXACT": 117,
+  "A_EQ": 117,
+  "W_UNIQUE": 117,
+  "ERA_OK": 117,
+  "LOCAL_PART": 106,
+  "A_DIFF": 90,
+  "COLLECTION": 28,
+  "T_AUTHOR_NEAR": 21,
+  "ERA_CONFLICT": 15,
+  "T_FUZZY": 8,
+  "A_SECONDARY_ONLY": 8,
+  "ALT_TITLE_SIBLING": 5,
+  "MULTI_TITLE": 5,
+  "JUAN_GAP": 3,
+  "A_ALIAS_ONLY": 2,
+  "CAP_DROPPED": 1,
+  "DUP_WORK_SUSPECT": 1,
+  "T_EMPTY": 1
+ },
+ "group_split_groups": 0,
+ "write_plan": 3,
+ "cap_dropped": 1
+}
