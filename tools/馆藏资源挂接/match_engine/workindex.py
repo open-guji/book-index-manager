@@ -63,9 +63,9 @@ class WorkIndex:
 
 # --------------------------------------------------------------------------- 读盘
 # 资源项里站方记录号所在的 metadata 键（口径 K 的 metadata_keys；site_id 见 SITE_OF_SOURCE）
-RECORD_KEY = {'nlc': 'nlc_fid', 'kokusho': 'kokusho_bid', 'ndl': 'ndl_record', 'nat-archives-jp': 'naikaku_file_id', 'waseda': 'waseda_id',
+RECORD_KEY = {'nlc': 'nlc_fid', 'ncl-tw': 'ncltw_bookno', 'kokusho': 'kokusho_bid', 'ndl': 'ndl_record', 'nat-archives-jp': 'naikaku_file_id', 'waseda': 'waseda_id',
               **{s: s + '_record' for s in ('bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb')}}
-SITE_OF_SOURCE = {'nlc': 'nlc', 'kokusho': 'kokusho', 'ndl': 'ndl', 'naikaku': 'nat-archives-jp', 'waseda': 'waseda',
+SITE_OF_SOURCE = {'nlc': 'nlc', 'ncltw': 'ncl-tw', 'kokusho': 'kokusho', 'ndl': 'ndl', 'naikaku': 'nat-archives-jp', 'waseda': 'waseda',
                   **{s: s for s in ('bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb')}}
 
 

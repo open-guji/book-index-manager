@@ -14,7 +14,7 @@ import exclusions  # noqa: E402
 import roots  # noqa: E402
 
 TYPES = {'image', 'text', 'physical', 'catalog', 'annotated'}
-SITE = {'nlc': 'nlc', 'kokusho': 'kokusho', 'ndl': 'ndl', 'naikaku': 'nat-archives-jp', 'waseda': 'waseda'}
+SITE = {'nlc': 'nlc', 'ncltw': 'ncl-tw', 'kokusho': 'kokusho', 'ndl': 'ndl', 'naikaku': 'nat-archives-jp', 'waseda': 'waseda'}
 
 
 def check_item(it, groups):
