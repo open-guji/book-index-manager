@@ -19,7 +19,7 @@ from titleparse import (COLL_BASE, COLL_EXT, PREF, LOCAL_PART, SUPPLEMENT, suppl
 
 CONFIRMED, DOUBT, NONE = '确定', '存疑', '无'
 EURO = ('bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb')
-JPC1 = ('utokyo', 'ioc', 'shoryobu', 'keio', 'arc', 'nagoya')     # A9：C1 日本诸馆第二批
+JPC1 = ('utokyo', 'ioc', 'shoryobu', 'keio', 'arc', 'nagoya', 'kyoto')     # A9：C1 日本诸馆第二批（kyoto＝京大贵重，A9续）
 
 CODES_SUFFICIENT = ('T_EXACT', 'A_EQ', 'W_UNIQUE', 'ERA_OK')
 CODES_DOUBT = ('T_FUZZY', 'T_AUTHOR_NEAR', 'A_MISSING', 'A_DIFF', 'A_ALIAS_ONLY', 'ERA_CONFLICT', 'ERA_VERSION_EARLIER',
