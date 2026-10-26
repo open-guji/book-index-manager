@@ -1,0 +1,73 @@
+索引檔缺記錄檔        0
+works 索引漂移        17648
+entities 索引漂移     2
+work 側懸空引用       13486
+被併旧 id 無墓碑（merged_in[] 之 id 須有 merged_into 指回本 Work 之墓碑檔） 4910
+  無墓碑 ('d59fxvy1bpj5', '1exp0glr63kzm')
+  無墓碑 ('d59fxvytqayo', '1exp3xkonndog')
+  無墓碑 ('d59fxvz0wrgg', '1exp0i3xtm7er')
+  無墓碑 ('d59fxwbvtqtc', '1exnstb7uzx1c')
+  無墓碑 ('d59fxwd535kx', '1exnmitaz794w')
+  無墓碑 ('d59fxwp3jd36', '1exoks2di9ybm')
+  無墓碑 ('d59fxwym9xc0', '1exoli8bq3gg2')
+  無墓碑 ('d59fxx80bxtu', '1exp12pfauvba')
+  無墓碑 ('d59fxy2rtwxs', '1exp0glhkjvnm')
+  無墓碑 ('d59fxy35kcu9', '1exp0i3qxgjk5')
+相對基線消失之 id（被併須留墓碑檔，不得直接刪） 0 （基線 origin/main：341130 個 Work／Entity id，現有 341130，新增 0）
+墓碑目標不存在或亦為墓碑 7
+  墓碑目標 ('d59fyuatqkua', 'd59fytdanfuo')
+  墓碑目標 ('d59fyuapzqbm', 'd59fytd4eozk')
+  墓碑目標 ('1exp2jk31hiio', 'd59fy5bam8sg')
+  墓碑目標 ('d59f9uwprls2', 'd59f9s1nkxdy')
+  墓碑目標 ('d59fyuauoagx', 'd59fytdciv40')
+  墓碑目標 ('d59fyuashmo0', 'd59fytd85ji9')
+  墓碑目標 ('1exp0i3rxo2km', 'd59fxu434pvk')
+墓碑檔不在 index/works 0
+分類類檔不合（classify check） 0
+舊格式殘留（check_v2；--strict 計入 FAIL） 16  V07:16
+專名子類型不合（dynasty／reign／office／place；ERROR 計入 FAIL） 7  條目數 {'office': 2221, 'place': 951, 'publisher': 73, 'dynasty': 143, 'seal': 13, 'reign': 735}
+  專名 hixi1ubkeejc D2 parent_id 深度 4 > 3
+  專名 hixi1ubkeejd D2 parent_id 深度 4 > 3
+  專名 hixi1ubkeeje D2 parent_id 深度 4 > 3
+  專名 hixi1ubkeejf D2 parent_id 深度 4 > 3
+  專名 hixi1ubkeejg D2 parent_id 深度 4 > 3
+  專名 hixi1ubkeejh D2 parent_id 深度 4 > 3
+  專名 hixi1ubkeeji D2 parent_id 深度 4 > 3
+專名子類型 WARN（僅報，不入 FAIL） 161
+provenance 形狀不合    0
+edition_type 不在詞表  0
+physical_description 形狀不合 0
+base_edition 形狀不合  0
+entity.dates 不合法 0
+entity.external_ids 不合法 0
+count 形狀不對          0
+todo 形狀不合           0
+review 形狀不合         0
+related_works[].title 漂移（僅報，不入 FAIL） 0
+provenance[].institution 簡體字（僅報，不入 FAIL） 19
+dynasty 與生卒世纪不合（僅報，不入 FAIL） 185
+印章反查表漂移（index/seals*） 0
+裁決賬（只增不減）  7328
+  漂移 ('d59f2htpfncx', 'dynasty', '北宋', '南宋')
+  漂移 ('d59f2my9t24j', 'author', '聖祖', '清聖祖')
+  漂移 ('d59f2pt7bksh', 'period', None, 'liao-jin-yuan')
+  漂移 ('d59fxox2f5ds', 'author', None, '李應機')
+  漂移 ('d59fxox2f5ds', 'role', None, '撰')
+  漂移 ('d59fxox2f5ds', 'dynasty', None, '清')
+  漂移 ('d59fxox2qdxc', 'author', None, '孟森')
+  漂移 ('d59fxox2qdxc', 'role', None, '撰')
+  漂移 ('d59fxox2qdxc', 'dynasty', None, '民國')
+  漂移 ('d59fxox31mgx', 'author', None, '孟森')
+  漂移 ('hixhd2h9bj4p', 'dynasty', '清', None)
+  漂移 ('hixhd2h9bj4p', 'period', 'qing', None)
+  懸空 ('d59f24mgmm1d', 'authors.entity_id', 'hixicab9hq6j')
+  懸空 ('d59f28kwwef5', 'authors.entity_id', 'hixicabaqoa2')
+  懸空 ('d59f2n1goe0w', 'authors.entity_id', 'hixiclg1kqbc')
+  懸空 ('d59f2n4haz28', 'authors.entity_id', 'hixiclg1vyu5')
+  懸空 ('d59f2pvk84qq', 'authors.entity_id', 'hixicab88rw8')
+  懸空 ('d59f2pz89i4g', 'authors.entity_id', 'hixicabbd5g8')
+  懸空 ('d59f2q10vmrl', 'authors.entity_id', 'hixicabaqocf')
+  懸空 ('d59f2q2kfv29', 'authors.entity_id', 'hixicabaqobj')
+  懸空 ('d59f2q5x8pvk', 'authors.entity_id', 'hixicab96hih')
+  懸空 ('d59f6efc22gz', 'authors.entity_id', 'hixicabcauxx')
+FAIL
