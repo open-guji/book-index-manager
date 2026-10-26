@@ -91,3 +91,13 @@ def test_judge_shidianguji():
     assert J(None, 'u', 'timeout')[0] == 'error'
     r = L.judge('shidianguji', 'https://www.shidianguji.com/book/ZZ99999X', fetch=lambda u: (200, 'https://www.shidianguji.com/?page_from=404_page', 'x' * 8347))
     assert r['status'] == 'dead'
+
+def test_confirm_gone_redlink_uses_api_not_edit_page(monkeypatch):
+    import io, json, threading
+    u = 'https://zh.wikisource.org/w/index.php?title=%E7%84%A1&action=edit&redlink=1'
+    monkeypatch.setattr(L, 'http_probe', lambda *a, **k: (200, u, 'HEAD'))        # 编辑页对不存在页面也 200
+    monkeypatch.setattr(L, 'wiki_batch', lambda h, us, lim, **k: {us[0]: ('missing', 'API missing')})
+    done = {u: {'url': u, 'host': 'zh.wikisource.org', 'verdict': 'gone', 'ts': ''}}
+    out = io.StringIO()
+    L.confirm_gone(done, 2.0, out, threading.Lock(), gap=0, sleep=lambda s: None)
+    assert done[u]['verdict'] == 'dead'
