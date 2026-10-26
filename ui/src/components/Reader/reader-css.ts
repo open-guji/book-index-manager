@@ -36,6 +36,10 @@ export const READER_CSS = `
 }
 .bim-rd *, .bim-rd *::before, .bim-rd *::after { box-sizing: border-box; }
 
+/* 页框用 content-visibility: auto（含 paint 包含）跳过屏外排版，副作用是页框把溢出的内容裁掉、后一页再盖上来：
+   悬停卡（专名／书名）开在页尾时下半截被截断。页内有卡开着时这页恢复正常渲染（它正在屏内，本来就要画）。 */
+.guji-page-section:has(.bim-et-card) { content-visibility: visible !important; }
+
 /* 跳到正文：平时按标准 visually-hidden 收成 1px 并裁掉（任何宽度都不外露），
    获得焦点时才还原成左上角的按钮 */
 .bim-rd-skip {
