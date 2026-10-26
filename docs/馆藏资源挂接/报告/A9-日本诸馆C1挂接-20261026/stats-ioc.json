@@ -1,0 +1,35 @@
+{
+ "source": "ioc",
+ "n": 3821,
+ "tiers": {
+  "存疑": 1173,
+  "确定": 583,
+  "无": 2065
+ },
+ "codes": {
+  "T_MISS": 2065,
+  "A_MISSING": 832,
+  "T_EXACT": 583,
+  "A_EQ": 583,
+  "W_UNIQUE": 583,
+  "ERA_OK": 583,
+  "MULTI_WORK": 229,
+  "A_DIFF": 95,
+  "JUAN_GAP": 80,
+  "T_AUTHOR_NEAR": 52,
+  "LOCAL_PART": 48,
+  "T_FUZZY": 48,
+  "COLLECTION": 38,
+  "DUP_WORK_SUSPECT": 32,
+  "MULTI_TITLE": 27,
+  "A_ALIAS_ONLY": 10,
+  "ERA_CONFLICT": 9,
+  "A_SECONDARY_ONLY": 3,
+  "ALT_TITLE_SIBLING": 2,
+  "CAP_DROPPED": 2,
+  "HUMAN_REJECT": 1
+ },
+ "group_split_groups": 0,
+ "write_plan": 536,
+ "cap_dropped": 2
+}
