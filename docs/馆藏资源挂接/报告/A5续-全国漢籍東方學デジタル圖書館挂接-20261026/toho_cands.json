@@ -1,0 +1,6518 @@
+[
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/ShiSanJingZhuShu/html/top.html",
+"title": "十三經注疏",
+"rest": "嘉靖中福建刊本　有山井鼎山井璞助識語",
+"parent": "",
+"has_vol": false,
+"fetched": false,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A034menu.html",
+"title": "十三經註疏 殘",
+"rest": "崇禎中古虞毛氏汲古閣刊本",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/ShiSanJingZhuShu/html/A014menu.html",
+"title": "周易正義　十四卷",
+"rest": "唐孔穎達等奉敕撰　舊鈔本",
+"parent": "",
+"has_vol": false,
+"fetched": false,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A029menu.html",
+"title": "周易筮述　八卷",
+"rest": "淸王弘撰撰　乾隆五十八年朝坂蕭氏滋德堂刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A027menu.html",
+"title": "尚書正義　二十卷",
+"rest": "漢孔安國傳　唐孔穎達等疏　弘化四年熊本藩時習館用足利學校藏南宋本景刊",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A065menu.html",
+"title": "周易集解",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A046menu.html",
+"title": "尚書譜　五卷",
+"rest": "清梅鴛撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A048menu.html",
+"title": "古文尚書冤詞補正 不分卷",
+"rest": "淸周春撰　民國二十七年徐征鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A050menu.html",
+"title": "古文尚書條辨  五卷",
+"rest": "淸梁上國撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A049menu.html",
+"title": "書序答問  一卷",
+"rest": "淸王詠霓撰　刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A044menu.html",
+"title": "毛詩 二十卷",
+"rest": "日本鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A042menu.html",
+"title": "新鐫鄒臣虎先生詩經翼註講意　不分卷",
+"rest": "明鄒之麟撰   刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A068menu.html",
+"title": "韓詩外傳十卷補逸一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A069menu.html",
+"title": "禮説十四卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A064menu.html",
+"title": "周禮正義殘",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A070menu.html",
+"title": "釋服二卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A053menu.html",
+"title": "律呂新書淺釋",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A055menu.html",
+"title": "春秋釋例十五卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A017menu.html",
+"title": "附釋音春秋左傳註疏　六十卷",
+"rest": "晉杜預注　唐陸德明音義　唐孔穎達等疏　宋刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A018menu.html",
+"title": "監本附音春秋公羊註疏　二十八卷",
+"rest": "漢何休學　唐陸德明音義　□闕名疏　宋刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A019menu.html",
+"title": "監本附音春秋穀梁傳註疏　二十卷",
+"rest": "晉范甯集解　唐陸德明音義　唐楊士勛疏　宋刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A037menu.html",
+"title": "春秋解 十五卷",
+"rest": "宋胡銓撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A056menu.html",
+"title": "論語十卷坿南宗論語考異一卷天文板論語考",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A015menu.html",
+"title": "論語　零片",
+"rest": "魏何晏集解　舊鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A071menu.html",
+"title": "論語古訓十卷坿一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A066menu.html",
+"title": "論語發疑",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A057menu.html",
+"title": "大學章句一卷中庸章句一卷論語集註十卷孟子集註十四卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A041menu.html",
+"title": "大學億　二卷 釋疑　一卷",
+"rest": "明王道撰 中御門資煕鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A067menu.html",
+"title": "四書集註直解",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A058menu.html",
+"title": "古文孝經一卷坿附錄一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A074menu.html",
+"title": "駮五經異義疏證十卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A051menu.html",
+"title": "七經偶記",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A043menu.html",
+"title": "同文囮雅 六卷",
+"rest": "□雲厓居士撰   鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A030menu.html",
+"title": "說文解字　十五卷",
+"rest": "漢許愼撰　宋徐鉉等奉敕校定　虞山毛氏汲古閣刊第四次修改本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A020menu.html",
+"title": "說文解字　十五卷",
+"rest": "漢許愼撰　宋徐鉉等奉敕校定　據汲古閣本重刊　有惠棟席世昌校語席淏識語圖記",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A038menu.html",
+"title": "說文解字　十五卷",
+"rest": "漢許愼撰　宋徐鉉等奉敕校定　乾隆三十八年大興朱氏椒華吟舫據汲古閣本重刊",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A024menu.html",
+"title": "說文解字　十五卷　 坿 　汲古閣說文解字校記　一卷",
+"rest": "光緒七年淮南書局據汲古閣第四次樣本重刊",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A054menu.html",
+"title": "說文解字",
+"rest": "[經-Ⅹ-2-8]",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A052menu.html",
+"title": "說文解字",
+"rest": "[經-Ⅹ-2-9]",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A028menu.html",
+"title": "說文解字　十五卷　 坿 　通檢　十四卷　末一卷",
+"rest": "漢許愼撰　宋徐鉉等奉敕校定　通檢　淸黎永椿撰　同治十二年番禺陳昌治校刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A025menu.html",
+"title": "說文解字　十五卷　 坿 　說文部首　一卷",
+"rest": "漢許愼撰　宋徐鉉等奉敕校定 部首　淸丁艮善輯　光緒七年日照丁氏據汲古閣舊藏宋監本重校刊  部首 光緒十年刊",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A047menu.html",
+"title": "說文解字繫傳　四十卷",
+"rest": "南唐徐鍇撰　道光十九年壽陽祁氏據景宋鈔本重刊",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A039menu.html",
+"title": "說文解字繫傳　四十卷　 坿 　校勘記　三卷",
+"rest": "南唐徐鍇撰　校勘記　淸祁寯藻撰　道光十九年壽陽祁氏據景宋鈔本重刊",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A045menu.html",
+"title": "許氏說文解字五音韻譜　十二卷",
+"rest": "宋李燾撰　嘉靖十一年孫氏刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A023menu.html",
+"title": "說文解字五音韻譜　十二卷",
+"rest": "宋李燾撰　萬曆二十六年崇川陳大科白狼書社刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A016menu.html",
+"title": "重刊許氏說文解字五音韻譜　十二卷",
+"rest": "宋李燾撰　天啓七年世裕堂刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A072menu.html",
+"title": "説文段注訂補十四卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A073menu.html",
+"title": "説文辨疑一卷條記一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A059menu.html",
+"title": "郋園小學四種",
+"rest": "",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A040menu.html",
+"title": "改併五音類聚四聲篇　十五卷 五音集韻　十五卷  坿  新編經史正音切韻指南　一卷 新編篇韻貫珠集　八卷 直指玉鑰匙門法　一卷",
+"rest": "金韓道昭撰 切韻指南 元劉鑑撰 篇韻貫珠集 明釋眞空撰　　正德十年刊本  切韻指南 正德十一年刊",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A033menu.html",
+"title": "三字經　一卷",
+"rest": "瑞凝堂刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A022menu.html",
+"title": "増修互註禮部韻略　殘一卷",
+"rest": "宋闕名撰　宋毛晃增注　男毛居正重增刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A031menu.html",
+"title": "高郵王氏父子論韻文稿　不分卷",
+"rest": "淸王念孫王引之同撰　昭和十一年東方文化學院京都研究所據北平人文科學研究所藏本重鈔",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A032menu.html",
+"title": "直音彙韻　一卷",
+"rest": "明闕名輯　明刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A026menu.html",
+"title": "歙江氏二十一部諧聲表　一卷　入聲表凡例　一卷　 坿 　句容陳氏十九部諧聲孳生述　一卷",
+"rest": "淸江有誥撰　十九部諧聲孳生述　淸陳立撰　江都李祖望半畝園鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A021menu.html",
+"title": "英語集全　六卷",
+"rest": "淸唐廷樞撰　同治元年廣東刊本　緯經堂藏板",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B001menu.html",
+"title": "漢書　零片",
+"rest": "漢班固撰　唐顏師古注　宋刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B004menu.html",
+"title": "後漢書　九十卷　 坿 　續漢志　三十卷",
+"rest": "劉宋范曄撰　唐李賢注　續志　晉司馬彪撰　梁劉昭注　宋刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B048menu.html",
+"title": "史記正義佚文　不分卷",
+"rest": "日本瀧川龜太郎輯　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B168menu.html",
+"title": "史記訂補八卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B169menu.html",
+"title": "漢書地理志校注二卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B170menu.html",
+"title": "三國志辨疑三卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B171menu.html",
+"title": "通鑑注商十八卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B161menu.html",
+"title": "少備通鑑節要五十卷外紀四卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B107menu.html",
+"title": "新刊補遺標題論策綱鑑全備精要　二十卷",
+"rest": "明郭子章蘇濬同輯　萬曆二十年余秀峯刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B167menu.html",
+"title": "東萊先生音註唐鑑",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B013menu.html",
+"title": "皇朝編年備要　三十卷",
+"rest": "宋陳均撰　淸白草廬鈔本　有馬玉堂圖記",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B073menu.html",
+"title": "三朝北盟會編　二百五十卷",
+"rest": "宋徐夢莘撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B148menu.html",
+"title": "山海經十八卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B172menu.html",
+"title": "東觀漢記二十四卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B005menu.html",
+"title": "金史補　不分卷",
+"rest": "淸杭世駿輯　鈔本　有繆荃孫圖記",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B028menu.html",
+"title": "宗室王公章京世襲爵秩册",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B006menu.html",
+"title": "淸史天文志　不分卷",
+"rest": "鄧傑臣王崇源同撰　淸史館鈔本　有柯劭忞識語",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B022menu.html",
+"title": "儒林公議　不分卷",
+"rest": "宋田況撰　鈔本　有曹溶古林武進盛氏所藏圖記",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B134menu.html",
+"title": "牙帖執照九種",
+"rest": "咸豐宣統閒",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B050menu.html",
+"title": "行文底檔",
+"rest": "淸宣統中官撰　宣統二年至六年八年至十三年鈔",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B074menu.html",
+"title": "唐大詔令集　一百三十卷",
+"rest": "宋宋敏求輯　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B149menu.html",
+"title": "六諭衍義一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B180menu.html",
+"title": "皇明詔令　二十一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B007menu.html",
+"title": "國朝諸臣奏議　殘二十六卷",
+"rest": "宋趙汝愚輯　宋刊　大德元統閒福州路補刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B173menu.html",
+"title": "孔子編年四卷孟子編年四卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B018menu.html",
+"title": "孫文定公行述　一卷",
+"rest": "淸宋維中輯   道光二十一年 春園宋氏也足山房鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B021menu.html",
+"title": "楊忠武公行述　一卷　 坿 　楊時齋宮保中外勤勞錄　一卷",
+"rest": "淸楊國佐楊國楨同撰 勤勞錄　淸楊芳撰　道光二十一年春園宋氏也足山房鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B017menu.html",
+"title": "明状元圖考　三卷",
+"rest": "明顧祖訓輯　漢陽葉氏平安館刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B174menu.html",
+"title": "鄭大司農蔡中郎年譜合表一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B150menu.html",
+"title": "元和郡縣志四十卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B176menu.html",
+"title": "九域志十卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B029menu.html",
+"title": "廣輿圖　二卷",
+"rest": "元朱思本原本　明羅洪先補訂　刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B027menu.html",
+"title": "今古輿地圖　三卷",
+"rest": "明沈定之呉國輔等撰　崇禎十一年山陰呉氏刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"title": "山東圖",
+"rest": "",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B105menu.html",
+"title": "欽定大淸一統志　殘九十五卷　表　一卷",
+"rest": "淸乾隆二十九年　敕撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B008menu.html",
+"title": "榮河縣志　二卷",
+"rest": "明宋綱纂修　據嘉靖十七年本鈔",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B009menu.html",
+"title": "郾城縣志　十二卷",
+"rest": "明李振聲修　明李豫等纂　崇禎十年刊本　有山本信有圖記",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B136menu.html",
+"title": "廣東通志　七十卷　闕卷第五十四至第五十六",
+"rest": "明談愷修 明黃佐等纂   嘉靖三十九年序刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B106menu.html",
+"title": "廣西通志　六十卷　闕卷第十六至第二十一第二十八第二十九",
+"rest": "明林富修 明黃佐等纂　嘉靖十一年刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B137menu.html",
+"title": "海國圖志　五十卷",
+"rest": "淸魏源撰   道光二十四年邵陽魏氏古微堂活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B177menu.html",
+"title": "水經注疏要删四十卷補遺一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B178menu.html",
+"title": "水經注疏要删補遺四十卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B010menu.html",
+"title": "水經注疏　四十卷",
+"rest": "淸楊守敬熊會貞同撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B147menu.html",
+"title": "問水漫録",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B139menu.html",
+"title": "常熟名勝古蹟古物調査表",
+"rest": "闕名撰   鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B046menu.html",
+"title": "京都至伊吾廬行程日記　不分卷",
+"rest": "淸□麟撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B151menu.html",
+"title": "李氏五種",
+"rest": "",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B157menu.html",
+"title": "宋朝事實二十卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"title": "憲綱册",
+"rest": "淸光緒宣統間官撰　刊本 有補鈔",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B051menu.html",
+"title": "憲法比例徵　四卷",
+"rest": "戴澤撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B135menu.html",
+"title": "政治叢書提要　四卷",
+"rest": "淸闕名撰  光緒宣統閒內府鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B019menu.html",
+"title": "文公家禮會通　十卷",
+"rest": "明湯鐸輯　景泰元年金陵湯氏執中堂刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B049menu.html",
+"title": "租簿　道光三年四年",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B030menu.html",
+"title": "租簿　道光十一年至十五年",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B031menu.html",
+"title": "租簿　道光十六年至二十年",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B032menu.html",
+"title": "租簿　同治元年至五年",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B033menu.html",
+"title": "租簿　同治十二年至光緒三年",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B034menu.html",
+"title": "租簿　光緒四年至八年",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B035menu.html",
+"title": "租簿　光緒九年至十三年",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B036menu.html",
+"title": "入厫同治六年夏麥入厫　光緒四年入厫　光緒十七年入厫　光緒二十年入厫",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B037menu.html",
+"title": "租數　光緒四年至六年八年十五年十七年",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B038menu.html",
+"title": "租簿　光緒十九年至二十年",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B039menu.html",
+"title": "二七淸粮底本",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B040menu.html",
+"title": "美字上節田號坵名册",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B041menu.html",
+"title": "大糧各處取租册檔雍正七年　 坿 　大糧各頊庄頭差銀册檔雍正七年十一年",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B042menu.html",
+"title": "漕白寔徵册　光緒二十七年三十年　地漕定徵册光緒二十七年",
+"rest": "鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"title": "山東現行簡明賦役全書･憲綱册･履歴･圖",
+"rest": "淸光緒宣統間官撰　刊鈔本",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B043menu.html",
+"title": "錢穀精騎　不分卷",
+"rest": "淸闕名撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B044menu.html",
+"title": "湖北全省征收錢粮漕米數目淸册　不分卷",
+"rest": "淸闕名撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B045menu.html",
+"title": "全省倉穀數目　不分卷",
+"rest": "淸闕名撰　道光中鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B024menu.html",
+"title": "楚境長江水師全卷章程　不分卷",
+"rest": "淸闕名撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B011menu.html",
+"title": "唐律疏義　三十卷　 坿 　釋文",
+"rest": "唐長孫無忌等奉敕撰　釋文　元王元亮撰　鈔本　有莫祥芝莫棠圖記",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B182menu.html",
+"title": "大明律講解　三十卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B016menu.html",
+"title": "陵工事宜淸册　不分卷",
+"rest": "淸闕名撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B002menu.html",
+"title": "直齋書錄解題　二十二卷",
+"rest": "宋陳振孫撰　元程棨批注　乾隆三十八年序武英殿活字印本　有盧文弨識語呉騫陳鱣識語圖記",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B179menu.html",
+"title": "天一閣見存書目四卷首一卷末一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B023menu.html",
+"title": "澹庵書目　四卷",
+"rest": "淸忻寶華撰　光緒三十三年自序嘉興忻氏不暇嬾齋鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B014menu.html",
+"title": "徐氏家藏書目　四卷　四卷",
+"rest": "明徐𤊹撰　光緒十七年江陰繆氏藝風堂鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B020menu.html",
+"title": "絳雲樓書目　不分卷",
+"rest": "淸錢謙益撰　淸陳景雲注　鈔本　有呉翌鳳圖記",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B071menu.html",
+"title": "木犀軒收藏舊本書目　四卷",
+"rest": "李盛鐸撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B104menu.html",
+"title": "嘉業藏書樓宋本書目　一卷",
+"rest": "淸劉承幹撰　昭和十二年本所鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B072menu.html",
+"title": "宋元書景　不分卷",
+"rest": "淸繆荃孫輯　宣統三年江陰繆氏刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B047menu.html",
+"title": "淸閨秀藝文略　五卷",
+"rest": "單士釐撰　手稾本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B003menu.html",
+"title": "淸儀閣所藏古器物文　十册",
+"rest": "淸張廷濟撰　手稾本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B142menu.html",
+"title": "陳乾藏吉金文字 一卷",
+"rest": "淸陳乾輯   拓本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B143menu.html",
+"title": "殷禮足徵齋藏三代文字一卷",
+"rest": "徐乃昌輯   拓本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B140menu.html",
+"title": "澂秋館藏器搨本　不分卷",
+"rest": "淸陳寶琛輯   拓本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B141menu.html",
+"title": "弘齋藏三代吉金文字 不分卷",
+"rest": "□闕名輯   拓本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B162menu.html",
+"title": "金石三例",
+"rest": "",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B025menu.html",
+"title": "泉志　十五卷　補遺錄　一卷",
+"rest": "宋洪遵撰　補遺錄　淸高翰伯輯　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B144menu.html",
+"title": "龜甲獸骨拓片 一卷",
+"rest": "王富晉輯   民國中冀王氏拓本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B026menu.html",
+"title": "咸豐朝行用官票",
+"rest": "□闕名輯",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B158menu.html",
+"title": "金石學錄四卷補一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B159menu.html",
+"title": "金石原起説考補一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B160menu.html",
+"title": "北宋石經補考一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B012menu.html",
+"title": "精刻補註評解綱鑑歴朝捷錄　十卷　首　一卷　 坿 　國朝捷錄　四卷　中興偉畧　一卷　闕元朝捷錄",
+"rest": "明顧充撰　明黄道周增訂　國朝捷錄　明李良翰鍾惺同撰　中興偉畧　明馮夢龍輯　余氏尊古堂刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B138menu.html",
+"title": "楊鐵崖文集 二卷 卽 史義拾遺",
+"rest": "元楊維禎撰   漱雲樓刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B146menu.html",
+"title": "尚書六體遺範 十五卷",
+"rest": "淸金象乾撰　刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C051menu.html",
+"title": "荀子十巻首一巻",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C053menu.html",
+"title": "晦菴先生語錄類要　十八卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C042menu.html",
+"title": "合刻宋明四先生語録",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C010menu.html",
+"title": "明儒學案　六十二卷　師說　一卷",
+"rest": "淸黄宗羲撰　道光元年會稽莫氏刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C057menu.html",
+"title": "日知錄之餘 四卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C050menu.html",
+"title": "札樸十卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C052menu.html",
+"title": "札樸十卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C032menu.html",
+"title": "三一子　三卷",
+"rest": "明程德良撰　萬曆二十八年自序刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C043menu.html",
+"title": "十一家註孫子三卷坿十家註孫子遺說一卷孫子今譯",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C001menu.html",
+"title": "江南經畧　八卷",
+"rest": "明鄭若曾撰　嘉靖四十五年序刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C054menu.html",
+"title": "紀效新書　十八卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C047menu.html",
+"title": "武備志二百四十卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C058menu.html",
+"title": "管子地員篇注 四卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C048menu.html",
+"title": "治蝗書",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C044menu.html",
+"title": "救荒本草",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C045menu.html",
+"title": "傷寒論淺註方論合編六卷首一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C002menu.html",
+"title": "大明嘉靖二十年歳次辛丑大統曆　一卷",
+"rest": "明刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C038menu.html",
+"title": "天原發微　五卷",
+"rest": "宋鮑雲龍撰   明刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C029menu.html",
+"title": "玉髓眞經　三十卷　後卷　二十一卷",
+"rest": "宋張洞玄撰　 坿 錄　宋闕名輯　宋劉允中注　宋蔡季通發揮　嘉靖二十九年陳少嶽刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C003menu.html",
+"title": "靈臺秘苑　十五卷",
+"rest": "北周庾季才原本　宋于大吉等奉敕重修　鈔本　有蔣鳳藻柯逢時圖記　周星詒識語",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C004menu.html",
+"title": "大唐開元占經　殘三卷",
+"rest": "唐瞿曇悉達等奉敕撰　淸徐有壬校　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C005menu.html",
+"title": "觀象玩占　四十九卷",
+"rest": "□闕名撰　明呉士安沕穆齋鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C006menu.html",
+"title": "二十八宿總論　不分卷",
+"rest": "□闕名撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C040menu.html",
+"title": "卜歳恆言",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C021menu.html",
+"title": "𧻰日曆書　不分卷　目錄　一卷",
+"rest": "□闕名撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C007menu.html",
+"title": "大唐陰陽書　殘一卷",
+"rest": "日本鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C008menu.html",
+"title": "集古印譜　四卷　首　一卷",
+"rest": "明甘暘撰　刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C015menu.html",
+"title": "學山堂印譜　八卷",
+"rest": "明張灝輯　崇禎四年鈐印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C011menu.html",
+"title": "明印式　不分卷",
+"rest": "□闕名撰　民國九年嘉善曹氏據江安傅氏藏鈔本鈔",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C025menu.html",
+"title": "錦囊印林　四卷",
+"rest": "淸汪啓淑輯　鈐本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C041menu.html",
+"title": "古印集存",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C026menu.html",
+"title": "奉天舊印　一卷",
+"rest": "闕名輯   民國三年鈐本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C022menu.html",
+"title": "製茶景全圖　一卷",
+"rest": "幼亭氏繪",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu.html",
+"title": "群芳淸玩",
+"rest": "明李璵輯  崇禎二年序東吳毛氏汲古閣刊本",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C046menu.html",
+"title": "墨子閒詁十五卷目錄一卷附錄一卷後語二卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C039menu.html",
+"title": "呂氏春秋　二十六卷",
+"rest": "漢高誘注　明雲閒宋邦乂等校刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C049menu.html",
+"title": "鈍硯巵言",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C037menu.html",
+"title": "容齋一筆　十六卷 二筆　十六卷 三筆　十六卷 四筆　十六卷 五筆　十卷",
+"rest": "宋洪邁撰　明刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C036menu.html",
+"title": "鶴林玉露 十七卷",
+"rest": "宋羅大經撰   敦古齋刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C059menu.html",
+"title": "池北偶談 二十六卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C033menu.html",
+"title": "羣書治要五十卷  原闕卷第四第十三第二十",
+"rest": "唐魏徵等奉敕輯　弘化三年紀藩活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C031menu.html",
+"title": "標題徐狀元補注蒙求 三卷",
+"rest": "日本活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C020menu.html",
+"title": "新箋決科古今源流至論前集　十卷　後集　十卷",
+"rest": "宋林駉撰　弘治二年梅隱書堂刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C055menu.html",
+"title": "新鐫詳解丘瓊山故事成語必讀成語考　一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C018menu.html",
+"title": "新鍥正譌訓解標類書言故事大全　四卷",
+"rest": "明胡繼宗撰　明李廷機校釋　余雲波刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C019menu.html",
+"title": "增補幼學須知雜字大全　三卷　首　一卷",
+"rest": "明闕名輯　戊午歳瑯嬛閣刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C035menu.html",
+"title": "欽定古今圖書集成　殘三卷　存山川典卷第二十三第二十四考工典卷第五十三 有闕葉",
+"rest": "淸康煕中敕撰  活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C012menu.html",
+"title": "永樂大典　殘二卷",
+"rest": "明解縉等奉敕輯　隆慶中呂鳴瑒鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C017menu.html",
+"title": "大般若波羅蜜多經　殘一卷",
+"rest": "唐釋玄奘奉詔譯　金刊本　趙城廣勝寺金版大藏經之一",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C014menu.html",
+"title": "西夏文大方廣佛華嚴經　殘五卷",
+"rest": "元活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C013menu.html",
+"title": "西夏文大方廣佛華嚴經　殘一卷",
+"rest": "元活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C016menu.html",
+"title": "妙臂菩薩所問經　四卷",
+"rest": "宋釋法天奉詔譯　金刊本　趙城廣勝寺金版大藏經之一",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C009menu.html",
+"title": "高僧傳　十四卷",
+"rest": "梁釋慧皎撰　元刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C056menu.html",
+"title": "水陸無遮平等齋儀撮要　一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C028menu.html",
+"title": "隆興佛敎編年通論　殘六卷　存卷第三至第五第二十一至第二十三",
+"rest": "宋釋祖琇撰　日本刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C030menu.html",
+"title": "祖庭事苑　八卷",
+"rest": "宋釋善卿撰　日本活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"title": "方壺外史　八卷",
+"rest": "明陸西星撰　萬曆中趙宋未孩堂刊本",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D152menu.html",
+"title": "楚辭 二卷",
+"rest": "明閔齊伋校   烏程閔氏刊本 三色套印",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D012menu.html",
+"title": "蔡中郎集　十九卷　十九卷",
+"rest": "漢蔡邕撰　淸嚴可均校輯　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D169menu.html",
+"title": "曹集詮評十卷 逸文一卷 坿魏陳思王年譜一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D155menu.html",
+"title": "諸葛忠武侯文集",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D058menu.html",
+"title": "高常侍集　二卷",
+"rest": "唐高適撰　海陽汪應臯刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D063menu.html",
+"title": "杜工部詩通　十六卷",
+"rest": "明張綖撰   隆慶六年男張守中刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D060menu.html",
+"title": "白樂天文集　三十五卷  坿 　年譜　一卷",
+"rest": "唐白居易撰 年譜　淸汪立名撰　餘姚馮氏萍實盦據正德十四年鳳陽郭氏刊本鈔",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D053menu.html",
+"title": "樊川文集夾註　四卷　外集夾註　一卷　 坿 　添註",
+"rest": "□闕名撰　朝鮮刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D064menu.html",
+"title": "晞髮集　十卷",
+"rest": "宋謝翱撰 明張蔚然徐𤊹同訂  萬曆四十六年長溪郭氏刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D015menu.html",
+"title": "玉斗山人集　三卷　附錄　一卷",
+"rest": "元王奕撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D014menu.html",
+"title": "巴西文集 不分卷　不分卷",
+"rest": "元鄧文原撰　鈔本　有歙鮑氏知不足齋圖記",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D051menu.html",
+"title": "龍谿王先生全集　二十卷",
+"rest": "明王畿撰　明刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D016menu.html",
+"title": "笥河學士詩集　二十八卷",
+"rest": "淸朱筠撰　大興朱氏椒花吟舫鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D017menu.html",
+"title": "笥河文集稿本　不分卷",
+"rest": "淸朱筠撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D002menu.html",
+"title": "嶰谷集　一卷　不知名殘稿　一卷",
+"rest": "淸朱筠撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D162menu.html",
+"title": "崔東壁先生知非集一卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D004menu.html",
+"title": "未之思軒襍箸　不分卷",
+"rest": "淸朱錫庚撰　大興朱氏椒花吟舫鈔本　有武億李威呉鼒陳希曾朱文翰内藤虎次郎識語",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D052menu.html",
+"title": "竟無小品 一卷",
+"rest": "歐陽漸撰　手稿本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D160menu.html",
+"title": "文選六十卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D059menu.html",
+"title": "六家文選　六十卷",
+"rest": "梁蕭統輯 唐呂延濟劉良張銑李周翰呂向李善注　嘉靖十三年至二十八年吳郡袁氏嘉趣堂用宋蜀本景刊",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D055menu.html",
+"title": "文選　六十卷",
+"rest": "梁蕭統輯　唐李善呂延濟劉良張銑李周翰呂向注　寛永二年據直江氏活字印本重活字印",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D166menu.html",
+"title": "文選古字通疏證六卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D164menu.html",
+"title": "又玄集三巻",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D167menu.html",
+"title": "唐詩品彙　九十卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D158menu.html",
+"title": "西江詩派韓饒二集",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D156menu.html",
+"title": "金文雅",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D061menu.html",
+"title": "鐫李卓吾合選皇明三異人集",
+"rest": "明李贄輯　明刊本",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D157menu.html",
+"title": "海陵文徵",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D168menu.html",
+"title": "詳說古文眞寶大全後集 十卷　坿　文章軌範 七卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D018menu.html",
+"title": "近代名人尺牘　不分卷",
+"rest": "□闕名輯　手簡本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D165menu.html",
+"title": "文心雕龍十巻",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D153menu.html",
+"title": "曝書亭詞拾遺",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D154menu.html",
+"title": "遯盦樂府",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D057menu.html",
+"title": "牡丹亭還魂記 二卷",
+"rest": "明湯顯祖撰　萬曆中懷德堂刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D062menu.html",
+"title": "西湖扇傳奇　二卷",
+"rest": "淸丁耀亢撰　刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D005menu.html",
+"title": "弘陽嘆世經　二卷",
+"rest": "明闕名撰　刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D019menu.html",
+"title": "弘陽後續燃燈天華寶卷　三卷",
+"rest": "明淸虛道人　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/BaoJuanWuShiZhong/html/D100top.html",
+"title": "寶卷五十種",
+"rest": "上海惜陰書局石印本",
+"parent": "",
+"has_vol": false,
+"fetched": false,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D151menu.html",
+"title": "玉連環全傳 十卷",
+"rest": "□闕名撰   鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"title": "廣東曲本",
+"rest": "廣州五桂堂富桂堂以文堂等刊本",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D065menu.html",
+"title": "新刻按鑑編纂開闢衍繹通俗志傳　六卷",
+"rest": "明周游撰 明王黌釋   崇禎八年序古吳麟瑞堂刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D161menu.html",
+"title": "新刻批評繍像平山冷燕",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D054menu.html",
+"title": "新編繡像畫圖緣小傳　十六囘",
+"rest": "淸闕名撰   刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D056menu.html",
+"title": "鐫像古本西遊證道書　一百囘",
+"rest": "明吳承恩撰 淸汪象旭箋評 淸黃太鴻印正  西陵汪氏蜩寄刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D159menu.html",
+"title": "新刻鍾伯敬先生批評封神演義十九卷",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D050menu.html",
+"title": "三祥報　二十四卷",
+"rest": "淸陶炳南撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D163menu.html",
+"title": "西遊記",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E162menu.html",
+"title": "岱南閣叢書",
+"rest": "",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E168menu.html",
+"title": "五經歳徧齋校書三種",
+"rest": "",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"title": "江南製造局譯書彙刻",
+"rest": "光緒中江南製造局刊排印本",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E172menu.html",
+"title": "南林叢刊",
+"rest": "",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E178menu.html",
+"title": "南林叢刊次集",
+"rest": "",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E160menu.html",
+"title": "晁氏三先生集",
+"rest": "宋黃汝嘉輯   嘉靖三十三年裔孫黃瑮寶文堂據慶元五年刊本　東吳重刊",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E161menu.html",
+"title": "郭氏佚書六種",
+"rest": "",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/Q001top.html",
+"title": "元白長慶集",
+"rest": "萬曆三十四年松江馬氏刊本",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/R001menu.html",
+"title": "五代史纂誤　三卷",
+"rest": "宋吳縝撰   武英殿聚珍版本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/R002menu.html",
+"title": "攷古質疑　六卷",
+"rest": "宋葉大慶撰   武英殿聚珍版本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M007menu.html",
+"title": "孟子　十四卷",
+"rest": "漢趙岐注　日本活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M001menu.html",
+"title": "古文孝經　一卷",
+"rest": "漢孔安國傳　日本活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M002menu.html",
+"title": "大唐西域記　十二卷",
+"rest": "唐釋玄奘奉敕譯　唐釋辯機撰　日本鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M056menu.html",
+"title": "化度寺碑考　一卷",
+"rest": "淸翁方綱撰　嘉慶二年門人李彥章鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M003menu.html",
+"title": "眞西山讀書記乙集上大學衍義　殘三卷",
+"rest": "宋眞德秀撰　朝鮮銅活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M052menu.html",
+"title": "方氏墨譜　六卷　首　一卷",
+"rest": "明方于魯撰　萬曆十六年序刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M008menu.html",
+"title": "新刊鶴林玉露　六卷　二集　六卷　三集　六卷",
+"rest": "宋羅大經撰　日本活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M029menu.html",
+"title": "韻府羣玉　二十卷",
+"rest": "宋陰時夫陰中夫同撰　元東山秀岩書堂刊本　卷第十五用日本刊本補配",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M082menu.html",
+"title": "稽古彙編 十卷",
+"rest": "明林光華撰   萬曆五年序活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M058menu.html",
+"title": "金剛般若波羅蜜經　一卷",
+"rest": "姚秦釋鳩摩羅什譯　宋張卽之書　文永七年刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M010menu.html",
+"title": "金剛般若波羅蜜經　一卷",
+"rest": "姚秦釋鳩摩羅什奉詔譯　唐釋慧能解　日本刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M019menu.html",
+"title": "金剛般若波羅蜜經　一卷　 坿 　持誦金剛經感應事跡　一卷",
+"rest": "姚秦釋鳩摩羅什奉詔譯　感應事跡　□闕名撰　朝鮮刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M021menu.html",
+"title": "金剛般若波羅蜜經註解　一卷　般若波羅蜜多心經註解　一卷",
+"rest": "明釋宗泐等撰　應永二十七年南禪雲臥據洪武十一年釋宗泐等刊本重刊",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M083menu.html",
+"title": "十七家解註金剛經 四卷",
+"rest": "宋潘舜龍等輯   萬曆元年刊本  板存三山復初庵",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M084menu.html",
+"title": "妙法蓮華經 七卷",
+"rest": "姚秦釋鳩摩羅什譯   慶安三年松永貞德刊本",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M057menu.html",
+"title": "科註妙法蓮華經　七卷",
+"rest": "元徐行善撰　元釋必昇校　日本刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M085menu.html",
+"title": "大方廣佛華嚴經 卷第七",
+"rest": "晉釋佛陀跋陀羅等譯   貞治三年比丘光信刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M087menu.html",
+"title": "大方廣佛華嚴經 八十卷　普賢行願品 一卷",
+"rest": "唐釋實叉難陁譯 普賢行顧品 唐釋般若奉詔譯　嘉靖三十年大隆善寺重刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M043menu.html",
+"title": "大乘華嚴經略策　一卷　入法界十八問答　一卷　華嚴講主自問自答　一卷",
+"rest": "唐釋澄觀撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M036menu.html",
+"title": "大聖文殊師利菩薩佛刹功德莊嚴經　三卷",
+"rest": "唐釋不空奉詔釋　大治五年沙門運覺鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M086menu.html",
+"title": "大般涅槃經 四十卷  坿  後分 二卷",
+"rest": "北涼釋曇無讖奉詔譯 後分 唐若那跋陀羅等譯  嘉靖三十六年重刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M044menu.html",
+"title": "地藏菩薩本願經　二卷",
+"rest": "唐釋寶叉難陀譯　日本刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M048menu.html",
+"title": "佛說盂蘭盆經一卷　 坿 　疏科分一卷",
+"rest": "晉釋竺法護奉詔譯　 坿 錄　宋釋元照撰　日本刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M037menu.html",
+"title": "佛說慢法經　一卷",
+"rest": "晉釋法炬譯　日本鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M028menu.html",
+"title": "楞伽阿跋多羅寶經　四卷",
+"rest": "劉宋釋求那跋陀羅譯　宋刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M049menu.html",
+"title": "相續解脱地波羅蜜了義經　一卷",
+"rest": "劉宋釋求那跋陀羅譯　元刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M046menu.html",
+"title": "佛說解節經　一卷",
+"rest": "陳釋眞諦譯　宋刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M080menu.html",
+"title": "無所有菩薩經 殘一卷 存卷第四",
+"rest": "隋釋闍那崛多等譯   宋刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M030menu.html",
+"title": "佛說浴像功德經　一卷",
+"rest": "唐釋寶思惟譯　日本鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M065menu.html",
+"title": "大方廣圓覺略疏注經　四卷",
+"rest": "唐釋宗密撰　寛永三年活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M027menu.html",
+"title": "佛說大自在天子因地經　一卷　佛說如意摩尼陀羅經　一卷",
+"rest": "宋釋施護譯　金刊本　趙城廣勝寺金版大藏經之一",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M009menu.html",
+"title": "廣大寶樓閣善住秘密陀羅尼經　三卷",
+"rest": "唐釋菩提流志譯　元刊本　至正中印",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M013menu.html",
+"title": "金剛頂瑜伽中略出念誦經　殘一卷",
+"rest": "唐釋金剛智譯　康平二年釋念慶鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M017menu.html",
+"title": "金剛頂一切如來眞實大乘現證大教王經　殘一卷",
+"rest": "唐釋不空譯　日本鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M070menu.html",
+"title": "佛說聖觀自在菩薩梵讚　一卷　佛一百八名讚　一卷　佛說布施經　一卷　佛說聖曜母陀羅尼經　一卷",
+"rest": "劉宋釋法賢奉詔譯　元刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M045menu.html",
+"title": "四分戒本　一卷",
+"rest": "姚秦釋伽陀耶舍譯　元亨二年寓泉涌寺幹緣比丘會源刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M042menu.html",
+"title": "解脱戒本經　一卷",
+"rest": "後魏釋瞿曇般若流支譯　宋刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M024menu.html",
+"title": "五分比丘尼戒本　一卷",
+"rest": "梁釋明徽撰　元刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M041menu.html",
+"title": "四分比丘戒本　一卷",
+"rest": "唐釋懷素輯　元刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M032menu.html",
+"title": "阿毗曇甘露味論　二卷",
+"rest": "魏闕名譯　金刊本　趙城廣勝寺金版大藏經之一",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M071menu.html",
+"title": "阿毗曇毗婆沙論　殘二卷　存卷第四十一第七十四",
+"rest": "北涼釋浮陀跋摩釋道泰同譯　元刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M022menu.html",
+"title": "雜阿毗曇心論　殘一卷",
+"rest": "劉宋釋僧伽跋摩等譯　金刊本　趙城廣勝寺金版大藏經之一",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M072menu.html",
+"title": "阿毗達磨品類足論　殘十卷　存卷第一至第十",
+"rest": "唐釋玄奘譯　高麗國大藏都監奉敕刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M059menu.html",
+"title": "大乘阿毗達磨集論　七卷",
+"rest": "唐釋玄奘譯　高麗國大藏都監奉敕刊本　卷第七第四至第十八紙　大正二年松本文三郎補鈔",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M033menu.html",
+"title": "觀所綠論釋　一卷　 坿 　音釋",
+"rest": "唐釋義淨譯　元刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M004menu.html",
+"title": "随相論　一卷",
+"rest": "陳釋眞諦譯　金刊本　趙城廣勝寺金版大藏經之一",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M038menu.html",
+"title": "大乘起信論　一卷",
+"rest": "陳釋眞諦譯　宋刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M039menu.html",
+"title": "大乘起信論　一卷",
+"rest": "陳釋眞諦譯　日本鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M020menu.html",
+"title": "大乘起信論　一卷",
+"rest": "陳釋眞諦譯　高麗大藏都監奉敕刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M040menu.html",
+"title": "大乘起信論　一卷",
+"rest": "陳釋眞諦譯　永德元年大傳法院阿觀刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M068menu.html",
+"title": "大乘起信論疏　二卷",
+"rest": "唐釋法藏撰　慶長十七年洛陽飯田久左衞門勝家活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M073menu.html",
+"title": "肇論中吳集解　三卷",
+"rest": "宋釋淨源撰　刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M074menu.html",
+"title": "白花道場發願文略解",
+"rest": "高麗刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M090menu.html",
+"title": "白花道場發願文略解",
+"rest": "高麗刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M060menu.html",
+"title": "十不二門文心解　一卷",
+"rest": "宋釋仁岳述　日本活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M025menu.html",
+"title": "請觀世音菩薩消伏毒害陀羅尼三昧儀　一卷",
+"rest": "宋釋遵式撰　日本闕名注　日本鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M063menu.html",
+"title": "天台四教儀　一卷",
+"rest": "高麗釋諦觀撰　活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M050menu.html",
+"title": "佛說焰口經天地冥陽水陸儀文　卷下",
+"rest": "□仔虁撰　建文三年朝鮮刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M089menu.html",
+"title": "略諸經論念佛法門往生淨土集　殘一卷 存卷第一 卽　慈悲集 慈愍集  坿 　重編龍舒淨土文　殘卷 存卷第六第一第二葉",
+"rest": "唐釋慧日撰　重編龍舒淨土文 宋王日休撰  高麗刊  昭和中印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M061menu.html",
+"title": "達磨三論　達摩大師血脈論　一卷　悟性論　一卷　破相論　一卷",
+"rest": "梁菩提達磨撰　日本活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M054menu.html",
+"title": "六祖大師灋寶壇經　一卷",
+"rest": "唐釋慧能撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M051menu.html",
+"title": "證道歌　一卷",
+"rest": "唐釋玄覺撰　元趙孟頫書　嘉靖十年慶尚道永川地公山本寺刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M062menu.html",
+"title": "雲門匡眞禪師廣錄　三卷",
+"rest": "宋釋守堅集　慶長十八年洛陽宗鐵活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M075menu.html",
+"title": "宗鏡錄　殘一卷　存卷第四十七",
+"rest": "宋釋延壽撰   宋刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M067menu.html",
+"title": "佛果圜悟禪師碧巖錄　十卷",
+"rest": "宋釋重顯頌古　宋釋克勤評唱　京都妙心禪寺正眼菴刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M011menu.html",
+"title": "大慧普覺禅師書　二卷",
+"rest": "宋釋宋杲撰　宋釋慧然錄　日本刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M018menu.html",
+"title": "大慧普覺禅師普說　一卷",
+"rest": "宋釋宗杲撰　宋釋慧然錄　宋黄文昌重輯　日本刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M006menu.html",
+"title": "住鼎州梁山廓庵和尚十牛圖　一卷　 坿 　入衆日用　一卷",
+"rest": "宋釋皓昇撰　入衆日用　宋釋宗壽撰　日本刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M015menu.html",
+"title": "密庵禅師語錄　一卷",
+"rest": "宋釋咸傑撰　宋釋崇岳了悟等輯　日本刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M014menu.html",
+"title": "破庵語錄　一卷",
+"rest": "宋釋圓照等輯　應安三年刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M023menu.html",
+"title": "開山護國仁王禪寺語錄　一卷",
+"rest": "宋釋慧開撰　日本刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M016menu.html",
+"title": "枯崖和尚漫錄　三卷",
+"rest": "宋釋圓悟撰　日本刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M047menu.html",
+"title": "迦葉結經　一卷",
+"rest": "漢釋安世高譯　乙卯歳伊勢常明寺宗存活字印本　宗存版大藏經之一",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M005menu.html",
+"title": "大慈恩寺三藏法師傳　十卷",
+"rest": "唐釋慧立撰　唐釋彥悰箋　承元四年鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M076menu.html",
+"title": "歷代三寶紀 殘八卷 存卷第三第五至第七第九第十第十四第十五",
+"rest": "隋費長房撰   紹興十八年福州開元禪寺刊本　開元寺版大藏經之一",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M081menu.html",
+"title": "歷代三寶紀 殘一卷　卷第三",
+"rest": "隋費長房撰   明刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M026menu.html",
+"title": "大唐西域求法高僧傳　二卷",
+"rest": "唐釋義淨撰　紹興十八年福州開元禪寺刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M064menu.html",
+"title": "傳法正宗記　十二卷",
+"rest": "宋釋契嵩撰　寛永七年活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M066menu.html",
+"title": "五家正宗贊　不分卷",
+"rest": "宋釋紹曇撰　慶長十三年西京花園一枝軒活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M069menu.html",
+"title": "續集古今佛道論衡　一卷",
+"rest": "唐釋智昇撰　日本活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M077menu.html",
+"title": "南海寄歸內法傳 殘一卷  存卷第二",
+"rest": "唐釋義淨撰   紹興十八年福州開元禪寺刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M031menu.html",
+"title": "大宋僧史略　三卷　 坿 　紹興朝旨改正僧道班列文字一集　一卷",
+"rest": "宋釋贊寧撰　 坿錄　宋闕名輯　日本刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M055menu.html",
+"title": "藏乘法數　一卷",
+"rest": "元釋可遂輯　日本刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M053menu.html",
+"title": "賢首諸乘法數　十卷",
+"rest": "明釋行深輯　朝鮮刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M078menu.html",
+"title": "出三藏記集 殘十三卷 存卷第一第三至第六第八至第十五",
+"rest": "梁釋僧佑撰   紹興十八年福洲開元禪寺刊本　開元寺版大藏經之一",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M079menu.html",
+"title": "開元釋敎錄 殘十三卷 存卷第一第三第六第八第十一至第十四第十六至第二十",
+"rest": "唐釋智昇撰   紹興十八年福州開元禪寺刊本　開元寺版大藏經之一",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M012menu.html",
+"title": "南華眞經注疏　十卷",
+"rest": "晉郭象注 唐成玄英疏   遵義黎氏用宋刊本景刊",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M034menu.html",
+"title": "太上三元賜福赦罪解厄消災延生保命妙經　一卷",
+"rest": "□闕名撰　刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M035menu.html",
+"title": "九天應元雷聲普化天尊玉樞寶經　一卷",
+"rest": "□闕名撰  　萬曆四十七年刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/M088menu.html",
+"title": "太上感應篇經傳　一卷",
+"rest": "明闕名撰   活字印本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N013top.html",
+"title": "大淸三朝實錄",
+"rest": "淸康熙中敕修　鈔本",
+"parent": "",
+"has_vol": false,
+"fetched": true,
+"kind": ""
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N014menu.html",
+"title": "滿文太祖高皇帝本紀書",
+"rest": "淸闕名撰　嘉慶二十四年鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N017menu.html",
+"title": "元史譯文證補　三十卷　原闕卷七第八第十三第十六第十七第十九至二十一第二十五第二十八",
+"rest": "淸洪鈞撰　光緒二十三年元和陸氏刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N009menu.html",
+"title": "欽定蒙古源流　八卷",
+"rest": "蒙古小徹辰薩囊台吉撰　乾隆四十二年敕譯　刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N003menu.html",
+"title": "校正元親征錄　一卷　 坿 　刊誤一卷",
+"rest": "元闕名撰　淸何秋濤校正　刊誤　淸沈曾植等撰　光緒二十年桐盧袁氏小漚巢刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N006menu.html",
+"title": "夷氛聞記　五卷",
+"rest": "淸梁廷枏撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N004menu.html",
+"title": "黒韃事略　一卷",
+"rest": "宋彭大雅徐霆同撰　上虞羅氏舊藏鈔本　内藤虎次郎手校",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N018menu.html",
+"title": "孤樹裒談 十卷",
+"rest": "明李默撰   刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N011menu.html",
+"title": "皇輿圖　不分卷",
+"rest": "淸闕名撰　刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N005menu.html",
+"title": "蒙古遊牧記　殘六卷",
+"rest": "淸張穆撰　淸何秋濤補　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N012menu.html",
+"title": "西域瑣談　四卷",
+"rest": "淸七十一撰   鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N023menu.html",
+"title": "河源紀略　十卷",
+"rest": "淸乾隆四十七年敕撰　刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N001menu.html",
+"title": "光緒八九二年南路分界日記圖說　一卷",
+"rest": "淸沙克都林札布撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N007menu.html",
+"title": "沿途日記　不分卷",
+"rest": "淸闕名撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N010menu.html",
+"title": "衞藏驛程記　一卷",
+"rest": "淸孫毓麒撰　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N008menu.html",
+"title": "塞語　一卷",
+"rest": "明尹畊撰　隆慶六年成都高氏刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N002menu.html",
+"title": "滿漢並香集　四卷",
+"rest": "淸錢書撰　淸尚玉章譯　鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N016menu.html",
+"title": "滿漢西廂記　四卷",
+"rest": "元王德信撰　淸闕名譯　康熙四十九年刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N015menu.html",
+"title": "滿文金甁梅　一百囘",
+"rest": "明笑笑生撰　淸闕名譯　康熙四十七年序刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N019menu.html",
+"title": "定西記 不分卷",
+"rest": "淸巴忠撰   乾隆五十四年序刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N022menu.html",
+"title": "裔乘 八卷",
+"rest": "明楊一葵撰   萬曆四十三年序刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N021menu.html",
+"title": "秘書志 十一卷",
+"rest": "元王士點商企翁同撰   鈔本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N020menu.html",
+"title": "定武敷文 一卷",
+"rest": "淸高宗愛新覺羅弘曆撰   刊本",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E001menu.html",
+"title": "佛學手稿",
+"rest": "章炳麟手稿",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/W001menu.html",
+"title": "佛國暦象編 五卷",
+"rest": "釋圓通撰　釋智轂校",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/W002menu.html",
+"title": "原古處、白圭、采蘋小傳及詩鈔",
+"rest": "山田新一郎編　鈴木虎雄選",
+"parent": "",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A001menu.html",
+"title": "周易兼義九坿略例一卷音義一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A002menu.html",
+"title": "尚書註疏二十卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A003menu.html",
+"title": "毛詩註疏二十卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A004menu.html",
+"title": "周禮註疏四十二卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A005menu.html",
+"title": "儀禮註疏十七卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A006menu.html",
+"title": "禮記註疏六十三卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A007menu.html",
+"title": "春秋左傳註疏六十卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A008menu.html",
+"title": "春秋公羊傳註疏二十八卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A009menu.html",
+"title": "春秋穀梁註疏二十卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A010menu.html",
+"title": "論語註疏解經二十卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/A011menu.html",
+"title": "孝經正義九卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/ShiSanJingZhuShu/html/top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A035menu.html",
+"title": "春秋公羊註疏 二十八卷",
+"rest": "漢何休學 唐陸德明音義 □闕名疏　　崇禎七年刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A036menu.html",
+"title": "論語註疏解經 二十卷",
+"rest": "魏何晏集解 宋邢昺疏　　崇禎十年刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A060menu.html",
+"title": "六書古微十卷",
+"rest": "葉德輝 撰 民國五年 刊",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A059menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A061menu.html",
+"title": "說文讀若字考七卷 說文讀同字考一卷",
+"rest": "葉德輝 撰 民國十二年 刊",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A059menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A062menu.html",
+"title": "同聲假借字考二卷",
+"rest": "葉德輝 撰 民國十二年 刊",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A059menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A063menu.html",
+"title": "說文籀文攷證一卷 說籀一卷 坿補遺一卷",
+"rest": "葉德輝 撰 姪葉啓勳 撰補遺 民國十九年 刊",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/A059menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B076menu.html",
+"title": "滕縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B081menu.html",
+"title": "汶上縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B096menu.html",
+"title": "青州府地輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B075menu.html",
+"title": "益都縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B093menu.html",
+"title": "博山縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B094menu.html",
+"title": "昌樂縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B095menu.html",
+"title": "臨胊縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B102menu.html",
+"title": "棲霞縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B103menu.html",
+"title": "招遠縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B145menu.html",
+"title": "山東海陽縣全境輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B100menu.html",
+"title": "濰縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B078menu.html",
+"title": "膠州直隸州輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B089menu.html",
+"title": "靑城縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B085menu.html",
+"title": "平陰縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B091menu.html",
+"title": "城武縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B097menu.html",
+"title": "濮州輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B090menu.html",
+"title": "范縣黄河南北兩堤曁金堤高寛丈尺綿長里敷情形圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B099menu.html",
+"title": "□……□送黄河隄隄埝情形圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B086menu.html",
+"title": "金郷縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B101menu.html",
+"title": "魚臺縣輿圖",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B109menu.html",
+"has_vol": false,
+"fetched": true,
+"kind": "djvu"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B152menu.html",
+"title": "歷代地理志韻編今釋二十卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B151menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B153menu.html",
+"title": "皇朝輿地韻編二卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B151menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B154menu.html",
+"title": "歷代地理沿革圖一卷",
+"rest": "淸 六嚴 撰 淸 馬徵麟 增輯",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B151menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B155menu.html",
+"title": "皇朝一統輿圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B151menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B156menu.html",
+"title": "紀元編三卷 末一卷",
+"rest": "淸 六承如 錄",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B151menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B119menu.html",
+"title": "滕縣造送憲綱清册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B120menu.html",
+"title": "調署兗州府汶上縣造送憲綱册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B124menu.html",
+"title": "靑州府益都縣造送憲綱條日事件清册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B125menu.html",
+"title": "靑州府博山縣呈送憲綱清册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B126menu.html",
+"title": "同知銜靑州府博山縣知縣璥璐履歴 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B123menu.html",
+"title": "代理靑州府臨胊縣造送憲綱履歷淸册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B127menu.html",
+"title": "登州府棲霞縣造送憲綱事宜册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B128menu.html",
+"title": "署理登州府棲霞縣造送憲綱事宜册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B129menu.html",
+"title": "登州府招遠縣造送縣內憲綱事宜册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B122menu.html",
+"title": "萊州府平度州造送憲綱册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B130menu.html",
+"title": "萊州府平度州造送□圖册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B121menu.html",
+"title": "萊州府濰縣呈送郷官册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B111menu.html",
+"title": "代理膠州直隷州憲綱册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B112menu.html",
+"title": "候補知府代理膠州直隷州知州姚贊元履歷 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B115menu.html",
+"title": "曹州府造送憲綱册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B114menu.html",
+"title": "曹州府城武縣憲綱 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B116menu.html",
+"title": "曹州府城武縣憲綱 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B117menu.html",
+"title": "鉅野縣造送憲綱清册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B118menu.html",
+"title": "鄆城縣憲綱册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B131menu.html",
+"title": "署理曹州府濮州知州蒋茲履歷 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B113menu.html",
+"title": "臨淸直隷州武城縣呈憲綱册 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B110menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B053menu.html",
+"title": "山東曹州府濮州現行簡明賦役全書 一卷",
+"rest": "光緒三十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B056menu.html",
+"title": "山東登州府招遠縣現行簡明賦役全書 一卷",
+"rest": "光緒三十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B057menu.html",
+"title": "山東登州府棲霞縣現行簡明賦役全書 一卷",
+"rest": "光緒三十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B058menu.html",
+"title": "山東膠州直隸州收併各衞所現行賦役全書 一卷",
+"rest": "光緒三十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B059menu.html",
+"title": "山東靑州府臨胊縣現行簡明賦役全書 一卷",
+"rest": "光緒三十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B060menu.html",
+"title": "靑州府昌樂縣現行簡明賦役全書 一卷",
+"rest": "光緒三十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B061menu.html",
+"title": "山東曹州府城武縣現行簡明賦役全書 一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B062menu.html",
+"title": "山東曹州府鄆城縣現行簡明賦役全書 一卷",
+"rest": "光緒三十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B063menu.html",
+"title": "山東武定府靑城縣現行簡明賦役全書 一卷",
+"rest": "光緒三十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B064menu.html",
+"title": "山東靑州府益都縣現行簡明賦役全書 一卷",
+"rest": "光緒三十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B065menu.html",
+"title": "山東膠州直隸州現行簡明賦役全書 一卷",
+"rest": "光緒三十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B066menu.html",
+"title": "山東泰安府平陰縣現行簡明賦役全書 一卷",
+"rest": "光緒三十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B067menu.html",
+"title": "山東萊州府濰縣現行簡明賦役全書 一卷",
+"rest": "光緒二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B068menu.html",
+"title": "山東兗州府汶上縣現行簡明賦役全書 一卷",
+"rest": "光緒二十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B069menu.html",
+"title": "山東濟寧直隸州金郷縣簡明賦役全書 一卷",
+"rest": "光緒二十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B070menu.html",
+"title": "山東濟寧直隸州魚臺縣現行簡明賦役全書 一卷",
+"rest": "光緒二十二年分",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B052menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B163menu.html",
+"title": "金石例",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B162menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B164menu.html",
+"title": "墓銘舉例",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B162menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B165menu.html",
+"title": "金石要例",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/B162menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu01.html",
+"title": "鼎錄 一卷",
+"rest": "梁虞荔撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu02.html",
+"title": "刀劍錄 一卷",
+"rest": "梁陶弘景撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu03.html",
+"title": "研史 一卷 　宋米芾撰\n畫鑒 一卷",
+"rest": "元湯垕撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu05.html",
+"title": "石譜 一卷",
+"rest": "宋杜綰撰明",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu06.html",
+"title": "甁史 二卷 　明袁宏道撰\n奕律 一卷",
+"rest": "明王思任撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu08.html",
+"title": "王氏蘭譜 一卷",
+"rest": "宋王貴學撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu09.html",
+"title": "茗笈 二卷 品藻 一卷 　明屠本畯撰\n香國 二卷",
+"rest": "明毛晉撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu11.html",
+"title": "采菊襍咏 一卷",
+"rest": "明馬宏衜撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C027menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu01.html",
+"title": "方壺外史　序文・目次",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu02.html",
+"title": "無上玉皇心印妙經測疏　一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu03.html",
+"title": "陰符經測疏　三卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu04.html",
+"title": "老子道德經玄覽　二卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu05.html",
+"title": "周易參同契測疏　三卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu06.html",
+"title": "參同契口義　三卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu07.html",
+"title": "悟眞篇詩小序　一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu08.html",
+"title": "崔公入藥鏡測疏　一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu09.html",
+"title": "純陽呂公百字碑測疏　一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu10.html",
+"title": "紫陽眞人金丹四百字測疏　一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu11.html",
+"title": "龍眉子金丹印證詩測疏　一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu12.html",
+"title": "丘長春眞人靑天歌測疏　一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu13.html",
+"title": "玄膚論　一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu14.html",
+"title": "金丹就正篇　一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu15.html",
+"title": "金丹大旨圖　一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/C034menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D061menu01.html",
+"title": "李卓吾評選方正學集　十一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D061menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D061menu02.html",
+"title": "李卓吾評選楊椒山集　五卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D061menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D061menu03.html",
+"title": "李卓吾評選于節闇集　九卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D061menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D101Amenu.html",
+"title": "太平趙素貞寶卷 二卷 □闕名撰",
+"rest": "民國二十四年五版本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D102Amenu.html",
+"title": "繪圖玉帶記寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D103Amenu.html",
+"title": "趙五娘琵琶記寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D104Amenu.html",
+"title": "新出繪圖雙玉燕寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D105Amenu.html",
+"title": "繪圖天仙寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D106Amenu.html",
+"title": "繪圖顧鼎臣雙玉玦寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D107Amenu.html",
+"title": "新編合同記寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D108Amenu.html",
+"title": "孝燈寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D109Amenu.html",
+"title": "八寶雙鸞釵寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D110Amenu.html",
+"title": "河南開封府花枷良願龍圖寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D111Amenu.html",
+"title": "新編果報錄寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D112Amenu.html",
+"title": "李三娘磨房寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D113Amenu.html",
+"title": "湖廣荊州府永慶縣修行梅氏花閷寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D114Amenu.html",
+"title": "後珍珠塔麒麟豹 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D115Amenu.html",
+"title": "新刻黃糠寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D117Amenu.html",
+"title": "繡像碧玉簪寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D118menu.html",
+"title": "新刻洛陽橋寶卷 一卷 卽 受生寶卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D119Amenu.html",
+"title": "雌雄盃寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D120Amenu.html",
+"title": "新編白鶴圖寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D121Amenu.html",
+"title": "新編殺子報寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D122Amenu.html",
+"title": "繡像雙貴圖寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D123Amenu.html",
+"title": "繪圖雙蘭英寶卷 二卷 卽 雙金花大團圓 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D124Amenu.html",
+"title": "蝴蝶杯寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D125Amenu.html",
+"title": "新編徐子建雙蝴蝶寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D126Amenu.html",
+"title": "眞修寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D127Amenu.html",
+"title": "烏金記寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D128Amenu.html",
+"title": "新編倭袍寶卷 二卷 □塵影室撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D129Amenu.html",
+"title": "新編南樓寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D130Amenu.html",
+"title": "繪圖十美圖寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D131Amenu.html",
+"title": "繪圖姉妹花寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D132Amenu.html",
+"title": "繪圖現世報養媳婦寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D133Amenu.html",
+"title": "浙江杭州府錢塘縣白蛇寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D134Amenu.html",
+"title": "新刻說唱金鳳寶卷 二卷 卽 龍鳳銷寶卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D135Amenu.html",
+"title": "繪圖竇娥寶卷 二卷 卽 六月雪寶卷  陳潤身撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D136Amenu.html",
+"title": "正本雙珠鳳奇緣竇卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D137Amenu.html",
+"title": "繪圖蘇鳳英藥茶記寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D138Amenu.html",
+"title": "蘭英寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D139Amenu.html",
+"title": "繪圖新編龍鳳配寶卷 二卷 □醉痴生撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D140Amenu.html",
+"title": "落金扇寶卷 二卷 卽 王龍鬦寶 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D141Amenu.html",
+"title": "繡像蜜蜂記寶卷 二卷  陳潤身 撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D142Amenu.html",
+"title": "浙江嘉興府秀水縣刺心寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D143Amenu.html",
+"title": "太華山紫金鎮兩世修行劉香寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D144Amenu.html",
+"title": "小董永賣身寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D145Amenu.html",
+"title": "百花台雙恩寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D146Amenu.html",
+"title": "繪圖玉連環寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D147menu.html",
+"title": "繪圖囘郎寶卷一卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D148Amenu.html",
+"title": "繪圖珍珠塔寶卷 二卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D149Amenu.html",
+"title": "大明嘉靖江蘇蘇州府玉蜻蜒寶卷 二卷 卽 瑞珠寶卷 □闕名撰",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/BaoJuanWuShiZhong/html/D100top.html",
+"has_vol": false,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D020menu.html",
+"title": "夜吊秋喜　殘一卷　存卷中",
+"rest": "□闕名撰　廣州富桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D021menu.html",
+"title": "廢鐵生光　一卷",
+"rest": "□闕名撰　廣州守經堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D022menu.html",
+"title": "賣油郎　二卷",
+"rest": "□闕名撰　廣州丹柱堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D023menu.html",
+"title": "新出狡婦疴難全套　三卷",
+"rest": "□闕名撰　廣州富桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D024menu.html",
+"title": "重訂山伯訪友　三卷",
+"rest": "□闕名撰　廣州五桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D025menu.html",
+"title": "青樓河調疏粧臺　一卷",
+"rest": "□闕名撰　廣州富桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D026menu.html",
+"title": "新琵琶行　一卷",
+"rest": "□闕名撰　廣州富桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D027menu.html",
+"title": "陳姑自盡　一卷",
+"rest": "□闕名撰　廣州富桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D028menu.html",
+"title": "重臺分別　四卷",
+"rest": "□闕名撰　廣州富桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D029menu.html",
+"title": "人壽年出頭　五卷",
+"rest": "□闕名撰　廣州富桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D030menu.html",
+"title": "大快活開廳　一卷",
+"rest": "□闕名撰　廣州醉經堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D031menu.html",
+"title": "特別打天九歌　一卷",
+"rest": "□闕名撰　廣州以文堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D032menu.html",
+"title": "新出龍舟歌明皇遊月殿　一卷",
+"rest": "□闕名撰　廣州以文堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D033menu.html",
+"title": "生祭李彥貴全本　二卷",
+"rest": "□闕名撰　道光二十年廣州德文堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D034menu.html",
+"title": "新刻燈花記全本　二卷",
+"rest": "□闕名撰　廣州丹柱堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D035menu.html",
+"title": "新刻琥珀鳳釵柳希雲全本南音　六卷",
+"rest": "□闕名撰　刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D036menu.html",
+"title": "新刻後續琥珀鳳釵柳希雲全本南音　六卷",
+"rest": "□闕名撰　刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D037menu.html",
+"title": "新玉蕭琴記南音　二卷",
+"rest": "□闕名撰　同治八年廣州右經堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D038menu.html",
+"title": "百花宮主點將全本　二卷",
+"rest": "□闕名撰　廣州五經堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D039menu.html",
+"title": "新選背解紅羅全本　六卷",
+"rest": "□闕名撰　廣州富桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D041menu.html",
+"title": "新本百八鐘　三卷",
+"rest": "□闕名撰　廣州五桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D042menu.html",
+"title": "新出龍舟歌西蓬擊掌　一卷",
+"rest": "□闕名撰　廣州五桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D043menu.html",
+"title": "新出龍舟歌貂嬋拜月　一卷",
+"rest": "□闕名撰　廣州富桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D044menu.html",
+"title": "三星　二卷",
+"rest": "□闕名撰　廣州富桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D045menu.html",
+"title": "新出龍舟歌關倫賣妹　一卷",
+"rest": "□闕名撰　廣州富桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D046menu.html",
+"title": "新出龍舟歌麓金橋問卦　一卷",
+"rest": "□闕名撰　廣州富桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D047menu.html",
+"title": "新出龍舟歌瑞蘭許愿　一卷",
+"rest": "□闕名撰　廣州富桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D048menu.html",
+"title": "新送王蕭琴全本初集　四卷　二集　四卷",
+"rest": "□闕名撰　廣州五桂堂刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/D099menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E163menu.html",
+"title": "周易集解十卷",
+"rest": "淸 孫星衍 撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E162menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E164menu.html",
+"title": "周易口訣義六卷",
+"rest": "唐 史徵 撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E162menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E165menu.html",
+"title": "夏小正傳二卷",
+"rest": "淸 孫星衍 校",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E162menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E166menu.html",
+"title": "急就章考異一卷",
+"rest": "淸 孫星衍 撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E162menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E167menu.html",
+"title": "王無功集三卷 東皐子集補遺二卷",
+"rest": "唐 王績 撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E162menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E169menu.html",
+"title": "覆校穆天子傳六卷 補遺一卷",
+"rest": "晉 郭璞 注 淸 翟云升 校 道光十二年 刊",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E168menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E170menu.html",
+"title": "校正古今人表九卷",
+"rest": "漢 班固 撰 唐 顏師古 注 淸 翟云升 校",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E168menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E171menu.html",
+"title": "焦氏易林校略十六卷",
+"rest": "淸 翟云升 撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E168menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E002menu.html",
+"title": "江南製造局譯書彙刻目録册",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E003menu.html",
+"title": "埏紘外乘二十五卷 續編二卷 補遺一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E004menu.html",
+"title": "俄國新志八卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E005menu.html",
+"title": "法國新志四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E006menu.html",
+"title": "美國憲法纂釋二十一卷 憲法一卷 續增憲法一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E007menu.html",
+"title": "歐洲東方交涉記十二卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E008menu.html",
+"title": "英俄印度交涉書一卷 續編一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E009menu.html",
+"title": "列國歲計政要十二卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E010menu.html",
+"title": "國政貿易相關書二卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E011menu.html",
+"title": "保富述要一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E012menu.html",
+"title": "列國陸軍制不分卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E013menu.html",
+"title": "西國陸軍制考略八卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E014menu.html",
+"title": "行軍指要六卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E015menu.html",
+"title": "臨陣管見九卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E016menu.html",
+"title": "營城揭要二卷 附圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E017menu.html",
+"title": "營壘圖說一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E018menu.html",
+"title": "開地道轟藥法三卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E019menu.html",
+"title": "水師章程十四卷 續編六卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E020menu.html",
+"title": "水師操練十八卷 附一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E021menu.html",
+"title": "水師保身法一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E022menu.html",
+"title": "輪船布陣十二卷 首一卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E023menu.html",
+"title": "考試司機七卷 首一卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E024menu.html",
+"title": "兵船汽機六卷 附一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E025menu.html",
+"title": "克虜伯礮說四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E026menu.html",
+"title": "克虜伯礮操法四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E027menu.html",
+"title": "克虜伯船礮操法一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E028menu.html",
+"title": "克虜伯礮表八卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E029menu.html",
+"title": "克虜伯礮準心法一卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E030menu.html",
+"title": "克虜伯腰箍礮說一卷 附圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E031menu.html",
+"title": "克虜伯礮架說一卷 附圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E032menu.html",
+"title": "克虜伯螺繩礮架說一卷 附圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E033menu.html",
+"title": "克虜伯礮彈造法二卷 附圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E034menu.html",
+"title": "攻守礮法一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E035menu.html",
+"title": "餅藥造法一卷 附圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E036menu.html",
+"title": "格林礮操法一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E037menu.html",
+"title": "喇叭吹法一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E038menu.html",
+"title": "製火藥法三卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E039menu.html",
+"title": "爆藥記要六卷 附圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E040menu.html",
+"title": "兵船礮法六卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E041menu.html",
+"title": "海防新論十八卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E042menu.html",
+"title": "海道圖說十五卷 長江圖說一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E043menu.html",
+"title": "航海章程一卷 初議紀録一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E044menu.html",
+"title": "航海簡法四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E045menu.html",
+"title": "行海要術四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E046menu.html",
+"title": "御風要術三卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E047menu.html",
+"title": "海塘輯要十卷 釋一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E048menu.html",
+"title": "美國鐵路彙考十三卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E049menu.html",
+"title": "鐵路紀要三卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E050menu.html",
+"title": "算式集要四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E051menu.html",
+"title": "算式解法十四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E052menu.html",
+"title": "數學理九卷 附一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E053menu.html",
+"title": "三角數理十二卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E054menu.html",
+"title": "代數術二十五卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E055menu.html",
+"title": "微積溯源八卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E056menu.html",
+"title": "代數微積拾級十八卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E057menu.html",
+"title": "代數難題解法十六卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E058menu.html",
+"title": "談天十八卷 附表一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E059menu.html",
+"title": "測候叢談四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E060menu.html",
+"title": "測地繪圖十一卷 附一卷 表一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E061menu.html",
+"title": "繪地法原一卷 附表一卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E062menu.html",
+"title": "運規約指三卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E063menu.html",
+"title": "器象顯眞四卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E064menu.html",
+"title": "行軍測繪十一卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E065menu.html",
+"title": "測繪海圖全法八卷 附一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E066menu.html",
+"title": "格致啓蒙四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E067menu.html",
+"title": "格致小引一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E068menu.html",
+"title": "物理學上編四卷 中編四卷 下編四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E069menu.html",
+"title": "物體遇熱改易記四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E070menu.html",
+"title": "農學初級一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E071menu.html",
+"title": "農務化學問答二卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E072menu.html",
+"title": "農務土質論三卷 圖說一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E073menu.html",
+"title": "農務化學簡法三卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E074menu.html",
+"title": "農學津梁一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E075menu.html",
+"title": "意大里蠶書一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E076menu.html",
+"title": "農學理說二卷 表一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E077menu.html",
+"title": "農務全書上編十六卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E078menu.html",
+"title": "寶藏興焉十二卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E079menu.html",
+"title": "地學淺釋三十八卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E080menu.html",
+"title": "相地探金石法四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E081menu.html",
+"title": "金石識別十二卷 表一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E082menu.html",
+"title": "礦學考質上編五卷 下編五卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E083menu.html",
+"title": "探礦取金六卷 續編一卷 附編一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E084menu.html",
+"title": "求礦指南十卷 附一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E085menu.html",
+"title": "銀鑛指南一卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E086menu.html",
+"title": "冶金録三卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E087menu.html",
+"title": "鍊鋼要言一卷 附録一卷 附圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E088menu.html",
+"title": "井礦工程三卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E089menu.html",
+"title": "開煤要法十二卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E090menu.html",
+"title": "考工記要十七卷 附圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E091menu.html",
+"title": "金工教範一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E092menu.html",
+"title": "鑄金論畧六卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E093menu.html",
+"title": "製羼金法二卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E094menu.html",
+"title": "取濾火油法一卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E095menu.html",
+"title": "造洋漆法一卷 續編一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E096menu.html",
+"title": "照相鏤板印圖法一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E097menu.html",
+"title": "西藝知新二十二卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E098menu.html",
+"title": "製機理法八卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E099menu.html",
+"title": "汽機必以十二卷 首一卷 附一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E100menu.html",
+"title": "汽機發軔九卷 表一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E101menu.html",
+"title": "汽機新制八卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E102menu.html",
+"title": "聲學八卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E103menu.html",
+"title": "光學二卷 視學諸器圖說一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E104menu.html",
+"title": "化學分原八卷 表一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E105menu.html",
+"title": "化學鑑原六卷 續編二十四卷 補編六卷 附一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E106menu.html",
+"title": "化學考質八卷 表二卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E107menu.html",
+"title": "化學求數十五卷 附表一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E108menu.html",
+"title": "電學十卷 首一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E109menu.html",
+"title": "電學綱目一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E110menu.html",
+"title": "通物電光四卷 附圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E111menu.html",
+"title": "無線電報一卷 補編一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E112menu.html",
+"title": "電氣鍍䤼一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E113menu.html",
+"title": "電氣鍍金略法一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E114menu.html",
+"title": "西藥大成十卷 首一卷 藥品中西名目表一卷 補編六卷 首一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E115menu.html",
+"title": "儒門醫學四卷 附一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E116menu.html",
+"title": "内科理法前編六卷 後編十卷 附一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E117menu.html",
+"title": "濟急法一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E118menu.html",
+"title": "保全生命論一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E119menu.html",
+"title": "法律醫學二十四卷 首一卷 附一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E120menu.html",
+"title": "公法總論一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E121menu.html",
+"title": "各國交涉公法論十六卷 校勘記一卷 中西紀年一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E122menu.html",
+"title": "各國交涉便法論六卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E123menu.html",
+"title": "佐治芻言一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E124menu.html",
+"title": "德國陸軍考四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E125menu.html",
+"title": "英國水師律例四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E126menu.html",
+"title": "東方時局論略一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E127menu.html",
+"title": "海軍調度要言三卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E128menu.html",
+"title": "前敵須知四卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E129menu.html",
+"title": "營工要覽四卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E130menu.html",
+"title": "鐵甲叢譚五卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E131menu.html",
+"title": "水雷秘要五卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E132menu.html",
+"title": "子藥準則一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E133menu.html",
+"title": "礮法求新六卷 附編一卷 補編一卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E134menu.html",
+"title": "礮乘新法三卷 圖一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E000menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E173menu.html",
+"title": "潯谿紀事詩二卷",
+"rest": "淸 范鍇 撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E172menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E174menu.html",
+"title": "南潯鎮志十卷",
+"rest": "淸 范來庚 撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E172menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E175menu.html",
+"title": "朱文肅公詩集不分卷 集一卷",
+"rest": "明 朱國禎 撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E172menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E176menu.html",
+"title": "劫餘雜識一卷",
+"rest": "淸 李光霽 撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E172menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E177menu.html",
+"title": "山傭遺詩一卷",
+"rest": "蔣文勳 撰",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E172menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E179menu.html",
+"title": "范氏記私史事一卷",
+"rest": "淸 范韓 撰 劉氏嘉業堂藏舊鈔本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E178menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E180menu.html",
+"title": "前身集不分卷",
+"rest": "淸 黃周星 撰 劉氏嘉業堂藏稿本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E178menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E181menu.html",
+"title": "南潛日記二卷",
+"rest": "淸 董說 撰 劉氏嘉業堂藏稿本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E178menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E182menu.html",
+"title": "兼山續草一卷",
+"rest": "淸 董思 撰 張氏適園藏稿本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E178menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E183menu.html",
+"title": "古壁叢鈔一卷",
+"rest": "淸 温日鑑 輯 據張氏適園藏原刊本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E178menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E184menu.html",
+"title": "堅匏盦集二卷",
+"rest": "淸 劉錦藻 撰 稿本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E178menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E185menu.html",
+"title": "一浮漚齋詩選三卷",
+"rest": "沈焜 撰 稿本",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/E178menu.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/Q001menu01.html",
+"title": "白氏長慶集 七十一卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/Q001top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N013menu1.html",
+"title": "大清太祖承天廣運聖德神功肇紀立極仁孝睿武弘文定業高皇帝實録 不分卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N013top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+},
+{
+"url": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N013menu2.html",
+"title": "大清太宗應天興國弘德彰武寛温仁聖睿孝隆道顯功文皇帝實録 六十五卷",
+"rest": "",
+"parent": "http://kanji.zinbun.kyoto-u.ac.jp/db-machine/toho/html/N013top.html",
+"has_vol": true,
+"fetched": true,
+"kind": "image"
+}
+]
