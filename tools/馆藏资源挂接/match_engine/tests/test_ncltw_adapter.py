@@ -25,3 +25,12 @@ def test_load_and_make_item(tmp_path):
     assert item['metadata'] == dict(ncltw_bookno='02362', call_number='205.1 02362', edition='明黃魯曾刊本')
     assert label == '臺灣國家圖書館藏本：明黃魯曾刊本'
     assert writeplan.make_item('ncltw', b) is None
+
+
+def test_partner_holder(tmp_path):
+    r = _rec('B1234', URL)
+    r['extra']['owner'] = '美國柏克萊加州大學東亞圖書館'
+    (tmp_path / ncltw.DEFAULT_PATH).write_text(json.dumps([r], ensure_ascii=False), encoding='utf-8')
+    item, _, label = writeplan.make_item('ncltw', ncltw.load(str(tmp_path))[0])
+    assert item['metadata']['holder'] == '美國柏克萊加州大學東亞圖書館'
+    assert label == '美國柏克萊加州大學東亞圖書館藏本：明黃魯曾刊本'
