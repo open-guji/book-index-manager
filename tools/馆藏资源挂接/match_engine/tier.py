@@ -18,6 +18,7 @@ from normalize import norm_title, norm_author
 from titleparse import (COLL_BASE, COLL_EXT, PREF, LOCAL_PART, SUPPLEMENT, supplement_marks, split_title, multi_title, parse_juan, local_part_text)
 
 CONFIRMED, DOUBT, NONE = '确定', '存疑', '无'
+EURO = ('bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb')
 
 CODES_SUFFICIENT = ('T_EXACT', 'A_EQ', 'W_UNIQUE', 'ERA_OK')
 CODES_DOUBT = ('T_FUZZY', 'T_AUTHOR_NEAR', 'A_MISSING', 'A_DIFF', 'A_ALIAS_ONLY', 'ERA_CONFLICT', 'ERA_VERSION_EARLIER',
@@ -54,6 +55,7 @@ class Profile:
     multi_mode: str = 'rest'      # rest：题名后附部分含别的题名；segs：≥2 个不同题名段
     alt_sibling_brake: bool = False   # 仅凭 Work 附加题名命中且（有兄弟 Work 或有额外责任者）→ 存疑（R1-E5，Milo 批）
     lead_brake: bool = False          # 站方首位责任者须与 Work 相合（责任方式丢失的源，如早稲田）
+    pinyin: bool = False              # 站方罗马字（拼音）责任者与 Work 著者拼音比（A8 欧美馆，loc 只有拼音）
 
 
 @dataclass
@@ -68,6 +70,8 @@ class Policy:
         'ndl': Profile(jp=True, style='parsed', coll=COLL_EXT, alias=True, shi_strip=True, wildcard=True, multi_mode='segs'),
         'naikaku': Profile(jp=True, style='parsed', coll=COLL_EXT, alias=True, shi_strip=True, multi_mode='segs'),
         'waseda': Profile(jp=True, style='parsed', coll=COLL_EXT, alias=True, shi_strip=True, multi_mode='segs', alt_sibling_brake=True),   # R1-E5：只出三档表
+        **{s: Profile(jp=False, style='parsed', coll=COLL_EXT, alias=True, shi_strip=True, multi_mode='segs', alt_sibling_brake=True,
+                      lead_brake=True, pinyin=True) for s in EURO},   # A8 欧美六馆
     })
 
     def profile(self, source):
@@ -105,6 +109,7 @@ class Query:
     own_marks: set = field(default_factory=set)   # 记录自身题名里的续／补标记
     lead: set = field(default_factory=set)        # 站方首位责任者（责任方式丢失的源）
     main_key: str = ''                            # 本册自己的题名键（parsed 取 segs[0]，不取丛书／合刻名 wname）
+    roman: list = field(default_factory=list)     # 罗马字（拼音）责任者键，首位在前（A8）
 
 
 def _rank_of_token(tok):
@@ -142,7 +147,7 @@ def prepare(rec, prof):
                  local=bool(prof.local_part and LOCAL_PART.search(local_part_text(title, '', segs[1:]))),
                  alts=[norm_title(t, prof.jp) for t in (p.get('alts') or [])] if prof.alt_titles else [],
                  force=list(p.get('force') or []), borrowed=bool(p.get('borrowed')),
-                 lead=set(p.get('lead') or ()), main_key=norm_title(segs[0], prof.jp) if segs else (keys[0] if keys else ''))
+                 lead=set(p.get('lead') or ()), roman=list(p.get('roman') or ()) if prof.pinyin else [], main_key=norm_title(segs[0], prof.jp) if segs else (keys[0] if keys else ''))
 
 
 # --------------------------------------------------------------------------- 责任者关系
@@ -154,8 +159,41 @@ def _wild_eq(a, b):
     return len(a) == len(b) and all(x == '〓' or x == y for x, y in zip(a, b))
 
 
-def auth_relation(lib, w, prof, pol):
-    """'eq' 有交集／'alias' 仅别名／'missing' 任一方缺／'diff'。"""
+_PY = {}
+
+
+def pinyin_keys(name):
+    """归一汉字名 → 拼音键集合（多音字全组合，最多 64 种）；「释」前缀两读都给。"""
+    if name not in _PY:
+        from pypinyin import pinyin, Style
+        import itertools
+        out = set()
+        for nm in {name, name[1:] if name.startswith('释') and len(name) > 2 else name}:
+            ps = pinyin(nm, style=Style.NORMAL, heteronym=True, errors='ignore')
+            if not ps or len(ps) != len(nm):
+                continue
+            combos = 1
+            for p in ps:
+                combos *= len(p)
+            if combos > 64:
+                ps = [p[:1] for p in ps]
+            for c in itertools.product(*ps):
+                out.add(''.join(c).replace('ü', 'v'))
+        _PY[name] = out
+    return _PY[name]
+
+
+def _roman_eq(roman, w):
+    return any(r in pinyin_keys(a) for r in roman for a in w['authors'])
+
+
+def auth_relation(lib, w, prof, pol, roman=None):
+    """'eq' 有交集／'alias' 仅别名／'missing' 任一方缺／'diff'。roman：站方拼音责任者（prof.pinyin 时用）。"""
+    if roman and prof.pinyin and (w['authors'] or w['alias']):
+        rel = auth_relation(lib, w, prof, pol) if lib else 'diff'
+        if rel == 'eq':
+            return rel
+        return 'eq' if _roman_eq(roman, w) else rel
     if not lib or not (w['authors'] or (prof.alias and w['alias'])):
         return 'missing'
     if lib & w['authors'] or (prof.shi_strip and _shi(lib) & _shi(w['authors'])):
@@ -254,7 +292,7 @@ def judge(rec, wi, pol):
 
     scored = []
     for w in cands:
-        rel = auth_relation(q.names, w, prof, pol)
+        rel = auth_relation(q.names, w, prof, pol, q.roman)
         flags = []
         if q.a_era is not None and w['eras'] and all(abs(q.a_era - e) > 0.9 for e in w['eras']):
             flags.append('ERA_CONFLICT')
@@ -264,7 +302,7 @@ def judge(rec, wi, pol):
             flags.append('JUAN_GAP')
         if q.own_marks - supplement_marks(w.get('tkeys') or ()):
             flags.append('SUPPLEMENT')
-        if rel == 'eq' and prof.lead_brake and q.lead and auth_relation(q.lead, w, prof, pol) != 'eq':
+        if rel == 'eq' and prof.lead_brake and (q.lead or q.roman) and auth_relation(q.lead, w, prof, pol, q.roman[:1]) != 'eq':
             flags.append('A_SECONDARY_ONLY')
         hv = HUMAN.get((rec['source'], str(rec.get('source_record_id'))))
         if rel == 'eq' and hv == 'reject':

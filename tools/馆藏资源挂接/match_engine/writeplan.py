@@ -17,7 +17,15 @@ SITES = {
                     label='內閣文庫藏本：{edition}（{req}，{extent}）'),
     'waseda': dict(id='waseda', name='早稲田大学図書館 古典籍総合データベース', short_name='早稲田', prefix='waseda-', label='早稲田藏本{edition}'),
     'ndl': dict(id='ndl', name='國立國會圖書館デジタルコレクション', short_name='NDL', prefix='ndl-', label='NDL藏本：{edition}'),
+    # A8 欧美六馆（2026-10-26）：url＝站方影像阅览页（bnf 用 Gallica、onb 用 ABO 阅览器；书目页无影像），记录号 <site>_record
+    'bnf': dict(id='bnf', name='Gallica（法國國家圖書館）', short_name='法國國圖', prefix='bnf-', label='法國國家圖書館藏本：{edition}'),
+    'bsb': dict(id='bsb', name='MDZ 數字館藏（巴伐利亞州立圖書館）', short_name='巴伐利亞', prefix='bsb-', label='巴伐利亞州立圖書館藏本：{edition}'),
+    'sbb': dict(id='sbb', name='柏林國家圖書館數字館藏', short_name='柏林國圖', prefix='sbb-', label='柏林國家圖書館藏本：{edition}'),
+    'loc': dict(id='loc', name='美國國會圖書館數字館藏', short_name='美國國會', prefix='loc-', label='美國國會圖書館藏本：{edition}'),
+    'cudl': dict(id='cudl', name='劍橋大學數字圖書館', short_name='劍橋', prefix='cudl-', label='劍橋大學圖書館藏本：{edition}'),
+    'onb': dict(id='onb', name='奧地利國家圖書館 Austrian Books Online', short_name='奧地利國圖', prefix='onb-', label='奧地利國家圖書館藏本：{edition}'),
 }
+EURO = ('bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb')
 VAGUE_EDITION = {'', '刊', '写', '寫', '刻', '抄', '鈔'}
 
 
@@ -68,6 +76,22 @@ def make_item(source, rec, types=('image',)):
         if rec['source_record_id'] == rid:
             url = re.sub(r'/html/([^/]+)/[^/]+/index\.html$', lambda m: f'/html/{m.group(1)}/{rid}/index.html', url)
         types = ('image',)
+    elif source in EURO:
+        rid = rec['source_record_id']
+        md = {source + '_record': rid}
+        ex = rec.get('extra') or {}
+        gid = ex.get('set_id') or rid      # 多册书：group 用整套记录号（bsb parent_b3kat_id／柏林 parent_ppn）；无整套号时用首册号
+        url = rec['image_url'] if source in ('bnf', 'onb') else rec['url']
+        if source == 'bnf':
+            md['bnf_catalogue'] = rec['url']
+        if source in ('bsb', 'sbb', 'loc', 'cudl'):
+            md['iiif_manifest'] = rec['image_url']
+        hid = (rec.get('extra') or {}).get('holding_id') or ''
+        if hid:
+            md['shelfmark'] = hid
+        url = url.replace('http://', 'https://', 1)
+        if ex.get('set_size', 1) > 1:
+            md['volume_count'] = ex['set_size']
     else:
         rid = _pid(rec)
         if not rid:
@@ -81,9 +105,11 @@ def make_item(source, rec, types=('image',)):
         md['iiif_manifest'] = rec['image_url']
     if source == 'naikaku':
         md['extent'] = (rec.get('extra') or {}).get('extent', '')
-    grp = s['prefix'] + rid
+    grp = s['prefix'] + (gid if source in EURO else rid)
     item = dict(id=s['id'], group=grp, group_role='origin', name=s['name'], short_name=s['short_name'], url=url,
                 types=list(types), metadata=md)
+    if source in EURO and md.get('volume_count'):
+        item['details'] = f'多冊本，站方分 {md["volume_count"]} 條著錄；此處鏈接其中排序最前一條（{rid}），其餘各冊見站方'
     ex = rec.get('extra') or {}
     if source == 'waseda' and edition:
         edition = '：' + edition
@@ -95,7 +121,8 @@ def make_item(source, rec, types=('image',)):
 def rank_key(rec):
     """K9 取舍序：影像 > 版本明确 > 卷数；再以记录号定序，保证确定性。"""
     ed = (rec.get('version_raw') or '').strip()
-    return (-int(bool(rec.get('has_image'))), -int(ed not in VAGUE_EDITION), -(rec.get('juan') or 0), rec['source_record_id'])
+    return (-int(bool(rec.get('has_image'))), -int(ed not in VAGUE_EDITION), -(rec.get('juan') or 0),
+            (rec.get('extra') or {}).get('set_order', 0), rec['source_record_id'])
 
 
 def build(source, rows, existing=None):
@@ -117,7 +144,7 @@ def build(source, rows, existing=None):
             made = make_item(source, x['rec'])
             if made is None:
                 continue
-            if source == 'waseda':        # 匹配单位是记录、写入单位是顶层册：同 Work 同顶层册只留排序最前的一条
+            if source == 'waseda' or source in EURO:        # 匹配单位是记录、写入单位是顶层册／整套：同 Work 同组只留排序最前的一条
                 if made[1] in seen_grp:
                     continue
                 seen_grp.add(made[1])

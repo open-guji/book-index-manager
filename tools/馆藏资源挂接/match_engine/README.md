@@ -5,13 +5,13 @@
 ## 依赖与运行
 代码在 `open-guji/book-index-manager` 的 `tools/馆藏资源挂接/`（2026-10-22 随草稿库清空从 book-index-draft 迁来，与 draft `1a29e3b6c9^` 逐字节相同）。
 ```
-pip install opencc-python-reimplemented pytest
+pip install opencc-python-reimplemented pytest pypinyin   # pypinyin：A8 欧美馆拼音责任者
 # 三个外部仓：放在与 book-index-manager 并列的 book-index／book_index_json／overview 目录即可自动找到，
 # 或用环境变量 BOOK_INDEX、BOOK_INDEX_JSON、OVERVIEW_ROOT 指定（见 roots.py）
 # 朝代键表（book-index 派生，约 4 分钟，_build 约 3 GB，只留键表即可）：
 python3 <book-index>/build/build_derived.py --root <book-index> --text-index <空目录> --out <临时目录>
 mkdir -p tools/馆藏资源挂接/.cache && cp <临时目录>/dynasty_reign_keys.json tools/馆藏资源挂接/.cache/   # 或 export DYNASTY_KEYS=<路径>
-python3 engine.py --source nlc|kokusho|ndl|naikaku|waseda --out DIR [--emit-write-plan] [--limit N] \
+python3 engine.py --source nlc|kokusho|ndl|naikaku|waseda|bnf|bsb|sbb|loc|cudl|onb --out DIR [--emit-write-plan] [--limit N] \
    [--works-root <book-index 正式仓根>] [--data-root <library_data 根>] [--overview-root <overview 根>] \
    [--ledger-dir DIR] [--plan-dir DIR] [--mapping 政权映射.tsv]
 python3 plancheck.py --source X --dir DIR [--works-root …]   # 写计划校验与库内比对；默认含 R1–R3/R7 占用检查（命中退出码 3，--no-occupancy 跳过）
@@ -41,4 +41,4 @@ T_EXACT（题名全等）∧ A_EQ（责任者相合）∧ W_UNIQUE（唯一 Work
 6. 写 `tests/`（适配器解析、每个降级码的用例），跑 `pytest`；在 #583 贴数字，让 E 块独立跑一遍、`matches.tsv` diff 为空。
 
 ## 约定与红线
-不改 schema；匹配表等大文件不进仓；凭据不进仓；只写确定档，存疑不写。已有适配器：nlc／kokusho／ndl／naikaku／waseda；另有 `authorgate`（责任者闸）、`plancheck`（写计划校验与占用检查，K9 每 Work 最多 3 条藏本）。
+不改 schema；匹配表等大文件不进仓；凭据不进仓；只写确定档，存疑不写。已有适配器：nlc／kokusho／ndl／naikaku／waseda；欧美六馆 bnf／bsb／sbb／loc／cudl／onb 共用 `adapters/euro.py`（A8，见 `docs/馆藏资源挂接/报告/A8-欧美六馆挂接-20261026.md`）；另有 `authorgate`（责任者闸）、`plancheck`（写计划校验与占用检查，K9 每 Work 最多 3 条藏本）。
