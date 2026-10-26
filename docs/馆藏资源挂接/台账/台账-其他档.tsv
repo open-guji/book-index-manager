@@ -1,0 +1,10 @@
+馆	档（library_data 下）	站点 id	条数	有影像	已挂	档位
+国图 數字方志	中國國家圖書館 數字方志.json	nlc	6528	6528	5806	未跑引擎
+国图 趙城金藏	中國國家圖書館 趙城金藏.json	nlc	1281	1281	1231	未跑引擎
+家譜（read.nlc.cn 影像）	家譜（read.nlc.cn 影像）.json	nlc	2267	2267	1596	未跑引擎
+台北故宫 善本古籍	臺灣故宮博物院善本古籍	npm-rarebooks	18089	2322	18071	未跑引擎
+台北故宫 明清輿圖	臺灣故宮博物院明清輿圖	npm-rarebooks	1437	1437	0	未跑引擎
+関西大学 KU-ORCAS	関西大学KU-ORCAS.json	kansai	1455	1455	0	未跑引擎
+牛津 Bodleian	牛津博德利图书馆.json	bodleian	2013	2013	0	未跑引擎
+全国漢籍データベース	kanseki	kanseki	296182	0	0	未跑引擎
+上海圖書館藏書（_整理）	_整理/上海圖書館藏書	shlib	129159	0	0	未跑引擎

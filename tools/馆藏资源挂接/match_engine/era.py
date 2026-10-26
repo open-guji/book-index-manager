@@ -14,6 +14,8 @@ import json
 import os
 import re
 
+import roots
+
 # 桶界（公元年）：中点 ≤ 界 → 对应序。与旧 RANK 的语义一致：
 # 先秦0；秦汉1；三国晋南北朝2；隋3；唐4；五代4.5；宋辽金5；元6；明7；清8；民国9
 _BUCKETS = [(-221, 0), (220, 1), (581, 2), (618, 3), (907, 4), (960, 4.5), (1271, 5), (1368, 6), (1644, 7), (1911, 8)]
@@ -40,7 +42,7 @@ def bucket(start, end):
 
 def load_keys(path=None, mapping_tsv=None):
     """读键表。返回 (dynasty 名数, 政权映射条数)。"""
-    path = path or os.environ.get('DYNASTY_KEYS', '/tmp/claude-0/keys/out/dynasty_reign_keys.json')
+    path = path or roots.dynasty_keys()
     d = json.load(open(path, encoding='utf-8'))
     _spans.clear(); AMBIGUOUS.clear()
     for name, entries in d['keys'].items():
