@@ -1,0 +1,536 @@
+[
+ {
+  "book_id": "NLVNPF-0079",
+  "n_vol": 1,
+  "title": "傳奇漫錄",
+  "author": "阮嶼",
+  "edition": "Handwritten text/ Viết tay",
+  "period": "",
+  "holding": "R.1624",
+  "sort": "Literary collections (tập 集)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/82/",
+  "works": [
+   "[d59g10f0v1hp] 傳奇漫錄||卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0092",
+  "n_vol": 2,
+  "title": "貫華堂評論金雲翹傳",
+  "author": "青心才人編次/貫華堂梓行",
+  "edition": "Handwritten text/ Viết tay",
+  "period": "",
+  "holding": "R.966",
+  "sort": "Literary collections (tập 集)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/95/",
+  "works": [
+   "[d59fxox31pmo] 貫華堂評論金雲翹傳|佚名()撰|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0098",
+  "n_vol": 2,
+  "title": "抑齋集",
+  "author": "阮廌",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "嗣德嗣戊辰 • 1868",
+  "holding": "R.963",
+  "sort": "Literary collections (tập 集)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/100/",
+  "works": [
+   "[d59f6ejlmtqg] 抑齋集|王來()撰|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0099",
+  "n_vol": 1,
+  "title": "約齋文集",
+  "author": "裴春",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "成泰辛丑孟春 • 1901",
+  "holding": "R.146",
+  "sort": "Literary collections (tập 集)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/102/",
+  "works": [
+   "[d59fsgfxaqdd] 約齋文集|馮雲驤(清)撰|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0593",
+  "n_vol": 1,
+  "title": "戒殺放生文",
+  "author": "周宏, 嚴訥",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "",
+  "holding": "R.1568",
+  "sort": "Literary collections (tập 集)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/768/",
+  "works": [
+   "[d59f6eljjzeu] 戒殺放生文|祩宏()撰|卷1",
+   "[d59fyjpseyv5] 戒殺放生文|佚名()撰|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0780",
+  "n_vol": 6,
+  "title": "唐詩合選詳解",
+  "author": "劉文蔚",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "嗣德貳年 • 1849",
+  "holding": "R.1026",
+  "sort": "Literary collections (tập 集)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/967/",
+  "works": [
+   "[d59fssn9tate] 唐詩合選詳解|文蔚(清)注|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-1207",
+  "n_vol": 1,
+  "title": "詩韻輯要",
+  "author": "濟南李攀龍編輯, 韓山鄭德瀟慕生校閲, 嘉禾鄭德昌峻[?]校訂",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "",
+  "holding": "R.650",
+  "sort": "Literary collections (tập 集)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/1166/",
+  "works": [
+   "[d59fs7ex2l8h] 詩韻輯要|李攀龍(明)輯|卷",
+   "[d59fxwosxamb] 詩韻輯要|王穉登(明)撰|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-1208",
+  "n_vol": 1,
+  "title": "詩韻輯要",
+  "author": "濟南李攀龍編輯, 韓山鄭得瀟慕生校閲, 嘉禾鄭德昌峻[?]校訂",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "明命拾柒年新刊 • 1836",
+  "holding": "R.1714",
+  "sort": "Literary collections (tập 集)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/1167/",
+  "works": [
+   "[d59fs7ex2l8h] 詩韻輯要|李攀龍(明)輯|卷",
+   "[d59fxwosxamb] 詩韻輯要|王穉登(明)撰|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-1263",
+  "n_vol": 1,
+  "title": "傳奇漫錄",
+  "author": "阮嶼",
+  "edition": "Handwritten text/ Viết tay",
+  "period": "",
+  "holding": "R.424",
+  "sort": "Literary collections (tập 集)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/1252/",
+  "works": [
+   "[d59g10f0v1hp] 傳奇漫錄||卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0371",
+  "n_vol": 12,
+  "title": "御纂周易折中",
+  "author": "眞定洞庵阮茂建校字",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "嗣德莘辛酉仲秋重鐫 • 1861",
+  "holding": "R.793",
+  "sort": "Classics (kinh 經)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/525/",
+  "works": [
+   "[d59f2ntfnyf4] 御纂周易折中|李光地(清)撰|卷12"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0489",
+  "n_vol": 9,
+  "title": "詩經大全",
+  "author": "篡修:翰林院學士兼左春坊大學士奉政大夫臣胡廣",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "嗣德拾年新鐫",
+  "holding": "R.1303",
+  "sort": "Classics (kinh 經)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/642/",
+  "works": []
+ },
+ {
+  "book_id": "NLVNPF-0825",
+  "n_vol": 6,
+  "title": "論語集註大全",
+  "author": "孔子",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "",
+  "holding": "R.1023",
+  "sort": "Classics (kinh 經)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/1029/",
+  "works": [
+   "[d59fxwolflkw] 論語集註大全|陸隴其(清)輯|卷",
+   "[d59fxwpael1c] 論語集註大全||卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0222",
+  "n_vol": 1,
+  "title": "痘疹全集",
+  "author": "馮兆張",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "",
+  "holding": "R.5741",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/316/",
+  "works": [
+   "[d59f2nijlw5d] 痘疹全集|馮兆張(清)撰|卷12"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0323",
+  "n_vol": 9,
+  "title": "醫學入門",
+  "author": "南豐李諱梃先生編註",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "嗣德十二年夏月吉日新鎸 • 1871",
+  "holding": "R.1362",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/463/",
+  "works": [
+   "[d59fxzhz2bcx] 醫學入門|王世鍾(清)撰|卷",
+   "[d59f6eghvv9e] 醫學入門|李廷()撰|卷7"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0324",
+  "n_vol": 4,
+  "title": "辨證奇聞",
+  "author": "陳士鐸",
+  "edition": "Handwritten text/ Viết tay",
+  "period": "",
+  "holding": "R.5509",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/472/",
+  "works": [
+   "[d59fy03odb0g] 辨證奇聞|陳士鐸(清)撰、錢松(清)删定|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0338",
+  "n_vol": 7,
+  "title": "妙法蓮華經",
+  "author": "終南山釋道宣述",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "",
+  "holding": "R.685",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/487/",
+  "works": [
+   "[d59fyny480ld] 妙法蓮華經|吳坤修(清)輯、釋鳩摩羅什(後秦)譯|卷",
+   "[d59f27x41zb5] 妙法蓮華經|鳩摩羅什(後秦)譯|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0403",
+  "n_vol": 1,
+  "title": "陳子性藏書",
+  "author": "陳子性",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "",
+  "holding": "R.3217",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/562/",
+  "works": [
+   "[d59f2mgcaarl] 陳子性藏書|陳應選(清)撰|卷12"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0512",
+  "n_vol": 2,
+  "title": "博物新編",
+  "author": "陳仲恭提序",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "維新己酉孟夏 • 1909",
+  "holding": "R.111",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/671/",
+  "works": [
+   "[d59fxszcnwg0] 博物新編|管茂材(清)譯|卷",
+   "[d59fyfe5d6gw] 博物新編|合信()撰|卷",
+   "[d59fy1heja4g] 博物新編|英國合信氏()撰|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0540",
+  "n_vol": 1,
+  "title": "診家正眼",
+  "author": "李士材",
+  "edition": "Handwritten text/ Viết tay",
+  "period": "康熙丁未 • 1667",
+  "holding": "R.58",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/700/",
+  "works": [
+   "[d59fy04r2qdc] 診家正眼|李時珍(明)撰|卷",
+   "[d59fy04qg9a9] 診家正眼|李裕達(清)撰|卷",
+   "[d59f2ni58z5u] 診家正眼|李中梓(清)撰|卷2",
+   "[d59fy04rdywx] 診家正眼||卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0604",
+  "n_vol": 1,
+  "title": "活幼心法大全",
+  "author": "周雨郇",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "",
+  "holding": "R.9",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/778/",
+  "works": [
+   "[d59fxstgej9d] 活幼心法大全|聶尙恆(明)撰、俞茂鯤(清)撰|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0694",
+  "n_vol": 1,
+  "title": "二味集",
+  "author": "鄧輝著",
+  "edition": "Handwritten text/ Viết tay",
+  "period": "-",
+  "holding": "R.57",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/863/",
+  "works": [
+   "[d59fxyde7oxt] 二味集|彭樹楳(清)輯|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0749",
+  "n_vol": 4,
+  "title": "救偏瑣言",
+  "author": "費啓泰",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "嗣德三十四年 • 1881",
+  "holding": "R.2005",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/932/",
+  "works": [
+   "[d59fxz341kap] 救偏瑣言|費啓泰(清)撰|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0762",
+  "n_vol": 1,
+  "title": "藥性賦",
+  "author": "寶亭居士堅如甫",
+  "edition": "Handwritten text/ Viết tay",
+  "period": "",
+  "holding": "R.1679",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/950/",
+  "works": [
+   "[d59fxzhl0mwx] 藥性賦|羅必煒(明)訂|卷",
+   "[d59fxzhlbvgh] 藥性賦|李杲(金)撰|卷",
+   "[d59fxzhkpedc] 藥性賦|徐鴻昇(清)輯|卷",
+   "[d59fxzhkpede] 藥性賦|范美中(清)撰|卷",
+   "[d59fy047es5d] 藥性賦||卷",
+   "[d59fy048yyv4] 藥性賦|劉全備(明)撰|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-0846",
+  "n_vol": 1,
+  "title": "女小學",
+  "author": "嚴衡",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "成泰壬寅 • 1902",
+  "holding": "R.1022",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/1055/",
+  "works": [
+   "[d59fxu2ki9dt] 女小學|嚴蘅(清)輯|卷",
+   "[d59fxu2ki9ds] 女小學|戴禮(清)撰|卷"
+  ]
+ },
+ {
+  "book_id": "NLVNPF-1010",
+  "n_vol": 1,
+  "title": "詩韻輯要",
+  "author": "鄭峻菴校訂",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "明命拾捌年 • 1837",
+  "holding": "R.281",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/1/volume/1146/",
+  "works": [
+   "[d59fs7ex2l8h] 詩韻輯要|李攀龍(明)輯|卷",
+   "[d59fxwosxamb] 詩韻輯要|王穉登(明)撰|卷"
+  ]
+ },
+ {
+  "book_id": "TNVNPF-003",
+  "n_vol": 1,
+  "title": "百喻經",
+  "author": "尊者僧伽斯那撰; 蕭齊西竺三藏求那毗地譯",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "",
+  "holding": "TN.024",
+  "sort": "Thư Viện Chùa / Entire Temple Library",
+  "url": "https://lib.nomfoundation.org/collection/2/volume/1257/",
+  "works": [
+   "[d59f2q5rxo1s] 百喻經|求那毗地(南朝齊)撰|卷1",
+   "[d59fygqrku0w] 百喻經|僧伽斯那(外國)撰、求那毘地(南朝齊)譯|卷"
+  ]
+ },
+ {
+  "book_id": "TNVNPF-007",
+  "n_vol": 17,
+  "title": "大方廣佛華嚴經",
+  "author": "唐于闐國沙門實叉難陀譯 ; 清諒山大華嚴寺沙門澄觀撰述 ; 崇禎八年嵗在壬戌重陽日菩蕯戒弟子順德劉起相薰沐頓首敬題",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "御製序永樂十年六月初四日 ; 成泰四年壬辰嵗四月八日 • 1922",
+  "holding": "TN.061",
+  "sort": "Thư Viện Chùa / Entire Temple Library",
+  "url": "https://lib.nomfoundation.org/collection/2/volume/1262/",
+  "works": [
+   "[d59f2n83gxkx] 大方廣佛華嚴經|清高宗(清)御譯|卷1",
+   "[d59fykwox6o1] 大方廣佛華嚴經|釋般若(唐)譯|卷",
+   "[d59fyh3kxkw0] 大方廣佛華嚴經|釋佛駄跋陀羅(南朝宋)譯、佛陀跋陀羅(南朝宋)譯|卷",
+   "[d59f28n54e10] 大方廣佛華嚴經|實叉難陀(唐)譯|卷80",
+   "[d59f9nmwgzk1] 大方廣佛華嚴經|佛馱跋陀羅(晉)撰|卷",
+   "[d59f2pyx0yde] 大方廣佛華嚴經||卷2",
+   "[d59fyh3lk1z5] 大方廣佛華嚴經|釋佛陀羅(南朝宋)譯|卷"
+  ]
+ },
+ {
+  "book_id": "TNVNPF-008",
+  "n_vol": 4,
+  "title": "大方便佛報恩經",
+  "author": "失譯人名出後漢錄",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "皇朝維新二年中秋節題於南方寶峯之髙閣 • 1908",
+  "holding": "TN.020",
+  "sort": "Thư Viện Chùa / Entire Temple Library",
+  "url": "https://lib.nomfoundation.org/collection/2/volume/1279/",
+  "works": [
+   "[d59f2q1em2v6] 大方便佛報恩經|後漢總計與失譯錄(東漢)譯|卷7"
+  ]
+ },
+ {
+  "book_id": "TNVNPF-010",
+  "n_vol": 7,
+  "title": "妙法蓮華經",
+  "author": "終南山釋道宣述",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "",
+  "holding": "TN.100",
+  "sort": "Thư Viện Chùa / Entire Temple Library",
+  "url": "https://lib.nomfoundation.org/collection/2/volume/1284/",
+  "works": [
+   "[d59fyny480ld] 妙法蓮華經|吳坤修(清)輯、釋鳩摩羅什(後秦)譯|卷",
+   "[d59f27x41zb5] 妙法蓮華經|鳩摩羅什(後秦)譯|卷"
+  ]
+ },
+ {
+  "book_id": "TNVNPF-014",
+  "n_vol": 2,
+  "title": "賢愚因緣經",
+  "author": "元魏沙門慧覺在髙昌郡譯 ; 青蓼社匠主付事刊",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "",
+  "holding": "TN.053",
+  "sort": "Thư Viện Chùa / Entire Temple Library",
+  "url": "https://lib.nomfoundation.org/collection/2/volume/1293/",
+  "works": [
+   "[d59fyhlhimm9] 賢愚因緣經|釋慧覺(北魏)譯|卷",
+   "[d59f2pxzbcaq] 賢愚因緣經||卷13"
+  ]
+ },
+ {
+  "book_id": "TNVNPF-016",
+  "n_vol": 1,
+  "title": "金剛般若波羅密經",
+  "author": "姚秦三藏法師鳩摩羅什譯",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "皇朝同慶弍年嵗在丙午夏天穀日 • 1887",
+  "holding": "TN.028",
+  "sort": "Thư Viện Chùa / Entire Temple Library",
+  "url": "https://lib.nomfoundation.org/collection/2/volume/1296/",
+  "works": [
+   "[d59fyk5zti4h] 金剛般若波羅密經||卷",
+   "[d59fyj8wnx8g] 金剛般若波羅密經|佚名()撰|卷",
+   "[d59f9s1h0xz7] 金剛般若波羅密經|姚秦鳩摩羅什(晉)撰|卷",
+   "[d59fymcqfj0g] 金剛般若波羅密經|佚名()撰|卷"
+  ]
+ },
+ {
+  "book_id": "TNVNPF-019",
+  "n_vol": 1,
+  "title": "禮記大全",
+  "author": "温陵 二水 張瑞圖 編纂; 吳江 桐岡 沈正宗 校正 ; 豫章 東邑 王氏 仝梓",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "",
+  "holding": "TN.048",
+  "sort": "Thư Viện Chùa / Entire Temple Library",
+  "url": "https://lib.nomfoundation.org/collection/2/volume/1307/",
+  "works": [
+   "[d59f2nk9ezuo] 禮記大全|胡廣(明)奉敕撰|卷30"
+  ]
+ },
+ {
+  "book_id": "TNVNPF-030",
+  "n_vol": 2,
+  "title": "禪林寶訓合註",
+  "author": "東吳沙門淨善重集 ; 雲棲建師音義 ; 虎林淨慧居士張文嘉仲嘉父較定",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "嗣德十一年歲次戊午季秋望日 • 1858",
+  "holding": "TN.025",
+  "sort": "Thư Viện Chùa / Entire Temple Library",
+  "url": "https://lib.nomfoundation.org/collection/2/volume/1326/",
+  "works": [
+   "[d59fxwce8qv5] 禪林寶訓合註|釋行盛(清)撰|卷"
+  ]
+ },
+ {
+  "book_id": "TNVNPF-041",
+  "n_vol": 2,
+  "title": "妙法蓮華經",
+  "author": "終南山沙門道宣述 ; 姚秦三藏法師鳩摩羅什譯",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "",
+  "holding": "TN.113",
+  "sort": "Thư Viện Chùa / Entire Temple Library",
+  "url": "https://lib.nomfoundation.org/collection/2/volume/1351/",
+  "works": [
+   "[d59fyny480ld] 妙法蓮華經|吳坤修(清)輯、釋鳩摩羅什(後秦)譯|卷",
+   "[d59f27x41zb5] 妙法蓮華經|鳩摩羅什(後秦)譯|卷"
+  ]
+ },
+ {
+  "book_id": "TNVNPF-045",
+  "n_vol": 1,
+  "title": "法句譬喻經",
+  "author": "西晉沙門法炬共法立譯",
+  "edition": "Woodblock text/ Khắc in",
+  "period": "",
+  "holding": "TN.120",
+  "sort": "Thư Viện Chùa / Entire Temple Library",
+  "url": "https://lib.nomfoundation.org/collection/2/volume/1357/",
+  "works": [
+   "[d59f9s1m0qo2] 法句譬喻經|釋法炬(晉)撰|卷",
+   "[d59f2py7fif4] 法句譬喻經|後漢總計與失譯錄(東漢)譯|卷4"
+  ]
+ },
+ {
+  "book_id": "PNVNPF-017",
+  "n_vol": 2,
+  "title": "莊子雪",
+  "author": "信宜陸樹芝見廷甫集註.",
+  "edition": "Handwritten text/ Viết tay",
+  "period": "",
+  "holding": "普仁禪寺020",
+  "sort": "Philosophy (tử 子)",
+  "url": "https://lib.nomfoundation.org/collection/3/volume/1437/",
+  "works": [
+   "[d59fxzsrdi4g] 莊子雪|陸樹芝(清)撰|卷"
+  ]
+ }
+]

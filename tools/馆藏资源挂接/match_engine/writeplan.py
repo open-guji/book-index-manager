@@ -13,7 +13,7 @@ SITES = {
     'nlc': dict(id='nlc', name='中華古籍資源庫（國家圖書館）', short_name='國圖', prefix='nlc-', label='國圖藏本：{edition}'),
     # C3 台湾国图（2026-10-26）：url＝按書號的 GET 检索（详情页带会话令牌）；记录号＝書號
     'ncltw': dict(id='ncl-tw', name='古籍與特藏文獻資源（臺灣國家圖書館）', short_name='臺灣國圖', prefix='ncltw-',
-                  label='臺灣國家圖書館藏本：{edition}'),
+                  label='{holder}藏本：{edition}', default_holder='臺灣國家圖書館'),
     # C3 韩国 KORCIS（2026-10-26）：影像在韩国国立中央图书馆数字馆藏；url＝按国中自馆控制号（KOL…）的 GET 检索；记录号＝KORCIS rec_key
     'korcis': dict(id='nlk', name='韓國古文獻綜合目錄 KORCIS（韓國國立中央圖書館）', short_name='韓國國中', prefix='korcis-',
                    label='韓國國立中央圖書館數字化藏本：{edition}'),
@@ -79,6 +79,9 @@ def _pid(rec):
     return m.group(1) if m else ''
 
 
+NCLTW_HOLDER = {'國圖代管原平圖古籍微片': '原北平圖書館（臺灣國家圖書館代管）'}
+
+
 def make_item(source, rec, types=('image',)):
     """一条确定记录 → (resource 项, 组键, 组 label)。无影像或缺记录号返回 None。"""
     s = SITES[source]
@@ -96,6 +99,9 @@ def make_item(source, rec, types=('image',)):
         hid = (rec.get('extra') or {}).get('holding_id') or ''
         if hid:
             md['call_number'] = hid
+        owner = (rec.get('extra') or {}).get('owner') or '國家圖書館'
+        if owner != '國家圖書館':     # 站方含合作馆影像（柏克萊等），label 与 holder 写实际藏馆
+            md['holder'] = NCLTW_HOLDER.get(owner, owner)
         url = rec['url']
     elif source == 'korcis':
         rid = rec['source_record_id']
@@ -177,7 +183,7 @@ def make_item(source, rec, types=('image',)):
     ex = rec.get('extra') or {}
     if (source == 'waseda' or source in JPC1) and edition:
         edition = '：' + edition
-    label = s['label'].format(edition=ex.get('edition_label') or edition, holder=md.get('holder', ''),
+    label = s['label'].format(edition=ex.get('edition_label') or edition, holder=md.get('holder') or s.get('default_holder', ''),
                               req=unicodedata.normalize('NFKC', ex.get('request_no', '')).replace('－', '-'), extent=ex.get('extent', ''))
     return item, grp, label
 
