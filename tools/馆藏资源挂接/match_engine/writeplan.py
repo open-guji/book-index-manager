@@ -14,6 +14,9 @@ SITES = {
     # C3 台湾国图（2026-10-26）：url＝按書號的 GET 检索（详情页带会话令牌）；记录号＝書號
     'ncltw': dict(id='ncl-tw', name='古籍與特藏文獻資源（臺灣國家圖書館）', short_name='臺灣國圖', prefix='ncltw-',
                   label='臺灣國家圖書館藏本：{edition}'),
+    # C3 韩国 KORCIS（2026-10-26）：影像在韩国国立中央图书馆数字馆藏；url＝按国中自馆控制号（KOL…）的 GET 检索；记录号＝KORCIS rec_key
+    'korcis': dict(id='nlk', name='韓國古文獻綜合目錄 KORCIS（韓國國立中央圖書館）', short_name='韓國國中', prefix='korcis-',
+                   label='韓國國立中央圖書館數字化藏本：{edition}'),
     'kokusho': dict(id='kokusho', name='國書データベース（國文學研究資料館）', short_name='國書', prefix='kokusho-',
                     label='國書·{holder}藏{edition}'),
     'naikaku': dict(id='nat-archives-jp', name='國立公文書館デジタルアーカイブ（內閣文庫）', short_name='內閣文庫', prefix='naikaku-',
@@ -93,6 +96,17 @@ def make_item(source, rec, types=('image',)):
         hid = (rec.get('extra') or {}).get('holding_id') or ''
         if hid:
             md['call_number'] = hid
+        url = rec['url']
+    elif source == 'korcis':
+        rid = rec['source_record_id']
+        ex = rec.get('extra') or {}
+        md = dict(korcis_rec_key=rid, nlk_control_no=ex.get('kol', ''))
+        if ex.get('library'):
+            md['holder'] = ex['library']
+        if ex.get('call_number'):
+            md['call_number'] = ex['call_number']
+        if ex.get('part'):
+            md['part'] = ex['part']
         url = rec['url']
     elif source == 'kokusho':
         rid = rec['source_record_id']
