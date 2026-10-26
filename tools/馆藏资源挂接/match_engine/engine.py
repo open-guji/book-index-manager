@@ -50,8 +50,12 @@ def run(source, works_root, data_root, out, overview_root=None, limit=None, keys
         pol.profiles[source] = dataclasses.replace(pol.profiles[source], alias=True)
     prof = pol.profile(source)
     n_names, n_map = era.load_keys(keys, mapping or (os.path.join(overview_root, '项目进展', '朝代年号录入', '政权映射.tsv') if overview_root else None))
-    adapter = importlib.import_module('adapters.' + source)
-    recs = adapter.load(data_root)
+    if source in tier.EURO:
+        from adapters import euro
+        recs = euro.load(data_root, source)
+    else:
+        adapter = importlib.import_module('adapters.' + source)
+        recs = adapter.load(data_root)
     if limit:
         recs = recs[:limit]
     wi = workindex.build_from_root(works_root, jp=prof.jp, with_entities=prof.alias)
@@ -127,7 +131,7 @@ def run(source, works_root, data_root, out, overview_root=None, limit=None, keys
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    ap.add_argument('--source', required=True, choices=['nlc', 'kokusho', 'ndl', 'naikaku', 'waseda'])
+    ap.add_argument('--source', required=True, choices=['nlc', 'kokusho', 'ndl', 'naikaku', 'waseda', 'bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb'])
     ap.add_argument('--works-root', default=roots.book_index(), help='正式库根；缺省 $BOOK_INDEX 或 ../book-index')
     ap.add_argument('--data-root', default=roots.library_data(), help='library_data 根；缺省 $BOOK_INDEX_JSON/library_data 或 ../book_index_json/library_data')
     ap.add_argument('--out', required=True)
