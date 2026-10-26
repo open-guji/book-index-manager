@@ -7,6 +7,15 @@
 只有 404/410（或 API 返回 missing）且隔开后二次确认才记 dead；无凭据、无登录、不下载影像。"""
 import datetime, http.cookiejar, re, os, sys, json, time, random, argparse, threading, collections, urllib.parse, urllib.request, urllib.error, socket, ssl
 
+def _relax_x509_strict():
+    """Python 3.13 起默认开 VERIFY_X509_STRICT，台湾国图（rbook／taiwanebook）证书缺 SKI 会被拒；去掉该标志，链与主机名照常校验。"""
+    ctx = ssl.create_default_context()
+    if hasattr(ssl, 'VERIFY_X509_STRICT'): ctx.verify_flags &= ~ssl.VERIFY_X509_STRICT
+    urllib.request.install_opener(urllib.request.build_opener(urllib.request.HTTPSHandler(context=ctx)))
+    return ctx
+
+
+SSL_CTX = _relax_x509_strict()
 UA = 'open-guji-link-audit/1.0 (read-only link check; contact: ai-team R4 Reid)'
 HARD_MIN = 2.0
 CRASHED = []
@@ -142,7 +151,7 @@ def judge_npm(code, final, body):
 def judge_ndl(url, lim):
     m = re.search(r'/pid/(\d+)', url)
     if not m: return None
-    code, _, body = fetch_body('https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/' + m.group(1), urllib.request.build_opener(), lim)
+    code, _, body = fetch_body('https://dl.ndl.go.jp/api/item/search/info:ndljp/pid/' + m.group(1), urllib.request.build_opener(urllib.request.HTTPSHandler(context=SSL_CTX)), lim)
     if code is None: return 'error', body
     return classify_status(code), 'ndl API HTTP %d' % code
 
@@ -156,7 +165,7 @@ def judge_kokusho(url, lim):
     """Remy 找到的接口（2026-10-15 我复测）：真 bid → 200 JSON（含 bid），不存在 → 404 HTML。"""
     api = kokusho_api(url)
     if not api: return 'error', 'url 无 /biblio/<数字>'
-    code, _, body = fetch_body(api, urllib.request.build_opener(), lim)
+    code, _, body = fetch_body(api, urllib.request.build_opener(urllib.request.HTTPSHandler(context=SSL_CTX)), lim)
     if code is None: return 'error', body
     if code == 200: return ('ok', 'kokusho API 200') if body.lstrip().startswith('{') else ('error', 'API 200 但非 JSON')
     return classify_status(code), 'kokusho API HTTP %d' % code
@@ -286,7 +295,7 @@ def _probe_host(host, urls, interval, done, outf, outlock, stats_lim, backoff, s
     consecutive_429 = 0
     opener = None
     if host == 'rarebooks-maps.npm.edu.tw':        # 必须带会话 cookie，否则任何 search url 都跳首页
-        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+        opener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=SSL_CTX), urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
         fetch_body('https://rarebooks-maps.npm.edu.tw/index.php', opener, lim)
     if host in UNJUDGED_HOSTS:
         for u in todo: emit(u, 'unjudged', None, UNJUDGED_HOSTS[host])
@@ -296,7 +305,7 @@ def _probe_host(host, urls, interval, done, outf, outlock, stats_lim, backoff, s
         bfetch, bclose = browser_fetch_factory(lim); CLOSERS.append(bclose)
     def judge(u):
         if bfetch: c, f, b = bfetch(u); return judge_shidianguji(c, f, b)
-        if host == 'read.nlc.cn': c, f, b = fetch_body(u, urllib.request.build_opener(), lim); return judge_nlc(c, f, b)
+        if host == 'read.nlc.cn': c, f, b = fetch_body(u, urllib.request.build_opener(urllib.request.HTTPSHandler(context=SSL_CTX)), lim); return judge_nlc(c, f, b)
         if host == 'rarebooks-maps.npm.edu.tw':
             c, f, b = fetch_body(u, opener, lim)
             v, n = judge_npm(c, f, b)
@@ -305,7 +314,7 @@ def _probe_host(host, urls, interval, done, outf, outlock, stats_lim, backoff, s
             return v, n
         if host == 'dl.ndl.go.jp': return judge_ndl(u, lim)
         if host == 'kokusho.nijl.ac.jp': return judge_kokusho(u, lim)
-        if host in STATUS_HOSTS: c, f, b = fetch_body(u, urllib.request.build_opener(), lim); return judge_status(c, f, b)
+        if host in STATUS_HOSTS: c, f, b = fetch_body(u, urllib.request.build_opener(urllib.request.HTTPSHandler(context=SSL_CTX)), lim); return judge_status(c, f, b)
         return None
     for u in todo:
         j = judge(u)
@@ -339,9 +348,9 @@ def confirm_gone(done, interval, outf, outlock, gap=600, sleep=time.sleep):
         h = r['host']; lim = lims.setdefault(h, HostLimiter(interval))
         # 二次确认一律直查页面（API 不解析简繁变体重定向，会把 301 的页面误判 missing）
         h = r['host']
-        if h == 'read.nlc.cn': cc, ff, bb = fetch_body(r['url'], urllib.request.build_opener(), lim); c, _ = judge_nlc(cc, ff, bb)
+        if h == 'read.nlc.cn': cc, ff, bb = fetch_body(r['url'], urllib.request.build_opener(urllib.request.HTTPSHandler(context=SSL_CTX)), lim); c, _ = judge_nlc(cc, ff, bb)
         elif h == 'rarebooks-maps.npm.edu.tw':
-            op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar())); fetch_body('https://rarebooks-maps.npm.edu.tw/index.php', op, lim)
+            op = urllib.request.build_opener(urllib.request.HTTPSHandler(context=SSL_CTX), urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar())); fetch_body('https://rarebooks-maps.npm.edu.tw/index.php', op, lim)
             cc, ff, bb = fetch_body(r['url'], op, lim); c, _ = judge_npm(cc, ff, bb)
         elif h == 'dl.ndl.go.jp': c, _ = judge_ndl(r['url'], lim) or ('error', '')
         elif h == 'www.shidianguji.com':
