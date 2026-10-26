@@ -67,6 +67,7 @@ class Policy:
     juan_gap_ratio: float = 0.5
     profiles: dict = field(default_factory=lambda: {
         'nlc': Profile(jp=False, style='raw', coll=COLL_BASE, version_era=True, gazetteer=True, multi_mode='rest'),
+        'ncltw': Profile(jp=False, style='raw', coll=COLL_BASE, version_era=True, gazetteer=True, multi_mode='rest'),   # C3 台湾国图，著录体例同国图
         'kokusho': Profile(jp=True, style='parsed', coll=COLL_EXT, alias=True, alt_titles=True, shi_strip=True, multi_mode='segs'),
         'ndl': Profile(jp=True, style='parsed', coll=COLL_EXT, alias=True, shi_strip=True, wildcard=True, multi_mode='segs'),
         'naikaku': Profile(jp=True, style='parsed', coll=COLL_EXT, alias=True, shi_strip=True, multi_mode='segs'),

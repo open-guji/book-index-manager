@@ -11,6 +11,9 @@ MAX_ITEMS = 3
 
 SITES = {
     'nlc': dict(id='nlc', name='中華古籍資源庫（國家圖書館）', short_name='國圖', prefix='nlc-', label='國圖藏本：{edition}'),
+    # C3 台湾国图（2026-10-26）：url＝按書號的 GET 检索（详情页带会话令牌）；记录号＝書號
+    'ncltw': dict(id='ncl-tw', name='古籍與特藏文獻資源（臺灣國家圖書館）', short_name='臺灣國圖', prefix='ncltw-',
+                  label='臺灣國家圖書館藏本：{edition}'),
     'kokusho': dict(id='kokusho', name='國書データベース（國文學研究資料館）', short_name='國書', prefix='kokusho-',
                     label='國書·{holder}藏{edition}'),
     'naikaku': dict(id='nat-archives-jp', name='國立公文書館デジタルアーカイブ（內閣文庫）', short_name='內閣文庫', prefix='naikaku-',
@@ -83,6 +86,13 @@ def make_item(source, rec, types=('image',)):
     if source == 'nlc':
         rid = rec['source_record_id']
         md = dict(nlc_fid=rid)
+        url = rec['url']
+    elif source == 'ncltw':
+        rid = rec['source_record_id']
+        md = dict(ncltw_bookno=rid)
+        hid = (rec.get('extra') or {}).get('holding_id') or ''
+        if hid:
+            md['call_number'] = hid
         url = rec['url']
     elif source == 'kokusho':
         rid = rec['source_record_id']

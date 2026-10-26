@@ -132,7 +132,7 @@ def run(source, works_root, data_root, out, overview_root=None, limit=None, keys
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    ap.add_argument('--source', required=True, choices=['nlc', 'kokusho', 'ndl', 'naikaku', 'waseda', 'bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb'] + list(JPC1))
+    ap.add_argument('--source', required=True, choices=['nlc', 'ncltw', 'kokusho', 'ndl', 'naikaku', 'waseda', 'bnf', 'bsb', 'sbb', 'loc', 'cudl', 'onb'] + list(JPC1))
     ap.add_argument('--works-root', default=roots.book_index(), help='正式库根；缺省 $BOOK_INDEX 或 ../book-index')
     ap.add_argument('--data-root', default=roots.library_data(), help='library_data 根；缺省 $BOOK_INDEX_JSON/library_data 或 ../book_index_json/library_data')
     ap.add_argument('--out', required=True)
