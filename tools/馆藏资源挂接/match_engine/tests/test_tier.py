@@ -457,3 +457,13 @@ def test_human_verdicts(monkeypatch):
     monkeypatch.setattr(tier, 'HUMAN', {('waseda', 'zz1'): 'reject'})
     r = judge(rec, wi, POL)
     assert r.tier == '存疑' and 'HUMAN_REJECT' in r.codes
+
+
+def test_split_title_unjuan_marks():
+    """A7：国图「记政录 不分卷」「甫田集 □□卷」——单空格或粘连的不分卷／缺数卷注要切到 rest，否则题名键带「不分卷」永远对不上。"""
+    from titleparse import split_title
+    assert split_title('记政录 不分卷')[:2] == ('记政录', '不分卷')
+    assert split_title('督抚疏稿不分卷')[:2] == ('督抚疏稿', '不分卷')
+    assert split_title('文太史甫田集 □□卷')[:2] == ('文太史甫田集', '□□卷')
+    assert split_title('元豐類稿五十卷附錄一卷')[:2] == ('元豐類稿', '五十卷附錄一卷')
+    assert split_title('分卷')[0] == '分卷'
