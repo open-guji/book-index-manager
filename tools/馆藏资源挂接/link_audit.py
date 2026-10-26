@@ -353,6 +353,9 @@ def confirm_gone(done, interval, outf, outlock, gap=600, sleep=time.sleep):
             op = urllib.request.build_opener(urllib.request.HTTPSHandler(context=SSL_CTX), urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar())); fetch_body('https://rarebooks-maps.npm.edu.tw/index.php', op, lim)
             cc, ff, bb = fetch_body(r['url'], op, lim); c, _ = judge_npm(cc, ff, bb)
         elif h == 'dl.ndl.go.jp': c, _ = judge_ndl(r['url'], lim) or ('error', '')
+        elif 'redlink=1' in r['url'] or 'action=edit' in r['url']:
+            # 编辑页对不存在的页面也回 200，直查页面会把红链误判 ok；红链只能再问一次 API
+            v, _ = wiki_batch(h, [r['url']], lim)[r['url']]; c = {'missing': 'gone', 'ok': 'ok', 'blocked': 'blocked'}.get(v, 'error')
         elif h == 'www.shidianguji.com':
             if 'sdg' not in lims: lims['sdg'] = browser_fetch_factory(lim)
             cc, ff, bb = lims['sdg'][0](r['url']); c, _ = judge_shidianguji(cc, ff, bb)
