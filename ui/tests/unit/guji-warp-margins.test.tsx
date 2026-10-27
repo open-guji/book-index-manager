@@ -6,7 +6,7 @@
 import React from 'react';
 import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
-import { GujiWarpCanvas, type PageWarpData } from '../../src/components/Reader/GujiWarpCanvas';
+import { GujiWarpCanvas, fitToImageAspect, type PageWarpData } from '../../src/components/Reader/GujiWarpCanvas';
 
 const page = (W: number, H: number, box: [number, number, number, number]): PageWarpData => ({
     page_id: 'p:1', title: '第1葉', image_size: [W, H], total_warped_w: W,
@@ -46,5 +46,23 @@ describe('GujiWarpCanvas · 整图页保留空白', () => {
         const t = draw(loose, false);
         expect(t.size).toBe('460x660');
         expect([t.x, t.y]).toEqual([30, 30]);
+    });
+});
+
+describe('fitToImageAspect · 画布不拉伸真图', () => {
+    const p = page(1000, 1400, [100, 140, 900, 1260]);
+    it('真图比例与数据一致（或还没加载）：原样返回', () => {
+        expect(fitToImageAspect(p, null)).toBe(p);
+        expect(fitToImageAspect(p, { w: 500, h: 700 })).toBe(p);
+        expect(fitToImageAspect(p, { w: 1000, h: 1405 })).toBe(p);
+    });
+    it('比例不一致：宽不变、高按真图，字框 y 按比例缩放', () => {
+        const f = fitToImageAspect(p, { w: 1000, h: 2000 });
+        expect(f.image_size).toEqual([1000, 2000]);
+        expect(f.columns[0].chars[0].bbox_col).toEqual([100, 200, 900, 1800]);
+    });
+    it('有透视 strip 的页不动', () => {
+        const w = { ...p, columns: [{ ...p.columns[0], strips: [{ srcQuad: [[0, 0], [1, 0], [1, 1], [0, 1]], dstRect: [0, 0, 1, 1] }] }] } as unknown as PageWarpData;
+        expect(fitToImageAspect(w, { w: 1000, h: 2000 })).toBe(w);
     });
 });

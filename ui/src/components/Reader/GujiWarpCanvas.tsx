@@ -168,9 +168,36 @@ export function loadImage(url: string): Promise<HTMLImageElement | null> {
   return p;
 }
 
+/**
+ * 整图页按实际加载的图的长宽比取尺寸：数据里的 image_size 与真图比例不一致时（换图源、取到别档图），
+ * 以真图为准，宽不变、高按真图比例；逐字框按相对位置（y 比例）随之缩放。画布永远不拉伸、不压缩书影。
+ * 差在 1% 以内视为一致，不动。有透视 strip 的页不走这里。
+ */
+export function fitToImageAspect(pageData: PageWarpData, real: { w: number; h: number } | null): PageWarpData {
+  if (!real || !(real.w > 0) || !(real.h > 0)) return pageData;
+  const [W, H] = pageData.image_size || [0, 0];
+  if (!(W > 0) || !(H > 0)) return pageData;
+  if (pageData.columns.some((c) => (c.strips?.length ?? 0) > 0)) return pageData;
+  const H2 = (W * real.h) / real.w;
+  if (Math.abs(H2 / H - 1) <= 0.01) return pageData;
+  const k = H2 / H;
+  return {
+    ...pageData,
+    image_size: [W, H2],
+    columns: pageData.columns.map((c) => ({
+      ...c,
+      warped_h: c.warped_h * k,
+      chars: c.chars.map((ch) => ({ ...ch, bbox_col: [ch.bbox_col[0], ch.bbox_col[1] * k, ch.bbox_col[2], ch.bbox_col[3] * k] as [number, number, number, number] })),
+    })),
+    ...(pageData.figBlocks
+      ? { figBlocks: pageData.figBlocks.map((b) => ({ ...b, box: [b.box[0], b.box[1] * k, b.box[2], b.box[3] * k] as [number, number, number, number] })) }
+      : {}),
+  };
+}
+
 export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   imageUrl,
-  pageData,
+  pageData: pageDataProp,
   selectedCharIds,
   hoveredCharId,
   preserveMargins = false,
@@ -180,6 +207,12 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   onFigBlockClick,
   renderScale = 1,
 }) => {
+  // 真图的长宽（按地址记，换页后旧值作废）：整图页以它为准，见 fitToImageAspect
+  const [realSize, setRealSize] = useState<{ url: string; w: number; h: number } | null>(null);
+  const pageData = useMemo(
+    () => fitToImageAspect(pageDataProp, realSize && realSize.url === imageUrl ? realSize : null),
+    [pageDataProp, realSize, imageUrl],
+  );
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   // 画布外框的显示宽度：null＝还没量到；0＝被隐藏。没有 ResizeObserver 的环境（jsdom）按「可见、满尺寸」走旧行为
@@ -530,6 +563,7 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
       if (!active || !img) return;
       mainImgRef.current = img;
       loadedMainUrl.current = imageUrl;
+      setRealSize((prev) => (prev && prev.url === imageUrl && prev.w === img.naturalWidth && prev.h === img.naturalHeight ? prev : { url: imageUrl, w: img.naturalWidth, h: img.naturalHeight }));
       const r = rendererRef.current;
       if (r) {
         r.deleteTexture(mainTextureRef.current);
