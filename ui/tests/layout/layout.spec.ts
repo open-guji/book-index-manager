@@ -155,6 +155,8 @@ test.describe('书影画布：去空白', () => {
         expect(trimmed.trim, '这一页应能算出裁切区（字框没占满整图）').not.toBeNull();
         // 保留空白：整幅原图的宽
         expect(kept.w).toBe(kept.image.w);
+        // 高度同样是原图高（不被版心高度的下限撑高，否则整图纵向拉伸、字框对不上）
+        expect(kept.h).toBe(kept.image.h);
         // 去空白：画布就是裁切区，且两个方向都比保留空白小
         // 裁切区是小数；<canvas width> 属性按整数解析，截断而不是四舍五入
         // 预期裁切区在这里独立算（字框并集＋短边 3% 的边），不借用被测的 fullImageTrimRect——否则它错了测试也跟着错

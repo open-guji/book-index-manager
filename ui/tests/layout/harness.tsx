@@ -72,11 +72,42 @@ function Canvas() {
     );
 }
 
+/**
+ * 新图源（殿本 qiefen2）：1260×1920、本身已无空白的整图页。图上画了与字框同位置的黑框，字框全部选中（高亮）。
+ * 坐标对得上＝高亮框正好罩住图上的黑框；?margins=1|0 对比保留／去空白。
+ */
+function TightCanvas() {
+    const W = 1260, H = 1920;
+    const boxes: [number, number, number, number][] = [];
+    for (let c = 0; c < 8; c++) for (let r = 0; r < 12; r++) boxes.push([40 + c * 150, 40 + r * 150, 40 + c * 150 + 110, 40 + r * 150 + 110]);
+    const pageData: PageWarpData = {
+        page_id: 'p:1', title: '第1葉', image_size: [W, H], total_warped_w: W,
+        columns: [{ col: 1, warped_w: W, warped_h: H, offset_x: 0, strips: [], chars: boxes.map((b, i) => ({ id: `1:1:${i}`, char: '字', slot: i, pos: i, bbox_col: b })) }],
+    };
+    const [url, setUrl] = useState('');
+    useEffect(() => {
+        const c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        const g = c.getContext('2d')!;
+        g.fillStyle = '#e8dcc0'; g.fillRect(0, 0, W, H);
+        g.strokeStyle = '#222'; g.lineWidth = 6;
+        for (const b of boxes) g.strokeRect(b[0], b[1], b[2] - b[0], b[3] - b[1]);
+        setUrl(c.toDataURL('image/png'));
+    }, []);
+    if (!url) return null;
+    return (
+        <div id="host" style={{ width: 500, height: 760 }}>
+            <GujiWarpCanvas imageUrl={url} pageData={pageData} selectedCharIds={new Set(boxes.map((_, i) => `1:1:${i}`))} preserveMargins={q.get('margins') === '1'} />
+        </div>
+    );
+}
+
 const App = () => (
     <LocaleProvider locale="zh-Hant">
         <style>{READER_CSS}</style>
         {scenario === 'text' && <Text />}
         {scenario === 'canvas' && <Canvas />}
+        {scenario === 'canvas-tight' && <TightCanvas />}
     </LocaleProvider>
 );
 

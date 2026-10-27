@@ -217,9 +217,12 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   const totalWarpedW = pageData.total_warped_w;
   const banxin = pageData.banxin;
 
+  // 整幅原图页（没有透视 strip）：画布与字框都在原图像素坐标里，不走版心拼接
+  const isFullImage = useMemo(() => !pageData.columns.some((c) => (c.strips?.length ?? 0) > 0), [pageData]);
+
   // 边距计算（支持去空白模式 vs 保留空白模式）
   const margins = useMemo(() => {
-    if (!preserveMargins) {
+    if (!preserveMargins || isFullImage) {
       return { top: 0, bottom: 0, left: 0, right: 0 };
     }
     const [imgW, imgH] = pageData.image_size || [2386, 3082];
@@ -267,10 +270,17 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
       imgW,
       imgH,
     };
-  }, [pageData, preserveMargins]);
+  }, [pageData, preserveMargins, isFullImage]);
 
-  // 整幅原图页（无透视 strip）去空白：画布只取版心那一块（保留空白时整图）
-  const crop = useMemo(() => (preserveMargins ? null : fullImageTrimRect(pageData)), [pageData, preserveMargins]);
+  // 整幅原图页的取景框（原图像素）：去空白＝字框外接矩形，保留空白＝整图。
+  // 画布尺寸、绘制源区、字框与插图框的平移都由它一处决定，裁不裁都是同一套「原图像素 − 取景框原点」的变换，
+  // 不再拿透视页的版心尺寸（maxWarpedH 的 2440 下限）去撑整图页：新图源本身没有空白，那样会把整图纵向拉伸、字框对不上
+  const crop = useMemo<{ x: number; y: number; w: number; h: number } | null>(() => {
+    if (!isFullImage) return null;
+    const [W, H] = pageData.image_size || [0, 0];
+    if (!(W > 0) || !(H > 0)) return null;
+    return (!preserveMargins && fullImageTrimRect(pageData)) || { x: 0, y: 0, w: W, h: H };
+  }, [pageData, preserveMargins, isFullImage]);
 
   const contentW = totalWarpedW + (banxin ? banxin.total_w : 0);
   const totalDisplayW = crop ? crop.w : contentW + margins.left + margins.right;

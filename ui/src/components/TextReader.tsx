@@ -88,6 +88,8 @@ export interface TextReaderProps {
     resolveImages?: ReaderImageResolver;
     renderImageOverlay?: ReaderImageOverlay;
     imagePanel?: PanelState;
+    /** 这部书的书影图源已裁去空白（如殿本 qiefen2）：不显示「书影保留空白」，书影一律按整图显示 */
+    facsimileTrimmed?: boolean;
     allowVertical?: boolean;
     /** 「报告错字」：回传书名、条目 id、当前章、位置锚点与选中文字，宿主据此打开现有反馈入口（不传则不显示） */
     onReportError?: (ctx: ReaderReportContext) => void;
@@ -246,7 +248,7 @@ export const TextReader: React.FC<TextReaderProps> = props => {
 const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof useReaderPrefs> }> = ({
     prefsState,
     id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate, anchor: anchorProp,
-    title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical, onReportError, revisedAt, backHref, backLabel,
+    title, subtitle, resolveImages, renderImageOverlay, imagePanel, facsimileTrimmed, allowVertical, onReportError, revisedAt, backHref, backLabel,
     resolveWarpData, warpData: warpDataProp, resolveEntities, onEntityNavigate,
     className, style,
 }) => {
@@ -460,7 +462,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     const [hover] = useState(createHoverStore);
     const [showPunctuation, setShowPunctuation] = useState<boolean>(true);
     // 书影保留空白：走阅读偏好（持久化；设置面板里的勾选框与书影区的分段按钮是同一个偏好）
-    const preserveMargins = storedPrefs.preserveMargins;
+    // 图源已无空白：没有「去空白」可言，整图显示（与偏好无关，偏好值不动）
+    const preserveMargins = facsimileTrimmed ? true : storedPrefs.preserveMargins;
     const setPreserveMargins = useCallback((v: boolean) => setPrefs({ preserveMargins: v }), [setPrefs]);
     // 书影缩放：倍数（显示百分比、放大后换原图档）；翻页按钮带正文滚动用的触发器
     const zoomRef = useRef<ZoomPanHandle>(null);
@@ -832,6 +835,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             renderImageOverlay={renderImageOverlay}
             imagePanel={warpData ? 'open' : imagePanel}
             isWarpMode={!!warpData}
+            showPreserveMargins={!facsimileTrimmed}
             customImagePanel={warpData && activePageData ? (
                 <div
                     ref={facsimileRef}
