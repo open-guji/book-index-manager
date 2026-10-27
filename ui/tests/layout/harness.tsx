@@ -55,9 +55,10 @@ function Canvas() {
     const [url, setUrl] = useState('');
     useEffect(() => {
         const c = document.createElement('canvas');
-        c.width = 64; c.height = 64;
+        // 图的长宽比要与页数据一致（画布以真图比例为准，见 fitToImageAspect）；内容是纯色，缩到 1/4 省内存
+        c.width = Math.max(1, Math.round(info.width / 4)); c.height = Math.max(1, Math.round(info.height / 4));
         const g = c.getContext('2d')!;
-        g.fillStyle = '#e8dcc0'; g.fillRect(0, 0, 64, 64);
+        g.fillStyle = '#e8dcc0'; g.fillRect(0, 0, c.width, c.height);
         setUrl(c.toDataURL('image/png'));
     }, []);
     const w = window as unknown as Record<string, unknown>;
