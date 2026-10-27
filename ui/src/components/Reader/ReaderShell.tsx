@@ -129,6 +129,8 @@ export interface ReaderShellProps {
     settingsLayout?: React.ReactNode;
     /** 是否处于 interactive_warp 模式 */
     isWarpMode?: boolean;
+    /** 「书影保留空白」勾选框；图源本身已裁掉空白的书传 false，不显示（默认显示） */
+    showPreserveMargins?: boolean;
 
     children: React.ReactNode;
     className?: string;
@@ -339,7 +341,7 @@ export function ReaderShell({
     contentLoading = false,
     pagerUnit: pagerUnitProp,
     versions, currentVersionKey, onVersionChange, versionSource = true, keepChapterOnVersionChange = false,
-    customImagePanel, toolbarExtra, settingsAnnotate, settingsLayout, isWarpMode,
+    customImagePanel, toolbarExtra, settingsAnnotate, settingsLayout, isWarpMode, showPreserveMargins = true,
     children, className, style,
 }: ReaderShellProps) {
     const { t, convert } = useI18n();
@@ -564,10 +566,12 @@ export function ReaderShell({
                     <input type="checkbox" checked={prefs.pageBreaks} onChange={e => onPrefsChange({ pageBreaks: e.target.checked })} />
                     <span>{t('reader.pageBreaks')}</span>
                 </label>
-                <label className="bim-rd-t bim-rd-chk bim-rd-sp-tg">
-                    <input type="checkbox" checked={prefs.preserveMargins} onChange={e => onPrefsChange({ preserveMargins: e.target.checked })} />
-                    <span>{t('reader.preserveMargins')}</span>
-                </label>
+                {showPreserveMargins && (
+                    <label className="bim-rd-t bim-rd-chk bim-rd-sp-tg">
+                        <input type="checkbox" checked={prefs.preserveMargins} onChange={e => onPrefsChange({ preserveMargins: e.target.checked })} />
+                        <span>{t('reader.preserveMargins')}</span>
+                    </label>
+                )}
                 {settingsLayout}
             </section>
         </div>

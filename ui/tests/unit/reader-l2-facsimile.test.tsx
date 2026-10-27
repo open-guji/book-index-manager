@@ -68,7 +68,7 @@ const wp = () => document.querySelector('[data-warp-page]')!.getAttribute('data-
 const input = () => screen.getByTestId('facsimile-page-input') as HTMLInputElement;
 const stub = () => screen.getByTestId('canvas-stub');
 
-async function setup() {
+async function setup(extra: Partial<React.ComponentProps<typeof TextReader>> = {}) {
     const images = [1, 2, 3, 4, 5, 6].map(n => ({ pageNo: n, seq: String(n).padStart(4, '0'), url: `u${n}`, hiresUrl: `h${n}`, width: 1000, height: 1400 }));
     const view = render(
         <LocaleProvider>
@@ -79,6 +79,7 @@ async function setup() {
                 chapter="003"
                 resolveWarpData={async () => ({ page_id: '', title: '', image_size: [0, 0], total_warped_w: 0, columns: [], pages: adaptCharCord(char, cord), punctuations: [] }) as never}
                 resolveImages={async () => images as never}
+                {...extra}
             />
         </LocaleProvider>,
     );
@@ -214,6 +215,15 @@ describe('L2 · 保留空白／去空白', () => {
         expect(box().checked).toBe(false);
         fireEvent.click(box());
         expect(stub().getAttribute('data-preserve')).toBe('true');
+    });
+
+    it('图源已裁去空白（facsimileTrimmed）：不显示勾选框，书影画布一律整图，已存的偏好不被改写', async () => {
+        localStorage.setItem('bim-reader-prefs', JSON.stringify({ v: 2, pageBreaks: true, preserveMargins: false }));
+        await setup({ facsimileTrimmed: true });
+        expect(stub().getAttribute('data-preserve')).toBe('true');
+        openSettings();
+        expect(screen.queryByLabelText(/書影保留空白|书影保留空白/)).toBeNull();
+        expect(JSON.parse(localStorage.getItem('bim-reader-prefs')!).preserveMargins).toBe(false);
     });
 
     it('选择写进阅读偏好并在刷新（重新挂载）后保持', async () => {
