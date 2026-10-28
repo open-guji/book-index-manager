@@ -59,8 +59,39 @@ a.bim-et:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: 2p
 .bim-et-card-s { display: block; color: ${bim('hint-fg')}; }
 .bim-et-card-a { display: block; margin-top: 6px; color: ${bim('accent')}; text-decoration: none; }
 .bim-et-card-a:hover, .bim-et-card-a:focus-visible { text-decoration: underline; }
+/* 触屏：点专名／书名打开的卡是贴底面板（手机无悬停，浮在词旁的小卡遮字、链接难点）。
+   fixed 定位：阅读页分页容器已对含卡的页关掉 content-visibility，不会裁掉它 */
+.bim-et-card[data-sheet] {
+  position: fixed; z-index: 200; top: auto; left: 8px; right: 8px; width: auto; max-width: none;
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  max-height: min(50vh, 420px); overflow-y: auto; overscroll-behavior: contain;
+  padding: 14px 16px 6px; font-size: 15px; border-radius: 12px;
+  box-shadow: ${bim('shadow-summary')};
+}
+.bim-et-card[data-sheet] .bim-et-card-k { padding-right: 44px; }
+.bim-et-card[data-sheet] .bim-et-card-t { font-size: 17px; }
+.bim-et-card[data-sheet] .bim-et-card-d { -webkit-line-clamp: 5; }
+.bim-et-card[data-sheet] .bim-et-card-a {
+  box-sizing: border-box; min-height: 44px; margin: 10px 0 8px; padding: 10px 12px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid ${bim('accent')}; border-radius: 8px; font-size: 15px;
+}
+/* 合称面板：每条目一行，「查看详情」缩成标题行右端的按钮，两三条不必滚动 */
+.bim-et-card-multi[data-sheet] .bim-et-row { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 10px; padding: 10px 0 8px; }
+.bim-et-card-multi[data-sheet] .bim-et-row-t { grid-column: 1; grid-row: 1; }
+.bim-et-card-multi[data-sheet] .bim-et-row > .bim-et-card-a { grid-column: 2; grid-row: 1; margin: 0; padding: 6px 12px; min-height: 40px; white-space: nowrap; }
+.bim-et-card-multi[data-sheet] .bim-et-row > :not(.bim-et-row-t):not(.bim-et-card-a) { grid-column: 1 / -1; }
+.bim-et-card-multi[data-sheet] .bim-et-card-k + .bim-et-row { margin-top: 6px; }
+.bim-et-card.bim-et-dense[data-sheet] .bim-et-card-a { margin: 0 0 0 auto; padding: 6px 14px; min-height: 40px; }
+.bim-et-card-x {
+  position: absolute; top: 2px; right: 2px; width: 44px; height: 44px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: 0; color: ${bim('label-fg')}; font-size: 26px; line-height: 1; cursor: pointer;
+}
 @media (prefers-reduced-motion: no-preference) {
   .bim-et-card { animation: bim-et-in 120ms ease-out; }
   @keyframes bim-et-in { from { opacity: 0; transform: translateY(-2px); } to { opacity: 1; transform: none; } }
+  .bim-et-card[data-sheet] { animation: bim-et-up 160ms ease-out; }
+  @keyframes bim-et-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 }
 `;

@@ -533,3 +533,72 @@ describe('合称 matched_multi（book-text#244）', () => {
         expect(screen.queryByRole('group')).toBeNull();
     });
 });
+
+describe('触屏点按：底部面板（手机没有悬停）', () => {
+    const spans = adaptEntityJson(ENTITY_JSON);
+    const tap = (el: Element) => {
+        fireEvent.pointerDown(el, { pointerType: 'touch' });
+        fireEvent.mouseEnter(el.closest('.bim-et-w')!); // 触屏模拟出的 mouseenter 不该开浮卡
+        return fireEvent.click(el, { detail: 1 });
+    };
+
+    it('点已收录专名：不跳条目，开贴底面板；模拟的 mouseleave 不收；点词外才收', async () => {
+        const onNavigate = vi.fn();
+        const { container } = render(
+            <EntityText
+                text={PUNCTUATED} entities={spans} offsets="plain" onNavigate={onNavigate}
+                transport={makeTransport({ p1abc: { type: 'entity', primary_name: '劉向' } })}
+            />,
+        );
+        const link = container.querySelector('a.bim-et-people')!;
+        expect(screen.queryByRole('dialog')).toBeNull();
+        const notPrevented = tap(link);
+        expect(notPrevented).toBe(false);                       // 不直接进条目页
+        expect(onNavigate).not.toHaveBeenCalled();
+        const sheet = screen.getByRole('dialog');
+        expect(sheet.hasAttribute('data-sheet')).toBe(true);
+        expect(screen.queryByRole('tooltip')).toBeNull();
+        fireEvent.mouseLeave(link.closest('.bim-et-w')!);
+        await act(async () => { await new Promise(r => setTimeout(r, 400)); });
+        expect(screen.getByRole('dialog')).toBeTruthy();         // 钉住：不随触屏模拟的 mouseleave 收
+        const detail = await screen.findByRole('link', { name: '查看詳情 →' });
+        expect(detail.getAttribute('href')).toBe('/item/p1abc');
+        fireEvent.click(document.body);
+        expect(screen.queryByRole('dialog')).toBeNull();
+    });
+
+    it('关闭钮收卡；同一时刻只开一张', async () => {
+        const { container } = render(
+            <EntityText text={PUNCTUATED} entities={spans} offsets="plain" transport={makeTransport({ p1abc: { type: 'entity', primary_name: '劉向' }, w9xyz: { type: 'work', title: '別錄' } })} />,
+        );
+        tap(container.querySelector('a.bim-et-people')!);
+        tap(container.querySelector('a.bim-et-work')!);
+        expect(screen.getAllByRole('dialog')).toHaveLength(1);
+        fireEvent.click(screen.getByRole('button', { name: '關閉' }));
+        expect(screen.queryByRole('dialog')).toBeNull();
+    });
+
+    it('点合称：同样是底部面板', () => {
+        const span: EntitySpan = {
+            key: 'e1', kind: 'people', start: 0, end: 2, text: '二程',
+            targets: [{ id: 'p1', canonicalName: '程顥' }, { id: 'p2', canonicalName: '程頤' }],
+        };
+        render(<EntityText text="二程" entities={[span]} injectStyles={false} />);
+        const word = screen.getByRole('button', { name: '二程' });
+        fireEvent.pointerDown(word, { pointerType: 'touch' });
+        fireEvent.click(word, { detail: 1 });
+        expect(screen.getByRole('group').hasAttribute('data-sheet')).toBe(true);
+        fireEvent.click(document.body);
+        expect(screen.queryByRole('group')).toBeNull();
+    });
+
+    it('鼠标仍是悬停浮卡，不出面板', () => {
+        const { container } = render(<EntityText text={PUNCTUATED} entities={spans} offsets="plain" />);
+        const link = container.querySelector('a.bim-et-people')!;
+        fireEvent.pointerDown(link, { pointerType: 'mouse' });
+        fireEvent.mouseEnter(link.closest('.bim-et-w')!);
+        fireEvent.focus(link);
+        expect(screen.getByRole('tooltip').hasAttribute('data-sheet')).toBe(false);
+        expect(screen.queryByRole('dialog')).toBeNull();
+    });
+});
