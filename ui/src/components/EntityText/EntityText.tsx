@@ -153,6 +153,10 @@ export const EntityMark: React.FC<EntityMarkProps> = ({
     const cardId = useId();
     const [open, setOpen] = useState(false);
     const [active, setActive] = useState(false);
+    /** 触屏点开的卡改成贴底的底部面板（手机上没有悬停，浮在词旁的小卡会遮字、够不着链接） */
+    const [sheet, setSheet] = useState(false);
+    /** 最近一次指针是触屏：忽略触屏模拟出来的 mouseenter／mouseleave／focus，只认点按 */
+    const touch = useRef(false);
     const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const cls = `bim-et bim-et-${span.kind}${plain ? ' bim-et-nu' : ''}`;
@@ -173,7 +177,7 @@ export const EntityMark: React.FC<EntityMarkProps> = ({
     const closeNow = useCallback(() => {
         pinned.current = false;
         clearOpen(); clearClose();
-        setOpen(false); setActive(false);
+        setOpen(false); setActive(false); setSheet(false);
         if (openCardCloser === closeNow) openCardCloser = null;
     }, []);
     useEffect(() => () => { clearOpen(); clearClose(); if (openCardCloser === closeNow) openCardCloser = null; }, [closeNow]);
@@ -202,12 +206,41 @@ export const EntityMark: React.FC<EntityMarkProps> = ({
 
     const wrapRef = useRef<HTMLSpanElement | null>(null);
     useEffect(() => {
-        if (!open || !span.targets) return;
-        // 触屏没有 mouseleave：点词外任意处收卡（鼠标移出走 leave 的延迟收卡，不受影响）
-        const away = (e: PointerEvent) => { if (!wrapRef.current?.contains(e.target as Node | null)) closeNow(); };
-        document.addEventListener('pointerdown', away);
-        return () => document.removeEventListener('pointerdown', away);
-    }, [open, span.targets, closeNow]);
+        if (!open || !(span.targets || sheet)) return;
+        // 触屏没有 mouseleave：点词外任意处收卡（鼠标移出走 leave 的延迟收卡，不受影响）。
+        // 底部面板用 click 而非 pointerdown：在面板外拖动滚页不该把它关掉
+        const evt = sheet ? 'click' : 'pointerdown';
+        const away = (e: Event) => { if (!wrapRef.current?.contains(e.target as Node | null)) closeNow(); };
+        document.addEventListener(evt, away);
+        return () => document.removeEventListener(evt, away);
+    }, [open, sheet, span.targets, closeNow]);
+
+    /** 触屏点按：钉住并以底部面板打开；面板盖住了词就把页面往上推一点，词留在面板上方 */
+    const openSheet = useCallback(() => {
+        clearOpen(); clearClose();
+        pinned.current = true;
+        setActive(true); setSheet(true);
+        openCard();
+    }, [openCard]);
+    useIsoLayoutEffect(() => {
+        if (!open || !sheet) return;
+        const wrap = wrapRef.current;
+        const card = wrap?.querySelector<HTMLElement>('.bim-et-card');
+        if (!wrap || !card || typeof window === 'undefined') return;
+        const keepWordClear = () => {
+            const rects = wrap.getClientRects();
+            const word = rects[rects.length - 1];
+            if (!word) return;
+            const over = word.bottom + 12 - card.getBoundingClientRect().top;
+            if (over > 0) window.scrollBy({ top: over, behavior: 'smooth' });
+        };
+        keepWordClear();
+        // 摘要加载完卡会变高，再核一次
+        if (typeof ResizeObserver === 'undefined') return;
+        const ro = new ResizeObserver(keepWordClear);
+        ro.observe(card);
+        return () => ro.disconnect();
+    }, [open, sheet]);
 
     const hasLink = !!span.targetId;
     const id = span.targetId;
@@ -215,8 +248,10 @@ export const EntityMark: React.FC<EntityMarkProps> = ({
     const wrapProps = {
         className: 'bim-et-w',
         'data-active': active ? '' : undefined,
-        onMouseEnter: () => enter(hoverDelayMs),
-        onMouseLeave: leave,
+        onPointerEnter: (e: React.PointerEvent) => { touch.current = e.pointerType === 'touch'; },
+        onPointerDown: (e: React.PointerEvent) => { touch.current = e.pointerType === 'touch'; },
+        onMouseEnter: () => { if (!touch.current) enter(hoverDelayMs); },
+        onMouseLeave: () => { if (!touch.current) leave(); },
         // 焦点移到卡内的详情链接不算离开；移出整个词+卡才收
         onBlur: (e: React.FocusEvent<HTMLElement>) => {
             if (!e.currentTarget.contains(e.relatedTarget as Node | null)) closeNow();
@@ -235,41 +270,45 @@ export const EntityMark: React.FC<EntityMarkProps> = ({
                     aria-haspopup="true"
                     aria-expanded={open}
                     aria-controls={open ? cardId : undefined}
-                    onFocus={() => enter(0)}
-                    onClick={() => { clearClose(); pinned.current = true; setActive(true); openCard(); }}
+                    onFocus={() => { if (!touch.current) enter(0); }}
+                    onClick={() => { if (touch.current) openSheet(); else { clearClose(); pinned.current = true; setActive(true); openCard(); } }}
                     onKeyDown={e => {
                         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (open) closeNow(); else { pinned.current = true; setActive(true); openCard(); } }
                     }}
                 >
                     {inner}
                 </span>
-                {open && <EntityMultiCard id={cardId} span={span} loader={loader} buildHref={buildHref} onNavigate={cardNewTab ? undefined : onCardNavigate} newTab={cardNewTab} />}
+                {open && <EntityMultiCard id={cardId} span={span} loader={loader} buildHref={buildHref} onNavigate={cardNewTab ? undefined : onCardNavigate} newTab={cardNewTab} sheet={sheet} onClose={closeNow} />}
             </span>
         );
     }
 
     if (!hasLink || !id) {
         return (
-            <span {...wrapProps}>
+            <span {...wrapProps} ref={wrapRef}>
                 <span className={cls}>{inner}</span>
-                {open && <EntityCard id={cardId} entityId={null} span={span} loader={null} buildHref={buildHref} onNavigate={onNavigate} />}
+                {open && !touch.current && <EntityCard id={cardId} entityId={null} span={span} loader={null} buildHref={buildHref} onNavigate={onNavigate} />}
             </span>
         );
     }
 
     return (
-        <span {...wrapProps}>
+        <span {...wrapProps} ref={wrapRef}>
             <a
                 className={cls}
                 href={buildHref(id)}
                 data-entity-id={id}
                 aria-describedby={open ? cardId : undefined}
-                onFocus={() => enter(0)}
-                onClick={onNavigate ? e => onNavigate(id, e) : undefined}
+                onFocus={() => { if (!touch.current) enter(0); }}
+                onClick={e => {
+                    // 触屏点专名：先看卡（详情链接在卡里，点了才跳），不直接跳条目
+                    if (touch.current && e.detail > 0) { e.preventDefault(); openSheet(); return; }
+                    onNavigate?.(id, e);
+                }}
             >
                 {inner}
             </a>
-            {open && <EntityCard id={cardId} entityId={id} span={span} loader={loader} buildHref={buildHref} onNavigate={cardNewTab ? undefined : onCardNavigate} newTab={cardNewTab} />}
+            {open && <EntityCard id={cardId} entityId={id} span={span} loader={loader} buildHref={buildHref} onNavigate={cardNewTab ? undefined : onCardNavigate} newTab={cardNewTab} sheet={sheet} onClose={closeNow} />}
         </span>
     );
 };
@@ -288,7 +327,10 @@ const EntityCard: React.FC<{
     buildHref: (id: string) => string;
     onNavigate?: EntityTextProps['onNavigate'];
     newTab?: boolean;
-}> = ({ id, entityId, span, loader, buildHref, onNavigate, newTab }) => {
+    /** 触屏：贴底面板 + 关闭钮 */
+    sheet?: boolean;
+    onClose?: () => void;
+}> = ({ id, entityId, span, loader, buildHref, onNavigate, newTab, sheet, onClose }) => {
     const { convert, t } = useI18n();
     const ref = useRef<HTMLSpanElement | null>(null);
     const [align, setAlign] = useState<'start' | 'end'>('start');
@@ -310,8 +352,8 @@ const EntityCard: React.FC<{
         if (!el || typeof window === 'undefined') return;
         const r = el.getBoundingClientRect();
         const vw = document.documentElement.clientWidth || window.innerWidth;
-        if (r.right > vw - 8 && align === 'start') setAlign('end');
-    }, [state, align]);
+        if (!sheet && r.right > vw - 8 && align === 'start') setAlign('end');
+    }, [state, align, sheet]);
 
     const summary = state.status === 'ready' ? state.summary : null;
     const title = summary?.title ?? span.canonicalName ?? span.text;
@@ -325,7 +367,8 @@ const EntityCard: React.FC<{
     }
 
     return (
-        <span ref={ref} id={id} role="tooltip" className="bim-et-card" data-align={align}>
+        <span ref={ref} id={id} role={sheet ? 'dialog' : 'tooltip'} aria-label={sheet ? title : undefined} className="bim-et-card" data-align={align} data-sheet={sheet ? '' : undefined}>
+            {sheet && onClose && <SheetClose onClose={onClose} />}
             <span className="bim-et-card-k">{convert(KIND_LABEL[span.kind])}</span>
             {title && <span className="bim-et-card-t">{convert(title)}</span>}
             {summary?.meta && <span className="bim-et-card-m">{convert(summary.meta)}</span>}
@@ -358,14 +401,16 @@ const EntityMultiCard: React.FC<{
     buildHref: (id: string) => string;
     onNavigate?: EntityTextProps['onNavigate'];
     newTab?: boolean;
-}> = ({ id, span, loader, buildHref, onNavigate, newTab }) => {
+    sheet?: boolean;
+    onClose?: () => void;
+}> = ({ id, span, loader, buildHref, onNavigate, newTab, sheet, onClose }) => {
     const { convert } = useI18n();
     const ref = useRef<HTMLSpanElement | null>(null);
     // 卡片定宽（≤340px）：词靠右时往左挪，保证整张卡落在视口内（左右各留 8px）；只在打开时量一次
     const [shift, setShift] = useState(0);
     useIsoLayoutEffect(() => {
         const el = ref.current;
-        if (!el || typeof window === 'undefined') return;
+        if (!el || sheet || typeof window === 'undefined') return;
         const r = el.getBoundingClientRect();
         if (!r.width) return;
         const vw = document.documentElement.clientWidth || window.innerWidth;
@@ -373,7 +418,8 @@ const EntityMultiCard: React.FC<{
     }, []);
     const targets = span.targets ?? [];
     return (
-        <span ref={ref} id={id} role="group" aria-label={convert(`合稱，${targets.length} 條`)} className={`bim-et-card bim-et-card-multi${targets.length > 3 ? " bim-et-dense" : ""}`} style={shift ? { left: shift } : undefined}>
+        <span ref={ref} id={id} role="group" aria-label={convert(`合稱，${targets.length} 條`)} className={`bim-et-card bim-et-card-multi${targets.length > 3 ? " bim-et-dense" : ""}`} data-sheet={sheet ? '' : undefined} style={shift && !sheet ? { left: shift } : undefined}>
+            {sheet && onClose && <SheetClose onClose={onClose} />}
             <span className="bim-et-card-k">{convert('合稱')} · {convert(`${targets.length} 條`)}</span>
             {targets.map(t => (
                 <MultiRow key={t.id} target={t} kind={span.kind} loader={loader} buildHref={buildHref} onNavigate={onNavigate} newTab={newTab} />
@@ -430,3 +476,9 @@ const MultiRow: React.FC<{
 
 /** 「正」→「正 →」：part 是正文里的字，简体模式下一起转 */
 const renderPart = (part: string, convert: (s: string) => string) => `${convert(part)} →`;
+
+/** 底部面板右上角的关闭钮（触屏点按区 ≥ 44px） */
+const SheetClose: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+    const { t } = useI18n();
+    return <button type="button" className="bim-et-card-x" aria-label={t('reader.close')} onClick={onClose}>×</button>;
+};
