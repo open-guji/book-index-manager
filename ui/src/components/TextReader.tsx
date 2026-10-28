@@ -444,9 +444,17 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     useEffect(() => { workLabelCacheRef.current.clear(); }, [id]);
 
     const resolveCtx = useMemo<ReaderResolveContext>(() => ({ versionKey, chapter: (chapterMeta as Record<string, unknown> | null) ?? null }), [versionKey, chapterMeta]);
-    const images = useChapterImages(resolveImages, effectiveChapter ?? null, resolveCtx);
-    const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData, warpDataProp, effectiveChapter ?? null, resolveCtx);
-    const entitySpans = useChapterEntities(resolveEntities, effectiveChapter ?? null, resolveCtx);
+    const images = useChapterImages(resolveImages, effectiveChapter ?? null, resolveCtx, id);
+    const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData, warpDataProp, effectiveChapter ?? null, resolveCtx, id);
+    // 换章时书影栏：之前开着（有书影／对读书影），新章的数据到手前保持开着并显示「加载书影…」，不收起再弹开（栏宽变两次、正文横移）。
+    // 首次进入不撑开（GUJI-181），所以要先见过书影才算
+    const sawImagesRef = useRef(false);
+    if (warpData || (images.images && images.images.length > 0)) sawImagesRef.current = true;
+    useEffect(() => { sawImagesRef.current = false; }, [id]);
+    const waitingImages = images.loading || (isDuiduChapter(chapterMeta) && warpLoading && !warpData);
+    const keepImgPanel = sawImagesRef.current && waitingImages;
+    const switchingImages = keepImgPanel;
+    const entitySpans = useChapterEntities(resolveEntities, effectiveChapter ?? null, resolveCtx, id);
     // 专名号：用户没选过（properNameMode==null）时，本章有专名层数据就默认 full（没有就 off，不画空线）；选过就照用户的
     const properNameMode = storedPrefs.properNameMode ?? (entitySpans.length > 0 ? 'full' : 'off');
     const prefs = useMemo(() => ({ ...storedPrefs, properNameMode }), [storedPrefs, properNameMode]);
@@ -833,7 +841,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             // 加载中（书影请求或对读 warp 数据）都不撑开书影栏（GUJI-181）：没书影的书会「开 20ms 又收」，
             // 正文列横移两次（CLS 0.14，线上实测）；有书影的书等拿到图（hasImages）再开，开的次数不变
             renderImageOverlay={renderImageOverlay}
-            imagePanel={warpData ? 'open' : imagePanel}
+            imagePanel={warpData || keepImgPanel ? 'open' : imagePanel}
+            imagesLoading={switchingImages}
             isWarpMode={!!warpData}
             showPreserveMargins={!facsimileTrimmed}
             customImagePanel={warpData && activePageData ? (
