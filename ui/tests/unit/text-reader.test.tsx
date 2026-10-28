@@ -53,7 +53,7 @@ function setup(transport: IndexStorage, props: Partial<React.ComponentProps<type
     const utils = render(<TextReader id={WORK} transport={transport} onLocationChange={onLocationChange} {...props} />);
     return { ...utils, log };
 }
-const versionSelect = () => screen.getByRole('combobox', { name: '版本' }) as HTMLSelectElement;
+const versionSelect = () => screen.getByRole('combobox', { name: '來源' }) as HTMLSelectElement;
 const optionTexts = () => Array.from(versionSelect().options).map(o => o.textContent);
 
 describe('TextReader · 新结构', () => {
@@ -145,7 +145,7 @@ describe('TextReader · 新结构', () => {
     it('只有一份版本：不出下拉，書名后只标來源名', async () => {
         setup(nativeTransport({}, { id: WORK, versions: [MANIFEST.versions[1]] }), { versionKey: 'wikisource' });
         await screen.findByRole('heading', { level: 1, name: '卷一' });
-        expect(screen.queryByRole('combobox', { name: '版本' })).toBeNull();
+        expect(screen.queryByRole('combobox', { name: '來源' })).toBeNull();
         expect(document.querySelector('.bim-rd-ttl')?.textContent).toContain('維基文庫');
     });
 

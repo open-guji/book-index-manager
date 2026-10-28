@@ -87,19 +87,19 @@ describe('版本数据换算', () => {
 describe('閱讀器「版本」下拉框（#235）', () => {
     it('没有 versions：不出下拉框，也不出出處行', () => {
         const { container } = render(<Shell />);
-        expect(screen.queryByRole('combobox', { name: '版本' })).toBeNull();
+        expect(screen.queryByRole('combobox', { name: '來源' })).toBeNull();
         expect(srcLine(container)).toBeNull();
     });
 
     it('只有一份全文：不出下拉框，出處与授权照常显示', () => {
         const { container } = render(<Shell versions={[TWO[1]]} />);
-        expect(screen.queryByRole('combobox', { name: '版本' })).toBeNull();
+        expect(screen.queryByRole('combobox', { name: '來源' })).toBeNull();
         expect(srcLine(container)).toBe('出處 CBETA授權 CC BY-NC-SA 4.0');
     });
 
     it('两份以上：工具条上出下拉框，默认选 primary，选项文字是 version_label · source_name', () => {
         const { container } = render(<Shell versions={SHIXU} />);
-        const select = screen.getByRole('combobox', { name: '版本' }) as HTMLSelectElement;
+        const select = screen.getByRole('combobox', { name: '來源' }) as HTMLSelectElement;
         expect(select.closest('.bim-rd-tools')).toBeTruthy();
         expect(select.value).toBe('wikisource-01');
         expect([...select.options].map(o => o.textContent)).toEqual(['詩序 · 維基文庫', '詩序（Kanripo WYG 本）']);
@@ -111,17 +111,17 @@ describe('閱讀器「版本」下拉框（#235）', () => {
 
     it('primary 不在第一位也默认选它；宿主给了 currentVersionKey 就用宿主的', () => {
         const { unmount } = render(<Shell versions={TWO} />);
-        expect((screen.getByRole('combobox', { name: '版本' }) as HTMLSelectElement).value).toBe('cbeta-01');
+        expect((screen.getByRole('combobox', { name: '來源' }) as HTMLSelectElement).value).toBe('cbeta-01');
         unmount();
         render(<Shell versions={TWO} currentVersionKey="wikisource-01" />);
-        expect((screen.getByRole('combobox', { name: '版本' }) as HTMLSelectElement).value).toBe('wikisource-01');
+        expect((screen.getByRole('combobox', { name: '來源' }) as HTMLSelectElement).value).toBe('wikisource-01');
     });
 
     it('切换：回调给出新 key；组件不改 URL', () => {
         const onVersionChange = vi.fn();
         const before = window.location.href;
         render(<Shell versions={TWO} currentVersionKey="cbeta-01" onVersionChange={onVersionChange} />);
-        fireEvent.change(screen.getByRole('combobox', { name: '版本' }), { target: { value: 'wikisource-01' } });
+        fireEvent.change(screen.getByRole('combobox', { name: '來源' }), { target: { value: 'wikisource-01' } });
         expect(onVersionChange).toHaveBeenCalledTimes(1);
         expect(onVersionChange).toHaveBeenCalledWith('wikisource-01');
         expect(window.location.href).toBe(before);
@@ -147,11 +147,11 @@ describe('閱讀器「版本」下拉框（#235）', () => {
         }
         const { container } = render(<Host />);
         expect(srcLine(container)).toContain('CC BY-NC-SA 4.0');
-        fireEvent.change(screen.getByRole('combobox', { name: '版本' }), { target: { value: 'wikisource-01' } });
+        fireEvent.change(screen.getByRole('combobox', { name: '來源' }), { target: { value: 'wikisource-01' } });
         await waitFor(() => expect(onSelect).toHaveBeenCalledWith('001'));
         expect(onSelect).toHaveBeenCalledTimes(1);
         expect(srcLine(container)).toBe('出處 維基文庫授權 CC BY-SA 4.0');
-        expect((screen.getByRole('combobox', { name: '版本' }) as HTMLSelectElement).value).toBe('wikisource-01');
+        expect((screen.getByRole('combobox', { name: '來源' }) as HTMLSelectElement).value).toBe('wikisource-01');
     });
 
     it('新目錄异步到达（先空后有）：等目錄到了才跳第一卷', async () => {
@@ -159,7 +159,7 @@ describe('閱讀器「版本」下拉框（#235）', () => {
         const { rerender } = render(
             <Shell versions={TWO} currentVersionKey="cbeta-01" toc={tocOf(3, 'c')} activeKey="002" onSelect={onSelect} />,
         );
-        fireEvent.change(screen.getByRole('combobox', { name: '版本' }), { target: { value: 'wikisource-01' } });
+        fireEvent.change(screen.getByRole('combobox', { name: '來源' }), { target: { value: 'wikisource-01' } });
         rerender(<Shell versions={TWO} currentVersionKey="wikisource-01" toc={[]} activeKey="002" onSelect={onSelect} />);
         expect(onSelect).not.toHaveBeenCalled();
         rerender(<Shell versions={TWO} currentVersionKey="wikisource-01" toc={tocOf(5, 'w')} activeKey="002" onSelect={onSelect} />);
@@ -175,7 +175,7 @@ describe('閱讀器「版本」下拉框（#235）', () => {
         const { rerender } = render(
             <Shell versions={TWO} currentVersionKey="cbeta-01" toc={tocOf(3, 'c')} activeKey="003" onSelect={onSelect} />,
         );
-        fireEvent.change(screen.getByRole('combobox', { name: '版本' }), { target: { value: 'wikisource-01' } });
+        fireEvent.change(screen.getByRole('combobox', { name: '來源' }), { target: { value: 'wikisource-01' } });
         // 版本 key 先变，目录还是旧的（但每次渲染都是新数组）
         rerender(<Shell versions={TWO} currentVersionKey="wikisource-01" toc={tocOf(3, 'c')} activeKey="003" onSelect={onSelect} />);
         await waitFor(() => expect(onSelect).toHaveBeenLastCalledWith('001'));
@@ -190,14 +190,14 @@ describe('閱讀器「版本」下拉框（#235）', () => {
     it('非受控：不给 currentVersionKey 时组件自己记住所选，出處行跟着变', () => {
         const { container } = render(<Shell versions={TWO} />);
         expect(srcLine(container)).toContain('CBETA');
-        fireEvent.change(screen.getByRole('combobox', { name: '版本' }), { target: { value: 'wikisource-01' } });
-        expect((screen.getByRole('combobox', { name: '版本' }) as HTMLSelectElement).value).toBe('wikisource-01');
+        fireEvent.change(screen.getByRole('combobox', { name: '來源' }), { target: { value: 'wikisource-01' } });
+        expect((screen.getByRole('combobox', { name: '來源' }) as HTMLSelectElement).value).toBe('wikisource-01');
         expect(srcLine(container)).toBe('出處 維基文庫授權 CC BY-SA 4.0');
     });
 
     it('versionSource={false}：宿主自己画出處时不重複', () => {
         const { container } = render(<Shell versions={TWO} versionSource={false} />);
-        expect(screen.getByRole('combobox', { name: '版本' })).toBeTruthy();
+        expect(screen.getByRole('combobox', { name: '來源' })).toBeTruthy();
         expect(srcLine(container)).toBeNull();
     });
 

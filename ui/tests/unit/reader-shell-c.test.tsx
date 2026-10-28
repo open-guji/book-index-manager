@@ -120,13 +120,13 @@ describe('切版本不自动回第一卷（keepChapterOnVersionChange）', () =>
     it('默认（false）：切版本后选中新目錄的第一卷', async () => {
         render(<Host keep={false} />);
         expect(current()).toContain('a卷2');
-        await act(async () => { fireEvent.change(screen.getByRole('combobox', { name: '版本' }), { target: { value: 'wikisource' } }); });
+        await act(async () => { fireEvent.change(screen.getByRole('combobox', { name: '來源' }), { target: { value: 'wikisource' } }); });
         expect(current()).toContain('b卷1');
     });
 
     it('keep=true：壳不替宿主选章，宿主决定停在哪一章', async () => {
         render(<Host keep />);
-        await act(async () => { fireEvent.change(screen.getByRole('combobox', { name: '版本' }), { target: { value: 'wikisource' } }); });
+        await act(async () => { fireEvent.change(screen.getByRole('combobox', { name: '來源' }), { target: { value: 'wikisource' } }); });
         expect(current()).toContain('b卷2'); // 章 key 002 在新目录里还在，照旧选中
     });
 });
