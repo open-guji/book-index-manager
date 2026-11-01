@@ -262,6 +262,21 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 .bim-d-mention-where { display: block; font-size: 13px; color: ${bim('aux-fg')}; margin-bottom: 2px; }
 .bim-d-mention-ctx { font-size: 16px; letter-spacing: .04em; }
 .bim-d-mention-ctx b { font-weight: 700; background: ${bim('mark-bg')}; border-radius: 2px; padding: 0 1px; }
+.bim-d-mentions-h { margin: 18px 0 6px; font-size: 14px; font-weight: 700; color: ${bim('label-fg')}; }
+.bim-d-mbooks { list-style: none; margin: 0 0 12px; padding: 0; }
+.bim-d-mbooks > li { border-top: 1px solid ${bim('rule')}; }
+.bim-d-mbooks > li:first-child { border-top: 0; }
+.bim-d-mbook > summary { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; cursor: pointer; list-style: none; }
+.bim-d-mbook > summary::-webkit-details-marker { display: none; }
+.bim-d-mbook > summary::before { content: '▸'; color: ${bim('aux-fg')}; margin-right: -4px; }
+.bim-d-mbook[open] > summary::before { content: '▾'; }
+.bim-d-mbook > summary:hover { background: ${bim('zebra-bg')}; }
+.bim-d-mbook-t { flex: 1; font-size: 16px; color: ${bim('ink')}; }
+.bim-d-mbook-n { font-size: 13px; color: ${bim('aux-fg')}; white-space: nowrap; }
+.bim-d-mchaps { list-style: none; margin: 0 0 8px; padding: 0 0 0 28px; }
+.bim-d-mchap { display: flex; justify-content: space-between; gap: 12px; padding: 6px 12px; color: ${bim('accent')}; text-decoration: none; font-size: 15px; }
+.bim-d-mchap:hover { background: ${bim('zebra-bg')}; }
+.bim-d-mchap span:last-child { font-size: 13px; color: ${bim('aux-fg')}; white-space: nowrap; }
 
 /* 提要卡：生卒条、著作四部分布条 */
 .bim-d-life { margin-top: 18px; }

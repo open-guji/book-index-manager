@@ -92,7 +92,7 @@ export {
 export type { IdComponents } from './id';
 
 // Storage
-export type { IndexStorage, MentionsPage, MentionItem } from './storage/types';
+export type { IndexStorage, MentionsIndex, MentionBook, MentionChapter, MentionsBookChapters, MentionItem } from './storage/types';
 export { GithubStorage } from './storage/github-storage';
 export type { GithubStorageConfig } from './storage/github-storage';
 export { LocalStorage } from './storage/local-storage';

@@ -195,6 +195,7 @@ export const BIM_TOKEN_GROUPS = [
         'flag-bg': { value: 'rgba(158, 42, 43, 0.08)', note: '唯一的状态色块「有影印」' },
         'mark-bg': { value: '#fde68a', note: '专名出处：从「古籍中的出处」跳到阅读页时高亮的字、出处摘录里的专名（A12）' },
         'mark-flash': { value: '#f59e0b', note: '专名出处：跳到阅读页时高亮先闪一下的颜色' },
+        'mark-soft': { value: 'rgba(253, 230, 138, 0.45)', note: '专名出处：阅读页 `#e=` 时本章提到该实体的其余各处（当前一处用 mark-bg）' },
         'theme-dot-zhusha': { value: '#9c3a2c', note: '主题切换控件的色点：朱砂（不随主题变，两套主题下都要认得出）' },
         'theme-dot-indigo': { value: '#2e5266', note: '主题切换控件的色点：靛青' },
         'theme-dot-ink': { value: '#3b4a58', note: '主题切换控件的色点：墨' },

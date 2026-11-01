@@ -120,7 +120,7 @@ export interface IndexStorage {
     // ── 专名出处反查（可选；A12，产物 mentions/<id>.json，打包时由 book-text 的专名号派生） ──
 
     /** 某实体（或 Work）被专名号标出的出处，第 page 页（从 1 起）；没有出处或取不到返回 null */
-    getMentions?(id: string, page?: number): Promise<MentionsPage | null>;
+    getMentions?(id: string, item?: string): Promise<MentionsIndex | MentionsBookChapters | null>;
 
     /** 获取版本传承图数据 */
     getLineageGraph?(workId: string): Promise<LineageGraph | null>;
@@ -170,18 +170,46 @@ export interface IndexCounts {
     subtypeStats?: Record<string, number>;
 }
 
-/** 专名出处反查的一页（schema mentions/v1）。第 1 页另带 books */
-export interface MentionsPage {
+/**
+ * 专名出处反查（schema mentions/v2，打包时由 book-text 专名号派生）：`getMentions(id)` 取实体的书／章目录与例子。
+ * 章里的逐处位置不预生成，阅读页 `#e=<id>` 现场标出。章行太多的热门实体，`books[].chapters` 不内联，
+ * 另用 `getMentions(id, item)` 取该书的 `MentionsBookChapters`。
+ */
+export interface MentionsIndex {
     schema: string;
     entity_id: string;
-    page: number;
-    pages: number;
     total: number;
-    books?: { item: string; title?: string; count: number }[];
-    items: MentionItem[];
+    /** 章数（所有书合计） */
+    chapters: number;
+    books: MentionBook[];
+    examples: MentionItem[];
 }
 
-/** 一处出处：start／end 是格位（页:列:格[ab]），阅读页地址 `/read/<item>[/<key>]/<chapter>#<start>~<end>` */
+export interface MentionBook {
+    item: string;
+    title?: string;
+    count: number;
+    chapter_count: number;
+    chapters?: MentionChapter[];
+}
+
+/** 一章：count 处；ids 是该章 entity 文件里实际写的 id（与现行 id 不同时才有），阅读页 `#e=` 用它 */
+export interface MentionChapter {
+    key: string;
+    chapter: string;
+    count: number;
+    heading?: string;
+    ids?: string[];
+}
+
+export interface MentionsBookChapters {
+    schema: string;
+    entity_id: string;
+    item: string;
+    chapters: MentionChapter[];
+}
+
+/** 一处例子：start／end 是格位（页:列:格[ab]），阅读页地址 `/read/<item>[/<key>]/<chapter>#<start>~<end>` */
 export interface MentionItem {
     item: string;
     key: string;

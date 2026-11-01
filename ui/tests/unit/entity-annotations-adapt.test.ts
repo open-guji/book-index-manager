@@ -128,3 +128,20 @@ describe('adaptEntityJson · 类别输入', () => {
         expect(kindOf(42)).toBe('other');
     });
 });
+
+describe('adaptEntityJson：拆分复合名的片段（阅读页 #e= 用）', () => {
+    it('只留已对上条目、offset 合法的片段；一个都没有就不带 parts', () => {
+        const [s] = adaptEntityJson([{
+            id: 'e1', type: 'place', text: '泰州如臯', anchor: { start: '3:2:7', end: '3:2:10' },
+            target: { status: 'new_candidate' },
+            decomposition: { mode: 'split', parts: [
+                { text: '泰州', offset: [0, 2], target: { status: 'matched', entity_id: 'taizhou' } },
+                { text: '如臯', offset: [2, 4], target: { status: 'new_candidate' } },
+                { text: '壞', offset: [3, 3], target: { entity_id: 'bad' } },
+            ] },
+        }]);
+        expect(s.parts).toEqual([{ id: 'taizhou', offset: [0, 2] }]);
+        const [t] = adaptEntityJson([{ id: 'e2', type: 'people', text: '朱子', anchor: { start: '1:1:1', end: '1:1:2' }, target: { status: 'matched', entity_id: 'zx' } }]);
+        expect('parts' in t).toBe(false);
+    });
+});

@@ -79,6 +79,11 @@ export interface EntitySpan {
      * 直接按字 id 对位到对读正文，不受标点、缺字、夹注影响。规范里它是必有的权威定位。
      */
     anchor?: { start: string; end: string };
+    /**
+     * 拆分的复合名（`decomposition.parts[]`，如「泰州如臯」）里已对上条目的片段：`offset` 是片段在本区间里的
+     * 字序 [起, 止)，按逐字 anchor 推格位。只用于「本章提到某实体的各处」（阅读页 `#e=`），画线仍按整个区间。
+     */
+    parts?: Array<{ id: string; offset: [number, number] }>;
 }
 
 /**
@@ -159,6 +164,23 @@ function multiTargetsOf(target: Record<string, unknown>): EntitySpan['targets'] 
     return out.length >= 2 ? out : undefined;
 }
 
+/** `decomposition.parts[]` → 已对上条目的片段（offset 须是合法的 [起, 止)）；一个都没有就回 undefined */
+function partsOf(dec: unknown): EntitySpan['parts'] {
+    const list = dec && typeof dec === 'object' ? (dec as { parts?: unknown }).parts : undefined;
+    if (!Array.isArray(list)) return undefined;
+    const out: NonNullable<EntitySpan['parts']> = [];
+    for (const p of list) {
+        if (!p || typeof p !== 'object') continue;
+        const o = p as Record<string, unknown>;
+        const t = (o.target ?? {}) as Record<string, unknown>;
+        const id = bookIndexUriToId(str(t.entity_id)) ?? bookIndexUriToId(str(t.href));
+        const off = o.offset;
+        if (!id || !Array.isArray(off) || typeof off[0] !== 'number' || typeof off[1] !== 'number' || off[0] < 0 || off[1] <= off[0]) continue;
+        out.push({ id, offset: [off[0], off[1]] });
+    }
+    return out.length ? out : undefined;
+}
+
 /** 有偏移的区间（按偏移切分用） */
 type OffsetSpan = EntitySpan & { start: number; end: number };
 const hasOffsets = (s: EntitySpan): s is OffsetSpan => s.start !== undefined && s.end !== undefined;
@@ -196,6 +218,7 @@ export function adaptEntityJson(raw: unknown): EntitySpan[] {
         const targetConfidence = num(target.confidence);
         const targets = status === 'matched_multi' ? multiTargetsOf(target) : undefined;
         const candidates = candidatesOf(e.ambiguous);
+        const parts = partsOf(e.decomposition);
         out.push({
             ...(aStart && aEnd ? { anchor: { start: aStart, end: aEnd } } : {}),
             key: str(e.id) ?? `e${i}`,
@@ -211,6 +234,7 @@ export function adaptEntityJson(raw: unknown): EntitySpan[] {
             ...(str(target.note) !== undefined ? { targetNote: str(target.note) } : {}),
             ...(str(e.group) !== undefined ? { group: str(e.group) } : {}),
             ...(candidates !== undefined ? { candidates } : {}),
+            ...(parts ? { parts } : {}),
         });
     });
     // 有偏移的按起点排（同起点长的在前）；无偏移的（只有 anchor）排后面，数组排序稳定，保持文件内顺序

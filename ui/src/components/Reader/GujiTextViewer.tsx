@@ -144,6 +144,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   figUrl,
   onFigureBlockClick,
 }) => {
+  const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement | null>(null);
   // 点字／划词之后一小段时间内，滚动不改书影页：以读者点的字所在页为准，免得点在页首时被上一页抢回去
   const pageLockUntil = useRef(0);
@@ -386,11 +387,13 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     return order;
   }, [reflowPages]);
 
+  const charIndex = useMemo(() => new Map(charOrder.map((id, i) => [id, i] as const)), [charOrder]);
+
   // 实体按逐字 id 对位：字 id → 实体（范围内每个字都指向它；重叠时取先出现的、更长的）
   const entityOfChar = useMemo(() => {
     const map = new Map<string, EntitySpan>();
     if (!entities || entities.length === 0) return map;
-    const index = new Map(charOrder.map((id, i) => [id, i] as const));
+    const index = charIndex;
     for (const ent of entities) {
       if (!ent.anchor) continue;
       const a = index.get(ent.anchor.start);
@@ -399,7 +402,34 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       for (let i = a; i <= b; i++) if (!map.has(charOrder[i])) map.set(charOrder[i], ent);
     }
     return map;
-  }, [entities, charOrder]);
+  }, [entities, charOrder, charIndex]);
+
+  // 地址 `#e=<实体id[,…]>`（「古籍中的出处」按章跳来）：本章提到这些实体的各处，按字序排好的 [起, 止] 字序区间。
+  // 整个专名、合称里的一个、拆分复合名的片段都算；同一区间只记一次
+  const mentionIds = useMemo(() => {
+    const a = scrollToAnchor?.anchor;
+    return a && a.startsWith('e=') ? new Set(a.slice(2).split(',').filter(Boolean)) : null;
+  }, [scrollToAnchor?.anchor]);
+  const mentionHits = useMemo(() => {
+    if (!mentionIds || !entities) return [] as Array<[number, number]>;
+    const seen = new Set<string>();
+    const out: Array<[number, number]> = [];
+    const push = (a: number, b: number) => { const k = `${a}:${b}`; if (!seen.has(k)) { seen.add(k); out.push([a, b]); } };
+    for (const ent of entities) {
+      if (!ent.anchor) continue;
+      const a = charIndex.get(ent.anchor.start);
+      const b = charIndex.get(ent.anchor.end);
+      if (a === undefined || b === undefined || b < a) continue;
+      if ((ent.targetId && mentionIds.has(ent.targetId)) || ent.targets?.some((x) => mentionIds.has(x.id))) push(a, b);
+      for (const p of ent.parts ?? []) {
+        if (!mentionIds.has(p.id)) continue;
+        const s0 = a + p.offset[0];
+        const e0 = a + p.offset[1] - 1;
+        if (e0 >= s0 && e0 <= b) push(s0, e0);
+      }
+    }
+    return out.sort((x, y) => x[0] - y[0] || x[1] - y[1]);
+  }, [mentionIds, entities, charIndex]);
 
   const entityLoader = useEntitySummaryLoader(entityTransport, loadEntitySummary);
   const hasEntities = entityOfChar.size > 0;
@@ -574,7 +604,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   const anchorDone = useRef<number | null>(null);
   const highlighted = useRef<HTMLElement[]>([]);
   useEffect(() => {
-    if (!scrollToAnchor || anchorDone.current === scrollToAnchor.nonce) return;
+    if (!scrollToAnchor || anchorDone.current === scrollToAnchor.nonce || scrollToAnchor.anchor.startsWith('e=')) return;
     const [start, end] = scrollToAnchor.anchor.split('~');
     const c = containerRef.current;
     const ch = c?.querySelector<HTMLElement>(`span[data-char-id="${cssEscape(start)}"]`);
@@ -592,38 +622,67 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     for (const el of highlighted.current) el.classList.remove('guji-hl');
     highlighted.current = [];
     if (end) {
-      const a = charOrder.indexOf(start);
-      const b = charOrder.indexOf(end);
-      if (a >= 0 && b >= a && b - a < 64) {
+      const a = charIndex.get(start);
+      const b = charIndex.get(end);
+      if (a !== undefined && b !== undefined && b >= a && b - a < 64) {
         for (let i = a; i <= b; i++) {
           const el = c?.querySelector<HTMLElement>(`span[data-char-id="${cssEscape(charOrder[i])}"]`);
           if (el) { el.classList.add('guji-hl'); highlighted.current.push(el); }
         }
       }
-      ch.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
-      // 'instant' 而不用 'auto'：站点 html 设了 scroll-behavior: smooth，'auto' 会变成动画，动画途中目标还在挪。
-      // 上方各页是 content-visibility: auto，滚过去之后才排出真实高度，目标会被挤走：
-      // 头 1.5 秒里目标不在视口就再居中一次；读者自己动了（滚轮、触摸、按键）就不再管
-      let userMoved = false;
-      const stop = () => { userMoved = true; };
-      const evs = ['wheel', 'touchstart', 'keydown', 'mousedown'] as const;
-      evs.forEach((e) => window.addEventListener(e, stop, { once: true, passive: true }));
-      [120, 350, 700, 1100, 1500].forEach((ms, k, all) => setTimeout(() => {
-        if (!userMoved && ch.isConnected) {
-          const r = ch.getBoundingClientRect();
-          if (r.top < 80 || r.bottom > window.innerHeight - 40) {
-            pageLockUntil.current = Date.now() + 800;
-            ch.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
-          }
-        }
-        if (k === all.length - 1) evs.forEach((e) => window.removeEventListener(e, stop));
-      }, ms));
+      centerWithRetries(ch, pageLockUntil);
     } else {
       const block = ch.closest<HTMLElement>('.guji-reflow-paragraph') ?? ch;
       block.scrollIntoView({ behavior: 'auto', block: 'start' });
     }
     if (!isNaN(page)) latest.current.onVisiblePageChange?.(page);
-  }, [scrollToAnchor, reflowPages, shownCount, allShown, ensurePageShown, charOrder]);
+  }, [scrollToAnchor, reflowPages, shownCount, allShown, ensurePageShown, charOrder, charIndex]);
+
+  // `#e=`：本章各处都淡淡标出（一段 <style>，后渲染的页也带上），当前一处用 guji-hl 并居中；「上一处／下一处」在底部
+  const [mentionNav, setMentionNav] = useState<{ k: number; nonce: number } | null>(null);
+  const [mentionClosed, setMentionClosed] = useState(false);
+  const eDone = useRef<number | null>(null);
+  useEffect(() => {
+    if (!scrollToAnchor || !mentionIds || eDone.current === scrollToAnchor.nonce || mentionHits.length === 0) return;
+    eDone.current = scrollToAnchor.nonce;
+    setMentionClosed(false);
+    setMentionNav({ k: 0, nonce: Date.now() });
+  }, [scrollToAnchor, mentionIds, mentionHits]);
+  const navDone = useRef<number | null>(null);
+  useEffect(() => {
+    if (!mentionNav || navDone.current === mentionNav.nonce) return;
+    const hit = mentionHits[mentionNav.k];
+    if (!hit) return;
+    const c = containerRef.current;
+    const startId = charOrder[hit[0]];
+    const ch = c?.querySelector<HTMLElement>(`span[data-char-id="${cssEscape(startId)}"]`);
+    const page = parseInt(startId.split(':')[0], 10);
+    if (!ch) { if (!allShown && !isNaN(page)) ensurePageShown(page); return; }
+    navDone.current = mentionNav.nonce;
+    for (const el of highlighted.current) el.classList.remove('guji-hl');
+    highlighted.current = [];
+    for (let i = hit[0]; i <= hit[1]; i++) {
+      const el = c?.querySelector<HTMLElement>(`span[data-char-id="${cssEscape(charOrder[i])}"]`);
+      if (el) { el.classList.add('guji-hl'); highlighted.current.push(el); }
+    }
+    centerWithRetries(ch, pageLockUntil);
+    if (!isNaN(page)) latest.current.onVisiblePageChange?.(page);
+  }, [mentionNav, mentionHits, charOrder, shownCount, allShown, ensurePageShown]);
+  const mentionCss = useMemo(() => {
+    if (!mentionIds || mentionClosed || mentionHits.length === 0) return '';
+    const sel: string[] = [];
+    for (const [a, b] of mentionHits) for (let i = a; i <= b; i++) sel.push(`.guji-text-pane-content span[data-char-id="${cssEscape(charOrder[i])}"]`);
+    return `${sel.join(',')}{background:${bim('mark-soft')};border-radius:2px}`;
+  }, [mentionIds, mentionClosed, mentionHits, charOrder]);
+  const goMention = (d: number) => setMentionNav((n) => {
+    const len = mentionHits.length;
+    return { k: ((n?.k ?? 0) + d + len) % len, nonce: Date.now() };
+  });
+  const closeMentions = () => {
+    setMentionClosed(true);
+    for (const el of highlighted.current) el.classList.remove('guji-hl');
+    highlighted.current = [];
+  };
 
   // 页指示头：位置（视口高度比例）。拖动中用本地值，松手才通知宿主写偏好
   const hasVisibleCb = !!onVisiblePageChange || !!onVisibleHeadingChange;
@@ -723,6 +782,15 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       onCopy={onContainerCopy}
     >
       {hasEntities && <style>{ENTITY_TEXT_CSS}</style>}
+      {mentionCss && <style>{mentionCss}</style>}
+      {mentionCss && mentionNav && (
+        <div className="bim-rd-mnav bim-d-ui" role="navigation" aria-label={t('mentions.navLabel')}>
+          <span>{t('mentions.navCount', { k: mentionNav.k + 1, n: mentionHits.length })}</span>
+          <button type="button" onClick={() => goMention(-1)} aria-label={t('mentions.prev')} title={t('mentions.prev')}>‹</button>
+          <button type="button" onClick={() => goMention(1)} aria-label={t('mentions.next')} title={t('mentions.next')}>›</button>
+          <button type="button" onClick={closeMentions} aria-label={t('mentions.close')} title={t('mentions.close')}>×</button>
+        </div>
+      )}
       {indicatorOn && (
         <PageIndicator
           y={effectiveY}
@@ -756,6 +824,30 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     </div>
   );
 };
+
+/**
+ * 把字 ch 滚到视口中间。'instant' 而不用 'auto'：站点 html 设了 scroll-behavior: smooth，'auto' 会变成动画，动画途中目标还在挪。
+ * 上方各页是 content-visibility: auto，滚过去之后才排出真实高度，目标会被挤走：头 1.5 秒里目标不在视口就再居中一次；
+ * 读者自己动了（滚轮、触摸、按键）就不再管
+ */
+function centerWithRetries(ch: HTMLElement, pageLockUntil: React.MutableRefObject<number>) {
+  pageLockUntil.current = Date.now() + 800;
+  ch.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
+  let userMoved = false;
+  const stop = () => { userMoved = true; };
+  const evs = ['wheel', 'touchstart', 'keydown', 'mousedown'] as const;
+  evs.forEach((e) => window.addEventListener(e, stop, { once: true, passive: true }));
+  [120, 350, 700, 1100, 1500].forEach((ms, k, all) => setTimeout(() => {
+    if (!userMoved && ch.isConnected) {
+      const r = ch.getBoundingClientRect();
+      if (r.top < 80 || r.bottom > window.innerHeight - 40) {
+        pageLockUntil.current = Date.now() + 800;
+        ch.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
+      }
+    }
+    if (k === all.length - 1) evs.forEach((e) => window.removeEventListener(e, stop));
+  }, ms));
+}
 
 /** 分批渲染：首批与之后每批大约多少字（GUJI-632）。首批要盖住第一屏（手机上约 4 屏）；每批在 CPU 降速 4–6 倍下约 0.3 秒 */
 const FIRST_BATCH_CHARS = 1800;
