@@ -1,0 +1,86 @@
+馆	record_id	题名	责任者	原因码	候选Work
+ioc	A212400	儀禮註疏十七卷	(漢)鄭玄注；(唐)陸德明音義；(唐)賈公彥疏	DUP_WORK_SUSPECT	d59f28np3ksj,d59fxwp1cpaa
+ioc	A212500	儀禮註疏十七卷	(漢)鄭玄注；(唐)陸德明音義；(唐)賈公彥疏	DUP_WORK_SUSPECT	d59f28np3ksj,d59fxwp1cpaa
+ioc	A135100	毛詩二十卷	(漢)毛亨傳；(漢)鄭玄箋	DUP_WORK_SUSPECT;A_MISSING	d59f27ywo3r7,d59fxxka0qgw,d59f24mit9tt,d59f24mit9ts,d59f24mit9tu,d59f20am36dc,d59fz4c16hvl,d59f6elqqfwk
+ioc	A212200	儀禮注疏十七卷	(漢)鄭玄注；(唐)賈公彥疏	DUP_WORK_SUSPECT	d59f28np3ksj,d59fxwp1cpaa
+ioc	A212300	儀禮注疏十七卷	(漢)鄭玄注；(唐)賈公彥疏	DUP_WORK_SUSPECT	d59f28np3ksj,d59fxwp1cpaa
+ioc	B1693500	洛陽搢紳舊聞記一卷	(宋)張齊賢撰	DUP_WORK_SUSPECT;A_MISSING	d59fy2dxpo8w,d59fyjwokkxs,d59fyjwkihvl,d59fyjwr2ha8,d59f2hk0gc1t
+ioc	B1720400	鐵圍山叢談一卷	(宋)蔡絛撰	DUP_WORK_SUSPECT	d59f2hth08ow,d59fy5b4zz0g
+ioc	B1760200	謇齋瑣綴錄殘四卷	(明)尹直撰	DUP_WORK_SUSPECT;LOCAL_PART	d59f2nkh7x8h,d59fy2e07klc
+ioc	B1842200	野人閒話一卷	(宋)景煥撰	DUP_WORK_SUSPECT;A_MISSING	d59fybbwooow,d59f2hg9akua,d59f2puaypkw
+ioc	B2092300	汝南先賢傳一卷	(晉)周斐撰	DUP_WORK_SUSPECT	d59fybaabb41,d59f27t2le6a
+ioc	B2662000	富順縣志三十八卷	(清)張利貞等修；(清)黃靖圖等纂	DUP_WORK_SUSPECT	d59fyobznqbk,d59f6eqi3q4m,d59fyp0e1iwy,d59fyozmvvnm,d59fynsd9p1c,d59fyfe940zk,d59f2mqhhybk,d59fynqnry0w
+ioc	B2752600	中吳紀聞一卷	(宋)龔明之撰	DUP_WORK_SUSPECT	d59fy02xu22o,d59f2hu7uneo
+ioc	B3373800	荊楚歲時記一卷	(梁)宗懍撰	DUP_WORK_SUSPECT;A_MISSING	d59f2pw8kmwy,d59f990cos90,d59f286xpurm
+ioc	B3880700	明刑管見錄一卷	(清)穆翰撰	DUP_WORK_SUSPECT	d59fxvyj48ht,d59f2nhv9ds0
+ioc	B4012000	郎潛紀聞一卷	(清)陳康祺撰	DUP_WORK_SUSPECT	d59fy100ogzk,d59fxvymjugw
+ioc	C5712400	見聞紀訓一卷	(明)陳良謨撰	DUP_WORK_SUSPECT	d59fy1x4giyp,d59f2nhigrnm
+ioc	C5862600	簷曝雜記一卷	(清)趙翼撰	DUP_WORK_SUSPECT	d59fy5b429ds,d59fyzmx20oy
+ioc	C6256000	杜陽雜編一卷	(唐)蘇鶚撰	DUP_WORK_SUSPECT;A_MISSING	d59fy1h988w1,d59f6en41xqf,d59f28k54a2t
+ioc	C6322700	睽車志一卷	(宋)郭彖撰	DUP_WORK_SUSPECT	d59fxv33kzcw,d59f2hsfjri8,d59fybb5j1fk
+ioc	C6451600	妙法蓮華經殘一卷	(姚秦)鳩摩羅什譯	DUP_WORK_SUSPECT;LOCAL_PART	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+ioc	C6451700	妙法蓮華經殘一卷	(姚秦)鳩摩羅什譯	DUP_WORK_SUSPECT;LOCAL_PART	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+ioc	C6451800	妙法蓮華經殘一卷	(姚秦)鳩摩羅什譯	DUP_WORK_SUSPECT;LOCAL_PART	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+ioc	C6741200	崔公入藥鏡註解一卷	(元)王玠撰	DUP_WORK_SUSPECT	d59fxwdlbhtt,d59fydxa7cap
+ioc	D8503600	碧山樂府四卷	(明)王九思撰	DUP_WORK_SUSPECT	d59f2ng3wbgh,d59f2hg6hfy8,d59fyfa1elfl
+shoryobu	1000072560001	孟子 （巻１・２）	宋 朱熹集註	DUP_WORK_SUSPECT;A_MISSING	d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w,d59fy2cntq0x,d59fy2cntq0y
+shoryobu	1000072560002	孟子 （巻３・４）	宋 朱熹集註	DUP_WORK_SUSPECT;A_MISSING	d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w,d59fy2cntq0x,d59fy2cntq0y
+shoryobu	1000072560003	孟子 （巻５・６）	宋 朱熹集註	DUP_WORK_SUSPECT;A_MISSING	d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w,d59fy2cntq0x,d59fy2cntq0y
+shoryobu	1000072560004	孟子 （巻７・８）	宋 朱熹集註	DUP_WORK_SUSPECT;A_MISSING	d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w,d59fy2cntq0x,d59fy2cntq0y
+shoryobu	1000072560005	孟子 （巻９・１０）	宋 朱熹集註	DUP_WORK_SUSPECT;A_MISSING	d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w,d59fy2cntq0x,d59fy2cntq0y
+shoryobu	1000072560006	孟子 （巻１１・１２）	宋 朱熹集註	DUP_WORK_SUSPECT;A_MISSING	d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w,d59fy2cntq0x,d59fy2cntq0y
+shoryobu	1000072560007	孟子 （巻１３・１４）	宋 朱熹集註	DUP_WORK_SUSPECT;A_MISSING	d59f28n623nk,d59fymbzwbgg,d59fxx7l1b7m,d59fxx7l1b7k,d59fxx7l1b7l,d59fy2cntq0w,d59fy2cntq0x,d59fy2cntq0y
+keio	keioobjecthub-12030	毛詩 20巻 存巻7.8	漢鄭玄 箋	DUP_WORK_SUSPECT;A_MISSING;LOCAL_PART	d59f27ywo3r7,d59fxxka0qgw,d59f24mit9tt,d59f24mit9ts,d59f24mit9tu,d59f20am36dc,d59fz4c16hvl,d59f6elqqfwk
+keio	keioobjecthub-12144	論語 2巻	宋朱熹 集注　単経本	DUP_WORK_SUSPECT;A_MISSING	d59fxx7e639c,d59fxx7e639e,d59fxx7e639d,d59fz13ha3nk,d59f2oflu3nl,d59fy03lvbwg,d59f24mo4b2c,d59fxx7ehbsw
+keio	keioobjecthub-13336	妙法蓮華經 存巻1 尾闕	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT;LOCAL_PART	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16745	妙法蓮華經 存巻5 断簡	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT;LOCAL_PART;MULTI_TITLE	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16746	妙法蓮華經 存巻1 断簡	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT;LOCAL_PART;MULTI_TITLE	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16747	妙法蓮華經 存巻8	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT;LOCAL_PART	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16748	妙法蓮華經 存巻2	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT;LOCAL_PART	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16749	妙法蓮華經 零巻	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16750	妙法蓮華經 存巻7 断簡	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT;LOCAL_PART;MULTI_TITLE	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16751	妙法蓮華經 存巻7 断簡	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT;LOCAL_PART;MULTI_TITLE	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16752	妙法蓮華經 存巻7 断簡	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT;LOCAL_PART;MULTI_TITLE	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16753	妙法蓮華經 存巻2	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT;LOCAL_PART	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16754	妙法蓮華經 存巻3	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT;LOCAL_PART	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16755	妙法蓮華經	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16756	妙法蓮華經	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16757	妙法蓮華經	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16758	妙法蓮華經	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16759	妙法蓮華經	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16760	妙法蓮華經	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16761	妙法蓮華經	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16762	妙法蓮華經	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16763	妙法蓮華經 存巻8	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT;LOCAL_PART	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16764	妙法蓮華經 存巻8	姚秦釈鳩摩羅什 訳	DUP_WORK_SUSPECT;LOCAL_PART	d59fyegvnny8,d59fyny480ld,d59f27x41zb5
+keio	keioobjecthub-16808	大方廣圓覺修多羅了義經 1巻	唐釈佛陀多羅 訳	DUP_WORK_SUSPECT	d59f28m73itg,d59fynyc0y69
+keio	keioobjecthub-16960	増廣註釋音辯唐柳先生集 20巻 別集1巻 外集  1巻 附録1巻	唐柳宗元 撰、宋童宗説 音注、宋張敦頤 音弁、宋潘緯 音義	DUP_WORK_SUSPECT;MULTI_TITLE	d59f28j9wjr8,d59fyf9uum0w
+keio	keioobjecthub-16961	増廣註釋音辯唐柳先生集 20巻 別集1巻 外集  1巻 附録1巻	唐柳宗元 撰、宋童宗説 音注、宋張敦頤 音弁、宋潘緯 音義	DUP_WORK_SUSPECT;MULTI_TITLE	d59f28j9wjr8,d59fyf9uum0w
+keio	keioobjecthub-16962	増廣註釋音辯唐柳先生集 20巻 別集1巻 外集  1巻 附録1巻	唐柳宗元 撰、宋童宗説 音注、宋張敦頤 音弁、宋潘緯 音義	DUP_WORK_SUSPECT;MULTI_TITLE	d59f28j9wjr8,d59fyf9uum0w
+keio	keioobjecthub-16963	増廣註釋音辯唐柳先生集 20巻 別集1巻 外集  1巻 附録1巻	唐柳宗元 撰、宋童宗説 音注、宋張敦頤 音弁、宋潘緯 音義	DUP_WORK_SUSPECT;MULTI_TITLE	d59f28j9wjr8,d59fyf9uum0w
+keio	keioobjecthub-16964	増廣註釋音辯唐柳先生集 20巻 別集1巻 外集  1巻 附録1巻	唐柳宗元 撰、宋童宗説 音注、宋張敦頤 音弁、宋潘緯 音義	DUP_WORK_SUSPECT;MULTI_TITLE	d59f28j9wjr8,d59fyf9uum0w
+keio	keioobjecthub-16965	増廣註釋音辯唐柳先生集 20巻 別集1巻 外集  1巻 附録1巻	唐柳宗元 撰、宋童宗説 音注、宋張敦頤 音弁、宋潘緯 音義	DUP_WORK_SUSPECT;MULTI_TITLE	d59f28j9wjr8,d59fyf9uum0w
+keio	keioobjecthub-16966	増廣註釋音辯唐柳先生集 20巻 別集1巻 外集  1巻 附録1巻	唐柳宗元 撰、宋童宗説 音注、宋張敦頤 音弁、宋潘緯 音義	DUP_WORK_SUSPECT;MULTI_TITLE	d59f28j9wjr8,d59fyf9uum0w
+keio	keioobjecthub-16967	増廣註釋音辯唐柳先生集 20巻 別集1巻 外集  1巻 附録1巻	唐柳宗元 撰、宋童宗説 音注、宋張敦頤 音弁、宋潘緯 音義	DUP_WORK_SUSPECT;MULTI_TITLE	d59f28j9wjr8,d59fyf9uum0w
+keio	keioobjecthub-16968	増廣註釋音辯唐柳先生集 20巻 別集1巻 外集  1巻 附録1巻	唐柳宗元 撰、宋童宗説 音注、宋張敦頤 音弁、宋潘緯 音義	DUP_WORK_SUSPECT;MULTI_TITLE	d59f28j9wjr8,d59fyf9uum0w
+keio	keioobjecthub-16969	増廣註釋音辯唐柳先生集 20巻 別集1巻 外集  1巻 附録1巻	唐柳宗元 撰、宋童宗説 音注、宋張敦頤 音弁、宋潘緯 音義	DUP_WORK_SUSPECT;MULTI_TITLE	d59f28j9wjr8,d59fyf9uum0w
+keio	keioobjecthub-16970	増廣註釋音辯唐柳先生集 20巻 別集1巻 外集  1巻 附録1巻	唐柳宗元 撰、宋童宗説 音注、宋張敦頤 音弁、宋潘緯 音義	DUP_WORK_SUSPECT;MULTI_TITLE	d59f28j9wjr8,d59fyf9uum0w
+keio	keioobjecthub-16971	増廣註釋音辯唐柳先生集 20巻 別集1巻 外集  1巻 附録1巻	唐柳宗元 撰、宋童宗説 音注、宋張敦頤 音弁、宋潘緯 音義	DUP_WORK_SUSPECT;MULTI_TITLE	d59f28j9wjr8,d59fyf9uum0w
+keio	keioobjecthub-17038	瓊臺會稿 12巻	明丘濬 撰	DUP_WORK_SUSPECT	d59fsibrjgg3,d59fxyuj0g75,d59fz9h2erk1
+keio	keioobjecthub-17039	瓊臺會稿 12巻	明丘濬 撰	DUP_WORK_SUSPECT	d59fsibrjgg3,d59fxyuj0g75,d59fz9h2erk1
+keio	keioobjecthub-17040	瓊臺會稿 12巻	明丘濬 撰	DUP_WORK_SUSPECT	d59fsibrjgg3,d59fxyuj0g75,d59fz9h2erk1
+keio	keioobjecthub-17041	瓊臺會稿 12巻	明丘濬 撰	DUP_WORK_SUSPECT	d59fsibrjgg3,d59fxyuj0g75,d59fz9h2erk1
+keio	keioobjecthub-17042	瓊臺會稿 12巻	明丘濬 撰	DUP_WORK_SUSPECT	d59fsibrjgg3,d59fxyuj0g75,d59fz9h2erk1
+keio	keioobjecthub-17043	瓊臺會稿 12巻	明丘濬 撰	DUP_WORK_SUSPECT	d59fsibrjgg3,d59fxyuj0g75,d59fz9h2erk1
+arc	arc_books-BM_JH015	山海経	郭璞（撰）	DUP_WORK_SUSPECT;A_MISSING	d59fye9x054w,d59fye9x054y,d59fy1xcvxmq,d59fytlhbx1c,d59fz5bihkow,d59fyzr1xptt,d59fyja5auwx
+arc	arc_books-BM_JH015_1	山海経	郭璞（撰）	DUP_WORK_SUSPECT;A_MISSING	d59fye9x054w,d59fye9x054y,d59fy1xcvxmq,d59fytlhbx1c,d59fz5bihkow,d59fyzr1xptt,d59fyja5auwx
+arc	arc_books-BM_JH015_2	山海経	郭璞（撰）	DUP_WORK_SUSPECT;A_MISSING	d59fye9x054w,d59fye9x054y,d59fy1xcvxmq,d59fytlhbx1c,d59fz5bihkow,d59fyzr1xptt,d59fyja5auwx
+arc	arc_books-BM_JH015_3	山海経	郭璞（撰）	DUP_WORK_SUSPECT;A_MISSING	d59fye9x054w,d59fye9x054y,d59fy1xcvxmq,d59fytlhbx1c,d59fz5bihkow,d59fyzr1xptt,d59fyja5auwx
+arc	arc_books-BM_JH015_4	山海経	郭璞（撰）	DUP_WORK_SUSPECT;A_MISSING	d59fye9x054w,d59fye9x054y,d59fy1xcvxmq,d59fytlhbx1c,d59fz5bihkow,d59fyzr1xptt,d59fyja5auwx
+arc	arc_books-BM_JH015_5	山海経	郭璞（撰）	DUP_WORK_SUSPECT;A_MISSING	d59fye9x054w,d59fye9x054y,d59fy1xcvxmq,d59fytlhbx1c,d59fz5bihkow,d59fyzr1xptt,d59fyja5auwx
+arc	arc_books-BM_JH015_6	山海経	郭璞（撰）	DUP_WORK_SUSPECT;A_MISSING	d59fye9x054w,d59fye9x054y,d59fy1xcvxmq,d59fytlhbx1c,d59fz5bihkow,d59fyzr1xptt,d59fyja5auwx
+arc	arc_books-BM_JH015_7	山海経	郭璞（撰）	DUP_WORK_SUSPECT;A_MISSING	d59fye9x054w,d59fye9x054y,d59fy1xcvxmq,d59fytlhbx1c,d59fz5bihkow,d59fyzr1xptt,d59fyja5auwx
+arc	arc_books-arcBK01_0051	郁離子	劉基（撰）	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2neo2xab,d59f2q23wa9s
+arc	arc_books-arcBK01_0084	儒門語要	倪元坦畬香(倪元坦)（輯著）、倪元坦醒吾(倪元坦)（自序）、吉村晋(吉村秋陽)（校閲・序）、頌尭日園・士恩祥微・士銘坤凝（校字）、王元吉（跋）	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59f2nhayygy
+arc	arc_books-arcBK01_0202	仏説般舟三昧経	支婁迦讖（訳）	T_EXACT;A_EQ;W_UNIQUE;ERA_OK;GROUP_SPLIT	d59fxuci8741
+nagoya	THERS_da-N004_20230901_02872	風俗通義十卷	漢應劭撰 明鐘惺評	DUP_WORK_SUSPECT	d59fy1jhg8ht,d59fyiuuzfnm,d59f208tsagw
