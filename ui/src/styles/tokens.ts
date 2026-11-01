@@ -193,6 +193,8 @@ export const BIM_TOKEN_GROUPS = [
         'tint-bg': { value: '#f3eee6', note: '检索框、悬停' },
         'shadow-summary': { value: '0 10px 32px rgba(60, 50, 40, 0.07)', note: '提要卡投影' },
         'flag-bg': { value: 'rgba(158, 42, 43, 0.08)', note: '唯一的状态色块「有影印」' },
+        'mark-bg': { value: '#fde68a', note: '专名出处：从「古籍中的出处」跳到阅读页时高亮的字、出处摘录里的专名（A12）' },
+        'mark-flash': { value: '#f59e0b', note: '专名出处：跳到阅读页时高亮先闪一下的颜色' },
         'theme-dot-zhusha': { value: '#9c3a2c', note: '主题切换控件的色点：朱砂（不随主题变，两套主题下都要认得出）' },
         'theme-dot-indigo': { value: '#2e5266', note: '主题切换控件的色点：靛青' },
         'theme-dot-ink': { value: '#3b4a58', note: '主题切换控件的色点：墨' },

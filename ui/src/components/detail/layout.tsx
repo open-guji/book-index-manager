@@ -253,6 +253,16 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 .bim-d-pick-n .bim-d-flag { margin-left: auto; }
 .bim-d-sec-sub { margin: -8px 0 16px; font-size: 13px; color: ${bim('aux-fg')}; }
 
+/* 古籍中的出处（MentionsSection）：一行一处，书名·标题在上，摘录在下，专名加粗 */
+.bim-d-mentions { list-style: none; margin: 0 0 12px; padding: 0; }
+.bim-d-mentions li { border-top: 1px solid ${bim('rule')}; }
+.bim-d-mentions li:first-child { border-top: 0; }
+.bim-d-mention { display: block; padding: 10px 12px; color: ${bim('ink')}; text-decoration: none; }
+.bim-d-mention:hover { background: ${bim('zebra-bg')}; }
+.bim-d-mention-where { display: block; font-size: 13px; color: ${bim('aux-fg')}; margin-bottom: 2px; }
+.bim-d-mention-ctx { font-size: 16px; letter-spacing: .04em; }
+.bim-d-mention-ctx b { font-weight: 700; background: ${bim('mark-bg')}; border-radius: 2px; padding: 0 1px; }
+
 /* 提要卡：生卒条、著作四部分布条 */
 .bim-d-life { margin-top: 18px; }
 .bim-d-life-bar { position: relative; height: 6px; border-radius: 3px; background: ${bim('rule')}; }

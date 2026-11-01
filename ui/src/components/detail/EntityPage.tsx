@@ -32,6 +32,7 @@ import {
 import { bim } from '../../styles/tokens';
 import { measureText, normalizeRole, roleFacets, workClassification, type RoleClass } from '../../core/detail-model';
 import { SealFigure } from './SealFigure';
+import { MentionsSection } from './MentionsSection';
 import { mapLimit, DETAIL_FETCH_CONCURRENCY } from '../../core/map-limit';
 
 /** 桌面 cap，与作品页版本表同一量级 */
@@ -132,6 +133,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
     const [showAll, setShowAll] = useState(false);
     const [sort, setSort] = useState<'default' | 'versions'>('default');
     const [resolved, setResolved] = useState<Map<string, ResolvedWork>>(new Map());
+    const [mentionsTotal, setMentionsTotal] = useState(0);
 
     const works = useMemo(() => data._works || [], [data._works]);
     const allRows: WorkRow[] = useMemo(() => works.map(w => {
@@ -366,9 +368,18 @@ export const EntityPage: React.FC<EntityPageProps> = ({
 
     const roleTabs = facets.map(f => ({ key: f.cls as RoleClass | '全部', label: `${f.label} ${f.count}` }));
 
+    const mentionsSec = data.id ? (
+        <MentionsSection
+            id={data.id}
+            transport={transport}
+            onTotal={setMentionsTotal}
+        />
+    ) : null;
+
     const nav: RailNavItem[] = [
         ...(showPicks && !picksPending ? [{ id: 'featured', label: t('entityPage.sec.featured'), count: picks.length }] : []),
         ...(allRows.length ? [{ id: 'works', label: t('entityPage.sec.allWorks'), count: allRows.length }] : []),
+        ...(mentionsTotal ? [{ id: 'mentions', label: t('mentions.title'), count: mentionsTotal }] : []),
         ...(extLinks.length ? [{ id: 'external', label: t('entityPage.sec.external'), count: extLinks.length }] : []),
     ];
 
@@ -400,11 +411,12 @@ export const EntityPage: React.FC<EntityPageProps> = ({
         </Sec>
     ) : null;
 
-    const main = allRows.length === 0 ? (
+    const main = allRows.length === 0 ? (<>
         <Sec title={t('entityPage.sec.works')}>
             <p className="bim-d-meta bim-d-ui" style={{ margin: 0 }}>{t('entityPage.empty')}</p>
         </Sec>
-    ) : (<>
+        {mentionsSec}
+    </>) : (<>
         {picksSec}
         <Sec
             id="works"
@@ -477,6 +489,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                 <CapMore total={filtered.length} shown={visible.length} unit={t('entityPage.moreUnit')} onClick={() => setShowAll(true)} />
             )}
         </Sec>
+        {mentionsSec}
     </>);
 
     const side = extLinks.length > 0 ? (

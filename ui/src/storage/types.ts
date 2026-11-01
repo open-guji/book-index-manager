@@ -117,6 +117,11 @@ export interface IndexStorage {
 
     // ── 版本传承（可选） ──
 
+    // ── 专名出处反查（可选；A12，产物 mentions/<id>.json，打包时由 book-text 的专名号派生） ──
+
+    /** 某实体（或 Work）被专名号标出的出处，第 page 页（从 1 起）；没有出处或取不到返回 null */
+    getMentions?(id: string, page?: number): Promise<MentionsPage | null>;
+
     /** 获取版本传承图数据 */
     getLineageGraph?(workId: string): Promise<LineageGraph | null>;
 
@@ -163,4 +168,29 @@ export interface IndexCounts {
     entities: number;
     resourceCounts?: { hasText: number; hasImage: number };
     subtypeStats?: Record<string, number>;
+}
+
+/** 专名出处反查的一页（schema mentions/v1）。第 1 页另带 books */
+export interface MentionsPage {
+    schema: string;
+    entity_id: string;
+    page: number;
+    pages: number;
+    total: number;
+    books?: { item: string; title?: string; count: number }[];
+    items: MentionItem[];
+}
+
+/** 一处出处：start／end 是格位（页:列:格[ab]），阅读页地址 `/read/<item>[/<key>]/<chapter>#<start>~<end>` */
+export interface MentionItem {
+    item: string;
+    key: string;
+    chapter: string;
+    start: string;
+    end: string;
+    text: string;
+    heading?: string;
+    before: string;
+    after: string;
+    v?: string;
 }

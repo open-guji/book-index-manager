@@ -34,7 +34,7 @@ export type {
 } from './types';
 
 // Storage
-export type { IndexStorage } from './storage/types';
+export type { IndexStorage, MentionsPage, MentionItem } from './storage/types';
 export { GithubStorage } from './storage/github-storage';
 export type { GithubStorageConfig } from './storage/github-storage';
 export { LocalStorage } from './storage/local-storage';

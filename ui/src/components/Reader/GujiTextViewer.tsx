@@ -569,23 +569,61 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   }, [scrollNonce, shownCount]);
 
   // 目录点标题 → 正文滚到该段开头，书影跟到该页。字还没渲染出来就等下一次（换章时数据后到）
+  // 范围 `起~止`（专名出处反查的链接）：滚到起字、居中，并给范围内的字加 guji-hl 高亮；
+  // 起字找不到（格位过时）就只滚到那一页，不高亮、不报错
   const anchorDone = useRef<number | null>(null);
+  const highlighted = useRef<HTMLElement[]>([]);
   useEffect(() => {
     if (!scrollToAnchor || anchorDone.current === scrollToAnchor.nonce) return;
+    const [start, end] = scrollToAnchor.anchor.split('~');
     const c = containerRef.current;
-    const ch = c?.querySelector<HTMLElement>(`span[data-char-id="${cssEscape(scrollToAnchor.anchor)}"]`);
+    const ch = c?.querySelector<HTMLElement>(`span[data-char-id="${cssEscape(start)}"]`);
+    const page = parseInt(start.split(':')[0], 10);
     if (!ch) {
-      const page = parseInt(scrollToAnchor.anchor.split(':')[0], 10);
-      if (!allShown && !isNaN(page)) ensurePageShown(page);
+      if (!allShown && !isNaN(page) && reflowPages.some((pg) => pg.page >= page)) { ensurePageShown(page); return; }
+      if (end && !isNaN(page)) {
+        anchorDone.current = scrollToAnchor.nonce;
+        pageAnchor(page)?.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
       return;
     }
     anchorDone.current = scrollToAnchor.nonce;
-    const block = ch.closest<HTMLElement>('.guji-reflow-paragraph') ?? ch;
     pageLockUntil.current = Date.now() + 800;
-    block.scrollIntoView({ behavior: 'auto', block: 'start' });
-    const page = parseInt(scrollToAnchor.anchor.split(':')[0], 10);
+    for (const el of highlighted.current) el.classList.remove('guji-hl');
+    highlighted.current = [];
+    if (end) {
+      const a = charOrder.indexOf(start);
+      const b = charOrder.indexOf(end);
+      if (a >= 0 && b >= a && b - a < 64) {
+        for (let i = a; i <= b; i++) {
+          const el = c?.querySelector<HTMLElement>(`span[data-char-id="${cssEscape(charOrder[i])}"]`);
+          if (el) { el.classList.add('guji-hl'); highlighted.current.push(el); }
+        }
+      }
+      ch.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
+      // 'instant' 而不用 'auto'：站点 html 设了 scroll-behavior: smooth，'auto' 会变成动画，动画途中目标还在挪。
+      // 上方各页是 content-visibility: auto，滚过去之后才排出真实高度，目标会被挤走：
+      // 头 1.5 秒里目标不在视口就再居中一次；读者自己动了（滚轮、触摸、按键）就不再管
+      let userMoved = false;
+      const stop = () => { userMoved = true; };
+      const evs = ['wheel', 'touchstart', 'keydown', 'mousedown'] as const;
+      evs.forEach((e) => window.addEventListener(e, stop, { once: true, passive: true }));
+      [120, 350, 700, 1100, 1500].forEach((ms, k, all) => setTimeout(() => {
+        if (!userMoved && ch.isConnected) {
+          const r = ch.getBoundingClientRect();
+          if (r.top < 80 || r.bottom > window.innerHeight - 40) {
+            pageLockUntil.current = Date.now() + 800;
+            ch.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
+          }
+        }
+        if (k === all.length - 1) evs.forEach((e) => window.removeEventListener(e, stop));
+      }, ms));
+    } else {
+      const block = ch.closest<HTMLElement>('.guji-reflow-paragraph') ?? ch;
+      block.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }
     if (!isNaN(page)) latest.current.onVisiblePageChange?.(page);
-  }, [scrollToAnchor, reflowPages, shownCount, allShown, ensurePageShown]);
+  }, [scrollToAnchor, reflowPages, shownCount, allShown, ensurePageShown, charOrder]);
 
   // 页指示头：位置（视口高度比例）。拖动中用本地值，松手才通知宿主写偏好
   const hasVisibleCb = !!onVisiblePageChange || !!onVisibleHeadingChange;

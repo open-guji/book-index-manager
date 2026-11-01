@@ -40,6 +40,11 @@ export const READER_CSS = `
    悬停卡（专名／书名）开在页尾时下半截被截断。页内有卡开着时这页恢复正常渲染（它正在屏内，本来就要画）。 */
 .guji-page-section:has(.bim-et-card) { content-visibility: visible !important; }
 
+/* 从「古籍中的出处」跳来（地址 #起~止）：范围内的字高亮，先闪一下再常亮，直到下一次跳转 */
+.bim-rd .guji-hl { background: ${bim('mark-bg')}; border-radius: 2px; box-shadow: 0 0 0 2px ${bim('mark-bg')}; animation: guji-hl-in 1.2s ease-out 1; }
+@keyframes guji-hl-in { 0% { background: ${bim('mark-flash')}; box-shadow: 0 0 0 4px ${bim('mark-flash')}; } 100% { background: ${bim('mark-bg')}; box-shadow: 0 0 0 2px ${bim('mark-bg')}; } }
+@media (prefers-reduced-motion: reduce) { .bim-rd .guji-hl { animation: none; } }
+
 /* 跳到正文：平时按标准 visually-hidden 收成 1px 并裁掉（任何宽度都不外露），
    获得焦点时才还原成左上角的按钮 */
 .bim-rd-skip {
