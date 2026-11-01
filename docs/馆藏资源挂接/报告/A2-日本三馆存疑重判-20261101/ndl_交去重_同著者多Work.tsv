@@ -1,0 +1,36 @@
+record_id	题名	责任者	原因码	候选Work
+000007603633	古今合璧事類備要前集69卷後集81卷續集56卷附別集94卷外集66卷	宋謝維新撰,別集外集宋虞載撰	MULTI_WORK;MULTI_TITLE	d59f2hpi1jwh,d59f2hsxcagw,d59f2htmxr0i,d59f6elpsq9y,d59f6el5tji9,d59fyfens6wy,d59f6eikstmr,d59f6esnttdw
+000007537669	古今萬姓統譜140卷歴代帝王姓系統譜6卷氏族博攷14卷	明凌迪知撰	MULTI_WORK;MULTI_TITLE	d59fyn6hpyip,d59f2nezxy4h
+000007553005	新刊古今醫鑑 8卷	龔, 信；龔, 廷賢	T_FUZZY	d59fxyo0a60y,d59fxxouivb5,d59fxxaosc8w
+000007512381	春秋左傳註疏60卷	晉杜預註,唐孔穎達疏	MULTI_WORK	d59fxwpca0aq,d59f28nf3zeq
+000007557904	本草綱目53卷瀕湖脈學1卷奇經八脈攷1卷	明李時珍撰	MULTI_WORK;MULTI_TITLE	d59f2nk0ocn6,d59f2nkfnqwx,d59fxz17248w
+000007614433	佛法金湯編16卷	明釋心泰撰	MULTI_WORK	d59fyv4caeio,d59f2gfybyf4
+000007557918	本草綱目52卷瀕湖脈學1卷奇經八脈攷1卷脈訣攷證1卷	明李時珍撰	MULTI_WORK;MULTI_TITLE	d59f2nk0ocn6,d59f2nkfnqwx,d59fxz17248w
+000007553300	傷寒論10卷	漢張仲景撰,晉王叔和撰次,宋林億校正	A_MISSING;A_ALIAS_ONLY;MULTI_WORK;MULTI_TITLE	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+000007537710	古今萬姓統譜140卷歴代帝王姓系統譜6卷氏族博攷14卷	明凌迪知撰,鵜飼眞泰點	MULTI_WORK;MULTI_TITLE	d59fyn6hpyip,d59f2nezxy4h
+000007620131	老子道徳眞經2卷	魏王弼註,唐陸徳明音義,宇佐美〓水校	MULTI_WORK;A_MISSING	d59fyzmpkbnk,d59fyk6zek1s,d59fxyekcphc,d59fxyej3rb5
+000007530024	釋名疏證8卷續釋名1卷釋名補遺1卷附篆字本	清畢〓撰	MULTI_WORK;A_MISSING;MULTI_TITLE	d59f24m94wzq,d59fy039p2ps,d59fz5ahcc1t,d59f2nasuz28,d59fxx74hqf5,d59f2q124l4w,d59fxvlpg9a9
+000007726189	平妖傳8卷40回	明羅貫中撰,明馮夢龍補	MULTI_TITLE	d59fxs7c45xc,d59f2nkydzb6
+000007691389	揅經室一集14卷二集8卷三集5卷四集2卷四集詩11卷外集5卷續集11卷再續集6卷	阮, 元, 1764-1849	MULTI_WORK;MULTI_TITLE	d59f2noq63gh,d59fy3sgleyp,d59f6eqchgci,d59f6ef9veo5,d59f6eqbuz9f,d59f6eqo18g5,d59f6ehrgikn,d59fy031w54w
+000007612113	救荒活民書12卷	宋董〓撰,元張光大増,明朱熊補,明王崇慶釋斷	MULTI_WORK	d59f2hpcfa4h,d59f2gi1vdvl
+000007553353	傷寒論1卷	漢張仲景撰,晉王叔和撰次	A_MISSING;A_ALIAS_ONLY;MULTI_WORK;MULTI_TITLE	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+000007623004	述古堂藏書目4卷宋板書目1卷	清錢曾撰	MULTI_WORK;MULTI_TITLE	d59fy3rbpbsx,d59f2msw9xc1
+pid12970829	本草綱目52卷圖3卷奇經八脈攷1卷脈訣攷證1卷瀕湖脈學1卷附本草萬方鍼線8卷本草綱目拾遺10卷	明李時珍撰；鍼線清蔡烈先撰；拾遺清趙學敏撰	MULTI_WORK;MULTI_TITLE	d59f2nk0ocn6,d59f2nkfnqwx,d59fxz17248w,d59f2nia8rup
+pid14363102	白虎通2卷	漢班固撰；清汪士漢校	MULTI_WORK	d59f2084tb0g,d59fkwn0o935
+000007553366	傷寒論1卷	漢張仲景撰	A_MISSING;A_ALIAS_ONLY;MULTI_WORK	d59f2mt8g6iq,d59f24m8ifwn,d59fxzu4p0xt,d59f208iuzgg,d59f2gkapukg
+000007612976	佛説四十二章經解1卷八大人覺經畧解1卷	明釋智旭撰	MULTI_WORK;MULTI_TITLE	d59fy9dya3up,d59fxwavm7sw,d59fyj9aed4w
+000007540371	楊子法言2卷附老子考異1卷	漢楊雄撰；宋宋咸註	A_ALIAS_ONLY;MULTI_WORK;MULTI_TITLE	d59f28jf7kzq,d59f2087mfwg,d59f27u7spvn,d59f23ntwsg2
+000007684730	碧山堂集5卷	元釋宗衍撰	MULTI_WORK	d59fxqn4591c,d59f2ndmmghs,d59fxt8na4n4,d59fxu7px1xd
+pid2544326	新刊古今醫鑑 8卷	(明) 龔信 撰；(明) 龔廷賢 續	T_FUZZY	d59fxyo0a60y,d59fxxouivb5,d59fxxaosc8w
+pid2544734	冥樞會要 3卷	(宋) 釋祖心 集；[霊源惟清] [編]	MULTI_WORK	d59f2ng7bxtt,d59fyhij2pdt
+pid2557511	本草綱目52卷圖3卷瀕湖脉學1卷奇經八脉攷1卷脉訣攷證1卷附本草綱目拾遺10卷本草萬方鍼線8卷	明李時珍撰；拾遺清趙學敏撰；鍼線清蔡烈先撰；清呉毓昌校	MULTI_WORK;MULTI_TITLE	d59f2nk0ocn6,d59f2nkfnqwx,d59fxz17248w,d59fxz13xqtd
+pid2559599	釋氏稽古略4卷附釋鑑稽古略續集3卷	元釋覺岸撰；附明釋大聞撰	MULTI_WORK;MULTI_TITLE	d59fyfe025mp,d59f2gpsmayp
+pid2565571	隸釋27卷隸續21卷附隸釋刊誤1卷	宋洪〓撰；附清黄丕烈撰	MULTI_WORK;MULTI_TITLE	d59f2net2qdg,d59f2ht9ijnm,d59f2hq7brwi
+pid2568022	歸田瑣記8卷浪跡叢談11卷續談8卷	清梁章鉅撰	MULTI_WORK;MULTI_TITLE	d59f2nmagetd,d59f2nmarncw
+pid2569169	孫氏祠堂書目内編4卷外編3卷平津館鑒藏書籍記3卷補遺1卷續編1卷廉石居藏書内編1卷外編1卷	清孫星衍撰	MULTI_WORK;MULTI_TITLE	d59f2nfkjhtt,d59fyxbfdwjk,d59f6et002ki,d59f6eqqudc1,d59fyqwf5gci,d59f2hfl9b0h,d59f6eme58na,d59fz4bri51e
+pid2575910	本草綱目52卷圖3卷奇經八脈攷1卷脈訣攷證1卷瀕湖脈學1卷附本草萬方鍼線8卷本草綱目拾遺10卷	明李時珍撰；鍼線清蔡烈先撰；拾遺清趙學敏撰	MULTI_WORK;MULTI_TITLE	d59f2nk0ocn6,d59f2nkfnqwx,d59fxz17248w,d59f2nia8rup
+pid2576144	本草綱目52卷圖3卷奇經八脈攷1卷脈訣攷證1卷瀕湖脈學1卷附本草綱目拾遺10卷本草萬方鍼線8卷	明李時珍撰；拾遺清趙學敏撰；鍼線清蔡烈先撰	MULTI_WORK;MULTI_TITLE	d59f2nk0ocn6,d59f2nkfnqwx,d59fxz17248w,d59fxz13xqtd
+pid2580810	夢溪筆談26卷補筆談3卷續筆談11卷校字記1卷	宋沈括撰；清陶福祥校	MULTI_WORK;A_MISSING;MULTI_TITLE	d59f2q7zj6yp,d59fxvyznta8,d59f2pya8n42,d59f6enfwydd
+pid2600608	大事記12卷通釋3卷解題12卷	宋呂祖謙撰	MULTI_WORK;A_MISSING;MULTI_TITLE	d59f24mbmtcf,d59f2hrg9y4j,d59f2hh2mvwg,d59f2hi1lgqp,d59f2hhb2akh
+pid2600705	漢書辨疑22卷後漢書辨疑11卷續漢書辨疑9巻	(清) 錢大昭 撰	MULTI_WORK;MULTI_TITLE	d59f2nbng8aq,d59f2nbqklq8,d59f2mrw2ebl
+pid2602601	平定粤匪紀略18卷附記4卷	清杜文瀾撰	MULTI_WORK;MULTI_TITLE	d59f2nc8d4ow,d59f2nc8d4ox

@@ -1,0 +1,59 @@
+record_id	题名	责任者	原因码	候选Work
+300120234	前漢書	班／固 撰	MULTI_WORK;A_MISSING	d59f9nmkaqdi,d59f1iqd854w,d59f2845ioe9,d59f28mlgft3,d59f24mkop38,d59f24mkop35,d59f24mkop39,d59f24mkop37
+100389827	滄浪詩話／談藝録／秇圃擷餘	石川／之清(石河／大凡) 校	MULTI_WORK;MULTI_TITLE	d59f2htbp7gg,d59f2ni8op35,d59f2njarnk1
+100419553	孝経正義九巻／即孝経註疏	玄宗 註	MULTI_WORK;A_MISSING;MULTI_TITLE	d59f28noh3ph,d59f2prigb2a,d59f2nux1jb5,d59fxwg1nlz5,d59fxwg1nlz4,d59fyy48cao1,d59fxz4ahreo
+100389291	後漢書	范／曄	MULTI_WORK;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f27xspq81,d59f283xpqtf,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100453222	後漢書	范／曄	MULTI_WORK;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f27xspq81,d59f283xpqtf,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+300086457	後漢書	范／曄	MULTI_WORK;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f27xspq81,d59f283xpqtf,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+300098186	後漢書	范／曄	MULTI_WORK;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f27xspq81,d59f283xpqtf,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+300120232	後漢書	范／曄	MULTI_WORK;A_MISSING	d59f2nuq6bcw,d59f27xspq82,d59f27xspq81,d59f283xpqtf,d59f27tbyigy,d59fyv8ifjsy,d59fyivjn6rl,d59f283pwt8g
+100354672	儒釋道平心論	劉／謐	MULTI_WORK	d59f2ghlbt34,d59f6elvf01s,d59fxyt5p4hu
+200018996	三國志	陳／寿 撰	MULTI_WORK;A_MISSING	d59fxrwmm32a,d59f2nk1atq9,d59f282rkphc,d59fz4bpmps0,d59f283yngg4
+100257273	四元玉鑑細草	朱／世傑 撰	MULTI_WORK;A_MISSING	d59fy1im8i68,d59f2nja52bk,d59fy1gobchs
+100257274	四元玉鑑細草	朱／世傑 撰	MULTI_WORK;A_MISSING	d59fy1im8i68,d59f2nja52bk,d59fy1gobchs
+300092672	釋鑑稽古略續集	覚岸 輯	MULTI_WORK	d59fyfe025mp,d59f2gpsmayp,d59f2nf74ema
+100354750	釋氏稽古略／釋鑑稽古略續集	覚岸 輯	MULTI_WORK;MULTI_TITLE	d59fyfe025mp,d59f2gpsmayp,d59f2nf74ema
+100049220	経典釋文／周易音義	陸／徳明 撰	MULTI_TITLE	d59fy03ifpxc,d59fxwoib85c,d59f28j8nll0
+100243987	蕉園首書左傳	杜／預 撰	MULTI_WORK;A_MISSING	d59fyzmp9341,d59ezak6jq4g,d59f2nd4tx50,d59fz4bpbh8h,d59fxw1cvls2,d59fxwga30n5,d59fxw1d6ubk,d59fxw1d6ubl
+300077188	待漏院記	王／元之 撰	A_MISSING;A_ALIAS_ONLY;MULTI_WORK	d59fy9xbm7sx,d59f2ptei134,d59f2hngos8y
+300086323	新刊古今医鑑	龔／信 編	T_FUZZY	d59fxyo0a60y,d59fxxouivb5,d59fxxaosc8w
+300096874	新刊古今醫鑑	龔／信 編	T_FUZZY	d59fxyo0a60y,d59fxxouivb5,d59fxxaosc8w
+200021465	續新齊諧	袁／随園(袁／枚)	MULTI_WORK	d59fyfdhn56p,d59fxvylm4u9,d59fxprwf475
+300092345	續新齊諧	袁／随園(袁／枚)	MULTI_WORK	d59fyfdhn56p,d59fxvylm4u9,d59fxprwf475
+300139833	金匱要畧	張／機 撰	MULTI_WORK	d59fxz2st0qo,d59f23jjpk3k,d59f2myqnvgg
+100256826	新朝算学啓蒙	朱／世傑 撰	MULTI_WORK	d59fy1gobchu,d59fy1gq6rr4
+100237246	新編算学啓蒙	朱／世傑 撰	MULTI_WORK	d59fy1gobchu,d59fy1gq6rr4
+100237480	新編算学啓蒙	朱／世傑 撰	MULTI_WORK	d59fy1gobchu,d59fy1gq6rr4
+100237481	新編算学啓蒙	朱／世傑 撰	MULTI_WORK	d59fy1gobchu,d59fy1gq6rr4
+100237482	新編算学啓蒙	朱／世傑 撰	MULTI_WORK	d59fy1gobchu,d59fy1gq6rr4
+100237483	新編算学啓蒙	朱／世傑 撰	MULTI_WORK	d59fy1gobchu,d59fy1gq6rr4
+100246307	新編算学啓蒙	朱／世傑 撰	MULTI_WORK	d59fy1gobchu,d59fy1gq6rr4
+100249753	新編算学啓蒙	朱／世傑 撰	MULTI_WORK	d59fy1gobchu,d59fy1gq6rr4
+100240606	新編筭學啓蒙／３巻	朱／世傑 撰	MULTI_WORK	d59fy1gobchu,d59fy1gq6rr4
+100231561	世說新語補	何／良俊 撰	MULTI_WORK;A_MISSING	d59fy1xdtn9e,d59fy1078ge8,d59f2nkkcao0,d59fy1ij44qo
+300050639	世説新語補	何／良俊 撰	MULTI_WORK;A_MISSING	d59fy1xdtn9e,d59fy1078ge8,d59f2nkkcao0,d59fy1ij44qo
+100244497	李卓吾批點世説新語補	何／良俊 撰	MULTI_WORK;A_MISSING	d59fy1xdtn9e,d59fy1078ge8,d59f2nkkcao0,d59fy1ij44qo,d59f2nj6337k,d59fy1x8im0w
+100449655	李卓吾批點世説新語補	何／良俊 撰	MULTI_WORK;A_MISSING	d59fy1xdtn9e,d59fy1078ge8,d59f2nkkcao0,d59fy1ij44qo,d59f2nj6337k,d59fy1x8im0w
+100452831	李卓吾批點世説新語補	何／良俊 撰	MULTI_WORK;A_MISSING	d59fy1xdtn9e,d59fy1078ge8,d59f2nkkcao0,d59fy1ij44qo,d59f2nj6337k,d59fy1x8im0w
+200021448	李卓吾批點世説新語補	何／良俊 撰	MULTI_WORK;A_MISSING	d59fy1xdtn9e,d59fy1078ge8,d59f2nkkcao0,d59fy1ij44qo,d59f2nj6337k,d59fy1x8im0w
+300098283	李卓吾批點世説新語補	何／良俊 撰	MULTI_WORK;A_MISSING	d59fy1xdtn9e,d59fy1078ge8,d59f2nkkcao0,d59fy1ij44qo,d59f2nj6337k,d59fy1x8im0w
+300118911	李卓吾批点世説新語補巻七・八	何／良俊 撰	MULTI_WORK;A_MISSING	d59fy1xdtn9e,d59fy1078ge8,d59f2nkkcao0,d59fy1ij44qo
+100386182	黄石公素書	張／商英 注	MULTI_WORK;A_MISSING	d59fz892998h,d59f1mpdh4ao,d59f2hk8vqpt,d59fxs6lw8aq,d59fy1hz4xz4,d59f2pzyhfk1,d59fyayezfnk,d59fytlvou0w
+100112260	合訂西廂記文機活趣全解	王／実甫	A_ALIAS_ONLY;MULTI_WORK	d59fryq7s6wx,d59fxxdi8agw
+100354845	竹窓隨筆／二筆／三筆	袾宏 撰	MULTI_TITLE	d59fyiq2zpxe,d59f6epbyosj,d59f2nloak8x,d59f2ncmq1oh,d59f2nlbhtz4,d59f6epbng8y,d59f2ncn1a80
+100354846	竹窓隨筆／二筆／三筆	袾宏 撰	MULTI_TITLE	d59fyiq2zpxe,d59f6epbyosj,d59f2nloak8x,d59f2ncmq1oh,d59f2nlbhtz4,d59f6epbng8y,d59f2ncn1a80
+100378024	畜徳録	陳／沂 撰	MULTI_WORK	d59f2nh7up6o,d59f2nu2ga2o
+300083016	傷寒論注解	成／無己	A_MISSING;ERA_CONFLICT;MULTI_WORK	d59f2godqmf6,d59f24m8ifwm,d59fy04xmps2,d59fy3wyaf41
+100317348	註解傷寒論	成／無己	MULTI_WORK;A_MISSING	d59f2godqmf6,d59f24m8ifwm,d59fy04xmps2
+100257300	疇人伝	阮／元( 正編 )	MULTI_WORK	d59f2nd1pfr5,d59f2ms6zpc2,d59fxz4hzgg1
+100244590	疇人傳／４６卷／續疇人傳／６巻	阮／元( 正編 )	MULTI_WORK;MULTI_TITLE	d59f2nd1pfr5,d59f2ms6zpc2,d59fxz4hzgg1,d59f2nd20oao
+100386031	百丈清規	徳煇 重輯	MULTI_WORK	d59f2ghjrmde,d59fygqrku0y
+100386036	百丈清規	徳煇 重輯	MULTI_WORK	d59f2ghjrmde,d59fygqrku0y
+100317041	類証陳氏小児痘疹方論	陳／文中 撰	MULTI_WORK	d59fxz1ev1tt,d59f2j4rrrwh
+100288126	桐陰論畫／桐陰畫訣／續桐陰論畫	秦／祖永 撰	MULTI_WORK;MULTI_TITLE	d59f2nkcuhog,d59f2mysuj9e
+100348271	辨惑論	李／杲 撰	MULTI_WORK	d59f2j514w74,d59f2gd572f6,d59fyj7jcfep,d59f2j4tn75s
+300106542	白虎通	班／固 撰	MULTI_WORK	d59f2084tb0g,d59fkwn0o935
+100317187	大医院校註婦人良方大全	陳／自明 編	MULTI_WORK;COLLECTION	d59f2hg0jxmp,d59fxzgc2gox
+100317372	婦人良方	陳／自明 編	MULTI_WORK	d59f2hg0jxmp,d59fxzgc2gox
+100354777	佛法金湯編	心泰 撰	MULTI_WORK	d59fyv4caeio,d59f2gfybyf4
+100376396	分甘余話	漁洋／山人(王／士禛)	A_ALIAS_ONLY;MULTI_WORK	d59f2mgr9ou8,d59fz8nsa7lu
