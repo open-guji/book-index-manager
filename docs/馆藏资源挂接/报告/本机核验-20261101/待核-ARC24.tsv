@@ -1,0 +1,24 @@
+batch	source	record_id	work_id	url	iiif_manifest	must_contain
+A9-0	arc	arc_books-AIC_R08_2_11_0Nr30a	d59fxq6bu03m	https://www.dh-jac.net/db1/books/AIC.R08-2-11.0(3)/portal/	https://www.dh-jac.net/db1/books/AIC.R08-2-11.0(3)/portal/manifest.json	
+A9-0	arc	arc_books-AIC_R08_2_12_0	d59fxqhcvv28	https://www.dh-jac.net/db1/books/AIC.R08-2-11.0/portal/	https://www.dh-jac.net/db1/books/AIC.R08-2-12.0/portal/manifest.json	
+A9-0	arc	arc_books-AIC_R08_2_12_0Nr10a	d59fxqhcvv28	https://www.dh-jac.net/db1/books/AIC.R08-2-12.0(1)/portal/	https://www.dh-jac.net/db1/books/AIC.R08-2-12.0(1)/portal/manifest.json	
+A9-0	arc	arc_books-AIC_R08_2_12_0Nr20a	d59fxqhcvv28	https://www.dh-jac.net/db1/books/AIC.R08-2-12.0(2)/portal/	https://www.dh-jac.net/db1/books/AIC.R08-2-12.0(2)/portal/manifest.json	
+A9-0	arc	arc_books-UCLA_G0000702597	d59fxwyij2tc	https://www.dh-jac.net/db1/books/UCLA-G0000702597/portal/	https://www.dh-jac.net/db1/books/UCLA-G0000702597/portal/manifest.json	
+A9-0	arc	arc_books-UCLA_G0000716373	d59fxwyij2tc	https://www.dh-jac.net/db1/books/UCLA-G0000716373/portal/	https://www.dh-jac.net/db1/books/UCLA-G0000716373/portal/manifest.json	
+A9-0	arc	arc_books-UCLA_G0000735951_02	d59f2nkglgcj	https://www.dh-jac.net/db1/books/UCLA-G0000735951/portal/	https://www.dh-jac.net/db1/books/UCLA-G0000735951-02/portal/manifest.json	
+A9-0	arc	arc_books-UCLA_G0000741256	d59f2hhqo5qa	https://www.dh-jac.net/db1/books/UCLA-G0000741256/portal/	https://www.dh-jac.net/db1/books/UCLA-G0000741256/portal/manifest.json	
+A9-0	arc	arc_books-UCLA_G0000816595	d59f28kvng94	https://www.dh-jac.net/db1/books/UCLA-G0000816595/portal/	https://www.dh-jac.net/db1/books/UCLA-G0000816595/portal/manifest.json	
+A9-0	arc	arc_books-UCLA_G0000896761_02	d59f2hqhmltu	https://www.dh-jac.net/db1/books/UCLA-G0000896761/portal/	https://www.dh-jac.net/db1/books/UCLA-G0000896761-02/portal/manifest.json	
+A9-0	arc	arc_books-UCLA_H0000130013_01	d59fxw0y7g8x	https://www.dh-jac.net/db1/books/UCLA-H0000130013/portal/	https://www.dh-jac.net/db1/books/UCLA-H0000130013-01/portal/manifest.json	
+A9-0	arc	arc_books-UCLA_H0000130252	d59f2ht4tzia	https://www.dh-jac.net/db1/books/UCLA-H0000130252/portal/	https://www.dh-jac.net/db1/books/UCLA-H0000130252/portal/manifest.json	
+A9-0	arc	arc_books-arcBK01_0051_02	d59f2neo2xab	https://www.dh-jac.net/db1/books/arcBK01-0051-01/portal/	https://www.dh-jac.net/db1/books/arcBK01-0051-02/portal/manifest.json	
+A9-0	arc	arc_books-arcBK01_0084_01	d59f2nhayygy	https://www.dh-jac.net/db1/books/arcBK01-0084-01/portal/	https://www.dh-jac.net/db1/books/arcBK01-0084-01/portal/manifest.json	
+A9-升档	arc	arc_books-AIC_R01_2_01_a	d59fyne5nsow	https://www.dh-jac.net/db1/books/AIC.R01-2-01.a/portal/	https://www.dh-jac.net/db1/books/AIC.R01-2-01.a/portal/manifest.json	
+A9-升档	arc	arc_books-AIC_R08_2_10_c	d59fxq6cgh6q	https://www.dh-jac.net/db1/books/AIC.R08-2-10.c/portal/	https://www.dh-jac.net/db1/books/AIC.R08-2-10.c/portal/manifest.json	
+A9-升档	arc	arc_books-AIC_R08_2_11_b_3	d59fxq6cgh6q	https://www.dh-jac.net/db1/books/AIC.R08-2-11.b.3/portal/	https://www.dh-jac.net/db1/books/AIC.R08-2-11.b.3/portal/manifest.json	
+A9-升档	arc	arc_books-AIC_R08_2_10_d	d59fxq6crpqa	https://www.dh-jac.net/db1/books/AIC.R08-2-10.d/portal/	https://www.dh-jac.net/db1/books/AIC.R08-2-10.d/portal/manifest.json	
+A9-升档	arc	arc_books-AIC_R08_2_11_b_4	d59fxq6crpqa	https://www.dh-jac.net/db1/books/AIC.R08-2-11.b.4/portal/	https://www.dh-jac.net/db1/books/AIC.R08-2-11.b.4/portal/manifest.json	
+A9-升档	arc	arc_books-RV_1086_21_	d59f2njhmvi8	https://www.dh-jac.net/db1/books/RV-1086-21-/portal/	https://www.dh-jac.net/db1/books/RV-1086-21-/portal/manifest.json	
+A9-升档	arc	arc_books-UCLA_AA0010986016	d59fxwlxakn6	https://www.dh-jac.net/db1/books/UCLA-AA0010986016/portal/	https://www.dh-jac.net/db1/books/UCLA-AA0010986016/portal/manifest.json	
+A9-升档	arc	arc_books-UCLA_G0000896761	d59f2hqhmltu	https://www.dh-jac.net/db1/books/UCLA-G0000896761/portal/	https://www.dh-jac.net/db1/books/UCLA-G0000896761/portal/manifest.json	
+A9-升档	arc	arc_books-arcBK05_0015	d59fxqj7onb4	https://www.dh-jac.net/db1/books/arcBK05-0015/portal/	https://www.dh-jac.net/db1/books/arcBK05-0015/portal/manifest.json	
