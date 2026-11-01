@@ -1,0 +1,233 @@
+batch	source	record_id	work_id	which	url	code	cls	final_url	bytes	has_id	note
+A8-held	bnf	FRBNF441999560000002	d59fyt1g9qtd	page	https://gallica.bnf.fr/ark:/12148/bpt6k9109865z	403	blocked		0		
+A8-held	cudl	MS-FH-00020-00071-00072	d59f2njjiayq	page	https://cudl.lib.cam.ac.uk/view/MS-FH-00020-00071-00072	403	blocked		0		
+A8-held	onb	AC07688235	d59fxovqcow0	page	https://data.onb.ac.at/ABO/%2BZ43252206	200	ok	https://viewer.onb.ac.at/ABO_+Z43252206	1667	False	
+A8-held	bnf	FRBNF441999300000006	d59fyt0g27sx	page	https://gallica.bnf.fr/ark:/12148/bpt6k91102001	403	blocked		0		
+A8-held	cudl	MS-FH-00020-00071-00072	d59f2njjiayq	manifest	https://cudl.lib.cam.ac.uk/iiif/MS-FH-00020-00071-00072	200	ok		244456	True	json-ok
+A8-held	bnf	FRBNF441999320000000	d59fyt3mmb5u	page	https://gallica.bnf.fr/ark:/12148/bpt6k91102038	403	blocked		0		
+A8-held	onb	AC08268819	d59f2nfmq5mo	page	https://data.onb.ac.at/ABO/%2BZ117973509	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	cudl	PR-FG-00711-00049-A	d59fyh2wwb28	page	https://cudl.lib.cam.ac.uk/view/PR-FG-00711-00049-A	403	blocked		0		
+A8-held	bnf	FRBNF44199920000000X	d59fxzrdqsjl	page	https://gallica.bnf.fr/ark:/12148/bpt6k9109848f	403	blocked		0		
+A8-held	onb	AC07772190	d59f2ni9marl	page	https://data.onb.ac.at/ABO/%2BZ43267404	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	cudl	PR-FG-00711-00049-A	d59fyh2wwb28	manifest	https://cudl.lib.cam.ac.uk/iiif/PR-FG-00711-00049-A	200	ok		400000	True	not-json
+A8-held	bnf	FRBNF41947176000000X	d59fsfdwucxu	page	https://gallica.bnf.fr/ark:/12148/bpt6k9611580m	403	blocked		0		
+A8-held	cudl	PR-FC-00171-00007-00003	d59fyrrrvl6p	page	https://cudl.lib.cam.ac.uk/view/PR-FC-00171-00007-00003	403	blocked		0		
+A8-held	onb	AC07753304	d59f2nk0ocn6	page	https://data.onb.ac.at/ABO/%2BZ43263307	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF44581561000000X	d59fxx3317nk	page	https://gallica.bnf.fr/ark:/12148/bpt6k98182006	403	blocked		0		
+A8-held	cudl	PR-FC-00171-00007-00003	d59fyrrrvl6p	manifest	https://cudl.lib.cam.ac.uk/iiif/PR-FC-00171-00007-00003	200	ok		36465	True	json-ok
+A8-held	bnf	FRBNF44582711000000X	d59fxu6feozl	page	https://gallica.bnf.fr/ark:/12148/bpt6k19118139	403	blocked		0		
+A8-held	onb	AC07724512	d59f2nkfnqwx	page	https://data.onb.ac.at/ABO/%2BZ43258804	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	cudl	PR-FC-00171-00007-00006	d59fysq6sc8y	page	https://cudl.lib.cam.ac.uk/view/PR-FC-00171-00007-00006	403	blocked		0		
+A8-held	bnf	FRBNF44585223000000X	d59fy0dr318g	page	https://gallica.bnf.fr/ark:/12148/bpt6k9819493v	403	blocked		0		
+A8-held	onb	AC08362978	d59fyt6kfrb6	page	https://data.onb.ac.at/ABO/%2BZ117997502	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF44582953000000X	d59f2n4xjbb6	page	https://gallica.bnf.fr/ark:/12148/bpt6k9817271z	403	blocked		0		
+A8-held	cudl	PR-FC-00171-00007-00006	d59fysq6sc8y	manifest	https://cudl.lib.cam.ac.uk/iiif/PR-FC-00171-00007-00006	200	ok		50423	True	json-ok
+A8-held	onb	AC07594172	d59f2nbt2i2q	page	https://data.onb.ac.at/ABO/%2BZ43234605	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF44580543000000X	d59fyt7x4s1s	page	https://gallica.bnf.fr/ark:/12148/bpt6k9818215n	403	blocked		0		
+A8-held	cudl	PR-FC-00171-00008-00001	d59fysq5je2p	page	https://cudl.lib.cam.ac.uk/view/PR-FC-00171-00008-00001	403	blocked		0		
+A8-held	bnf	FRBNF44585664000000X	d59fxx4hlmv5	page	https://gallica.bnf.fr/ark:/12148/bpt6k98171847	403	blocked		0		
+A8-held	onb	AC07946473	d59fxvlj7if5	page	https://data.onb.ac.at/ABO/%2BZ43295709	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	cudl	PR-FC-00171-00008-00001	d59fysq5je2p	manifest	https://cudl.lib.cam.ac.uk/iiif/PR-FC-00171-00008-00001	200	ok		33124	True	json-ok
+A8-held	bnf	FRBNF44585665000000X	d59fxx4gz5s0	page	https://gallica.bnf.fr/ark:/12148/bpt6k9818316d	403	blocked		0		
+A8-held	cudl	PR-FC-00171-00011-00002	d59fxv80vuv4	page	https://cudl.lib.cam.ac.uk/view/PR-FC-00171-00011-00002	403	blocked		0		
+A8-held	onb	AC08398816	d59f209xqo00	page	https://data.onb.ac.at/ABO/%2BZ147304806	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF44585555000000X	d59fxx58g1kw	page	https://gallica.bnf.fr/ark:/12148/bpt6k326358d	403	blocked		0		
+A8-held	cudl	PR-FC-00171-00011-00002	d59fxv80vuv4	manifest	https://cudl.lib.cam.ac.uk/iiif/PR-FC-00171-00011-00002	200	ok		43770	True	json-ok
+A8-held	bnf	FRBNF41947196000000X	d59f2mw2is5d	page	https://gallica.bnf.fr/ark:/12148/bpt6k96109153	403	blocked		0		
+A8-held	onb	AC07576633	d59fxx37eigx	page	https://data.onb.ac.at/ABO/%2BZ43231707	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	cudl	PR-FC-00171-00012-00003	d59fyrtgfmkh	page	https://cudl.lib.cam.ac.uk/view/PR-FC-00171-00012-00003	403	blocked		0		
+A8-held	bnf	FRBNF44583927000000X	d59fxsfpc2yo	page	https://gallica.bnf.fr/ark:/12148/bpt6k317635j	403	blocked		0		
+A8-held	onb	AC08035443	d59f2nlc4fep	page	https://data.onb.ac.at/ABO/%2BZ117911504	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	cudl	PR-FC-00171-00012-00003	d59fyrtgfmkh	manifest	https://cudl.lib.cam.ac.uk/iiif/PR-FC-00171-00012-00003	200	ok		62756	True	json-ok
+A8-held	bnf	FRBNF44581758000000X	d59fxwdwk1dt	page	https://gallica.bnf.fr/ark:/12148/btv1b52524134r	403	blocked		0		
+A8-held	onb	AC08103173	d59f2navzcht	page	https://data.onb.ac.at/ABO/%2BZ117923208	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	cudl	PR-FC-00246-00001	d59f2mdgyqyo	page	https://cudl.lib.cam.ac.uk/view/PR-FC-00246-00001	403	blocked		0		
+A8-held	bnf	FRBNF41947198000000X	d59f2hfireo1	page	https://gallica.bnf.fr/ark:/12148/bpt6k96115707	403	blocked		0		
+A8-held	bnf	FRBNF41947179000000X	d59fse1mt0cj	page	https://gallica.bnf.fr/ark:/12148/bpt6k96108521	403	blocked		0		
+A8-held	cudl	PR-FC-00246-00001	d59f2mdgyqyo	manifest	https://cudl.lib.cam.ac.uk/iiif/PR-FC-00246-00001	200	ok		365658	True	json-ok
+A8-held	onb	AC07585926	d59fyylsr37l	page	https://data.onb.ac.at/ABO/%2BZ43233406	200	ok	https://viewer.onb.ac.at/ABO_+Z43233406	1667	False	
+A8-held	bnf	FRBNF44583329000000X	d59fxu3kpse8	page	https://gallica.bnf.fr/ark:/12148/bpt6k3295338	403	blocked		0		
+A8-held	cudl	PR-FB-00926-00001	d59f2nkte2gy	page	https://cudl.lib.cam.ac.uk/view/PR-FB-00926-00001	403	blocked		0		
+A8-held	onb	AC08893290	d59f2njhbmyo	page	https://data.onb.ac.at/ABO/%2BZ151106403	200	ok	https://viewer.onb.ac.at/ABO_+Z151106403	1667	False	
+A8-held	bnf	FRBNF44581589000000X	d59f2gpqqvpc	page	https://gallica.bnf.fr/ark:/12148/bpt6k9817388k	403	blocked		0		
+A8-held	cudl	PR-FB-00926-00001	d59f2nkte2gy	manifest	https://cudl.lib.cam.ac.uk/iiif/PR-FB-00926-00001	200	ok		294297	True	json-ok
+A8-held	bnf	FRBNF44585640000000X	d59fxzv99ukg	page	https://gallica.bnf.fr/ark:/12148/bpt6k9817338p	403	blocked		0		
+A8-held	onb	AC08051403	d59f2hrpn2f5	page	https://data.onb.ac.at/ABO/%2BZ151109301	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	cudl	MS-FC-00184-00001	d59f2071hekg	page	https://cudl.lib.cam.ac.uk/view/MS-FC-00184-00001	403	blocked		0		
+A8-held	bnf	FRBNF441999310000003	d59f2netduki	page	https://gallica.bnf.fr/ark:/12148/bpt6k9110202v	403	blocked		0		
+A8-held	onb	AC07695892	d59f2mrzi0ap	page	https://data.onb.ac.at/ABO/%2BZ43253508	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	cudl	MS-FC-00184-00001	d59f2071hekg	manifest	https://cudl.lib.cam.ac.uk/iiif/MS-FC-00184-00001	200	ok		325645	True	json-ok
+A8-held	bnf	FRBNF44583192000000X	d59f2nk8siyq	page	https://gallica.bnf.fr/ark:/12148/bpt6k9822386g	403	blocked		0		
+A8-held	bnf	FRBNF44583193000000X	d59f2nj5gm4g	page	https://gallica.bnf.fr/ark:/12148/bpt6k9820224d	403	blocked		0		
+A8-held	onb	AC07613837	d59f2q45kao1	page	https://data.onb.ac.at/ABO/%2BZ43237709	200	ok	https://viewer.onb.ac.at/ABO_+Z43237709	1667	False	
+A8-held	bnf	FRBNF441999330000008	d59f2net2m0w	page	https://gallica.bnf.fr/ark:/12148/bpt6k9110204p	403	blocked		0		
+A8-held	onb	AC08400350	d59f2n14i4ua	page	https://data.onb.ac.at/ABO/%2BZ147305203	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF44585663000000X	d59fxx4haebm	page	https://gallica.bnf.fr/ark:/12148/bpt6k98172798	403	blocked		0		
+A8-held	bnf	FRBNF44582924000000X	d59fxvljiqyq	page	https://gallica.bnf.fr/ark:/12148/bpt6k9822553s	403	blocked		0		
+A8-held	onb	AC08102629	d59f2mrmpa0y	page	https://data.onb.ac.at/ABO/%2BZ117923105	200	ok	https://viewer.onb.ac.at/ABO_+Z117923105	1667	False	
+A8-held	bnf	FRBNF44585235000000X	d59fy0fyzsao	page	https://gallica.bnf.fr/ark:/12148/bpt6k98181834	403	blocked		0		
+A8-held	onb	AC08285571	d59fsch13u9t	page	https://data.onb.ac.at/ABO/%2BZ117979603	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF44581248000000X	d59fyoc25hq8	page	https://gallica.bnf.fr/ark:/12148/bpt6k9817764j	403	blocked		0		
+A8-held	onb	AC08277335	d59fxyda5lvl	page	https://data.onb.ac.at/ABO/%2BZ117977102	200	ok	https://viewer.onb.ac.at/ABO_+Z117977102	1667	False	
+A8-held	bnf	FRBNF41947238000000X	d59fxrxdghs0	page	https://gallica.bnf.fr/ark:/12148/bpt6k96116799	403	blocked		0		
+A8-held	bnf	FRBNF44581709000000X	d59fxu2yv6dd	page	https://gallica.bnf.fr/ark:/12148/bpt6k9817353c	403	blocked		0		
+A8-held	onb	AC08271455	d59f2mbyyozl	page	https://data.onb.ac.at/ABO/%2BZ117976201	200	ok	https://viewer.onb.ac.at/ABO_+Z117976201	1667	False	
+A8-held	bnf	FRBNF44581713000000X	d59fy0euexog	page	https://gallica.bnf.fr/ark:/12148/bpt6k98173022	403	blocked		0		
+A8-held	onb	AC08041517	d59f2nbzmhhe	page	https://data.onb.ac.at/ABO/%2BZ117912405	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF446138910000003	d59f2nj7na4j	page	https://gallica.bnf.fr/ark:/12148/bd6t5784112v	403	blocked		0		
+A8-held	bnf	FRBNF446138940000005	d59f2nj7na4j	page	https://gallica.bnf.fr/ark:/12148/bd6t5772672p	403	blocked		0		
+A8-held	onb	AC07911552	d59fy3pll3pc	page	https://data.onb.ac.at/ABO/%2BZ43289606	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF44578974000000X	d59fxp89elmo	page	https://gallica.bnf.fr/ark:/12148/bpt6k9817674k	403	blocked		0		
+A8-held	onb	AC08550873	d59f28k96d4x	page	https://data.onb.ac.at/ABO/%2BZ147357203	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF443406240000009	d59f2mo4lekg	page	https://gallica.bnf.fr/ark:/12148/bpt6k96117468	403	blocked		0		
+A8-held	onb	AC08532623	d59f28khaj9f	page	https://data.onb.ac.at/ABO/%2BZ14734970X	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF44585544000000X	d59fy0gichz4	page	https://gallica.bnf.fr/ark:/12148/bpt6k9817331s	403	blocked		0		
+A8-held	bnf	FRBNF44583295000000X	d59fxt3bxts2	page	https://gallica.bnf.fr/ark:/12148/bpt6k9819492f	403	blocked		0		
+A8-held	onb	AC07965177	d59f2nmf4yyp	page	https://data.onb.ac.at/ABO/%2BZ4329920X	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF44580926000000X	d59fxvl8woht	page	https://gallica.bnf.fr/ark:/12148/bpt6k98173326	403	blocked		0		
+A8-held	onb	AC07725446	d59fxvlkggle	page	https://data.onb.ac.at/ABO/%2BZ43258907	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF44360081000000X	d59f2mi4wf7l	page	https://gallica.bnf.fr/ark:/12148/bpt6k9610919r	403	blocked		0		
+A8-held	onb	AC07594468	d59f2mv4hwxv	page	https://data.onb.ac.at/ABO/%2BZ43234708	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF41947191000000X	d59f2mhdqry9	page	https://gallica.bnf.fr/ark:/12148/bpt6k9611785c	403	blocked		0		
+A8-held	bnf	FRBNF44580852000000X	d59fxwfwckqo	page	https://gallica.bnf.fr/ark:/12148/bpt6k9814095r	403	blocked		0		
+A8-held	onb	AC08372349	d59f2nrz835t	page	https://data.onb.ac.at/ABO/%2BZ11800000X	200	ok	https://viewer.onb.ac.at/ABO_+Z11800000X	1667	False	
+A8-held	bnf	FRBNF44581673000000X	d59fy0exjb41	page	https://gallica.bnf.fr/ark:/12148/bpt6k9817344d	403	blocked		0		
+A8-held	onb	AC08383620	d59f2nlghmo1	page	https://data.onb.ac.at/ABO/%2BZ147301209	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF446152600000003	d59f28jn0ikn	page	https://gallica.bnf.fr/ark:/12148/bd6t57813207	403	blocked		0		
+A8-held	bnf	FRBNF441999340000005	d59fyt12ujgg	page	https://gallica.bnf.fr/ark:/12148/bpt6k9110208b	403	blocked		0		
+A8-held	onb	AC08023682	d59f2ncghate	page	https://data.onb.ac.at/ABO/%2BZ117914608	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF44580928000000X	d59fxwp87x8g	page	https://gallica.bnf.fr/ark:/12148/bpt6k98176520	403	blocked		0		
+A8-held	bnf	FRBNF44581831000000X	d59f2njdksn5	page	https://gallica.bnf.fr/ark:/12148/bpt6k98177278	403	blocked		0		
+A8-held	onb	AC08275991	d59f2n8n4vsw	page	https://data.onb.ac.at/ABO/%2BZ117976705	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF41947239000000X	d59fxpsp4y6a	page	https://gallica.bnf.fr/ark:/12148/bpt6k9611594n	403	blocked		0		
+A8-held	onb	AC08053644	d59fs7pdu0w1	page	https://data.onb.ac.at/ABO/%2BZ117914402	200	ok	https://viewer.onb.ac.at/ABO_+Z117914402	1667	False	
+A8-held	bnf	FRBNF44360285000000X	d59f2hpjai2q	page	https://gallica.bnf.fr/ark:/12148/bpt6k9641904f	403	blocked		0		
+A8-held	bnf	FRBNF44582551000000X	d59fxp5ummtc	page	https://gallica.bnf.fr/ark:/12148/bpt6k98180364	403	blocked		0		
+A8-held	onb	AC08546786	d59f2nup8lq8	page	https://data.onb.ac.at/ABO/%2BZ147356703	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF41947165000000X	d59fy1gu8oox	page	https://gallica.bnf.fr/ark:/12148/bpt6k9611579z	403	blocked		0		
+A8-held	onb	AC08041845	d59fxv2y9ybl	page	https://data.onb.ac.at/ABO/%2BZ117912600	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF44581761000000X	d59fydxattdt	page	https://gallica.bnf.fr/ark:/12148/bpt6k3176345	403	blocked		0		
+A8-held	bnf	FRBNF41947257000000X	d59fryqlimth	page	https://gallica.bnf.fr/ark:/12148/bpt6k96116836	403	blocked		0		
+A8-held	onb	AC08512706	d59f2mrsy0w2	page	https://data.onb.ac.at/ABO/%2BZ147342509	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	bnf	FRBNF44578970000000X	d59fypzlzhfk	page	https://gallica.bnf.fr/ark:/12148/bpt6k9813816k	403	blocked		0		
+A8-held	onb	AC07941857	d59f2nbpmw3k	page	https://data.onb.ac.at/ABO/%2BZ4329450X	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08279365	d59f2noywqo0	page	https://data.onb.ac.at/ABO/%2BZ117977904	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08078833	d59f2nhjehhd	page	https://data.onb.ac.at/ABO/%2BZ117917609	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC09014799	d59f2nkzboxv	page	https://data.onb.ac.at/ABO/%2BZ114842301	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08479086	d59f2nfncmpu	page	https://data.onb.ac.at/ABO/%2BZ14733270X	200	ok	https://viewer.onb.ac.at/ABO_+Z14733270X	1667	False	
+A8-held	onb	AC08277804	d59fxuhf7pj5	page	https://data.onb.ac.at/ABO/%2BZ117977503	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08519826	d59f2nagzyf4	page	https://data.onb.ac.at/ABO/%2BZ147344403	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07611994	d59fymclfoxs	page	https://data.onb.ac.at/ABO/%2BZ43236900	200	ok	https://viewer.onb.ac.at/ABO_+Z43236900	1667	False	
+A8-held	onb	AC08008962	d59f2ngcy39c	page	https://data.onb.ac.at/ABO/%2BZ117905607	200	ok	https://viewer.onb.ac.at/ABO_+Z117905607	1667	False	
+A8-held	onb	AC08266532	d59f2ngdvsw1	page	https://data.onb.ac.at/ABO/%2BZ117972402	200	ok	https://viewer.onb.ac.at/ABO_+Z117972402	1667	False	
+A8-held	onb	AC08532734	d59f2ngei9z5	page	https://data.onb.ac.at/ABO/%2BZ147349802	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08528698	d59f2ofs2u4h	page	https://data.onb.ac.at/ABO/%2BZ147347209	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07516426	d59f2hul9url	page	https://data.onb.ac.at/ABO/%2BZ43217802	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08086110	d59f2ncex43l	page	https://data.onb.ac.at/ABO/%2BZ117919102	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08018825	d59f2hudgx6q	page	https://data.onb.ac.at/ABO/%2BZ117907707	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC10492686	d59f28jel3wk	page	https://data.onb.ac.at/ABO/%2BZ172221200	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07594032	d59f2mv3k7b4	page	https://data.onb.ac.at/ABO/%2BZ43234502	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08428284	d59fxq6mrb42	page	https://data.onb.ac.at/ABO/%2BZ147316006	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07919400	d59f2nc1hwqp	page	https://data.onb.ac.at/ABO/%2BZ43290207	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07641103	d59f2mrvr5s1	page	https://data.onb.ac.at/ABO/%2BZ43241804	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08050336	d59f2ng89j41	page	https://data.onb.ac.at/ABO/%2BZ117913604	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08040977	d59f2gosq0ht	page	https://data.onb.ac.at/ABO/%2BZ11791220X	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08183025	d59f2mbtnnr4	page	https://data.onb.ac.at/ABO/%2BZ117938509	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07479042	d59f2ncean0g	page	https://data.onb.ac.at/ABO/%2BZ43211204	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08141036	d59fxq6uvh8i	page	https://data.onb.ac.at/ABO/%2BZ117932301	200	ok	https://viewer.onb.ac.at/ABO_+Z117932301	1667	False	
+A8-held	onb	AC08136615	d59f28krld6q	page	https://data.onb.ac.at/ABO/%2BZ117931400	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07941422	d59f2hqmxn28	page	https://data.onb.ac.at/ABO/%2BZ43294407	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08543330	d59f2mc0ivpc	page	https://data.onb.ac.at/ABO/%2BZ147354500	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08318097	d59fxuhk7i82	page	https://data.onb.ac.at/ABO/%2BZ117983904	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08402822	d59f2mbyc7wg	page	https://data.onb.ac.at/ABO/%2BZ147305604	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08258291	d59f2mrrdu6a	page	https://data.onb.ac.at/ABO/%2BZ117969701	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08927330	d59f2mrrdu6a	page	https://data.onb.ac.at/ABO/%2BZ15110960X	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08399140	d59fxw3zgem9	page	https://data.onb.ac.at/ABO/%2BZ147305008	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07723764	d59fyrohvv9d	page	https://data.onb.ac.at/ABO/%2BZ43258609	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07956149	d59f206ep2ww	page	https://data.onb.ac.at/ABO/%2BZ43297500	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08182952	d59f2ne7uh34	page	https://data.onb.ac.at/ABO/%2BZ117938406	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08280123	d59f2nbayqkh	page	https://data.onb.ac.at/ABO/%2BZ117978507	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08380117	d59fxv32yigy	page	https://data.onb.ac.at/ABO/%2BZ147301003	200	ok	https://viewer.onb.ac.at/ABO_+Z147301003	1667	False	
+A8-held	onb	AC07545294	d59f2msdjoqq	page	https://data.onb.ac.at/ABO/%2BZ43223000	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07484781	d59f2ngn8x6q	page	https://data.onb.ac.at/ABO/%2BZ43211605	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07484794	d59f2ngn8x6q	page	https://data.onb.ac.at/ABO/%2BZ43211708	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07762121	d59fygifwyyp	page	https://data.onb.ac.at/ABO/%2BZ43264609	200	ok	https://viewer.onb.ac.at/ABO_+Z43264609	1667	False	
+A8-held	onb	AC07631450	d59f2nbm7a4g	page	https://data.onb.ac.at/ABO/%2BZ43241002	200	ok	https://viewer.onb.ac.at/ABO_+Z43241002	1667	False	
+A8-held	onb	AC08325611	d59f2nuwf281	page	https://data.onb.ac.at/ABO/%2BZ117985706	200	ok	https://viewer.onb.ac.at/ABO_+Z117985706	1667	False	
+A8-held	onb	AC08441274	d59f2n8mieps	page	https://data.onb.ac.at/ABO/%2BZ147320204	200	ok	https://viewer.onb.ac.at/ABO_+Z147320204	1667	False	
+A8-held	onb	AC08054287	d59f2nup8lq9	page	https://data.onb.ac.at/ABO/%2BZ117914700	200	ok	https://viewer.onb.ac.at/ABO_+Z117914700	1667	False	
+A8-held	onb	AC07918560	d59f2nkglg5d	page	https://data.onb.ac.at/ABO/%2BZ43290104	200	ok	https://viewer.onb.ac.at/ABO_+Z43290104	1667	False	
+A8-held	onb	AC08478311	d59f2n8p0b28	page	https://data.onb.ac.at/ABO/%2BZ147332401	200	ok	https://viewer.onb.ac.at/ABO_+Z147332401	1667	False	
+A8-held	onb	AC08520613	d59f2n8py0oy	page	https://data.onb.ac.at/ABO/%2BZ147344804	200	ok	https://viewer.onb.ac.at/ABO_+Z147344804	1667	False	
+A8-held	onb	AC07538026	d59fyrjdemtc	page	https://data.onb.ac.at/ABO/%2BZ43222007	200	ok	https://viewer.onb.ac.at/ABO_+Z43222007	1667	False	
+A8-held	onb	AC08015872	d59f2nc81w5c	page	https://data.onb.ac.at/ABO/%2BZ117906806	200	ok	https://viewer.onb.ac.at/ABO_+Z117906806	1667	False	
+A8-held	onb	AC08149427	d59f2nc81w5c	page	https://data.onb.ac.at/ABO/%2BZ117933408	200	ok	https://viewer.onb.ac.at/ABO_+Z117933408	1667	False	
+A8-held	onb	AC08424545	d59fy107joxu	page	https://data.onb.ac.at/ABO/%2BZ14731390X	200	ok	https://viewer.onb.ac.at/ABO_+Z14731390X	1667	False	
+A8-held	onb	AC08383025	d59f2n93d81s	page	https://data.onb.ac.at/ABO/%2BZ147301507	200	ok	https://viewer.onb.ac.at/ABO_+Z147301507	1667	False	
+A8-held	onb	AC08416575	d59f2md6z5kw	page	https://data.onb.ac.at/ABO/%2BZ147309701	200	ok	https://viewer.onb.ac.at/ABO_+Z147309701	1667	False	
+A8-held	onb	AC07962864	d59fyrmcs9og	page	https://data.onb.ac.at/ABO/%2BZ43298401	200	ok	https://viewer.onb.ac.at/ABO_+Z43298401	1667	False	
+A8-held	onb	AC07584786	d59fxw0y7g8x	page	https://data.onb.ac.at/ABO/%2BZ43232906	200	ok	https://viewer.onb.ac.at/ABO_+Z43232906	1667	False	
+A8-held	onb	AC08428017	d59f2nhbws1v	page	https://data.onb.ac.at/ABO/%2BZ147315804	200	ok	https://viewer.onb.ac.at/ABO_+Z147315804	1667	False	
+A8-held	onb	AC08363819	d59f2namaznm	page	https://data.onb.ac.at/ABO/%2BZ117998300	200	ok	https://viewer.onb.ac.at/ABO_+Z117998300	1667	False	
+A8-held	onb	AC08059684	d59f2mwkxs74	page	https://data.onb.ac.at/ABO/%2BZ117915406	200	ok	https://viewer.onb.ac.at/ABO_+Z117915406	1667	False	
+A8-held	onb	AC08042024	d59fxvknojk0	page	https://data.onb.ac.at/ABO/%2BZ117912703	200	ok	https://viewer.onb.ac.at/ABO_+Z117912703	1667	False	
+A8-held	onb	AC07593874	d59fyyls4m4h	page	https://data.onb.ac.at/ABO/%2BZ4323440X	200	ok	https://viewer.onb.ac.at/ABO_+Z4323440X	1667	False	
+A8-held	onb	AC08448988	d59f2hunrr42	page	https://data.onb.ac.at/ABO/%2BZ147323205	200	ok	https://viewer.onb.ac.at/ABO_+Z147323205	1667	False	
+A8-held	onb	AC07944011	d59f2nbzmhhd	page	https://data.onb.ac.at/ABO/%2BZ43294900	200	ok	https://viewer.onb.ac.at/ABO_+Z43294900	1667	False	
+A8-held	onb	AC08890832	d59f2n9249vm	page	https://data.onb.ac.at/ABO/%2BZ151105502	200	ok	https://viewer.onb.ac.at/ABO_+Z151105502	1667	False	
+A8-held	onb	AC08393768	d59fxwlw1mgx	page	https://data.onb.ac.at/ABO/%2BZ147303504	200	ok	https://viewer.onb.ac.at/ABO_+Z147303504	1667	False	
+A8-held	onb	AC08054846	d59f2mrk7dog	page	https://data.onb.ac.at/ABO/%2BZ117914803	200	ok	https://viewer.onb.ac.at/ABO_+Z117914803	1667	False	
+A8-held	onb	AC08280319	d59f2md11n9d	page	https://data.onb.ac.at/ABO/%2BZ117978805	200	ok	https://viewer.onb.ac.at/ABO_+Z117978805	1667	False	
+A8-held	onb	AC08106726	d59f2nb1lm9s	page	https://data.onb.ac.at/ABO/%2BZ117924602	200	ok	https://viewer.onb.ac.at/ABO_+Z117924602	1667	False	
+A8-held	onb	AC08381733	d59f2nb1lm9s	page	https://data.onb.ac.at/ABO/%2BZ147300606	200	ok	https://viewer.onb.ac.at/ABO_+Z147300606	1667	False	
+A8-held	onb	AC08515039	d59f2nazeygx	page	https://data.onb.ac.at/ABO/%2BZ147344105	200	ok	https://viewer.onb.ac.at/ABO_+Z147344105	1667	False	
+A8-held	onb	AC08524429	d59f2mrny875	page	https://data.onb.ac.at/ABO/%2BZ147347106	200	ok	https://viewer.onb.ac.at/ABO_+Z147347106	1667	False	
+A8-held	onb	AC08317298	d59f2naxjj7k	page	https://data.onb.ac.at/ABO/%2BZ117983709	200	ok	https://viewer.onb.ac.at/ABO_+Z117983709	1667	False	
+A8-held	onb	AC08326780	d59f2nb4pzpd	page	https://data.onb.ac.at/ABO/%2BZ117985901	200	ok	https://viewer.onb.ac.at/ABO_+Z117985901	1667	False	
+A8-held	onb	AC08381143	d59f2mrn0ikh	page	https://data.onb.ac.at/ABO/%2BZ147300801	200	ok	https://viewer.onb.ac.at/ABO_+Z147300801	1667	False	
+A8-held	onb	AC08328117	d59fy3pfytxc	page	https://data.onb.ac.at/ABO/%2BZ117986309	200	ok	https://viewer.onb.ac.at/ABO_+Z117986309	1667	False	
+A8-held	onb	AC08318668	d59f2mrny874	page	https://data.onb.ac.at/ABO/%2BZ117984404	200	ok	https://viewer.onb.ac.at/ABO_+Z117984404	1667	False	
+A8-held	onb	AC08336862	d59f2mqjom4j	page	https://data.onb.ac.at/ABO/%2BZ117987508	200	ok	https://viewer.onb.ac.at/ABO_+Z117987508	1667	False	
+A8-held	onb	AC07992185	d59f2mrewcg1	page	https://data.onb.ac.at/ABO/%2BZ117901808	200	ok	https://viewer.onb.ac.at/ABO_+Z117901808	1667	False	
+A8-held	onb	AC08317132	d59fxv2jx1c0	page	https://data.onb.ac.at/ABO/%2BZ117983606	200	ok	https://viewer.onb.ac.at/ABO_+Z117983606	1667	False	
+A8-held	onb	AC08531661	d59f2na6dvy8	page	https://data.onb.ac.at/ABO/%2BZ147349607	None	neterr		0		TimeoutError('The read operation timed out')
+A8-held	onb	AC08434555	d59f2nk5ze2r	page	https://data.onb.ac.at/ABO/%2BZ14731860X	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08431898	d59f2nagopvl	page	https://data.onb.ac.at/ABO/%2BZ147316602	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07666941	d59f2hpxc6io	page	https://data.onb.ac.at/ABO/%2BZ43245603	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08891145	d59f2mro9gqp	page	https://data.onb.ac.at/ABO/%2BZ151105708	200	ok	https://viewer.onb.ac.at/ABO_+Z151105708	1667	False	
+A8-held	onb	AC07576797	d59fy0dtkxkw	page	https://data.onb.ac.at/ABO/%2BZ4323180X	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08310242	d59f2nld20ox	page	https://data.onb.ac.at/ABO/%2BZ117982407	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08427699	d59f2mrq4w01	page	https://data.onb.ac.at/ABO/%2BZ147315506	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08088455	d59f2nl3drsz	page	https://data.onb.ac.at/ABO/%2BZ117919400	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08409925	d59f2gny4r9c	page	https://data.onb.ac.at/ABO/%2BZ147308009	200	ok	https://viewer.onb.ac.at/ABO_+Z147308009	1667	False	
+A8-held	onb	AC08250219	d59fyt7knabl	page	https://data.onb.ac.at/ABO/%2BZ117967108	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08286541	d59f2njdksn5	page	https://data.onb.ac.at/ABO/%2BZ117979809	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08379480	d59f2mrkturl	page	https://data.onb.ac.at/ABO/%2BZ147300709	200	ok	https://viewer.onb.ac.at/ABO_+Z147300709	1667	False	
+A8-held	onb	AC08882231	d59f2natsoox	page	https://data.onb.ac.at/ABO/%2BZ151104601	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08061224	d59f2hs8ojk3	page	https://data.onb.ac.at/ABO/%2BZ117915704	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07973673	d59fy3ta8ykg	page	https://data.onb.ac.at/ABO/%2BZ43299909	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08419491	d59f2nkt2y9u	page	https://data.onb.ac.at/ABO/%2BZ147312803	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08271247	d59f2mccdwcg	page	https://data.onb.ac.at/ABO/%2BZ117976109	200	ok	https://viewer.onb.ac.at/ABO_+Z117976109	1667	False	
+A8-held	onb	AC08479337	d59f2mu4adxd	page	https://data.onb.ac.at/ABO/%2BZ147333107	200	ok	https://viewer.onb.ac.at/ABO_+Z147333107	1667	False	
+A8-held	onb	AC07985838	d59f2nkk124h	page	https://data.onb.ac.at/ABO/%2BZ117901201	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07527776	d59fyrnuh340	page	https://data.onb.ac.at/ABO/%2BZ43221404	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08484027	d59f2ng7bthc	page	https://data.onb.ac.at/ABO/%2BZ147333703	200	ok	https://viewer.onb.ac.at/ABO_+Z147333703	1667	False	
+A8-held	onb	AC08551399	d59f2m9k6pz5	page	https://data.onb.ac.at/ABO/%2BZ147357707	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08393285	d59fxujgkh6q	page	https://data.onb.ac.at/ABO/%2BZ147303103	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08275653	d59f2nelw5j4	page	https://data.onb.ac.at/ABO/%2BZ117976602	200	ok	https://viewer.onb.ac.at/ABO_+Z117976602	1667	False	
+A8-held	onb	AC07567708	d59f2my4t9fm	page	https://data.onb.ac.at/ABO/%2BZ43228009	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07648784	d59fxzqniuww	page	https://data.onb.ac.at/ABO/%2BZ43242407	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07137290	d59fy0fw6neo	page	https://data.onb.ac.at/ABO/%2BZ4320750X	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08174304	d59fxujoonb4	page	https://data.onb.ac.at/ABO/%2BZ117935703	200	ok	https://viewer.onb.ac.at/ABO_+Z117935703	1667	False	
+A8-held	onb	AC08940510	d59fxujoonb4	page	https://data.onb.ac.at/ABO/%2BZ151110807	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07642202	d59f2nk28jcw	page	https://data.onb.ac.at/ABO/%2BZ43242006	200	ok	https://viewer.onb.ac.at/ABO_+Z43242006	1667	False	
+A8-held	onb	AC07642207	d59f2nk28jcw	page	https://data.onb.ac.at/ABO/%2BZ43242109	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08312414	d59f2htm01du	page	https://data.onb.ac.at/ABO/%2BZ117983102	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08883060	d59f2gouwoap	page	https://data.onb.ac.at/ABO/%2BZ151105009	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07577561	d59f2mbzwem9	page	https://data.onb.ac.at/ABO/%2BZ43232104	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08098120	d59f2nal21he	page	https://data.onb.ac.at/ABO/%2BZ117921704	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC07593495	d59f2nh9evpd	page	https://data.onb.ac.at/ABO/%2BZ43234101	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08502815	d59f2mrp76de	page	https://data.onb.ac.at/ABO/%2BZ14733950X	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08325075	d59fxwp8j5s2	page	https://data.onb.ac.at/ABO/%2BZ117985500	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
+A8-held	onb	AC08381442	d59fxvjbarcx	page	https://data.onb.ac.at/ABO/%2BZ147300503	200	ok	https://viewer.onb.ac.at/ABO_+Z147300503	1667	False	
+A8-held	onb	AC08276480	d59f2mccdwch	page	https://data.onb.ac.at/ABO/%2BZ11797700X	None	neterr		0		URLError(ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))
