@@ -133,7 +133,7 @@ def load_books(book_root):
     return by_work
 
 
-def run(matches, book_root, keys, out, source):
+def run(matches, book_root, keys, out, source, has_image='1'):
     reigns, _ = load_names(keys)
     books = load_books(book_root)
     rows = list(csv.DictReader(open(matches, encoding='utf-8'), delimiter='\t'))
@@ -141,7 +141,7 @@ def run(matches, book_root, keys, out, source):
     cnt = collections.Counter()
     res = []
     for x in rows:
-        if x['tier'] != '确定' or not x['work_id'] or x['excluded'] or x['has_image'] != '1':
+        if x['tier'] != '确定' or not x['work_id'] or x['excluded'] or x['has_image'] != has_image:
             continue
         bs = books.get(x['work_id'])
         if not bs:
@@ -201,5 +201,6 @@ if __name__ == '__main__':
     ap.add_argument('--keys', default=os.environ.get('DYNASTY_KEYS'))
     ap.add_argument('--out', required=True)
     ap.add_argument('--source', required=True)
+    ap.add_argument('--has-image', default='1', choices=['0', '1'], help='取 has_image 为此值的确定档；0＝无影像书目页（Book 层 catalog，2026-11-01 A11-U2-e）')
     a = ap.parse_args()
-    print(dict(run(a.matches, a.book_root, a.keys, a.out, a.source)))
+    print(dict(run(a.matches, a.book_root, a.keys, a.out, a.source, a.has_image)))
