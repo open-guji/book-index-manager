@@ -130,3 +130,17 @@ describe('切版本不自动回第一卷（keepChapterOnVersionChange）', () =>
         expect(current()).toContain('b卷2'); // 章 key 002 在新目录里还在，照旧选中
     });
 });
+
+describe('阅读设置「更多」组（宿主插槽 settingsExtra）', () => {
+    it('不给就没有「更多」组', () => {
+        render(<Shell />);
+        expect(screen.queryByRole('heading', { name: '更多' })).toBeNull();
+    });
+
+    it('给了：设置面板末尾出一组，标题可改，内容原样渲染', () => {
+        render(<Shell settingsExtra={<button type="button">下載本冊</button>} />);
+        fireEvent.click(screen.getByRole('button', { name: /阅读设置|閱讀設置|設置|设置/ }));
+        expect(screen.getByRole('heading', { name: '更多' })).toBeTruthy();
+        expect(screen.getByRole('button', { name: '下載本冊' })).toBeTruthy();
+    });
+});
