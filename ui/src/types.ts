@@ -343,7 +343,13 @@ export interface PublicationInfo {
 
 /** 位置/机构信息 */
 export interface LocationInfo {
-    name: string;
+    /** 递藏事件的名称；知见藏本（《通俗小说书目》类）用 `location` */
+    name?: string;
+    /** Book.location_history 知见藏本形：藏处名称 */
+    location?: string;
+    item_id?: string;
+    url?: string;
+    note?: string;
     start_date?: string;
     end_date?: string;
     description?: string;

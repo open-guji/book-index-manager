@@ -667,7 +667,7 @@ function HistoryTimeline({ items }: { items: LocationInfo[] }) {
                             border: `1.5px solid ${bim('input-bg')}`,
                         }} />
                         <span style={{ fontSize: '13px', fontWeight: 500, color: bim('fg') }}>
-                            {convert(loc.name)}
+                            {convert(loc.name || loc.location || "")}
                         </span>
                         {loc.description && (
                             <span style={{ fontSize: '12px', color: bim('desc-fg'), marginLeft: '8px' }}>

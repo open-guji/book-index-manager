@@ -560,12 +560,13 @@ export const BookPage: React.FC<BookPageProps> = ({
                     <ul className="bim-d-tl">
                         {data.location_history.map((loc, i) => (
                             <li key={i}>
-                                <span className="bim-d-tl-t">{convert(loc.name)}</span>
-                                {([loc.start_date, loc.end_date].filter(Boolean).join('—') || loc.description) && (
+                                <span className="bim-d-tl-t">{convert(loc.name || loc.location || '')}</span>
+                                {([loc.start_date, loc.end_date].filter(Boolean).join('—') || loc.description || loc.note) && (
                                     <span className="bim-d-tl-ev" style={{ marginLeft: 0 }}>
                                         <MetaLine items={[
                                             [loc.start_date, loc.end_date].filter(Boolean).join('—'),
                                             loc.description ? convert(loc.description) : '',
+                                            loc.note ? convert(loc.note) : '',
                                         ]} />
                                     </span>
                                 )}
