@@ -32,3 +32,16 @@ describe('年代统一后推断不变', () => {
         expect(deriveEra(b).era).toBe('明');
     });
 });
+
+import { measureText } from '../../src/core/detail-model';
+import { datingProjection } from '../../src/core/storage';
+describe('計量合一读取', () => {
+    it('measureText：无 juan_count 时读 measures', () => {
+        expect(measureText({ measures: [{ number: 20, unit: '卷' }] } as never)).toBe('二十卷');
+        expect(measureText({ measures: [{ number: 56, unit: '回' }] } as never)).toBe('五十六回');
+        expect(measureText({ measure_info: '原文', measures: [{ number: 1, unit: '卷' }] } as never)).toBe('原文');
+    });
+    it('datingProjection 不受影响', () => {
+        expect(datingProjection({ dating: { year: 1869 } }).sort_year).toBe(1869);
+    });
+});
