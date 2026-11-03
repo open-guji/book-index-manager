@@ -372,6 +372,34 @@ function matchReign(text: string, era?: string): string | undefined {
 }
 
 /**
+ * 年代统一（S2-L）后，publication_info.year / lineage.year_text 已并入 dating：
+ * 数字年 → dating.year，区间 → dating.year_range，文本 → dating.text。
+ * 下面的推断逻辑仍按「出版著录文本」写，这里把没有朝代的 dating 还原成等价的
+ * publication_info.year 再交给它们，行为与迁移前一致。旧数据（仍带 publication_info.year）原样放行。
+ */
+/** 展示用的「著录年代」文本：旧的 publication_info.year，否则 dating.text／年／区间 */
+export function publicationYearText(book: EraInferable): string | undefined {
+    if (book.publication_info?.year) return book.publication_info.year;
+    const d = book.dating;
+    if (!d) return undefined;
+    if (d.text) return d.text;
+    if (d.year != null) return String(d.year);
+    if (d.year_range && d.year_range.length === 2) return `${d.year_range[0]}-${d.year_range[1]}`;
+    return undefined;
+}
+
+function withLegacyYear<T extends EraInferable>(book: T): T {
+    const d = book.dating;
+    if (!d || d.era || d.reign) return book;
+    if (book.publication_info?.year || book.lineage?.year_text) return book;
+    const y = d.text
+        ?? (d.year != null ? String(d.year)
+            : d.year_range && d.year_range.length === 2 ? `${d.year_range[0]}-${d.year_range[1]}` : undefined);
+    if (!y) return book;
+    return { ...book, publication_info: { ...book.publication_info, year: y } };
+}
+
+/**
  * 推断一个版本的朝代 / 纪年。
  *
  * 三级回退，越靠前越可信：
@@ -383,6 +411,7 @@ function matchReign(text: string, era?: string): string | undefined {
  * 「宋 · 慶元」是著录事实。
  */
 export function deriveEra(book: EraInferable): DerivedEra {
+    book = withLegacyYear(book);
     const none: DerivedEra = { era: '', reign: '', source: 'none' };
 
     // 0. 已落盘的 dating 最优先
@@ -446,6 +475,7 @@ export function deriveEra(book: EraInferable): DerivedEra {
  * 最后用年号表折算「乾隆四十三年」→ 1736 + 43 - 1 = 1778。
  */
 export function deriveYear(book: EraInferable): number | undefined {
+    book = withLegacyYear(book);
     if (book.dating?.year != null) return book.dating.year;
     if (typeof book.lineage?.year === 'number') return book.lineage.year;
 
@@ -555,6 +585,7 @@ export function deriveYear(book: EraInferable): number | undefined {
  * 区间只用于排序（取下界）与展示，不当确切年份 —— 故与 deriveYear 分开。
  */
 export function deriveYearRange(book: EraInferable): YearRange | undefined {
+    book = withLegacyYear(book);
     const r = book.dating?.year_range;
     if (r && r.length === 2) return { from: r[0], to: r[1] };
 
@@ -763,6 +794,7 @@ function findOtherEra(text: string, exclude: string):
 }
 
 export function deriveDating(book: EraInferable): DerivedDating | undefined {
+    book = withLegacyYear(book);
     const era = deriveEra(book);
     const ptext = book.publication_info?.year ?? '';
     const pubSpan = ptext ? parseCeSpan(ptext) : undefined;
@@ -1148,6 +1180,8 @@ export interface ResolvedVersion {
     /** 馆藏；无 current_location 时取第一项机构作 locationName（S2-H） */
     provenance?: BookDetailData['provenance'];
     lineage?: BookDetailData['lineage'];
+    /** 结构化年代（S2-L 后 publication_info.year 并入此处，推断函数靠它还原） */
+    dating?: BookDetailData['dating'];
     /** 描述首句（同版组代表行显示用） */
     summary?: string;
 }
