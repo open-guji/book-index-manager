@@ -169,7 +169,8 @@ export const WorkPage: React.FC<WorkPageProps> = ({
 
         const measure = measureText(data, m.unit.juan);
         if (measure) {
-            const desc = data.juan_count?.description;
+            const desc = data.juan_count?.description
+                ?? data.measures?.find(x => x?.unit === '卷' && x.note)?.note;
             out.push({
                 label: t('workPage.fact.measure'),
                 value: <>{convert(measure)}{desc && desc !== measure
