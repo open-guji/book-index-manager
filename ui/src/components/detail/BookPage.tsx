@@ -287,7 +287,7 @@ export const BookPage: React.FC<BookPageProps> = ({
             });
         }
 
-        // 存藏：provenance（机构＋索书號）优先，其次 physical 资源，最后 current_location
+        // 存藏：provenance（机构＋索书號）优先，其次 physical 资源（Book 的 current_location 已并入 provenance）
         const prov = (data.provenance || []).filter(p => p && p.institution);
         const physical = (data.resources || []).filter(r => getResourceTypes(r).includes('physical'));
         if (prov.length) {
@@ -312,8 +312,6 @@ export const BookPage: React.FC<BookPageProps> = ({
                 value: physical.slice(0, 2).map(r => convert(r.name)).join('、')
                     + (physical.length > 2 ? tr('bookPage.andMorePlaces', { n: physical.length }) : ''),
             });
-        } else if (data.current_location?.name) {
-            out.push({ label: tr('bookPage.fact.holdings'), value: convert(data.current_location.name) });
         }
         // 行款／裝幀／尺寸／品相：空串不显示
         const pd = data.physical_description;
