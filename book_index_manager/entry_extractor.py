@@ -102,12 +102,22 @@ def _extract_dating(metadata: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _extract_holder(metadata: Dict[str, Any]) -> str:
-    """从 current_location 提取持有方名称。"""
+    """提取持有方名称：先 current_location（旧），无则取 provenance[0].institution（S2-H）。
+
+    与 book-index build/build_derived.holder_of、ui storage.ts 同序，三处必须同步。"""
     loc = metadata.get("current_location")
+    name = ""
     if isinstance(loc, dict):
-        return loc.get("name", "")
-    if isinstance(loc, str):
-        return loc
+        name = loc.get("name", "") or ""
+    elif isinstance(loc, str):
+        name = loc
+    if name:
+        return name
+    prov = metadata.get("provenance")
+    if isinstance(prov, list) and prov and isinstance(prov[0], dict):
+        inst = prov[0].get("institution")
+        if isinstance(inst, str):
+            return inst
     return ""
 
 

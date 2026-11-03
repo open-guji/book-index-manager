@@ -163,6 +163,11 @@ export function buildIndexEntry(
     } else if (typeof loc === 'string') {
         holder = loc;
     }
+    // current_location 无值时取 provenance[0].institution（S2-H；与 Python entry_extractor、build holder_of 同序）
+    if (!holder && Array.isArray(metadata.provenance) && metadata.provenance.length > 0) {
+        const inst = (metadata.provenance[0] as { institution?: unknown } | null)?.institution;
+        if (typeof inst === 'string') holder = inst;
+    }
 
     // 提取 additional_titles（Work 别名，兼容 string 和 {book_title} 两种格式）
     const additionalTitles = Array.isArray(metadata.additional_titles)
