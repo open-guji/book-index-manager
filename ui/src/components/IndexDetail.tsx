@@ -25,6 +25,7 @@ import { useT, useConvert } from '../i18n';
 import { formatTemplate } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
 import { numberToChinese, publicationYearText } from '../core/detail-model';
+import { relatedBookIds } from '../core/lineage-graph';
 import { bim } from '../styles/tokens';
 
 /** 已解析的收录关联（ID → 标题 + 册号） */
@@ -1489,7 +1490,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
             )}
 
             {bookData?.related_books && bookData.related_books.length > 0 && (
-                <RelationList title={t.section.relatedVersions} ids={bookData.related_books} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
+                <RelationList title={t.section.relatedVersions} ids={relatedBookIds(bookData)} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
             )}
 
             {collectionData?.books && collectionData.books.length > 0 && (
