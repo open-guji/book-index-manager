@@ -1073,14 +1073,20 @@ export function bucketResources(
 
     const mirrorMap = new Map<string, ResourceEntry[]>();
     const standalone: ResourceEntry[] = [];
-    for (const it of merged) {
+    const labelOnly = new Map<string, string>();
+    merged.forEach((it, idx) => {
         if (it.group) {
             if (!mirrorMap.has(it.group)) mirrorMap.set(it.group, []);
             mirrorMap.get(it.group)!.push(it);
+        } else if (it.label) {
+            // 带 label 而无 group 的资源＝只有它一条的组（2026-11 起单成员组改写成 label）
+            const key = `_label:${idx}`;
+            mirrorMap.set(key, [it]);
+            labelOnly.set(key, it.label);
         } else {
             standalone.push(it);
         }
-    }
+    });
     // origin 优先于 mirror
     for (const arr of mirrorMap.values()) {
         arr.sort((a, b) => {
@@ -1109,8 +1115,8 @@ export function bucketResources(
 
     const mirrors: MirrorGroup[] = [...mirrorMap.entries()].map(([key, items]) => ({
         key,
-        label: groups?.[key]?.label || key,
-        description: groups?.[key]?.description,
+        label: labelOnly.get(key) || groups?.[key]?.label || key,
+        description: labelOnly.has(key) ? undefined : groups?.[key]?.description,
         items,
     }));
 
