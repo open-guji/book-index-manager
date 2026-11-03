@@ -24,7 +24,7 @@ import { MarkdownText } from './common/MarkdownText';
 import { useT, useConvert } from '../i18n';
 import { formatTemplate } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
-import { numberToChinese } from '../core/detail-model';
+import { numberToChinese, publicationYearText } from '../core/detail-model';
 import { bim } from '../styles/tokens';
 
 /** 已解析的收录关联（ID → 标题 + 册号） */
@@ -1342,8 +1342,10 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
 
     // 构建 meta 行
     const meta: React.ReactNode[] = [];
-    if (detail.publication_info?.year) {
-        meta.push(<MetaItem key="year" label={t.label.year}>{detail.publication_info.year}</MetaItem>);
+    const pubYearText = detail.publication_info?.year
+        ?? (detail.type === 'book' ? publicationYearText(detail as never) : undefined);
+    if (pubYearText) {
+        meta.push(<MetaItem key="year" label={t.label.year}>{pubYearText}</MetaItem>);
     }
     if (detail.current_location?.name) {
         meta.push(<MetaItem key="loc" label={t.label.currentLocation}>{convert(detail.current_location.name)}</MetaItem>);

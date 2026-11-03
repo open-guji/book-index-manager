@@ -467,6 +467,8 @@ export interface DatingInfo {
     year?: number;
     /** 只知「某某間」时给区间，与 year 二选一 */
     year_range?: [number, number];
+    /** 著录的年代原文（如「清」「清乾隆时期」），机器解析不了的留在这里（S2-L；取代 publication_info.year 的文本） */
+    text?: string;
     /** attested 著录 | inferred 推断 | uncertain 存疑 */
     certainty?: 'attested' | 'inferred' | 'uncertain';
     /** edition 题名推断 | catalog 书目著录 | colophon 牌记序跋 | manual 人工订正 */
