@@ -606,7 +606,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                             ...(work.authors || []).slice(0, 2).map(a =>
                                 `${a.dynasty ? `〔${convert(a.dynasty)}〕` : ''}${convert(a.name)}`),
                             convert(measureText(work, t.unit.juan)),
-                            work._edition_count ? tr('bookPage.editionCount', { n: work._edition_count }) : '',
+                            (work._edition_count ?? work._books?.length) ? tr('bookPage.editionCount', { n: work._edition_count ?? work._books?.length }) : '',
                         ]}
                     />
                     {work.description?.text && (
