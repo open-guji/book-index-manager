@@ -6,6 +6,7 @@
  */
 
 import type {
+    BaseEditionEntry,
     BookDetailData,
     BookLineage,
     LineageConfidence,
@@ -13,10 +14,82 @@ import type {
     LineageRelation,
     LineageSibling,
     LineageStatus,
+    RelatedBookEntry,
     VersionGraph,
     VersionGraphHypotheticalNode,
     WorkDetailData,
 } from '../types';
+
+/**
+ * 一本书的「所出之本」边（有向），统一读新旧两处：
+ *   lineage.derived_from（旧），以及 base_edition 中带 relation 且有 book_id／hypothetical_id 的项（新）。
+ * 无 relation 的 base_edition 项是纯著录，不成边。同一 (ref, ref_type) 旧写法优先。
+ * 与 book-index build_derived.derived_items 同口径。
+ */
+export function derivedItems(book: {
+    lineage?: BookLineage;
+    base_edition?: BaseEditionEntry[];
+}): LineageDerivation[] {
+    const out: LineageDerivation[] = [];
+    const seen = new Set<string>();
+    for (const d of book.lineage?.derived_from ?? []) {
+        if (!d || !d.ref) continue;
+        out.push(d);
+        seen.add(`${d.ref}|${d.ref_type ?? 'book'}`);
+    }
+    for (const b of book.base_edition ?? []) {
+        if (!b || !b.relation) continue;
+        const hypo = !!b.hypothetical_id;
+        const ref = hypo ? b.hypothetical_id : b.book_id;
+        if (!ref) continue;
+        const key = `${ref}|${hypo ? 'hypothetical' : 'book'}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push({
+            ref,
+            ref_type: hypo ? 'hypothetical' : 'book',
+            relation: b.relation,
+            confidence: (b.confidence ?? undefined) as LineageConfidence,
+            evidence: b.evidence,
+            note: b.note,
+        });
+    }
+    return out;
+}
+
+/**
+ * 一本书的「非源流关联」边（无向）：lineage.related_to（旧）＋ related_books 中带 relation 的对象项（新）。
+ * 纯 id 字符串和无 relation 的对象只算「相关版本」，不成图边。与 build_derived.related_items 同口径。
+ */
+export function relatedItems(book: {
+    lineage?: BookLineage;
+    related_books?: Array<string | RelatedBookEntry>;
+}): LineageSibling[] {
+    const out: LineageSibling[] = [...(book.lineage?.related_to ?? [])];
+    for (const r of book.related_books ?? []) {
+        if (r && typeof r === 'object' && r.book_id && r.relation) {
+            out.push({
+                book_id: r.book_id,
+                relation: r.relation,
+                confidence: (r.confidence ?? undefined) as LineageConfidence,
+                evidence: r.evidence,
+            });
+        }
+    }
+    return out;
+}
+
+/** related_books 里所有对方 Book id（字符串项和对象项） */
+export function relatedBookIds(book: { related_books?: Array<string | RelatedBookEntry> }): string[] {
+    return (book.related_books ?? [])
+        .map(r => (typeof r === 'string' ? r : r?.book_id))
+        .filter((x): x is string => typeof x === 'string' && x.length > 0);
+}
+
+/** 该书是否带版本源流信息（lineage 对象，或新写法的 base_edition／related_books 关系项） */
+function hasLineageInfo(b: BookDetailData): boolean {
+    return !!b.lineage || derivedItems(b).length > 0 || relatedItems(b).length > 0;
+}
 
 /** 图节点：实存版本 + 假想祖本统一形态 */
 export interface LineageGraphNode {
@@ -94,15 +167,16 @@ function hypoToNode(h: VersionGraphHypotheticalNode): LineageGraphNode {
 
 /** Book → 图节点（仅当有 lineage 时） */
 function bookToNode(b: BookDetailData, groupMap: Record<string, string>): LineageGraphNode | null {
-    if (!b.lineage) return null;
-    const lin: BookLineage = b.lineage;
+    if (!hasLineageInfo(b)) return null;
+    const lin: BookLineage = b.lineage ?? {} as BookLineage;
     return {
         id: b.id,
         kind: 'book',
         label: b.title,
-        year: lin.year,
-        year_text: lin.year_text,
-        year_uncertain: lin.year_uncertain,
+        // 年代统一（S2-L）后 lineage.year* 已并入 dating；旧数据仍读 lineage
+        year: lin.year ?? b.dating?.year ?? b.dating?.year_range?.[0],
+        year_text: lin.year_text ?? b.dating?.text,
+        year_uncertain: lin.year_uncertain ?? b.dating?.year_uncertain,
         category: lin.category,
         status: lin.status,
         extant_juan: lin.extant_juan,
@@ -239,8 +313,8 @@ export function buildLineageGraph(
 
         const getParents = (id: string): string[] => {
             const b = bookById.get(id);
-            if (b && b.lineage) {
-                return (b.lineage.derived_from ?? []).map(d => d.ref);
+            if (b && hasLineageInfo(b)) {
+                return derivedItems(b).map(d => d.ref);
             }
             const h = hypoById.get(id);
             if (h) {
@@ -313,13 +387,13 @@ export function buildLineageGraph(
     };
 
     for (const b of books) {
-        if (excluded.has(b.id) || !b.lineage) continue;
+        if (excluded.has(b.id) || !hasLineageInfo(b)) continue;
         // 核心模式下：核心节点 + 桥接节点 都参与边遍历
         if (coreBookSet && !coreBookSet.has(b.id) && !bridgeBookSet.has(b.id)) continue;
-        (b.lineage.derived_from ?? []).forEach((d, i) => {
+        derivedItems(b).forEach((d, i) => {
             pushEdge(derivationToEdge(b.id, d, i));
         });
-        (b.lineage.related_to ?? []).forEach((s, i) => {
+        relatedItems(b).forEach((s, i) => {
             pushEdge(siblingToEdge(b.id, s, i));
         });
     }
@@ -396,10 +470,10 @@ export function validateLineageGraph(
     };
 
     for (const b of books) {
-        if (!b.lineage) continue;
+        if (!hasLineageInfo(b)) continue;
         const owner = `Book ${b.id} (${b.title})`;
-        (b.lineage.derived_from ?? []).forEach((d) => checkDerivation(owner, d));
-        (b.lineage.related_to ?? []).forEach((s) => {
+        derivedItems(b).forEach((d) => checkDerivation(owner, d));
+        relatedItems(b).forEach((s) => {
             if (!bookIds.has(s.book_id)) {
                 errors.push(`${owner}: related_to.book_id "${s.book_id}" 不在 books 列表中`);
             }

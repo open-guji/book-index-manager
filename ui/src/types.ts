@@ -475,6 +475,8 @@ export interface DatingInfo {
     source?: 'edition' | 'catalog' | 'colophon' | 'manual';
     /** 判定依据，一句话 */
     basis?: string;
+    /** 年份存疑（年代的朝代可靠、具体年份不可靠；原 lineage.year_uncertain） */
+    year_uncertain?: boolean;
     /** 底本：本版所依据的更早的本子 */
     based_on?: {
         era?: string;
@@ -598,7 +600,8 @@ export interface BookDetailData extends BaseDetailData {
     /** build 产物：所属丛编（每个丛编一项，枢纽丛编无 title，名称见 withHubTitles） */
     _collections?: DerivedCollectionRef[];
     location_history?: LocationInfo[];
-    related_books?: string[];
+    /** 非源流关联：id 字符串（旧）或 {book_id, relation?, …}（新，版本关系 06 稿；读时用 relatedBookIds／relatedItems） */
+    related_books?: Array<string | RelatedBookEntry>;
     /** 版本传承信息（用于版本图） */
     lineage?: BookLineage;
     /** 行款／装帧／尺寸／品相（2026-09-28 S2b）；四内容子段全为空串时目录侧不写本对象 */
@@ -632,11 +635,25 @@ export interface ProvenanceEntry {
 /** Book.base_edition[]：role 取 底本／配補／參校；有 book_id 的可跳转 */
 export interface BaseEditionEntry {
     role: string;
+    /** 怎么出来的（翻刻、過錄……）；带 relation 且有 book_id／hypothetical_id 的项才成版本图的边 */
+    relation?: string;
     name?: string;
     book_id?: string;
     work_id?: string;
+    /** 假想祖本（h_ 起首），对应 Work.version_graph.hypothetical_nodes[].id */
+    hypothetical_id?: string;
+    confidence?: LineageConfidence;
+    evidence?: string;
     note?: string;
     source?: string;
+}
+
+/** Book.related_books[] 的对象项 */
+export interface RelatedBookEntry {
+    book_id: string;
+    relation?: string;
+    confidence?: LineageConfidence;
+    evidence?: string;
 }
 
 /** Collection 详情 */

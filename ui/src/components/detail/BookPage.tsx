@@ -32,7 +32,7 @@ import {
 } from '../../core/detail-model';
 import { AuthorByline, ResourceGroupList, ResourceRow, splitResources } from './shared';
 import { VersionLineageView } from '../VersionLineageView';
-import type { LineageGraph } from '../../core/lineage-graph';
+import { derivedItems, relatedItems, relatedBookIds, type LineageGraph } from '../../core/lineage-graph';
 
 /** 同作品版本：全部解析后按年代排的上限（再多就只取前几条，不排） */
 const SIBLINGS_SORT_MAX = 40;
@@ -155,10 +155,10 @@ export const BookPage: React.FC<BookPageProps> = ({
 
     // ── 同作品版本：不多于 40 种时全解析、按年代排；本页也在列里（高亮） ──
     const siblingIds = useMemo(() => {
-        const ids = new Set<string>([...(work ? workVersionIds(work) : []), ...(data.related_books || [])]);
+        const ids = new Set<string>([...(work ? workVersionIds(work) : []), ...relatedBookIds(data)]);
         ids.add(data.id);
         return [...ids];
-    }, [work, data.related_books, data.id]);
+    }, [work, data.related_books, data.id]); // eslint-disable-line react-hooks/exhaustive-deps
     const otherCount = siblingIds.length - 1;
 
     useEffect(() => {
@@ -189,9 +189,9 @@ export const BookPage: React.FC<BookPageProps> = ({
     // ── 源流里引到的其他版本：取版本名 ──
     const lineage = data.lineage;
     const lineageBookIds = useMemo(() => [
-        ...(lineage?.derived_from || []).filter(d => d.ref_type === 'book').map(d => d.ref),
-        ...(lineage?.related_to || []).map(r => r.book_id),
-    ].filter(Boolean), [lineage]);
+        ...derivedItems(data).filter(d => d.ref_type === 'book').map(d => d.ref),
+        ...relatedItems(data).map(r => r.book_id),
+    ].filter(Boolean), [data]);
     useEffect(() => {
         if (!transport || lineageBookIds.length === 0) { setLineageRefs(new Map()); return; }
         let cancelled = false;
@@ -260,7 +260,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                 value: tr('bookPage.volumesValue', { range: formatVolumeRange(volumes, t.unit.volume), unit: t.unit.volume, n: volumes.length }),
             });
         }
-        const base = (data.lineage?.derived_from || []).find(d => d.relation === '底本' && d.ref_type === 'book');
+        const base = derivedItems(data).find(d => d.relation === '底本' && d.ref_type === 'book');
         if (base && refName(base.ref)) {
             out.push({
                 label: tr('bookPage.fact.baseEdition'),
@@ -336,7 +336,7 @@ export const BookPage: React.FC<BookPageProps> = ({
     /* 标题：大标题是书名，版本名作副题（也免得长版本名撑成三行） */
     const heading = convert(data.title);
     const subtitle = data.edition ? convert(data.edition) : undefined;
-    const yearText = data.lineage?.year_text || '';
+    const yearText = data.lineage?.year_text || data.dating?.text || '';
 
     const card = (
         <SummaryCard
@@ -374,7 +374,7 @@ export const BookPage: React.FC<BookPageProps> = ({
     /** 章节单位：小说「回」，其余「章」「卷」——取第一章章名的末字 */
     const chapUnit = convert((chapters[0] && splitChapterTitle(chapters[0].title)[0].slice(-1)) || '') || tr('bookPage.chapterUnit');
     const chapterCountText = tr('bookPage.chapterCount', { n: chapters.length, unit: chapUnit });
-    const hasLineage = !!(lineage?.derived_from?.length || lineage?.related_to?.length || data.appendix?.length);
+    const hasLineage = !!(derivedItems(data).length || relatedItems(data).length || data.appendix?.length);
 
     const nav: RailNavItem[] = [];
     const imagesTitle = hasPhysicalOnly ? tr('bookPage.sec.physical') : tr('bookPage.sec.images');
@@ -495,7 +495,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                 <Sec
                     id="lineage"
                     title={tr('bookPage.sec.lineage')}
-                    meta={lineage?.derived_from?.length ? tr('bookPage.lineageMeta') : undefined}
+                    meta={derivedItems(data).length ? tr('bookPage.lineageMeta') : undefined}
                     action={workGraph ? (
                         <span className="bim-d-seg bim-d-ui" role="group" aria-label={tr('bookPage.lineageView')}>
                             <button type="button" aria-pressed={lineageMode === 'flow'} onClick={() => setLineageMode('flow')}>{tr('bookPage.viewCards')}</button>
@@ -606,7 +606,7 @@ export const BookPage: React.FC<BookPageProps> = ({
                             ...(work.authors || []).slice(0, 2).map(a =>
                                 `${a.dynasty ? `〔${convert(a.dynasty)}〕` : ''}${convert(a.name)}`),
                             convert(measureText(work, t.unit.juan)),
-                            (work._edition_count ?? work._books?.length) ? tr('bookPage.editionCount', { n: work._edition_count ?? work._books?.length }) : '',
+                            (work._edition_count ?? work._books?.length) ? tr('bookPage.editionCount', { n: work._edition_count ?? work._books?.length ?? 0 }) : '',
                         ]}
                     />
                     {work.description?.text && (
@@ -689,11 +689,11 @@ function LineageFlow({ data, heading, yearText, refName, onNavigate, renderLink 
 }) {
     const { t, convert } = useI18n();
     const lineage = data.lineage;
-    const derived = lineage?.derived_from || [];
+    const derived = derivedItems(data);
     const ancestors = derived.filter(d => d.ref_type !== 'book');
     const bases = derived.filter(d => d.ref_type === 'book' && d.relation === '底本');
     const others = derived.filter(d => d.ref_type === 'book' && d.relation !== '底本');
-    const related = lineage?.related_to || [];
+    const related = relatedItems(data);
     const hasFlow = derived.length > 0 || related.length > 0;
 
     const conf = (c?: LineageConfidence) => (c && CONFIDENCE_KEYS.has(c)

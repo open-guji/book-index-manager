@@ -34,6 +34,7 @@ import { getResourceTypes } from '../types';
 import { getTypeGroupKey, mergeVolumeResources, volumeStats } from './resources';
 import { getT } from '../i18n/translate';
 import type { TFunction } from '../i18n/translate';
+import { relatedItems } from './lineage-graph';
 
 // ══════════════════════════════════════════════════════════════
 // 朝代 / 年代推断
@@ -1180,6 +1181,7 @@ export interface ResolvedVersion {
     /** 馆藏；无 current_location 时取第一项机构作 locationName（S2-H） */
     provenance?: BookDetailData['provenance'];
     lineage?: BookDetailData['lineage'];
+    related_books?: BookDetailData['related_books'];
     /** 结构化年代（S2-L 后 publication_info.year 并入此处，推断函数靠它还原） */
     dating?: BookDetailData['dating'];
     /** 描述首句（同版组代表行显示用） */
@@ -1250,7 +1252,7 @@ export function holderCallNumber(r?: ResourceEntry): string | undefined {
 
 /** lineage.related_to 里第一条「同版」所指的代表本 */
 export function sameEditionRep(v: ResolvedVersion): string | undefined {
-    for (const r of v.lineage?.related_to ?? []) {
+    for (const r of relatedItems(v)) {
         const ref = r.ref ?? r.book_id;
         if (r.relation === SAME_EDITION && ref && ref !== v.id) return ref;
     }
