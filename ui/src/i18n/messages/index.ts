@@ -17,6 +17,7 @@ import { catalogPage } from './catalog-page';
 import { searchPage } from './search-page';
 import { feedback } from './feedback';
 import { lineage } from './lineage';
+import { mentions } from './mentions';
 
 export const NAMESPACES = {
     common,
@@ -33,6 +34,7 @@ export const NAMESPACES = {
     searchPage,
     feedback,
     lineage,
+    mentions,
 } satisfies Record<string, MessageSet<unknown>>;
 
 export type NamespaceMessages = { [K in keyof typeof NAMESPACES]: (typeof NAMESPACES)[K]['zh-Hant'] };
