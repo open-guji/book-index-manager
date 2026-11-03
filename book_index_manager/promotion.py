@@ -744,9 +744,12 @@ def validate_promotions(storage) -> List[PromotionIssue]:
             （清墓碑再升一次）若照做，会把已并掉的条目重新变出来。
 
             故判据取二重，皆以并条之痕为凭：
-              1. 存者若**全无** `merged_from` —— 断为撞号（error）。并条工具
-                 必写此栏，撞号则无人写。
-              2. 存者有 `merged_from`，而某条 draft 记录之题**不在**存者的
+              1. 存者若**全无**并条之痕 —— 断为撞号（error）。并条工具必留账，撞号
+                 则无人写。2026-11-03 起记录里不再有 `merged_from`／`merged_in`
+                 （book-index 删并条历史字段），痕取正式库台账
+                 `.claude/qa/purge-tombstones/ledger/*.tsv`：存者是某行的留存号即算；
+                 旧字段若还在也认。
+              2. 存者有并条之痕，而某条 draft 记录之题**不在**存者的
                  题集（title ＋ additional_titles；entity 则 primary_name ＋
                  alt_names）之内 —— 并是并了，但这一条像是另一回事，
                  报 warning 待人看。并条之所以生一对多，正因二者同题
@@ -808,6 +811,7 @@ def validate_promotions(storage) -> List[PromotionIssue]:
 
     # E07: production_id 一对多——须辨「撞号」与「并条之应然记账」，见 docstring
     by_prod: Dict[str, List[str]] = {}
+    ledger_keepers: Optional[Set[str]] = None
     for draft_id, rec in records.items():
         by_prod.setdefault(rec.production_id, []).append(draft_id)
     for prod_id, draft_ids in sorted(by_prod.items()):
@@ -815,14 +819,16 @@ def validate_promotions(storage) -> List[PromotionIssue]:
             continue
         draft_ids = sorted(draft_ids)
         prod_data = _read_json(id_paths.get(prod_id))
-        if not _merge_marks(prod_data):
+        if ledger_keepers is None:
+            ledger_keepers = _ledger_keepers(storage.official_root)
+        if not (_merge_marks(prod_data) or prod_id in ledger_keepers):
             issues.append(PromotionIssue(
                 severity="error", code="E07",
                 draft_id=",".join(draft_ids), production_id=prod_id,
                 path=str(promotions.path),
                 message=(
                     f"production id {prod_id} is claimed by {len(draft_ids)} draft records "
-                    f"({', '.join(draft_ids)}) and the production entry bears no merged_from "
+                    f"({', '.join(draft_ids)}) and the production entry has no merge record (ledger) "
                     f"— an id collision: the later promote overwrote the earlier one's "
                     f"production file. Recover by clearing the loser's _promoted_to and its "
                     f"promotions.json entry, then promoting it again (draft content survives "
@@ -842,7 +848,7 @@ def validate_promotions(storage) -> List[PromotionIssue]:
                 path=str(promotions.path),
                 message=(
                     f"production id {prod_id} is claimed by {len(draft_ids)} draft records; "
-                    f"the entry does carry merged_from, so this is likely a production-side "
+                    f"the entry does have a merge record, so this is likely a production-side "
                     f"merge — but {', '.join(odd)} has a title not among the survivor's "
                     f"title/additional_titles, so it may be an unrelated record that collided. "
                     f"Worth a look; do not auto-recover."
@@ -1031,6 +1037,27 @@ def _merge_marks(data: dict) -> bool:
         if isinstance(entry, dict) and entry.get("merged_from"):
             return True
     return False
+
+
+def _ledger_keepers(official_root) -> Set[str]:
+    """正式库并条台账里出现过的留存号（history 的 keeper 列；purge 的 merged_into、final_keeper 列）。"""
+    out: Set[str] = set()
+    led = Path(official_root) / ".claude" / "qa" / "purge-tombstones" / "ledger"
+    if not led.is_dir():
+        return out
+    for f in sorted(led.glob("*.tsv")):
+        try:
+            lines = f.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            continue
+        if not lines:
+            continue
+        head = lines[0].split("\t")
+        cols = [head.index(c) for c in ("keeper", "merged_into", "final_keeper") if c in head]
+        for line in lines[1:]:
+            row = line.split("\t")
+            out.update(row[c] for c in cols if c < len(row) and row[c])
+    return out
 
 
 def _name_set(data: dict) -> Set[str]:
