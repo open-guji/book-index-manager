@@ -99,6 +99,10 @@ export interface TextReaderProps {
     backHref?: string;
     /** 返回链接的文字，默认「阅读」 */
     backLabel?: string;
+    /** 「阅读设置」（宽屏侧栏／窄屏底栏抽屉）末尾的「更多」组内容，如「下载本冊」；不给不出 */
+    settingsExtra?: React.ReactNode;
+    /** 「更多」组标题；缺省「更多」 */
+    settingsExtraTitle?: React.ReactNode;
     /** 矫正对读数据提供函数（返回当前卷的透视矫正数据） */
     resolveWarpData?: ReaderWarpResolver;
     /** 对读正文的实体标注（entity.json，须带逐字 anchor）；按章取，没有就不画 */
@@ -248,7 +252,7 @@ export const TextReader: React.FC<TextReaderProps> = props => {
 const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof useReaderPrefs> }> = ({
     prefsState,
     id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate, anchor: anchorProp,
-    title, subtitle, resolveImages, renderImageOverlay, imagePanel, facsimileTrimmed, allowVertical, onReportError, revisedAt, backHref, backLabel,
+    title, subtitle, settingsExtra, settingsExtraTitle, resolveImages, renderImageOverlay, imagePanel, facsimileTrimmed, allowVertical, onReportError, revisedAt, backHref, backLabel,
     resolveWarpData, warpData: warpDataProp, resolveEntities, onEntityNavigate,
     className, style,
 }) => {
@@ -938,6 +942,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                     </div>
                 </div>
             ) : undefined}
+            settingsExtra={settingsExtra}
+            settingsExtraTitle={settingsExtraTitle}
             settingsAnnotate={warpData ? (
                 <button
                     type="button"

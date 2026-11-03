@@ -127,6 +127,13 @@ export interface ReaderShellProps {
     settingsAnnotate?: React.ReactNode;
     /** 右侧「阅读设置」侧栏「版面」组里的额外控制项（如书影留白） */
     settingsLayout?: React.ReactNode;
+    /**
+     * 「阅读设置」（宽屏右侧栏、窄屏底栏抽屉）最末尾新开一组「更多」，放宿主自己的动作（如「下载本冊」）。
+     * 不给不出这一组。窄屏下它和其它设置一起在底部抽屉里，宿主不必另做手机入口。
+     */
+    settingsExtra?: React.ReactNode;
+    /** 「更多」组的标题；缺省按繁简给「更多」 */
+    settingsExtraTitle?: React.ReactNode;
     /** 是否处于 interactive_warp 模式 */
     isWarpMode?: boolean;
     /** 「书影保留空白」勾选框；图源本身已裁掉空白的书传 false，不显示（默认显示） */
@@ -341,7 +348,7 @@ export function ReaderShell({
     contentLoading = false,
     pagerUnit: pagerUnitProp,
     versions, currentVersionKey, onVersionChange, versionSource = true, keepChapterOnVersionChange = false,
-    customImagePanel, toolbarExtra, settingsAnnotate, settingsLayout, isWarpMode, showPreserveMargins = true,
+    customImagePanel, toolbarExtra, settingsAnnotate, settingsLayout, settingsExtra, settingsExtraTitle, isWarpMode, showPreserveMargins = true,
     children, className, style,
 }: ReaderShellProps) {
     const { t, convert } = useI18n();
@@ -574,6 +581,12 @@ export function ReaderShell({
                 )}
                 {settingsLayout}
             </section>
+            {settingsExtra && (
+                <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g4`}>
+                    <h3 id={`${setId}-g4`} className="bim-rd-sp-h">{settingsExtraTitle ?? t('reader.groupMore')}</h3>
+                    {settingsExtra}
+                </section>
+            )}
         </div>
     );
 

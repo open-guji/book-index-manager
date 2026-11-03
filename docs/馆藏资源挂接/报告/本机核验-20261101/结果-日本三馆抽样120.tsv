@@ -1,0 +1,201 @@
+batch	source	record_id	work_id	which	url	code	cls	final_url	bytes	has_id	note
+A2-kokusho	kokusho	100405673	d59fy3p8h4w1	manifest	https://www.dl.ndl.go.jp/api/iiif/2583173/manifest.json	200	ok		27171	False	json-ok
+A2-kokusho	kokusho	100065297	d59fyfeqlbsx	page	https://kokusho.nijl.ac.jp/biblio/100065297	200	ok		4813	False	
+A2-ndl	ndl	000007593516	d59fy1cqaark	page	https://dl.ndl.go.jp/pid/2537178	200	ok		4298	False	
+A2-naikaku	naikaku	1079096	d59fxunqrs3m	page	https://www.digital.archives.go.jp/file/1079096	200	ok		127098	True	
+A2-kokusho	kokusho	100315864	d59fyfellipt	manifest	https://rmda.kulib.kyoto-u.ac.jp/iiif/metadata_manifest/RB00003323/manifest.json	200	ok		177543	False	json-ok
+A2-ndl	ndl	pid2545951	d59fxrutzyf4	page	https://dl.ndl.go.jp/pid/2545951	200	ok		4298	False	
+A2-kokusho	kokusho	100065297	d59fyfeqlbsx	manifest	https://kokusho.nijl.ac.jp/biblio/100065297/manifest	200	ok		400000	True	not-json
+A2-naikaku	naikaku	1079096	d59fxunqrs3m	manifest	https://www.digital.archives.go.jp/api/iiif/584649/manifest.json	200	ok		75107	False	json-ok
+A2-ndl	ndl	pid2602760	d59fy0i4ensy	page	https://dl.ndl.go.jp/pid/2602760	200	ok		4298	False	
+A2-kokusho	kokusho	100386006	d59fygq884ch	manifest	https://rmda.kulib.kyoto-u.ac.jp/iiif/metadata_manifest/RB00009409/manifest.json	200	ok		43460	False	json-ok
+A2-kokusho	kokusho	300093294	d59fye0dyark	page	https://kokusho.nijl.ac.jp/biblio/300093294	200	ok		4857	False	
+A2-naikaku	naikaku	1074535	d59fxtzatq80	page	https://www.digital.archives.go.jp/file/1074535	200	ok		98039	True	
+A2-ndl	ndl	pid2566733	d59fyknzu4g1	page	https://dl.ndl.go.jp/pid/2566733	200	ok		4298	False	
+A2-kokusho	kokusho	300093294	d59fye0dyark	manifest	https://kokusho.nijl.ac.jp/biblio/300093294/manifest	200	ok		180362	True	json-ok
+A2-kokusho	kokusho	100386010	d59fyexelzb4	manifest	https://rmda.kulib.kyoto-u.ac.jp/iiif/metadata_manifest/RB00009417/manifest.json	200	ok		86875	False	json-ok
+A2-ndl	ndl	000007530701	d59fxz3pw3k0	page	https://dl.ndl.go.jp/pid/2541560	200	ok		4298	False	
+A2-naikaku	naikaku	1074535	d59fxtzatq80	manifest	https://www.digital.archives.go.jp/api/iiif/3967561/manifest.json	200	ok		47980	False	json-ok
+A2-kokusho	kokusho	100237429	d59fxrv2445e	page	https://kokusho.nijl.ac.jp/biblio/100237429	200	ok		4858	False	
+A2-ndl	ndl	000007534773	d59fxwp619fm	page	https://dl.ndl.go.jp/pid/2609259	200	ok		4298	False	
+A2-naikaku	naikaku	1077898	d59f2nelw9og	page	https://www.digital.archives.go.jp/file/1077898	200	ok		336412	True	
+A2-ndl	ndl	000007535965	d59fxujhtfcx	page	https://dl.ndl.go.jp/pid/2607394	200	ok		4298	False	
+A2-kokusho	kokusho	100237429	d59fxrv2445e	manifest	https://kokusho.nijl.ac.jp/biblio/100237429/manifest	200	ok		187007	True	json-ok
+A2-ndl	ndl	R100000039-I2603256	d59fy3qg6fwg	page	https://dl.ndl.go.jp/pid/2603256	200	ok		4298	False	
+A2-kokusho	kokusho	100452761	d59fxzsj9csh	page	https://kokusho.nijl.ac.jp/biblio/100452761	200	ok		4867	False	
+A2-naikaku	naikaku	1077898	d59f2nelw9og	manifest	https://www.digital.archives.go.jp/api/iiif/5389359/manifest.json	200	ok		145889	False	json-ok
+A2-ndl	ndl	000007532928	d59fye161ou8	page	https://dl.ndl.go.jp/pid/2533318	200	ok		4298	False	
+A2-kokusho	kokusho	100452761	d59fxzsj9csh	manifest	https://kokusho.nijl.ac.jp/biblio/100452761/manifest	200	ok		252085	True	json-ok
+A2-naikaku	naikaku	1076385	d59fy04s0g01	page	https://www.digital.archives.go.jp/file/1076385	200	ok		225197	True	
+A2-ndl	ndl	000007532629	d59fyfhunlds	page	https://dl.ndl.go.jp/pid/2539553	200	ok		4298	False	
+A2-kokusho	kokusho	100452820	d59fy5pb1o1t	page	https://kokusho.nijl.ac.jp/biblio/100452820	200	ok		4866	False	
+A2-ndl	ndl	000007623099	d59fxruq93wg	page	https://dl.ndl.go.jp/pid/2540468	200	ok		4298	False	
+A2-kokusho	kokusho	100452820	d59fy5pb1o1t	manifest	https://kokusho.nijl.ac.jp/biblio/100452820/manifest	200	ok		203706	True	json-ok
+A2-ndl	ndl	000007603865	d59fy1263bpd	page	https://dl.ndl.go.jp/pid/2605289	200	ok		4298	False	
+A2-naikaku	naikaku	1076385	d59fy04s0g01	manifest	https://www.digital.archives.go.jp/api/iiif/577970/manifest.json	200	ok		79517	False	json-ok
+A2-kokusho	kokusho	100244714	d59fxxhodlvl	page	https://kokusho.nijl.ac.jp/biblio/100244714	200	ok		4875	False	
+A2-ndl	ndl	pid2604591	d59fy8ynca9t	page	https://dl.ndl.go.jp/pid/2604591	200	ok		4298	False	
+A2-naikaku	naikaku	1068071	d59fxryg5x4y	page	https://www.digital.archives.go.jp/file/1068071	200	ok		111181	True	
+A2-ndl	ndl	000007576831	d59fyfi4by80	page	https://dl.ndl.go.jp/pid/2539402	200	ok		4298	False	
+A2-kokusho	kokusho	100244714	d59fxxhodlvl	manifest	https://kokusho.nijl.ac.jp/biblio/100244714/manifest	200	ok		66062	True	json-ok
+A2-naikaku	naikaku	1068071	d59fxryg5x4y	manifest	https://www.digital.archives.go.jp/api/iiif/4276250/manifest.json	200	ok		42544	False	json-ok
+A2-ndl	ndl	000007612200	d59fyevj6pz4	page	https://dl.ndl.go.jp/pid/2541647	200	ok		4298	False	
+A2-kokusho	kokusho	100155515	d59fxv2ncnb4	page	https://kokusho.nijl.ac.jp/biblio/100155515	200	ok		4960	False	
+A2-naikaku	naikaku	1076754	d59fxr2j5dds	page	https://www.digital.archives.go.jp/file/1076754	200	ok		111361	True	
+A2-ndl	ndl	pid2578855	d59fxqhp248x	page	https://dl.ndl.go.jp/pid/2578855	200	ok		4298	False	
+A2-kokusho	kokusho	100155515	d59fxv2ncnb4	manifest	https://kokusho.nijl.ac.jp/biblio/100155515/manifest	200	ok		400000	True	not-json
+A2-ndl	ndl	pid2568739	d59fxr78n8cg	page	https://dl.ndl.go.jp/pid/2568739	200	ok		4298	False	
+A2-naikaku	naikaku	1076754	d59fxr2j5dds	manifest	https://www.digital.archives.go.jp/api/iiif/4762467/manifest.json	200	ok		67885	False	json-ok
+A2-kokusho	kokusho	100315864	d59fyfellipt	page	https://kokusho.nijl.ac.jp/biblio/100315864	200	ok		4891	False	
+A2-ndl	ndl	000007519285	d59fxu43r6yo	page	https://dl.ndl.go.jp/pid/2541556	200	ok		4298	False	
+A2-naikaku	naikaku	1072239	d59fynrizocg	page	https://www.digital.archives.go.jp/file/1072239	200	ok		136218	True	
+A2-kokusho	kokusho	100112551	d59fyutvitxc	page	https://kokusho.nijl.ac.jp/biblio/100112551	200	ok		4963	False	
+A2-ndl	ndl	000007577823	d59fyodccr28	page	https://dl.ndl.go.jp/pid/2607050	200	ok		4298	False	
+A2-ndl	ndl	pid2544877	d59fymcfi800	page	https://dl.ndl.go.jp/pid/2544877	200	ok		4298	False	
+A2-kokusho	kokusho	100112551	d59fyutvitxc	manifest	https://kokusho.nijl.ac.jp/biblio/100112551/manifest	200	ok		257744	True	json-ok
+A2-naikaku	naikaku	1072239	d59fynrizocg	manifest	https://www.digital.archives.go.jp/api/iiif/4763416/manifest.json	200	ok		39771	False	json-ok
+A2-ndl	ndl	000007527859	d59fy7s7dkap	page	https://dl.ndl.go.jp/pid/2543300	200	ok		4298	False	
+A2-kokusho	kokusho	100239514	d59fxxhfy77m	page	https://kokusho.nijl.ac.jp/biblio/100239514	200	ok		4945	False	
+A2-naikaku	naikaku	1084787	d59fxpytihoi	page	https://www.digital.archives.go.jp/file/1084787	200	ok		111281	True	
+A2-ndl	ndl	000007609480	d59fypyz75s2	page	https://dl.ndl.go.jp/pid/2608038	200	ok		4298	False	
+A2-kokusho	kokusho	100239514	d59fxxhfy77m	manifest	https://kokusho.nijl.ac.jp/biblio/100239514/manifest	200	ok		155559	True	json-ok
+A2-ndl	ndl	pid2603792	d59fyafmvhts	page	https://dl.ndl.go.jp/pid/2603792	200	ok		4298	False	
+A2-naikaku	naikaku	1084787	d59fxpytihoi	manifest	https://www.digital.archives.go.jp/api/iiif/5049675/manifest.json	200	ok		82417	False	json-ok
+A2-kokusho	kokusho	100076562	d59fyh5zpjwh	page	https://kokusho.nijl.ac.jp/biblio/100076562	200	ok		4925	False	
+A2-ndl	ndl	pid2603758	d59fy3r1ptdt	page	https://dl.ndl.go.jp/pid/2603758	200	ok		4298	False	
+A2-naikaku	naikaku	1073456	d59fxszn9zb5	page	https://www.digital.archives.go.jp/file/1073456	200	ok		161646	True	
+A2-kokusho	kokusho	100076562	d59fyh5zpjwh	manifest	https://kokusho.nijl.ac.jp/biblio/100076562/manifest	200	ok		303113	True	json-ok
+A2-ndl	ndl	pid2568747	d59fxr75iuww	page	https://dl.ndl.go.jp/pid/2568747	200	ok		4298	False	
+A2-ndl	ndl	000007558503	d59fxz13xqtd	page	https://dl.ndl.go.jp/pid/2605921	200	ok		4298	False	
+A2-kokusho	kokusho	300081374	d59fxv3b2old	page	https://kokusho.nijl.ac.jp/biblio/300081374	200	ok		4869	False	
+A2-ndl	ndl	pid2568943	d59fypwe6fwh	page	https://dl.ndl.go.jp/pid/2568943	200	ok		4298	False	
+A2-kokusho	kokusho	300081374	d59fxv3b2old	manifest	https://kokusho.nijl.ac.jp/biblio/300081374/manifest	200	ok		174578	True	json-ok
+A2-naikaku	naikaku	1073456	d59fxszn9zb5	manifest	https://www.digital.archives.go.jp/api/iiif/4030906/manifest.json	200	ok		162280	False	json-ok
+A2-ndl	ndl	000007554068	d59fxz1sa96p	page	https://dl.ndl.go.jp/pid/2608025	200	ok		4298	False	
+A2-kokusho	kokusho	300099144	d59fxq77cyyq	page	https://kokusho.nijl.ac.jp/biblio/300099144	200	ok		4813	False	
+A2-naikaku	naikaku	1078449	d59fxzfyn9c1	page	https://www.digital.archives.go.jp/file/1078449	200	ok		218265	True	
+A2-ndl	ndl	pid2599532	d59fy0g5v08w	page	https://dl.ndl.go.jp/pid/2599532	200	ok		4298	False	
+A2-kokusho	kokusho	300099144	d59fxq77cyyq	manifest	https://kokusho.nijl.ac.jp/biblio/300099144/manifest	200	ok		48863	True	json-ok
+A2-naikaku	naikaku	1078449	d59fxzfyn9c1	manifest	https://www.digital.archives.go.jp/api/iiif/4756673/manifest.json	200	ok		47033	False	json-ok
+A2-ndl	ndl	pid2601684	d59fxr4ekmpt	page	https://dl.ndl.go.jp/pid/2601684	200	ok		4298	False	
+A2-kokusho	kokusho	100346856	d59fy1h21se8	page	https://kokusho.nijl.ac.jp/biblio/100346856	200	ok		4867	False	
+A2-ndl	ndl	pid2599695	d59fxx3ny39c	page	https://dl.ndl.go.jp/pid/2599695	200	ok		4298	False	
+A2-naikaku	naikaku	1068394	d59fyovbfr40	page	https://www.digital.archives.go.jp/file/1068394	200	ok		98679	True	
+A2-ndl	ndl	000007555665	d59fyod6qha8	page	https://dl.ndl.go.jp/pid/2605786	200	ok		4298	False	
+A2-kokusho	kokusho	100346856	d59fy1h21se8	manifest	https://kokusho.nijl.ac.jp/biblio/100346856/manifest	200	ok		349987	True	json-ok
+A2-ndl	ndl	000007623031	d59fyh7ktxq9	page	https://dl.ndl.go.jp/pid/2540462	200	ok		4298	False	
+A2-kokusho	kokusho	100236012	d59fxt344w74	page	https://kokusho.nijl.ac.jp/biblio/100236012	200	ok		4925	False	
+A2-naikaku	naikaku	1068394	d59fyovbfr40	manifest	https://www.digital.archives.go.jp/api/iiif/4759934/manifest.json	200	ok		79697	False	json-ok
+A2-ndl	ndl	pid2601848	d59fxyc7g6ip	page	https://dl.ndl.go.jp/pid/2601848	200	ok		4298	False	
+A2-naikaku	naikaku	1076435	d59fxruvk4xs	page	https://www.digital.archives.go.jp/file/1076435	404	gone		0		
+A2-ndl	ndl	000007565184	d59fyn70rfnk	page	https://dl.ndl.go.jp/pid/2606894	200	ok		4298	False	
+A2-kokusho	kokusho	100236012	d59fxt344w74	manifest	https://kokusho.nijl.ac.jp/biblio/100236012/manifest	200	ok		400000	True	not-json
+A2-ndl	ndl	pid2581878	d59fxz3v74sg	page	https://dl.ndl.go.jp/pid/2581878	200	ok		4298	False	
+A2-naikaku	naikaku	1076435	d59fxruvk4xs	manifest	https://www.digital.archives.go.jp/api/iiif/4917502/manifest.json	200	ok		43408	False	json-ok
+A2-kokusho	kokusho	100386006	d59fygq884ch	page	https://kokusho.nijl.ac.jp/biblio/100386006	200	ok		4941	False	
+A2-ndl	ndl	pid2600779	d59fyro6c35s	page	https://dl.ndl.go.jp/pid/2600779	200	ok		4298	False	
+A2-naikaku	naikaku	1074210	d59fxwga30n5	page	https://www.digital.archives.go.jp/file/1074210	200	ok		174142	True	
+A2-kokusho	kokusho	100452781	d59fxy2un1tt	page	https://kokusho.nijl.ac.jp/biblio/100452781	200	ok		4897	False	
+A2-ndl	ndl	000007508154	d59fxw10pclc	page	https://dl.ndl.go.jp/pid/2608039	200	ok		4298	False	
+A2-naikaku	naikaku	1074210	d59fxwga30n5	manifest	https://www.digital.archives.go.jp/api/iiif/3957666/manifest.json	200	ok		77004	False	json-ok
+A2-kokusho	kokusho	100452781	d59fxy2un1tt	manifest	https://kokusho.nijl.ac.jp/biblio/100452781/manifest	200	ok		253932	True	json-ok
+A2-ndl	ndl	000007566091	d59fynpq2bcw	page	https://dl.ndl.go.jp/pid/2606818	200	ok		4298	False	
+A2-naikaku	naikaku	1076064	d59fyfaz4dfl	page	https://www.digital.archives.go.jp/file/1076064	200	ok		98478	True	
+A2-kokusho	kokusho	100405673	d59fy3p8h4w1	page	https://kokusho.nijl.ac.jp/biblio/100405673	200	ok		5034	False	
+A2-ndl	ndl	000007611579	d59fyjsvjg8w	page	https://dl.ndl.go.jp/pid/2537773	200	ok		4298	False	
+A2-kokusho	kokusho	100410687	d59fxteilypt	page	https://kokusho.nijl.ac.jp/biblio/100410687	200	ok		4919	False	
+A2-kokusho	kokusho	100410687	d59fxteilypt	manifest	https://kokusho.nijl.ac.jp/biblio/100410687/manifest	200	ok		37783	True	json-ok
+A2-naikaku	naikaku	1076064	d59fyfaz4dfl	manifest	https://www.digital.archives.go.jp/api/iiif/4766867/manifest.json	200	ok		138649	False	json-ok
+A2-kokusho	kokusho	100296166	d59fy3of4tts	page	https://kokusho.nijl.ac.jp/biblio/100296166	200	ok		4835	False	
+A2-naikaku	naikaku	1072539	d59fyou91kao	page	https://www.digital.archives.go.jp/file/1072539	200	ok		123662	True	
+A2-kokusho	kokusho	100296166	d59fy3of4tts	manifest	https://kokusho.nijl.ac.jp/biblio/100296166/manifest	200	ok		349207	True	json-ok
+A2-naikaku	naikaku	1072539	d59fyou91kao	manifest	https://www.digital.archives.go.jp/api/iiif/4757428/manifest.json	200	ok		36143	False	json-ok
+A2-kokusho	kokusho	100244713	d59fxz4gqi9s	page	https://kokusho.nijl.ac.jp/biblio/100244713	200	ok		4941	False	
+A2-naikaku	naikaku	1075140	d59fyoa63w8w	page	https://www.digital.archives.go.jp/file/1075140	200	ok		148772	True	
+A2-kokusho	kokusho	100244713	d59fxz4gqi9s	manifest	https://kokusho.nijl.ac.jp/biblio/100244713/manifest	200	ok		23384	True	json-ok
+A2-kokusho	kokusho	100237051	d59fy1cnh5vk	page	https://kokusho.nijl.ac.jp/biblio/100237051	200	ok		4953	False	
+A2-naikaku	naikaku	1075140	d59fyoa63w8w	manifest	https://www.digital.archives.go.jp/api/iiif/4312304/manifest.json	200	ok		120540	False	json-ok
+A2-kokusho	kokusho	100237051	d59fy1cnh5vk	manifest	https://kokusho.nijl.ac.jp/biblio/100237051/manifest	200	ok		288941	True	json-ok
+A2-naikaku	naikaku	1074540	d59fxqo9z1tt	page	https://www.digital.archives.go.jp/file/1074540	200	ok		184622	True	
+A2-kokusho	kokusho	100175967	d59fygqpperk	page	https://kokusho.nijl.ac.jp/biblio/100175967	200	ok		4857	False	
+A2-naikaku	naikaku	1074540	d59fxqo9z1tt	manifest	https://www.digital.archives.go.jp/api/iiif/3671030/manifest.json	200	ok		53464	False	json-ok
+A2-kokusho	kokusho	100175967	d59fygqpperk	manifest	https://kokusho.nijl.ac.jp/biblio/100175967/manifest	200	ok		207580	True	json-ok
+A2-naikaku	naikaku	1078179	d59fyeg3kb28	page	https://www.digital.archives.go.jp/file/1078179	200	ok		130707	True	
+A2-kokusho	kokusho	100256812	d59fxwkkljwg	page	https://kokusho.nijl.ac.jp/biblio/100256812	200	ok		4970	False	
+A2-naikaku	naikaku	1078179	d59fyeg3kb28	manifest	https://www.digital.archives.go.jp/api/iiif/5054931/manifest.json	200	ok		63370	False	json-ok
+A2-kokusho	kokusho	100256812	d59fxwkkljwg	manifest	https://kokusho.nijl.ac.jp/biblio/100256812/manifest	200	ok		250859	True	json-ok
+A2-kokusho	kokusho	100148747	d59fxxcpight	page	https://kokusho.nijl.ac.jp/biblio/100148747	200	ok		4898	False	
+A2-naikaku	naikaku	1072831	d59fyob1mv40	page	https://www.digital.archives.go.jp/file/1072831	200	ok		123668	True	
+A2-naikaku	naikaku	1072831	d59fyob1mv40	manifest	https://www.digital.archives.go.jp/api/iiif/4757840/manifest.json	200	ok		60632	False	json-ok
+A2-kokusho	kokusho	100148747	d59fxxcpight	manifest	https://kokusho.nijl.ac.jp/biblio/100148747/manifest	200	ok		345270	True	json-ok
+A2-naikaku	naikaku	1072737	d59fyobzchs2	page	https://www.digital.archives.go.jp/file/1072737	200	ok		136221	True	
+A2-kokusho	kokusho	100088623	d59fxwga30n5	page	https://kokusho.nijl.ac.jp/biblio/100088623	200	ok		4941	False	
+A2-naikaku	naikaku	1072737	d59fyobzchs2	manifest	https://www.digital.archives.go.jp/api/iiif/4763964/manifest.json	200	ok		57004	False	json-ok
+A2-kokusho	kokusho	100088623	d59fxwga30n5	manifest	https://kokusho.nijl.ac.jp/biblio/100088623/manifest	200	ok		400000	True	not-json
+A2-kokusho	kokusho	100453568	d59fy0n3kphc	page	https://kokusho.nijl.ac.jp/biblio/100453568	200	ok		4919	False	
+A2-naikaku	naikaku	1073283	d59fyqzbescg	page	https://www.digital.archives.go.jp/file/1073283	200	ok		111575	True	
+A2-kokusho	kokusho	100453568	d59fy0n3kphc	manifest	https://kokusho.nijl.ac.jp/biblio/100453568/manifest	200	ok		165045	True	json-ok
+A2-naikaku	naikaku	1073283	d59fyqzbescg	manifest	https://www.digital.archives.go.jp/api/iiif/4758527/manifest.json	200	ok		81487	False	json-ok
+A2-kokusho	kokusho	100394542	d59fyk5p7fnk	page	https://kokusho.nijl.ac.jp/biblio/100394542	200	ok		4940	False	
+A2-naikaku	naikaku	1068522	d59fyob1y3nk	page	https://www.digital.archives.go.jp/file/1068522	200	ok		124161	True	
+A2-kokusho	kokusho	100394542	d59fyk5p7fnk	manifest	https://kokusho.nijl.ac.jp/biblio/100394542/manifest	200	ok		400000	True	not-json
+A2-kokusho	kokusho	100152248	d59fxujpb4ea	page	https://kokusho.nijl.ac.jp/biblio/100152248	200	ok		4898	False	
+A2-naikaku	naikaku	1068522	d59fyob1y3nk	manifest	https://www.digital.archives.go.jp/api/iiif/4759624/manifest.json	200	ok		42492	False	json-ok
+A2-kokusho	kokusho	100152248	d59fxujpb4ea	manifest	https://kokusho.nijl.ac.jp/biblio/100152248/manifest	200	ok		50519	True	json-ok
+A2-naikaku	naikaku	1073688	d59fxw0zrmyp	page	https://www.digital.archives.go.jp/file/1073688	200	ok		123711	True	
+A2-kokusho	kokusho	100244731	d59fxxy4u0w0	page	https://kokusho.nijl.ac.jp/biblio/100244731	200	ok		4835	False	
+A2-naikaku	naikaku	1073688	d59fxw0zrmyp	manifest	https://www.digital.archives.go.jp/api/iiif/4418690/manifest.json	200	ok		102403	False	json-ok
+A2-kokusho	kokusho	100244731	d59fxxy4u0w0	manifest	https://kokusho.nijl.ac.jp/biblio/100244731/manifest	200	ok		49932	True	json-ok
+A2-naikaku	naikaku	1070116	d59fxsp0kykh	page	https://www.digital.archives.go.jp/file/1070116	200	ok		187998	True	
+A2-kokusho	kokusho	300093583	d59fye1bz5z5	page	https://kokusho.nijl.ac.jp/biblio/300093583	200	ok		4898	False	
+A2-naikaku	naikaku	1070116	d59fxsp0kykh	manifest	https://www.digital.archives.go.jp/api/iiif/3948412/manifest.json	200	ok		45307	False	json-ok
+A2-kokusho	kokusho	300093583	d59fye1bz5z5	manifest	https://kokusho.nijl.ac.jp/biblio/300093583/manifest	200	ok		95576	True	json-ok
+A2-naikaku	naikaku	3610462	d59fy1ci64n4	page	https://www.digital.archives.go.jp/file/3610462	200	ok		112972	True	
+A2-kokusho	kokusho	100386010	d59fyexelzb4	page	https://kokusho.nijl.ac.jp/biblio/100386010	200	ok		4857	False	
+A2-kokusho	kokusho	100056356	d59fyiq2zpxe	page	https://kokusho.nijl.ac.jp/biblio/100056356	200	ok		4953	False	
+A2-naikaku	naikaku	3610462	d59fy1ci64n4	manifest	https://www.digital.archives.go.jp/api/iiif/3903293/manifest.json	200	ok		58005	False	json-ok
+A2-kokusho	kokusho	100056356	d59fyiq2zpxe	manifest	https://kokusho.nijl.ac.jp/biblio/100056356/manifest	200	ok		125285	True	json-ok
+A2-naikaku	naikaku	1067411	d59fyv4aez9d	page	https://www.digital.archives.go.jp/file/1067411	200	ok		186635	True	
+A2-kokusho	kokusho	100257277	d59fxt3ssn40	page	https://kokusho.nijl.ac.jp/biblio/100257277	200	ok		4941	False	
+A2-naikaku	naikaku	1067411	d59fyv4aez9d	manifest	https://www.digital.archives.go.jp/api/iiif/4487646/manifest.json	200	ok		40739	False	json-ok
+A2-kokusho	kokusho	100257277	d59fxt3ssn40	manifest	https://kokusho.nijl.ac.jp/biblio/100257277/manifest	200	ok		218486	True	json-ok
+A2-kokusho	kokusho	300055979	d59fyt7jpkow	page	https://kokusho.nijl.ac.jp/biblio/300055979	200	ok		4835	False	
+A2-naikaku	naikaku	1075013	d59fyt50vim9	page	https://www.digital.archives.go.jp/file/1075013	200	ok		111554	True	
+A2-kokusho	kokusho	300055979	d59fyt7jpkow	manifest	https://kokusho.nijl.ac.jp/biblio/300055979/manifest	200	ok		230851	True	json-ok
+A2-naikaku	naikaku	1075013	d59fyt50vim9	manifest	https://www.digital.archives.go.jp/api/iiif/4308864/manifest.json	200	ok		93354	False	json-ok
+A2-kokusho	kokusho	100127131	d59fxwga30n5	page	https://kokusho.nijl.ac.jp/biblio/100127131	200	ok		4945	False	
+A2-naikaku	naikaku	1076926	d59fyqwhyl8i	page	https://www.digital.archives.go.jp/file/1076926	200	ok		99234	True	
+A2-kokusho	kokusho	100127131	d59fxwga30n5	manifest	https://kokusho.nijl.ac.jp/biblio/100127131/manifest	200	ok		400000	True	not-json
+A2-naikaku	naikaku	1076926	d59fyqwhyl8i	manifest	https://www.digital.archives.go.jp/api/iiif/4428677/manifest.json	200	ok		90708	False	json-ok
+A2-kokusho	kokusho	200016595	d59fyfe1mby8	page	https://kokusho.nijl.ac.jp/biblio/200016595	200	ok		4856	False	
+A2-naikaku	naikaku	1074755	d59fye25xzb4	page	https://www.digital.archives.go.jp/file/1074755	200	ok		111146	True	
+A2-kokusho	kokusho	200016595	d59fyfe1mby8	manifest	https://kokusho.nijl.ac.jp/biblio/200016595/manifest	200	ok		400000	True	not-json
+A2-naikaku	naikaku	1074755	d59fye25xzb4	manifest	https://www.digital.archives.go.jp/api/iiif/5088006/manifest.json	200	ok		69701	False	json-ok
+A2-kokusho	kokusho	200042834	d59fxx5to6io	page	https://kokusho.nijl.ac.jp/biblio/200042834	200	ok		4940	False	
+A2-naikaku	naikaku	1067170	d59f2ngeidxe	page	https://www.digital.archives.go.jp/file/1067170	200	ok		143052	True	
+A2-kokusho	kokusho	200042834	d59fxx5to6io	manifest	https://kokusho.nijl.ac.jp/biblio/200042834/manifest	200	ok		1588	True	json-ok
+A2-naikaku	naikaku	1067170	d59f2ngeidxe	manifest	https://www.digital.archives.go.jp/api/iiif/4750958/manifest.json	200	ok		45213	False	json-ok
+A2-kokusho	kokusho	100441636	d59fyh4rp3b4	page	https://kokusho.nijl.ac.jp/biblio/100441636	200	ok		4818	False	
+A2-naikaku	naikaku	1073067	d59fynrddekh	page	https://www.digital.archives.go.jp/file/1073067	200	ok		111217	True	
+A2-kokusho	kokusho	100441636	d59fyh4rp3b4	manifest	https://kokusho.nijl.ac.jp/biblio/100441636/manifest	200	ok		83997	True	json-ok
+A2-naikaku	naikaku	1073067	d59fynrddekh	manifest	https://www.digital.archives.go.jp/api/iiif/4753856/manifest.json	200	ok		106901	False	json-ok
+A2-kokusho	kokusho	300098287	d59fy122npqa	page	https://kokusho.nijl.ac.jp/biblio/300098287	200	ok		4818	False	
+A2-naikaku	naikaku	1079555	d59fxz30x6v4	page	https://www.digital.archives.go.jp/file/1079555	200	ok		111220	True	
+A2-kokusho	kokusho	300098287	d59fy122npqa	manifest	https://kokusho.nijl.ac.jp/biblio/300098287/manifest	200	ok		204185	True	json-ok
+A2-naikaku	naikaku	1079555	d59fxz30x6v4	manifest	https://www.digital.archives.go.jp/api/iiif/4432316/manifest.json	200	ok		99694	False	json-ok
+A2-naikaku	naikaku	1068864	d59fyobrjk76	page	https://www.digital.archives.go.jp/file/1068864	200	ok		186533	True	
+A2-naikaku	naikaku	1068864	d59fyobrjk76	manifest	https://www.digital.archives.go.jp/api/iiif/4759041/manifest.json	200	ok		140454	False	json-ok
+A2-naikaku	naikaku	1079323	d59fxzijcqo0	page	https://www.digital.archives.go.jp/file/1079323	200	ok		136230	True	
+A2-naikaku	naikaku	1079323	d59fxzijcqo0	manifest	https://www.digital.archives.go.jp/api/iiif/4410563/manifest.json	200	ok		77007	False	json-ok
+A2-naikaku	naikaku	1079147	d59fxtzkte69	page	https://www.digital.archives.go.jp/file/1079147	200	ok		105093	True	
+A2-naikaku	naikaku	1079147	d59fxtzkte69	manifest	https://www.digital.archives.go.jp/api/iiif/4420960/manifest.json	200	ok		127799	False	json-ok
+A2-naikaku	naikaku	1068277	d59f2nkglgcj	page	https://www.digital.archives.go.jp/file/1068277	200	ok		123857	True	
+A2-naikaku	naikaku	1068277	d59f2nkglgcj	manifest	https://www.digital.archives.go.jp/api/iiif/4913572/manifest.json	200	ok		41582	False	json-ok
+A2-naikaku	naikaku	1067973	d59fyqwmyght	page	https://www.digital.archives.go.jp/file/1067973	200	ok		111106	True	
+A2-naikaku	naikaku	1067973	d59fyqwmyght	manifest	https://www.digital.archives.go.jp/api/iiif/4764614/manifest.json	200	ok		59725	False	json-ok
+A2-naikaku	naikaku	1069634	d59fxyavzxts	page	https://www.digital.archives.go.jp/file/1069634	200	ok		123689	True	
+A2-naikaku	naikaku	1069634	d59fxyavzxts	manifest	https://www.digital.archives.go.jp/api/iiif/4775244/manifest.json	200	ok		95098	False	json-ok
+A2-naikaku	naikaku	1071265	d59fxsnp4w00	page	https://www.digital.archives.go.jp/file/1071265	200	ok		111079	True	
+A2-naikaku	naikaku	1071265	d59fxsnp4w00	manifest	https://www.digital.archives.go.jp/api/iiif/3947249/manifest.json	200	ok		50701	False	json-ok
+A2-naikaku	naikaku	3006467	d59fxvrdljb5	page	https://www.digital.archives.go.jp/file/3006467	200	ok		112466	True	
+A2-naikaku	naikaku	3006467	d59fxvrdljb5	manifest	https://www.digital.archives.go.jp/api/iiif/4765383/manifest.json	200	ok		108727	False	json-ok
