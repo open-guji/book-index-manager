@@ -155,8 +155,13 @@ def test_physical_description_bad():
 
 def test_base_edition_ok():
     be = [{"role": "底本", "name": "文淵閣四庫全書本", "source": "館藏",
-           "book_id": "b1", "work_id": "w1"}]
+           "book_id": "b1"}]
     assert base_edition_ok(be, "b0", {"b1"}, {"w1"}) is True
+    # 有 id 时 name 可省；relation／confidence／evidence／hypothetical_id（06 稿）
+    be3 = [{"role": "底本", "relation": "翻刻", "book_id": "b1", "confidence": "probable",
+            "evidence": "某論", "source": "lineage.derived_from"},
+           {"role": "底本", "relation": "過錄", "hypothetical_id": "h_x", "source": "lineage.derived_from"}]
+    assert base_edition_ok(be3, "b0", {"b1"}, set()) is True
     # 无引用 id 也合法
     be2 = [{"role": "參校", "name": "某本", "source": "某目錄"}]
     assert base_edition_ok(be2, "b0", set(), set()) is True
@@ -175,6 +180,14 @@ def test_base_edition_bad():
     # 引用未知 work
     assert base_edition_ok([{"role": "底本", "name": "x", "source": "y", "work_id": "zzz"}],
                            "b0", set(), {"w1"}) is False
+    # 三个 id 至多一个；无 id 时 name 必填；hypothetical_id 须 h_ 起首；confidence 须在词表
+    assert base_edition_ok([{"role": "底本", "source": "y", "book_id": "b1", "work_id": "w1"}],
+                           "b0", {"b1"}, {"w1"}) is False
+    assert base_edition_ok([{"role": "底本", "source": "y"}], "b0", set(), set()) is False
+    assert base_edition_ok([{"role": "底本", "source": "y", "hypothetical_id": "x"}],
+                           "b0", set(), set()) is False
+    assert base_edition_ok([{"role": "底本", "name": "x", "source": "y", "confidence": "maybe"}],
+                           "b0", set(), set()) is False
     # name 为空
     assert base_edition_ok([{"role": "底本", "name": " ", "source": "y"}],
                            "b0", set(), set()) is False
