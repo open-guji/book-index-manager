@@ -179,7 +179,8 @@ export const CollectionPage: React.FC<CollectionPageProps> = ({
     const cnt = data.count;
     const numOf = (v: number | null | undefined) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
     /* 数字格：子目 / 卷 / 册。卷取「應收」的 juan，缺则用卷帙里的数；册取「應收」的 ce，缺则用目录算出的总册数 */
-    const juanNum = numOf(cnt?.juan) ?? numOf(data.juan_count?.number);
+    const juanNum = numOf(cnt?.juan) ?? numOf(data.juan_count?.number)
+        ?? numOf(data.measures?.find(x => x?.unit === '卷')?.number);
     const ceNum = numOf(cnt?.ce) ?? (table.totalVolumes || null);
     const stats = [
         // `_members` 只带前 20 项，总数以 `_member_count` 为准

@@ -130,6 +130,7 @@ export interface CatalogWorkSource {
     id: string;
     title?: string;
     juan_count?: { number?: number; description?: string } | number | null;
+    measures?: { unit?: string; number?: number }[];
     measure_info?: string;
     dynasty?: string;
     authors?: { name?: string; dynasty?: string }[];
@@ -146,7 +147,9 @@ function plainSummary(text: string | undefined): string {
 export function toCatalogWorkCard(w: CatalogWorkSource): CatalogWorkCard {
     const card: CatalogWorkCard = { id: w.id, title: w.title || w.id };
     const jc = w.juan_count;
-    const juanNum = typeof jc === 'number' ? jc : jc?.number;
+    // 計量合一：juan_count 缺时取 measures[] 里第一个「卷」项
+    const juanNum = typeof jc === 'number' ? jc
+        : jc?.number ?? w.measures?.find(x => x?.unit === '卷' && typeof x.number === 'number')?.number;
     if (typeof juanNum === 'number' && juanNum > 0) card.juan = juanNum;
     else if (w.measure_info) card.juan = w.measure_info;
     const authors = (w.authors ?? [])
