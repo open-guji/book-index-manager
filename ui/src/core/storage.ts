@@ -187,6 +187,12 @@ export function buildIndexEntry(
     } else if (typeof jc === 'object' && jc !== null) {
         juanCount = (jc as any).number || undefined;
     }
+    // 計量合一：juan_count 缺时取 measures[] 里第一个 unit=「卷」的项（与 Python entry_extractor._extract_juan_count 同序）
+    if (!juanCount && Array.isArray(metadata.measures)) {
+        const m = (metadata.measures as Array<{ number?: number; unit?: string }>)
+            .find(x => x && x.unit === '卷' && typeof x.number === 'number' && x.number > 0);
+        if (m) juanCount = m.number;
+    }
 
     // 提取 measure_info（UI 展示用計量文本）
     const measureInfo = typeof metadata.measure_info === 'string' ? metadata.measure_info : '';

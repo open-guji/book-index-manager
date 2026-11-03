@@ -397,3 +397,12 @@ def test_dynasty_takes_first_author_that_has_one():
         "Book/b/1.json",
     )
     assert entry["dynasty"] == "清"
+
+
+def test_juan_count_falls_back_to_measures():
+    """計量合一：juan_count 缺时取 measures[] 里第一个「卷」项；有 juan_count 时仍以它为准"""
+    from book_index_manager.entry_extractor import _extract_juan_count
+    assert _extract_juan_count({"juan_count": {"number": 12, "unit": "卷"}}) == 12
+    assert _extract_juan_count({"measures": [{"number": 3, "unit": "冊"}, {"number": 20, "unit": "卷"}]}) == 20
+    assert _extract_juan_count({"measures": [{"number": 3, "unit": "冊"}]}) == 0
+    assert _extract_juan_count({"juan_count": {"number": 5}, "measures": [{"number": 9, "unit": "卷"}]}) == 5

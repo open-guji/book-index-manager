@@ -1789,10 +1789,17 @@ export function sourceHref(s: DescriptionSource | null | undefined): string | un
 
 /** 计量文本：measure_info 优先（70% 有），回退 juan_count */
 export function measureText(detail: Partial<IndexDetailData>, juanUnit = '卷'): string {
-    const d = detail as { measure_info?: string; juan_count?: { number?: number; description?: string } };
+    const d = detail as {
+        measure_info?: string;
+        juan_count?: { number?: number; description?: string };
+        measures?: Array<{ number?: number; unit?: string }>;
+    };
     if (d.measure_info) return d.measure_info;
     if (d.juan_count?.number) return numberToChinese(d.juan_count.number) + juanUnit;
     if (d.juan_count?.description) return d.juan_count.description;
+    // 計量合一：juan_count 缺时用 measures[]，各項按「数＋单位」拼
+    const ms = (d.measures ?? []).filter(m => m && typeof m.number === 'number' && m.number > 0 && m.unit);
+    if (ms.length) return ms.map(m => numberToChinese(m.number as number) + (m.unit === '卷' ? juanUnit : m.unit)).join('');
     return '';
 }
 

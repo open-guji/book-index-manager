@@ -128,10 +128,14 @@ def _extract_juan_count(metadata: Dict[str, Any]) -> int:
     或纯数字。
     """
     vc = metadata.get("juan_count")
-    if isinstance(vc, dict):
+    if isinstance(vc, dict) and vc.get("number"):
         return vc.get("number", 0) or 0
-    if isinstance(vc, (int, float)):
+    if isinstance(vc, (int, float)) and not isinstance(vc, bool) and vc:
         return int(vc)
+    # 計量合一：juan_count 缺时取 measures[] 里第一个 unit=="卷" 的项（与 build_derived.juan_of、ui storage.ts 同序）
+    for m in metadata.get("measures") or []:
+        if isinstance(m, dict) and m.get("unit") == "卷" and isinstance(m.get("number"), (int, float)) and m["number"]:
+            return int(m["number"])
     return 0
 
 
