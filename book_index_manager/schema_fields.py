@@ -156,9 +156,11 @@ def physical_description_ok(pd) -> bool:
 # ---- Book.base_edition ----
 
 BASE_EDITION_ROLES = {'底本', '配補', '參校'}
+BASE_EDITION_CONFIDENCE = {'certain', 'consensus', 'probable', 'disputed'}
 
 
 def base_edition_ok(be, self_id, book_ids, work_ids) -> bool:
+    """name 在 book_id／work_id／hypothetical_id 都没有时必填（06 稿：有 id 时 name 可省）；三个 id 至多一个。"""
     if not isinstance(be, list):
         return False
     for item in be:
@@ -166,9 +168,15 @@ def base_edition_ok(be, self_id, book_ids, work_ids) -> bool:
             return False
         if item.get('role') not in BASE_EDITION_ROLES:
             return False
-        if not isinstance(item.get('name'), str) or not item.get('name').strip():
-            return False
         if not isinstance(item.get('source'), str) or not item.get('source').strip():
+            return False
+        ids = [k for k in ('book_id', 'work_id', 'hypothetical_id') if item.get(k) is not None]
+        if len(ids) > 1:
+            return False
+        name = item.get('name')
+        if name is not None and (not isinstance(name, str) or not name.strip()):
+            return False
+        if not ids and name is None:
             return False
         bid = item.get('book_id')
         if bid is not None:
@@ -178,6 +186,14 @@ def base_edition_ok(be, self_id, book_ids, work_ids) -> bool:
         if wid is not None:
             if not isinstance(wid, str) or wid not in work_ids:
                 return False
+        hid = item.get('hypothetical_id')
+        if hid is not None and not (isinstance(hid, str) and hid.startswith('h_')):
+            return False
+        for k in ('relation', 'evidence'):
+            if item.get(k) is not None and (not isinstance(item[k], str) or not item[k].strip()):
+                return False
+        if item.get('confidence') is not None and item['confidence'] not in BASE_EDITION_CONFIDENCE:
+            return False
     return True
 
 
