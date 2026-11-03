@@ -107,7 +107,7 @@ entity.json 的 `span` 是**纯字**偏移（不计标点空白），配 `offset
 |---|---|
 | `BookIndexManager` | Facade：统一 `getItem/saveItem/deleteItem/generateId/...` |
 | `BookIndexStorage` | 本地文件系统实现（Node / Electron） |
-| `GithubStorage` | GitHub 只读 + jsdelivr CDN fallback（浏览器/CI 用） |
+| `GithubStorage` | **已废弃**：读源仓 `index/`，`index/` 删除后不可用；请改用 COS 产物或 BundleStorage |
 | `BundleStorage` | 同域预打包数据读取（kaiyuanguji-web 生产模式） |
 | `LocalStorage` | `BookIndexStorage` 的薄包装（兼容历史 API） |
 | `IndexStorage` | 接口（自实现自定义后端时实现它） |

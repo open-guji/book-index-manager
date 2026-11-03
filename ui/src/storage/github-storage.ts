@@ -65,6 +65,9 @@ const DEFAULT_TIMEOUT = 5000;
  * 从 GitHub raw.githubusercontent.com 获取 index.json 和单个 JSON 文件。
  * 支持 jsDelivr CDN fallback（适用于中国大陆）。
  * 写操作（saveItem/deleteItem/generateId）抛出异常。
+ *
+ * @deprecated 读源仓的 index/ 分片；book-index 删除 index/ 之后不可用。
+ * 请改用 COS 产物或 BundleStorage。读不到 index/ 时抛错并说明原因。
  */
 export class GithubStorage implements IndexStorage {
     private config: Required<GithubStorageConfig>;
@@ -102,19 +105,26 @@ export class GithubStorage implements IndexStorage {
         if (this.cacheLoading) return this.cacheLoading;
 
         this.cacheLoading = (async () => {
+            let draftFailed = false;
+            let officialFailed = false;
             // promotions 和两个仓的 index 并行拉取
             const [promotions, draftData, officialData] = await Promise.all([
                 this.fetchPromotions(),
                 this.fetchIndex(this.config.repos.draft).catch((err) => {
                     console.warn('Failed to fetch draft index:', err);
+                    draftFailed = true;
                     return { books: {}, collections: {}, works: {} } as GithubIndexResponse;
                 }),
                 this.fetchIndex(this.config.repos.official).catch((err) => {
                     console.warn('Failed to fetch official index:', err);
+                    officialFailed = true;
                     return { books: {}, collections: {}, works: {} } as GithubIndexResponse;
                 }),
             ]);
             this.promotions = promotions;
+            if (draftFailed && officialFailed) {
+                throw new Error('GithubStorage 已废弃：两个仓都读不到 index/ 分片。请改用 COS 产物或 BundleStorage。');
+            }
 
             const allEntries: IndexEntry[] = [
                 ...this.parseIndexResponse(draftData, true),
@@ -215,7 +225,7 @@ export class GithubStorage implements IndexStorage {
         // 先探测 repo 是否有索引数据，避免大量 404
         const hasIndex = await this.probeIndex(repo);
         if (!hasIndex) {
-            return { books: {}, collections: {}, works: {} };
+            throw new Error(`GithubStorage 已废弃：它读源仓的 index/ 分片，而 ${repo} 已无 index/，读不到数据。请改用 COS 产物或 BundleStorage。`);
         }
 
         const merged: GithubIndexResponse = { books: {}, collections: {}, works: {} };
