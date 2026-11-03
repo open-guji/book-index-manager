@@ -118,6 +118,8 @@ export interface ResourceEntry {
     group?: string;
     /** origin = 原始来源；mirror = 我们做的备份镜像 */
     group_role?: 'origin' | 'mirror';
+    /** 单资源标签：只有这一条的「组」的小标题（等价于单成员组的 resource_groups[].label，无需 group） */
+    label?: string;
 }
 
 /** Book/Work 上的资源组元数据：每个 group key 对应一组同源镜像的展示信息 */

@@ -63,18 +63,20 @@ export const ResourceList: React.FC<ResourceListProps> = ({
     const mergedItems = useMemo(() => mergeVolumeResources(items || []), [items]);
 
     // 拆分有镜像组 vs 独立资源
-    const { mirrorGroups, ungroupedItems } = useMemo(() => {
+    const { mirrorGroups, ungroupedItems, labelOnlyKeys } = useMemo(() => {
         const groups = new Map<string, ResourceEntry[]>();
         const standalone: ResourceEntry[] = [];
-        for (const it of mergedItems) {
-            const gk = it.group;
+        const labelOnlyKeys = new Map<string, string>();
+        mergedItems.forEach((it, idx) => {
+            const gk = it.group || (it.label ? `_label:${idx}` : undefined);
+            if (!it.group && it.label && gk) labelOnlyKeys.set(gk, it.label);
             if (gk) {
                 if (!groups.has(gk)) groups.set(gk, []);
                 groups.get(gk)!.push(it);
             } else {
                 standalone.push(it);
             }
-        }
+        });
         // origin first, then mirror
         for (const arr of groups.values()) {
             arr.sort((a, b) => {
@@ -82,7 +84,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
                 return w(a) - w(b);
             });
         }
-        return { mirrorGroups: groups, ungroupedItems: standalone };
+        return { mirrorGroups: groups, ungroupedItems: standalone, labelOnlyKeys };
     }, [mergedItems]);
 
     const TYPE_LABELS: Record<string, string> = {
@@ -118,7 +120,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
     // 镜像组渲染：每组一个 section（label + description + chips）
     const renderMirrorGroup = (gk: string, gItems: ResourceEntry[]) => {
         const info = resourceGroups?.[gk];
-        const label = info?.label || gk;
+        const label = labelOnlyKeys.get(gk) || info?.label || gk;
         const desc = info?.description;
         return (
             <div key={`group-${gk}`} style={{

@@ -285,6 +285,19 @@ describe('groupRelatedWorks', () => {
 });
 
 describe('bucketResources', () => {
+    it('带 label 而无 group 的资源按「只有它一条的组」处理，与单成员组渲染一致', () => {
+        const items: ResourceEntry[] = [
+            { id: 'nlc', name: '國圖', types: ['image'], url: 'https://x/1', label: '國圖藏本：清', group_role: 'origin' },
+            { id: 'commons', name: '維基共享', types: ['image'], url: 'https://x/2' },
+        ];
+        const r = bucketResources(items);
+        expect(r.mirrors).toHaveLength(1);
+        expect(r.mirrors[0].label).toBe('國圖藏本：清');
+        expect(r.mirrors[0].items.map(i => i.id)).toEqual(['nlc']);
+        expect(r.buckets.flatMap(b => b.items.map(i => i.id))).toEqual(['commons']);
+        expect(r.total).toBe(2);
+    });
+
     // 史記的 9 条真实资源
     const shijiResources: ResourceEntry[] = [
         { id: '1', name: '维基文库', types: ['text'], url: 'https://zh.wikisource.org/wiki/史記' },
