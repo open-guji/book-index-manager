@@ -50,12 +50,13 @@ describe('Book 新字段', () => {
         expect(container.textContent).not.toContain('INTERNAL-SRC');
     });
 
-    it('provenance：无索書號／藏印则不出这两行；空数组回退 current_location', async () => {
+    it('provenance：无索書號／藏印则不出这两行；缺省字段不崩', async () => {
         const { container } = mount({ provenance: [{ institution: '某館', call_number: '', seals: [] }] });
         await waitFor(() => expect(factText(container)).toContain('某館'));
         expect(factText(container)).not.toContain('索書號'); expect(factText(container)).not.toContain('藏印');
-        const r = mount({ provenance: [], current_location: { name: '回退地' } });
-        await waitFor(() => expect(factText(r.container)).toContain('回退地'));
+        // Book 的 current_location 已并入 provenance（S2-H），不再回退
+        const r = mount({ provenance: [{ institution: '並入館', source: 'current_location' }] });
+        await waitFor(() => expect(factText(r.container)).toContain('並入館'));
     });
 
     it('base_edition：配補／參校各一行，无名条目跳过', async () => {

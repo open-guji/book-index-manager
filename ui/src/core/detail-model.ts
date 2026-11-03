@@ -1145,6 +1145,8 @@ export interface ResolvedVersion {
     resource_groups?: Record<string, ResourceGroupInfo>;
     publication_info?: BookDetailData['publication_info'];
     current_location?: BookDetailData['current_location'];
+    /** 馆藏；无 current_location 时取第一项机构作 locationName（S2-H） */
+    provenance?: BookDetailData['provenance'];
     lineage?: BookDetailData['lineage'];
     /** 描述首句（同版组代表行显示用） */
     summary?: string;
@@ -1266,7 +1268,7 @@ export function buildVersionRow(v: ResolvedVersion, vg?: VersionGraph): VersionR
         sortYear: sortYear(v),
         images,
         holders,
-        locationName: v.current_location?.name,
+        locationName: v.current_location?.name || v.provenance?.[0]?.institution || undefined,
         callNumber: holderCallNumber(holders[0]),
         copyOf: sameEditionRep(v),
         summary: v.summary,

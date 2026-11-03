@@ -93,6 +93,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                         resources: b.resources,
                         publication_info: b.publication_info,
                         current_location: b.current_location,
+                        provenance: b.provenance,
                         lineage: b.lineage,
                         measure_info: b.measure_info,
                         summary: firstSentence((raw as { description?: { text?: string } } | null)?.description?.text),
