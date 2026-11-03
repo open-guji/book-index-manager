@@ -36,22 +36,14 @@ def split_type_atoms(value: str) -> list:
 
 
 def normalize_resource_types(entry: dict) -> list:
-    """从 resource entry dict 提取规范化的 types 列表（原子类型组合）。
-
-    优先读 'types'（list），回退到 'type'（str，旧格式）。
-    'text+image' → ['text', 'image']
-    """
+    """从 resource entry dict 提取规范化的 types 列表（只认 `types`；旧单值 `type` 数据已清空，不再回退）。"""
     types = entry.get("types")
-    if isinstance(types, list) and types:
+    if isinstance(types, list):
         return [t for t in types if t in VALID_TYPE_ATOMS]
-    t = entry.get("type")
-    if not t:
-        return []
-    atoms = split_type_atoms(t) if isinstance(t, str) else []
-    if atoms and all(a in VALID_TYPE_ATOMS for a in atoms):
-        return atoms
     return []
-VALID_ROOT_TYPES = {"catalog", "search"}
+
+
+VALID_ROOT_TYPES = {"catalog"}  # 与 JSON Schema 一致（const catalog）
 
 
 def extract_id_from_url(url: str) -> str:
@@ -171,7 +163,7 @@ class ResourceEntry:
     @property
     def normalized_types(self) -> List[str]:
         """规范化 types 列表（兼容新旧）。"""
-        return normalize_resource_types({"type": self.type, "types": self.types})
+        return normalize_resource_types({"types": self.types or split_type_atoms(self.type)})
 
     def validate(self) -> List[str]:
         """Return a list of validation errors (empty if valid)."""

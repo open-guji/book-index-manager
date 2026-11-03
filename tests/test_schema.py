@@ -28,13 +28,11 @@ def test_resource_entry_to_dict_full():
         name="Internet Archive",
         url="https://archive.org/details/test",
         type="image",
-        root_type="search",
         structure=["册"],
         coverage=CoverageInfo(level=1, ranges="3-4"),
         details="彩色",
     )
     d = r.to_dict()
-    assert d["root_type"] == "search"
     assert d["structure"] == ["册"]
     assert d["coverage"] == {"level": 1, "ranges": "3-4"}
     assert d["details"] == "彩色"
@@ -90,6 +88,6 @@ def test_types_closed_set_accepts_catalog_and_annotated():
     from book_index_manager.schema import normalize_resource_types, VALID_TYPE_ATOMS
     assert VALID_TYPE_ATOMS == {"text", "image", "physical", "catalog", "annotated"}
     assert normalize_resource_types({"types": ["catalog", "annotated"]}) == ["catalog", "annotated"]
-    assert normalize_resource_types({"type": "text+image"}) == ["text", "image"]  # 读侧回退保留
+    assert normalize_resource_types({"type": "text+image"}) == []  # 旧单值 type 不再回退（数据已清空）
     assert normalize_resource_types({"type": "bogus"}) == []
     assert ResourceEntry(id="c", name="C", url="https://e.com", types=["catalog"]).validate() == []
