@@ -2,6 +2,9 @@
 GitHub read-only storage implementation.
 Fetches sharded index files and individual JSON files from GitHub / jsDelivr CDN.
 Port of TypeScript GithubStorage.
+
+【已废弃】本后端读源仓的 index/ 分片；book-index 删除 index/ 之后不可用。
+请改用 COS 产物或 BundleStorage。读不到 index/ 时抛 StorageError 说明原因。
 """
 
 import json
@@ -95,6 +98,11 @@ class GithubStorage(IndexStorage):
                 except StorageError:
                     continue
 
+        if not (merged["books"] or merged["works"] or merged["collections"]):
+            raise StorageError(
+                "GithubStorage 已废弃：它读源仓的 index/ 分片，而 %s 已无 index/，读不到数据。"
+                "请改用 COS 产物或 BundleStorage。" % repo
+            )
         return merged
 
     def _ensure_loaded(self) -> List[Dict]:
@@ -105,13 +113,17 @@ class GithubStorage(IndexStorage):
         all_entries: List[Dict] = []
         type_map = {"books": "book", "collections": "collection", "works": "work"}
 
+        last_err: Optional[StorageError] = None
+        loaded = 0
         for is_draft in [True, False]:
             repo = self.config.repos["draft"] if is_draft else self.config.repos["official"]
             try:
                 data = self._fetch_index(repo)
-            except StorageError:
+            except StorageError as e:
+                last_err = e
                 continue
 
+            loaded += 1
             for section_key, type_name in type_map.items():
                 items = data.get(section_key, {})
                 for item_id, item in items.items():
@@ -127,6 +139,9 @@ class GithubStorage(IndexStorage):
                     }
                     all_entries.append(entry)
                     self._path_map[entry["id"]] = {"path": item.get("path", ""), "isDraft": is_draft}
+
+        if not loaded and last_err is not None:
+            raise last_err
 
         # De-duplicate by id (later entries override earlier)
         seen: Dict[str, Dict] = {}

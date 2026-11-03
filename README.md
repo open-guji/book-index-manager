@@ -25,7 +25,7 @@ npm install book-index-ui  # TypeScript
 BookIndexManager (Facade API)
   └── Storage (多后端)
         ├── LocalStorage    — 本地文件系统（Python / Node / VS Code 扩展）
-        ├── GithubStorage   — GitHub 只读 + jsDelivr CDN fallback（浏览器）
+        ├── GithubStorage   — 【已废弃】读源仓 index/（已删除），请改用 COS 产物或 BundleStorage
         ├── BundleStorage   — 同域预打包 JSON（kaiyuanguji-web 生产：COS current/ + v/{commit}/search/）
         └── DevApiStorage   — Vite dev 中间件 /api/*（仅 ui/ 的本地测试页，不导出）
 ```
