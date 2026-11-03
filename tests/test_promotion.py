@@ -758,6 +758,26 @@ def test_validate_allows_one_to_many_with_merged_in(tmp_path):
         f"merged_in 之並條不當報 E07，實得 {[(i.code, i.severity) for i in issues]}"
 
 
+def test_validate_allows_one_to_many_with_ledger(tmp_path):
+    """2026-11-03 起記錄不再帶 merged_from／merged_in，並條之痕取正式庫台賬：存者是留存號即不報 E07。"""
+    led = tmp_path / "book-index" / ".claude" / "qa" / "purge-tombstones" / "ledger"
+    led.mkdir(parents=True)
+    (led / "history-20261103.tsv").write_text(
+        "old_id\tkeeper\ttype\tfield\ttitle\tat\tby\trule\twhy\textra\n"
+        "d59fxv2qh0jl\td59f27tfpczl\tWork\tmerged_in\t春秋墨說\t\t\t\t\t\n", encoding="utf-8")
+    issues = _one_to_many_fixture(
+        tmp_path, {"additional_titles": ["春秋墨說", "春秋墨説"]}, ("春秋墨說", "春秋墨説"))
+    assert not [i for i in issues if i.code == "E07"], \
+        f"台賬記過之並條不當報 E07，實得 {[(i.code, i.severity) for i in issues]}"
+
+
+def test_validate_flags_one_to_many_without_any_merge_record(tmp_path):
+    """無舊欄、無台賬：斷為撞號（error）。"""
+    issues = _one_to_many_fixture(
+        tmp_path, {"additional_titles": ["春秋墨說", "春秋墨説"]}, ("春秋墨說", "春秋墨説"))
+    assert [i.severity for i in issues if i.code == "E07"] == ["error"]
+
+
 def test_validate_warns_when_merged_but_title_unrelated(tmp_path):
     """有併條之痕，而某條之題不在存者題集內——併是併了，這一條卻像另一回事。
 
