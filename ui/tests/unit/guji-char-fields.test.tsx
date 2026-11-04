@@ -53,6 +53,20 @@ describe('适配器 adaptCharCord：新字段', () => {
         expect('lacuna' in ch[1]).toBe(false);
     });
 
+    it('pending_reason（char v0.4）：待审格带 pending；与 lacuna／guess_c／fig 同在、非法值都不带', () => {
+        const p = adaptCharCord(charDoc([
+            cell('3:1:1', '已', { pending_reason: 'hard_pair' }),
+            cell('3:1:2', '□', { pending_reason: 'seg_defect' }),
+            cell('3:1:3', '□', { lacuna: true, pending_reason: 'seg_defect' }),
+            cell('3:1:4', '甲', { pending_reason: 'Bad Value' }),
+            cell('3:1:5', '乙', { pending_reason: 3 }),
+        ]));
+        const ch = p[0].columns[0].chars;
+        expect(ch[0]).toMatchObject({ char: '已', pending: 'hard_pair' });
+        expect(ch[1]).toMatchObject({ char: '□', pending: 'seg_defect' });
+        for (const c of ch.slice(2)) expect('pending' in c).toBe(false);
+    });
+
     it('列 raised／lead_blank／kind；页 label', () => {
         const p = adaptCharCord(charDoc([cell('3:1:1', '甲')], { raised: 2, lead_blank: 3, kind: 'banxin' }, { label: '一' }));
         expect(p[0].label).toBe('一');
@@ -116,6 +130,23 @@ describe('阅读器显示：新字段', () => {
         expect(el(container, '3:1:2').classList.contains('is-sub')).toBe(false);
         expect(el(container, '3:1:3a').classList.contains('is-sub')).toBe(true);
         expect(el(container, '3:1:3a').classList.contains('is-solo')).toBe(false);
+    });
+
+    it('pending：待审格悬停显示原因；机器给了字照常显示，□ 按阙文框显示；认不出的值显示原因不明', () => {
+        const { container } = mount(adaptCharCord(charDoc([
+            cell('3:1:1', '已', { pending_reason: 'hard_pair' }),
+            cell('3:1:2', '□', { pending_reason: 'seg_defect' }),
+            cell('3:1:3', '丙', { pending_reason: 'future_reason' }),
+        ])));
+        const a = el(container, '3:1:1'), b = el(container, '3:1:2'), c = el(container, '3:1:3');
+        expect(a.classList.contains('is-pending')).toBe(true);
+        expect(a.classList.contains('is-lacuna')).toBe(false);
+        expect(a.textContent).toBe('已');
+        expect(a.getAttribute('title')).toBe('待審：极难形近');
+        expect(b.classList.contains('is-pending')).toBe(true);
+        expect(b.classList.contains('is-lacuna')).toBe(true);
+        expect(b.getAttribute('title')).toBe('待審：切坏格');
+        expect(c.getAttribute('title')).toBe('待審：原因不明');
     });
 
     it('lacuna：缺字框 □，带「闕文」提示；不是正文字', () => {
