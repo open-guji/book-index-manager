@@ -1,4 +1,5 @@
 import type { IndexStorage } from './types';
+import { splitExtraTitles } from '../core/storage';
 import type { IndexType, IndexEntry, IndexStatus, PageResult, LoadOptions, GroupedSearchResult, VolumeBookMapping, ResourceCatalog, CollatedEditionIndex, CollatedJuan, ResourceProgress, RecommendedData } from '../types';
 import { rankByRelevance, rankByRelevanceWithSimplified, NUM_SHARDS } from '../core/storage';
 import type { SearchSIndex } from '../core/storage';
@@ -294,6 +295,7 @@ export class GithubStorage implements IndexStorage {
                     cbdb_id?: number;
                 };
                 // Entity 用 primary_name 作为 title 显示
+                const extra = splitExtraTitles(raw.additional_titles, raw.attached_texts);
                 const displayTitle = type === 'entity'
                     ? (raw.primary_name || item.title || item.name || item.id)
                     : (item.title || item.name || item.id);
@@ -306,8 +308,8 @@ export class GithubStorage implements IndexStorage {
                     dynasty: item.dynasty,
                     role: item.role,
                     path: item.path,
-                    additional_titles: raw.additional_titles?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
-                    attached_texts: raw.attached_texts?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
+                    additional_titles: raw.additional_titles ? extra.aliases : undefined,
+                    attached_texts: extra.attached.length || raw.attached_texts ? extra.attached : undefined,
                     edition: raw.edition,
                     juan_count: raw.juan_count,
                     has_text: raw.has_text,

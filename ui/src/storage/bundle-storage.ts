@@ -15,6 +15,7 @@ import { normalizeCatalog } from '../core/normalize-catalog';
 import { extractType } from '../id';
 import { buildPromotionMap, PROMOTION_SHARD_KEY_LENGTH } from './promotions';
 import { isSafeSegment, isTextKey } from '../core/text-model';
+import { splitExtraTitles } from '../core/storage';
 
 export interface BundleStorageConfig {
     /** chunk 文件的基础路径，默认 '/data' */
@@ -417,6 +418,7 @@ export class BundleStorage implements IndexStorage {
             const detail = (await this.loadDetail(canonicalId)) as Record<string, any> | null;
             if (!detail) return null;
             const type = extractType(canonicalId);
+            const extra = splitExtraTitles(detail.additional_titles, detail.attached_texts);
             const displayTitle = type === 'entity'
                 ? (detail.primary_name || detail.title || detail.name || canonicalId)
                 : (detail.title || detail.name || canonicalId);
@@ -428,8 +430,8 @@ export class BundleStorage implements IndexStorage {
                 author: detail.author,
                 dynasty: detail.dynasty,
                 role: detail.role,
-                additional_titles: detail.additional_titles?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
-                attached_texts: detail.attached_texts?.map((t: any) => typeof t === 'string' ? t : t?.book_title).filter(Boolean),
+                additional_titles: detail.additional_titles ? extra.aliases : undefined,
+                attached_texts: extra.attached.length || detail.attached_texts ? extra.attached : undefined,
                 edition: detail.edition,
                 juan_count: detail.juan_count,
                 has_text: detail.has_text,

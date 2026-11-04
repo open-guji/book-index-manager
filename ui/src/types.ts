@@ -388,8 +388,9 @@ export interface BaseDetailData {
     /** 长篇附记（详情页展示，不进卡片/搜索摘要） */
     appendix?: AppendixEntry[];
     authors?: AuthorInfo[];
-    additional_titles?: (string | { book_title: string })[];
-    /** Book 附载篇目 */
+    /** 别名（字符串）；Book 上还可有 {book_title, type:'附刻'}＝附刻之书（第 12 组 S2-T 起并入此处） */
+    additional_titles?: (string | { book_title: string; type?: string })[];
+    /** @deprecated Book 附载篇目；已并入 additional_titles（type:'附刻'），迁移完成后删除 */
     attached_texts?: (string | { book_title: string })[];
     additional_works?: AdditionalWork[];
     indexed_by?: IndexedByEntry[];

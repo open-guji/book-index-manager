@@ -36,6 +36,27 @@ def _extract_titles_list(raw: Any) -> List[str]:
     return result
 
 
+ATTACHED_TYPE = "附刻"
+
+
+def split_extra_titles(additional: Any, attached: Any = None) -> tuple:
+    """Book 的「异名」与「附刻之书」分开（第 12 组 S2-T：attached_texts 并入 additional_titles）。
+
+    additional_titles 的项是字符串（异名），或 {book_title, type: "附刻"}（附刻之书）；
+    旧写法 attached_texts 的项一律是附刻。返回 (异名列表, 附刻列表)，各自保序（不去重，与旧输出逐字节相同），
+    与 book-index build_derived._titles_split、ui core/storage.ts splitExtraTitles 同口径。
+    """
+    aliases: List[str] = []
+    attached_out: List[str] = _extract_titles_list(attached)
+    for t in additional if isinstance(additional, list) else []:
+        if isinstance(t, dict) and t.get("type") == ATTACHED_TYPE:
+            if t.get("book_title"):
+                attached_out.append(t["book_title"])
+        else:
+            aliases.extend(_extract_titles_list([t]))
+    return aliases, attached_out
+
+
 def _first_author_dynasty(metadata: Dict[str, Any]) -> str:
     """authors[] 中第一个有非空 dynasty 的作者的朝代（不限第 1 位）；没有则空串。"""
     authors = metadata.get("authors", [])
@@ -243,8 +264,8 @@ def build_index_entry(metadata: Dict[str, Any], type_val: BookIndexType, rel_pat
     measure_info = metadata.get("measure_info", "") or ""
     edition = metadata.get("edition", "")
     subtype = metadata.get("subtype", "")
-    additional_titles = _extract_titles_list(metadata.get("additional_titles", []))
-    attached_texts = _extract_titles_list(metadata.get("attached_texts", []))
+    additional_titles, attached_texts = split_extra_titles(
+        metadata.get("additional_titles", []), metadata.get("attached_texts", []))
     flags = _extract_resource_flags(metadata)
 
     entry: Dict[str, Any] = {
