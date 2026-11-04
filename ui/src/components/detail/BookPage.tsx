@@ -336,7 +336,7 @@ export const BookPage: React.FC<BookPageProps> = ({
     /* 标题：大标题是书名，版本名作副题（也免得长版本名撑成三行） */
     const heading = convert(data.title);
     const subtitle = data.edition ? convert(data.edition) : undefined;
-    const yearText = data.lineage?.year_text || data.dating?.text || '';
+    const yearText = data.dating?.text || '';
 
     const card = (
         <SummaryCard

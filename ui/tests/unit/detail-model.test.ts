@@ -69,12 +69,12 @@ describe('parseChineseNumber', () => {
 });
 
 describe('deriveEra', () => {
-    it('lineage.year_text 最优先，标记来源为 lineage', () => {
+    it('著录年代文本（dating.text）压过题名，标记来源为 publication', () => {
         const r = deriveEra({
-            lineage: { year_text: '宋慶元年間', category: '刻本', status: 'extant' },
-            edition: '明汲古閣刻本',  // 故意冲突：lineage 必须赢
+            dating: { text: '宋慶元年間' },
+            edition: '明汲古閣刻本',  // 故意冲突：著录必须赢
         });
-        expect(r).toEqual({ era: '宋', reign: '慶元', source: 'lineage' });
+        expect(r).toEqual({ era: '宋', reign: '慶元', source: 'publication' });
     });
 
     it('publication_info.year 次之', () => {
@@ -181,8 +181,8 @@ describe('deriveEra', () => {
 });
 
 describe('deriveYear', () => {
-    it('lineage.year 最优先', () => {
-        expect(deriveYear({ lineage: { year: 1195, category: '刻本', status: 'extant' } })).toBe(1195);
+    it('dating.year 最优先', () => {
+        expect(deriveYear({ dating: { year: 1195 } })).toBe(1195);
     });
 
     it('年号 + 中文序数折算成公元年', () => {
@@ -1063,11 +1063,11 @@ describe('deriveYearRange：「某某間」', () => {
         expect(r).toEqual({ from: 1368, to: 1662 });
     });
 
-    it('lineage.year_range 优先于 lineage.year', () => {
+    it('dating.year_range 优先于 dating.year', () => {
         // 水滸「文盛堂藏板」：year=1700 是区间中点不是考定年，源数据自带真区间
         const r = deriveYearRange({
             title: '忠義水滸全書',
-            lineage: { year: 1700, year_text: '明末清初', year_range: [1640, 1750], category: '刻本', status: 'extant' },
+            dating: { year: 1700, text: '明末清初', year_range: [1640, 1750] },
         } as never);
         expect(r).toEqual({ from: 1640, to: 1750 });
     });
@@ -1075,7 +1075,7 @@ describe('deriveYearRange：「某某間」', () => {
     it('year_text 跨代（明末清初）给区间', () => {
         const r = deriveYearRange({
             title: '水滸忠義志傳',
-            lineage: { year: 1650, year_text: '明末清初（推定）', category: '刻本', status: 'extant' },
+            dating: { year: 1650, text: '明末清初（推定）' },
         } as never);
         expect(r).toBeDefined();
         expect(r!.from).toBeLessThan(1644);
@@ -1091,7 +1091,7 @@ describe('deriveDating：完整年代判定', () => {
     it('著录来源标 attested', () => {
         const d = deriveDating({
             edition: '某本',
-            lineage: { year: 1195, year_text: '宋慶元', category: '刻本', status: 'extant' },
+            dating: { year: 1195, text: '宋慶元' },
         });
         expect(d!.certainty).toBe('attested');
         expect(d!.source).toBe('catalog');
@@ -1262,10 +1262,10 @@ describe('优先读 dating 字段（Phase C 回退链）', () => {
             .toEqual({ from: 1368, to: 1398 });
     });
 
-    it('dating 优先于 lineage.year', () => {
+    it('dating.year 优先于题名里的年号', () => {
         expect(deriveYear({
             dating: { year: 1500 },
-            lineage: { year: 1200, category: '刻本', status: 'extant' },
+            edition: '宋慶元二年刊本',
         })).toBe(1500);
     });
 });
@@ -1308,7 +1308,7 @@ describe('著录朝代优先于题名年号', () => {
     it('著录有确切年份时照常使用', () => {
         expect(deriveYear({
             edition: '熹平石經殘石',
-            lineage: { year: 175, category: '石刻', status: 'fragment' },
+            dating: { year: 175 },
         })).toBe(175);
     });
 });
@@ -1364,22 +1364,21 @@ describe('全库一致性哨兵（2026-09-05 实测基线）', () => {
     });
 });
 
-describe('刊刻年代：lineage 路径（水滸六例）', () => {
-    const L = (lineage: unknown) => ({ title: '水滸傳', lineage } as never);
+describe('刊刻年代：dating.text 路径（水滸六例；原 lineage.year* 已并入 dating）', () => {
+    const L = (dating: unknown) => ({ title: '水滸傳', dating } as never);
 
     it('跨代 year_text 不产出确切年，改走区间', () => {
         // 此前：era=明 + year=1700 → 明止 1644，朝代与年份打架
-        const d = deriveDating(L({ year: 1700, year_text: '明末清初', year_range: [1640, 1750], category: '刻本', status: 'extant' }));
+        const d = deriveDating(L({ year: 1700, text: '明末清初', year_range: [1640, 1750] }));
         expect(d!.year).toBeUndefined();
         expect(d!.yearRange).toEqual({ from: 1640, to: 1750 });
     });
 
     it('「原刻…補印」取原刻年，补印记入 laterRepair', () => {
-        // 石渠閣補印本：lineage.year=1666 是补印年，主体是明萬曆 1589 原刻
+        // 石渠閣補印本：dating.year=1666 是补印年，主体是明萬曆 1589 原刻
         const d = deriveDating(L({
             year: 1666,
-            year_text: '明萬曆十七年（1589）原刻、清康熙五年（1666）石渠閣補印',
-            category: '刻本', status: 'extant',
+            text: '明萬曆十七年（1589）原刻、清康熙五年（1666）石渠閣補印',
         }));
         expect(d!.era).toBe('明');
         expect(d!.year).toBe(1589);          // 不是 1666
@@ -1388,17 +1387,17 @@ describe('刊刻年代：lineage 路径（水滸六例）', () => {
 
     it('朝代与年份必须自洽', () => {
         const cases = [
-            { year: 1700, year_text: '明末清初', year_range: [1640, 1750] as [number, number], category: '刻本', status: 'extant' },
-            { year: 1650, year_text: '明末清初（推定）', category: '刻本', status: 'extant' },
-            { year: 1666, year_text: '明萬曆十七年（1589）原刻、清康熙五年（1666）石渠閣補印', category: '刻本', status: 'extant' },
+            { year: 1700, text: '明末清初', year_range: [1640, 1750] as [number, number] },
+            { year: 1650, text: '明末清初（推定）' },
+            { year: 1666, text: '明萬曆十七年（1589）原刻、清康熙五年（1666）石渠閣補印' },
         ];
         const BOUND: Record<string, [number, number]> = { 明: [1368, 1662], 清: [1616, 1911] };
         for (const c of cases) {
             const d = deriveDating(L(c));
             if (d?.era && d.year != null && BOUND[d.era]) {
                 const [lo, hi] = BOUND[d.era];
-                expect(d.year, `${d.era} ${d.year} 越界（${c.year_text}）`).toBeGreaterThanOrEqual(lo);
-                expect(d.year, `${d.era} ${d.year} 越界（${c.year_text}）`).toBeLessThanOrEqual(hi);
+                expect(d.year, `${d.era} ${d.year} 越界（${c.text}）`).toBeGreaterThanOrEqual(lo);
+                expect(d.year, `${d.era} ${d.year} 越界（${c.text}）`).toBeLessThanOrEqual(hi);
             }
         }
     });

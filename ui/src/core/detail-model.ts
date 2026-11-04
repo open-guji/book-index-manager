@@ -10,7 +10,7 @@
  *   Book.edition           96.4%   ← 但题名里带朝代，可推断
  *   Book.resources[physical] 15,297 条 ← 「收藏機構」的真实来源在这里
  *
- * 所以「刊刻年代」走 lineage → publication_info → 题名推断三级回退，
+ * 所以「刊刻年代」走 dating／publication_info → 题名推断回退，
  * 「收藏機構」直接渲染 physical 资源。推断出的值必须能被 UI 标注来源
  * （eraSource），让读者知道哪些是著录、哪些是我们从题名猜的。
  *
@@ -41,7 +41,7 @@ import { relatedItems } from './lineage-graph';
 // ══════════════════════════════════════════════════════════════
 
 /** 推断出的朝代及其可信来源 */
-export type EraSource = 'lineage' | 'publication' | 'edition' | 'catalog' | 'none';
+export type EraSource = 'publication' | 'edition' | 'catalog' | 'none';
 
 /**
  * 推断函数只读这几个字段，故用结构类型而非完整 BookDetailData——
@@ -50,7 +50,6 @@ export type EraSource = 'lineage' | 'publication' | 'edition' | 'catalog' | 'non
 export interface EraInferable {
     title?: string;
     edition?: string;
-    lineage?: BookDetailData['lineage'];
     publication_info?: BookDetailData['publication_info'];
     /** 目录侧已考定的版本类型（受控词表）；有则优先于现推 */
     edition_type?: string;
@@ -373,7 +372,7 @@ function matchReign(text: string, era?: string): string | undefined {
 }
 
 /**
- * 年代统一（S2-L）后，publication_info.year / lineage.year_text 已并入 dating：
+ * 年代统一（S2-L）后，publication_info.year / lineage.year* 已并入 dating：
  * 数字年 → dating.year，区间 → dating.year_range，文本 → dating.text。
  * 下面的推断逻辑仍按「出版著录文本」写，这里把没有朝代的 dating 还原成等价的
  * publication_info.year 再交给它们，行为与迁移前一致。旧数据（仍带 publication_info.year）原样放行。
@@ -392,7 +391,7 @@ export function publicationYearText(book: EraInferable): string | undefined {
 function withLegacyYear<T extends EraInferable>(book: T): T {
     const d = book.dating;
     if (!d || d.era || d.reign) return book;
-    if (book.publication_info?.year || book.lineage?.year_text) return book;
+    if (book.publication_info?.year) return book;
     const y = d.text
         ?? (d.year != null ? String(d.year)
             : d.year_range && d.year_range.length === 2 ? `${d.year_range[0]}-${d.year_range[1]}` : undefined);
@@ -403,10 +402,9 @@ function withLegacyYear<T extends EraInferable>(book: T): T {
 /**
  * 推断一个版本的朝代 / 纪年。
  *
- * 三级回退，越靠前越可信：
- *   1. lineage.year_text —— 人工整理的版本传承信息（仅 1% 有）
- *   2. publication_info.year —— 著录的出版年（仅 2% 有）
- *   3. edition ∥ title 的题名前缀与特征词 —— 覆盖约 96%，但是**推断**
+  * 回退，越靠前越可信：
+ *   1. publication_info.year（含 dating.text 还原）—— 著录的出版年
+ *   2. edition ∥ title 的题名前缀与特征词 —— 覆盖约 96%，但是**推断**
  *
  * UI 必须依 source 区分显示（推断的加 hover 提示），不要让读者误以为
  * 「宋 · 慶元」是著录事实。
@@ -425,14 +423,7 @@ export function deriveEra(book: EraInferable): DerivedEra {
         };
     }
 
-    // 1. lineage
-    const yearText = book.lineage?.year_text;
-    if (yearText) {
-        const era = matchEraPrefix(yearText) ?? '';
-        return { era: normalizeEra(era), reign: matchReign(yearText, era) ?? '', source: 'lineage' };
-    }
-
-    // 2. publication_info.year
+    // 1. publication_info.year
     const pubYear = book.publication_info?.year;
     if (pubYear) {
         // 纯公元年／区间优先；朝代按年反推，1950 以后不给（见 eraFromYear）
@@ -472,13 +463,12 @@ export function deriveEra(book: EraInferable): DerivedEra {
 /**
  * 推断可排序的公元年份。
  *
- * 优先 lineage.year（人工著录），其次文本里的 4 位公元年，
+ * 优先 dating.year，其次文本里的 4 位公元年，
  * 最后用年号表折算「乾隆四十三年」→ 1736 + 43 - 1 = 1778。
  */
 export function deriveYear(book: EraInferable): number | undefined {
     book = withLegacyYear(book);
     if (book.dating?.year != null) return book.dating.year;
-    if (typeof book.lineage?.year === 'number') return book.lineage.year;
 
     /*
      * 只看 edition，**不看 title**。
@@ -501,7 +491,6 @@ export function deriveYear(book: EraInferable): number | undefined {
     }
 
     const texts = [
-        book.lineage?.year_text,
         book.publication_info?.year,
         book.edition,
         book.edition ? undefined : book.title,
@@ -514,7 +503,7 @@ export function deriveYear(book: EraInferable): number | undefined {
          * 题名里的「開成」是**被补刻的对象**（唐开成石经），不是刊刻年。
          * 捞了就会得到「清 · 836」这种自相矛盾的组合。
          */
-        const cited = book.publication_info?.year || book.lineage?.year_text;
+        const cited = book.publication_info?.year;
         if (cited && text !== cited && (matchEraPrefix(cited) || matchBareEra(cited))) break;
         // 公元年。必须带「年」或被括号/边界包住，且前面不能是「第」——
         // 否则「摛藻堂四庫全書薈要·第321冊」会被读成公元 321 年，
@@ -589,29 +578,6 @@ export function deriveYearRange(book: EraInferable): YearRange | undefined {
     book = withLegacyYear(book);
     const r = book.dating?.year_range;
     if (r && r.length === 2) return { from: r[0], to: r[1] };
-
-    /*
-     * 人工著录的 lineage.year_range 直接用——录入者已经判过了。
-     * 水滸「文盛堂藏板」就带着 [1640, 1750]，此前被无视，
-     * 转而拿 lineage.year=1700 当确切年份，再配上「明」，1700 早过了 1644。
-     */
-    const lr = book.lineage?.year_range;
-    if (lr && lr.length === 2) return { from: lr[0], to: lr[1] };
-
-    /*
-     * year_text 是跨代/模糊表述（「明末清初」「宋元間」「約明中葉」）时，
-     * 给区间而不是确切年。录入者在 year 里填的是代表值（1650）或中点（1700），
-     * 不是考定的确切年份，当成确切年会和朝代打架。
-     */
-    const yt = book.lineage?.year_text;
-    if (yt) {
-        const cross = yt.match(/([宋元明清])\s*末\s*([宋元明清])\s*初/);
-        if (cross) {
-            const a = ERA_END_YEAR[normalizeEra(cross[1])];
-            const b = ERA_START_YEAR[normalizeEra(cross[2])];
-            if (a != null && b != null) return { from: Math.min(a, b) - 20, to: Math.max(a, b) + 40 };
-        }
-    }
 
     const pt = book.publication_info?.year;
     if (pt) {
@@ -812,15 +778,13 @@ export function deriveDating(book: EraInferable): DerivedDating | undefined {
     const isRange = /[間间]/.test(text);
 
     /*
-     * lineage.year_text 是跨代/模糊表述时，lineage.year 不是考定的确切年份，
+     * 著录年代文本（dating.text）是跨代/模糊表述时，年份不是考定的确切年份，
      * 而是录入者填的代表值或区间中点——不能当确切年用。
      *
-     * 水滸「慕尼黑藏本」year_text=「明末清初（推定）」、year=1650：era 取到「明」，
+     * 水滸「慕尼黑藏本」text=「明末清初（推定）」、year=1650：era 取到「明」，
      * year 取 1650 尚可；但「文盛堂藏板」year=1700 配「明」就越界了（明止 1644）。
-     * 这类一律退到区间。
+     * 这类一律退到区间（见下 pubVague）。
      */
-    const ltext = book.lineage?.year_text ?? '';
-    const lineageVague = /末[宋元明清]初|[約约]|推定|前後|前后|左右/.test(ltext);
     // 出版著录同理：「明末清初（推算）」「南宋紹興年間」「日本江戶後期」都不是确切年
     const pubVague = era.source === 'publication' && PUB_VAGUE.test(ptext);
     // 「紹興年間」是区间不是存疑：不产确切年，但可信度仍按著录算
@@ -829,15 +793,15 @@ export function deriveDating(book: EraInferable): DerivedDating | undefined {
     /*
      * 「原刻…補印/補修」：主体是**原刻**，补印是后事。
      *
-     * 石渠閣補印本 year_text=「明萬曆十七年（1589）原刻、清康熙五年（1666）石渠閣補印」，
-     * 而 lineage.year=1666 记的是补印年。deriveEra 从文本抓第一个朝代得「明萬曆」，
+     * 石渠閣補印本著录「明萬曆十七年（1589）原刻、清康熙五年（1666）石渠閣補印」，
+     * 而 dating.year=1666 记的是补印年。deriveEra 从文本抓第一个朝代得「明萬曆」，
      * deriveYear 取 1666，拼成「明萬曆 1666」——萬曆 1573–1620 装不下。
      * 与题名侧「清光緒…修民國九年排印本」是同一个错，此前只在 edition 路径修过。
      */
-    const reprint = ltext.match(/([宋元明清])[^、，,]*?[（(](\d{3,4})[）)][^、，,]*?原刻/);
+    const reprint = ptext.match(/([宋元明清])[^、，,]*?[（(](\d{3,4})[）)][^、，,]*?原刻/);
 
     let year: number | undefined;
-    if (isRange || lineageVague || pubVague || pubIsRange) {
+    if (isRange || pubVague || pubIsRange) {
         year = undefined;
     } else if (reprint) {
         year = parseInt(reprint[2], 10);   // 取原刻年，不取补印年
@@ -851,7 +815,7 @@ export function deriveDating(book: EraInferable): DerivedDating | undefined {
     if (era.source === 'publication' && (pubVague || UNCERTAIN_PATTERN.test(ptext))) {
         // 著录自己就说是推算/约略——不能标 attested
         certainty = 'uncertain';
-    } else if (era.source === 'lineage' || era.source === 'publication') {
+    } else if (era.source === 'publication') {
         certainty = 'attested';
     } else if (UNCERTAIN_PATTERN.test(text)) {
         // 题名明说存疑（「舊題」「相傳」「疑」…）
@@ -865,9 +829,7 @@ export function deriveDating(book: EraInferable): DerivedDating | undefined {
 
     const basis = era.source === 'edition'
         ? `題名「${text}」`
-        : era.source === 'lineage'
-            ? `版本傳承著錄「${book.lineage?.year_text ?? book.lineage?.year ?? ''}」`
-            : `出版著錄「${book.publication_info?.year ?? ''}」`;
+        : `出版著錄「${book.publication_info?.year ?? ''}」`;
 
     const out: DerivedDating = {
         era: era.era,
@@ -879,9 +841,9 @@ export function deriveDating(book: EraInferable): DerivedDating | undefined {
         basis,
     };
 
-    // ── 后修：lineage 的「原刻…補印」──
+    // ── 后修：著录的「原刻…補印」──
     if (reprint) {
-        const repEra = ltext.match(/[、，,]\s*([宋元明清])/);
+        const repEra = ptext.match(/[、，,]\s*([宋元明清])/);
         if (repEra && repEra[1] !== out.era) out.laterRepair = { era: repEra[1] };
     }
 
