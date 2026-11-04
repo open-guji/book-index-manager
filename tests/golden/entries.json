@@ -172,7 +172,7 @@
     "negative": false
   },
   {
-    "name": "book-additional_titles／attached_texts 两种形态",
+    "name": "book-additional_titles 异名与附刻两种项",
     "type": "Book",
     "record": {
       "id": "d59f2aaaa007",
@@ -186,13 +186,15 @@
         {
           "x": 1
         },
-        ""
-      ],
-      "attached_texts": [
+        "",
         {
-          "book_title": "附一"
+          "book_title": "附一",
+          "type": "附刻"
         },
-        "附二"
+        {
+          "book_title": "附二",
+          "type": "附刻"
+        }
       ]
     },
     "expect_index_entry": {

@@ -281,8 +281,7 @@ export class GithubStorage implements IndexStorage {
             if (!items) continue;
             for (const item of Object.values(items)) {
                 const raw = item as GithubIndexItem & {
-                    additional_titles?: string[];
-                    attached_texts?: string[];
+                    additional_titles?: unknown[];
                     edition?: string;
                     juan_count?: number;
                     has_text?: boolean;
@@ -295,7 +294,7 @@ export class GithubStorage implements IndexStorage {
                     cbdb_id?: number;
                 };
                 // Entity 用 primary_name 作为 title 显示
-                const extra = splitExtraTitles(raw.additional_titles, raw.attached_texts);
+                const extra = splitExtraTitles(raw.additional_titles);
                 const displayTitle = type === 'entity'
                     ? (raw.primary_name || item.title || item.name || item.id)
                     : (item.title || item.name || item.id);
@@ -309,7 +308,7 @@ export class GithubStorage implements IndexStorage {
                     role: item.role,
                     path: item.path,
                     additional_titles: raw.additional_titles ? extra.aliases : undefined,
-                    attached_texts: extra.attached.length || raw.attached_texts ? extra.attached : undefined,
+                    attached_texts: extra.attached.length ? extra.attached : undefined,
                     edition: raw.edition,
                     juan_count: raw.juan_count,
                     has_text: raw.has_text,

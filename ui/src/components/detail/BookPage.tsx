@@ -327,7 +327,7 @@ export const BookPage: React.FC<BookPageProps> = ({
         if (data.page_count?.description) {
             out.push({ label: t.label.pageCount, value: convert(data.page_count.description) });
         }
-        const aliases = [...flattenTitles(data.additional_titles), ...flattenTitles(data.attached_texts)];
+        const aliases = flattenTitles(data.additional_titles);
         if (aliases.length) out.push({ label: tr('bookPage.fact.aliases'), value: aliases.map(convert).join('、') });
         return out;
         // refName 读 lineageRefs

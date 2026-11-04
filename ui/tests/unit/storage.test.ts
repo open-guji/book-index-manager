@@ -332,8 +332,7 @@ describe('BookIndexStorage 索引 shard', () => {
     it('updateIndexEntry 提取 additional_titles + attached_texts', async () => {
         await storage.saveItem('work', WORK_ID_SHIJI, {
             title: '史記',
-            additional_titles: ['太史公書', { book_title: '太史公記' }],
-            attached_texts: ['某序'],
+            additional_titles: ['太史公書', { book_title: '太史公記' }, { book_title: '某序', type: '附刻' }],
         });
         const entries = await storage.loadEntries('work', 'draft');
         expect(entries[0].additional_titles).toEqual(['太史公書', '太史公記']);

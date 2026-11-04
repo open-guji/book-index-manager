@@ -1202,7 +1202,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     const [containedInResolved, setContainedInResolved] = useState<ResolvedContainedIn[]>([]);
 
     const detail = dataProp || loaded;
-    const extraTitles = splitExtraTitles(detail?.additional_titles, detail?.attached_texts);
+    const extraTitles = splitExtraTitles(detail?.additional_titles);
 
     useEffect(() => {
         if (dataProp || !id || !transport) return;
