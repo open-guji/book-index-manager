@@ -13,6 +13,30 @@ const FOLDER_TO_TYPE: Record<string, IndexType> = { Book: 'book', Collection: 'c
 
 export const NUM_SHARDS = 16;
 
+/** 附刻之书在 additional_titles 里的 type 值 */
+export const ATTACHED_TITLE_TYPE = '附刻';
+
+/**
+ * Book 的「异名」与「附刻之书」分开（第 12 组 S2-T）：additional_titles 的项是字符串（异名）
+ * 或 {book_title, type:'附刻'}（附刻之书）；旧写法 attached_texts 的项一律是附刻。
+ * 与 Python entry_extractor.split_extra_titles、book-index build_derived._titles_split 同口径。
+ */
+export function splitExtraTitles(additional: unknown, attached?: unknown): { aliases: string[]; attached: string[] } {
+    const one = (t: unknown): string => typeof t === 'string' ? t : ((t as { book_title?: string } | null)?.book_title ?? '');
+    const attachedOut = (Array.isArray(attached) ? attached : []).map(one).filter(Boolean);
+    const aliases: string[] = [];
+    for (const t of Array.isArray(additional) ? additional : []) {
+        if (t && typeof t === 'object' && (t as { type?: string }).type === ATTACHED_TITLE_TYPE) {
+            const x = one(t);
+            if (x) attachedOut.push(x);
+        } else {
+            const x = one(t);
+            if (x) aliases.push(x);
+        }
+    }
+    return { aliases, attached: attachedOut };
+}
+
 /** Deterministic hash — identical results in Python (h*31+ord(c)) & 0xFFFFFFFF */
 export function shardOf(id: string, n = NUM_SHARDS): number {
     let h = 0;
@@ -169,15 +193,11 @@ export function buildIndexEntry(
         if (typeof inst === 'string') holder = inst;
     }
 
-    // 提取 additional_titles（Work 别名，兼容 string 和 {book_title} 两种格式）
-    const additionalTitles = Array.isArray(metadata.additional_titles)
-        ? (metadata.additional_titles as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
-        : undefined;
-
-    // 提取 attached_texts（Book 附载篇目，兼容 string 和 {book_title} 两种格式）
-    const attachedTexts = Array.isArray(metadata.attached_texts)
-        ? (metadata.attached_texts as any[]).map(t => typeof t === 'string' ? t : t?.book_title).filter(Boolean) as string[]
-        : undefined;
+    // additional_titles（别名）与 attached_texts（附刻之书）：第 12 组 S2-T 后附刻之书并入 additional_titles
+    // （项为 {book_title, type:"附刻"}），这里拆回两个字符串数组，index 条目形状不变
+    const split = splitExtraTitles(metadata.additional_titles, metadata.attached_texts);
+    const additionalTitles = Array.isArray(metadata.additional_titles) ? split.aliases : undefined;
+    const attachedTexts = (Array.isArray(metadata.attached_texts) || split.attached.length > 0) ? split.attached : undefined;
 
     // 提取 juan_count
     let juanCount: number | undefined;

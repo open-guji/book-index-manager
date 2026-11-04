@@ -26,6 +26,7 @@ import { formatTemplate } from '../i18n';
 import { useBidUrl } from '../core/bid-url';
 import { numberToChinese, publicationYearText } from '../core/detail-model';
 import { relatedBookIds } from '../core/lineage-graph';
+import { splitExtraTitles } from '../core/storage';
 import { bim } from '../styles/tokens';
 
 /** 已解析的收录关联（ID → 标题 + 册号） */
@@ -1201,6 +1202,7 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
     const [containedInResolved, setContainedInResolved] = useState<ResolvedContainedIn[]>([]);
 
     const detail = dataProp || loaded;
+    const extraTitles = splitExtraTitles(detail?.additional_titles, detail?.attached_texts);
 
     useEffect(() => {
         if (dataProp || !id || !transport) return;
@@ -1458,12 +1460,12 @@ export const IndexDetail: React.FC<IndexDetailProps> = ({
                 <AdditionalWorksList items={detail.additional_works} />
             )}
 
-            {detail.additional_titles && detail.additional_titles.length > 0 && (
-                <AdditionalTitlesList items={detail.additional_titles} />
+            {extraTitles.aliases.length > 0 && (
+                <AdditionalTitlesList items={extraTitles.aliases} />
             )}
 
-            {detail.attached_texts && detail.attached_texts.length > 0 && (
-                <AttachedTextsList items={detail.attached_texts} />
+            {extraTitles.attached.length > 0 && (
+                <AttachedTextsList items={extraTitles.attached} />
             )}
 
             {detail.indexed_by && detail.indexed_by.length > 0 && (
