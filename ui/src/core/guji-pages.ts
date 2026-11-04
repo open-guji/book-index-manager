@@ -30,6 +30,8 @@ export interface GujiPageChar {
     zi?: string;
     /** 规范层（norm.json）：人审过的「异体→通行字」，恰好一个字、且与 `char` 不同；缺省＝该位没有逐位规范（overview#525） */
     norm?: string;
+    /** 待审格（char v0.4 `pending_reason`，spec/02 §4.8）：这格还在待审，值是待审原因；`char` 是机器字，机器没给字时是 `□`（与阙文同样显示） */
+    pending?: string;
     /** 图片格（char v0.3 `fig`，spec/02 §4.7）：本格是图不是字，值是同章 fig.json 里的图 id；`char` 仍是 `□`。连续同 id 的格是同一张图 */
     fig?: string;
 }

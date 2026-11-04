@@ -18,6 +18,8 @@ export interface CharGeometry {
   zi?: string;
   /** 规范层（norm.json）：人审过的通行字，恰好一个字；缺省＝该位没有逐位规范（overview#525） */
   norm?: string;
+  /** 待审格（char v0.4 `pending_reason`，spec/02 §4.8）：值是待审原因 */
+  pending?: string;
   /** 图片格（char v0.3 `fig`，spec/02 §4.7）：值是同章 fig.json 里的图 id；`char` 是 `□` */
   fig?: string;
 }

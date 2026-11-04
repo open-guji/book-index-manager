@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import { PageWarpData } from './GujiWarpCanvas';
+import { pendingReasonLabel } from '../../core/pending-reasons';
 import { bim } from '../../styles/tokens';
 import { EntityMark, useEntitySummaryLoader } from '../EntityText/EntityText';
 import { ENTITY_TEXT_CSS } from '../EntityText/entity-text-css';
@@ -1069,10 +1070,10 @@ const PageSection = React.memo(function PageSection({
                   ) : <span
                     data-char-id={ch.id}
                     data-page-start={pageStarts.get(ch.id)}
-                    className={`guji-text-char${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${ch.lacuna ? ' is-lacuna' : ''}${ch.lacuna && ch.guess_c ? ' has-guess' : ''}${ch.guess ? ' is-guess' : ''}${ch.zi ? ' is-zi' : ''}${start?.raised ? ' is-raised' : ''}`}
+                    className={`guji-text-char${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${ch.lacuna || (ch.pending && ch.char === '□') ? ' is-lacuna' : ''}${ch.pending ? ' is-pending' : ''}${ch.lacuna && ch.guess_c ? ' has-guess' : ''}${ch.guess ? ' is-guess' : ''}${ch.zi ? ' is-zi' : ''}${start?.raised ? ' is-raised' : ''}`}
                     data-raised={start?.raised || undefined}
                     data-guji-guess={ch.lacuna && ch.guess_c ? ch.guess_c : undefined}
-                    title={ch.lacuna ? (ch.guess_c ? t('reader.lacunaGuess', { guess: convert ? convert(ch.guess_c) : ch.guess_c }) : t('detail.lacuna')) : ch.zi ? t('detail.composedChar', { label: ch.zi }) : ch.guess ? t('reader.charGuess') : undefined}
+                    title={ch.pending ? t('reader.pendingReason', { label: convert ? convert(pendingReasonLabel(ch.pending)) : pendingReasonLabel(ch.pending) }) : ch.lacuna ? (ch.guess_c ? t('reader.lacunaGuess', { guess: convert ? convert(ch.guess_c) : ch.guess_c }) : t('detail.lacuna')) : ch.zi ? t('detail.composedChar', { label: ch.zi }) : ch.guess ? t('reader.charGuess') : undefined}
                   >
                     {show(ch)}
                   </span>}
