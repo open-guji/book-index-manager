@@ -156,6 +156,7 @@ export interface EntityWorkRef {
 /** Entity.external_ids —— 外部数据库引用 */
 export interface ExternalIds {
     cbdb_id?: number;
+    /** 旧位置（2026-11-04 前）；现挪到顶层 external_ids_meta，过渡期两处都认 */
     cbdb_match?: string;
     cbdb_source?: string;
     /** 形如 Q123456 */
@@ -752,6 +753,8 @@ export interface EntityDetailData extends BaseDetailData {
     _works?: DerivedEntityWork[];
     /** 外部数据库引用（CBDB 等） */
     external_ids?: ExternalIds;
+    /** CBDB 匹配过程元数据（2026-11-04 起，原 external_ids.cbdb_match／cbdb_source） */
+    external_ids_meta?: { cbdb_match?: string; cbdb_source?: string };
     /** 是否草稿 */
     isDraft?: boolean;
     /** 印影等图（GUJI-538／544）：图本体在 book-index-asset，`file` 是仓内相对路径，URL＝资源根＋file */

@@ -353,12 +353,14 @@ export const EntityPage: React.FC<EntityPageProps> = ({
 
     // ── 站外资料 ──
     const ext = data.external_ids || {};
+    // cbdb_match 2026-11-04 起在顶层 external_ids_meta；过渡期两处都认
+    const cbdbMatch = data.external_ids_meta?.cbdb_match ?? ext.cbdb_match;
     const extLinks: { label: string; id: string; href: string; note?: string }[] = [];
     if (ext.cbdb_id != null) {
         extLinks.push({
             label: 'CBDB', id: String(ext.cbdb_id),
             href: `https://cbdb.fas.harvard.edu/cbdbapi/person.php?id=${ext.cbdb_id}`,
-            note: ext.cbdb_match === 'auto' ? t('entityPage.autoMatch') : undefined,
+            note: cbdbMatch === 'auto' ? t('entityPage.autoMatch') : undefined,
         });
     }
     const wikidata = ext.wikidata_id;
@@ -500,7 +502,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                 <a href={l.href} target="_blank" rel="noopener noreferrer">{l.label} <span aria-hidden="true">↗</span></a>
             ))}
             metas={extLinks.map(l => l.id)}
-            foot={ext.cbdb_id != null && ext.cbdb_match === 'auto' ? t('entityPage.cbdbAuto') : undefined}
+            foot={ext.cbdb_id != null && cbdbMatch === 'auto' ? t('entityPage.cbdbAuto') : undefined}
         />
     ) : null;
 
