@@ -55,11 +55,10 @@ const BOOK: IndexDetailData = {
         { id: 'bd', name: '百度网盘', url: 'https://pan.baidu.com/s/x', types: ['image'], group: 'g1', group_role: 'mirror' },
     ],
     resource_groups: { g1: { label: '程甲本原本掃描', description: '國圖全本黑白。' } },
-    lineage: {
-        year: 1791, year_text: '清乾隆五十六年（1791）', category: '刻本', status: 'extant',
-        derived_from: [{ ref: 'b0', ref_type: 'book', relation: '底本', confidence: 'consensus', evidence: '文字簡約' }],
-    },
-    base_edition: [{ role: '底本', book_id: 'b0', name: '夢覺本' }],
+    lineage: { status: 'extant' },
+    dating: { year: 1791, text: '清乾隆五十六年（1791）' },
+    edition_type: '刻本',
+    base_edition: [{ role: '底本', relation: '底本', book_id: 'b0', name: '夢覺本', confidence: 'consensus', evidence: '文字簡約', source: 't' }],
     appendix: [{ title: '清代程甲系翻刻本一覽', text: '- 本衙藏板本' }],
 } as unknown as IndexDetailData;
 
@@ -433,18 +432,15 @@ describe('BookPage（v3）', () => {
         expect(within(sec).getByText('清代程甲系翻刻本一覽')).toBeTruthy();
     });
 
-    it('參校等其他关系画成虚线卡，在本版右侧；related_to 出「翻刻 · 衍生」标签行', async () => {
+    it('參校等其他关系画成虚线卡，在本版右侧；related_books 出「翻刻 · 衍生」标签行', async () => {
         const data = {
             ...BOOK,
-            lineage: {
-                ...(BOOK as unknown as { lineage: object }).lineage,
-                derived_from: [
-                    { ref: 'b0', ref_type: 'book', relation: '底本', confidence: 'consensus', evidence: '文字簡約' },
-                    { ref: 'b2', ref_type: 'book', relation: '參校', confidence: 'probable', evidence: '後四十回接近' },
-                    { ref: 'x', ref_type: 'reconstructed', relation: '祖本' },
-                ],
-                related_to: [{ book_id: 'b2', relation: '翻刻', evidence: '依程甲本翻刻' }],
-            },
+            base_edition: [
+                { role: '底本', relation: '底本', book_id: 'b0', name: '夢覺本', confidence: 'consensus', evidence: '文字簡約', source: 't' },
+                { role: '參校', relation: '參校', book_id: 'b2', confidence: 'probable', evidence: '後四十回接近', source: 't' },
+                { role: '底本', relation: '祖本', hypothetical_id: 'h_x', source: 't' },
+            ],
+            related_books: [{ book_id: 'b2', relation: '翻刻', evidence: '依程甲本翻刻' }],
         } as unknown as IndexDetailData;
         const { container } = render(<BookDetailLayout {...props(data, BOOK_EXTRA)} />);
         await waitFor(() => expect(lineageOf(container).querySelector('.bim-d-lf-out')).toBeTruthy());

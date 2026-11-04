@@ -1211,7 +1211,7 @@ export interface VersionRow {
     locationName?: string;
     /** 首个 physical 资源的索书号／统一编号（metadata.item_id 或 call_number）：同版多部藏本靠它区分 */
     callNumber?: string;
-    /** 本部以 lineage.related_to「同版」指向的代表本 id */
+    /** 本部以 related_books「同版」指向的代表本 id */
     copyOf?: string;
     /** 代表行：收在其下的同版其余各部（按索书号排） */
     copies?: VersionRow[];
@@ -1256,7 +1256,7 @@ export function holderCallNumber(r?: ResourceEntry): string | undefined {
     return v || undefined;
 }
 
-/** lineage.related_to 里第一条「同版」所指的代表本 */
+/** related_books 里第一条「同版」所指的代表本 */
 export function sameEditionRep(v: ResolvedVersion): string | undefined {
     for (const r of relatedItems(v)) {
         const ref = r.ref ?? r.book_id;
@@ -1813,11 +1813,10 @@ export function measureText(detail: Partial<IndexDetailData>, juanUnit = '卷'):
 
 /**
  * 版本类型推断（写本 / 刻本 / 活字本…）。
- * lineage.category 只有 1% 有，其余从题名尾缀猜。
+ * edition_type 缺的从题名尾缀猜。
  */
 export function deriveEditionType(book: EraInferable): string {
     if (book.edition_type) return book.edition_type;
-    if (book.lineage?.category) return book.lineage.category;
     const text = book.edition || book.title || '';
     const patterns: [RegExp, string][] = [
         [/活字|聚珍/, '活字本'],

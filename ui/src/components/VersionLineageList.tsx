@@ -19,7 +19,7 @@ export interface VersionLineageListProps {
 
 /**
  * 版本传承列表视图：按 group 分组、按 year 排序展示节点，
- * 每个节点列出其上游来源（derived_from）和兄弟本（related_to）。
+ * 每个节点列出其上游来源（base_edition）和兄弟本（related_books）。
  *
  * 这是无重依赖的 fallback。完整图可视化请用上层（如 kaiyuanguji-web）
  * 提供的基于 React Flow 的组件。
