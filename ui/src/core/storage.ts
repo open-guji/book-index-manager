@@ -18,12 +18,12 @@ export const ATTACHED_TITLE_TYPE = '附刻';
 
 /**
  * Book 的「异名」与「附刻之书」分开（第 12 组 S2-T）：additional_titles 的项是字符串（异名）
- * 或 {book_title, type:'附刻'}（附刻之书）；旧写法 attached_texts 的项一律是附刻。
+ * 或 {book_title, type:'附刻'}（附刻之书）。
  * 与 Python entry_extractor.split_extra_titles、book-index build_derived._titles_split 同口径。
  */
-export function splitExtraTitles(additional: unknown, attached?: unknown): { aliases: string[]; attached: string[] } {
+export function splitExtraTitles(additional: unknown): { aliases: string[]; attached: string[] } {
     const one = (t: unknown): string => typeof t === 'string' ? t : ((t as { book_title?: string } | null)?.book_title ?? '');
-    const attachedOut = (Array.isArray(attached) ? attached : []).map(one).filter(Boolean);
+    const attachedOut: string[] = [];
     const aliases: string[] = [];
     for (const t of Array.isArray(additional) ? additional : []) {
         if (t && typeof t === 'object' && (t as { type?: string }).type === ATTACHED_TITLE_TYPE) {
@@ -193,11 +193,11 @@ export function buildIndexEntry(
         if (typeof inst === 'string') holder = inst;
     }
 
-    // additional_titles（别名）与 attached_texts（附刻之书）：第 12 组 S2-T 后附刻之书并入 additional_titles
+    // additional_titles（别名）与 attached_texts（附刻之书）：附刻之书在源档的 additional_titles 里
     // （项为 {book_title, type:"附刻"}），这里拆回两个字符串数组，index 条目形状不变
-    const split = splitExtraTitles(metadata.additional_titles, metadata.attached_texts);
+    const split = splitExtraTitles(metadata.additional_titles);
     const additionalTitles = Array.isArray(metadata.additional_titles) ? split.aliases : undefined;
-    const attachedTexts = (Array.isArray(metadata.attached_texts) || split.attached.length > 0) ? split.attached : undefined;
+    const attachedTexts = split.attached.length > 0 ? split.attached : undefined;
 
     // 提取 juan_count
     let juanCount: number | undefined;

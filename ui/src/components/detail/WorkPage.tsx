@@ -207,8 +207,6 @@ export const WorkPage: React.FC<WorkPageProps> = ({
 
         const aliases = flatten(data.additional_titles);
         if (aliases.length) out.push({ label: t('workPage.fact.alias'), value: aliases.map(convert).join('、') });
-        const attached = flatten(data.attached_texts);
-        if (attached.length) out.push({ label: t('workPage.fact.attached'), value: attached.map(convert).join('、') });
         const appendixWorks = (data.additional_works || []).map(w =>
             convert(w.book_title) + (w.n_juan != null ? ` ${w.n_juan}${m.unit.juan}` : ''));
         if (appendixWorks.length) out.push({ label: t('workPage.fact.appendix'), value: appendixWorks.join('、') });

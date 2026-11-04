@@ -418,7 +418,7 @@ export class BundleStorage implements IndexStorage {
             const detail = (await this.loadDetail(canonicalId)) as Record<string, any> | null;
             if (!detail) return null;
             const type = extractType(canonicalId);
-            const extra = splitExtraTitles(detail.additional_titles, detail.attached_texts);
+            const extra = splitExtraTitles(detail.additional_titles);
             const displayTitle = type === 'entity'
                 ? (detail.primary_name || detail.title || detail.name || canonicalId)
                 : (detail.title || detail.name || canonicalId);
@@ -431,7 +431,7 @@ export class BundleStorage implements IndexStorage {
                 dynasty: detail.dynasty,
                 role: detail.role,
                 additional_titles: detail.additional_titles ? extra.aliases : undefined,
-                attached_texts: extra.attached.length || detail.attached_texts ? extra.attached : undefined,
+                attached_texts: extra.attached.length ? extra.attached : undefined,
                 edition: detail.edition,
                 juan_count: detail.juan_count,
                 has_text: detail.has_text,
