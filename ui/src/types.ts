@@ -410,6 +410,9 @@ export interface BaseDetailData {
     review?: ReviewInfo;
     /** 存佚：extant 今存 / fragment 殘 / lost 佚 等 */
     loss_status?: string;
+    /** 真偽：只在確定是偽書時寫（唯一值 forged），依據在 authenticity_basis */
+    authenticity?: 'forged' | (string & {});
+    authenticity_basis?: string;
     /** 數據修訂號與修訂日期（詳情頁提要卡底部小字） */
     revision?: number | string;
     revised_at?: string;

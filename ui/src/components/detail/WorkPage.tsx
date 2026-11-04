@@ -179,6 +179,12 @@ export const WorkPage: React.FC<WorkPageProps> = ({
             });
         }
         if (data.loss_status) out.push({ label: t('workPage.fact.loss'), value: convert(lossStatusLabel(data.loss_status, t)) });
+        if (data.authenticity === 'forged') {
+            out.push({
+                label: t('workPage.fact.authenticity'), value: convert(t('workPage.fact.forged')),
+                title: data.authenticity_basis ? convert(data.authenticity_basis) : undefined,
+            });
+        }
 
         const dated = table.allRows.filter(r => r.sortYear != null);
         const earliest = dated.length > 0
