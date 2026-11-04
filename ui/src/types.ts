@@ -974,6 +974,8 @@ export interface CollatedSection {
     header_line?: string;
     /** AI 生成的备注 */
     ai_note?: string;
+    /** 整理过程留下的解析证据（原下划线前缀字段，第 11 组收进这里），阅读器不显示 */
+    evidence?: Record<string, unknown>;
 }
 
 /** 整理本的一卷数据 */
@@ -982,6 +984,8 @@ export interface CollatedJuan {
     page_title?: string;
     source_url?: string;
     sections: CollatedSection[];
+    /** 章的其余元数据（第 11 组起 page_title／source_url 等收在这里；读取时经 normalizeCollatedJuan 补到顶层） */
+    meta?: Record<string, unknown>;
 }
 
 /** 整理本卷分组 */

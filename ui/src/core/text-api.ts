@@ -7,12 +7,14 @@
  *
  * 数据来自 transport 的 `getTextManifest／getTextIndex／getChapter`（BundleStorage 自带）。
  * 不从旧目录（collated_edition／full_text）合成 manifest：旧结构的条目没有 manifest，就是「暂无文本」。
+ * 整理本章 json 经 `normalizeCollatedJuan` 新旧写法两认（第 11 组）。
  * 这一层只做三件事：条目的 manifest 按 id 缓存（并发也只取一次，取不到不缓存）、key／章校验成路径安全的单段、
  * 取数失败当作没有（不往外抛）。
  */
 import type { IndexStorage } from '../storage/types';
 import type { TextChapterContent, TextIndex, TextManifest } from './text-model';
 import { isSafeSegment } from './text-model';
+import { normalizeCollatedJuan } from './collated-normalize';
 
 export interface TextApi {
     getManifest(id: string): Promise<TextManifest | null>;
@@ -50,7 +52,8 @@ export function createTextApi(transport: IndexStorage): TextApi {
 
         async getChapter(id, key, chapter, opts) {
             if (!isSafeSegment(id) || !isSafeSegment(key) || !isSafeSegment(chapter) || !transport.getChapter) return null;
-            return settle(transport.getChapter(id, key, chapter, opts));
+            const c = await settle(transport.getChapter(id, key, chapter, opts));
+            return c && c.json ? { ...c, json: normalizeCollatedJuan(c.json) } : c;
         },
     };
 }
