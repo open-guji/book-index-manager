@@ -87,6 +87,18 @@ describe('WorkPage（三栏）', () => {
         expect(stats.at(-1)).toMatch(/家著錄$/);
     });
 
+    it('真偽：authenticity=forged 才在提要卡出「真偽 偽書」，判伪依据放 title；没有就不出', () => {
+        const forged = { ...WORK, authenticity: 'forged', authenticity_basis: '提要稱其偽托' } as unknown as IndexDetailData;
+        render(<BookDetailLayout {...props(forged)} />);
+        expect(screen.getByText('真偽')).toBeTruthy();
+        expect(screen.getByText('偽書').closest('[title]')?.getAttribute('title')).toBe('提要稱其偽托');
+    });
+
+    it('没有 authenticity 不出「真偽」', () => {
+        render(<BookDetailLayout {...props(WORK)} />);
+        expect(screen.queryByText('真偽')).toBeNull();
+    });
+
     it('没有 _classifications / todo / review 就不显示', () => {
         const bare = { ...WORK, _classifications: undefined, todo: undefined, review: undefined, revision: undefined } as IndexDetailData;
         render(<BookDetailLayout {...props(bare)} />);
