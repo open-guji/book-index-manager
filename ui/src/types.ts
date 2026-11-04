@@ -1176,28 +1176,22 @@ export interface LineageSibling {
 
 /** Book.lineage —— 单本书的版本节点信息 */
 export interface BookLineage {
-    /** 数字年份（用于时间轴/排序） */
-    year?: number;
-    /** 原始年代表述 */
-    year_text?: string;
-    /** 年份是否仅为推断 */
-    year_uncertain?: boolean;
     /**
-     * 著录的年代区间。year_text 是「明末清初」这类跨代表述时，
-     * 录入者会在 year 填代表值、在此填真实区间——取区间才对，
-     * 拿代表值当确切年会和朝代打架（水滸文盛堂本 year=1700 配「明」越界）。
+     * @deprecated 年代已并入 dating（第 1 组），数据里不再有；detail-model 的年份推断仍留着兜底读取，待另行清理。
      */
+    year?: number;
+    /** @deprecated 同上，见 dating.text */
+    year_text?: string;
+    /** @deprecated 同上，见 dating.year_uncertain */
+    year_uncertain?: boolean;
+    /** @deprecated 同上，见 dating.year_range */
     year_range?: [number, number];
-    category: LineageCategory;
-    status: LineageStatus;
+    /** 存佚（年代见 dating，所出之本见 base_edition，关联见 related_books） */
+    status?: LineageStatus;
     /** 现存范围说明 */
     extant_juan?: string;
     /** 别名 */
     alias?: string[];
-    /** 派生关系（可多源） */
-    derived_from?: LineageDerivation[];
-    /** 横向兄弟本（不是父子） */
-    related_to?: LineageSibling[];
     note?: string;
 }
 

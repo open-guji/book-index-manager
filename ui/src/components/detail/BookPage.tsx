@@ -239,7 +239,7 @@ export const BookPage: React.FC<BookPageProps> = ({
             out.push({
                 label: tr('bookPage.fact.editionType'),
                 value: convert(editionType),
-                title: (data.edition_type || data.lineage?.category) ? undefined : tr('bookPage.inferredFromEdition'),
+                title: data.edition_type ? undefined : tr('bookPage.inferredFromEdition'),
             });
         }
         if (data.publication_info?.details) {
@@ -677,7 +677,7 @@ function VolumeList({ volumes, unit }: { volumes: number[]; unit: string }) {
 /**
  * 版本源流·卡片流（设计稿 v3）：一条竖线穿起——
  * 擬構祖本（虚线框）→ 底本（卡片）→ 本版（深色条）＋ 參校等（虚线卡，在本版右侧）→ 翻刻／衍生（一行标签）→ 附记 → 说明。
- * 只画数据里有的：没有底本就没有底本卡，没有 related_to 就没有翻刻行；不造年代、不造「祖本」。
+ * 只画数据里有的：没有底本就没有底本卡，没有 related_books 关联就没有翻刻行；不造年代、不造「祖本」。
  */
 function LineageFlow({ data, heading, yearText, refName, onNavigate, renderLink }: {
     data: BookDetailData;

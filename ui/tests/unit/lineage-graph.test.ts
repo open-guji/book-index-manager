@@ -26,6 +26,11 @@ function mkBook(id: string, title: string, lineage?: BookDetailData['lineage']):
     } as BookDetailData;
 }
 
+/** 带 base_edition／related_books 的 Book（版本关系 06 稿的新写法） */
+function mkBookX(id: string, title: string, extra: Partial<BookDetailData>): BookDetailData {
+    return { id, type: 'book', title, ...extra } as BookDetailData;
+}
+
 describe('buildLineageGraph 边界', () => {
     it('未启用 version_graph 时返回空图', () => {
         const r = buildLineageGraph(mkWork(undefined), []);
@@ -93,15 +98,14 @@ describe('buildLineageGraph 节点构造', () => {
 });
 
 describe('buildLineageGraph 边构造', () => {
-    it('Book.lineage.derived_from 生成 derive 边', () => {
+    it('Book.base_edition（带 relation）生成 derive 边', () => {
         const r = buildLineageGraph(
             mkWork({ enabled: true }),
             [
-                // 父本 b0 必须有 lineage 否则不进图，悬挂边会被丢弃
-                mkBook('b0', '祖本', { year: 1500 }),
-                mkBook('b1', '派生本', {
-                    year: 1700,
-                    derived_from: [{ ref: 'b0', relation: '过录', confidence: 'probable' }],
+                // 父本 b0 必须有版本信息才进图，悬挂边会被丢弃
+                mkBook('b0', '祖本', { status: 'extant' }),
+                mkBookX('b1', '派生本', {
+                    base_edition: [{ role: '底本', relation: '过录', book_id: 'b0', confidence: 'probable', source: 't' }],
                 }),
             ],
         );
@@ -113,12 +117,11 @@ describe('buildLineageGraph 边构造', () => {
         expect(edge!.confidence).toBe('probable');
     });
 
-    it('derived_from 引用不存在的节点时边被丢弃（防悬挂）', () => {
+    it('base_edition 引用不存在的节点时边被丢弃（防悬挂）', () => {
         const r = buildLineageGraph(
             mkWork({ enabled: true }),
-            [mkBook('b1', '派生本', {
-                year: 1700,
-                derived_from: [{ ref: 'b_missing', relation: '过录' }],
+            [mkBookX('b1', '派生本', {
+                base_edition: [{ role: '底本', relation: '过录', book_id: 'b_missing', source: 't' }],
             })],
         );
         // 端点 b_missing 不存在 → 边被合理丢弃
@@ -126,21 +129,15 @@ describe('buildLineageGraph 边构造', () => {
         expect(r.nodes).toHaveLength(1);  // b1 自己仍然在
     });
 
-    it('Book.lineage.related_to 生成 sibling 边（按 ID 字典序去重）', () => {
+    it('related_books（带 relation 的对象）生成 sibling 边（按 ID 字典序去重）', () => {
         const r = buildLineageGraph(
             mkWork({ enabled: true }),
             [
-                mkBook('b1', 'A', {
-                    year: 1700,
-                    related_to: [{ book_id: 'b2', relation: '兄弟' }],
-                }),
-                mkBook('b2', 'B', {
-                    year: 1700,
-                    related_to: [{ book_id: 'b1', relation: '兄弟' }],
-                }),
+                mkBookX('b1', 'A', { related_books: [{ book_id: 'b2', relation: '兄弟' }] }),
+                mkBookX('b2', 'B', { related_books: [{ book_id: 'b1', relation: '兄弟' }] }),
             ],
         );
-        // 双向 related_to 应该只产生一条边（id 字典序合并）
+        // 双向 related_books 应该只产生一条边（id 字典序合并）
         const siblingEdges = r.edges.filter(e => e.kind === 'sibling');
         expect(siblingEdges).toHaveLength(1);
         // source/target 按字典序
@@ -185,11 +182,10 @@ describe('buildLineageGraph excluded_books', () => {
 });
 
 describe('validateLineageGraph', () => {
-    it('找出 derived_from 引用了不存在的 Book ID', () => {
+    it('找出 base_edition 引用了不存在的 Book ID', () => {
         const work = mkWork({ enabled: true });
-        const books = [mkBook('b1', '派生本', {
-            year: 1700,
-            derived_from: [{ ref: 'b_missing', relation: '过录' }],
+        const books = [mkBookX('b1', '派生本', {
+            base_edition: [{ role: '底本', relation: '过录', book_id: 'b_missing', source: 't' }],
         })];
         const issues = validateLineageGraph(work, books);
         expect(issues.length).toBeGreaterThan(0);
@@ -201,9 +197,8 @@ describe('validateLineageGraph', () => {
             enabled: true,
             hypothetical_nodes: [{ id: 'h0', label: '祖' }],
         });
-        const books = [mkBook('b1', '派生本', {
-            year: 1700,
-            derived_from: [{ ref: 'h0', ref_type: 'hypothetical', relation: '过录' }],
+        const books = [mkBookX('b1', '派生本', {
+            base_edition: [{ role: '底本', relation: '过录', hypothetical_id: 'h0', source: 't' }],
         })];
         const issues = validateLineageGraph(work, books);
         expect(issues).toEqual([]);

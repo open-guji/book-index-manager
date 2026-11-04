@@ -337,7 +337,7 @@ class CLIHandler:
             hypothetical_ids = set(h.get("id") for h in version_graph.get("hypothetical_nodes", []))
             all_valid_ids = (book_ids_set - excluded_books) | hypothetical_ids
 
-            # 检查 derived_from 和 related_to 引用
+            # 检查 base_edition 和 related_books 引用
             for book_id in book_ids_set:
                 if book_id in excluded_books:
                     continue
@@ -346,21 +346,19 @@ class CLIHandler:
                     errors.append(f"Book {book_id} referenced but not found in storage")
                     continue
 
-                lineage = book.get("lineage", {})
-                if not lineage:
-                    continue
-
-                # 检查 derived_from
-                for d in lineage.get("derived_from", []):
-                    ref = d.get("ref")
+                # 检查 base_edition（带 relation 的项是版本图的边）
+                for be in book.get("base_edition", []):
+                    if not be.get("relation"):
+                        continue
+                    ref = be.get("hypothetical_id") or be.get("book_id")
                     if ref and ref not in all_valid_ids:
-                        errors.append(f"Book {book_id}: derived_from.ref '{ref}' not found in books or hypothetical nodes")
+                        errors.append(f"Book {book_id}: base_edition '{ref}' not found in books or hypothetical nodes")
 
-                # 检查 related_to
-                for r in lineage.get("related_to", []):
-                    ref_book_id = r.get("book_id")
-                    if ref_book_id and ref_book_id not in book_ids_set:
-                        errors.append(f"Book {book_id}: related_to.book_id '{ref_book_id}' not in this work")
+                # 检查 related_books（带 relation 的对象项是版本图的无向边）
+                for r in book.get("related_books", []):
+                    ref_book_id = r.get("book_id") if isinstance(r, dict) else None
+                    if ref_book_id and r.get("relation") and ref_book_id not in book_ids_set:
+                        errors.append(f"Book {book_id}: related_books.book_id '{ref_book_id}' not in this work")
 
             # 检查 hypothetical_nodes 的 derived_from
             for hypo in version_graph.get("hypothetical_nodes", []):

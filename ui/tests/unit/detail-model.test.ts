@@ -216,11 +216,11 @@ describe('deriveYear', () => {
 });
 
 describe('deriveEditionType', () => {
-    it('lineage.category 优先', () => {
+    it('edition_type 优先于题名推断', () => {
         expect(deriveEditionType({
-            lineage: { category: '石刻', status: 'extant' },
+            edition_type: '石印本',
             edition: '清刻本',
-        })).toBe('石刻');
+        })).toBe('石印本');
     });
 
     it.each([
@@ -471,12 +471,12 @@ describe('buildVersionTable', () => {
     });
 
     it('同版各部收进代表行，代表本不在表内时照常单列', () => {
-        const rel = (ref: string) => ({ related_to: [{ ref, book_id: '', relation: '同版', confidence: 'certain' as const }] });
+        const rel = (ref: string) => ({ related_books: [{ book_id: ref, relation: '同版', confidence: 'certain' as const }] });
         const t = buildVersionTable([
             { id: 'rep', edition: '殿本', resources: [] },
-            { id: 'k2', edition: '殿本', lineage: rel('rep'), resources: [{ id: 'n', name: '故宮', types: ['physical' as const, 'image' as const], url: 'u', metadata: { item_id: 'B2' } }] },
-            { id: 'k1', edition: '殿本', lineage: rel('rep'), resources: [{ id: 'n', name: '故宮', types: ['physical' as const], url: 'u', metadata: { item_id: 'B1' } }] },
-            { id: 'orphan', edition: '粵本', lineage: rel('missing'), resources: [] },
+            { id: 'k2', edition: '殿本', ...rel('rep'), resources: [{ id: 'n', name: '故宮', types: ['physical' as const, 'image' as const], url: 'u', metadata: { item_id: 'B2' } }] },
+            { id: 'k1', edition: '殿本', ...rel('rep'), resources: [{ id: 'n', name: '故宮', types: ['physical' as const], url: 'u', metadata: { item_id: 'B1' } }] },
+            { id: 'orphan', edition: '粵本', ...rel('missing'), resources: [] },
         ], undefined);
         expect(t.allRows.map(r => r.id)).toEqual(['rep', 'orphan']);
         const rep = t.allRows[0];
