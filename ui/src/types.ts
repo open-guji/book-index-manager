@@ -1176,16 +1176,6 @@ export interface LineageSibling {
 
 /** Book.lineage —— 单本书的版本节点信息 */
 export interface BookLineage {
-    /**
-     * @deprecated 年代已并入 dating（第 1 组），数据里不再有；detail-model 的年份推断仍留着兜底读取，待另行清理。
-     */
-    year?: number;
-    /** @deprecated 同上，见 dating.text */
-    year_text?: string;
-    /** @deprecated 同上，见 dating.year_uncertain */
-    year_uncertain?: boolean;
-    /** @deprecated 同上，见 dating.year_range */
-    year_range?: [number, number];
     /** 存佚（年代见 dating，所出之本见 base_edition，关联见 related_books） */
     status?: LineageStatus;
     /** 现存范围说明 */
