@@ -78,6 +78,7 @@ def build_tables():
         for key, fl in rec.flat.items():
             for col, spec in _field_cols(fl.fields, None):
                 t.add(col, spec.type, spec.notnull)
+        t.add('file_name', 'text')   # 源文件名（`{id}-{题名}.json`）：题名部分是建档时的，不总等于今天的题名，库产出 _build/ 要原样用
         t.add('notes', 'jsonb')
         t.add('extra', 'jsonb')
         t.pk = ['id']

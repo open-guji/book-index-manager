@@ -96,3 +96,15 @@ def test_record_paths_use_shard_dirs(tmp_path):
     _write(p, '{}')
     assert record_paths(str(tmp_path), 'Work', {'d59fuoeo5d6o'}) == [p]
     assert record_paths(str(tmp_path), 'Work') == [p]
+
+
+def test_shred_files_keeps_file_name(tmp_path):
+    from book_index_manager.db.build import shred_files
+    from book_index_manager.db.mapping import RECORDS
+    from book_index_manager.db.shred import Rows
+    rec = [r for r in RECORDS.values() if r.name == 'Work'][0]
+    p = os.path.join(tmp_path, 'w1-舊題名.json')
+    _write(p, json.dumps({'id': 'w1', 'type': 'work', 'title': '新題名'}, ensure_ascii=False))
+    rows = Rows()
+    assert shred_files(rec, [p], rows) == 1
+    assert rows.t[rec.table][0]['file_name'] == 'w1-舊題名.json'
