@@ -19,6 +19,7 @@ book-index-manager/
 │   ├── storage_github.py     # GitHub 只读后端
 │   ├── entry_extractor.py    # metadata → index 条目（与 ui/src/core/storage.ts 必须同步）
 │   ├── promotion.py          # draft → production 升格（换 ID、tombstone、promotions.json）
+│   ├── db/                   # 规范化目录库：拆表映射（唯一真源）→ 建表语句、拆表还原、schema 覆盖检查（见 db/README.md）
 │   ├── manager.py            # 高层 Facade API (BookIndexManager)
 │   ├── id_generator.py       # Snowflake + base36 ID 生成（base58 仅兼容解码）
 │   ├── bid_link.py           # bid:// 链接解析
@@ -26,7 +27,7 @@ book-index-manager/
 │   ├── logger.py             # 日志
 │   └── exceptions.py         # 异常定义
 ├── scripts/                  # 批处理脚本
-├── tests/                    # pytest（189）
+├── tests/                    # pytest（315）
 ├── ui/                       # npm 包 book-index-ui：网站索引页全部 React 组件（详情页在 src/components/detail/）
 └── pyproject.toml            # 包配置
 ```

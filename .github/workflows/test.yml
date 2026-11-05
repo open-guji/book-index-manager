@@ -16,6 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # 目录库映射的「schema 有、映射没有」检查要读 book-index 的 schema/json（只取这一个目录）
+      - uses: actions/checkout@v4
+        with:
+          repository: open-guji/book-index
+          path: book-index
+          sparse-checkout: schema/json
+          filter: blob:none
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -24,6 +31,8 @@ jobs:
           pip install -e .
           pip install pytest
       - name: Run pytest
+        env:
+          BOOK_INDEX_SCHEMA: book-index/schema/json
         run: pytest tests/ -v
 
   ui-unit:
