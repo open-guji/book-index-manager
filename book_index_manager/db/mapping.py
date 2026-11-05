@@ -117,7 +117,7 @@ MEMBER_OF = Kid('member_of', {'id': C(col='collection_id', notnull=True), 'volum
                              'sub_items': C('jsonb')}, owner='member_id')
 DESC_SOURCES = Kid('description_source', scalar=C('jsonb', col='source'))
 # 墓碑的 merged_into＋merged_basis 合成一项（shred 先合、还原再拆）；live_id 是链末的现行记录，装载时解
-ID_MAP = Kid('id_map', {'into': C(col='direct_into'), 'rule': C(), 'at': C(), 'by': C(), 'why': C()},
+ID_MAP = Kid('id_map', {'into': C(col='direct_into', notnull=True), 'rule': C(), 'at': C(), 'by': C(), 'why': C()},
              mode='one', owner='old_id', fixed={'kind': 'merged', 'src': 'tombstone'},
              cols={'live_id': 'text', 'title': 'text'})
 

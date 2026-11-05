@@ -113,7 +113,7 @@ def test_audit_fields_have_no_columns():
 def test_ddl_generates():
     sql = ddl.schema_sql()
     assert sql.count('CREATE TABLE') == 34
-    assert 'CREATE TABLE id_map' in sql and 'PRIMARY KEY (old_id, kind, src)' in sql
+    assert 'CREATE TABLE id_map' in sql and 'PRIMARY KEY (old_id, kind, src, direct_into)' in sql
     cons = ddl.constraints_sql()
     assert 'book_seal_mark' in cons and 'NOT VALID' in cons
     assert 'book_work_id_ref FOREIGN KEY (work_id) REFERENCES work (id)' in cons

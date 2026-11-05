@@ -62,10 +62,11 @@ def build_tables():
             tables[name] = Table(name)
         return tables[name]
 
-    tables['build_meta'] = t = Table('build_meta', '每次建库一行：git 提交与时间')
+    tables['build_meta'] = t = Table('build_meta', '建库记录：库里现在对应的 git 提交；ddl_sha 变了要全量重建')
     t.add('git_commit', 'text', True)
     t.add('built_at', 'text', True)
-    t.add('schema_version', 'int', True)
+    t.add('ddl_sha', 'text', True)
+    t.add('mode', 'text', True)
     t.pk = ['git_commit']
 
     # 主表
@@ -119,6 +120,8 @@ def build_tables():
             elif kid.mode == 'dict':
                 t.add(kid.dictkey, 'text', True)
                 pk.append(kid.dictkey)
+            if kid.table == 'id_map':
+                pk.append('direct_into')   # 台账里同一旧号偶有几个去向（history 7 条），都留
             t.pk = pk
             if not shared and parent is None and kid.table not in ('id_map',):
                 t.fk.append(((kid.owner,), rec.table, ('id',)))
