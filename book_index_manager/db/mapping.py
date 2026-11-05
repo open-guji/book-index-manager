@@ -1,0 +1,314 @@
+"""目录库拆表映射：JSON 记录的每个键进哪张表、哪一列。
+
+这是唯一真源：建表语句（ddl.py）、拆表与还原（shred.py）、「schema 有、映射没有」检查（coverage.py）都从这里读。
+
+写法：
+  C(type, col=None)  建列。type 取 TYPES 或 ENUMS 里的名字；col 缺省同 JSON 键名。
+  N                  不建列，原值进该行的 notes（jsonb）。依据、判断备注、ai_note 这类审计字段走这里。
+  Flat({...})        对象拆进本行的几列（description.text → description_text）。
+  Kid(...)           数组／对象拆进明细表，一项一行。
+  extra_ok           映射里故意不建列的长尾键（十条以内的对象等），原样进 extra。
+
+值装不进列（类型不对、不在枚举里）时原样进 extra，还原无损；还原门禁见 shred.roundtrip。
+"""
+
+TYPES = {
+    'text': 'text', 'int': 'int', 'bool': 'boolean', 'date': 'date', 'jsonb': 'jsonb',
+    'text[]': 'text[]', 'int2': 'int[]', 'char1': 'char(1)',
+}
+
+ENUMS = {
+    'edition_type': ('刻本', '抄本', '稿本', '活字本', '石印本', '油印本', '曬印本', '鉛印本', '影印本', '套印本', '拓本',
+                     '印刷本', '其他'),
+    'loss_status': ('lost', 'partially_extant', 'extant', 'undetermined'),
+    'work_subtype': ('book', 'article', 'poem', 'chapter'),
+    'coll_subtype': ('work_collection', 'book_collection'),
+    'entity_subtype': ('people', 'collective', 'dynasty', 'reign', 'office', 'place', 'seal', 'publisher'),
+    'attested_status': ('extant', 'lost', 'partial', 'not_seen'),
+}
+
+
+class C:
+    __slots__ = ('type', 'col', 'notnull')
+
+    def __init__(self, type='text', col=None, notnull=False):
+        assert type in TYPES or type in ENUMS, type
+        self.type, self.col, self.notnull = type, col, notnull
+
+    def __repr__(self):
+        return 'C(%r, %r)' % (self.type, self.col)
+
+
+class _Notes:
+    def __repr__(self):
+        return 'N'
+
+
+N = _Notes()
+
+
+class Flat:
+    """对象拆进本行的列：{子键: C | N}。子键对应的 Kid 用 'k.sub' 写在 kids 里（如 description.sources）。"""
+
+    def __init__(self, fields):
+        self.fields = fields
+
+
+class Kid:
+    """明细映射。
+
+    mode：list＝数组每项一行（seq 记位置）；one＝单值一行；dict＝对象每个键一行（键存 dictkey 列）。
+    scalar：项是标量时整个进这一列（如 additional_titles 的字符串项）；项也可能是对象，则按 fields 拆。
+    fixed：本用途在表里的区分列及其值（index_entry.kind＝'I'／'E'）。
+    sub：项里的数组再拆一层（provenance[].seal_marks），parent 是子表里记上层 seq 的列。
+    cols：表上还有、但不来自 JSON 的列（如 id_map.live_id，装载时另算）。
+    extra_ok：项里故意不建列的长尾键，原样进该行 extra。
+    """
+
+    def __init__(self, table, fields=None, scalar=None, mode='list', owner='owner_id', dictkey=None, fixed=None,
+                 sub=None, parent=None, cols=None, extra_ok=()):
+        self.table, self.fields, self.scalar, self.mode = table, fields or {}, scalar, mode
+        self.owner, self.dictkey, self.fixed = owner, dictkey, fixed or {}
+        self.sub, self.parent, self.cols = sub or {}, parent, cols or {}
+        self.extra_ok = tuple(extra_ok)
+
+
+class Side:
+    """Entity 子类表（主键即 entity.id）：fields 进子类表列；N 进主表 notes；Flat 拆进子类表列。"""
+
+    def __init__(self, table, fields=None, flat=None):
+        self.table, self.fields, self.flat = table, fields or {}, flat or {}
+
+
+class Record:
+    def __init__(self, name, table, owner_type, fixed, cols, flat=None, notes=(), kids=None, side=None,
+                 extra_ok=()):
+        self.name, self.table, self.owner_type, self.fixed = name, table, owner_type, fixed
+        self.cols = cols                     # {键: C}
+        self.flat = flat or {}               # {键: Flat}
+        self.notes = tuple(notes)            # 顶层审计键，原值进 notes
+        self.kids = kids or {}               # {键 或 'k.sub': Kid}
+        self.side = side or {}               # {subtype: Side}
+        self.extra_ok = tuple(extra_ok)
+
+
+# ---------------------------------------------------------------- 四类共用的明细
+
+AUTHORS = Kid('authorship', {'name': C(notnull=True), 'role': C(notnull=True), 'entity_id': C(), 'dynasty': C(),
+                             'dynasty_basis': N, 'name_basis': N, 'role_basis': N, 'original_name': N, 'note': N,
+                             'source': N})
+_IDX = {'source': C(notnull=True), 'source_bid': C(), 'title_info': C(), 'summary': C(), 'section': C(),
+        'author_info': C(), 'juan_count': C(), 'juan': C(), 'volume': C(), 'page': C(), 'edition': C(),
+        'catalog_no': C(), 'in_note_of': C(), 'attested_status': C('attested_status'), 'attested_status_raw': C(),
+        'misattached': C('bool'),
+        'section_basis': N, 'attested_status_note': N, 'misattached_note': N, 'note': N}
+# 《四庫》等少数目录的附加栏（各几百条），不建列
+_IDX_EXTRA = ('text', 'comment', 'category', 'self_note', 'commentaries', 'link_basis', 'additional_comment')
+SOURCES = Kid('source_ref', {'id': C(col='sid'), 'name': C(), 'type': C(), 'details': C(), 'version': C(),
+                             'processor_version': C()})
+RESOURCES = Kid('resource', {'id': C(col='rid'), 'name': C(), 'label': C(), 'short_name': C(), 'url': C(),
+                             'types': C('text[]'), 'details': C(), 'group': C(col='grp'), 'group_role': C(),
+                             'root_type': C(), 'color_mode': C(), 'expected_volumes': C('int'), 'note': C(),
+                             'source_label': C(), 'volumes': C('jsonb'), 'metadata': C('jsonb')})
+RESOURCE_GROUPS = Kid('resource_group', {'label': C(), 'description': C()}, mode='dict', dictkey='key')
+MEASURES = Kid('measure', {'number': C('int'), 'unit': C(), 'note': C()})
+MEMBER_OF = Kid('member_of', {'id': C(col='collection_id', notnull=True), 'volume_index': C('jsonb'),
+                             'group': C(col='grp'), 'details': C(), 'section': C(), 'order': C('int', col='orig_order'),
+                             'sub_items': C('jsonb')}, owner='member_id')
+DESC_SOURCES = Kid('description_source', scalar=C('jsonb', col='source'))
+# 墓碑的 merged_into＋merged_basis 合成一项（shred 先合、还原再拆）；live_id 是链末的现行记录，装载时解
+ID_MAP = Kid('id_map', {'into': C(col='direct_into'), 'rule': C(), 'at': C(), 'by': C(), 'why': C()},
+             mode='one', owner='old_id', fixed={'kind': 'merged', 'src': 'tombstone'},
+             cols={'live_id': 'text', 'title': 'text'})
+
+
+def common_kids(emendated=True, groups=True):
+    out = {
+        'authors': AUTHORS,
+        'indexed_by': Kid('index_entry', _IDX, fixed={'kind': 'I'}, extra_ok=_IDX_EXTRA),
+        'emendated_by': Kid('index_entry', _IDX, fixed={'kind': 'E'}, extra_ok=_IDX_EXTRA),
+        'sources': SOURCES,
+        'resources': RESOURCES,
+        'resource_groups': RESOURCE_GROUPS,
+        'contained_in': MEMBER_OF,
+        'measures': MEASURES,
+        'merged_into': ID_MAP,
+        'description.sources': DESC_SOURCES,
+    }
+    if not emendated:
+        del out['emendated_by']
+    if not groups:
+        del out['resource_groups']
+    return out
+
+
+TITLE_ALT = Kid('alt_name', scalar=C(col='name'))
+COMMON = {'id': C(notnull=True), 'title': C(), 'measure_info': C(), 'schema_version': C('int'), 'revision': C(),
+          'revised_at': C('date')}
+DESCRIPTION = Flat({'text': C(col='description_text')})
+
+# ---------------------------------------------------------------- 主记录
+
+WORK = Record(
+    'Work', 'work', 'W', {'type': 'work'},
+    cols=dict(COMMON, subtype=C('work_subtype'), original_title=C(), dynasty=C(), period=C(), period_upper=C(),
+              loss_status=C('loss_status'), authenticity=C(), additional_works=C('jsonb')),
+    flat={'description': DESCRIPTION},
+    notes=('title_basis', 'dynasty_basis', 'period_basis', 'period_upper_basis', 'loss_status_evidence',
+           'authenticity_basis', 'ai_note'),
+    kids=dict(common_kids(),
+              additional_titles=TITLE_ALT,
+              related_works=Kid('work_relation', {'id': C(col='dst', notnull=True), 'relation': C(notnull=True),
+                                                  'note': N}, owner='src')),
+    extra_ok=('title_emendation', 'version_graph', 'collection_scale', 'publication_info', 'appendix'),
+)
+
+BOOK = Record(
+    'Book', 'book', 'B', {'type': 'book'},
+    cols=dict(COMMON, work_id=C(), edition=C(), edition_type=C('edition_type')),
+    flat={
+        'publication_info': Flat({'place': C(col='pub_place'), 'publisher': C(col='pub_publisher'),
+                                  'details': C(col='pub_details')}),
+        'dating': Flat({'certainty': C(col='dating_certainty'), 'source': C(col='dating_source'), 'basis': N,
+                        'era': C(col='dating_era'), 'reign': C(col='dating_reign'), 'year': C('int', 'dating_year'),
+                        'year_range': C('int2', 'dating_year_range'),
+                        'year_uncertain': C('bool', 'dating_year_uncertain'), 'text': C(col='dating_text')}),
+        'physical_description': Flat({'leaf_style': C(col='physical_leaf_style'), 'binding': C(col='physical_binding'),
+                                      'dimensions': C(col='physical_dimensions'),
+                                      'condition': C(col='physical_condition'), 'source': N}),
+        'description': DESCRIPTION,
+        'external_ids': Flat({'zhsy_id': C()}),
+    },
+    notes=('ai_note',),
+    kids=dict(common_kids(emendated=False), **{
+        'additional_titles': Kid('alt_name', {'book_title': C(col='name'), 'type': C(col='kind')},
+                                 scalar=C(col='name')),
+        'provenance': Kid('book_provenance', {'institution': C(notnull=True), 'call_number': C(),
+                                              'notes': C(col='note'), 'source': C(), 'seals': C('text[]')},
+                          sub={'seal_marks': Kid('book_seal_mark', {'seal_id': C(notnull=True), 'note': C()},
+                                                 parent='prov_seq')}),
+        'base_edition': Kid('book_base_edition', {'role': C(notnull=True), 'relation': C(), 'name': C(),
+                                                  'source': C(), 'book_id': C(), 'hypothetical_id': C(),
+                                                  'confidence': C(), 'evidence': N, 'note': N},
+                                  extra_ok=('work_id',)),
+        'location_history': Kid('book_location_history', {'location': C(), 'name': C(), 'item_id': C(), 'url': C(),
+                                                          'note': C(), 'description': C(), 'source': C(),
+                                                          'acckey': C()}),
+        'related_books': Kid('related_record', {'book_id': C(col='dst'), 'relation': C(), 'confidence': C(),
+                                                'evidence': N}, owner='src'),
+    }),
+    extra_ok=('page_count', 'lineage', 'metadata', 'dating.later_repair'),
+)
+
+COLLECTION = Record(
+    'Collection', 'collection', 'C', {'type': 'collection'},
+    cols=dict(COMMON, subtype=C('coll_subtype'), edition=C(), work_id=C()),
+    flat={
+        'count': Flat({'juan': C('int', 'count_juan'), 'ce': C('int', 'count_ce'), 'zhong': C('int', 'count_zhong'),
+                       'han': C('int', 'count_han'), 'source': N}),
+        'publication_info': Flat({'year': C(col='pub_year'), 'year_iso': C(col='pub_year_iso'),
+                                  'place': C(col='pub_place'), 'publisher': C(col='pub_publisher'),
+                                  'details': C(col='pub_details')}),
+        'description': DESCRIPTION,
+    },
+    notes=('ai_note',),
+    kids=dict(common_kids(emendated=False, groups=False), **{
+        'contains': Kid('collection_content', {'type': C(), 'title': C(), 'scope': C(), 'note': C(), 'position': C(),
+                                               'work_id': C(), 'book_id': C(), 'collection_id': C(),
+                                               'related_work_id': C(), 'own_work_id': C(), 'categorization': C()}),
+        'additional_titles': TITLE_ALT,
+        'related_collections': Kid('related_record', scalar=C(col='dst'), owner='src'),
+    }),
+    extra_ok=('juan_count', 'dating', 'page_count', 'current_location'),
+)
+
+
+def _rel(rel, key, fields=None, scalar=True, mode='list'):
+    return Kid('entity_relation', fields, scalar=C(col='dst') if scalar else None, mode=mode, owner='src',
+               fixed={'rel': rel, 'src_key': key})
+
+
+ENTITY = Record(
+    'Entity', 'entity', 'E', {'type': 'entity'},
+    cols={'id': C(notnull=True), 'subtype': C('entity_subtype'), 'primary_name': C(), 'dynasty': C(), 'period': C(),
+          'schema_version': C('int'), 'revision': C(), 'revised_at': C('date'),
+          'images': C('jsonb'), 'locations': C('jsonb'), 'todo': C('jsonb'), 'appears_in': C('jsonb')},
+    flat={'description': DESCRIPTION},
+    notes=('dynasty_basis', 'period_basis', 'name_basis', 'ai_note'),
+    side={
+        'people': Side('person', {'title_or_office': C(), 'native_place': C(), 'native_place_entity_id': C(),
+                                  'native_place_basis': N},
+                       {'external_ids_meta': Flat({'cbdb_match': C(), 'cbdb_source': C()})}),
+        'collective': Side('collective', {'concept_id': C(), 'collective_kind': C(), 'institution_level': C(),
+                                          'function': C(), 'function_basis': N}),
+        'publisher': Side('publisher', {'publisher_kind': C(), 'status': C()}),
+        'office': Side('office', {'concept_id': C(), 'office_level': C(), 'office_class': C(), 'function': C(),
+                                  'base_office_id': C(), 'function_basis': N},
+                       {'rank': Flat({'text': C(col='rank_text'), 'basis': N}),
+                        'qualifier': Flat({'kind': C(col='qualifier_kind'), 'name': C(col='qualifier_name'),
+                                           'note': C(col='qualifier_note'), 'target': C(col='qualifier_target')})}),
+        'place': Side('place', {'concept_id': C(), 'place_level': C()},
+                      {'modern': Flat({'text': C(col='modern_text'), 'relation': C(col='modern_relation'),
+                                       'adcode': C(col='modern_adcode'), 'note': C(col='modern_note')})}),
+        'seal': Side('seal', {'seal_text': C(), 'seal_kind': C(), 'seal_style': C(), 'seal_form': C(),
+                              'usage_scope': C()}),
+        'reign': Side('reign', flat={'ruler': Flat({'name': C(col='ruler_name'), 'entity_id': C(col='ruler_entity_id')})}),
+    },
+    kids={
+        'alt_names': Kid('alt_name', {'name': C(col='name'), 'type': C(col='kind'), 'ambiguous': C('bool'),
+                                      'note': N}),
+        'external_ids': Kid('entity_external_id', scalar=C('jsonb', col='value'), mode='dict', dictkey='key'),
+        'dates': Kid('entity_dates', {'birth': C('int'), 'death': C('int'),
+                                      'floruit': (C('int', 'floruit_start'), C('int', 'floruit_end')),
+                                      'start': C('int', 'start_year'), 'end': C('int', 'end_year'), 'basis': N},
+                     mode='one'),
+        'history': Kid('place_history', {'name': C(), 'level': C(), 'start': C('int', 'start_year'),
+                                         'end': C('int', 'end_year'), 'parent_id': C(), 'note': N},
+                       sub={'dynasty_ids': Kid('place_history_dynasty', scalar=C(col='dynasty_id'), parent='hseq')}),
+        'dynasty_ids': _rel('in_dynasty', 'dynasty_ids'),
+        'dynasty_id': _rel('in_dynasty', 'dynasty_id', mode='one'),
+        'parent_id': _rel('parent', 'parent_id', mode='one'),
+        'institution_ref': _rel('institution', 'institution_ref', mode='one'),
+        'institution_ids': _rel('institution', 'institution_ids'),
+        'predecessors': _rel('predecessor', 'predecessors',
+                             {'id': C(col='dst'), 'kind': C(), 'year': C('int'), 'note': N}, scalar=False),
+        'superiors': _rel('superior', 'superiors', {'id': C(col='dst'), 'start': C('int', 'start_year'), 'note': N},
+                          scalar=False),
+        'owner_ids': _rel('owner', 'owner_ids'),
+        'owners': _rel('owner', 'owners', {'id': C(col='dst'), 'role': C(), 'note': N}, scalar=False),
+        'group_ids': _rel('in_group', 'group_ids'),
+        'relations': _rel('person', 'relations', {'entity_id': C(col='dst'), 'type': C(col='kind'), 'basis': N,
+                                                  'sources': N}, scalar=False),
+        'merged_into': ID_MAP,
+        'description.sources': DESC_SOURCES,
+    },
+    extra_ok=('suppressed_fields',),
+)
+
+RECORDS = {r.name: r for r in (WORK, BOOK, COLLECTION, ENTITY)}
+
+# 主键与索引里要用、但不来自映射的部分：{表: 额外 DDL 片段}
+INDEXES = [
+    'CREATE INDEX ON work USING gin (title gin_trgm_ops)',
+    'CREATE INDEX ON book USING gin (title gin_trgm_ops)',
+    'CREATE INDEX ON collection USING gin (title gin_trgm_ops)',
+    'CREATE INDEX ON entity USING gin (primary_name gin_trgm_ops)',
+    'CREATE INDEX ON alt_name USING gin (name gin_trgm_ops)',
+    'CREATE INDEX ON authorship USING gin (name gin_trgm_ops)',
+    'CREATE INDEX ON authorship (entity_id) WHERE entity_id IS NOT NULL',
+    'CREATE INDEX ON book (work_id)',
+    'CREATE INDEX ON work (period)',
+    'CREATE INDEX ON entity (subtype)',
+    'CREATE INDEX ON book_provenance (institution)',
+    'CREATE INDEX ON book_seal_mark (seal_id)',
+    'CREATE INDEX ON book_base_edition (book_id)',
+    'CREATE INDEX ON index_entry (source_bid)',
+    'CREATE INDEX ON resource (rid)',
+    'CREATE INDEX ON member_of (collection_id)',
+    'CREATE INDEX ON work_relation (dst, relation)',
+    'CREATE INDEX ON related_record (dst)',
+    'CREATE INDEX ON entity_relation (dst, rel)',
+    'CREATE INDEX ON entity_external_id (key, value)',
+    'CREATE INDEX ON place_history_dynasty (dynasty_id)',
+    'CREATE INDEX ON id_map (live_id)',
+]
