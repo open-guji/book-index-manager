@@ -56,6 +56,20 @@ def load(paths):
     return docs
 
 
+def shred_files(rec, paths, rows):
+    """读文件、拆表，主表行记上源文件名。回条数。"""
+    n = 0
+    for p in paths:
+        with open(p, encoding='utf-8') as f:
+            d = json.load(f)
+        shred(rec, d, rows)
+        main = rows.t[rec.table][-1]
+        assert main['id'] == d['id'], p
+        main['file_name'] = os.path.basename(p)
+        n += 1
+    return n
+
+
 # ---------------------------------------------------------------- id_map 的另外三个来源
 
 def _code(t):
@@ -243,12 +257,10 @@ def build(root, dsn, full=False, log=print):
             cur.execute(schema_sql())
             for name, rec in DIRS.items():
                 rows = Rows()
-                docs = load(record_paths(root, name))
-                for d in docs:
-                    shred(rec, d, rows)
+                n = shred_files(rec, record_paths(root, name), rows)
                 copy_rows(cur, rows)
-                stats[name] = len(docs)
-                log('%s：%d 条，%.0fs' % (name, len(docs), time.time() - t0))
+                stats[name] = n
+                log('%s：%d 条，%.0fs' % (name, n, time.time() - t0))
             stats['id_map_ledger'] = _load_ledgers(cur, root)
             cur.execute(constraints_sql())
         else:
@@ -259,12 +271,10 @@ def build(root, dsn, full=False, log=print):
                 rec = DIRS[name]
                 _delete(cur, rec, ids)
                 rows = Rows()
-                docs = load(record_paths(root, name, ids))
-                for d in docs:
-                    shred(rec, d, rows)
+                n = shred_files(rec, record_paths(root, name, ids), rows)
                 copy_rows(cur, rows)
-                stats[name] = {'changed': len(ids), 'present': len(docs)}
-                log('%s：改动 %d 个 id，现存 %d 条，%.0fs' % (name, len(ids), len(docs), time.time() - t0))
+                stats[name] = {'changed': len(ids), 'present': n}
+                log('%s：改动 %d 个 id，现存 %d 条，%.0fs' % (name, len(ids), n, time.time() - t0))
             if other or any(ch.values()):
                 stats['id_map_ledger'] = _load_ledgers(cur, root)
         ok, bad = resolve_live(cur)
@@ -286,9 +296,32 @@ def verify(root, dsn, log=print):
     bad = 0
     with psycopg.connect(dsn) as conn, conn.cursor() as cur:
         for name, rec in DIRS.items():
-            docs = {d['id']: d for d in load(record_paths(root, name))}
+            paths = record_paths(root, name)
+            docs = {d['id']: d for d in load(paths)}
             back = restore(rec, fetch_rows(cur, tables_of(rec)))
             n = sum(1 for i, d in docs.items() if back.get(i) != d) + len(set(back) - set(docs))
+            cur.execute('SELECT id, file_name FROM %s' % rec.table)
+            fn = dict(cur.fetchall())
+            n += sum(1 for p in paths if fn.get(os.path.basename(p).split('-', 1)[0]) != os.path.basename(p))
             log('%s：文件 %d、库 %d、不一致 %d' % (name, len(docs), len(back), n))
             bad += n
     return bad
+
+
+def read_records(dsn, name=None):
+    """从库里还原四类记录：{类型目录名: {id: (相对路径, doc)}}。相对路径 = `{类型}/{c1}/{c2}/{c3}/{file_name}`，
+    与工作区文件一致（`_build/` 由库产出时用）。name 只取一类。"""
+    from .pg import fetch_rows
+    from .shred import restore
+    psycopg, _ = _psycopg()
+    out = {}
+    with psycopg.connect(dsn) as conn, conn.cursor() as cur:
+        for n, rec in DIRS.items():
+            if name and n != name:
+                continue
+            cur.execute('SELECT id, file_name FROM %s' % rec.table)
+            fn = dict(cur.fetchall())
+            back = restore(rec, fetch_rows(cur, tables_of(rec)))
+            out[n] = {i: ('/'.join((n,) + tuple(shard_dirs(i)) + (fn.get(i) or i + '.json',)), d)
+                      for i, d in sorted(back.items())}
+    return out
