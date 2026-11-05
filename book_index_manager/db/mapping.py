@@ -427,7 +427,59 @@ FRAGMENT = Record(
     },
 )
 
-BT_RECORDS = {r.name: r for r in (BT_ITEM, BT_VERSION, FRAGMENT)}
+# 整理本各章 NNN.json：id＝「条目id/版本key/章文件名」。sections 每节一行，content 也进库（全库约 600 万字），还原无损
+_SECTION = {
+    'level': C('int'), 'type': C(col='sec_type'), 'title': C(), 'content': C(), 'content_from': C(),
+    'book_title': C(), 'original_title': C(), 'author': C(), 'author_info': C(), 'author_role': C(),
+    'author_type': C(), 'dynasty': C(), 'dynasty_tag': C(), 'edition': C(), 'n_juan': C('int'), 'juan': C(),
+    'juan_count': C('int'), 'page': C(), 'summary': C(), 'note': C(), 'comment': C(), 'additional_comment': C(),
+    'section_kind': C(), 'sub_cat': C(), 'tag': C(), 'target_bid': C(), 'target_source': C(), 'target_type': C(),
+    'book_id': C(), 'collection_id': C(), 'is_jiyi': C('bool'), 'lei': C(), 'part': C(), 'bian': C(),
+    'juan_no': C('int'), 'zhi_no': C('int'), 'measure': C('int'), 'header_line': C(), 'footnotes': C(),
+    'headings': C('int'), 'index': C('int', 'idx'), 'zi_idx': C('int'), 'text_status': C(),
+    'pian': C('jsonb'), 'coverage': C('jsonb'), 'fragments': C('jsonb'), 'metadata': C('jsonb'),
+    'title_emendation': C('jsonb'), 'collectors_tally': C('jsonb'), 'juans': C('jsonb'),
+    'other_records': C('jsonb'),
+    'evidence': N, 'ai_note': N, 'link_basis': N, 'section_kind_basis': N, 'section_kind_note': N, 'title_basis': N,
+    'unlinked_reason': N, 'relink_note': N, 'no_work_note': N, 'appendix_note': N, 'other_records_note': N,
+}
+BT_COLLATED = Record(
+    'BtCollated', 'bt_collated', 'K', {},
+    cols={'id': C(notnull=True), 'title': C()},
+    flat={'meta': Flat({
+        'work_id': C(col='meta_work_id'), 'type': C(col='meta_type'), 'schema_version': C('int', 'meta_schema_version'),
+        'page_title': C(col='meta_page_title'), 'source_url': C(col='meta_source_url'), 'source': C(col='meta_source'),
+        'source_juan': C(col='meta_source_juan'), 'chapter': C(col='meta_chapter'), 'bian': C(col='meta_bian'),
+        'lei': C(col='meta_lei'), 'part': C(col='meta_part'), 'page': C(col='meta_page'),
+        'collated_edition_type': C(col='meta_collated_edition_type'), 'updated_at': C(col='meta_updated_at'),
+        'related_works': C('jsonb', 'meta_related_works'), 'ai_note': N})},
+    kids={'sections': Kid('bt_section', _SECTION, owner='file_id', sub={
+        'work_ids': Kid('bt_section_work', scalar=C(col='work_id'), owner='file_id', parent='sec_seq'),
+        'additional_titles': Kid('bt_section_alt_title', {'book_title': C(), 'n_juan': C('int')}, owner='file_id',
+                                 parent='sec_seq'),
+    })},
+    extra_ok=('meta.lue', 'meta.lue_xu', 'meta.total', 'meta.total_notes', 'meta.zhong_count'),
+)
+
+# original 的专名层 NNN.entity.json：id＝「条目id/版本key/册」。每处专名一行
+BT_ENTITY = Record(
+    'BtEntityLayer', 'bt_entity_layer', 'L', {},
+    cols={'id': C(notnull=True), '$schema': C(col='schema'), 'book_id': C(), 'volume': C('int'), 'version': C(),
+          'text_version': C(), 'review': C('jsonb')},
+    flat={'metadata': Flat({'title': C(col='meta_title'), 'creator': C(), 'base_edition': C(),
+                            'description': C(col='meta_description')})},
+    kids={'entities': Kid('bt_entity_span', {
+        'id': C(col='eid'), 'type': C(col='span_type'), 'text': C(), 'source': C(),
+        'anchor': Flat({'start': C(col='anchor_start'), 'end': C(col='anchor_end')}),
+        'span': Flat({'start_offset': C('int'), 'end_offset': C('int')}),
+        'target': Flat({'status': C(), 'entity_id': C(col='target_id'), 'canonical_name': C(),
+                        'coarse': C(col='target_coarse'), 'level': C(col='target_level'), 'note': C(col='target_note'),
+                        'targets': C('jsonb', 'target_multi'), 'candidates': C('jsonb')}),
+        'group': Flat({'id': C(col='group_id'), 'kind': C(col='group_kind'), 'text': C(col='group_text')}),
+    }, owner='layer_id')},
+)
+
+BT_RECORDS = {r.name: r for r in (BT_ITEM, BT_VERSION, FRAGMENT, BT_COLLATED, BT_ENTITY)}
 # book-text 指向目录的引用：只出悬空检查、不加外键（两仓各自提交，book-text 常落后于并条）
 BT_REFS = [
     ('bt_item', 'id', ('work', 'book')),
@@ -436,6 +488,8 @@ BT_REFS = [
     ('fragment', 'work_id', ('work',)),
     ('fragment_based_on', 'source_bid', ('work', 'book', 'collection')),
     ('fragment_collector', 'collector_work_id', ('work', 'book', 'collection')),
+    ('bt_section_work', 'work_id', ('work',)),
+    ('bt_entity_span', 'target_id', ('entity', 'work')),
 ]
 ALL_RECORDS = dict(RECORDS, **BT_RECORDS)
 INDEXES += [
@@ -443,4 +497,12 @@ INDEXES += [
     'CREATE INDEX ON bt_version (book_id)',
     'CREATE INDEX ON fragment (work_id)',
     'CREATE INDEX ON fragment_piece USING gin (text gin_trgm_ops)',
+    'CREATE INDEX ON bt_section_work (work_id)',
+    'CREATE INDEX ON bt_section (target_bid)',
+    'CREATE INDEX ON bt_entity_span (target_id)',
+    # 专名出处反查：实体（或作品）× 文本条目 × 册 × 次数。单目标在 target_id，一处对多条的在 target_multi
+    "CREATE VIEW bt_mention AS SELECT target_id, split_part(layer_id, '/', 1) AS item_id, layer_id, count(*) AS n "
+    "FROM (SELECT layer_id, target_id FROM bt_entity_span WHERE target_id IS NOT NULL "
+    "UNION ALL SELECT layer_id, t->>'entity_id' FROM bt_entity_span, jsonb_array_elements(target_multi) t "
+    "WHERE jsonb_typeof(target_multi) = 'array' AND t->>'entity_id' IS NOT NULL) x GROUP BY 1, 2, 3",
 ]

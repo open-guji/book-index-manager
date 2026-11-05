@@ -11,7 +11,7 @@ shred(rec, doc) → {表: [行]}；restore(rec, rows) → {id: doc}。行是 {�
 import datetime
 from collections import defaultdict
 
-from .mapping import ENUMS, C, N
+from .mapping import ENUMS, C, Flat, N
 from .tables import TABLES
 
 
@@ -75,14 +75,36 @@ def _shred_fields(fields, obj, row, notes, extra):
                 and all(fits(x, s.type) for x, s in zip(v, spec)):
             row.update((s.col, x) for s, x in zip(spec, v))
             got = True
+        elif isinstance(spec, Flat) and isinstance(v, dict):
+            # 明细项里的对象拆平（entity span 的 target.entity_id → target_entity_id）；子键的 notes 记成「键.子键」
+            sn, se = {}, {}
+            g = _shred_fields(spec.fields, v, row, sn, se)
+            notes.update(('%s.%s' % (k, kk), vv) for kk, vv in sn.items())
+            if not g:
+                se['_present'] = 1
+            if se:
+                extra[k] = se
+            got = got or g
         else:
             extra[k] = v
     return got
 
 
-def _restore_fields(fields, row, notes):
+def _restore_fields(fields, row, notes, extra=None):
     o = {}
     for k, spec in fields.items():
+        if isinstance(spec, Flat):
+            se = (extra or {}).get(k)
+            se = se if isinstance(se, dict) else None
+            pre = k + '.'
+            sub = _restore_fields(spec.fields, row, {kk[len(pre):]: vv for kk, vv in notes.items()
+                                                     if kk.startswith(pre)}, se)
+            if se:
+                sub = _apply_extra(sub, {kk: vv for kk, vv in se.items()
+                                         if not (isinstance(spec.fields.get(kk), Flat) and isinstance(vv, dict))})
+            if sub or se:
+                o[k] = sub
+            continue
         if spec is N:
             if k in notes:
                 o[k] = notes[k]
@@ -239,8 +261,9 @@ def _restore_item(kid, row):
         return extra['@']
     if kid.scalar is not None and (not kid.fields or not extra.get('_obj')):
         return _norm(row[kid.scalar.col])
-    o = _restore_fields(kid.fields, row, row.get('notes') or {})
-    return _apply_extra(o, extra)
+    o = _restore_fields(kid.fields, row, row.get('notes') or {}, extra)
+    return _apply_extra(o, {k: v for k, v in extra.items()
+                            if not (isinstance(kid.fields.get(k), Flat) and isinstance(v, dict))})
 
 
 def _match(kid, rec, row, shared):

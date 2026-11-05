@@ -42,9 +42,12 @@ python -m book_index_manager.db build --root ../book-index --dsn "host=… dbnam
 
   链上同一旧号有几处去向时：墓碑 > 台账（文件名大者优先）> 升格表。旧号本身现行就指自己；解不到 `live_id` 留空，`checks.sql` 报。
 - 主表多一列 `file_name`：源文件名 `{id}-{题名}.json`。题名部分是建档时的，约 45 万条和今天的题名对不上，只能原样记。
-- `--text-root` 时 book-text 一起进库（13 张表，`bt_` 前缀与 `fragment*`）：`manifest.json`、各版本 `index.json`（章目录、标题层级）、
-  辑佚 `fragments/*.json`。正文 `NNN.md`、char／cord 逐格数据不进。这些文件没有 id，装库时补（条目id、`条目id/版本key`、
-  `Work id/文件名`）；两万来份，每次整批重灌，`build_meta.text_commit` 记建到的提交。指向目录的引用只出悬空检查、不加外键。
+- `--text-root` 时 book-text 一起进库（19 张表，`bt_` 前缀与 `fragment*`）：`manifest.json`、各版本 `index.json`（章目录、标题层级）、
+  辑佚 `fragments/*.json`、整理本各章 `NNN.json`（每节一行，content 也进）、original 专名层 `NNN.entity.json`（每处专名一行）。
+  正文 `NNN.md`、标点／字形／坐标等逐格数据不进。这些文件没有 id，装库时补（条目id、`条目id/版本key`、`Work id/文件名`、
+  `条目id/版本key/NNN`）；两万来份，每次整批重灌，`build_meta.text_commit` 记建到的提交。指向目录的引用只出悬空检查、不加外键。
+  视图 `bt_mention`：实体（或作品）× 文本条目 × 册 × 出现次数，出处反查用。
+- 明细项里的对象可以用 `Flat` 拆平成列（专名的 `target.entity_id` → `target_id`），装不下的子键进该行 `extra[键]`。
   jsonb 存不了 `\u0000`，含它的值整体转成 JSON 字符串包一层（键 `\x01nul`），读回时拆开。
 - `--verify` 把库里四类记录全部还原，与工作区文件逐条比对，文件名也比（门禁，应为 0）。
 - `read_records(dsn)` 从库还原四类记录（带相对路径）；book-index `build/build_derived.py --from-db DSN` 用它产出 `_build/`，与从文件产出逐字节一致。
