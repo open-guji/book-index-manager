@@ -1,6 +1,6 @@
 """目录库命令。
 
-  python -m book_index_manager.db ddl [--constraints]          打印建表语句（或外键）
+  python -m book_index_manager.db ddl [--constraints|--checks] 打印建表语句（或外键、悬空检查）
   python -m book_index_manager.db coverage --schema DIR        「schema 有、映射没有」检查，有 ERROR 退出码 1
   python -m book_index_manager.db roundtrip --root DIR [--type T …] [--dsn DSN] [--keep] [--create]
       拆表再还原、逐条比对；不给 --dsn 只在内存里做，给了就真灌进 PostgreSQL 再读回。
@@ -30,6 +30,7 @@ def main(argv=None):
     sp = ap.add_subparsers(dest='cmd', required=True)
     p = sp.add_parser('ddl')
     p.add_argument('--constraints', action='store_true')
+    p.add_argument('--checks', action='store_true')
     p = sp.add_parser('coverage')
     p.add_argument('--schema', required=True, help='book-index 的 schema/json 目录')
     p = sp.add_parser('roundtrip')
@@ -42,8 +43,8 @@ def main(argv=None):
     a = ap.parse_args(argv)
 
     if a.cmd == 'ddl':
-        from .ddl import constraints_sql, schema_sql
-        sys.stdout.write(constraints_sql() if a.constraints else schema_sql())
+        from .ddl import checks_sql, constraints_sql, schema_sql
+        sys.stdout.write(constraints_sql() if a.constraints else checks_sql() if a.checks else schema_sql())
         return 0
     if a.cmd == 'coverage':
         from .coverage import check

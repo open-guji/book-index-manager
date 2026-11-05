@@ -116,6 +116,10 @@ def test_ddl_generates():
     assert 'CREATE TABLE id_map' in sql and 'PRIMARY KEY (old_id, kind, src)' in sql
     cons = ddl.constraints_sql()
     assert 'book_seal_mark' in cons and 'NOT VALID' in cons
+    assert 'book_work_id_ref FOREIGN KEY (work_id) REFERENCES work (id)' in cons
+    assert 'related_record_dst_ref' not in cons            # 目标可是 Book 或 Collection，只查悬空
+    checks = ddl.checks_sql()
+    assert "'related_record.dst 悬空'" in checks and "'alt_name.owner_type 不符'" in checks
 
 
 @pytest.mark.parametrize('name,docs', [('Work', [WORK]), ('Book', [BOOK]), ('Collection', [COLLECTION]),

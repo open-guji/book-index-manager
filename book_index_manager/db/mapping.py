@@ -287,6 +287,25 @@ ENTITY = Record(
 
 RECORDS = {r.name: r for r in (WORK, BOOK, COLLECTION, ENTITY)}
 
+# 跨记录引用：(表, 列, 目标主表)。生成 NOT VALID 外键与悬空检查；目标可能是几类之一的（如 work_relation.dst
+# 可指 Collection、related_record.dst 可指 Book 或 Collection）只出悬空检查、不加外键。
+REFS = [
+    ('book', 'work_id', ('work',)),
+    ('collection', 'work_id', ('work',)),
+    ('authorship', 'entity_id', ('entity',)),
+    ('member_of', 'collection_id', ('collection',)),
+    ('index_entry', 'source_bid', ('work',)),
+    ('book_seal_mark', 'seal_id', ('entity',)),
+    ('book_base_edition', 'book_id', ('book',)),
+    ('person', 'native_place_entity_id', ('entity',)),
+    ('office', 'base_office_id', ('entity',)),
+    ('place_history_dynasty', 'dynasty_id', ('entity',)),
+    ('entity_relation', 'dst', ('entity',)),
+    ('work_relation', 'dst', ('work', 'collection')),
+    ('related_record', 'dst', ('book', 'collection')),
+    ('id_map', 'live_id', ('work', 'book', 'collection', 'entity')),
+]
+
 # 主键与索引里要用、但不来自映射的部分：{表: 额外 DDL 片段}
 INDEXES = [
     'CREATE INDEX ON work USING gin (title gin_trgm_ops)',

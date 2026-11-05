@@ -4,7 +4,7 @@
 
 外键单独出（constraints()）：建表 → COPY → 外键 NOT VALID → 查悬空 → VALIDATE。
 """
-from .mapping import ENUMS, INDEXES, RECORDS
+from .mapping import ENUMS, INDEXES, RECORDS, REFS
 from .tables import TABLES
 
 HEADER = """-- book-index 规范化目录库表结构（v2，PostgreSQL 16）。
@@ -55,6 +55,39 @@ def constraints_sql():
             ref = '%s (%s)' % (target, ', '.join(tcols)) if tcols else target
             out.append('ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s ON DELETE CASCADE NOT VALID;'
                        % (t.name, name, ', '.join(cols), ref))
+    out.append('-- 跨记录引用（目标唯一的才加外键；悬空清单见 checks.sql）')
+    for table, col, targets in REFS:
+        if len(targets) == 1:
+            out.append('ALTER TABLE %s ADD CONSTRAINT %s_%s_ref FOREIGN KEY (%s) REFERENCES %s (id) NOT VALID;'
+                       % (table, table, col, col, targets[0]))
+    out.append('')
+    return '\n'.join(out)
+
+
+def checks_sql():
+    """悬空与口径检查（灌库后、VALIDATE 前跑；每条应返回 0 行）。"""
+    out = ['-- 悬空与口径检查（生成物）：灌库后、VALIDATE 前跑，每条应返回 0 行。']
+    for table, col, targets in REFS:
+        t = TABLES[table]
+        key = t.pk[0]
+        cond = ' AND '.join('NOT EXISTS (SELECT 1 FROM %s x WHERE x.id = r.%s)' % (tg, col) for tg in targets)
+        out.append("SELECT '%s.%s 悬空' chk, r.%s, r.%s FROM %s r WHERE r.%s IS NOT NULL AND %s;"
+                   % (table, col, key, col, table, col, cond))
+    out.append('-- 并条账的终点不能还是墓碑')
+    out.append("SELECT 'id_map.live_id 仍是旧号' chk, m.old_id, m.live_id FROM id_map m "
+               "WHERE m.live_id IN (SELECT old_id FROM id_map);")
+    out.append('-- 共用明细表的 owner_type 与 id 实际所在主表一致')
+    mains = {r.owner_type: r.table for r in RECORDS.values()}
+    for t in TABLES.values():
+        if 'owner_type' not in t.cols:
+            continue
+        owner = t.pk[0]
+        cond = ' OR '.join("(r.owner_type = '%s' AND EXISTS (SELECT 1 FROM %s x WHERE x.id = r.%s))"
+                           % (ot, mains[ot], owner) for ot in sorted(mains))
+        out.append("SELECT '%s.owner_type 不符' chk, r.%s FROM %s r WHERE NOT (%s);" % (t.name, owner, t.name, cond))
+    out.append('-- 四类主表 id 不得重复')
+    out.append("SELECT 'id 跨类重复' chk, id FROM (%s) t GROUP BY id HAVING count(*) > 1;"
+               % ' UNION ALL '.join('SELECT id FROM %s' % r.table for r in RECORDS.values()))
     out.append('')
     return '\n'.join(out)
 
@@ -64,4 +97,4 @@ def summary():
     return [(t.name, len(t.cols), sorted(t.users)) for t in TABLES.values()]
 
 
-__all__ = ['schema_sql', 'constraints_sql', 'summary', 'RECORDS']
+__all__ = ['schema_sql', 'constraints_sql', 'checks_sql', 'summary', 'RECORDS']
