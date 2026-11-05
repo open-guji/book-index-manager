@@ -1,7 +1,7 @@
 """由 mapping 推出每张表的列、主键与外键（建表语句与装载共用）。"""
 from collections import OrderedDict
 
-from .mapping import ENUMS, RECORDS, TYPES, C, Kid, N
+from .mapping import ALL_RECORDS, ENUMS, RECORDS, TYPES, C, Kid, N
 
 
 class Table:
@@ -46,7 +46,7 @@ def _has_notes(fields):
 def kid_uses():
     """[(Record, 键, Kid, 上层 Kid 或 None)]，含 sub。"""
     out = []
-    for rec in RECORDS.values():
+    for rec in ALL_RECORDS.values():
         for key, kid in rec.kids.items():
             out.append((rec, key, kid, None))
             for sk, sub in kid.sub.items():
@@ -67,10 +67,11 @@ def build_tables():
     t.add('built_at', 'text', True)
     t.add('ddl_sha', 'text', True)
     t.add('mode', 'text', True)
+    t.add('text_commit', 'text')   # book-text 建到的提交；没给 --text-root 时空
     t.pk = ['git_commit']
 
     # 主表
-    for rec in RECORDS.values():
+    for rec in ALL_RECORDS.values():
         t = table(rec.table)
         t.users.add(rec.name)
         for key, spec in rec.cols.items():
@@ -78,7 +79,8 @@ def build_tables():
         for key, fl in rec.flat.items():
             for col, spec in _field_cols(fl.fields, None):
                 t.add(col, spec.type, spec.notnull)
-        t.add('file_name', 'text')   # 源文件名（`{id}-{题名}.json`）：题名部分是建档时的，不总等于今天的题名，库产出 _build/ 要原样用
+        if rec.name in RECORDS:
+            t.add('file_name', 'text')   # 源文件名（`{id}-{题名}.json`）：题名部分是建档时的，不总等于今天的题名，库产出 _build/ 要原样用
         t.add('notes', 'jsonb')
         t.add('extra', 'jsonb')
         t.pk = ['id']

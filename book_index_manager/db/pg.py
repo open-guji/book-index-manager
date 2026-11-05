@@ -26,6 +26,20 @@ def add_constraints(cur):
     cur.execute(constraints_sql())
 
 
+NUL_KEY = '\x01nul'   # jsonb 存不了 \u0000：含它的值整体转成 JSON 字符串包一层，读回时拆开
+
+
+def _js_in(v):
+    s = json.dumps(v, ensure_ascii=False)
+    return {NUL_KEY: s} if '\\u0000' in s else v
+
+
+def _js_out(v):
+    if isinstance(v, dict) and len(v) == 1 and NUL_KEY in v:
+        return json.loads(v[NUL_KEY])
+    return v
+
+
 def copy_rows(cur, rows):
     """rows：Rows 或 {表: [行]}。按列集合分组 COPY。"""
     _, Jsonb = _psycopg()
@@ -39,7 +53,7 @@ def copy_rows(cur, rows):
             js = [t.cols[c] == 'jsonb' for c in cols]
             with cur.copy('COPY %s (%s) FROM STDIN' % (table, ','.join(cols))) as cp:
                 for r in grp:
-                    cp.write_row([Jsonb(r[c]) if j else r[c] for c, j in zip(cols, js)])
+                    cp.write_row([Jsonb(_js_in(r[c])) if j else r[c] for c, j in zip(cols, js)])
 
 
 def fetch_rows(cur, tables, where=None):
@@ -49,7 +63,9 @@ def fetch_rows(cur, tables, where=None):
         cond, args = (where or {}).get(table, (None, ()))
         cur.execute('SELECT * FROM %s%s' % (table, ' WHERE ' + cond if cond else ''), args)
         names = [c.name for c in cur.description]
-        out[table] = [{k: v for k, v in zip(names, r) if v is not None} for r in cur.fetchall()]
+        js = [TABLES[table].cols.get(n) == 'jsonb' for n in names]
+        out[table] = [{k: (_js_out(v) if j else v) for k, v, j in zip(names, r, js) if v is not None}
+                      for r in cur.fetchall()]
     return out
 
 

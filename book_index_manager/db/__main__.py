@@ -40,6 +40,7 @@ def main(argv=None):
     p.add_argument('--dsn', required=True)
     p.add_argument('--full', action='store_true', help='不管上次建到哪，整库重建')
     p.add_argument('--verify', action='store_true', help='建完把四类记录还原，与文件逐条比对')
+    p.add_argument('--text-root', help='book-text 仓根目录：给了就把它的 manifest、版本 index.json、辑佚一起进库')
     p = sp.add_parser('roundtrip')
     p.add_argument('--root', required=True, help='book-index 仓根目录')
     p.add_argument('--type', action='append', choices=sorted(RECORDS))
@@ -65,9 +66,9 @@ def main(argv=None):
 
     if a.cmd == 'build':
         from .build import build, verify
-        build(a.root, a.dsn, full=a.full)
+        build(a.root, a.dsn, full=a.full, text_root=a.text_root)
         if a.verify:
-            return 1 if verify(a.root, a.dsn) else 0
+            return 1 if verify(a.root, a.dsn, text_root=a.text_root) else 0
         return 0
 
     types = a.type or ['Collection', 'Entity', 'Work', 'Book']

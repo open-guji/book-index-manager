@@ -14,6 +14,7 @@ git 里的 JSON 是唯一真源。本目录把它拆进 PostgreSQL 的规范化�
 | `pg.py` | COPY 进库、读回（要 `psycopg` 3，bim 本身不依赖） |
 | `coverage.py` | 「schema 有、映射没有」检查 |
 | `build.py` | 建库：全量或按 git diff 增量；id_map 合进台账与升格表，`live_id` 沿链解到现行记录 |
+| `booktext.py` | book-text 元数据（manifest、版本 index.json、辑佚）读文件、补 id，供建库与还原比对 |
 
 ## 命令
 
@@ -23,7 +24,7 @@ python -m book_index_manager.db ddl --constraints > ../book-index/schema/db/cons
 python -m book_index_manager.db coverage --schema ../book-index/schema/json
 python -m book_index_manager.db roundtrip --root ../book-index                 # 只在内存里
 python -m book_index_manager.db roundtrip --root ../book-index --dsn "host=… dbname=gj" --create --keep
-python -m book_index_manager.db build --root ../book-index --dsn "host=… dbname=gj" [--full] [--verify]
+python -m book_index_manager.db build --root ../book-index --dsn "host=… dbname=gj" [--full] [--verify] [--text-root ../book-text]
 ```
 
 ## 建库（`build`）
@@ -41,6 +42,10 @@ python -m book_index_manager.db build --root ../book-index --dsn "host=… dbnam
 
   链上同一旧号有几处去向时：墓碑 > 台账（文件名大者优先）> 升格表。旧号本身现行就指自己；解不到 `live_id` 留空，`checks.sql` 报。
 - 主表多一列 `file_name`：源文件名 `{id}-{题名}.json`。题名部分是建档时的，约 45 万条和今天的题名对不上，只能原样记。
+- `--text-root` 时 book-text 一起进库（13 张表，`bt_` 前缀与 `fragment*`）：`manifest.json`、各版本 `index.json`（章目录、标题层级）、
+  辑佚 `fragments/*.json`。正文 `NNN.md`、char／cord 逐格数据不进。这些文件没有 id，装库时补（条目id、`条目id/版本key`、
+  `Work id/文件名`）；两万来份，每次整批重灌，`build_meta.text_commit` 记建到的提交。指向目录的引用只出悬空检查、不加外键。
+  jsonb 存不了 `\u0000`，含它的值整体转成 JSON 字符串包一层（键 `\x01nul`），读回时拆开。
 - `--verify` 把库里四类记录全部还原，与工作区文件逐条比对，文件名也比（门禁，应为 0）。
 - `read_records(dsn)` 从库还原四类记录（带相对路径）；book-index `build/build_derived.py --from-db DSN` 用它产出 `_build/`，与从文件产出逐字节一致。
 

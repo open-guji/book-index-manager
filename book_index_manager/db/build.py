@@ -188,7 +188,7 @@ def resolve_live(cur):
 
 def _meta(cur):
     try:
-        cur.execute('SELECT git_commit, ddl_sha FROM build_meta')
+        cur.execute('SELECT git_commit, ddl_sha, text_commit FROM build_meta')
         r = cur.fetchone()
         return r
     except Exception:
@@ -235,10 +235,30 @@ def _load_ledgers(cur, root):
     return len(rows)
 
 
-def build(root, dsn, full=False, log=print):
+def _load_booktext(cur, text_root, log, t0):
+    """book-text 元数据整批重灌（两万来份文件，十几秒），不做增量。"""
+    from .booktext import bt_docs, bt_paths
+    from .mapping import BT_RECORDS
+    names = sorted({t for rec in BT_RECORDS.values() for t in tables_of(rec)})
+    cur.execute('TRUNCATE %s' % ', '.join(names))
+    stats = {}
+    paths = bt_paths(text_root)
+    for name, rec in BT_RECORDS.items():
+        rows = Rows()
+        docs = bt_docs(text_root, name, paths[name])
+        for d in docs:
+            shred(rec, d, rows)
+        copy_rows(cur, rows)
+        stats[name] = len(docs)
+        log('%s：%d 份，%.0fs' % (name, len(docs), time.time() - t0))
+    return stats
+
+
+def build(root, dsn, full=False, text_root=None, log=print):
     psycopg, _ = _psycopg()
     t0 = time.time()
     head = git(root, 'rev-parse', 'HEAD').strip()
+    text_head = git(text_root, 'rev-parse', 'HEAD').strip() if text_root else None
     sha = ddl_sha()
     with psycopg.connect(dsn) as conn, conn.cursor() as cur:
         meta = None if full else _meta(cur)
@@ -247,7 +267,7 @@ def build(root, dsn, full=False, log=print):
             dirty = _dirty(root)
             if dirty:
                 raise SystemExit('工作区有未提交的改动，不能增量：%s' % dirty[:5])
-            if meta[0] == head:
+            if meta[0] == head and (text_root is None or meta[2] == text_head):
                 log('库已在 %s，无需更新' % head[:10])
                 return {'mode': 'noop', 'commit': head}
         stats = {'mode': mode, 'commit': head}
@@ -277,18 +297,23 @@ def build(root, dsn, full=False, log=print):
                 log('%s：改动 %d 个 id，现存 %d 条，%.0fs' % (name, len(ids), n, time.time() - t0))
             if other or any(ch.values()):
                 stats['id_map_ledger'] = _load_ledgers(cur, root)
+        if text_root and (mode == 'full' or meta[2] != text_head):
+            stats['book_text'] = _load_booktext(cur, text_root, log, t0)
+        elif mode == 'incremental':
+            text_head = meta[2]      # 这次没给 book-text 或它没变：记录照旧
         ok, bad = resolve_live(cur)
         stats['live_resolved'], stats['live_unresolved'] = ok, bad
         cur.execute('DELETE FROM build_meta')
-        cur.execute('INSERT INTO build_meta (git_commit, built_at, ddl_sha, mode) VALUES (%s, %s, %s, %s)',
-                    (head, datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds'), sha, mode))
+        cur.execute('INSERT INTO build_meta (git_commit, built_at, ddl_sha, mode, text_commit) VALUES (%s, %s, %s, %s, %s)',
+                    (head, datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds'), sha, mode,
+                     text_head))
         conn.commit()
     stats['seconds'] = round(time.time() - t0)
     log('建库完成 %s' % json.dumps(stats, ensure_ascii=False))
     return stats
 
 
-def verify(root, dsn, log=print):
+def verify(root, dsn, text_root=None, log=print):
     """库里的四类记录还原后与工作区文件逐条相等（增量建库的门禁）。回不一致条数。"""
     from .pg import fetch_rows
     from .shred import restore
@@ -305,6 +330,16 @@ def verify(root, dsn, log=print):
             n += sum(1 for p in paths if fn.get(os.path.basename(p).split('-', 1)[0]) != os.path.basename(p))
             log('%s：文件 %d、库 %d、不一致 %d' % (name, len(docs), len(back), n))
             bad += n
+        if text_root:
+            from .booktext import bt_docs, bt_paths
+            from .mapping import BT_RECORDS
+            paths = bt_paths(text_root)
+            for name, rec in BT_RECORDS.items():
+                docs = {d['id']: d for d in bt_docs(text_root, name, paths[name])}
+                back = restore(rec, fetch_rows(cur, tables_of(rec)))
+                n = sum(1 for i, d in docs.items() if back.get(i) != d) + len(set(back) - set(docs))
+                log('%s：文件 %d、库 %d、不一致 %d' % (name, len(docs), len(back), n))
+                bad += n
     return bad
 
 

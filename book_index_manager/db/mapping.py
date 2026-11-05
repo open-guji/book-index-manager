@@ -331,3 +331,116 @@ INDEXES = [
     'CREATE INDEX ON place_history_dynasty (dynasty_id)',
     'CREATE INDEX ON id_map (live_id)',
 ]
+
+
+# ---------------------------------------------------------------- book-text（GUJI-755 第 4 步）
+# book-text 仓的元数据进库：manifest.json、各版本 index.json、辑佚 fragments/*.json。正文 NNN.md、char／cord 逐格数据不进库。
+# 这些文件本身没有 id，装库时补一个（bt_docs）：manifest 用条目 id；index.json 用「条目id/版本key」；
+# 辑佚用「Work id/文件名」。还原时去掉补的 id 即原文件内容。
+
+BT_ITEM = Record(
+    'BtItem', 'bt_item', 'T', {},
+    cols={'id': C(notnull=True)},
+    kids={'versions': Kid('bt_manifest_version', {
+        'key': C(notnull=True), 'kind': C(), 'label': C(), 'edition_label': C(), 'is_original': C('bool'),
+        'license': C(), 'quality': C(), 'script': C(), 'source': C(), 'source_name': C(), 'source_url': C(),
+        'chapters_total': C('int'), 'note': C()}, owner='item_id')},
+)
+
+_BT_CHAPTER = {
+    'n': C('int', notnull=True), 'file': C(notnull=True), 'title': C(), 'has_json': C('bool'), 'md_len': C('int'),
+    'page_title': C(), 'revid': C('int'), 'juan': C(), 'volume': C('int'), 'pdf_pages': C(), 'has_table': C('bool'),
+    'pages': C(), 'proofing': C('bool'), 'text_version': C(), 'punct_version': C(), 'entity_version': C(),
+    'char_file': C(), 'cord_file': C(), 'punct_file': C(), 'entity_file': C(), 'norm_file': C(), 'fig_file': C()}
+
+BT_VERSION = Record(
+    'BtVersion', 'bt_version', 'V', {},
+    cols={'id': C(notnull=True), 'work_id': C(), 'book_id': C(), 'title': C(), 'type': C(col='entry_type'),
+          'schema_version': C('int'), 'revision': C(), 'revised_at': C(), 'version_label': C(), 'edition_note': C(),
+          'fetched_at': C(), 'updated_at': C(), 'guji_markdown': C(), 'line_is_column': C('bool'),
+          'total_chapters': C('int'), 'total_entries': C('int'), 'matched_entries': C('int'),
+          'books_linked': C('int'), 'books_listed': C('int'), 'dropped_refs': C('int'),
+          'placeholder_chars': C('int'), 'collated_edition_type': C(), 'edition': C(), 'author': C(),
+          'compiler': C(), 'compiler_role': C(), 'annotator': C(), 'annotator_role': C(), 'table_notation': C(),
+          'heading_levels': C('text[]'), 'juan_groups': C('jsonb'), 'variants': C('jsonb'),
+          'unknown_templates': C('jsonb'), 'fetch_stats': C('jsonb'), 'coverage': C('jsonb'),
+          'references': C('jsonb', col='refs'), 'volume_structure': C('jsonb')},
+    flat={
+        'source': Flat({'name': C(col='source_name'), 'url': C(col='source_url'), 'license': C(col='source_license'),
+                        'base_edition': C(col='source_base_edition'), 'commit': C(col='source_commit'),
+                        'dump_date': C(col='source_dump_date'), 'page_title': C(col='source_page_title'),
+                        'revid': C('int', 'source_revid'), 'siku_class': C(col='source_siku_class'),
+                        'catalog_line': C('jsonb', 'source_catalog_line'), 'upstream': C('jsonb', 'source_upstream'),
+                        'type': C(col='source_type'), 'note': N}),
+        'text_quality': Flat({'grade': C(col='quality_grade'), 'scope': C(col='quality_scope'),
+                              'issues': C('jsonb', 'quality_issues'), 'source_note': N, 'grade_note': N,
+                              'gap_note': N}),
+    },
+    notes=('ai_note', 'note', 'annotation_note', 'count_caveat', 'entry_count_note', 'source_note', 'structure_note',
+           'structure_basis', '_note', '_emend_note', '_l2_note', '_match_note', '_pending_note', '_text_note'),
+    kids={
+        'chapters': Kid('bt_chapter', _BT_CHAPTER, owner='version_id',
+                        sub={'headings': Kid('bt_heading', {'level': C('int'), 'label': C(), 'anchor': C()},
+                                             owner='version_id', parent='ch_seq')}),
+        'other_sources': Kid('bt_other_source', {'id': C(col='src_id'), 'name': C(), 'url': C(), 'note': N},
+                             owner='version_id'),
+    },
+    extra_ok=('external_check', 'hidden_from', 'daxu', 'style', 'text_source', 'source_text', 'source_type',
+              'scraped_from', 'target_source', 'target_source_id', 'target_work_id', 'total_lue', 'total_zhong',
+              'source.kind', 'source.pageid', 'source.timestamp'),
+)
+
+_FRAG_SECTION = Kid('fragment_collector_section', {'file': C(), 'index': C('int', 'idx'), 'juan_no': C('int'),
+                                                   'lei': C(), 'part': C(), 'title': C(col='section_title')},
+                    owner='fragment_id', parent='cseq')
+FRAGMENT = Record(
+    'Fragment', 'fragment', 'F', {},
+    cols={'id': C(notnull=True), 'work_id': C(), 'title': C(), 'type': C(col='frag_type'), 'schema_version': C('int'),
+          'schema_ref': C(), 'loss_status': C('loss_status'), 'provenance': C(), 'statement': C(), 'updated_at': C(),
+          'text_condition': C(), 'cited_in_summary': C('jsonb'), 'collection_attested': C('jsonb'),
+          'other_statements': C('jsonb'), 'related_titles': C('jsonb')},
+    flat={'coverage': Flat({'level': C(col='coverage_level'), 'note': C(col='coverage_note'),
+                            'fragments_attested': C('int'), 'fragments_attested_note': N,
+                            'fragments_recorded': C('int'), 'text_available': C('bool')})},
+    notes=('ai_note', 'note', 'provenance_note', 'statement_note', 'cited_in_summary_note', 'collectors_note',
+           'collection_attested_note', '_dead_owner_note'),
+    kids={
+        'based_on': Kid('fragment_based_on', {'source': C(), 'source_bid': C(), 'field': C(), 'note': N},
+                        owner='fragment_id'),
+        'collectors': Kid('fragment_collector', {
+            'collector': C(), 'work': C(), 'work_id': C(col='collector_work_id'), 'work_alias': C(),
+            'count': C('int'), 'count_unit': C(), 'count_note': N, 'statement': C(), 'statement_label': C(),
+            'note': C(), 'basis': N, 'location': C('jsonb'), 'juans': C('jsonb'), 'edition': C(), 'measure': C(),
+            'appendix_count': C('int'), 'verified_against': C(), 'verify_result': C(), 'verify_note': N,
+            'attested_count': C('int'), 'attested_count_basis': C('jsonb')},
+            owner='fragment_id', sub={'sections': _FRAG_SECTION}),
+        'fragments': Kid('fragment_piece', {
+            'seq': C('int', 'num'), 'heading': C(), 'piece_title': C(), 'text': C(), 'text_status': C(),
+            'text_from': C(), 'attested_by': C(), 'confidence': C(), 'note': C(), 'editor_note': C()},
+            owner='fragment_id',
+            sub={'collected_by': Kid('fragment_piece_collector', {'collector': C(), 'work': C(),
+                                                                  'work_id': C(col='collector_work_id'), 'juan': C()},
+                                     owner='fragment_id', parent='pseq'),
+                 'cited_in': Kid('fragment_citation', {'raw': C(), 'book': C(), 'juan': C(), 'title': C(),
+                                                       'section': C(), 'detail': C(), 'work_id': C(), 'note': C()},
+                                 owner='fragment_id', parent='pseq')}),
+    },
+)
+
+BT_RECORDS = {r.name: r for r in (BT_ITEM, BT_VERSION, FRAGMENT)}
+# book-text 指向目录的引用：只出悬空检查、不加外键（两仓各自提交，book-text 常落后于并条）
+BT_REFS = [
+    ('bt_item', 'id', ('work', 'book')),
+    ('bt_version', 'work_id', ('work',)),
+    ('bt_version', 'book_id', ('book',)),
+    ('fragment', 'work_id', ('work',)),
+    ('fragment_based_on', 'source_bid', ('work', 'book', 'collection')),
+    ('fragment_collector', 'collector_work_id', ('work', 'book', 'collection')),
+]
+ALL_RECORDS = dict(RECORDS, **BT_RECORDS)
+INDEXES += [
+    'CREATE INDEX ON bt_version (work_id)',
+    'CREATE INDEX ON bt_version (book_id)',
+    'CREATE INDEX ON fragment (work_id)',
+    'CREATE INDEX ON fragment_piece USING gin (text gin_trgm_ops)',
+]
