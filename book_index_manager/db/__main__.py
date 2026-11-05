@@ -4,6 +4,8 @@
   python -m book_index_manager.db coverage --schema DIR        「schema 有、映射没有」检查，有 ERROR 退出码 1
   python -m book_index_manager.db roundtrip --root DIR [--type T …] [--dsn DSN] [--keep] [--create]
       拆表再还原、逐条比对；不给 --dsn 只在内存里做，给了就真灌进 PostgreSQL 再读回。
+  python -m book_index_manager.db build --root DIR --dsn DSN [--full] [--verify]
+      建库：表结构没变就按 git diff 增量，否则全量；id_map 装墓碑、台账、升格表并解到现行记录。
 """
 import argparse
 import collections
@@ -33,6 +35,11 @@ def main(argv=None):
     p.add_argument('--checks', action='store_true')
     p = sp.add_parser('coverage')
     p.add_argument('--schema', required=True, help='book-index 的 schema/json 目录')
+    p = sp.add_parser('build')
+    p.add_argument('--root', required=True, help='book-index 仓根目录（工作区须在 HEAD 且干净）')
+    p.add_argument('--dsn', required=True)
+    p.add_argument('--full', action='store_true', help='不管上次建到哪，整库重建')
+    p.add_argument('--verify', action='store_true', help='建完把四类记录还原，与文件逐条比对')
     p = sp.add_parser('roundtrip')
     p.add_argument('--root', required=True, help='book-index 仓根目录')
     p.add_argument('--type', action='append', choices=sorted(RECORDS))
@@ -55,6 +62,13 @@ def main(argv=None):
             print('WARN ', w)
         print('coverage：ERROR %d　WARN %d' % (len(errors), len(warns)))
         return 1 if errors else 0
+
+    if a.cmd == 'build':
+        from .build import build, verify
+        build(a.root, a.dsn, full=a.full)
+        if a.verify:
+            return 1 if verify(a.root, a.dsn) else 0
+        return 0
 
     types = a.type or ['Collection', 'Entity', 'Work', 'Book']
     if a.dsn and a.create:
