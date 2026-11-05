@@ -1,7 +1,7 @@
 """由 mapping 推出每张表的列、主键与外键（建表语句与装载共用）。"""
 from collections import OrderedDict
 
-from .mapping import ALL_RECORDS, ENUMS, RECORDS, TYPES, C, Kid, N
+from .mapping import ALL_RECORDS, ENUMS, RECORDS, TYPES, C, Flat, Kid, N
 
 
 class Table:
@@ -34,13 +34,15 @@ def _field_cols(fields, scalar):
             out.append((spec.col or key, spec))
         elif isinstance(spec, tuple):
             out.extend((s.col, s) for s in spec)
+        elif isinstance(spec, Flat):
+            out.extend(_field_cols(spec.fields, None))
     if scalar is not None:
         out.append((scalar.col, scalar))
     return out
 
 
 def _has_notes(fields):
-    return any(spec is N for spec in fields.values())
+    return any(spec is N or (isinstance(spec, Flat) and _has_notes(spec.fields)) for spec in fields.values())
 
 
 def kid_uses():

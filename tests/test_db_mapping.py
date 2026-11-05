@@ -94,9 +94,9 @@ ENTITIES = [
 
 
 def test_table_count():
-    # 目录 34 张（含 build_meta）＋ book-text 13 张
-    assert len(TABLES) == 47
-    assert len([t for t in TABLES if t.startswith(('bt_', 'fragment'))]) == 13
+    # 目录 34 张（含 build_meta）＋ book-text 19 张
+    assert len(TABLES) == 53
+    assert len([t for t in TABLES if t.startswith(('bt_', 'fragment'))]) == 19
     for name in ('alt_name', 'related_record', 'id_map', 'build_meta'):
         assert name in TABLES
     for gone in ('dynasty', 'record_todo', 'entity_image', 'work_additional', 'merged_into', 'work_title_alt'):
@@ -114,7 +114,7 @@ def test_audit_fields_have_no_columns():
 
 def test_ddl_generates():
     sql = ddl.schema_sql()
-    assert sql.count('CREATE TABLE') == 47
+    assert sql.count('CREATE TABLE') == 53
     assert 'CREATE TABLE id_map' in sql and 'PRIMARY KEY (old_id, kind, src, direct_into)' in sql
     cons = ddl.constraints_sql()
     assert 'book_seal_mark' in cons and 'NOT VALID' in cons

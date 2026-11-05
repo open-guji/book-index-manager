@@ -4,7 +4,10 @@
   {Work,Book}/c1/c2/c3/<id>/manifest.json         → BtItem（bt_item、bt_manifest_version）
   {Work,Book}/c1/c2/c3/<id>/<版本key>/index.json   → BtVersion（bt_version、bt_chapter、bt_heading、bt_other_source）
   Work/c1/c2/c3/<id>/fragments/<书名>.json         → Fragment（fragment 及六张明细表）
-后两种文件没有 id，装库时补：「条目id/版本key」「Work id/文件名（去 .json）」；还原时去掉即原文件内容。
+  <版本key>/NNN.json（整理本各章）                  → BtCollated（bt_collated、bt_section、bt_section_work、bt_section_alt_title）
+  <版本key>/NNN.entity.json（original 专名层）      → BtEntityLayer（bt_entity_layer、bt_entity_span）
+除 manifest 外的文件没有 id（或 id 另有含义），装库时补：「条目id/版本key」「Work id/文件名（去 .json）」
+「条目id/版本key/NNN」；还原时去掉即原文件内容。
 """
 import glob
 import json
@@ -31,6 +34,15 @@ def bt_paths(root):
                     continue
                 if os.path.isfile(os.path.join(item, key, 'index.json')):
                     out['BtVersion'].append(('%s/%s' % (iid, key), os.path.join(rel, key, 'index.json')))
+                    vdir = os.path.join(item, key)
+                    for f in sorted(os.listdir(vdir)):
+                        stem, _, ext = f.partition('.')
+                        if not (stem.isdigit() and len(stem) == 3):
+                            continue
+                        if ext == 'json':
+                            out['BtCollated'].append(('%s/%s/%s' % (iid, key, stem), os.path.join(rel, key, f)))
+                        elif ext == 'entity.json':
+                            out['BtEntityLayer'].append(('%s/%s/%s' % (iid, key, stem), os.path.join(rel, key, f)))
             for f in sorted(glob.glob(os.path.join(item, 'fragments', '*.json'))):
                 out['Fragment'].append(('%s/%s' % (iid, os.path.basename(f)[:-5]), os.path.relpath(f, root)))
     return out

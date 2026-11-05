@@ -130,12 +130,16 @@ def test_booktext_roundtrip(tmp_path):
         'fragments': [{'seq': 1, 'text': '佚文', 'collected_by': [{'collector': '馬國翰'}], 'cited_in': None}]},
         ensure_ascii=False))
     _write(os.path.join(item, 'sources', 'index.json'), '{}')      # 抓取素材目录不是版本
+    _write(os.path.join(item, 'default', '001.json'), json.dumps({'title': '一', 'meta': {'work_id': 'abc'}, 'sections': [
+        {'level': 1, 'type': 'h', 'title': '甲', 'content': '正文', 'work_ids': ['w1', 'w2'], 'evidence': {'author': 'x'}},
+        {'level': 2, 'type': 'p', 'title': '乙', 'work_ids': [], 'juan_no': None}]}, ensure_ascii=False))
+    _write(os.path.join(item, 'default', '001.md'), '正文')
     paths = bt_paths(str(tmp_path))
     assert [p[0] for p in paths['BtVersion']] == ['abc/default']
     assert [p[0] for p in paths['Fragment']] == ['abc/某書']
     for name, rec in BT_RECORDS.items():
         docs = bt_docs(str(tmp_path), name, paths[name])
-        assert len(docs) == 1
+        assert len(docs) == (1 if name in ('BtItem', 'BtVersion', 'Fragment', 'BtCollated') else 0)
         bad, rows = roundtrip(rec, docs)
         assert not bad, (name, bad)
     rows = roundtrip(BT_RECORDS['BtVersion'], bt_docs(str(tmp_path), 'BtVersion', paths['BtVersion']))[1].t
@@ -151,3 +155,21 @@ def test_jsonb_nul_wrapped():
     w = _js_in(v)
     assert '\\u0000' not in json.dumps(w).replace('\\\\u0000', '') and _js_out(w) == v
     assert _js_in({'a': 1}) == {'a': 1} and _js_out({'a': 1}) == {'a': 1}
+
+
+def test_flat_inside_kid_items():
+    from book_index_manager.db.mapping import BT_RECORDS
+    from book_index_manager.db.shred import roundtrip
+    doc = {'id': 'abc/default/001', '$schema': 's', 'volume': 1, 'metadata': {'title': '某', 'creator': 'x'},
+           'entities': [
+               {'id': 'e1', 'type': 'people', 'text': '甲', 'anchor': {'start': 'a', 'end': 'b'},
+                'span': {'start_offset': 0, 'end_offset': 1},
+                'target': {'status': 'matched', 'entity_id': 'E1', 'canonical_name': '甲', 'odd': 1}},
+               {'id': 'e2', 'type': 'work', 'text': '乙', 'anchor': {}, 'span': {'start_offset': 'x'},
+                'target': {'status': 'matched_multi', 'targets': [{'entity_id': 'W1'}]}, 'group': 'g'}]}
+    bad, rows = roundtrip(BT_RECORDS['BtEntityLayer'], [doc])
+    assert not bad
+    s1, s2 = rows.t['bt_entity_span']
+    assert (s1['anchor_start'], s1['target_id'], s1['extra']) == ('a', 'E1', {'target': {'odd': 1}})
+    assert s2['extra'] == {'anchor': {'_present': 1}, 'span': {'start_offset': 'x', '_present': 1}, 'group': 'g'}
+    assert s2['target_multi'] == [{'entity_id': 'W1'}]
