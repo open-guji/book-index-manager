@@ -4,7 +4,7 @@
 
 外键单独出（constraints()）：建表 → COPY → 外键 NOT VALID → 查悬空 → VALIDATE。
 """
-from .mapping import ENUMS, INDEXES, RECORDS, REFS
+from .mapping import BT_REFS, ENUMS, INDEXES, RECORDS, REFS
 from .tables import TABLES
 
 HEADER = """-- book-index 规范化目录库表结构（v2，PostgreSQL 16）。
@@ -68,6 +68,13 @@ def checks_sql():
     """悬空与口径检查（灌库后、VALIDATE 前跑；每条应返回 0 行）。"""
     out = ['-- 悬空与口径检查（生成物）：灌库后、VALIDATE 前跑，每条应返回 0 行。']
     for table, col, targets in REFS:
+        t = TABLES[table]
+        key = t.pk[0]
+        cond = ' AND '.join('NOT EXISTS (SELECT 1 FROM %s x WHERE x.id = r.%s)' % (tg, col) for tg in targets)
+        out.append("SELECT '%s.%s 悬空' chk, r.%s, r.%s FROM %s r WHERE r.%s IS NOT NULL AND %s;"
+                   % (table, col, key, col, table, col, cond))
+    out.append('-- book-text 指向目录（只在给了 --text-root 时有数据）')
+    for table, col, targets in BT_REFS:
         t = TABLES[table]
         key = t.pk[0]
         cond = ' AND '.join('NOT EXISTS (SELECT 1 FROM %s x WHERE x.id = r.%s)' % (tg, col) for tg in targets)

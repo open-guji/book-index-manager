@@ -108,3 +108,46 @@ def test_shred_files_keeps_file_name(tmp_path):
     rows = Rows()
     assert shred_files(rec, [p], rows) == 1
     assert rows.t[rec.table][0]['file_name'] == 'w1-舊題名.json'
+
+
+def test_booktext_roundtrip(tmp_path):
+    from book_index_manager.db.booktext import bt_docs, bt_paths
+    from book_index_manager.db.mapping import BT_RECORDS
+    from book_index_manager.db.shred import roundtrip
+    item = os.path.join(tmp_path, 'Work', 'c', 'b', 'a', 'abc')
+    _write(os.path.join(item, 'manifest.json'), json.dumps({'id': 'abc', 'versions': [
+        {'key': 'default', 'kind': 'transcription', 'label': '維基', 'license': 'CC BY-SA 4.0', 'quality': 'raw',
+         'source': 'wikisource', 'source_name': '維基文庫', 'source_url': None, 'chapters_total': 2}]},
+        ensure_ascii=False))
+    _write(os.path.join(item, 'default', 'index.json'), json.dumps({
+        'work_id': 'abc', 'revision': '1', 'total_chapters': 2, 'source': {'name': '維基文庫', 'commit': 'x', 'odd': 1},
+        'text_quality': {'grade': 'B', 'source_note': '抽查'}, 'ai_note': '備註', 'juan_groups': [{'label': '卷一'}],
+        'chapters': [{'n': 1, 'file': '001.md', 'title': '一', 'headings': [{'level': 1, 'label': '序', 'anchor': 'a'}]},
+                     {'n': 2, 'file': '002.md', 'title': '二', 'revid': 'not-int'}]}, ensure_ascii=False))
+    _write(os.path.join(item, 'fragments', '某書.json'), json.dumps({
+        'work_id': 'abc', 'title': '某書', 'loss_status': 'lost', 'coverage': {'level': 'x', 'fragments_attested': None},
+        'collectors': [{'collector': '馬國翰', 'count': None, 'sections': [{'file': 'a', 'index': 1}]}],
+        'fragments': [{'seq': 1, 'text': '佚文', 'collected_by': [{'collector': '馬國翰'}], 'cited_in': None}]},
+        ensure_ascii=False))
+    _write(os.path.join(item, 'sources', 'index.json'), '{}')      # 抓取素材目录不是版本
+    paths = bt_paths(str(tmp_path))
+    assert [p[0] for p in paths['BtVersion']] == ['abc/default']
+    assert [p[0] for p in paths['Fragment']] == ['abc/某書']
+    for name, rec in BT_RECORDS.items():
+        docs = bt_docs(str(tmp_path), name, paths[name])
+        assert len(docs) == 1
+        bad, rows = roundtrip(rec, docs)
+        assert not bad, (name, bad)
+    rows = roundtrip(BT_RECORDS['BtVersion'], bt_docs(str(tmp_path), 'BtVersion', paths['BtVersion']))[1].t
+    v = rows['bt_version'][0]
+    assert (v['id'], v['source_name'], v['quality_grade'], v['notes']) == \
+        ('abc/default', '維基文庫', 'B', {'ai_note': '備註', 'text_quality.source_note': '抽查'})
+    assert rows['bt_heading'][0]['ch_seq'] == 0 and rows['bt_chapter'][1]['extra'] == {'revid': 'not-int'}
+
+
+def test_jsonb_nul_wrapped():
+    from book_index_manager.db.pg import _js_in, _js_out
+    v = [{'primary': '\x00', 'alt': ['甲']}]
+    w = _js_in(v)
+    assert '\\u0000' not in json.dumps(w).replace('\\\\u0000', '') and _js_out(w) == v
+    assert _js_in({'a': 1}) == {'a': 1} and _js_out({'a': 1}) == {'a': 1}
