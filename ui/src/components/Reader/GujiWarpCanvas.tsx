@@ -148,11 +148,28 @@ const IMAGE_CACHE = new Map<string, Promise<HTMLImageElement | null>>();
 // 每张解码后约 8MB（1200×1600 RGBA）；24 张在手机上近 200MB，收到 8 张（GUJI-629）
 const IMAGE_CACHE_MAX = 8;
 
+/**
+ * 宿主自带的取图办法：返回 Promise 就由宿主给图（可以是它现摆正出来的图），返回 null／undefined 走默认的 `<img>` 加载。
+ * 例：海外读者的 Commons 缩略图要先套透视矩阵才和逐字框同一坐标系。Promise 给 null 当作加载失败。
+ */
+export type ImageSourceResolver = (url: string) => Promise<HTMLImageElement | null> | null | undefined;
+let imageSourceResolver: ImageSourceResolver | null = null;
+export function setImageSourceResolver(fn: ImageSourceResolver | null): void {
+  imageSourceResolver = fn;
+}
+
 export function loadImage(url: string): Promise<HTMLImageElement | null> {
   let p = IMAGE_CACHE.get(url);
   if (p) {
     IMAGE_CACHE.delete(url); // 刷新到最近使用
     IMAGE_CACHE.set(url, p);
+    return p;
+  }
+  const custom = imageSourceResolver?.(url);
+  if (custom) {
+    p = custom.then((img) => { if (!img) IMAGE_CACHE.delete(url); return img; }, () => { IMAGE_CACHE.delete(url); return null; });
+    IMAGE_CACHE.set(url, p);
+    while (IMAGE_CACHE.size > IMAGE_CACHE_MAX) IMAGE_CACHE.delete(IMAGE_CACHE.keys().next().value as string);
     return p;
   }
   p = new Promise<HTMLImageElement | null>((resolve) => {

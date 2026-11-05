@@ -23,7 +23,8 @@ export type {
 } from './types';
 
 // 古籍透视矫正与图文对读 (Guji Warp & Interactive Reader)
-export { GujiWarpCanvas } from './GujiWarpCanvas';
+export { GujiWarpCanvas, setImageSourceResolver } from './GujiWarpCanvas';
+export type { ImageSourceResolver } from './GujiWarpCanvas';
 export type { PageWarpData, CharGeometry, ColumnGeometry, BanxinData, GujiWarpCanvasProps } from './GujiWarpCanvas';
 export { GujiTextViewer } from './GujiTextViewer';
 export type { PunctEntry, GujiTextViewerProps } from './GujiTextViewer';
