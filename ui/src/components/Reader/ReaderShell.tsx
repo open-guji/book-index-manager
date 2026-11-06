@@ -128,19 +128,6 @@ export interface ReaderShellProps {
     keepChapterOnVersionChange?: boolean;
     /** 自定义书影/对读面板（如 WebGL 透视矫正画布）；传入时优先渲染此项，不渲染默认 ImagePanel */
     customImagePanel?: React.ReactNode;
-    /** 工具条上的额外控制项（旧入口，新代码放进右侧「阅读设置」的 settingsAnnotate / settingsLayout） */
-    toolbarExtra?: React.ReactNode;
-    /** 右侧「阅读设置」侧栏「标注」组里的额外控制项（如标点开关） */
-    settingsAnnotate?: React.ReactNode;
-    /** 右侧「阅读设置」侧栏「版面」组里的额外控制项（如书影留白） */
-    settingsLayout?: React.ReactNode;
-    /**
-     * 「阅读设置」（宽屏右侧栏、窄屏底栏抽屉）最末尾新开一组「更多」，放宿主自己的动作（如「下载本冊」）。
-     * 不给不出这一组。窄屏下它和其它设置一起在底部抽屉里，宿主不必另做手机入口。
-     */
-    settingsExtra?: React.ReactNode;
-    /** 「更多」组的标题；缺省按繁简给「更多」 */
-    settingsExtraTitle?: React.ReactNode;
     /** 插件的设置块（`ReaderPlugin.settings`，TextReader 已按 order 排好）；`group` 为已有组名则并进该组，否则新开一组 */
     pluginSettings?: ReaderShellPluginSetting[];
     /** 插件的工具条按钮：`subtitle` 在书名后，`actions` 在右侧；窄屏改放进设置抽屉的「更多」组 */
@@ -363,7 +350,7 @@ export function ReaderShell({
     contentLoading = false,
     pagerUnit: pagerUnitProp,
     versions, currentVersionKey, onVersionChange, versionSource = true, keepChapterOnVersionChange = false,
-    customImagePanel, toolbarExtra, settingsAnnotate, settingsLayout, settingsExtra, settingsExtraTitle, isWarpMode, showPreserveMargins = true,
+    customImagePanel, isWarpMode, showPreserveMargins = true,
     pluginSettings, pluginToolbar, pluginOverlay, textRootRef: textRootOut,
     children, className, style,
 }: ReaderShellProps) {
@@ -511,8 +498,8 @@ export function ReaderShell({
     }
     // 窄屏：工具条上的插件按钮收进「更多」组
     const collapsedToolbar = drawer ? [pluginToolbar?.subtitle, pluginToolbar?.actions].filter(Boolean) : [];
-    const hasMore = !!settingsExtra || plugMore.length > 0 || collapsedToolbar.length > 0;
-    const hasAnnotate = properNameToggle || !!settingsAnnotate || plugAnnotate.length > 0;
+    const hasMore = plugMore.length > 0 || collapsedToolbar.length > 0;
+    const hasAnnotate = properNameToggle || plugAnnotate.length > 0;
     const settingsPanel = (
         <div className="bim-rd-sp">
             <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g1`}>
@@ -582,7 +569,6 @@ export function ReaderShell({
                             />
                         </>
                     )}
-                    {settingsAnnotate}
                     {plugAnnotate}
                 </section>
             )}
@@ -613,7 +599,6 @@ export function ReaderShell({
                         <span>{t('reader.preserveMargins')}</span>
                     </label>
                 )}
-                {settingsLayout}
                 {plugLayout}
             </section>
             {customGroups.map((g, gi) => (
@@ -624,8 +609,7 @@ export function ReaderShell({
             ))}
             {hasMore && (
                 <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g4`}>
-                    <h3 id={`${setId}-g4`} className="bim-rd-sp-h">{settingsExtraTitle ?? t('reader.groupMore')}</h3>
-                    {settingsExtra}
+                    <h3 id={`${setId}-g4`} className="bim-rd-sp-h">{t('reader.groupMore')}</h3>
                     {plugMore}
                     {collapsedToolbar.map((n, i) => <div className="bim-rd-sp-row" key={`tb${i}`}>{n}</div>)}
                 </section>
@@ -787,7 +771,6 @@ export function ReaderShell({
                         aria-controls={setId}
                         onClick={() => setSetOpen(o => !o)}
                     ><IconSettings /><span className="bim-rd-tlabel">{t('reader.settings')}</span></button>
-                    {toolbarExtra}
                     {!drawer && pluginToolbar?.actions}
                 </div>
             </div>

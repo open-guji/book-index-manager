@@ -1,70 +1,62 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { FeedbackList } from './FeedbackList';
 import type { FeedbackItem } from './FeedbackList';
 import { FeedbackForm } from './FeedbackForm';
 import { useI18n } from '../i18n';
+import { createFeedbackTransport } from '../core/feedback-api';
+import type { FeedbackTransport } from '../core/feedback-api';
 
 export interface FeedbackTabProps {
     /** 该资源的 ID（用于过滤反馈条目） */
     resourceId: string;
     /**
-     * 反馈 API 端点。
-     * GET   `${apiUrl}?resourceId=...` 返回 `{ success: boolean, items: FeedbackItem[] }`
-     * POST  `${apiUrl}` body `{ type, content, contact?, pageUrl, resourceId }`（contact 选填，仅站方可见） 返回 2xx
-     * 默认 `/api/feedback`。
-     * 也支持函数形式：根据当前 hostname 动态决定（如 localhost → 远程，生产 → 同源）。
+     * 反馈传输层（`IndexStorage` 的 `listFeedback`／`submitFeedback`，或 `createFeedbackTransport(url)`）。
+     * 组件本身不发请求。
+     */
+    transport?: FeedbackTransport;
+    /**
+     * @deprecated 请传 `transport`。没传 `transport` 时按这个端点建一个 HTTP 传输层（默认 `/api/feedback`）。
      */
     apiUrl?: string | (() => string);
 }
 
-function resolveApiUrl(apiUrl: FeedbackTabProps['apiUrl']): string {
-    if (typeof apiUrl === 'function') return apiUrl();
-    return apiUrl ?? '/api/feedback';
-}
-
 /**
  * 反馈 tab 内容：列出已有反馈 + 提交新反馈。
- * 与 FeedbackList/FeedbackForm 不同，FeedbackTab 自带数据加载和提交逻辑，
+ * 与 FeedbackList/FeedbackForm 不同，FeedbackTab 自带数据加载和提交逻辑（经传输层），
  * 适合直接作为详情页的 tab 内容使用。
  */
-export const FeedbackTab: React.FC<FeedbackTabProps> = ({ resourceId, apiUrl }) => {
+export const FeedbackTab: React.FC<FeedbackTabProps> = ({ resourceId, transport, apiUrl }) => {
     const { t } = useI18n();
     const [items, setItems] = useState<FeedbackItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const tRef = useRef(t);
+    tRef.current = t;
+    const tr = useMemo(
+        () => transport ?? createFeedbackTransport(apiUrl, { defaultError: tRef.current('feedback.submitFailed') }),
+        [transport, apiUrl],
+    );
 
     const loadFeedback = useCallback(async () => {
-        const url = resolveApiUrl(apiUrl);
         setLoading(true);
         try {
-            const res = await fetch(`${url}?resourceId=${encodeURIComponent(resourceId)}`);
-            const data = await res.json();
-            if (data.success) setItems(data.items);
+            setItems(await tr.listFeedback(resourceId));
         } catch {
-            // ignore network errors — list stays empty
+            // 取不到：列表留空
         } finally {
             setLoading(false);
         }
-    }, [resourceId, apiUrl]);
+    }, [resourceId, tr]);
 
     useEffect(() => {
         loadFeedback();
     }, [loadFeedback]);
 
     const handleSubmit = async (data: { type: string; content: string; contact?: string }) => {
-        const url = resolveApiUrl(apiUrl);
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                ...data,
-                pageUrl: typeof window !== 'undefined' ? window.location.href : '',
-                resourceId,
-            }),
+        await tr.submitFeedback({
+            ...data,
+            pageUrl: typeof window !== 'undefined' ? window.location.href : '',
+            resourceId,
         });
-        if (!res.ok) {
-            const err = await res.json().catch(() => null);
-            throw new Error(err?.error || t('feedback.submitFailed'));
-        }
         setTimeout(() => loadFeedback(), 500);
     };
 

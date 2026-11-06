@@ -23,6 +23,7 @@ import type {
 } from '../types';
 import type { IndexStorage } from '../storage/types';
 import { withHubTitles } from '../storage/hub-titles';
+import { createFeedbackTransport, feedbackTransportOf } from '../core/feedback-api';
 import { CollectionCatalog } from './CollectionCatalog';
 import { TextReader } from './TextReader';
 import type { BookChapterList } from './detail/BookPage';
@@ -160,6 +161,7 @@ export interface BookDetailLayoutProps {
 
     // ── 内置反馈 tab ──
     showFeedbackTab?: boolean;
+    /** 没有 `storage.listFeedback`／`submitFeedback` 时的 HTTP 端点（见 `createFeedbackTransport`）；缺省 `/api/feedback` */
     feedbackApiUrl?: string | (() => string);
 
     // ── 布局 ──
@@ -239,6 +241,11 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
 }) => {
     /* build 产物里枢纽（入度 > 200）的引用只写 {id, h:1}：getItem 返回的条目先补上枢纽名称（页面直接读 `_` 字段） */
     const transport = useMemo(() => withHubTitles(transportProp), [transportProp]);
+    // 反馈走传输层：storage 自带 listFeedback／submitFeedback 就用它，否则按 feedbackApiUrl 建一个 HTTP 实现
+    const feedbackTransport = useMemo(
+        () => feedbackTransportOf(transport) ?? createFeedbackTransport(feedbackApiUrl),
+        [transport, feedbackApiUrl],
+    );
     const t = useT();
     /** tr：字典键取词（界面文字）；t 是旧的整本字典对象 */
     const { t: tr, convert } = useI18n();
@@ -794,7 +801,7 @@ export const BookDetailLayout: React.FC<BookDetailLayoutProps> = ({
         }
 
         if (activeTab === 'feedback' && showFeedbackTab) {
-            return <FeedbackTab resourceId={id} apiUrl={feedbackApiUrl} />;
+            return <FeedbackTab resourceId={id} transport={feedbackTransport} />;
         }
 
         const extra = extraTabs.find(tab => tab.key === activeTab);

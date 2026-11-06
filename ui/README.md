@@ -49,21 +49,21 @@ import 'book-index-ui/styles'                // 旧入口＝tokens.css ＋ theme
 | 组件 | 用途 |
 |---|---|
 | `IndexBrowser` | 完整索引浏览器：搜索框 + 分类 tab + 推荐 + 最近浏览 |
-| `IndexView` | 单条目详情视图（基于 ID 拉数据 + 渲染） |
-| `IndexDetail` | **旧版**详情纯渲染（2026-09 重构前，仍导出以兼容） |
+| `IndexView`（`book-index-ui/editor`） | **已弃用**：旧版查看／编辑合一视图，随编辑态拆到 `book-index-ui/editor` |
+| `IndexDetail` | **已弃用**：旧版详情纯渲染（2026-09 重构前），仅为兼容旧宿主，不再维护 |
 | `BookDetailLayout` | 详情页外壳：Tab（基本信息/整理本/全文/反馈）+ 路由到下面四个 Page；kaiyuanguji-web 用它 |
 | `WorkPage` / `BookPage` / `CollectionPage` / `EntityPage` | **现行详情页**（2026-09 版式重构）：作品 / 版本 / 丛编 / 人物 |
 | `primitives`（`PageFrame`、`SectionHead`、`DataTable`、`Chip` …） | 四个 Page 共用的版式原语与 `DETAIL_CSS` |
 | `deriveEra` / `deriveDating` / `buildVersionTable` … | `core/detail-model.ts` 的数据派生层（刊刻年代、角色归一、版本表） |
 | `WorkCatalog` | 作品目录 |
-| `IndexEditor` | 详情编辑器（写入需 storage 实现 saveItem） |
-| `HomePage` | 首页：推荐丛编 + 经典作品（kaiyuanguji-web 用） |
+| `IndexEditor`、`ResourceEditor`、`SourceEditor`、`RelationPanel`、`EntitySelector`、`CreateEntityDialog`、`EntityPickerDialog` | 编辑态，**在子入口 `book-index-ui/editor`**（0.66 起不再从主入口导出；写入需 storage 实现 saveItem） |
+| `HomePage` | **已弃用**：旧版五页签首页，请用 `MetaHomeView`／`ReadHomeView` |
 | `TextReader` | **统一阅读器**（overview#307）：整理本与全文合一，版本下拉含全部版本，取数走 `core/text-api`（只认新结构），见下「统一阅读器」 |
 | `ReaderShell` / `ReaderToc` / `ImagePanel` / `ReaderMdText` | 阅读器（整理本与全文共用），见下「阅读器」 |
 | `CollectionCatalog` | 丛编目录（按册/卷分组） |
 | `EmendatedBySection` | "校勘自" 引用列表 |
 | `VersionLineageView` / `VersionLineageGraph` | 版本传承图（dagre + xyflow） |
-| `FeedbackButton` / `FeedbackList` / `FeedbackForm` | 反馈组件 |
+| `FeedbackButton` / `FeedbackList` / `FeedbackForm` / `FeedbackTab` | 反馈组件。`FeedbackTab` 不直接发请求：走 `IndexStorage.listFeedback／submitFeedback`，没有就按 `feedbackApiUrl` 用 `createFeedbackTransport(url)` |
 | `LocaleProvider` / `LocaleToggle` | 繁简切换 |
 | `useI18n` / `getT` | **统一 i18n 入口**：界面文字 `t(key)`、数据文字 `convert`，见下「界面文字与繁简」 |
 | `useT` / `useConvert` | 旧 hook（整本字典 / 繁简转换），新代码用 `useI18n` |
@@ -91,7 +91,7 @@ import 'book-index-ui/styles'                // 旧入口＝tokens.css ＋ theme
 整理本与全文共用一个外壳 `ReaderShell`：
 
 - 布局：**书影在正文左边**，目录在最左。宽屏（≥1100px）目录是可收起的侧栏（默认展开）；更窄时是抽屉（默认收起，选卷后自动合上，Esc 关闭，打开时 Tab 圈在抽屉内）；窄屏（≤719px）书影区不显示，只留正文。
-- 工具条（吸顶）只用文字与图标：目录、繁｜简、A− A+、「阅读设置」键（overview#463）。其余偏好收进**右侧「阅读设置」侧栏**（≥860px 右侧可折叠栏；窄屏是底栏「设置」打开的底部抽屉），分三组：文字（字体、字号、繁简）、标注（专名线，对读时加标点）、版面（自然段、标出作品链接、书影、对读留白，竖排预留 `allowVertical`）。宿主可用 `settingsAnnotate` / `settingsLayout` 往侧栏塞自己的控件。字体选项只有宋体（默认，沿用 `--bim-font-reading`）／楷体／系统默认（无衬线），全是系统已装字体，不加载网络字体；楷体栈 `Kaiti SC → Kaiti TC → STKaiti → KaiTi → AR PL UKai CN → Noto Serif CJK SC → serif`。
+- 工具条（吸顶）只用文字与图标：目录、繁｜简、A− A+、「阅读设置」键（overview#463）。其余偏好收进**右侧「阅读设置」侧栏**（≥860px 右侧可折叠栏；窄屏是底栏「设置」打开的底部抽屉），分三组：文字（字体、字号、繁简）、标注（专名线，对读时加标点）、版面（自然段、标出作品链接、书影、对读留白，竖排预留 `allowVertical`）。宿主通过阅读器插件（`TextReader` 的 `plugins`，`ReaderPlugin.settings`）往侧栏塞自己的控件；0.66 已删旧插槽 `settingsExtra`／`settingsAnnotate`／`settingsLayout`／`toolbarExtra`。字体选项只有宋体（默认，沿用 `--bim-font-reading`）／楷体／系统默认（无衬线），全是系统已装字体，不加载网络字体；楷体栈 `Kaiti SC → Kaiti TC → STKaiti → KaiTi → AR PL UKai CN → Noto Serif CJK SC → serif`。
 - 正文：`--bim-font-reading`（宋体，默认接 `--bim-font-serif`，宿主覆盖后者即可）18px、行高 2.05（手机端同样），`line-break: strict` 避头尾；界面黑体。
 - 无障碍：第一个可聚焦元素是「跳到正文」；目录用游走 tabindex，几百卷也只有当前卷进 Tab 序列（↑↓ Home End 移动）。
 - 偏好（字号、字体、自然段、专名线…）存 `localStorage['bim-reader-prefs']`，首帧用默认值，SSR 安全。
