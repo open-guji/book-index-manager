@@ -30,6 +30,8 @@ import { filterEntitiesByMode } from '../core/entity-annotations';
 import { useReaderPrefs } from './Reader/prefs';
 import { useChapterImages } from './Reader/useChapterImages';
 import { createHoverStore, HoverBound } from './Reader/hover-store';
+import type { ReaderPlugin } from './Reader/plugins';
+import { useReaderPlugins, useReaderViewport } from './Reader/useReaderPlugins';
 import type { ReaderImageOverlay, ReaderImageResolver, ReaderResolveContext, ReaderReportContext, ReaderTocItem, ReaderVersion } from './Reader/types';
 import type { JuanCacheEntry, JuanView, WorkLabelCache } from './CollatedEdition';
 import {
@@ -111,6 +113,11 @@ export interface TextReaderProps {
     onEntityNavigate?: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
     /** 直接传入的对读数据 */
     warpData?: PageWarpData | null;
+    /**
+     * 阅读器插件（设置块、工具条、浮层、按格修饰、格子事件、选字动作；接口见 `Reader/plugins.ts`）。
+     * 请保持引用稳定（useMemo／模块常量）。旧的 `settingsExtra` 等插槽照旧可用，内部已按插件处理。
+     */
+    plugins?: ReadonlyArray<ReaderPlugin>;
     className?: string;
     style?: React.CSSProperties;
 }
@@ -253,7 +260,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     prefsState,
     id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate, anchor: anchorProp,
     title, subtitle, settingsExtra, settingsExtraTitle, resolveImages, renderImageOverlay, imagePanel, facsimileTrimmed, allowVertical, onReportError, revisedAt, backHref, backLabel,
-    resolveWarpData, warpData: warpDataProp, resolveEntities, onEntityNavigate,
+    resolveWarpData, warpData: warpDataProp, resolveEntities, onEntityNavigate, plugins: pluginsProp,
     className, style,
 }) => {
     const { t, convert } = useI18n();
@@ -741,6 +748,51 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         [index, matchStates, version, convert, isCollated, headingsOf],
     );
 
+    // ── 插件 ──
+    // 旧插槽（settingsExtra、标点开关）在这里改写成内置插件，与宿主插件走同一条路
+    const viewport = useReaderViewport();
+    const textRootRef = useRef<HTMLElement | null>(null);
+    const legacyPlugins = useMemo<ReaderPlugin[]>(() => {
+        const list: ReaderPlugin[] = [];
+        if (warpData) {
+            list.push({
+                id: 'bim:punctuation',
+                settings: {
+                    group: 'annotate', order: 0,
+                    render: () => (
+                        <button
+                            type="button"
+                            className={`bim-rd-t bim-rd-sp-tg ${showPunctuation ? 'bim-rd-on' : ''}`}
+                            aria-pressed={showPunctuation}
+                            title="切换外挂现代断句标点"
+                            onClick={() => setShowPunctuation(p => !p)}
+                        >
+                            {showPunctuation ? '标点' : '无标点'}
+                        </button>
+                    ),
+                },
+            });
+        }
+        if (settingsExtra) list.push({ id: 'bim:settings-extra', settings: { group: 'more', order: 0, render: () => settingsExtra } });
+        return list;
+    }, [warpData, showPunctuation, settingsExtra]);
+    const allPlugins = useMemo<ReadonlyArray<ReaderPlugin>>(
+        () => (pluginsProp && pluginsProp.length > 0 ? [...legacyPlugins, ...pluginsProp] : legacyPlugins),
+        [legacyPlugins, pluginsProp],
+    );
+    const pluginCtx = useMemo(
+        () => (version && chapterMeta && versionKey
+            ? { entryId: id, versionKey, chapterKey: chapterMeta.file, chapter: chapterMeta, version, transport, viewport }
+            : null),
+        [id, versionKey, chapterMeta, version, transport, viewport],
+    );
+    const scrollToAnchorFromPlugin = useCallback((anchor: string) => { if (effectiveChapter) goToAnchor(effectiveChapter, anchor); }, [effectiveChapter, goToAnchor]);
+    const pluginRt = useReaderPlugins({
+        plugins: allPlugins, ctx: pluginCtx, prefs, setPrefs, t: t as unknown as (key: string, vars?: Record<string, string | number>) => string, convert,
+        pages: (warpData as any)?.pages as GujiPageInfo[] | undefined,
+        textRootRef, selectedCharIds, scrollToAnchor: scrollToAnchorFromPlugin,
+    });
+
     // ── 渲染 ──
     // 文本清单、目录未到（服务端渲染出的首屏也是这一态）：先出书名与正文骨架，不是一行小字（overview#359 P2-8）
     if (manifestState === 'loading') return <ReaderSkeleton className={className} style={style} title={title ?? entryTitle} label={t('reader.loading')} />;
@@ -942,19 +994,10 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                     </div>
                 </div>
             ) : undefined}
-            settingsExtra={settingsExtra}
             settingsExtraTitle={settingsExtraTitle}
-            settingsAnnotate={warpData ? (
-                <button
-                    type="button"
-                    className={`bim-rd-t bim-rd-sp-tg ${showPunctuation ? 'bim-rd-on' : ''}`}
-                    aria-pressed={showPunctuation}
-                    title="切换外挂现代断句标点"
-                    onClick={() => setShowPunctuation(p => !p)}
-                >
-                    {showPunctuation ? '标点' : '无标点'}
-                </button>
-            ) : undefined}
+            pluginSettings={pluginRt.settings}
+            pluginToolbar={pluginRt.toolbar}
+            pluginOverlay={pluginRt.overlay}
             prefs={prefs}
             onPrefsChange={setPrefs}
             versions={readerVersions.length > 1 ? readerVersions : undefined}
@@ -971,7 +1014,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             {(contentLoading || (warpLoading && !warpData && !structured && body == null)) && <LoadingDots />}
 
             {!contentLoading && warpData && (
-                <article className="bim-rd-prose" style={{ marginTop: 0 }}>
+                <article className="bim-rd-prose" style={{ marginTop: 0 }} ref={textRootRef}>
                     <header style={{ marginBottom: 16 }}>
                         <h1 className="bim-rd-h1">{chapterMeta?.title ? convert(chapterMeta.title) : position}</h1>
                         {(sourceNameShown || version.license) && (
@@ -1002,8 +1045,10 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                             });
                             const pagePart = parseInt(id.split(':')[0], 10);
                             if (!isNaN(pagePart)) setActivePage(pagePart);
+                            pluginRt.onCellClick(id);
                         }}
-                        onCharHover={hover.set}
+                        onCharHover={(id) => { hover.set(id); pluginRt.onCellHover(id); }}
+                        decorations={pluginRt.decorations}
                         mode="horizontal"
                         showPunctuation={showPunctuation}
                         entities={drawnEntities}

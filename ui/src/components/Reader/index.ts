@@ -1,6 +1,6 @@
 /** 阅读器（整理本 / 全文共用）的公开出口 */
 export { ReaderShell, flattenToc } from './ReaderShell';
-export type { ReaderShellProps, PanelState } from './ReaderShell';
+export type { ReaderShellProps, ReaderShellPluginSetting, PanelState } from './ReaderShell';
 export { ReaderToc } from './ReaderToc';
 export { ImagePanel } from './ImagePanel';
 export type { TextRenderCtx, TextRenderer } from './ReaderText';
@@ -35,3 +35,9 @@ export type { GujiInteractiveReaderProps } from './GujiInteractiveReader';
 export { useChapterWarpData } from './useChapterWarpData';
 export type { ReaderWarpResolver } from './useChapterWarpData';
 export type { ReaderEntityResolver } from './useChapterEntities';
+
+// 阅读器插件接口（A41 迁移 P 线）
+export { mergeDecorations } from './plugins';
+export type {
+    ReaderPlugin, ReaderApi, ReaderChapterCtx, ReaderSettingsGroup, CellDecoration, ReaderCellInfo, CellHit, ReaderSelection, SelectionAction,
+} from './plugins';

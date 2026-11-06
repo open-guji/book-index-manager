@@ -32,6 +32,13 @@ import type { ReaderImageOverlay, ReaderPageImage, ReaderReportContext, ReaderTo
 
 export type PanelState = 'auto' | 'open' | 'closed';
 
+export interface ReaderShellPluginSetting {
+    key: string;
+    group: string;
+    title?: React.ReactNode;
+    node: React.ReactNode;
+}
+
 export interface ReaderShellProps {
     /** 工具条左侧：书名 */
     title?: React.ReactNode;
@@ -134,6 +141,12 @@ export interface ReaderShellProps {
     settingsExtra?: React.ReactNode;
     /** 「更多」组的标题；缺省按繁简给「更多」 */
     settingsExtraTitle?: React.ReactNode;
+    /** 插件的设置块（`ReaderPlugin.settings`，TextReader 已按 order 排好）；`group` 为已有组名则并进该组，否则新开一组 */
+    pluginSettings?: ReaderShellPluginSetting[];
+    /** 插件的工具条按钮：`subtitle` 在书名后，`actions` 在右侧；窄屏改放进设置抽屉的「更多」组 */
+    pluginToolbar?: { subtitle?: React.ReactNode; actions?: React.ReactNode };
+    /** 插件浮层，渲染在阅读器根节点末尾（样式见 `.bim-rd-overlay`：桌面右下角，窄屏贴底） */
+    pluginOverlay?: React.ReactNode;
     /** 是否处于 interactive_warp 模式 */
     isWarpMode?: boolean;
     /** 「书影保留空白」勾选框；图源本身已裁掉空白的书传 false，不显示（默认显示） */
@@ -349,6 +362,7 @@ export function ReaderShell({
     pagerUnit: pagerUnitProp,
     versions, currentVersionKey, onVersionChange, versionSource = true, keepChapterOnVersionChange = false,
     customImagePanel, toolbarExtra, settingsAnnotate, settingsLayout, settingsExtra, settingsExtraTitle, isWarpMode, showPreserveMargins = true,
+    pluginSettings, pluginToolbar, pluginOverlay,
     children, className, style,
 }: ReaderShellProps) {
     const { t, convert } = useI18n();
@@ -480,7 +494,23 @@ export function ReaderShell({
     const fontLabel: Record<ReaderFontFamily, string> = {
         song: t('reader.fontSong'), kai: t('reader.fontKai'), system: t('reader.fontSystem'),
     };
-    const hasAnnotate = properNameToggle || !!settingsAnnotate;
+    const plug = (group: string) => (pluginSettings ?? []).filter(p => p.group === group).map(p => <React.Fragment key={p.key}>{p.node}</React.Fragment>);
+    const plugText = plug('text');
+    const plugAnnotate = plug('annotate');
+    const plugLayout = plug('layout');
+    const plugMore = plug('more');
+    const customGroups: { group: string; title?: React.ReactNode; nodes: React.ReactNode[] }[] = [];
+    for (const p of pluginSettings ?? []) {
+        if (['text', 'annotate', 'layout', 'more'].includes(p.group)) continue;
+        let g = customGroups.find(x => x.group === p.group);
+        if (!g) customGroups.push(g = { group: p.group, title: p.title, nodes: [] });
+        else if (g.title == null) g.title = p.title;
+        g.nodes.push(<React.Fragment key={p.key}>{p.node}</React.Fragment>);
+    }
+    // 窄屏：工具条上的插件按钮收进「更多」组
+    const collapsedToolbar = drawer ? [pluginToolbar?.subtitle, pluginToolbar?.actions].filter(Boolean) : [];
+    const hasMore = !!settingsExtra || plugMore.length > 0 || collapsedToolbar.length > 0;
+    const hasAnnotate = properNameToggle || !!settingsAnnotate || plugAnnotate.length > 0;
     const settingsPanel = (
         <div className="bim-rd-sp">
             <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g1`}>
@@ -517,6 +547,7 @@ export function ReaderShell({
                     ]}
                     onPick={v => onPrefsChange({ quoteStyle: v })}
                 />
+                {plugText}
             </section>
             {hasAnnotate && (
                 <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g2`}>
@@ -550,6 +581,7 @@ export function ReaderShell({
                         </>
                     )}
                     {settingsAnnotate}
+                    {plugAnnotate}
                 </section>
             )}
             <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g3`}>
@@ -580,11 +612,20 @@ export function ReaderShell({
                     </label>
                 )}
                 {settingsLayout}
+                {plugLayout}
             </section>
-            {settingsExtra && (
+            {customGroups.map((g, gi) => (
+                <section className="bim-rd-sp-g" key={g.group} aria-labelledby={`${setId}-c${gi}`}>
+                    <h3 id={`${setId}-c${gi}`} className="bim-rd-sp-h">{g.title ?? g.group}</h3>
+                    {g.nodes}
+                </section>
+            ))}
+            {hasMore && (
                 <section className="bim-rd-sp-g" aria-labelledby={`${setId}-g4`}>
                     <h3 id={`${setId}-g4`} className="bim-rd-sp-h">{settingsExtraTitle ?? t('reader.groupMore')}</h3>
                     {settingsExtra}
+                    {plugMore}
+                    {collapsedToolbar.map((n, i) => <div className="bim-rd-sp-row" key={`tb${i}`}>{n}</div>)}
                 </section>
             )}
         </div>
@@ -645,12 +686,13 @@ export function ReaderShell({
                         <span aria-hidden="true">‹</span><span className="bim-rd-tlabel" aria-hidden="true">{backLabel}</span>
                     </a>
                 )}
-                {(title || subtitle || byline || current) && (
+                {(title || subtitle || byline || current || (!drawer && pluginToolbar?.subtitle)) && (
                     <p className="bim-rd-ttl" style={{ margin: 0 }}>
                         {title && <b>{title}</b>}
                         {byline && <span className="bim-rd-by">{byline}</span>}
                         {current && <><span className="bim-rd-dot" aria-hidden="true" /><span className="bim-rd-cur">{current}</span></>}
                         {subtitle && <span className="bim-rd-ttl-src">{subtitle}</span>}
+                        {!drawer && pluginToolbar?.subtitle && <span className="bim-rd-ttl-src">{pluginToolbar.subtitle}</span>}
                     </p>
                 )}
                 <div className="bim-rd-tools" role="group" aria-label={t('reader.settings')}>
@@ -744,6 +786,7 @@ export function ReaderShell({
                         onClick={() => setSetOpen(o => !o)}
                     ><IconSettings /><span className="bim-rd-tlabel">{t('reader.settings')}</span></button>
                     {toolbarExtra}
+                    {!drawer && pluginToolbar?.actions}
                 </div>
             </div>
 
@@ -909,6 +952,7 @@ export function ReaderShell({
                     </div>
                 </>
             )}
+            {pluginOverlay && <div className="bim-rd-overlay">{pluginOverlay}</div>}
         </div>
     );
 }
