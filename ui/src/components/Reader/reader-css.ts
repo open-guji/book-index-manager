@@ -580,6 +580,8 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 .guji-text-char.bim-cd-omit { background-color: ${bim('danger-soft-bg')}; color: ${bim('danger')}; }
 .guji-text-char.bim-cd-ul-solid { text-decoration: underline; text-underline-offset: 0.2em; }
 .guji-text-char.bim-cd-ul-dotted { text-decoration: underline dotted; text-underline-offset: 0.2em; }
+.guji-text-char.bim-cd-ul-dashed { text-decoration: underline dashed; text-underline-offset: 0.2em; }
+.guji-text-char[data-cd-custom] { background-color: var(--cd-bg, transparent); color: var(--cd-fg, inherit); }
 .guji-text-char.bim-cd-ul-wavy { text-decoration: underline wavy; text-underline-offset: 0.2em; }
 .guji-text-char[data-cd-focus] { outline: 2px solid ${bim('accent')}; outline-offset: 1px; }
 /* 下标与字后插入的小字走伪元素：不进 textContent，复制、选区文本不带它们 */

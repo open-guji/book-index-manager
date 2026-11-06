@@ -23,7 +23,10 @@ export type ReaderSettingsGroup = 'text' | 'annotate' | 'layout' | 'more' | (str
 export interface CellDecoration {
     /** 色调，映射到 token 色（底色＋字色）。 `add`＝对照本多出，`omit`＝对照本缺 */
     tone?: 'accent' | 'warn' | 'muted' | 'add' | 'omit' | (string & {});
-    underline?: 'solid' | 'dotted' | 'wavy';
+    underline?: 'solid' | 'dotted' | 'dashed' | 'wavy';
+    /** 自定义底色／字色（任意 CSS 颜色，可写 `var(--x)`）；给了就盖过 `tone` 的颜色。tone 取自定义名时，类名 `bim-cd-<tone>` 仍会加上，宿主也可自己写 CSS */
+    bg?: string;
+    fg?: string;
     /** 下标小字（如对校：对照本在这一位的写法）。不进 textContent，复制不带 */
     sub?: string;
     /** 字后插入的小字（如对校：对照本多出的字）。不进 textContent，复制不带 */
@@ -175,5 +178,5 @@ function stripUndefined(d: CellDecoration): CellDecoration {
 /** 两个修饰是否相同（按页分桶复用旧桶，页组件就不重渲染） */
 export function sameDecoration(a: CellDecoration, b: CellDecoration): boolean {
     return a.tone === b.tone && a.underline === b.underline && a.sub === b.sub && a.insertAfter === b.insertAfter
-        && a.title === b.title && !!a.focus === !!b.focus;
+        && a.bg === b.bg && a.fg === b.fg && a.title === b.title && !!a.focus === !!b.focus;
 }

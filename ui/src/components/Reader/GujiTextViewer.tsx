@@ -884,7 +884,12 @@ function decoAttrs(d: CellDecoration | undefined): Record<string, string> {
   const a: Record<string, string> = { 'data-cd': d.tone ?? '' };
   if (d.sub) a['data-cd-sub'] = d.sub;
   if (d.focus) a['data-cd-focus'] = '';
+  if (d.bg || d.fg) a['data-cd-custom'] = '';
   return a;
+}
+function decoStyle(d: CellDecoration | undefined): React.CSSProperties | undefined {
+  if (!d || (!d.bg && !d.fg)) return undefined;
+  return { ['--cd-bg' as string]: d.bg, ['--cd-fg' as string]: d.fg } as React.CSSProperties;
 }
 function decoClass(d: CellDecoration | undefined): string {
   if (!d) return '';
@@ -1115,6 +1120,7 @@ const PageSection = React.memo(function PageSection({
                     data-char-id={ch.id}
                     data-page-start={pageStarts.get(ch.id)}
                     {...decoAttrs(decorations?.get(ch.id))}
+                    style={decoStyle(decorations?.get(ch.id))}
                     className={`guji-text-char${decoClass(decorations?.get(ch.id))}${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${ch.lacuna || (ch.pending && ch.char === '□') ? ' is-lacuna' : ''}${ch.pending ? ' is-pending' : ''}${ch.lacuna && ch.guess_c ? ' has-guess' : ''}${ch.guess ? ' is-guess' : ''}${ch.zi ? ' is-zi' : ''}${start?.raised ? ' is-raised' : ''}`}
                     data-raised={start?.raised || undefined}
                     data-guji-guess={ch.lacuna && ch.guess_c ? ch.guess_c : undefined}

@@ -147,6 +147,15 @@ describe('阅读器插件', () => {
         expect(Array.from(container.querySelectorAll('span[data-char-id]')).map(s => s.textContent).join('')).toBe('钦定四库');
     });
 
+    it('自定义色与 dashed：写成 CSS 变量，自定义 tone 名保留为类', async () => {
+        const { container } = await setup([{ id: 'x', decorate: () => new Map([['3:1:1', { tone: 'cmp-glyph', underline: 'dashed', bg: 'var(--cmp-glyph)', fg: '#900' }]]) }]);
+        const c = cell(container, '3:1:1');
+        expect(c.className).toMatch(/bim-cd-cmp-glyph/);
+        expect(c.className).toMatch(/bim-cd-ul-dashed/);
+        expect(c.style.getPropertyValue('--cd-bg')).toBe('var(--cmp-glyph)');
+        expect(c.style.getPropertyValue('--cd-fg')).toBe('#900');
+    });
+
     it('多个插件对同一格的修饰叠加（后者覆盖，focus 取或）', async () => {
         const plugins: ReaderPlugin[] = [
             { id: 'a', decorate: () => new Map([['3:1:1', { tone: 'accent', focus: true }]]) },
