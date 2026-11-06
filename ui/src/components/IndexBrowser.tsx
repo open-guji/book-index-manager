@@ -378,7 +378,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
             {/* 网站搜索页（filtersEnabled）不出「古籍资源索引」标题，检索框顶到最上（overview#337 B4）；
                 宿主还要标题栏右侧内容或模式指示时，标题栏照出、只是不写标题 */}
             {(!filtersEnabled || headerRight || !hideModeIndicator) && (
-            <header style={{ padding: '12px 20px', borderBottom: `1px solid ${bim('widget-border')}` }}>
+            <header style={{ padding: `12px ${bim('browser-pad-x')}`, borderBottom: `1px solid ${bim('widget-border')}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     {filtersEnabled ? <span /> : <h1 style={{ margin: 0, fontSize: '18px', color: bim('fg') }}>{t.browser.title}</h1>}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -407,7 +407,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
                     <div className="bim-ib-bar-main">{searchBarItems}</div>
                 </div>
             ) : (
-                <div style={{ display: 'flex', gap: '8px', padding: '12px 20px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '8px', padding: `12px ${bim('browser-pad-x')}`, alignItems: 'center' }}>
                     {searchBarItems}
                 </div>
             )}
@@ -415,7 +415,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
             {/* 统计摘要 */}
             {showingRecent && (
                 <div className="bim-ib-stats" style={{
-                    padding: '0 20px 8px',
+                    padding: `0 ${bim('browser-pad-x')} 8px`,
                     fontSize: '12px',
                     color: bim('desc-fg'),
                     display: 'flex',
@@ -493,7 +493,7 @@ export const IndexBrowser: React.FC<IndexBrowserProps> = ({
 
             {/* Content */}
             {!(filtersEnabled && !showingRecent) && (
-            <div style={{ padding: '0 20px 20px', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+            <div style={{ padding: `0 ${bim('browser-pad-x')} 20px`, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
                 {isLoading || searchPending ? (
                     <div style={{ textAlign: 'center', padding: '40px', color: bim('desc-fg'), minHeight: SEARCH_PLACEHOLDER_MIN_HEIGHT, boxSizing: 'border-box' }}>
                         {t.search.searching}
@@ -739,7 +739,7 @@ export const STATS_CSS = `
  * 检索框放在结果列、左缘对齐结果区，最宽 720px，右边「搜索」按钮；窄屏（≤719px）左栏收起，检索框占满一行。
  */
 export const SEARCH_BAR_CSS = `
-.bim-ib-bar { display: grid; grid-template-columns: 208px minmax(0, 1fr); column-gap: 40px; padding: 0 20px 16px; }
+.bim-ib-bar { display: grid; grid-template-columns: 208px minmax(0, 1fr); column-gap: 40px; padding: 0 ${bim('browser-pad-x')} 16px; }
 .bim-ib-bar[data-nofilters] { grid-template-columns: minmax(0, 1fr); }
 .bim-ib-bar[data-nofilters] > [aria-hidden] { display: none; }
 .bim-ib-bar-main { display: flex; gap: 8px; align-items: stretch; max-width: 720px; min-width: 0; }
@@ -748,7 +748,7 @@ export const SEARCH_BAR_CSS = `
 .bim-ib-submit:hover { filter: brightness(1.1); }
 .bim-ib-submit:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: 2px; }
 @media (max-width: 719px) {
-  .bim-ib-bar { grid-template-columns: minmax(0, 1fr); padding: 0 16px 12px; }
+  .bim-ib-bar { grid-template-columns: minmax(0, 1fr); padding: 0 min(${bim('browser-pad-x')}, 16px) 12px; }
   .bim-ib-bar > [aria-hidden] { display: none; }
   .bim-ib-bar-main { max-width: none; }
   .bim-ib-submit { min-height: 44px; padding: 0 16px; }

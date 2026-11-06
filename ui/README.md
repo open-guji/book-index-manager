@@ -14,8 +14,33 @@ npm install book-index-ui
 ```ts
 import { ... } from 'book-index-ui'          // React 组件 + 类型 + 数据层
 import { ... } from 'book-index-ui/storage'  // 仅数据层（无 React，体积小，适合 Node/Worker）
-import 'book-index-ui/styles'                // CSS（用到组件时引入）
+import 'book-index-ui/tokens.css'            // 设计变量（推荐；用到组件时引入）
+import 'book-index-ui/themes.css'            // 可选：内置主题 indigo / ink（<html data-theme>）
+import 'book-index-ui/styles'                // 旧入口＝tokens.css ＋ themes.css 合并，保留兼容
 ```
+
+## 样式契约（设计变量）
+
+`tokens.css` 是设计变量的**唯一真源**（由 `src/styles/tokens.ts` 生成）。宿主的做法：
+
+1. 先 `import 'book-index-ui/tokens.css'`；
+2. 再在自己的 `:root` 里**只覆盖品牌相关的变量**（朱色一族、字体、页面底色等）；覆盖声明须在 tokens.css 之后加载；
+3. 不要重写整套 `--bim-*`，也不要写 `.bim-*` 结构选择器去改组件内部——要调的东西都应该有变量，没有就提需求加变量。
+
+内置主题（indigo、ink）在 `themes.css`，用 `<html data-theme="…">` 切换；宿主自己用品牌色接管的，不必引。版式（`data-layout="boxed"`，界栏）在 tokens.css 里。
+
+**对外承诺的变量**：`tokens.css` 里声明的全部 `--bim-*`（含 `data-layout="boxed"` 块里改的那些），改名或删除都按破坏性改动处理，需升 minor 并写进变更说明。常用分组：
+
+| 分组 | 变量（节选） |
+|---|---|
+| 颜色 | `--bim-bg` `--bim-fg` `--bim-page-bg` `--bim-ink` `--bim-accent` `--bim-accent-deep` `--bim-link` `--bim-muted` `--bim-border` `--bim-flag-bg` … |
+| 字体 | `--bim-font-ui` `--bim-font-body` `--bim-font-serif` `--bim-font-reading` |
+| 阅读器字体 | `--bim-font-reader-ui` `--bim-font-reader-serif` `--bim-font-reader-reading`：只在阅读器根节点（`.bim-rd`）内换掉对应字体；默认等于上面的全局字体 |
+| 列表页 | `--bim-browser-pad-x`：列表页（IndexBrowser）标题栏、检索框行、结果区的左右内边距，默认 `20px`，宿主要贴齐版心时设 `0` |
+| 版式 | `--bim-fr-*`（疏朗／界栏） |
+| 阅读器 | `--bim-reader-top`（吸顶工具条让出的顶部高度）等 |
+
+完整清单见 `src/styles/tokens.ts`。`tests/unit/tokens.test.ts` 保证 tokens.css 与源文件同步、组件里没有颜色字面量。
 
 ## 主要 export
 
