@@ -103,3 +103,24 @@ describe('TextReader · 版本列表规则', () => {
         expect(new Set(seen)).toEqual(new Set(['wikisource']));
     });
 });
+
+describe('loadReaderChapter · norm／fig（原网站 resolveWarpData 用例迁来）', () => {
+    const ch = { file: '005', char_file: 'c.json', cord_file: 'k.json' };
+    const FIG = { figures: [{ id: 'f148-2-14', kind: 'inline', file: 'fig/005/f148-2-14.png', alt: '左半圈连一实点' }] };
+    it('声明了 norm_file：hasNorm=true；没声明：false', async () => {
+        const s = store({ 'c.json': CHAR, 'k.json': { pages: [] }, 'n.json': { items: [] } });
+        const a = await loadReaderChapter(s, { id: 'n1', versionKey: 'k', chapter: { ...ch, norm_file: 'n.json' } });
+        expect(a?.warpData.hasNorm).toBe(true);
+        const b = await loadReaderChapter(s, { id: 'n2', versionKey: 'k', chapter: ch });
+        expect(b?.warpData.hasNorm).toBe(false);
+    });
+    it('声明了 fig_file：带 figures 与同步的 figUrl（取不到地址给空串）；没声明不带', async () => {
+        const s = store({ 'c.json': CHAR, 'k.json': { pages: [] }, 'f.json': FIG }, { getTextAssetUrl: async (_i: string, _k: string, rel: string) => `https://cdn/${rel}` });
+        const a = await loadReaderChapter(s, { id: 'f1', versionKey: 'k', chapter: { ...ch, fig_file: 'f.json' } }) as unknown as { warpData: Record<string, any> };
+        expect(a.warpData.figures.get('f148-2-14')).toMatchObject({ alt: '左半圈连一实点' });
+        expect(a.warpData.figUrl('fig/005/f148-2-14.png')).toBe('https://cdn/fig/005/f148-2-14.png');
+        expect(a.warpData.figUrl('fig/005/nope.png')).toBe('');
+        const b = await loadReaderChapter(s, { id: 'f2', versionKey: 'k', chapter: ch }) as unknown as { warpData: Record<string, unknown> };
+        expect(b.warpData).not.toHaveProperty('figures');
+    });
+});
