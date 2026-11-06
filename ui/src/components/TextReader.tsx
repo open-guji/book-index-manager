@@ -1048,6 +1048,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                             pageData={activePageData}
                             selectedCharIds={selectedCharIds}
                             hoveredCharId={hoveredCharId}
+                            decorations={pluginRt.decorations}
                             preserveMargins={preserveMargins}
                             renderScale={zoomScale}
                             selectedFigBlock={selectedFig}

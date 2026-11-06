@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useMemo, useCallback } from 'react';
+import type { CellDecoration } from './plugins';
 import { StripWarpRenderer, StripTransform } from './StripWarpRenderer';
 import { bim } from '../../styles/tokens';
 
@@ -98,6 +99,19 @@ export function fullImageTrimRect(pageData: PageWarpData): { x: number; y: numbe
   return { x, y, w, h };
 }
 
+const TONE_COLORS: Record<string, { bg?: string; fg: string }> = {
+  accent: { bg: bim('accent-bg'), fg: bim('accent') },
+  warn: { bg: bim('highlight-bg'), fg: bim('highlight-fg') },
+  muted: { fg: bim('meta-fg') },
+  add: { bg: bim('check-fine-bg'), fg: bim('check-fine-fg') },
+  omit: { bg: bim('danger-soft-bg'), fg: bim('danger') },
+};
+/** 修饰在书影画布上的颜色：自定义 bg／fg 优先，其次 tone，缺省取强调色 */
+function decoColors(d: CellDecoration): { bg?: string; fg: string } {
+  const t = (d.tone && TONE_COLORS[d.tone]) || undefined;
+  return { bg: d.bg ?? t?.bg, fg: d.fg ?? t?.fg ?? bim('accent') };
+}
+
 export interface GujiWarpCanvasProps {
   imageUrl: string;
   pageData: PageWarpData;
@@ -112,6 +126,8 @@ export interface GujiWarpCanvasProps {
   onFigBlockClick?: (figId: string) => void;
   /** 外层 CSS 缩放倍数（如 ZoomPanBox 的放大倍数）：放大时画布后备跟着加密，不糊；缺省 1 */
   renderScale?: number;
+  /** 插件给字的修饰（格位 key → 修饰）：在书影上按字框画色块、下划线、下标小字、字后插入字（阅读器插件 `decorate`） */
+  decorations?: ReadonlyMap<string, CellDecoration>;
 }
 
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
@@ -219,6 +235,7 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   pageData: pageDataProp,
   selectedCharIds,
   hoveredCharId,
+  decorations,
   preserveMargins = false,
   onCharClick,
   onCharHover,
@@ -737,6 +754,26 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
             >
               <title>{item.char}</title>
             </rect>
+          );
+        })}
+
+        {/* 1a. 插件修饰：色块、下划线、下标与字后插入字（不挡点击） */}
+        {decorations && decorations.size > 0 && flatChars.map((item) => {
+          const d = decorations.get(item.id);
+          if (!d) return null;
+          const col = decoColors(d);
+          const fs = Math.max(10, item.w * 0.42);
+          return (
+            <g key={`cd-${item.id}`} data-cd={d.tone ?? ''} data-cd-focus={d.focus ? '' : undefined} pointerEvents="none">
+              {col.bg && <rect x={item.x} y={item.y} width={item.w} height={item.h} fill={col.bg} fillOpacity={0.35} />}
+              {d.underline && (
+                <line x1={item.x} x2={item.x + item.w} y1={item.y + item.h} y2={item.y + item.h} stroke={col.fg} strokeWidth={3}
+                  strokeDasharray={d.underline === 'dotted' ? '2 5' : d.underline === 'dashed' ? '10 6' : undefined} />
+              )}
+              {d.focus && <rect x={item.x} y={item.y} width={item.w} height={item.h} fill="none" stroke={bim('accent')} strokeWidth={4} />}
+              {d.sub && <text data-cd-sub={d.sub} x={item.x + item.w} y={item.y + item.h - 2} fontSize={fs} textAnchor="end" fill={col.fg}>{d.sub}</text>}
+              {d.insertAfter && <text data-cd-ins={d.insertAfter} x={item.x + item.w / 2} y={item.y + item.h + fs} fontSize={fs} textAnchor="middle" fill={col.fg}>{d.insertAfter}</text>}
+            </g>
           );
         })}
 
