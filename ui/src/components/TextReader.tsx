@@ -113,6 +113,12 @@ export interface TextReaderProps {
      */
     resolveWarpData?: ReaderWarpResolver;
     /**
+     * 服务端直出的首章正文与上下章链接（给爬虫和首屏看的同一章文字）：阅读器自己的内容出来之前显示在阅读器之后（流内，卸载时不推动首屏），
+     * 之后由阅读器自己卸载。宿主不用再自己挂一段、再用 MutationObserver 盯 DOM 判断何时卸载。
+     * 初始渲染＝显示，与服务端一致（水合安全）。
+     */
+    initialChapter?: ReaderInitialChapter;
+    /**
      * 按阅读页规则（`readerVersions`）过一遍 manifest：有全文版时不列整理本，同源有精校时不列粗校。
      * 缺省 false＝列出 manifest 的全部版本（兼容旧宿主）；将来改为缺省 true。
      */
@@ -279,15 +285,57 @@ function buildToc(
  */
 export const TextReader: React.FC<TextReaderProps> = props => {
     const prefsState = useReaderPrefs();
+    const lead = props.initialChapter;
+    // 阅读器自己的正文出来了（任何一章）就卸载首章直出文字；取数失败或正文很短一直不出，10 秒后也不再留着
+    const [bodyReady, setBodyReady] = useState(false);
+    const [expired, setExpired] = useState(false);
+    useEffect(() => {
+        if (!lead) return;
+        const timer = window.setTimeout(() => setExpired(true), 10_000);
+        return () => window.clearTimeout(timer);
+    }, [lead]);
+    const onBodyReady = useCallback(() => setBodyReady(true), []);
     return (
-        <ScriptModeScope mode={prefsState[0].scriptMode}>
-            <TextReaderBody {...props} prefsState={prefsState} />
-        </ScriptModeScope>
+        <>
+            <ScriptModeScope mode={prefsState[0].scriptMode}>
+                <TextReaderBody {...props} prefsState={prefsState} onBodyReady={lead ? onBodyReady : undefined} />
+            </ScriptModeScope>
+            {lead && !bodyReady && !expired && <InitialChapterLead data={lead} />}
+        </>
     );
 };
 
-const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof useReaderPrefs> }> = ({
-    prefsState,
+/** 服务端直出的首章正文（见 `TextReaderProps.initialChapter`） */
+export interface ReaderInitialChapter {
+    paragraphs: string[];
+    /** 正文只给了开头一段：显示「继续阅读」指向 selfHref */
+    truncated?: boolean;
+    /** 本章规范地址 */
+    selfHref?: string;
+    prev?: { href: string; label: string };
+    next?: { href: string; label: string };
+    /** 条目页地址与链接文字 */
+    itemHref?: string;
+    itemLabel?: string;
+}
+
+function InitialChapterLead({ data }: { data: ReaderInitialChapter }) {
+    const { t } = useI18n();
+    return (
+        <section data-reader-lead style={{ maxWidth: 768, margin: '0 auto', padding: '24px 16px', lineHeight: 2 }}>
+            {data.paragraphs.map((p, i) => <p key={i} style={{ marginBottom: 16 }}>{p}</p>)}
+            {data.truncated && data.selfHref && <p><a href={data.selfHref}>{t('reader.continueReading')}</a></p>}
+            <nav style={{ marginTop: 16, display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 14 }}>
+                {data.prev && <a href={data.prev.href} rel="prev">{data.prev.label}</a>}
+                {data.next && <a href={data.next.href} rel="next">{data.next.label}</a>}
+                {data.itemHref && <a href={data.itemHref}>{data.itemLabel}</a>}
+            </nav>
+        </section>
+    );
+}
+
+const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof useReaderPrefs>; onBodyReady?: () => void }> = ({
+    prefsState, onBodyReady,
     id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate, anchor: anchorProp,
     title, subtitle, settingsExtra, settingsExtraTitle, resolveImages, renderImageOverlay, imagePanel, facsimileTrimmed, allowVertical, onReportError, revisedAt, backHref, backLabel,
     resolveWarpData, textFileBase, onChapterData, hideSupersededVersions, warpData: warpDataProp, resolveEntities, onEntityNavigate,
@@ -504,6 +552,9 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     ), [resolveEntities, canSelfLoad, transport, id, wideForCord, textFileBase]);
     const images = useChapterImages(resolveImages, effectiveChapter ?? null, resolveCtx, id);
     const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData ?? selfWarp, warpDataProp, effectiveChapter ?? null, resolveCtx, id);
+    // 阅读器自己的正文到手了：通知外层卸载服务端直出的首章文字（initialChapter）
+    const bodyReady = !contentLoading && chapterKey !== null && (!!warpData || !!content?.md || !!content?.json);
+    useEffect(() => { if (bodyReady) onBodyReady?.(); }, [bodyReady, onBodyReady]);
     // 换章时书影栏：之前开着（有书影／对读书影），新章的数据到手前保持开着并显示「加载书影…」，不收起再弹开（栏宽变两次、正文横移）。
     // 首次进入不撑开（GUJI-181），所以要先见过书影才算
     const sawImagesRef = useRef(false);
