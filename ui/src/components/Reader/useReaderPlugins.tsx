@@ -236,16 +236,47 @@ export function useReaderPlugins(inp: ReaderPluginRuntimeIn): ReaderPluginRuntim
         for (const p of plugins) if (p.onCell?.hover) safely(p, 'onCell.hover', () => p.onCell!.hover!(hit, api), undefined);
     }, [api, plugins, hitOf]);
 
+    // ── 无格位章（整理本、Markdown）：读者在正文里划选文字，浮条同样要出（anchors 为空） ──
+    const wantTextSel = cells.length === 0 && plugins.some(p => p.selectionActions);
+    const [textSel, setTextSel] = useState<{ text: string; rect: DOMRect | null } | null>(null);
+    useEffect(() => {
+        if (!wantTextSel) { setTextSel(null); return; }
+        const onChange = () => {
+            const sel = document.getSelection();
+            const root = shellTextRef.current;
+            if (!sel || sel.isCollapsed || sel.rangeCount === 0 || !root) { setTextSel(null); return; }
+            const range = sel.getRangeAt(0);
+            const anc = range.commonAncestorContainer;
+            const el = anc instanceof Element ? anc : anc.parentElement;
+            if (!root.contains(anc) || el?.closest('input,textarea,button,select,[contenteditable="true"]')) { setTextSel(null); return; }
+            const text = sel.toString().trim().slice(0, SELECTION_TEXT_MAX);
+            if (!text) { setTextSel(null); return; }
+            const rects = range.getClientRects?.();
+            const rect = (rects && rects.length > 0 ? rects[rects.length - 1] : range.getBoundingClientRect?.()) ?? null;
+            setTextSel(prev => (prev && prev.text === text ? prev : { text, rect }));
+        };
+        document.addEventListener('selectionchange', onChange);
+        return () => document.removeEventListener('selectionchange', onChange);
+    }, [wantTextSel, shellTextRef]);
+    // 换章：上一章的选区作废
+    useEffect(() => { setTextSel(null); }, [ctxKey]);
+
     // ── 选字浮条 ──
     const selectionActions = useMemo<SelectionAction[]>(() => {
-        if (!api || selectedCharIds.size === 0 || !plugins.some(p => p.selectionActions)) return [];
+        if (!api || !plugins.some(p => p.selectionActions)) return [];
+        if (cells.length === 0) {
+            if (!textSel) return [];
+            const sel: ReaderSelection = { anchors: [], text: textSel.text, rect: textSel.rect };
+            return plugins.flatMap(p => (p.selectionActions ? safely(p, 'selectionActions', () => p.selectionActions!(sel, api), []) : []));
+        }
+        if (selectedCharIds.size === 0) return [];
         const anchors: string[] = [];
         let text = '';
         for (const c of cells) if (selectedCharIds.has(c.anchor)) { anchors.push(c.anchor); if (text.length < SELECTION_TEXT_MAX) text += c.char; }
         if (anchors.length === 0) return [];
         const sel: ReaderSelection = { anchors, text: text.slice(0, SELECTION_TEXT_MAX), rect: rectOf(anchors[anchors.length - 1]) };
         return plugins.flatMap(p => (p.selectionActions ? safely(p, 'selectionActions', () => p.selectionActions!(sel, api), []) : []));
-    }, [api, plugins, selectedCharIds, cells, rectOf]);
+    }, [api, plugins, selectedCharIds, cells, rectOf, textSel]);
 
     // ── 设置块、工具条、浮层 ──
     const settings = useMemo<ReaderShellPluginSetting[]>(() => {
@@ -287,7 +318,7 @@ export function useReaderPlugins(inp: ReaderPluginRuntimeIn): ReaderPluginRuntim
                 {selectionActions.length > 0 && (
                     <div className="bim-rd-selbar" role="toolbar" aria-label={t('reader.selectionActions')} data-testid="reader-selbar">
                         {selectionActions.map(a => (
-                            <button key={a.key} type="button" title={a.title} onClick={a.onClick}>{a.label}</button>
+                            <button key={a.key} type="button" title={a.title} onMouseDown={e => e.preventDefault()} onClick={a.onClick}>{a.label}</button>
                         ))}
                     </div>
                 )}
