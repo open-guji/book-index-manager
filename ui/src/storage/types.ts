@@ -115,6 +115,15 @@ export interface IndexStorage {
      */
     getChapter?(id: string, key: string, chapter: string, opts?: { json?: boolean }): Promise<TextChapterContent | null>;
 
+    /**
+     * 版本目录下一个文本 JSON（对读六件套：`char_file／cord_file／punct_file／entity_file／norm_file／fig_file`，及 `warp_file`）。
+     * 文件名取自章条目的声明；取不到返回 null。没有这个方法的存储，阅读器可用 `textFileBase` 退回 `fetch`。
+     */
+    getTextFile?(id: string, key: string, file: string): Promise<unknown>;
+
+    /** 版本目录下相对路径文件（如 `fig/005/f148-2-14.png`）可直接用的地址；取不到（没有这份文件、不合规）返回 null */
+    getTextAssetUrl?(id: string, key: string, rel: string): Promise<string | null>;
+
     // ── 版本传承（可选） ──
 
     // ── 专名出处反查（可选；A12，产物 mentions/<id>.json，打包时由 book-text 的专名号派生） ──

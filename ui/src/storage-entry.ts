@@ -53,3 +53,7 @@ export { IdGenerator } from './core/id-generator';
 export { extractIdFromUrl, validateResource } from './core/schema';
 export { BidLink } from './core/bid-link';
 export { BookIndexError, StorageError, IdGenerationError, ConfigError, MigrationError } from './core/exceptions';
+
+// 阅读数据读取（无 React）
+export { loadReaderChapter, loadReaderFiles, loadFigUrls, volumeFromChar, readerVersions, readerManifest } from './core/reader-data';
+export type { ReaderChapterData, ReaderChapterFiles, ReaderLoadOptions } from './core/reader-data';
