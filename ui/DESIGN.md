@@ -81,7 +81,7 @@ book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、�
 
 - 组件使用 **CSS 变量 + inline styles**，不依赖 Tailwind
 - 消费者通过 CSS 变量（`--bim-*`）适配自己的主题
-- 导入 `book-index-ui/styles` 获取基础样式（即 `src/styles/variables.css`，由 `src/styles/tokens.ts` 生成）
+- 导入 `book-index-ui/tokens.css` 获取设计变量（`src/styles/tokens.css`，由 `src/styles/tokens.ts` 生成；内置主题在 `themes.css`；旧入口 `book-index-ui/styles` = 合并版 variables.css，保留兼容）。对外承诺的变量见 README「样式契约」
 
 ### 换肤约定（2026-09 N2 起）
 
@@ -89,7 +89,7 @@ book-index-ui 提供**可组合的 React 组件**，由消费者自由组合、�
 得到 `var(--bim-fg, #333333)`——回退值由 tokens.ts 统一给出，不再每处各写一份，
 也**不许**再写 `#hex` / `rgba()` / 命名色（单测 `tests/unit/tokens.test.ts` 守门）。
 
-- 新增或改动变量：改 tokens.ts → `npm run gen:tokens` 重新生成 variables.css（单测校验两者同步）
+- 新增或改动变量：改 tokens.ts → `npm run gen:tokens` 重新生成 variables.css / tokens.css / themes.css（单测校验同步）
 - 消费者只要在自己的 `:root` 覆盖同名变量即可整体换肤；若同时引入了
   `book-index-ui/styles`，覆盖声明须在其**之后**加载
 - 没引样式表时，内联回退值与样式表默认值相同，观感一致

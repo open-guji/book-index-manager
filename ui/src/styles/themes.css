@@ -1,0 +1,41 @@
+/**
+ * 内置主题（indigo、ink）—— 由 src/styles/tokens.ts 生成，勿手改。
+ * 需要用 <html data-theme="…"> 切换这些主题的宿主，在 tokens.css 之后引入；
+ * 自己用品牌色覆盖变量的宿主（如 kaiyuanguji-web）不引。
+ */
+/* ==== 主题：indigo（<html data-theme="indigo">）==== */
+:root[data-theme="indigo"] {
+    --bim-accent: #2e5266;
+    --bim-accent-deep: #23414f;
+    --bim-flag-bg: #e3eaec;
+    --bim-selection-bg: #dfe6e3;
+    --bim-rule-accent-soft: #cfd9dc;
+}
+
+/* ==== 主题：ink（<html data-theme="ink">）==== */
+:root[data-theme="ink"] {
+    --bim-page-bg: #ffffff;
+    --bim-card-bg: #f6f7f8;
+    --bim-zebra-bg: #eef0f2;
+    --bim-tint-bg: #eceef0;
+    --bim-row-hover-bg: #eef0f2;
+    --bim-selection-bg: #e3e5e8;
+    --bim-band-bg: #eef0f2;
+    --bim-band-bg-hover: #e3e5e8;
+    --bim-ink: #1d2024;
+    --bim-body-fg: #3b4046;
+    --bim-quiet-fg: #565c63;
+    --bim-meta-fg: #5f656c;
+    --bim-label-fg: #5f656c;
+    --bim-aux-fg: #5f656c;
+    --bim-hint-fg: #5f656c;
+    --bim-accent: #3b4a58;
+    --bim-accent-deep: #2e3a46;
+    --bim-flag-bg: #e8ecf0;
+    --bim-rule-strong: #1d2024;
+    --bim-rule: #e3e5e8;
+    --bim-rule-dashed: #cdd1d6;
+    --bim-rule-accent-soft: #cdd1d6;
+    --bim-shadow-summary: 0 10px 32px rgba(29, 32, 36, 0.06);
+    --bim-fr-shadow: 0 1px 0 var(--bim-rule), 0 12px 32px -18px rgba(29, 32, 36, 0.22);
+}

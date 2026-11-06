@@ -312,6 +312,16 @@
     --bim-font-serif: "Songti SC", "Songti TC", STSong, "Noto Serif CJK SC", "Source Han Serif SC", SimSun, serif;
     /* 阅读器正文（整理本 / 全文）；默认接 font-serif，只需覆盖那一个就同时换掉 */
     --bim-font-reading: var(--bim-font-serif);
+    /* 阅读器范围（.bim-rd）内的界面字体：阅读器根节点上把 font-ui / font-body 换成它；宿主想让阅读器单独用系统字体栈，覆盖这一个即可 */
+    --bim-font-reader-ui: var(--bim-font-ui);
+    /* 阅读器范围内的宋体：阅读器根节点上把 font-serif 换成它 */
+    --bim-font-reader-serif: var(--bim-font-serif);
+    /* 阅读器范围内的正文字体：阅读器根节点上把 font-reading 换成它 */
+    --bim-font-reader-reading: var(--bim-font-reading);
+
+    /* ==== 列表页（IndexBrowser） ==== */
+    /* 列表页标题栏、检索框行、统计摘要、结果区的左右内边距；宿主要贴齐自己的版心时设 0 */
+    --bim-browser-pad-x: 20px;
 }
 
 /* ==== 主题：indigo（<html data-theme="indigo">）==== */
