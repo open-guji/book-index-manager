@@ -229,3 +229,41 @@ describe('阅读器插件', () => {
         err.mockRestore();
     });
 });
+
+describe('无逐字格位的文本章：locate({text}) / scrollTo', () => {
+    const mdTransport = {
+        getItem: async () => ({ title: '某書' }),
+        getTextManifest: async () => ({ id: 'w1', versions: [{ key: 'v1', kind: 'wikisource', label: '維基文庫', source: 'wikisource' }] }),
+        getTextIndex: async () => ({ chapters: [{ n: 1, file: '001', title: '卷一' }] }),
+        getChapter: async () => ({ md: '## 卷一\n\n天地玄黃，宇宙洪荒。\n\n日月盈昃，辰宿列張。', json: null }),
+    } as unknown as IndexStorage;
+
+    it('按渲染出的文字（忽略空白与标点外的换行）定位，返回记号；scrollTo 滚到该处；找不到为 null', async () => {
+        let api: ReaderApi | null = null;
+        const scroll = vi.fn();
+        const orig = window.scrollTo;
+        window.scrollTo = scroll as never;
+        const rectSpy = vi.fn(() => ({ top: 500, bottom: 520, left: 0, right: 10, width: 10, height: 20, x: 0, y: 500, toJSON() { return this; } }));
+        const origRange = (Range.prototype as unknown as { getBoundingClientRect?: unknown }).getBoundingClientRect;
+        (Range.prototype as unknown as { getBoundingClientRect: unknown }).getBoundingClientRect = rectSpy;
+        try {
+            render(
+                <LocaleProvider>
+                    <TextReader id="w1" transport={mdTransport} versionKey="v1" chapter="001" plugins={[{ id: 'p', overlay: (a) => { api = a; return null; } }]} />
+                </LocaleProvider>,
+            );
+            await waitFor(() => expect(screen.getByText(/宇宙洪荒/)).toBeTruthy(), { timeout: 5000 });
+            await waitFor(() => expect(api).not.toBeNull());
+            expect(api!.cells.length).toBe(0);
+            const t = api!.locate({ text: '辰宿 列張' });
+            expect(t).toMatch(/^t:\d+:4$/);
+            expect(api!.locate({ text: '無此句' })).toBeNull();
+            expect(api!.rectOf(t!)?.top).toBe(500);
+            api!.scrollTo(t!);
+            expect(scroll).toHaveBeenCalled();
+        } finally {
+            window.scrollTo = orig;
+            (Range.prototype as unknown as { getBoundingClientRect: unknown }).getBoundingClientRect = origRange;
+        }
+    });
+});
