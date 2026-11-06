@@ -748,7 +748,7 @@ export const SEARCH_BAR_CSS = `
 .bim-ib-submit:hover { filter: brightness(1.1); }
 .bim-ib-submit:focus-visible { outline: 2px solid ${bim('accent')}; outline-offset: 2px; }
 @media (max-width: 719px) {
-  .bim-ib-bar { grid-template-columns: minmax(0, 1fr); padding: 0 16px 12px; }
+  .bim-ib-bar { grid-template-columns: minmax(0, 1fr); padding: 0 min(${bim('browser-pad-x')}, 16px) 12px; }
   .bim-ib-bar > [aria-hidden] { display: none; }
   .bim-ib-bar-main { max-width: none; }
   .bim-ib-submit { min-height: 44px; padding: 0 16px; }
