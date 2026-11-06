@@ -1,6 +1,6 @@
 {
   "name": "book-index-ui",
-  "version": "0.66.0-rc.4",
+  "version": "0.66.0-rc.6",
   "description": "React components for browsing and editing ancient book index metadata",
   "author": "Li Shaodong",
   "repository": {
@@ -30,6 +30,11 @@
       "types": "./dist/storage.d.ts",
       "import": "./dist/storage.js",
       "require": "./dist/storage.cjs"
+    },
+    "./editor": {
+      "types": "./dist/editor.d.ts",
+      "import": "./dist/editor.js",
+      "require": "./dist/editor.cjs"
     },
     "./styles": "./dist/book-index-ui.css",
     "./tokens.css": "./dist/tokens.css",

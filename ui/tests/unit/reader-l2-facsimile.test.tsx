@@ -64,6 +64,12 @@ const transport = {
     getChapter: async () => ({ md: 'x', json: null }),
 } as unknown as IndexStorage;
 
+/** 图源已裁边的版本：manifest 版本字段 facsimile.trimmed（取代已删的 facsimileTrimmed prop） */
+const trimmedTransport = {
+    ...transport,
+    getTextManifest: async () => ({ id: WORK, versions: [{ key: 'original', kind: 'collated', label: '底本', source: 'collated', facsimile: { trimmed: true } }] }),
+} as unknown as IndexStorage;
+
 const wp = () => document.querySelector('[data-warp-page]')!.getAttribute('data-warp-page');
 const input = () => screen.getByTestId('facsimile-page-input') as HTMLInputElement;
 const stub = () => screen.getByTestId('canvas-stub');
@@ -217,9 +223,9 @@ describe('L2 · 保留空白／去空白', () => {
         expect(stub().getAttribute('data-preserve')).toBe('true');
     });
 
-    it('图源已裁去空白（facsimileTrimmed）：不显示勾选框，书影画布一律整图，已存的偏好不被改写', async () => {
+    it('图源已裁去空白（版本 facsimile.trimmed）：不显示勾选框，书影画布一律整图，已存的偏好不被改写', async () => {
         localStorage.setItem('bim-reader-prefs', JSON.stringify({ v: 2, pageBreaks: true, preserveMargins: false }));
-        await setup({ facsimileTrimmed: true });
+        await setup({ transport: trimmedTransport });
         expect(stub().getAttribute('data-preserve')).toBe('true');
         openSettings();
         expect(screen.queryByLabelText(/書影保留空白|书影保留空白/)).toBeNull();

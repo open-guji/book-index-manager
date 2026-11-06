@@ -50,7 +50,7 @@ type Log = Array<[TextLocation, TextLocationCause]>;
 function setup(transport: IndexStorage, props: Partial<React.ComponentProps<typeof TextReader>> = {}) {
     const log: Log = [];
     const onLocationChange = (l: TextLocation, c: TextLocationCause) => { log.push([l, c]); };
-    const utils = render(<TextReader id={WORK} transport={transport} onLocationChange={onLocationChange} {...props} />);
+    const utils = render(<TextReader id={WORK} transport={transport} onLocationChange={onLocationChange} hideSupersededVersions={false} {...props} />);
     return { ...utils, log };
 }
 const versionSelect = () => screen.getByRole('combobox', { name: '來源' }) as HTMLSelectElement;
@@ -169,12 +169,12 @@ describe('TextReader · 新结构', () => {
 
     it('受控：宿主改 props 才换内容（组件自己不改）', async () => {
         const t = nativeTransport();
-        const { rerender } = render(<TextReader id={WORK} transport={t} versionKey="default" chapter="001" />);
+        const { rerender } = render(<TextReader id={WORK} transport={t} hideSupersededVersions={false} versionKey="default" chapter="001" />);
         await screen.findByRole('heading', { level: 1, name: '經錄' });
         fireEvent.change(versionSelect(), { target: { value: 'wikisource' } });
         await act(async () => { await Promise.resolve(); });
         expect(screen.getByRole('heading', { level: 1, name: '經錄' })).toBeTruthy(); // 宿主没改，仍是整理本
-        rerender(<TextReader id={WORK} transport={t} versionKey="wikisource" chapter="001" />);
+        rerender(<TextReader id={WORK} transport={t} hideSupersededVersions={false} versionKey="wikisource" chapter="001" />);
         await screen.findByRole('heading', { level: 1, name: '卷一' });
     });
 
@@ -182,10 +182,10 @@ describe('TextReader · 新结构', () => {
         const t = nativeTransport();
         const log: Log = [];
         const onLocationChange = (l: TextLocation, c: TextLocationCause) => { log.push([l, c]); };
-        const { rerender } = render(<TextReader id={WORK} transport={t} versionKey="default" chapter="001" onLocationChange={onLocationChange} />);
+        const { rerender } = render(<TextReader id={WORK} transport={t} hideSupersededVersions={false} versionKey="default" chapter="001" onLocationChange={onLocationChange} />);
         await screen.findByRole('heading', { level: 1, name: '經錄' });
         // default 的目录（001/002）还在手上时，宿主一次性给出 wikisource＋卷三
-        rerender(<TextReader id={WORK} transport={t} versionKey="wikisource" chapter="003" onLocationChange={onLocationChange} />);
+        rerender(<TextReader id={WORK} transport={t} hideSupersededVersions={false} versionKey="wikisource" chapter="003" onLocationChange={onLocationChange} />);
         await screen.findByRole('heading', { level: 1, name: '卷三' });
         // 不能向宿主发过「改回第一章」的 auto 通知（宿主一照办就切回卷一）
         expect(log.filter(([l, c]) => c === 'auto' && l.key === 'wikisource' && l.chapter !== '003')).toEqual([]);

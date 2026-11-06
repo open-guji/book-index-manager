@@ -80,12 +80,6 @@ describe('阅读器插件', () => {
         expect(container.querySelector('button[aria-pressed][title="切换外挂现代断句标点"]')).not.toBeNull();
     });
 
-    it('旧的 settingsExtra 插槽照旧可用', async () => {
-        await setup(undefined, { settingsExtra: <b data-testid="legacy">下载</b> });
-        openSettings();
-        expect(screen.getByTestId('legacy')).toBeTruthy();
-    });
-
     it('toolbar：subtitle、actions 宽屏在工具条上', async () => {
         const plugins: ReaderPlugin[] = [
             { id: 't1', toolbar: { slot: 'subtitle', render: () => <u data-testid="tb-sub">v1</u> } },

@@ -97,6 +97,14 @@ export interface IndexStorage {
     /** @deprecated 使用 getCollectionCatalogs */
     getCollectionCatalog?(collectionId: string): Promise<VolumeBookMapping | null>;
 
+    // ── 读者反馈（可选）：详情页「反馈」页签走它；没有就退回 `feedbackApiUrl` ──
+
+    /** 某条目的已有反馈 */
+    listFeedback?(resourceId: string): Promise<import('../core/feedback-api').FeedbackItem[]>;
+
+    /** 提交一条反馈；失败抛 Error */
+    submitFeedback?(data: import('../core/feedback-api').FeedbackSubmission): Promise<void>;
+
     // ── 阅读文本（新结构，可选；overview#307） ──
     //
     // 整理本与全文合一：一个条目下有 manifest.json 列出的若干份版本（key），每份是按章分的一组 md，

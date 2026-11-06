@@ -118,15 +118,17 @@ export { SNIPPET_MARK_START, SNIPPET_MARK_END, splitHighlightSnippet } from './c
 export type { HighlightSegment } from './core/highlight';
 
 // Components - Existing
-export { ResourceEditor } from './components/ResourceEditor';
 export { ResourceList } from './components/ResourceList';
 export { IndexBrowser, RECENT_IDS_STORAGE_KEY } from './components/IndexBrowser';
+/** @deprecated 旧版详情页，请用 `BookDetailLayout`／`WorkPage`／`BookPage`／`CollectionPage`／`EntityPage`；仅为兼容旧宿主，不再维护 */
 export { IndexDetail, EmendatedBySection } from './components/IndexDetail';
 export type { IndexDetailProps } from './components/IndexDetail';
 export { EntityDetail } from './components/EntityDetail';
 export type { EntityDetailProps } from './components/EntityDetail';
+/** @deprecated 旧版整站壳，请由宿主自己组合页面；仅为兼容旧宿主，不再维护 */
 export { IndexApp } from './components/IndexApp';
 export type { IndexAppProps } from './components/IndexApp';
+/** @deprecated 旧版首页（五个页签），请用 `MetaHomeView`／`ReadHomeView`；仅为兼容旧宿主，不再维护 */
 export { HomePage } from './components/HomePage';
 export type { HomePageProps, RecommendedItem } from './components/HomePage';
 export { SearchInput } from './components/SearchInput';
@@ -171,19 +173,10 @@ export type { ReadingMode, ReadingGenre, ParagraphBlock } from './core/paragraph
 export { WorkCatalog } from './components/WorkCatalog';
 export type { WorkCatalogProps } from './components/WorkCatalog';
 
-// Components - Unified View
-export { IndexView, detailToEditor, editorToDetail } from './components/IndexView';
-export type { IndexViewProps } from './components/IndexView';
-
-// Components - Editor
-export { IndexEditor } from './components/IndexEditor';
-export type { IndexEditorProps, IndexEditorData } from './components/IndexEditor';
-export { SmartBidInput } from './components/SmartBidInput';
-export { SourceEditor, parseSourceString, stringifySources } from './components/SourceEditor';
-export { RelationPanel } from './components/RelationPanel';
-export { EntitySelector } from './components/EntitySelector';
-export { CreateEntityDialog } from './components/CreateEntityDialog';
-export { EntityPickerDialog } from './components/EntityPickerDialog';
+// 编辑态（IndexEditor、ResourceEditor、SourceEditor、RelationPanel、实体选择／新建、IndexView）已拆到子入口 `book-index-ui/editor`
+// 反馈传输层：FeedbackTab 经它取数／提交，不直接 fetch
+export { createFeedbackTransport, feedbackTransportOf } from './core/feedback-api';
+export type { FeedbackTransport, FeedbackSubmission } from './core/feedback-api';
 export { FeedbackDialog } from './components/FeedbackDialog';
 export type { FeedbackDialogProps, FeedbackData, FeedbackType } from './components/FeedbackDialog';
 export { FeedbackButton, FEEDBACK_FAB_OFFSET_VAR } from './components/FeedbackButton';

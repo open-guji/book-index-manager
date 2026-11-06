@@ -2,20 +2,10 @@ import React from 'react';
 import { LoadingDots } from './common/LoadingDots';
 import { useBidUrl } from '../core/bid-url';
 import { bim } from '../styles/tokens';
+import type { FeedbackItem } from '../core/feedback-api';
 import { useI18n } from '../i18n';
 
-export interface FeedbackItem {
-    id: string;
-    // G-23 第二批：type/status 服务端已扩充（suggestion/contact/other、in_progress/wontfix/duplicate）。
-    // 旧版 UI 不认识的取值一律回退显示「其他」/「待处理」，不能崩——见 TYPE_CONFIG/STATUS_CONFIG 的 fallback。
-    type: 'bug' | 'resource' | 'suggestion' | 'contact' | 'other' | (string & {});
-    content: string;
-    createdAt: string;
-    status: 'pending' | 'in_progress' | 'resolved' | 'wontfix' | 'duplicate' | (string & {});
-    reply?: string;
-    pageUrl?: string;
-    resourceId?: string;
-}
+export type { FeedbackItem };
 
 export interface FeedbackListProps {
     items: FeedbackItem[];

@@ -91,11 +91,6 @@ export interface TextReaderProps {
     resolveImages?: ReaderImageResolver;
     renderImageOverlay?: ReaderImageOverlay;
     imagePanel?: PanelState;
-    /**
-     * 这部书的书影图源已裁去空白（如殿本 qiefen2）：不显示「书影保留空白」，书影一律按整图显示。
-     * 不传时读 manifest 里当前版本的 `facsimile.trimmed`；传了以传的为准。
-     */
-    facsimileTrimmed?: boolean;
     allowVertical?: boolean;
     /** 「报告错字」：回传书名、条目 id、当前章、位置锚点与选中文字，宿主据此打开现有反馈入口（不传则不显示） */
     onReportError?: (ctx: ReaderReportContext) => void;
@@ -105,10 +100,6 @@ export interface TextReaderProps {
     backHref?: string;
     /** 返回链接的文字，默认「阅读」 */
     backLabel?: string;
-    /** 「阅读设置」（宽屏侧栏／窄屏底栏抽屉）末尾的「更多」组内容，如「下载本冊」；不给不出 */
-    settingsExtra?: React.ReactNode;
-    /** 「更多」组标题；缺省「更多」 */
-    settingsExtraTitle?: React.ReactNode;
     /**
      * 矫正对读数据提供函数（返回当前卷的透视矫正数据）。**一般不用传**：不传时阅读器按章条目的 `*_file` 声明
      * 自己通过 `transport.getTextFile` 取（见 `loadReaderChapter`）；传了就完全由宿主接管。
@@ -122,7 +113,7 @@ export interface TextReaderProps {
     initialChapter?: ReaderInitialChapter;
     /**
      * 按阅读页规则（`readerVersions`）过一遍 manifest：有全文版时不列整理本，同源有精校时不列粗校。
-     * 缺省 false＝列出 manifest 的全部版本（兼容旧宿主）；将来改为缺省 true。
+     * 缺省 true；传 `false` 列出 manifest 的全部版本（如编辑／校对界面要看被盖掉的粗校本）。
      */
     hideSupersededVersions?: boolean;
     /**
@@ -344,8 +335,8 @@ function InitialChapterLead({ data }: { data: ReaderInitialChapter }) {
 const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof useReaderPrefs>; onBodyReady?: () => void }> = ({
     prefsState, onBodyReady,
     id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate, anchor: anchorProp,
-    title, subtitle, settingsExtra, settingsExtraTitle, resolveImages, renderImageOverlay, imagePanel, facsimileTrimmed, allowVertical, onReportError, revisedAt, backHref, backLabel,
-    resolveWarpData, textFileBase, onChapterData, hideSupersededVersions, warpData: warpDataProp, resolveEntities, onEntityNavigate, plugins: pluginsProp,
+    title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical, onReportError, revisedAt, backHref, backLabel,
+    resolveWarpData, textFileBase, onChapterData, hideSupersededVersions = true, warpData: warpDataProp, resolveEntities, onEntityNavigate, plugins: pluginsProp,
     className, style,
 }) => {
     const { t, convert } = useI18n();
@@ -587,7 +578,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     const [showPunctuation, setShowPunctuation] = useState<boolean>(true);
     // 书影保留空白：走阅读偏好（持久化；设置面板里的勾选框与书影区的分段按钮是同一个偏好）
     // 图源已无空白：没有「去空白」可言，整图显示（与偏好无关，偏好值不动）
-    const trimmed = facsimileTrimmed ?? version?.facsimile?.trimmed ?? false;
+    const trimmed = version?.facsimile?.trimmed ?? false;
     const preserveMargins = trimmed ? true : storedPrefs.preserveMargins;
     const setPreserveMargins = useCallback((v: boolean) => setPrefs({ preserveMargins: v }), [setPrefs]);
     // 书影缩放：倍数（显示百分比、放大后换原图档）；翻页按钮带正文滚动用的触发器
@@ -855,7 +846,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     );
 
     // ── 插件 ──
-    // 旧插槽（settingsExtra、标点开关）在这里改写成内置插件，与宿主插件走同一条路
+    // 标点开关在这里改写成内置插件，与宿主插件走同一条路
     const viewport = useReaderViewport();
     const textRootRef = useRef<HTMLElement | null>(null);
     const legacyPlugins = useMemo<ReaderPlugin[]>(() => {
@@ -879,9 +870,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                 },
             });
         }
-        if (settingsExtra) list.push({ id: 'bim:settings-extra', settings: { group: 'more', order: 0, render: () => settingsExtra } });
         return list;
-    }, [warpData, showPunctuation, settingsExtra]);
+    }, [warpData, showPunctuation]);
     const allPlugins = useMemo<ReadonlyArray<ReaderPlugin>>(
         () => (pluginsProp && pluginsProp.length > 0 ? [...legacyPlugins, ...pluginsProp] : legacyPlugins),
         [legacyPlugins, pluginsProp],
@@ -1101,7 +1091,6 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                     </div>
                 </div>
             ) : undefined}
-            settingsExtraTitle={settingsExtraTitle}
             pluginSettings={pluginRt.settings}
             pluginToolbar={pluginRt.toolbar}
             pluginOverlay={pluginRt.overlay}
