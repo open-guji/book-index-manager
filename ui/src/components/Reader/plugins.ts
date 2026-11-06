@@ -88,12 +88,17 @@ export interface ReaderApi {
     state<T = unknown>(pluginId: string): T | undefined;
     /** 本章的格，阅读顺序；没有逐字格位的章为空数组 */
     cells: ReadonlyArray<ReaderCellInfo>;
-    /** 滚到某格所在的段（一般是整段顶到视口上方）。格还没渲染出来就等它出来 */
+    /**
+     * 滚到某格所在的段（一般是整段顶到视口上方）。格还没渲染出来就等它出来。
+     * 也接受 `locate({ text })` 在无格位章（整理本、Markdown 文本）里返回的位置记号（`t:…`）。
+     */
     scrollTo(anchor: string, opts?: { block?: 'center' | 'start' }): void;
     rectOf(anchor: string): DOMRect | null;
     /**
-     * 按文字或按格序定位，返回格位 key，找不到为 null。
-     * `{ cp }`＝本章 `cells` 的下标（从 0 数）；`{ text }`＝在本章连续文字里找第一处。
+     * 按文字或按格序定位，返回位置 key，找不到为 null。
+     * `{ text }`＝在本章连续文字里找第一处（忽略空白）：有逐字格位的章返回格位 key；
+     * 整理本、Markdown 等无格位的章，按渲染出的文字找，返回不透明的位置记号 `t:…`（只用来传给 `scrollTo`／`rectOf`，别解析）。
+     * `{ cp }`＝本章 `cells` 的下标（从 0 数），只对有格位的章有效。
      */
     locate(q: { cp: number } | { text: string }): string | null;
     /** 插件自己的状态变了，要求重算修饰（缺省重算全部插件） */

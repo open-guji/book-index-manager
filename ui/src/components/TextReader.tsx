@@ -134,7 +134,7 @@ export interface TextReaderProps {
     warpData?: PageWarpData | null;
     /**
      * 阅读器插件（设置块、工具条、浮层、按格修饰、格子事件、选字动作；接口见 `Reader/plugins.ts`）。
-     * 请保持引用稳定（useMemo／模块常量）。旧的 `settingsExtra` 等插槽照旧可用，内部已按插件处理。
+     * 请保持引用稳定（useMemo／模块常量）。
      */
     plugins?: ReadonlyArray<ReaderPlugin>;
     className?: string;
@@ -849,6 +849,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     // 标点开关在这里改写成内置插件，与宿主插件走同一条路
     const viewport = useReaderViewport();
     const textRootRef = useRef<HTMLElement | null>(null);
+    const shellTextRef = useRef<HTMLElement | null>(null);
     const legacyPlugins = useMemo<ReaderPlugin[]>(() => {
         const list: ReaderPlugin[] = [];
         if (warpData) {
@@ -886,7 +887,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     const pluginRt = useReaderPlugins({
         plugins: allPlugins, ctx: pluginCtx, prefs, setPrefs, t: t as unknown as (key: string, vars?: Record<string, string | number>) => string, convert,
         pages: (warpData as any)?.pages as GujiPageInfo[] | undefined,
-        textRootRef, selectedCharIds, scrollToAnchor: scrollToAnchorFromPlugin,
+        textRootRef, shellTextRef, selectedCharIds, scrollToAnchor: scrollToAnchorFromPlugin,
     });
 
     // ── 渲染 ──
@@ -1094,6 +1095,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             pluginSettings={pluginRt.settings}
             pluginToolbar={pluginRt.toolbar}
             pluginOverlay={pluginRt.overlay}
+            textRootRef={shellTextRef}
             prefs={prefs}
             onPrefsChange={setPrefs}
             versions={readerVersions.length > 1 ? readerVersions : undefined}

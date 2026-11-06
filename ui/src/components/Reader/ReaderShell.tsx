@@ -134,6 +134,8 @@ export interface ReaderShellProps {
     pluginToolbar?: { subtitle?: React.ReactNode; actions?: React.ReactNode };
     /** 插件浮层，渲染在阅读器根节点末尾（样式见 `.bim-rd-overlay`：桌面右下角，窄屏贴底） */
     pluginOverlay?: React.ReactNode;
+    /** 正文容器元素（插件的文本定位用）；TextReader 内部使用 */
+    textRootRef?: React.MutableRefObject<HTMLElement | null>;
     /** 是否处于 interactive_warp 模式 */
     isWarpMode?: boolean;
     /** 「书影保留空白」勾选框；图源本身已裁掉空白的书传 false，不显示（默认显示） */
@@ -349,7 +351,7 @@ export function ReaderShell({
     pagerUnit: pagerUnitProp,
     versions, currentVersionKey, onVersionChange, versionSource = true, keepChapterOnVersionChange = false,
     customImagePanel, isWarpMode, showPreserveMargins = true,
-    pluginSettings, pluginToolbar, pluginOverlay,
+    pluginSettings, pluginToolbar, pluginOverlay, textRootRef: textRootOut,
     children, className, style,
 }: ReaderShellProps) {
     const { t, convert } = useI18n();
@@ -822,7 +824,7 @@ export function ReaderShell({
                         {settingsPanel}
                     </aside>
                 )}
-                <div className="bim-rd-text" id={textId} ref={textRef} tabIndex={-1} data-rail={(rail || onReportError) && !isWarpMode ? 'true' : undefined}>
+                <div className="bim-rd-text" id={textId} ref={(el) => { (textRef as React.MutableRefObject<HTMLDivElement | null>).current = el; if (textRootOut) textRootOut.current = el; }} tabIndex={-1} data-rail={(rail || onReportError) && !isWarpMode ? 'true' : undefined}>
                     <div className="bim-rd-col">
                         {children}
                         {versionSource && version && (version.sourceName || version.license) && (
