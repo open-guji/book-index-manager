@@ -91,6 +91,7 @@ export const reader = defineMessages({
     noText: '暫無文本',
     tocFailed: '無法加載目錄',
     tocLoading: '加載目錄…',
+    continueReading: '繼續閱讀',
     viewEntry: '查看條目',
     /** 作者行缺角色时的默认后缀 */
     defaultRole: '撰',
@@ -193,6 +194,7 @@ export const reader = defineMessages({
     noText: '暂无文本',
     tocFailed: '无法加载目录',
     tocLoading: '加载目录…',
+    continueReading: '继续阅读',
     viewEntry: '查看条目',
     defaultRole: '撰',
     tocCaption: '目录 · {n} {unit}',
