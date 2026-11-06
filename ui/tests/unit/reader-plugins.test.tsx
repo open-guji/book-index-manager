@@ -261,3 +261,47 @@ describe('无逐字格位的文本章：locate({text}) / scrollTo', () => {
         }
     });
 });
+
+describe('无格位的文本章：选中文字也出选字浮条', () => {
+    const mdTransport = {
+        getItem: async () => ({ title: '某書' }),
+        getTextManifest: async () => ({ id: 'w1', versions: [{ key: 'v1', kind: 'wikisource', label: '維基文庫', source: 'wikisource' }] }),
+        getTextIndex: async () => ({ chapters: [{ n: 1, file: '001', title: '卷一' }] }),
+        getChapter: async () => ({ md: '## 卷一\n\n天地玄黃，宇宙洪荒。', json: null }),
+    } as unknown as IndexStorage;
+
+    const selectText = (node: Node) => {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const sel = window.getSelection()!;
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.dispatchEvent(new Event('selectionchange'));
+    };
+
+    it('正文里划选：浮条名「选中文字」，anchors 为空、text 是选区；取消选择后消失；选区在正文外不出', async () => {
+        const onClick = vi.fn();
+        render(
+            <LocaleProvider>
+                <TextReader id="w1" transport={mdTransport} versionKey="v1" chapter="001"
+                    plugins={[{ id: 'r', selectionActions: (sel) => [{ key: 'rep', label: '报错', onClick: () => onClick(sel) }] }]} />
+            </LocaleProvider>,
+        );
+        const p = await screen.findByText(/宇宙洪荒/);
+        expect(screen.queryByRole('toolbar', { name: '选中文字' })).toBeNull();
+        act(() => selectText(p));
+        const bar = await screen.findByRole('toolbar', { name: '选中文字' });
+        fireEvent.click(bar.querySelector('button')!);
+        expect(onClick).toHaveBeenCalledTimes(1);
+        expect(onClick.mock.calls[0][0]).toMatchObject({ anchors: [], text: expect.stringContaining('天地玄') });
+        // 选区跑到阅读器外：浮条消失
+        const outside = document.createElement('p');
+        outside.textContent = '外面的字';
+        document.body.appendChild(outside);
+        act(() => selectText(outside));
+        await waitFor(() => expect(screen.queryByRole('toolbar', { name: '选中文字' })).toBeNull());
+        // 折叠选区：同样没有
+        act(() => { window.getSelection()!.removeAllRanges(); document.dispatchEvent(new Event('selectionchange')); });
+        expect(screen.queryByRole('toolbar', { name: '选中文字' })).toBeNull();
+    });
+});
