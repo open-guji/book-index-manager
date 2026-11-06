@@ -39,7 +39,7 @@ import { GujiWarpCanvas, loadImage, type PageWarpData } from './Reader/GujiWarpC
 import type { GujiPageInfo } from '../core/guji-pages';
 import { GujiTextViewer } from './Reader/GujiTextViewer';
 import { ZoomPanBox, type ZoomPanHandle } from './Reader/ZoomPanBox';
-import { loadReaderChapter, loadReaderFiles, type ReaderChapterData } from '../core/reader-data';
+import { loadReaderChapter, loadReaderFiles, readerVersions as filterReaderVersions, type ReaderChapterData } from '../core/reader-data';
 import { useChapterWarpData, type ReaderWarpResolver } from './Reader/useChapterWarpData';
 import { useChapterEntities, type ReaderEntityResolver } from './Reader/useChapterEntities';
 import { headingKey, headingsFromPunct, nestHeadings, parseHeadingKey, sanitizeHeadings, type HeadingNode, type TextHeading } from '../core/text-headings';
@@ -112,6 +112,11 @@ export interface TextReaderProps {
      * 自己通过 `transport.getTextFile` 取（见 `loadReaderChapter`）；传了就完全由宿主接管。
      */
     resolveWarpData?: ReaderWarpResolver;
+    /**
+     * 按阅读页规则（`readerVersions`）过一遍 manifest：有全文版时不列整理本，同源有精校时不列粗校。
+     * 缺省 false＝列出 manifest 的全部版本（兼容旧宿主）；将来改为缺省 true。
+     */
+    hideSupersededVersions?: boolean;
     /**
      * 阅读器自己取对读数据时，storage 没有 `getTextFile`（本地／bundle 模式）就退回 `fetch(<base>/<id>/<key>/<file>)`，如 `/data/items`。
      * 不传且 storage 也没有 `getTextFile` 则不自取。
@@ -285,7 +290,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     prefsState,
     id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate, anchor: anchorProp,
     title, subtitle, settingsExtra, settingsExtraTitle, resolveImages, renderImageOverlay, imagePanel, facsimileTrimmed, allowVertical, onReportError, revisedAt, backHref, backLabel,
-    resolveWarpData, textFileBase, onChapterData, warpData: warpDataProp, resolveEntities, onEntityNavigate,
+    resolveWarpData, textFileBase, onChapterData, hideSupersededVersions, warpData: warpDataProp, resolveEntities, onEntityNavigate,
     className, style,
 }) => {
     const { t, convert } = useI18n();
@@ -304,10 +309,10 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         setManifest(null);
         setManifestState('loading');
         api.getManifest(id)
-            .then(m => { if (cancelled) return; if (m) { setManifest(m); setManifestState('ready'); } else setManifestState('missing'); })
+            .then(m => { if (cancelled) return; if (m) { setManifest(hideSupersededVersions ? filterReaderVersions(m) : m); setManifestState('ready'); } else setManifestState('missing'); })
             .catch(() => { if (!cancelled) setManifestState('missing'); });
         return () => { cancelled = true; };
-    }, [api, id]);
+    }, [api, id, hideSupersededVersions]);
 
     // ── 当前版本与章（受控或自管） ──
     const versionControlled = versionKeyProp !== undefined;

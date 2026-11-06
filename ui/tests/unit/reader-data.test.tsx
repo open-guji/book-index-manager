@@ -85,3 +85,21 @@ describe('TextReader · 自取对读数据', () => {
         expect(a.container.textContent).not.toContain('保留空白');
     });
 });
+
+describe('TextReader · 版本列表规则', () => {
+    it('有全文版时不把整理本 default 列进版本选择，主版本是全文版', async () => {
+        const seen: string[] = [];
+        const t = {
+            getItem: async () => ({ title: '書' }),
+            getTextManifest: async () => ({ id: 'i7', versions: [
+                { key: 'default', kind: 'collated', label: '整理本' },
+                { key: 'wikisource', kind: 'transcription', label: '維基文庫' },
+            ] }),
+            getTextIndex: async (_i: string, k: string) => { seen.push(k); return { chapters: [{ n: 1, file: '001', title: '卷一' }] }; },
+            getChapter: async () => ({ md: '正文', json: null }),
+        } as unknown as IndexStorage;
+        render(<LocaleProvider><TextReader id="i7" transport={t} hideSupersededVersions /></LocaleProvider>);
+        await waitFor(() => expect(seen.length).toBeGreaterThan(0));
+        expect(new Set(seen)).toEqual(new Set(['wikisource']));
+    });
+});
