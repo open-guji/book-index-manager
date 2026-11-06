@@ -39,6 +39,7 @@ import { GujiWarpCanvas, loadImage, type PageWarpData } from './Reader/GujiWarpC
 import type { GujiPageInfo } from '../core/guji-pages';
 import { GujiTextViewer } from './Reader/GujiTextViewer';
 import { ZoomPanBox, type ZoomPanHandle } from './Reader/ZoomPanBox';
+import { loadReaderChapter, loadReaderFiles, type ReaderChapterData } from '../core/reader-data';
 import { useChapterWarpData, type ReaderWarpResolver } from './Reader/useChapterWarpData';
 import { useChapterEntities, type ReaderEntityResolver } from './Reader/useChapterEntities';
 import { headingKey, headingsFromPunct, nestHeadings, parseHeadingKey, sanitizeHeadings, type HeadingNode, type TextHeading } from '../core/text-headings';
@@ -88,7 +89,10 @@ export interface TextReaderProps {
     resolveImages?: ReaderImageResolver;
     renderImageOverlay?: ReaderImageOverlay;
     imagePanel?: PanelState;
-    /** 这部书的书影图源已裁去空白（如殿本 qiefen2）：不显示「书影保留空白」，书影一律按整图显示 */
+    /**
+     * 这部书的书影图源已裁去空白（如殿本 qiefen2）：不显示「书影保留空白」，书影一律按整图显示。
+     * 不传时读 manifest 里当前版本的 `facsimile.trimmed`；传了以传的为准。
+     */
     facsimileTrimmed?: boolean;
     allowVertical?: boolean;
     /** 「报告错字」：回传书名、条目 id、当前章、位置锚点与选中文字，宿主据此打开现有反馈入口（不传则不显示） */
@@ -103,8 +107,21 @@ export interface TextReaderProps {
     settingsExtra?: React.ReactNode;
     /** 「更多」组标题；缺省「更多」 */
     settingsExtraTitle?: React.ReactNode;
-    /** 矫正对读数据提供函数（返回当前卷的透视矫正数据） */
+    /**
+     * 矫正对读数据提供函数（返回当前卷的透视矫正数据）。**一般不用传**：不传时阅读器按章条目的 `*_file` 声明
+     * 自己通过 `transport.getTextFile` 取（见 `loadReaderChapter`）；传了就完全由宿主接管。
+     */
     resolveWarpData?: ReaderWarpResolver;
+    /**
+     * 阅读器自己取对读数据时，storage 没有 `getTextFile`（本地／bundle 模式）就退回 `fetch(<base>/<id>/<key>/<file>)`，如 `/data/items`。
+     * 不传且 storage 也没有 `getTextFile` 则不自取。
+     */
+    textFileBase?: string;
+    /**
+     * 阅读器自取一章的对读数据后回调（每章每次取一回；没有对读数据的章 data 为 null）。
+     * 宿主据此记「改字」「校对」的章上下文、补字体等，不用再自己取数。过渡接口：阅读器插件（`onChapter`）落地后由它取代。
+     */
+    onChapterData?: (info: { chapterKey: string; ctx: ReaderResolveContext; data: ReaderChapterData | null }) => void;
     /** 对读正文的实体标注（entity.json，须带逐字 anchor）；按章取，没有就不画 */
     resolveEntities?: ReaderEntityResolver;
     /** 点已收录实体（Ctrl／⌘／Shift 点击或键盘回车）进条目页；不传按 `/item/<id>` 整页跳 */
@@ -113,6 +130,21 @@ export interface TextReaderProps {
     warpData?: PageWarpData | null;
     className?: string;
     style?: React.CSSProperties;
+}
+
+/** 书影栏显示的宽度（≥860px；窄屏收起，不取最大的 cord 文件）。服务端与不支持 matchMedia 的环境按宽屏 */
+const FACSIMILE_WIDE_QUERY = '(min-width: 860px)';
+function useFacsimileWide(): boolean {
+    const [wide, setWide] = useState(() => (typeof window === 'undefined' || !window.matchMedia ? true : window.matchMedia(FACSIMILE_WIDE_QUERY).matches));
+    useEffect(() => {
+        if (!window.matchMedia) return;
+        const mq = window.matchMedia(FACSIMILE_WIDE_QUERY);
+        const on = () => setWide(mq.matches);
+        on();
+        mq.addEventListener?.('change', on);
+        return () => mq.removeEventListener?.('change', on);
+    }, []);
+    return wide;
 }
 
 const MUTED: React.CSSProperties = { padding: 24, color: bim('desc-fg'), fontSize: 14 };
@@ -253,7 +285,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     prefsState,
     id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate, anchor: anchorProp,
     title, subtitle, settingsExtra, settingsExtraTitle, resolveImages, renderImageOverlay, imagePanel, facsimileTrimmed, allowVertical, onReportError, revisedAt, backHref, backLabel,
-    resolveWarpData, warpData: warpDataProp, resolveEntities, onEntityNavigate,
+    resolveWarpData, textFileBase, onChapterData, warpData: warpDataProp, resolveEntities, onEntityNavigate,
     className, style,
 }) => {
     const { t, convert } = useI18n();
@@ -448,8 +480,25 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     useEffect(() => { workLabelCacheRef.current.clear(); }, [id]);
 
     const resolveCtx = useMemo<ReaderResolveContext>(() => ({ versionKey, chapter: (chapterMeta as Record<string, unknown> | null) ?? null }), [versionKey, chapterMeta]);
+    // 对读数据：宿主没接管（没传 resolveWarpData／resolveEntities）且存储取得到文件，就按章条目的声明自己取
+    const wideForCord = useFacsimileWide();
+    const canSelfLoad = typeof transport.getTextFile === 'function' || !!textFileBase;
+    const onChapterDataRef = useRef(onChapterData);
+    onChapterDataRef.current = onChapterData;
+    const selfWarp = useMemo<ReaderWarpResolver | undefined>(() => (
+        resolveWarpData || warpDataProp !== undefined || !canSelfLoad ? undefined : async (chapterKey, ctx) => {
+            const data = await loadReaderChapter(transport, { id, versionKey: ctx?.versionKey, chapter: ctx?.chapter }, { cord: wideForCord, textFileBase });
+            if (ctx?.chapter) onChapterDataRef.current?.({ chapterKey, ctx, data });
+            return data?.warpData ?? null;
+        }
+    ), [resolveWarpData, warpDataProp, canSelfLoad, transport, id, wideForCord, textFileBase]);
+    const selfEntities = useMemo<ReaderEntityResolver | undefined>(() => (
+        resolveEntities || !canSelfLoad ? undefined : async (_chapterKey, ctx) => (
+            (await loadReaderFiles(transport, { id, versionKey: ctx?.versionKey, chapter: ctx?.chapter }, { cord: wideForCord, textFileBase }))?.entity ?? null
+        )
+    ), [resolveEntities, canSelfLoad, transport, id, wideForCord, textFileBase]);
     const images = useChapterImages(resolveImages, effectiveChapter ?? null, resolveCtx, id);
-    const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData, warpDataProp, effectiveChapter ?? null, resolveCtx, id);
+    const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData ?? selfWarp, warpDataProp, effectiveChapter ?? null, resolveCtx, id);
     // 换章时书影栏：之前开着（有书影／对读书影），新章的数据到手前保持开着并显示「加载书影…」，不收起再弹开（栏宽变两次、正文横移）。
     // 首次进入不撑开（GUJI-181），所以要先见过书影才算
     const sawImagesRef = useRef(false);
@@ -458,7 +507,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     const waitingImages = images.loading || (isDuiduChapter(chapterMeta) && warpLoading && !warpData);
     const keepImgPanel = sawImagesRef.current && waitingImages;
     const switchingImages = keepImgPanel;
-    const entitySpans = useChapterEntities(resolveEntities, effectiveChapter ?? null, resolveCtx, id);
+    const entitySpans = useChapterEntities(resolveEntities ?? selfEntities, effectiveChapter ?? null, resolveCtx, id);
     // 专名号：用户没选过（properNameMode==null）时，本章有专名层数据就默认 full（没有就 off，不画空线）；选过就照用户的
     const properNameMode = storedPrefs.properNameMode ?? (entitySpans.length > 0 ? 'full' : 'off');
     const prefs = useMemo(() => ({ ...storedPrefs, properNameMode }), [storedPrefs, properNameMode]);
@@ -475,7 +524,8 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     const [showPunctuation, setShowPunctuation] = useState<boolean>(true);
     // 书影保留空白：走阅读偏好（持久化；设置面板里的勾选框与书影区的分段按钮是同一个偏好）
     // 图源已无空白：没有「去空白」可言，整图显示（与偏好无关，偏好值不动）
-    const preserveMargins = facsimileTrimmed ? true : storedPrefs.preserveMargins;
+    const trimmed = facsimileTrimmed ?? version?.facsimile?.trimmed ?? false;
+    const preserveMargins = trimmed ? true : storedPrefs.preserveMargins;
     const setPreserveMargins = useCallback((v: boolean) => setPrefs({ preserveMargins: v }), [setPrefs]);
     // 书影缩放：倍数（显示百分比、放大后换原图档）；翻页按钮带正文滚动用的触发器
     const zoomRef = useRef<ZoomPanHandle>(null);
@@ -848,7 +898,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             imagePanel={warpData || keepImgPanel ? 'open' : imagePanel}
             imagesLoading={switchingImages}
             isWarpMode={!!warpData}
-            showPreserveMargins={!facsimileTrimmed}
+            showPreserveMargins={!trimmed}
             customImagePanel={warpData && activePageData ? (
                 <div
                     ref={facsimileRef}

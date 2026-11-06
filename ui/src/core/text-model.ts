@@ -46,6 +46,8 @@ export interface TextVersion {
     quality?: string | null;
     chapters_total?: number | null;
     visibility?: string;
+    /** 书影图源的事实（manifest 声明）：`trimmed`＝图源已裁去空白（如殿本 qiefen2），阅读器不显示「书影保留空白」，书影一律按整图 */
+    facsimile?: { trimmed?: boolean };
     /** 支持的阅读能力/模式清单：['text'] | ['text', 'facsimile'] | ['text', 'facsimile', 'interactive_warp'] */
     reading_modes?: ReadingCapability[];
     default_reading_mode?: ReadingCapability;
