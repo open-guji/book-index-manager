@@ -11,6 +11,7 @@ import { transformMark, type MarkOpts, type QuoteStyle } from './marks';
 import type { EntitySummaryLoader, EntitySummaryTransport } from '../EntityText/summary';
 import type { GujiFigure } from '../../core/guji-pages';
 import { FigBlock, FigCell, copyTextWithFigures } from './GujiFigureParts';
+import { sameDecoration, type CellDecoration } from './plugins';
 
 export interface PunctEntry {
   /** 缺省时按 `<anchor>#<序号>` 补 */
@@ -86,6 +87,8 @@ export interface GujiTextViewerProps {
   figUrl?: (file: string) => string;
   /** 点击插图块（宿主据此把书影栏翻到该页、标出原框）；`box` 是 cord `marks.figure` 的框 `[x0,y0,x1,y1]`，没有 cord 时缺省 */
   onFigureBlockClick?: (info: { page: number; fig: string; box?: [number, number, number, number] }) => void;
+  /** 插件给字的修饰（格位 key → 修饰）。按页分桶，没变的页不重渲染；图片格不画。不传＝无修饰 */
+  decorations?: ReadonlyMap<string, CellDecoration>;
 }
 
 const defaultHref = (id: string) => `/item/${encodeURIComponent(id)}`;
@@ -144,6 +147,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   figures,
   figUrl,
   onFigureBlockClick,
+  decorations,
 }) => {
   const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -455,6 +459,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
 
   // 每页只收到落在本页的选中字；没变的页拿到同一个 Set，memo 才挡得住
   const selectedByPage = useSelectedByPage(selectedCharIds, reflow.mergedOwner);
+  const decoByPage = useDecorationsByPage(decorations, reflow.mergedOwner);
 
   // 字 id → 元素：悬停、点书影定位都要按 id 找字，不再每次在 3 万个节点里 querySelector（GUJI-630）。
   // 懒建；查不到或元素已脱离文档（换章、重排）就重建一次，同一份排版只重建一次
@@ -810,6 +815,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
             markOpts={markOpts}
             plainBooks={plainBooks}
             selected={selectedByPage.get(pGroup.page) ?? NO_SELECTION}
+            decorations={decoByPage.get(pGroup.page)}
             entityOfChar={entityOfChar}
             entityLoader={entityLoader}
             convert={convert}
@@ -870,6 +876,48 @@ interface PageHandlers {
   leave: () => void;
   navigate: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
   figBlock: (info: { page: number; fig: string; box?: [number, number, number, number] }) => void;
+}
+
+const NO_DECO_ATTRS = {};
+function decoAttrs(d: CellDecoration | undefined): Record<string, string> {
+  if (!d) return NO_DECO_ATTRS;
+  const a: Record<string, string> = { 'data-cd': d.tone ?? '' };
+  if (d.sub) a['data-cd-sub'] = d.sub;
+  if (d.focus) a['data-cd-focus'] = '';
+  if (d.bg || d.fg) a['data-cd-custom'] = '';
+  return a;
+}
+function decoStyle(d: CellDecoration | undefined): React.CSSProperties | undefined {
+  if (!d || (!d.bg && !d.fg)) return undefined;
+  return { ['--cd-bg' as string]: d.bg, ['--cd-fg' as string]: d.fg } as React.CSSProperties;
+}
+function decoClass(d: CellDecoration | undefined): string {
+  if (!d) return '';
+  return ` bim-cd${d.tone ? ` bim-cd-${d.tone}` : ''}${d.underline ? ` bim-cd-ul-${d.underline}` : ''}`;
+}
+
+/** 修饰按页分桶；内容没变的页复用上次的 Map（身份不变，memo 的页就不重渲染） */
+function useDecorationsByPage(decorations: ReadonlyMap<string, CellDecoration> | undefined, mergedOwner: ReadonlyMap<string, number>): Map<number, ReadonlyMap<string, CellDecoration>> {
+  const prev = useRef<Map<number, ReadonlyMap<string, CellDecoration>>>(new Map());
+  return useMemo(() => {
+    const next = new Map<number, ReadonlyMap<string, CellDecoration>>();
+    if (decorations && decorations.size > 0) {
+      const buckets = new Map<number, Map<string, CellDecoration>>();
+      decorations.forEach((d, id) => {
+        const page = mergedOwner.get(id) ?? parseInt(id.split(':')[0], 10);
+        let m = buckets.get(page);
+        if (!m) buckets.set(page, (m = new Map()));
+        m.set(id, d);
+      });
+      buckets.forEach((m, page) => {
+        const old = prev.current.get(page);
+        const same = old && old.size === m.size && Array.from(m).every(([id, d]) => { const o = old.get(id); return !!o && sameDecoration(o, d); });
+        next.set(page, same ? old! : m);
+      });
+    }
+    prev.current = next;
+    return next;
+  }, [decorations, mergedOwner]);
 }
 
 /** 选中字按页分桶；内容没变的页复用上次的 Set（身份不变，memo 的页就不重渲染） */
@@ -967,7 +1015,7 @@ function ReflowBlock({ heading, children }: { heading?: ReflowHeading; children:
 
 /** 一页正文。memo：翻页、悬停、选中别页的字都不会让它重渲染 */
 const PageSection = React.memo(function PageSection({
-  pGroup, first, pageBreaks, markOpts, plainBooks, selected, entityOfChar, entityLoader, convert, buildHref, handlers, charCount, pageStarts, figures, figUrl,
+  pGroup, first, pageBreaks, markOpts, plainBooks, selected, decorations, entityOfChar, entityLoader, convert, buildHref, handlers, charCount, pageStarts, figures, figUrl,
 }: {
   pGroup: ReflowPage;
   first: boolean;
@@ -975,6 +1023,7 @@ const PageSection = React.memo(function PageSection({
   markOpts: MarkOpts | null;
   plainBooks: boolean;
   selected: ReadonlySet<string>;
+  decorations?: ReadonlyMap<string, CellDecoration>;
   entityOfChar: Map<string, EntitySpan>;
   entityLoader: ReturnType<typeof useEntitySummaryLoader>;
   convert?: (s: string) => string;
@@ -1067,16 +1116,18 @@ const PageSection = React.memo(function PageSection({
                   {ch.fig ? (
                     <FigCell id={ch.id} fig={ch.fig} info={figures?.get(ch.fig)} figUrl={figUrl} cells={figCells} cont={figCont}
                       className={cls} pageStart={pageStarts.get(ch.id)}>{show(ch)}</FigCell>
-                  ) : <span
+                  ) : <><span
                     data-char-id={ch.id}
                     data-page-start={pageStarts.get(ch.id)}
-                    className={`guji-text-char${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${ch.lacuna || (ch.pending && ch.char === '□') ? ' is-lacuna' : ''}${ch.pending ? ' is-pending' : ''}${ch.lacuna && ch.guess_c ? ' has-guess' : ''}${ch.guess ? ' is-guess' : ''}${ch.zi ? ' is-zi' : ''}${start?.raised ? ' is-raised' : ''}`}
+                    {...decoAttrs(decorations?.get(ch.id))}
+                    style={decoStyle(decorations?.get(ch.id))}
+                    className={`guji-text-char${decoClass(decorations?.get(ch.id))}${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${ch.lacuna || (ch.pending && ch.char === '□') ? ' is-lacuna' : ''}${ch.pending ? ' is-pending' : ''}${ch.lacuna && ch.guess_c ? ' has-guess' : ''}${ch.guess ? ' is-guess' : ''}${ch.zi ? ' is-zi' : ''}${start?.raised ? ' is-raised' : ''}`}
                     data-raised={start?.raised || undefined}
                     data-guji-guess={ch.lacuna && ch.guess_c ? ch.guess_c : undefined}
-                    title={ch.pending ? t('reader.pendingReason', { label: convert ? convert(pendingReasonLabel(ch.pending)) : pendingReasonLabel(ch.pending) }) : ch.lacuna ? (ch.guess_c ? t('reader.lacunaGuess', { guess: convert ? convert(ch.guess_c) : ch.guess_c }) : t('detail.lacuna')) : ch.zi ? t('detail.composedChar', { label: ch.zi }) : ch.guess ? t('reader.charGuess') : undefined}
+                    title={decorations?.get(ch.id)?.title ?? (ch.pending ? t('reader.pendingReason', { label: convert ? convert(pendingReasonLabel(ch.pending)) : pendingReasonLabel(ch.pending) }) : ch.lacuna ? (ch.guess_c ? t('reader.lacunaGuess', { guess: convert ? convert(ch.guess_c) : ch.guess_c }) : t('detail.lacuna')) : ch.zi ? t('detail.composedChar', { label: ch.zi }) : ch.guess ? t('reader.charGuess') : undefined)}
                   >
                     {show(ch)}
-                  </span>}
+                  </span>{decorations?.get(ch.id)?.insertAfter && <span className="bim-cd-ins" aria-hidden="true" data-cd-ins={decorations.get(ch.id)!.insertAfter} />}</>}
                   {/* 外挂注入标点 (不带 data-char-id，对底本坐标完全透明) */}
                   {afterPuncts.map(punct)}
                 </React.Fragment>

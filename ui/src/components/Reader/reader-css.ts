@@ -60,6 +60,12 @@ export const READER_CSS = `
 .bim-rd-mnav button { min-width: 36px; height: 36px; border: 0; border-radius: 999px; background: transparent; color: ${bim('accent')}; font-size: 20px; line-height: 1; cursor: pointer; }
 .bim-rd-mnav button:hover { background: ${bim('row-hover-bg')}; }
 @media ${READER_BOTTOM_BAR_QUERY} { .bim-rd-mnav { bottom: calc(68px + env(safe-area-inset-bottom, 0px)); } }
+/* 插件浮层（ReaderPlugin.overlay）与选字浮条：桌面右下角，窄屏贴底（让开底栏） */
+.bim-rd-overlay { position: fixed; right: 16px; bottom: 16px; z-index: 40; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; max-width: min(420px, calc(100vw - 32px)); pointer-events: none; }
+.bim-rd-overlay > * { pointer-events: auto; }
+@media ${READER_BOTTOM_BAR_QUERY} { .bim-rd-overlay { left: 0; right: 0; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); max-width: none; align-items: stretch; padding: 0 12px; } }
+.bim-rd-selbar { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px; border: 1px solid ${bim('rule')}; border-radius: 8px; background: ${bim('card-bg')}; box-shadow: ${bim('shadow-dialog')}; }
+.bim-rd-selbar button { font: inherit; font-size: 13px; min-height: 36px; padding: 4px 12px; border: 1px solid ${bim('rule')}; border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
 
 /* 跳到正文：平时按标准 visually-hidden 收成 1px 并裁掉（任何宽度都不外露），
    获得焦点时才还原成左上角的按钮 */
@@ -571,6 +577,21 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
   background: ${bim('selection-bg')};
   color: inherit;
 }
+.guji-text-char.bim-cd { position: relative; border-radius: 2px; }
+.guji-text-char.bim-cd-accent { background-color: ${bim('accent-bg')}; }
+.guji-text-char.bim-cd-warn { background-color: ${bim('highlight-bg')}; }
+.guji-text-char.bim-cd-muted { color: ${bim('meta-fg')}; }
+.guji-text-char.bim-cd-add { background-color: ${bim('check-fine-bg')}; color: ${bim('check-fine-fg')}; }
+.guji-text-char.bim-cd-omit { background-color: ${bim('danger-soft-bg')}; color: ${bim('danger')}; }
+.guji-text-char.bim-cd-ul-solid { text-decoration: underline; text-underline-offset: 0.2em; }
+.guji-text-char.bim-cd-ul-dotted { text-decoration: underline dotted; text-underline-offset: 0.2em; }
+.guji-text-char.bim-cd-ul-dashed { text-decoration: underline dashed; text-underline-offset: 0.2em; }
+.guji-text-char[data-cd-custom] { background-color: var(--cd-bg, transparent); color: var(--cd-fg, inherit); }
+.guji-text-char.bim-cd-ul-wavy { text-decoration: underline wavy; text-underline-offset: 0.2em; }
+.guji-text-char[data-cd-focus] { outline: 2px solid ${bim('accent')}; outline-offset: 1px; }
+/* 下标与字后插入的小字走伪元素：不进 textContent，复制、选区文本不带它们 */
+.guji-text-char[data-cd-sub]::before { content: attr(data-cd-sub); position: absolute; right: -0.1em; bottom: -0.55em; font-size: 0.45em; color: ${bim('meta-fg')}; pointer-events: none; }
+.bim-cd-ins::after { content: attr(data-cd-ins); font-size: 0.55em; color: ${bim('check-fine-fg')}; vertical-align: sub; }
 .guji-text-char.is-selected {
   background-color: ${bim('selection-bg')};
   border-radius: 2px;
