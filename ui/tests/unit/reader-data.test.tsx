@@ -106,7 +106,7 @@ describe('TextReader · 版本列表规则', () => {
 
 describe('loadReaderChapter · norm／fig（原网站 resolveWarpData 用例迁来）', () => {
     const ch = { file: '005', char_file: 'c.json', cord_file: 'k.json' };
-    const FIG = { figures: [{ id: 'f148-2-14', kind: 'inline', file: 'fig/005/f148-2-14.png', alt: '左半圈连一实点' }] };
+    const FIG = { figures: [{ id: 'f148-2-14', kind: 'inline', file: 'fig/005/f148-2-14.png', alt: '左半圈连一实点', mime: 'image/png', width: 10, height: 10 }] };
     it('声明了 norm_file：hasNorm=true；没声明：false', async () => {
         const s = store({ 'c.json': CHAR, 'k.json': { pages: [] }, 'n.json': { items: [] } });
         const a = await loadReaderChapter(s, { id: 'n1', versionKey: 'k', chapter: { ...ch, norm_file: 'n.json' } });
