@@ -24,6 +24,11 @@ const BAR_H = '48px';
 
 export const READER_CSS = `
 .bim-rd {
+  /* 阅读器范围的字体：宿主覆盖 --bim-font-reader-*（见 README「样式契约」），不必再写 .bim-rd 选择器 */
+  --bim-font-ui: ${bim('font-reader-ui')};
+  --bim-font-body: ${bim('font-reader-ui')};
+  --bim-font-serif: ${bim('font-reader-serif')};
+  --bim-font-reading: ${bim('font-reader-reading')};
   position: relative;
   background: ${bim('page-bg')};
   color: ${bim('ink')};

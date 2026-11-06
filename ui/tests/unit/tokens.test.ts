@@ -9,11 +9,12 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { READER_CSS } from '../../src/components/Reader/reader-css';
 import { BIM_LAYOUTS, BIM_THEMES, BIM_TOKENS, bim, bimRootValue, bimTokensCss } from '../../src/styles/tokens';
 
 // jsdom 环境下 import.meta.url 不是 file: 协议，用 __dirname
 const SRC = resolve(__dirname, '../../src');
-const TOKEN_FILES = new Set(['styles/tokens.ts', 'styles/variables.css']);
+const TOKEN_FILES = new Set(['styles/tokens.ts', 'styles/variables.css', 'styles/tokens.css', 'styles/themes.css']);
 
 function listFiles(dir: string): string[] {
     return readdirSync(dir).flatMap(name => {
@@ -42,6 +43,26 @@ describe('tokens', () => {
     it('variables.css 与 tokens.ts 同步（不同步请跑 npm run gen:tokens）', () => {
         const css = readFileSync(join(SRC, 'styles/variables.css'), 'utf8');
         expect(css).toBe(bimTokensCss());
+    });
+
+    it('tokens.css / themes.css 与 tokens.ts 同步；tokens.css 无主题块，themes.css 无 :root 默认块', () => {
+        const tokens = readFileSync(join(SRC, 'styles/tokens.css'), 'utf8');
+        const themes = readFileSync(join(SRC, 'styles/themes.css'), 'utf8');
+        expect(tokens).toBe(bimTokensCss('tokens'));
+        expect(themes).toBe(bimTokensCss('themes'));
+        expect(tokens).not.toContain('data-theme=');
+        expect(tokens).toContain(':root[data-layout="boxed"]');
+        expect(themes).not.toMatch(/^:root \{/m);
+        expect(themes).toContain(':root[data-theme="ink"]');
+    });
+
+    it('阅读器字体 token：--bim-font-reader-* 默认接 font-ui / font-serif / font-reading，.bim-rd 上换入', () => {
+        const css = bimTokensCss('tokens');
+        expect(css).toContain('--bim-font-reader-ui: var(--bim-font-ui);');
+        expect(css).toContain('--bim-font-reader-serif: var(--bim-font-serif);');
+        expect(css).toContain('--bim-font-reader-reading: var(--bim-font-reading);');
+        expect(READER_CSS).toMatch(/\.bim-rd \{[^}]*--bim-font-ui: var\(--bim-font-reader-ui,/);
+        expect(READER_CSS).toMatch(/\.bim-rd \{[^}]*--bim-font-reading: var\(--bim-font-reader-reading,/);
     });
 
     it('bim() 产出 var(--bim-x, 默认值)', () => {

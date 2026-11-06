@@ -1,0 +1,359 @@
+/**
+ * book-index-ui 设计变量（tokens.css）—— 由 src/styles/tokens.ts 生成，勿手改；
+ * 改完 tokens.ts 后运行 `npm run gen:tokens`。
+ *
+ * 宿主先引本文件，再在自己的 :root 里只覆盖品牌相关的变量（颜色、字体）；覆盖声明须在本文件之后加载。
+ * 对外承诺的变量名见 README「样式契约」。内置主题（indigo、ink）在 themes.css。
+ */
+:root {
+    /* ==== 基础（VS Code 环境下跟随 --vscode-*） ==== */
+    --bim-bg: var(--vscode-editor-background, #ffffff);
+    --bim-fg: var(--vscode-foreground, #333333);
+    --bim-input-bg: var(--vscode-input-background, #ffffff);
+    --bim-input-fg: var(--vscode-input-foreground, #333333);
+    --bim-input-border: var(--vscode-input-border, #cccccc);
+    --bim-widget-border: var(--vscode-widget-border, #e0e0e0);
+    --bim-link-fg: var(--vscode-textLink-foreground, #0066cc);
+    --bim-desc-fg: var(--vscode-descriptionForeground, #717171);
+    --bim-primary: var(--vscode-button-background, #0078d4);
+    --bim-primary-fg: var(--vscode-button-foreground, #ffffff);
+    --bim-primary-soft: color-mix(in srgb, var(--bim-primary) 15%, transparent);
+    --bim-danger: #f44336;
+    --bim-warning: #ff9800;
+    --bim-success: #4caf50;
+    --bim-sidebar-bg: var(--vscode-sideBar-background, #f3f3f3);
+    --bim-list-hover-bg: var(--vscode-list-hoverBackground, rgba(0, 0, 0, 0.04));
+    --bim-list-active-bg: var(--vscode-list-activeSelectionBackground, rgba(0, 120, 212, 0.1));
+    --bim-focus-border: var(--vscode-focusBorder, #0078d4);
+
+    /* ==== 底色层次 / 文字与描边 / 链接 ==== */
+    --bim-bg-subtle: #fafafa;
+    --bim-widget-bg: #f8f8f8;
+    --bim-muted: #888888;
+    --bim-border: #e5e5e5;
+    --bim-primary-bg: #fdf4f4;
+    --bim-link: #1976d2;
+    --bim-tag-bg: #f0f0f0;
+    --bim-accent-bg: #1976d2;
+    /* 彩色底（徽章、选中态按钮）上的文字 */
+    --bim-on-color-fg: #ffffff;
+
+    /* ==== 提示与警告 ==== */
+    --bim-info-fg: #0c5380;
+    --bim-info-bg: #e7f3ff;
+    --bim-info-border: #b3dbff;
+    --bim-warn-fg: #856404;
+    --bim-warn-bg: #fff3cd;
+    --bim-warn-border: #ffc107;
+    /* 错误提示条底色 */
+    --bim-danger-bg: rgba(244, 67, 54, 0.08);
+    /* 编辑器危险区块 */
+    --bim-danger-soft-bg: rgba(244, 67, 54, 0.03);
+    --bim-danger-soft-border: rgba(244, 67, 54, 0.13);
+
+    /* ==== 遮罩与阴影 ==== */
+    /* 对话框遮罩 */
+    --bim-backdrop: rgba(0, 0, 0, 0.5);
+    /* 轻量遮罩底（图片占位等） */
+    --bim-overlay-bg: #00000010;
+    --bim-shadow-dialog: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --bim-shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --bim-shadow-tooltip: 0 2px 8px rgba(0, 0, 0, 0.08);
+    /* 悬浮按钮（反馈） */
+    --bim-shadow-fab: 0 2px 8px rgba(0, 0, 0, 0.25);
+    /* 展开的卡片 */
+    --bim-shadow-card: 0 1px 4px rgba(0, 0, 0, 0.06);
+    /* 谱系图节点 */
+    --bim-shadow-node: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --bim-shadow-node-selected: 0 0 0 3px rgba(0, 120, 212, 0.2), 0 2px 8px rgba(0, 120, 212, 0.3);
+
+    /* ==== 条目类型 / 状态徽章 ==== */
+    --bim-type-book: #c0392b;
+    --bim-type-work: #8e6f3e;
+    --bim-type-collection: #2471a3;
+    --bim-type-entity: #5b3e8e;
+    --bim-status-draft: #e67e22;
+    --bim-status-official: #27ae60;
+
+    /* ==== 资源 ==== */
+    --bim-restype-text: #2196f3;
+    --bim-restype-image: #ff9800;
+    --bim-restype-text-image: #9c27b0;
+    --bim-restype-physical: #795548;
+    /* 资源缺册提示 */
+    --bim-missing-fg: #e67e22;
+    /* 影印件色彩模式标记（黑白 / 彩色） */
+    --bim-colormode-bw-bg: #f5f5f5;
+    --bim-colormode-bw-fg: #757575;
+    --bim-colormode-color-bg: #fff8e1;
+    --bim-colormode-color-fg: #f57f17;
+    /* 资源导入进度 */
+    --bim-progress-active: #f59e0b;
+    --bim-progress-done: #10b981;
+    --bim-progress-todo: #9ca3af;
+    /* 文字资源校对程度徽章（精校 / 粗校 / AI整理） */
+    --bim-check-fine-bg: #e8f5e9;
+    --bim-check-fine-fg: #2e7d32;
+    --bim-check-rough-bg: #fff3e0;
+    --bim-check-rough-fg: #e65100;
+    --bim-check-ai-bg: #e3f2fd;
+    --bim-check-ai-fg: #1565c0;
+
+    /* ==== 整理本（CollatedEdition） ==== */
+    /* 搜索命中高亮底 */
+    --bim-highlight-bg: #fff59d;
+    /* 章节类型标记：类 / 书 / 序 / 结语 / 考证 / 注释 */
+    --bim-section-lei: #8e6f3e;
+    --bim-section-shu: #c0392b;
+    --bim-section-xu: #1a5276;
+    --bim-section-jieyu: #7d6608;
+    --bim-section-kaozhen: #5d6d7e;
+    --bim-section-zhushi: #6c5b7b;
+    /* 章节标记（△ 等） */
+    --bim-section-tag-fg: #e74c3c;
+    /* 与底本匹配状态提示 */
+    --bim-matchstate-fg: #b78900;
+    /* 文本质量等级（底本 / OCR / 粗校 / 精校 / 暂无正文 / 占位） */
+    --bim-quality-source: #1b5e20;
+    --bim-quality-ocr: #e65100;
+    --bim-quality-rough: #1565c0;
+    --bim-quality-fine: #2e7d32;
+    /* 中性灰：暂无正文 */
+    --bim-quality-none: #5f6368;
+    /* 中性灰：占位 */
+    --bim-quality-placeholder: #757575;
+
+    /* ==== 版本传承（VersionLineageGraph / List） / 关系方向（RelationPanel） ==== */
+    /* 佚失标记 */
+    --bim-lost-fg: #c62828;
+    /* 关系置信度 */
+    --bim-confidence-certain: #2e7d32;
+    --bim-confidence-consensus: #1976d2;
+    --bim-confidence-probable: #ed6c02;
+    --bim-confidence-disputed: #c62828;
+    /* ⚠️ 同为 consensus，List 徽章用 --bim-confidence-consensus（蓝），Graph 连线用这个（灰）。若要统一，覆盖成 var(--bim-confidence-consensus) */
+    --bim-lineage-edge-consensus: #555555;
+    --bim-relation-up: #2196f3;
+    --bim-relation-down: #4caf50;
+    --bim-relation-flat: #ff9800;
+
+    /* ==== 编辑器视图（主要在 guji-platform 插件中可见） ==== */
+    /* ⚠️ 与展示视图的 --bim-type-* 是两套配色（历史如此）。若要统一，覆盖成对应的 var(--bim-type-*) */
+    --bim-editor-type-work: #4caf50;
+    --bim-editor-type-collection: #2196f3;
+    --bim-editor-type-book: #ff9800;
+    --bim-editor-type-entity: #9c27b0;
+    /* 来源类型（SourceEditor） */
+    --bim-source-url: #2196f3;
+    --bim-source-bookid: #4caf50;
+    /* 模式指示器当前态（ModeIndicator） */
+    --bim-mode-active-bg: #2196f3;
+    /* 书目卡片「封面」点缀（IndexBrowser resultVariant="card"） */
+    --bim-cover-accent: #8e6f3e;
+
+    /* ==== 详情页（作品 / 版本 / 丛编）：宣纸 + 朱砂一套独立暖色，不继承 --bim-primary 等控件色 ==== */
+    /* 纸 */
+    --bim-page-bg: #fbf9f3;
+    --bim-row-hover-bg: #f5f1e5;
+    /* 选区 */
+    --bim-selection-bg: #ecdcbc;
+    /* 全文入口横幅（暖沙） */
+    --bim-band-bg: #f0e4cb;
+    --bim-band-bg-hover: #e6d5b4;
+    /* 文字层次：墨 → 正文 → 提要 → meta → 标签 → 提示 */
+    --bim-ink: #2a231c;
+    --bim-body-fg: #3b3228;
+    --bim-quiet-fg: #5b4f40;
+    --bim-meta-fg: #7b6a54;
+    /* 标签 / 提示：2026-09 N3a 调深，纸底与斑马底上对比度均 ≥4.5（原 #a3937b 2.8、#b3a385 2.3） */
+    --bim-label-fg: #6f6457;
+    --bim-hint-fg: #756a5e;
+    /* 朱 */
+    --bim-accent: #9c3a2c;
+    /* 链接 hover */
+    --bim-accent-deep: #6f2a20;
+    /* 分隔线：强 → 常规 → 虚线 → 提要左线 */
+    --bim-rule-strong: #2a231c;
+    --bim-rule: #e4dbc9;
+    --bim-rule-dashed: #d6c9ae;
+    --bim-rule-accent-soft: #e0d3b6;
+    /* 辅助字（元数据、注记、「·」分隔的浅色小字）。须在 page-bg / zebra-bg 上对比度 ≥4.5（Q5 巡检） */
+    --bim-aux-fg: #6f6457;
+    /* 提要卡：抬起的面 */
+    --bim-card-bg: #fffdf9;
+    /* 表格斑马纹 / 左栏分组底（不画格线，靠这一阶底色分行） */
+    --bim-zebra-bg: #f6f2eb;
+    /* 检索框、悬停 */
+    --bim-tint-bg: #f3eee6;
+    /* 提要卡投影 */
+    --bim-shadow-summary: 0 10px 32px rgba(60, 50, 40, 0.07);
+    /* 唯一的状态色块「有影印」 */
+    --bim-flag-bg: rgba(158, 42, 43, 0.08);
+    /* 专名出处：从「古籍中的出处」跳到阅读页时高亮的字、出处摘录里的专名（A12） */
+    --bim-mark-bg: #fde68a;
+    /* 专名出处：跳到阅读页时高亮先闪一下的颜色 */
+    --bim-mark-flash: #f59e0b;
+    /* 专名出处：阅读页 `#e=` 时本章提到该实体的其余各处（当前一处用 mark-bg） */
+    --bim-mark-soft: rgba(253, 230, 138, 0.45);
+    /* 主题切换控件的色点：朱砂（不随主题变，两套主题下都要认得出） */
+    --bim-theme-dot-zhusha: #9c3a2c;
+    /* 主题切换控件的色点：靛青 */
+    --bim-theme-dot-indigo: #2e5266;
+    /* 主题切换控件的色点：墨 */
+    --bim-theme-dot-ink: #3b4a58;
+    /* 四部分布条：經部（人物页提要卡；无别处使用） */
+    --bim-sect-jing: #2e5266;
+    /* 四部分布条：史部 */
+    --bim-sect-shi: #9a7a3b;
+    /* 四部分布条：子部 */
+    --bim-sect-zi: #4f7a5c;
+    /* 四部分布条：集部 */
+    --bim-sect-ji: #9fb3bc;
+
+    /* ==== 版式（v4 外观系统，overview#291）：疏朗＝留白分区（默认，下列值即疏朗）；界栏＝框线分区（`<html data-layout="boxed">`） ==== */
+    /* 区块外框（border 简写）。疏朗无框；界栏 1px 实线 */
+    --bim-fr-bd: 0 solid transparent;
+    /* 区块底。界栏＝卡面色 */
+    --bim-fr-bg: transparent;
+    /* 区块标题栏内边距。10-01 起疏朗也有淡染底的标题栏（--bim-fr-hd-bg），故疏朗 14px 18px，界栏 12px 18px */
+    --bim-fr-hd-pad: 14px 18px;
+    /* 区块标题栏下沿线（border 简写） */
+    --bim-fr-hd-bd: 0 solid transparent;
+    /* 区块正文内边距 */
+    --bim-fr-bd-pad: 0;
+    /* 区块之间的间距。界栏收紧到 24px（框线本身已分隔） */
+    --bim-fr-gap: 56px;
+    /* 侧栏各块之间的间距；界栏 20px */
+    --bim-fr-side-gap: 34px;
+    /* 抬起的面（提要卡）的投影；界栏不用投影，靠框线 */
+    --bim-fr-shadow: 0 1px 0 var(--bim-rule), 0 12px 32px -18px rgba(40, 36, 31, 0.25);
+    /* 页签行下沿线颜色（疏朗不画，界栏画） */
+    --bim-fr-tab-bd: transparent;
+    /* 分区标题字号。界栏标题在框顶标题栏里，小一档 19px */
+    --bim-fr-hd-size: 24px;
+    /* 分区标题栏底色（淡染主色）。疏朗混进页面底，界栏 6% 混进卡面底。主色取 accent（primary 是 VS Code 按钮蓝，不随配色） */
+    --bim-fr-hd-bg: color-mix(in srgb, var(--bim-accent) 7%, var(--bim-page-bg));
+    /* 卡片边框。疏朗不画（靠卡面底与淡投影）；界栏 1px */
+    --bim-fr-card-bd: 1px solid transparent;
+    /* 卡片底 */
+    --bim-fr-card-bg: var(--bim-card-bg);
+    /* 列表行线、块内小分割线。疏朗不画（靠行距）；界栏 1px */
+    --bim-fr-row-bd: 1px solid transparent;
+    /* 列表行内边距。界栏收紧 7px 2px */
+    --bim-fr-row-pad: 10px 2px;
+    /* 顶栏、分区导航（吸顶锚点条）的线 */
+    --bim-fr-chrome-bd: 1px solid transparent;
+    /* 标签、版本签、计数签、工具按钮的边框。疏朗浅底无框；界栏透明底加框 */
+    --bim-fr-tag-bd: 1px solid transparent;
+    /* 标签底 */
+    --bim-fr-tag-bg: var(--bim-tint-bg);
+    /* 表格格线。疏朗不画（靠斑马纹）；界栏全格线 */
+    --bim-fr-tbl-cell-bd: 0 solid transparent;
+    /* 表格斑马纹（只在疏朗下有） */
+    --bim-fr-tbl-zebra: var(--bim-tint-bg);
+    /* 侧栏里的块、提示块的边框 */
+    --bim-fr-rail-bd: 1px solid transparent;
+    /* 侧栏块底。疏朗浅底；界栏卡面底 */
+    --bim-fr-rail-bg: var(--bim-tint-bg);
+    /* 题签、书脊（竖排书名）的边框。界栏是强调色浅线 */
+    --bim-fr-spine-bd: 1px solid transparent;
+    /* 题签、书脊底。疏朗浅色实底；界栏卡面底（正史原志两种版式都是强调色实底） */
+    --bim-fr-spine-bg: var(--bim-flag-bg);
+    /* 书架架板（border 简写）。只在界栏下画 3px */
+    --bim-fr-plank: 0 solid transparent;
+    /* 时间轴轴线。界栏 1px */
+    --bim-fr-axis-bd: 0 solid transparent;
+    /* 时间轴底带高度。疏朗用 6px 浅色带代替轴线；界栏 0 */
+    --bim-fr-axis-band: 6px;
+    /* 时间轴刻度短线长度。界栏 5px */
+    --bim-fr-tick: 0;
+    /* 年代带各段之间的空隙。疏朗 3px；界栏紧贴 */
+    --bim-fr-band-gap: 3px;
+    /* 年代带外框与段间分隔。界栏 1px */
+    --bim-fr-band-bd: 0 solid transparent;
+
+    /* ==== 阅读器（整理本 / 全文） ==== */
+    /* 宿主吸顶导航的高度：阅读器工具条、目录与书影侧栏在它下面吸顶（如 60px） */
+    --bim-reader-top: 0px;
+    /* 阅读设置侧栏的暖黄：只做底色（8%）与选中态（24%），与朱／靛／墨三套主色都不冲 */
+    --bim-reader-warm: #c9a24a;
+    /* 古籍矫正底本书影画布底色 */
+    --bim-warp-bg: #faf8f5;
+    /* 古籍底本书影浮雕阴影 */
+    --bim-warp-box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    /* 古籍对读字框选中高亮底色 */
+    --bim-warp-sel-bg: rgba(196, 148, 76, 0.45);
+    /* 古籍对读字框选中描边 */
+    --bim-warp-sel-stroke: #a06e1c;
+    /* 古籍对读字框悬停高亮底色 */
+    --bim-warp-hover-bg: rgba(217, 185, 106, 0.25);
+    /* 古籍对读字框悬停描边 */
+    --bim-warp-hover-stroke: #c4944c;
+    /* 图文对读徽章背景 */
+    --bim-warp-badge-bg: rgba(184, 134, 54, 0.12);
+    /* 图文对读徽章文字颜色 */
+    --bim-warp-badge-fg: #8c6820;
+    /* 图文对读徽章边框 */
+    --bim-warp-badge-bd: rgba(184, 134, 54, 0.3);
+    /* 版心分界线 */
+    --bim-warp-banxin-border: #8a8070;
+    /* 版心中缝对折线 */
+    --bim-warp-banxin-fold: rgba(160, 110, 28, 0.65);
+    /* 版心外边线 */
+    --bim-warp-banxin-outer: #c9c3b4;
+
+    /* ==== 反馈浮钮（2026-09-28 Q5） ==== */
+    /* 层级：低于页面抽屉、弹层（本包对话框为 1000） */
+    --bim-feedback-fab-z: 40;
+
+    /* ==== 字体（全站无衬线，2026-09-05 定） ==== */
+    --bim-font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    --bim-font-body: var(--bim-font-ui);
+    /* 著录原文（提要、按语）用宋体 */
+    --bim-font-serif: "Songti SC", "Songti TC", STSong, "Noto Serif CJK SC", "Source Han Serif SC", SimSun, serif;
+    /* 阅读器正文（整理本 / 全文）；默认接 font-serif，只需覆盖那一个就同时换掉 */
+    --bim-font-reading: var(--bim-font-serif);
+    /* 阅读器范围（.bim-rd）内的界面字体：阅读器根节点上把 font-ui / font-body 换成它；宿主想让阅读器单独用系统字体栈，覆盖这一个即可 */
+    --bim-font-reader-ui: var(--bim-font-ui);
+    /* 阅读器范围内的宋体：阅读器根节点上把 font-serif 换成它 */
+    --bim-font-reader-serif: var(--bim-font-serif);
+    /* 阅读器范围内的正文字体：阅读器根节点上把 font-reading 换成它 */
+    --bim-font-reader-reading: var(--bim-font-reading);
+
+    /* ==== 列表页（IndexBrowser） ==== */
+    /* 列表页标题栏、检索框行、统计摘要、结果区的左右内边距；宿主要贴齐自己的版心时设 0 */
+    --bim-browser-pad-x: 20px;
+}
+
+/* ==== 版式：boxed（<html data-layout="boxed">）==== */
+:root[data-layout="boxed"] {
+    --bim-fr-bd: 1px solid var(--bim-rule);
+    --bim-fr-bg: var(--bim-card-bg);
+    --bim-fr-hd-pad: 12px 18px;
+    --bim-fr-hd-bd: 1px solid var(--bim-rule);
+    --bim-fr-bd-pad: 14px 18px 18px;
+    --bim-fr-gap: 24px;
+    --bim-fr-side-gap: 20px;
+    --bim-fr-shadow: none;
+    --bim-fr-tab-bd: var(--bim-rule);
+    --bim-fr-hd-size: 19px;
+    --bim-fr-hd-bg: color-mix(in srgb, var(--bim-accent) 6%, var(--bim-card-bg));
+    --bim-fr-card-bd: 1px solid var(--bim-rule);
+    --bim-fr-row-bd: 1px solid var(--bim-rule);
+    --bim-fr-row-pad: 7px 2px;
+    --bim-fr-chrome-bd: 1px solid var(--bim-rule);
+    --bim-fr-tag-bd: 1px solid var(--bim-rule-strong);
+    --bim-fr-tag-bg: transparent;
+    --bim-fr-tbl-cell-bd: 1px solid var(--bim-rule);
+    --bim-fr-tbl-zebra: transparent;
+    --bim-fr-rail-bd: 1px solid var(--bim-rule);
+    --bim-fr-rail-bg: var(--bim-card-bg);
+    --bim-fr-spine-bd: 1px solid var(--bim-rule-accent-soft);
+    --bim-fr-spine-bg: var(--bim-card-bg);
+    --bim-fr-plank: 3px solid var(--bim-rule-strong);
+    --bim-fr-axis-bd: 1px solid var(--bim-rule-strong);
+    --bim-fr-axis-band: 0;
+    --bim-fr-tick: 5px;
+    --bim-fr-band-gap: 0;
+    --bim-fr-band-bd: 1px solid var(--bim-rule-dashed);
+}

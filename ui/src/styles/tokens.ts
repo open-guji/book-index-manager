@@ -34,6 +34,10 @@ function group<T extends Record<string, BimToken>>(title: string, tokens: T) {
 /** 宋体字体栈：font-serif 与 font-reading 共用这一份（N3a 定的顺序） */
 const SERIF_STACK = '"Songti SC", "Songti TC", STSong, "Noto Serif CJK SC", "Source Han Serif SC", SimSun, serif';
 
+/** 黑体字体栈：font-ui 与 font-reader-ui 的回退值共用这一份 */
+const SANS_STACK = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", '
+    + '"PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif';
+
 /** 分组仅用于生成 variables.css 时的注释标题 */
 export const BIM_TOKEN_GROUPS = [
     group('基础（VS Code 环境下跟随 --vscode-*）', {
@@ -268,10 +272,7 @@ export const BIM_TOKEN_GROUPS = [
         'feedback-fab-offset': { value: '0px', root: false },
     }),
     group('字体（全站无衬线，2026-09-05 定）', {
-        'font-ui': {
-            value: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", '
-                + '"PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif',
-        },
+        'font-ui': { value: SANS_STACK },
         'font-body': { value: 'system-ui, sans-serif', css: 'var(--bim-font-ui)' },
         'font-serif': {
             value: SERIF_STACK,
@@ -281,6 +282,27 @@ export const BIM_TOKEN_GROUPS = [
             value: SERIF_STACK,
             css: 'var(--bim-font-serif)',
             note: '阅读器正文（整理本 / 全文）；默认接 font-serif，只需覆盖那一个就同时换掉',
+        },
+        'font-reader-ui': {
+            value: SANS_STACK,
+            css: 'var(--bim-font-ui)',
+            note: '阅读器范围（.bim-rd）内的界面字体：阅读器根节点上把 font-ui / font-body 换成它；宿主想让阅读器单独用系统字体栈，覆盖这一个即可',
+        },
+        'font-reader-serif': {
+            value: SERIF_STACK,
+            css: 'var(--bim-font-serif)',
+            note: '阅读器范围内的宋体：阅读器根节点上把 font-serif 换成它',
+        },
+        'font-reader-reading': {
+            value: SERIF_STACK,
+            css: 'var(--bim-font-reading)',
+            note: '阅读器范围内的正文字体：阅读器根节点上把 font-reading 换成它',
+        },
+    }),
+    group('列表页（IndexBrowser）', {
+        'browser-pad-x': {
+            value: '20px',
+            note: '列表页标题栏、检索框行、统计摘要、结果区的左右内边距；宿主要贴齐自己的版心时设 0',
         },
     }),
 ] as const;
@@ -397,9 +419,30 @@ export const BIM_LAYOUTS = {
 
 export type BimLayoutName = 'airy' | keyof typeof BIM_LAYOUTS;
 
-/** 生成 variables.css 的全文（`npm run gen:tokens` 调用） */
-export function bimTokensCss(): string {
-    const out: string[] = [
+/** `all` = variables.css 全文（兼容旧入口 book-index-ui/styles）；`tokens` = :root ＋ 版式；`themes` = 仅主题块 */
+export type BimCssPart = 'all' | 'tokens' | 'themes';
+
+/** 生成 variables.css / tokens.css / themes.css 的全文（`npm run gen:tokens` 调用） */
+export function bimTokensCss(part: BimCssPart = 'all'): string {
+    const wantRoot = part !== 'themes';
+    const wantThemes = part !== 'tokens';
+    const wantLayouts = part !== 'themes';
+    const out: string[] = part === 'themes' ? [
+        '/**',
+        ' * 内置主题（indigo、ink）—— 由 src/styles/tokens.ts 生成，勿手改。',
+        ' * 需要用 <html data-theme="…"> 切换这些主题的宿主，在 tokens.css 之后引入；',
+        ' * 自己用品牌色覆盖变量的宿主（如 kaiyuanguji-web）不引。',
+        ' */',
+    ] : part === 'tokens' ? [
+        '/**',
+        ' * book-index-ui 设计变量（tokens.css）—— 由 src/styles/tokens.ts 生成，勿手改；',
+        ' * 改完 tokens.ts 后运行 `npm run gen:tokens`。',
+        ' *',
+        ' * 宿主先引本文件，再在自己的 :root 里只覆盖品牌相关的变量（颜色、字体）；覆盖声明须在本文件之后加载。',
+        ' * 对外承诺的变量名见 README「样式契约」。内置主题（indigo、ink）在 themes.css。',
+        ' */',
+        ':root {',
+    ] : [
         '/**',
         ' * CSS 变量默认值（换肤接口）—— 由 src/styles/tokens.ts 生成，勿手改；',
         ' * 改完 tokens.ts 后运行 `npm run gen:tokens`。',
@@ -408,25 +451,34 @@ export function bimTokensCss(): string {
         ' */',
         ':root {',
     ];
-    BIM_TOKEN_GROUPS.forEach((g, i) => {
-        if (i > 0) out.push('');
-        out.push(`    /* ==== ${g.title} ==== */`);
-        for (const [name, t] of Object.entries(g.tokens) as [string, BimToken][]) {
-            if (t.root === false) continue;
-            if (t.note) out.push(`    /* ${t.note} */`);
-            out.push(`    --bim-${name}: ${bimRootValue(t)};`);
-        }
-    });
-    out.push('}');
-    for (const [theme, vars] of Object.entries(BIM_THEMES)) {
-        out.push('', `/* ==== 主题：${theme}（<html data-theme="${theme}">）==== */`, `:root[data-theme="${theme}"] {`);
-        for (const [name, v] of Object.entries(vars)) out.push(`    --bim-${name}: ${v};`);
+    if (wantRoot) {
+        BIM_TOKEN_GROUPS.forEach((g, i) => {
+            if (i > 0) out.push('');
+            out.push(`    /* ==== ${g.title} ==== */`);
+            for (const [name, t] of Object.entries(g.tokens) as [string, BimToken][]) {
+                if (t.root === false) continue;
+                if (t.note) out.push(`    /* ${t.note} */`);
+                out.push(`    --bim-${name}: ${bimRootValue(t)};`);
+            }
+        });
         out.push('}');
     }
-    for (const [layout, vars] of Object.entries(BIM_LAYOUTS)) {
-        out.push('', `/* ==== 版式：${layout}（<html data-layout="${layout}">）==== */`, `:root[data-layout="${layout}"] {`);
-        for (const [name, v] of Object.entries(vars)) out.push(`    --bim-${name}: ${v};`);
-        out.push('}');
+    if (wantThemes) {
+        let first = part === 'themes';
+        for (const [theme, vars] of Object.entries(BIM_THEMES)) {
+            if (!first) out.push('');
+            first = false;
+            out.push(`/* ==== 主题：${theme}（<html data-theme="${theme}">）==== */`, `:root[data-theme="${theme}"] {`);
+            for (const [name, v] of Object.entries(vars)) out.push(`    --bim-${name}: ${v};`);
+            out.push('}');
+        }
+    }
+    if (wantLayouts) {
+        for (const [layout, vars] of Object.entries(BIM_LAYOUTS)) {
+            out.push('', `/* ==== 版式：${layout}（<html data-layout="${layout}">）==== */`, `:root[data-layout="${layout}"] {`);
+            for (const [name, v] of Object.entries(vars)) out.push(`    --bim-${name}: ${v};`);
+            out.push('}');
+        }
     }
     out.push('');
     return out.join('\n');

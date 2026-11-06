@@ -4,6 +4,7 @@ name: Publish book-index-ui
 # 不用 push/tag 触发：见 test.yml 注，push 事件在本仓不可靠。
 #
 # 走 npm Trusted Publishing（OIDC）：不存任何 npm token。
+# 预发布：dev 上把 ui/package.json 的 version 写成 0.66.0-rc.N，从 dev 分支 Run workflow（tag 留空即发 next）。
 # 前提：npmjs.com → book-index-ui → Settings → Trusted Publisher 里
 # 登记 GitHub Actions：open-guji / book-index-manager / publish-ui.yml。
 on:
@@ -13,6 +14,10 @@ on:
         description: '只跑测试与打包，不真发（npm publish --dry-run）'
         type: boolean
         default: false
+      tag:
+        description: 'npm dist-tag。留空 = 自动：版本号带 -（如 0.66.0-rc.1）发 next，不动 latest；正式版发 latest。也可手填（如 next、beta）'
+        type: string
+        default: ''
 
 permissions:
   id-token: write   # OIDC，Trusted Publishing 必需
@@ -48,6 +53,24 @@ jobs:
             exit 1
           fi
 
+      # dist-tag：预发布版本绝不能占 latest，否则所有 `npm i book-index-ui` 的人都会拿到 rc。
+      - name: 决定 dist-tag
+        id: tag
+        env:
+          IN_TAG: ${{ inputs.tag }}
+        run: |
+          V=$(node -p "require('./package.json').version")
+          TAG="$IN_TAG"
+          if [ -z "$TAG" ]; then
+            case "$V" in *-*) TAG=next ;; *) TAG=latest ;; esac
+          fi
+          if [ "$TAG" = "latest" ]; then
+            case "$V" in *-*) echo "::error::预发布版本 $V 不能发到 latest，请用 tag=next"; exit 1 ;; esac
+          fi
+          case "$TAG" in *[!A-Za-z0-9._-]*) echo "::error::非法 tag: $TAG"; exit 1 ;; esac
+          echo "version=$V tag=$TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
       - name: Install
         run: npm ci
       - name: Test
@@ -60,9 +83,9 @@ jobs:
       - name: Publish
         run: |
           if [ "${{ inputs.dry_run }}" = "true" ]; then
-            npm publish --dry-run --ignore-scripts
+            npm publish --dry-run --ignore-scripts --tag "${{ steps.tag.outputs.tag }}"
           else
-            npm publish --ignore-scripts
+            npm publish --ignore-scripts --tag "${{ steps.tag.outputs.tag }}"
           fi
       # --ignore-scripts：上面已 build 过，避免 prepublishOnly 重复构建
 

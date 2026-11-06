@@ -10,7 +10,7 @@ export const SEARCH_NARROW_QUERY = '(max-width: 719px)';
 const COARSE = `${SEARCH_NARROW_QUERY}, (pointer: coarse)`;
 
 export const SEARCH_V4_CSS = `
-.bim-sr-layout { display: grid; grid-template-columns: 208px minmax(0, 1fr); column-gap: 40px; align-items: start; padding: 0 20px; }
+.bim-sr-layout { display: grid; grid-template-columns: 208px minmax(0, 1fr); column-gap: 40px; align-items: start; padding: 0 ${bim('browser-pad-x')}; }
 .bim-sr-layout[data-nofilters] { grid-template-columns: minmax(0, 1fr); }
 .bim-sr-aside { position: sticky; top: calc(${bim('reader-top')} + 16px); padding-top: 2px; }
 .bim-sr-main { min-width: 0; }
@@ -79,7 +79,7 @@ export const SEARCH_V4_CSS = `
 .bim-sr-empty { padding: 60px 0; text-align: center; font-size: 14px; color: ${bim('meta-fg')}; }
 
 @media ${SEARCH_NARROW_QUERY} {
-  .bim-sr-layout { grid-template-columns: minmax(0, 1fr); row-gap: 16px; padding: 0 16px; }
+  .bim-sr-layout { grid-template-columns: minmax(0, 1fr); row-gap: 16px; padding: 0 min(${bim('browser-pad-x')}, 16px); }
   .bim-sr-aside { position: static; }
   .bim-sr-fbtn {
     display: flex; width: 100%; justify-content: space-between; align-items: center; padding: 11px 14px;

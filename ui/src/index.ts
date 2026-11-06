@@ -145,6 +145,9 @@ export type { SearchFilters, SearchSort, LossStatusKey } from './core/search-fil
 export { TextReader, isDuiduChapter } from './components/TextReader';
 export type { TextReaderProps, TextLocation, TextLocationCause } from './components/TextReader';
 export { createTextApi } from './core/text-api';
+// 阅读数据读取：按章条目的声明取对读文件、阅读页的版本列表规则（原在宿主里，现收进包）
+export { loadReaderChapter, loadReaderFiles, loadFigUrls, volumeFromChar, readerVersions, readerManifest } from './core/reader-data';
+export type { ReaderChapterData, ReaderChapterFiles, ReaderLoadOptions } from './core/reader-data';
 export type { TextApi } from './core/text-api';
 export {
     isTextKey, isChapterSegment, matchChapterAcrossVersions, pickTextVersion, textVersionLabel,
