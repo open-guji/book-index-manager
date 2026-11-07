@@ -24,26 +24,6 @@ export const common = defineMessages({
     expandVolumes: '展開分冊',
     collapseArrow: '收起 ▲',
     expandArrow: '展開 ▼',
-    // EntityDetail
-    entitySubtype: {
-        people: '人物',
-        place: '地名',
-        dynasty: '朝代',
-        reign: '年號',
-        office: '官職',
-        anonymous: '佚名',
-        collective: '集體',
-    },
-    cbdbTitle: 'CBDB 中國歷代人物傳記數據庫',
-    entityPlaceholderNote: '人物信息暫缺。該 Entity 僅作為作者佔位，詳細生平資料尚待補充。',
-    /** IndexDetail 版本分组里未归组的一组 */
-    otherVersions: '其他版本',
-    // IndexView 查看／编辑切换
-    switchToEdit: '切換到編輯模式',
-    switchToView: '切換到查看模式',
-    modeEdit: '✏️ 編輯',
-    modeView: '👁 查看',
-    noData: '無數據',
 }, {
     toHans: '切换为简体',
     toHant: '切換為繁體',
@@ -62,21 +42,4 @@ export const common = defineMessages({
     expandVolumes: '展开分册',
     collapseArrow: '收起 ▲',
     expandArrow: '展开 ▼',
-    entitySubtype: {
-        people: '人物',
-        place: '地名',
-        dynasty: '朝代',
-        reign: '年号',
-        office: '官职',
-        anonymous: '佚名',
-        collective: '集体',
-    },
-    cbdbTitle: 'CBDB 中国历代人物传记数据库',
-    entityPlaceholderNote: '人物信息暂缺。该 Entity 仅作为作者占位，详细生平资料尚待补充。',
-    otherVersions: '其他版本',
-    switchToEdit: '切换到编辑模式',
-    switchToView: '切换到查看模式',
-    modeEdit: '✏️ 编辑',
-    modeView: '👁 查看',
-    noData: '无数据',
 });

@@ -49,25 +49,26 @@ import 'book-index-ui/styles'                // 旧入口＝tokens.css ＋ theme
 | 组件 | 用途 |
 |---|---|
 | `IndexBrowser` | 完整索引浏览器：搜索框 + 分类 tab + 推荐 + 最近浏览 |
-| `IndexView`（`book-index-ui/editor`） | **已弃用**：旧版查看／编辑合一视图，随编辑态拆到 `book-index-ui/editor` |
-| `IndexDetail` | **已弃用**：旧版详情纯渲染（2026-09 重构前），仅为兼容旧宿主，不再维护 |
 | `BookDetailLayout` | 详情页外壳：Tab（基本信息/整理本/全文/反馈）+ 路由到下面四个 Page；kaiyuanguji-web 用它 |
 | `WorkPage` / `BookPage` / `CollectionPage` / `EntityPage` | **现行详情页**（2026-09 版式重构）：作品 / 版本 / 丛编 / 人物 |
 | `primitives`（`PageFrame`、`SectionHead`、`DataTable`、`Chip` …） | 四个 Page 共用的版式原语与 `DETAIL_CSS` |
 | `deriveEra` / `deriveDating` / `buildVersionTable` … | `core/detail-model.ts` 的数据派生层（刊刻年代、角色归一、版本表） |
+| `MetaHomeView` / `ReadHomeView` | 元数据首页／阅读首页（取代已删除的旧 `HomePage`） |
 | `WorkCatalog` | 作品目录 |
 | `IndexEditor`、`ResourceEditor`、`SourceEditor`、`RelationPanel`、`EntitySelector`、`CreateEntityDialog`、`EntityPickerDialog` | 编辑态，**在子入口 `book-index-ui/editor`**（0.66 起不再从主入口导出；写入需 storage 实现 saveItem） |
-| `HomePage` | **已弃用**：旧版五页签首页，请用 `MetaHomeView`／`ReadHomeView` |
 | `TextReader` | **统一阅读器**（overview#307）：整理本与全文合一，版本下拉含全部版本，取数走 `core/text-api`（只认新结构），见下「统一阅读器」 |
 | `ReaderShell` / `ReaderToc` / `ImagePanel` / `ReaderMdText` | 阅读器（整理本与全文共用），见下「阅读器」 |
 | `CollectionCatalog` | 丛编目录（按册/卷分组） |
-| `EmendatedBySection` | "校勘自" 引用列表 |
 | `VersionLineageView` / `VersionLineageGraph` | 版本传承图（dagre + xyflow） |
 | `FeedbackButton` / `FeedbackList` / `FeedbackForm` / `FeedbackTab` | 反馈组件。`FeedbackTab` 不直接发请求：走 `IndexStorage.listFeedback／submitFeedback`，没有就按 `feedbackApiUrl` 用 `createFeedbackTransport(url)` |
 | `LocaleProvider` / `LocaleToggle` | 繁简切换 |
 | `useI18n` / `getT` | **统一 i18n 入口**：界面文字 `t(key)`、数据文字 `convert`，见下「界面文字与繁简」 |
 | `useT` / `useConvert` | 旧 hook（整本字典 / 繁简转换），新代码用 `useI18n` |
 | `findTraditionalChars` | 简体模式残留繁体字检测（vitest 与网站 e2e 共用） |
+
+### 阅读器插件（`TextReader` 的 `plugins`）
+
+宿主把站点功能写成 `ReaderPlugin` 对象传给 `TextReader`，不要再用选择器抓阅读器 DOM。钩子：`onChapter`、`settings`、`toolbar`、`decorate`、`onCell`、`selectionActions`、`overlay`；`ReaderApi` 提供 `locate／scrollTo／rectOf／refresh／prefs／t／convert`。`decorate`／`onCell`／`selectionActions`／`locate({cp})` 只对有逐字格位的对读章生效。完整接口见 `src/components/Reader/plugins.ts` 与 DESIGN.md。
 
 ### 统一阅读器（`TextReader`，overview#307）
 
@@ -81,7 +82,7 @@ import 'book-index-ui/styles'                // 旧入口＝tokens.css ＋ theme
 ```
 
 - 数据模型（规格 overview `项目进展/古籍索引网站/设计/阅读文本.md`）：`items/<id>/manifest.json` 列全部版本（`versions[0]` 是 `default`），`<key>/index.json` 是章目录（`chapters[{ n, file:'001', title, has_json }]`），章正文 `<key>/001.txt`，整理本的章另有 `001.json`。`IndexStorage` 新增可选 `getTextManifest / getTextIndex / getChapter`，`BundleStorage` 已实现。
-- **只认新结构**（用户 09-30 定）：条目没有 `manifest.json`（含旧的 `collated_edition/`、`full_text/…` 目录）就显示「暂无文本」，不从旧目录合成。旧的 `CollatedEdition`／`BookFullText` 暂留给还没迁移的页面，迁移在正式站验完后清掉。
+- **只认新结构**（用户 09-30 定）：条目没有 `manifest.json`（含旧的 `collated_edition/`、`full_text/…` 目录）就显示「暂无文本」，不从旧目录合成。旧的 `BookFullText` 已删；`CollatedEdition.tsx` 现在只是整理本章渲染模块（`JuanReading`／`JuanRail`／`useCrossJuanSearch`），不导出整页组件。
 - 界面：工具条一个「版本」下拉按 manifest 顺序列全部版本（含整理本），只有一份时只在书名后标来源名；正文末尾显示所选版本的出处与授权；章有 json 用结构化渲染（条目、作品链接、跨章搜索），否则按 md；切版本尽量停在同一章号，对不上回第一章。
 - 组件不改 URL：宿主在 `onLocationChange` 里改地址（新 URL：`/read/<id>[/<key>][/<章>]`，主版本不写 key）。`versionKey／chapter` 传了就受控；传了无效值时组件回落并以 `auto` 通知。
 - 工具条另有上一章／下一章（窄屏隐去，翻卷交给正文底部的翻页卡片）、书名链接回条目页；窄屏（右栏藏起来）时正文末尾有「报告错字」入口。
@@ -91,7 +92,7 @@ import 'book-index-ui/styles'                // 旧入口＝tokens.css ＋ theme
 整理本与全文共用一个外壳 `ReaderShell`：
 
 - 布局：**书影在正文左边**，目录在最左。宽屏（≥1100px）目录是可收起的侧栏（默认展开）；更窄时是抽屉（默认收起，选卷后自动合上，Esc 关闭，打开时 Tab 圈在抽屉内）；窄屏（≤719px）书影区不显示，只留正文。
-- 工具条（吸顶）只用文字与图标：目录、繁｜简、A− A+、「阅读设置」键（overview#463）。其余偏好收进**右侧「阅读设置」侧栏**（≥860px 右侧可折叠栏；窄屏是底栏「设置」打开的底部抽屉），分三组：文字（字体、字号、繁简）、标注（专名线，对读时加标点）、版面（自然段、标出作品链接、书影、对读留白，竖排预留 `allowVertical`）。宿主通过阅读器插件（`TextReader` 的 `plugins`，`ReaderPlugin.settings`）往侧栏塞自己的控件；0.66 已删旧插槽 `settingsExtra`／`settingsAnnotate`／`settingsLayout`／`toolbarExtra`。字体选项只有宋体（默认，沿用 `--bim-font-reading`）／楷体／系统默认（无衬线），全是系统已装字体，不加载网络字体；楷体栈 `Kaiti SC → Kaiti TC → STKaiti → KaiTi → AR PL UKai CN → Noto Serif CJK SC → serif`。
+- 工具条（吸顶）只用文字与图标：目录、繁｜简、A− A+、「阅读设置」键（overview#463）。其余偏好收进**右侧「阅读设置」侧栏**（≥860px 右侧可折叠栏；窄屏是底栏「设置」打开的底部抽屉），分三组：文字（字体、字号、繁简）、标注（专名线，对读时加标点）、版面（自然段、标出作品链接、书影、对读留白，竖排预留 `allowVertical`）。宿主通过阅读器插件（`TextReader` 的 `plugins`，`ReaderPlugin.settings`）往侧栏塞自己的控件，接口说明见 DESIGN.md「阅读器」；0.66 已删旧插槽 `settingsExtra`／`settingsAnnotate`／`settingsLayout`／`toolbarExtra`。字体选项只有宋体（默认，沿用 `--bim-font-reading`）／楷体／系统默认（无衬线），全是系统已装字体，不加载网络字体；楷体栈 `Kaiti SC → Kaiti TC → STKaiti → KaiTi → AR PL UKai CN → Noto Serif CJK SC → serif`。
 - 正文：`--bim-font-reading`（宋体，默认接 `--bim-font-serif`，宿主覆盖后者即可）18px、行高 2.05（手机端同样），`line-break: strict` 避头尾；界面黑体。
 - 无障碍：第一个可聚焦元素是「跳到正文」；目录用游走 tabindex，几百卷也只有当前卷进 Tab 序列（↑↓ Home End 移动）。
 - 偏好（字号、字体、自然段、专名线…）存 `localStorage['bim-reader-prefs']`，首帧用默认值，SSR 安全。

@@ -11,6 +11,3 @@ export { RelationPanel } from './components/RelationPanel';
 export { EntitySelector } from './components/EntitySelector';
 export { CreateEntityDialog } from './components/CreateEntityDialog';
 export { EntityPickerDialog } from './components/EntityPickerDialog';
-/** @deprecated 旧版「查看／编辑」合一视图，随旧 `IndexDetail` 一起保留；仅为兼容旧宿主 */
-export { IndexView, detailToEditor, editorToDetail } from './components/IndexView';
-export type { IndexViewProps } from './components/IndexView';
