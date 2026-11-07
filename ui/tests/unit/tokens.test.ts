@@ -10,11 +10,11 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { READER_CSS } from '../../src/components/Reader/reader-css';
-import { BIM_LAYOUTS, BIM_THEMES, BIM_TOKENS, bim, bimRootValue, bimTokensCss } from '../../src/styles/tokens';
+import { BIM_PALETTE, BIM_PALETTE_MAP, BIM_LAYOUTS, BIM_THEMES, BIM_TOKENS, bim, bimRootValue, bimTokensCss } from '../../src/styles/tokens';
 
 // jsdom 环境下 import.meta.url 不是 file: 协议，用 __dirname
 const SRC = resolve(__dirname, '../../src');
-const TOKEN_FILES = new Set(['styles/tokens.ts', 'styles/variables.css', 'styles/tokens.css', 'styles/themes.css']);
+const TOKEN_FILES = new Set(['styles/tokens.ts', 'styles/variables.css', 'styles/tokens.css', 'styles/themes.css', 'styles/palette.css']);
 
 function listFiles(dir: string): string[] {
     return readdirSync(dir).flatMap(name => {
@@ -54,6 +54,17 @@ describe('tokens', () => {
         expect(tokens).toContain(':root[data-layout="boxed"]');
         expect(themes).not.toMatch(/^:root \{/m);
         expect(themes).toContain(':root[data-theme="ink"]');
+    });
+
+    it('palette.css 与 tokens.ts 同步；调色板推出的语义变量都已定义，且不碰 VS Code 联动的默认值', () => {
+        const palette = readFileSync(join(SRC, 'styles/palette.css'), 'utf8');
+        expect(palette).toBe(bimTokensCss('palette'));
+        for (const name of Object.keys(BIM_PALETTE_MAP)) expect(BIM_TOKENS).toHaveProperty(name);
+        // 引用的调色板名都存在
+        const used = new Set([...palette.matchAll(/var\(--bim-palette-([a-z0-9-]+)\)/g)].map(m => m[1]));
+        for (const n of used) expect(BIM_PALETTE).toHaveProperty(n);
+        // tokens.css 不含调色板（不引 palette.css 的宿主零变化）
+        expect(bimTokensCss('tokens')).not.toContain('--bim-palette');
     });
 
     it('阅读器字体 token：--bim-font-reader-* 默认接 font-ui / font-serif / font-reading，.bim-rd 上换入', () => {

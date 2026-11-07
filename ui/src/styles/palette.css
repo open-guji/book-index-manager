@@ -1,0 +1,133 @@
+/**
+ * book-index-ui 调色板（palette.css）—— 由 src/styles/tokens.ts 生成，勿手改；
+ * 改完 tokens.ts 后运行 `npm run gen:tokens`。
+ *
+ * 用法：宿主依次引 tokens.css、palette.css，再在自己的 :root 里只覆盖 `--bim-palette-*`（约 20 个）；
+ * 语义变量（--bim-link、--bim-type-*、--bim-warn-* …）全部由调色板推出，不必逐个重写。
+ * 不引本文件 = 保持 tokens.css 的默认值（VS Code 扩展等）。
+ */
+:root {
+    /* ==== 调色板 ==== */
+    /* 页底 */
+    --bim-palette-paper: #faf7f2;
+    /* 抬起的面（卡片、检索框） */
+    --bim-palette-raise: #fffdf9;
+    /* 分组底、悬停 */
+    --bim-palette-tint: #f3eee6;
+    /* 再深一阶：悬停／选中，也是细线色 */
+    --bim-palette-tint-2: #ebe4d9;
+    /* 正文、标题 */
+    --bim-palette-ink: #26211c;
+    /* 次要文字 */
+    --bim-palette-ink-2: #5f564d;
+    /* 最浅的墨（只做装饰，不拿来写字） */
+    --bim-palette-ink-3: #948a7e;
+    /* 辅助字（标签、注记）：须在 paper / tint 上对比度 ≥4.5 */
+    --bim-palette-aux: #6f6457;
+    /* 强调色（朱）：链接、主按钮、选中态 */
+    --bim-palette-accent: #9e2a2b;
+    /* 强调色的深一阶（悬停） */
+    --bim-palette-accent-deep: #7a1c1f;
+    /* 泥金：点缀、警告条、高亮 */
+    --bim-palette-gold: #a37b43;
+    /* 泥金的字色（警告字、彩色标记字） */
+    --bim-palette-gold-ink: #8a6320;
+    /* 蓝：丛编、序 */
+    --bim-palette-blue: #2f6a8d;
+    /* 蓝（压暗一档）：文字资源、关系上行 */
+    --bim-palette-blue-soft: #3a6b8a;
+    /* 紫：专名条目 */
+    --bim-palette-purple: #6a4a86;
+    /* 紫（浅一档）：图文资源 */
+    --bim-palette-purple-soft: #7a5192;
+    /* 绿：正式、已完成 */
+    --bim-palette-green: #3f7d54;
+    /* 琥珀：草稿、缺册、平行关系 */
+    --bim-palette-amber: #b5762e;
+    /* 红：佚失 */
+    --bim-palette-red: #a8322c;
+    /* 「书」类标记色；默认随强调色，宿主在强调色是蓝灰的主题里想保留红时单独设 */
+    --bim-palette-book: var(--bim-palette-accent);
+    /* 疏朗版式提要卡的投影色（含透明度） */
+    --bim-palette-shade: rgba(40, 36, 31, 0.25);
+
+    /* ==== 由调色板推出的语义变量 ==== */
+    --bim-bg: var(--bim-palette-raise);
+    --bim-bg-subtle: var(--bim-palette-paper);
+    --bim-widget-bg: var(--bim-palette-paper);
+    --bim-sidebar-bg: var(--bim-palette-tint);
+    --bim-fg: var(--bim-palette-ink);
+    --bim-desc-fg: var(--bim-palette-ink-2);
+    --bim-muted: var(--bim-palette-aux);
+    --bim-widget-border: var(--bim-palette-tint-2);
+    --bim-border: var(--bim-palette-tint-2);
+    --bim-input-border: var(--bim-palette-tint-2);
+    --bim-focus-border: var(--bim-palette-accent);
+    --bim-input-bg: var(--bim-palette-raise);
+    --bim-input-fg: var(--bim-palette-ink);
+    --bim-primary: var(--bim-palette-accent);
+    --bim-primary-fg: #ffffff;
+    --bim-primary-soft: color-mix(in srgb, var(--bim-palette-accent) 12%, transparent);
+    --bim-primary-bg: color-mix(in srgb, var(--bim-palette-accent) 8%, transparent);
+    --bim-link: var(--bim-palette-accent);
+    --bim-link-fg: var(--bim-palette-accent);
+    --bim-list-hover-bg: var(--bim-palette-tint);
+    --bim-list-active-bg: color-mix(in srgb, var(--bim-palette-accent) 8%, transparent);
+    --bim-tag-bg: var(--bim-palette-tint);
+    --bim-accent-bg: var(--bim-palette-gold);
+    --bim-type-book: var(--bim-palette-book);
+    --bim-type-work: var(--bim-palette-gold);
+    --bim-type-collection: var(--bim-palette-blue);
+    --bim-type-entity: var(--bim-palette-purple);
+    --bim-status-draft: var(--bim-palette-amber);
+    --bim-status-official: var(--bim-palette-green);
+    --bim-restype-text: var(--bim-palette-blue-soft);
+    --bim-restype-image: var(--bim-palette-amber);
+    --bim-restype-text-image: var(--bim-palette-purple-soft);
+    --bim-missing-fg: var(--bim-palette-amber);
+    --bim-colormode-bw-bg: var(--bim-palette-tint);
+    --bim-colormode-bw-fg: var(--bim-palette-ink-2);
+    --bim-colormode-color-bg: color-mix(in srgb, var(--bim-palette-gold) 14%, transparent);
+    --bim-colormode-color-fg: var(--bim-palette-gold-ink);
+    --bim-progress-active: var(--bim-palette-gold);
+    --bim-progress-done: var(--bim-palette-green);
+    --bim-progress-todo: var(--bim-palette-ink-3);
+    --bim-warn-bg: color-mix(in srgb, var(--bim-palette-gold) 14%, transparent);
+    --bim-warn-border: color-mix(in srgb, var(--bim-palette-gold) 40%, transparent);
+    --bim-warn-fg: var(--bim-palette-gold-ink);
+    --bim-highlight-bg: color-mix(in srgb, var(--bim-palette-gold) 28%, transparent);
+    --bim-section-lei: var(--bim-palette-gold);
+    --bim-section-shu: var(--bim-palette-book);
+    --bim-section-xu: var(--bim-palette-blue);
+    --bim-section-kaozhen: var(--bim-palette-ink-2);
+    --bim-section-tag-fg: var(--bim-palette-accent);
+    --bim-matchstate-fg: var(--bim-palette-gold);
+    --bim-lost-fg: var(--bim-palette-red);
+    --bim-relation-up: var(--bim-palette-blue-soft);
+    --bim-relation-down: var(--bim-palette-green);
+    --bim-relation-flat: var(--bim-palette-amber);
+    --bim-cover-accent: var(--bim-palette-gold);
+    --bim-page-bg: var(--bim-palette-paper);
+    --bim-row-hover-bg: var(--bim-palette-tint);
+    --bim-selection-bg: color-mix(in srgb, var(--bim-palette-gold) 30%, transparent);
+    --bim-band-bg: var(--bim-palette-tint);
+    --bim-band-bg-hover: var(--bim-palette-tint-2);
+    --bim-ink: var(--bim-palette-ink);
+    --bim-body-fg: var(--bim-palette-ink);
+    --bim-quiet-fg: var(--bim-palette-ink-2);
+    --bim-meta-fg: var(--bim-palette-ink-2);
+    --bim-aux-fg: var(--bim-palette-aux);
+    --bim-label-fg: var(--bim-palette-aux);
+    --bim-hint-fg: var(--bim-palette-aux);
+    --bim-accent: var(--bim-palette-accent);
+    --bim-accent-deep: var(--bim-palette-accent-deep);
+    --bim-flag-bg: color-mix(in srgb, var(--bim-palette-accent) 8%, transparent);
+    --bim-rule-strong: var(--bim-palette-tint-2);
+    --bim-rule: var(--bim-palette-tint-2);
+    --bim-rule-dashed: var(--bim-palette-tint-2);
+    --bim-rule-accent-soft: color-mix(in srgb, var(--bim-palette-accent) 24%, var(--bim-palette-paper));
+    --bim-card-bg: var(--bim-palette-raise);
+    --bim-zebra-bg: color-mix(in srgb, var(--bim-palette-tint) 60%, transparent);
+    --bim-tint-bg: var(--bim-palette-tint);
+    --bim-fr-shadow: 0 1px 0 var(--bim-rule), 0 12px 32px -18px var(--bim-palette-shade);
+}
