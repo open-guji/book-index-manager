@@ -7,6 +7,7 @@ import type { GujiPageInfo } from '../../core/guji-pages';
 import type { ReaderPrefs } from './prefs';
 import type { ReaderShellPluginSetting } from './ReaderShell';
 import { READER_WIDE_QUERY } from './reader-css';
+import { applyTextHighlights, textCellsOf, textIndex, TEXT_TOKEN } from './textHighlights';
 import {
     mergeDecorations, safely,
     type CellDecoration, type CellHit, type ReaderApi, type ReaderCellInfo, type ReaderChapterCtx, type ReaderPlugin, type ReaderSelection, type SelectionAction,
@@ -15,29 +16,8 @@ import {
 const NO_CELLS: ReadonlyArray<ReaderCellInfo> = [];
 const NO_STATE: ReadonlyMap<string, unknown> = new Map();
 const SELECTION_TEXT_MAX = 500;
-/** 无格位章里 `locate({text})` 返回的位置记号前缀 */
-const TEXT_TOKEN = 't:';
 /** 滚到文字位置时，目标上方留的空（让开吸顶的工具条） */
 const SCROLL_MARGIN_TOP = 120;
-const WS = /\s/;
-
-/** 渲染出的文字（忽略空白）与每个字符在文本节点里的位置 */
-function textIndex(root: HTMLElement): { text: string; at: { node: Text; off: number }[] } {
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-        acceptNode: (n) => (n.parentElement?.closest('script,style,[aria-hidden="true"]') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
-    });
-    let text = '';
-    const at: { node: Text; off: number }[] = [];
-    for (let n = walker.nextNode() as Text | null; n; n = walker.nextNode() as Text | null) {
-        const v = n.data;
-        for (let i = 0; i < v.length; i++) {
-            if (WS.test(v[i])) continue;
-            text += v[i];
-            at.push({ node: n, off: i });
-        }
-    }
-    return { text, at };
-}
 
 /** 在正文已渲染的文字里找第一处，返回位置记号；找不到或没有渲染为 null */
 export function locateInText(root: HTMLElement | null, query: string, convert?: (s: string) => string): string | null {
@@ -64,6 +44,12 @@ function rangeOfToken(root: HTMLElement | null, token: string): Range | null {
     r.setStart(a.node, a.off);
     r.setEnd(b.node, b.off + 1);
     return r;
+}
+
+function hashKey(s: string): number {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    return Math.abs(h);
 }
 
 /** 窄屏＝不满足阅读器「宽屏」断点（目录收进抽屉、设置走抽屉）。服务端与首帧按宽屏算 */
@@ -157,6 +143,24 @@ export function useReaderPlugins(inp: ReaderPluginRuntimeIn): ReaderPluginRuntim
         return out;
     }, [pages, plugins.length]);
 
+    // ── 无格位章（整理本、Markdown）的文字格：从渲染出的文字里数，正文变了重数 ──
+    const wantTextCells = cells.length === 0 && plugins.some(p => p.decorate);
+    const [textCells, setTextCells] = useState<ReadonlyArray<ReaderCellInfo>>(NO_CELLS);
+    useEffect(() => {
+        const root = shellTextRef.current;
+        if (!wantTextCells || !root) { setTextCells(NO_CELLS); return; }
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const recount = () => {
+            const next = textCellsOf(textIndex(root));
+            setTextCells(prev => (prev.length === next.length && prev.every((c, i) => c.char === next[i].char) ? prev : next));
+        };
+        recount();
+        if (typeof MutationObserver === 'undefined') return;
+        const mo = new MutationObserver(() => { clearTimeout(timer); timer = setTimeout(recount, 80); });
+        mo.observe(root, { childList: true, subtree: true, characterData: true });
+        return () => { mo.disconnect(); clearTimeout(timer); };
+    }, [wantTextCells, ctxKey, shellTextRef]);
+
     const cellIndex = useMemo(() => {
         const m = new Map<string, ReaderCellInfo>();
         for (const c of cells) m.set(c.anchor, c);
@@ -198,6 +202,7 @@ export function useReaderPlugins(inp: ReaderPluginRuntimeIn): ReaderPluginRuntim
             ctx,
             state: <T,>(id: string) => stateMap.get(id) as T | undefined,
             cells,
+            textCells,
             scrollTo,
             rectOf,
             locate,
@@ -209,7 +214,7 @@ export function useReaderPlugins(inp: ReaderPluginRuntimeIn): ReaderPluginRuntim
         };
         // tick 不在 api 的字段里，但 refresh 后要让依赖 api 的修饰、设置块重算
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ctx, stateMap, cells, scrollTo, rectOf, locate, refresh, prefs, setPrefs, t, convert, tick]);
+    }, [ctx, stateMap, cells, textCells, scrollTo, rectOf, locate, refresh, prefs, setPrefs, t, convert, tick]);
 
     // ── 修饰 ──
     const decorations = useMemo(() => {
@@ -222,6 +227,13 @@ export function useReaderPlugins(inp: ReaderPluginRuntimeIn): ReaderPluginRuntim
         }
         return lists.length === 0 ? undefined : lists.length === 1 ? lists[0] : mergeDecorations(lists);
     }, [plugins, api]);
+
+    // 无格位章：修饰经 CSS Custom Highlight API 画到文字上（key 是 textCells 的 anchor）
+    useEffect(() => {
+        const root = shellTextRef.current;
+        if (cells.length > 0 || !root || !decorations || decorations.size === 0) return;
+        return applyTextHighlights(textIndex(root), decorations, ctxKey ? String(hashKey(ctxKey)) : 'x');
+    }, [cells.length, decorations, shellTextRef, ctxKey, textCells]);
 
     // ── 格子事件 ──
     const hitOf = useCallback((anchor: string): CellHit => ({ anchor, char: cellIndex.get(anchor)?.char ?? '', rect: rectOf(anchor) }), [cellIndex, rectOf]);

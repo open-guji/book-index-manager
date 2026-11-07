@@ -89,6 +89,13 @@ export interface ReaderApi {
     /** 本章的格，阅读顺序；没有逐字格位的章为空数组 */
     cells: ReadonlyArray<ReaderCellInfo>;
     /**
+     * 无逐字格位的章（整理本、Markdown 文本）里，按渲染出的文字（忽略空白）数出的「格」，阅读顺序；有格位的章为空数组。
+     * anchor 形如 `t:<序>:1`（与 `locate({ text })` 返回的位置记号同一形态）。`decorate` 以它们为 key 就能修饰文字：
+     * 支持 `tone`／`bg`／`fg`／`underline`／`focus`，**不支持** `sub`／`insertAfter`／`title`（不往正文 DOM 里加元素）；
+     * 浏览器没有 CSS Custom Highlight API 时不画。正文还没渲染出来前为空。
+     */
+    textCells: ReadonlyArray<ReaderCellInfo>;
+    /**
      * 滚到某格所在的段（一般是整段顶到视口上方）。格还没渲染出来就等它出来。
      * 也接受 `locate({ text })` 在无格位章（整理本、Markdown 文本）里返回的位置记号（`t:…`）。
      */
@@ -98,7 +105,9 @@ export interface ReaderApi {
      * 按文字或按格序定位，返回位置 key，找不到为 null。
      * `{ text }`＝在本章连续文字里找第一处（忽略空白）：有逐字格位的章返回格位 key；
      * 整理本、Markdown 等无格位的章，按渲染出的文字找，返回不透明的位置记号 `t:…`（只用来传给 `scrollTo`／`rectOf`，别解析）。
-     * `{ cp }`＝本章 `cells` 的下标（从 0 数），只对有格位的章有效。
+     * `{ cp }`＝**格序**：本章 `cells` 的下标（从 0 数，阅读顺序），只对有格位的章有效，越界为 null。
+     *   它不是网站旧版 DOM 里 `data-ft-cp` 的「全章码点偏移」；要按文字内容定位一律用 `{ text }`
+     *   （宿主拿到的查询词即可，不必先换算偏移）。`cells.length` 是格数，宿主若有码点偏移，自行按 `cells` 对应。
      */
     locate(q: { cp: number } | { text: string }): string | null;
     /** 插件自己的状态变了，要求重算修饰（缺省重算全部插件） */

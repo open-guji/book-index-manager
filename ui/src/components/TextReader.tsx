@@ -32,7 +32,7 @@ import { useChapterImages } from './Reader/useChapterImages';
 import { createHoverStore, HoverBound } from './Reader/hover-store';
 import type { ReaderPlugin } from './Reader/plugins';
 import { useReaderPlugins, useReaderViewport } from './Reader/useReaderPlugins';
-import type { ReaderImageOverlay, ReaderImageResolver, ReaderResolveContext, ReaderReportContext, ReaderTocItem, ReaderVersion } from './Reader/types';
+import type { ReaderImageOverlay, ReaderImageResolver, ReaderPageImage, ReaderResolveContext, ReaderReportContext, ReaderTocItem, ReaderVersion } from './Reader/types';
 import type { JuanCacheEntry, JuanView, WorkLabelCache } from './CollatedEdition';
 import {
     JuanRail, JuanReading, groupFileCount, groupMatchState, hasSectionText, useCrossJuanSearch,
@@ -41,7 +41,8 @@ import { GujiWarpCanvas, loadImage, type PageWarpData } from './Reader/GujiWarpC
 import type { GujiPageInfo } from '../core/guji-pages';
 import { GujiTextViewer } from './Reader/GujiTextViewer';
 import { ZoomPanBox, type ZoomPanHandle } from './Reader/ZoomPanBox';
-import { loadReaderChapter, loadReaderFiles, readerVersions as filterReaderVersions, type ReaderChapterData } from '../core/reader-data';
+import { iiifVolumeOf } from '../core/guji-pages';
+import { loadReaderChapter, loadReaderFiles, volumeFromChar, readerVersions as filterReaderVersions, type ReaderChapterData } from '../core/reader-data';
 import { useChapterWarpData, type ReaderWarpResolver } from './Reader/useChapterWarpData';
 import { useChapterEntities, type ReaderEntityResolver } from './Reader/useChapterEntities';
 import { headingKey, headingsFromPunct, nestHeadings, parseHeadingKey, sanitizeHeadings, type HeadingNode, type TextHeading } from '../core/text-headings';
@@ -88,7 +89,15 @@ export interface TextReaderProps {
     title?: React.ReactNode;
     /** 书名后的小字；缺省当前版本的来源名 */
     subtitle?: React.ReactNode;
+    /**
+     * 书影解析（宿主接管，最灵活）。**一般不用传**：给 `resolveFacsimile` 即可，阅读器自己按章条目的 cord 找出书影所在的 IIIF 册。
+     */
     resolveImages?: ReaderImageResolver;
+    /**
+     * 按 IIIF 册取书影页：`(bookId, vol) => 页图列表`。阅读器自己取本章 cord（命中与对读同一份缓存）、
+     * 从中得出 `bookId/vol` 再调它；宿主不必再碰 `loadReaderFiles`／`iiifVolumeOf`。`resolveImages` 优先。
+     */
+    resolveFacsimile?: (bookId: string, vol: string) => Promise<ReaderPageImage[] | null | undefined> | ReaderPageImage[] | null | undefined;
     renderImageOverlay?: ReaderImageOverlay;
     imagePanel?: PanelState;
     allowVertical?: boolean;
@@ -335,7 +344,7 @@ function InitialChapterLead({ data }: { data: ReaderInitialChapter }) {
 const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof useReaderPrefs>; onBodyReady?: () => void }> = ({
     prefsState, onBodyReady,
     id, transport, versionKey: versionKeyProp, chapter: chapterProp, onLocationChange, onNavigate, anchor: anchorProp,
-    title, subtitle, resolveImages, renderImageOverlay, imagePanel, allowVertical, onReportError, revisedAt, backHref, backLabel,
+    title, subtitle, resolveImages, resolveFacsimile, renderImageOverlay, imagePanel, allowVertical, onReportError, revisedAt, backHref, backLabel,
     resolveWarpData, textFileBase, onChapterData, hideSupersededVersions = true, warpData: warpDataProp, resolveEntities, onEntityNavigate, plugins: pluginsProp,
     className, style,
 }) => {
@@ -548,7 +557,15 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             (await loadReaderFiles(transport, { id, versionKey: ctx?.versionKey, chapter: ctx?.chapter }, { cord: wideForCord, textFileBase }))?.entity ?? null
         )
     ), [resolveEntities, canSelfLoad, transport, id, wideForCord, textFileBase]);
-    const images = useChapterImages(resolveImages, effectiveChapter ?? null, resolveCtx, id);
+    // 书影：宿主给了 resolveFacsimile（没接管 resolveImages）就自己从 cord 得册号再要书影
+    const selfImages = useMemo<ReaderImageResolver | undefined>(() => (
+        resolveImages || !resolveFacsimile || !canSelfLoad ? undefined : async (_chapterKey, ctx) => {
+            const files = await loadReaderFiles(transport, { id, versionKey: ctx?.versionKey, chapter: ctx?.chapter }, { cord: wideForCord, textFileBase });
+            const vol = files?.cord ? iiifVolumeOf(files.cord) : files?.cordSkipped ? volumeFromChar(files.char) : null;
+            return vol ? resolveFacsimile(vol.bookId, vol.vol) : null;
+        }
+    ), [resolveImages, resolveFacsimile, canSelfLoad, transport, id, wideForCord, textFileBase]);
+    const images = useChapterImages(resolveImages ?? selfImages, effectiveChapter ?? null, resolveCtx, id);
     const { warpData, loading: warpLoading } = useChapterWarpData(resolveWarpData ?? selfWarp, warpDataProp, effectiveChapter ?? null, resolveCtx, id);
     // 阅读器自己的正文到手了：通知外层卸载服务端直出的首章文字（initialChapter）
     const bodyReady = !contentLoading && chapterKey !== null && (!!warpData || !!content?.md || !!content?.json);

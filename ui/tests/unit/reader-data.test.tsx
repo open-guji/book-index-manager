@@ -77,6 +77,15 @@ describe('TextReader · 自取对读数据', () => {
         expect(getTextFile).toHaveBeenCalledWith('i5', 'k', '001.char.json');
         expect(cb.mock.calls[0][0].chapterKey).toBe('001');
     });
+    it('resolveFacsimile：阅读器自己从 cord 得出 IIIF 册再向宿主要书影（宿主不碰 loadReaderFiles）', async () => {
+        const CORD = { pages: [{ page: 1, canvas: { id: 'https://x/iiif/abc1/canvas/02/0001', seq: '0001', width: 10, height: 10 }, cells: [{ a: '1:1:1', box: [1, 1, 5, 5] }] }] };
+        const getTextFile = vi.fn(async (_i: string, _k: string, f: string) => (f.endsWith('cord.json') ? CORD : CHAR));
+        const t = { ...base, getTextManifest: async () => ({ id: 'i7', versions: [{ key: 'k', kind: 'self_collated', label: 'k' }] }), getTextIndex: async () => ({ chapters: [{ n: 1, file: '001', title: '卷一', char_file: '001.char.json', cord_file: '001.cord.json' }] }), getTextFile } as unknown as IndexStorage;
+        const resolveFacsimile = vi.fn(async () => null);
+        render(<LocaleProvider><TextReader id="i7" transport={t} versionKey="k" chapter="001" resolveFacsimile={resolveFacsimile} /></LocaleProvider>);
+        await waitFor(() => expect(resolveFacsimile).toHaveBeenCalled());
+        expect(resolveFacsimile).toHaveBeenCalledWith('abc1', '02');
+    });
     it('manifest 版本 facsimile.trimmed：不出「书影保留空白」', async () => {
         const mk = (trimmed: boolean) => ({ ...base, getTextManifest: async () => ({ id: 'i6', versions: [{ key: 'k', kind: 'self_collated', label: 'k', facsimile: { trimmed } }] }) }) as unknown as IndexStorage;
         const a = render(<LocaleProvider><TextReader id="i6" transport={mk(true)} versionKey="k" chapter="001" /></LocaleProvider>);
