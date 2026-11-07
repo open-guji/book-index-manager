@@ -39,12 +39,12 @@ book-index-manager/
 - CLI `--root` 指 `D:\workspace` 这个父目录，不是某个仓
 
 ## UI 组件设计
-详见 [ui/README.md](../ui/README.md)。[ui/DESIGN.md](../ui/DESIGN.md) 描述的是 2026-09 版式重构**之前**的 `IndexDetail` 架构，只看「设计原则」与 CSS 变量两节。
-现行详情页 = `ui/src/components/detail/` 四个 Page + `primitives.tsx` + `core/detail-model.ts`，外壳是 `BookDetailLayout`。
+详见 [ui/README.md](../ui/README.md) 与 [ui/DESIGN.md](../ui/DESIGN.md)（2026-11-07 已按现行架构重写：入口、阅读器插件接口、token 契约、`/editor` 子入口）。
+现行详情页 = `ui/src/components/detail/` 四个 Page + `primitives.tsx` + `core/detail-model.ts`，外壳是 `BookDetailLayout`；阅读 = `TextReader` + `components/Reader/`（插件接口在 `Reader/plugins.ts`）；编辑态在子入口 `book-index-ui/editor`。旧的 `IndexDetail／IndexApp／HomePage／IndexView／EntityDetail` 已删除。
 
 ## 关联项目
-- **guji-platform**（`D:\workspace\guji-platform`）：VS Code 插件，调用本包的 Python 模块和 React 组件
-- **kaiyuanguji-web**（`D:\workspace\kaiyuanguji-web`）：古籍网站，从 npm 装本包（`book-index-ui`）。发布顺序：先 `npm publish` 本包，再在网站仓 bump 依赖与 e2e 同批推
+- **guji-platform**（`D:\workspace\guji-platform`）：VS Code 插件，调用本包的 Python 模块和 React 组件；依赖 `book-index-ui ^0.1.17`，不会随本包升级
+- **kaiyuanguji-web**（`D:\workspace\kaiyuanguji-web`）：古籍网站，从 npm 装本包（`book-index-ui`）。分支流程：PR 投 `dev`，包的预发布走 `publish-ui.yml`（`0.66.x-rc.N`，dist-tag `next`），网站 dev 依赖 rc 版；正式发布升 patch，由 A41 汇总后合 main
 
 ## 交接手册
 全貌见 overview 仓 `项目进展/古籍索引网站/2026-09-网站交接手册.html`（[线上版](https://claude.ai/code/artifact/0b4a9456-eaf9-4f4c-9e2d-72bba9f4e5c8)）。

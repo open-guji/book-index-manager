@@ -27,7 +27,6 @@ export type {
     BookDetailData,
     CollectionDetailData,
     WorkDetailData,
-    EntityDetailData,
     EntitySubtype,
     AltName,
     AltNameType,
@@ -120,17 +119,6 @@ export type { HighlightSegment } from './core/highlight';
 // Components - Existing
 export { ResourceList } from './components/ResourceList';
 export { IndexBrowser, RECENT_IDS_STORAGE_KEY } from './components/IndexBrowser';
-/** @deprecated 旧版详情页，请用 `BookDetailLayout`／`WorkPage`／`BookPage`／`CollectionPage`／`EntityPage`；仅为兼容旧宿主，不再维护 */
-export { IndexDetail, EmendatedBySection } from './components/IndexDetail';
-export type { IndexDetailProps } from './components/IndexDetail';
-export { EntityDetail } from './components/EntityDetail';
-export type { EntityDetailProps } from './components/EntityDetail';
-/** @deprecated 旧版整站壳，请由宿主自己组合页面；仅为兼容旧宿主，不再维护 */
-export { IndexApp } from './components/IndexApp';
-export type { IndexAppProps } from './components/IndexApp';
-/** @deprecated 旧版首页（五个页签），请用 `MetaHomeView`／`ReadHomeView`；仅为兼容旧宿主，不再维护 */
-export { HomePage } from './components/HomePage';
-export type { HomePageProps, RecommendedItem } from './components/HomePage';
 export { SearchInput } from './components/SearchInput';
 export type { SearchInputProps } from './components/SearchInput';
 export { ModeIndicator } from './components/ModeIndicator';
@@ -173,7 +161,7 @@ export type { ReadingMode, ReadingGenre, ParagraphBlock } from './core/paragraph
 export { WorkCatalog } from './components/WorkCatalog';
 export type { WorkCatalogProps } from './components/WorkCatalog';
 
-// 编辑态（IndexEditor、ResourceEditor、SourceEditor、RelationPanel、实体选择／新建、IndexView）已拆到子入口 `book-index-ui/editor`
+// 编辑态（IndexEditor、ResourceEditor、SourceEditor、RelationPanel、实体选择／新建）已拆到子入口 `book-index-ui/editor`
 // 反馈传输层：FeedbackTab 经它取数／提交，不直接 fetch
 export { createFeedbackTransport, feedbackTransportOf } from './core/feedback-api';
 export type { FeedbackTransport, FeedbackSubmission } from './core/feedback-api';

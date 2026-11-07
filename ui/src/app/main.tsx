@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IndexBrowser } from '../components/IndexBrowser';
-import { HomePage } from '../components/HomePage';
-import type { TabKey } from '../components/HomePage';
 import { LocaleToggle } from '../components/LocaleToggle';
 import { RepoSourceLink } from '../components/common/RepoSourceLink';
 import { BookDetailLayout } from '../components/BookDetailLayout';
@@ -147,12 +145,6 @@ function App() {
         return m === 'graph' ? 'graph' : 'list';
     });
     const [lineageCollection, setLineageCollection] = useState<string | undefined>(() => getParamsFromUrl().collection);
-    const [homeTab, setHomeTab] = useState<TabKey>(() => {
-        const id = getIdFromUrl();
-        if (id) return 'recommend';
-        const params = getParamsFromUrl();
-        return ((params.tab === 'catalog' || params.tab === 'site') ? params.tab : 'recommend') as TabKey;
-    });
 
     // ── URL 同步辅助 ──
 
@@ -229,18 +221,9 @@ function App() {
             setActiveJuanState(params.juan || null);
             setLineageModeState(params.mode === 'graph' ? 'graph' : 'list');
             setLineageCollection(params.collection);
-            if (!id) {
-                setHomeTab(((params.tab === 'catalog' || params.tab === 'site') ? params.tab : 'recommend') as TabKey);
-            }
         };
         window.addEventListener('popstate', onPopState);
         return () => window.removeEventListener('popstate', onPopState);
-    }, []);
-
-    // 首页 tab 切换
-    const handleHomeTabChange = useCallback((tab: TabKey) => {
-        setHomeTab(tab);
-        pushUrl(null, tab !== 'recommend' ? { tab } : undefined);
     }, []);
 
     // 更新浏览器标签页标题（详情页）
@@ -293,12 +276,6 @@ function App() {
                                 />
                             </span>
                         }
-                    />
-                    <HomePage
-                        transport={transport}
-                        onNavigate={handleNavigate}
-                        activeTab={homeTab}
-                        onTabChange={handleHomeTabChange}
                     />
                 </div>
             )}
