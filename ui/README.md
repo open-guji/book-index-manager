@@ -25,7 +25,9 @@ import 'book-index-ui/styles'                // 旧入口＝tokens.css ＋ theme
 
 1. 先 `import 'book-index-ui/tokens.css'`；
 2. 再在自己的 `:root` 里**只覆盖品牌相关的变量**（朱色一族、字体、页面底色等）；覆盖声明须在 tokens.css 之后加载；
-3. 不要重写整套 `--bim-*`，也不要写 `.bim-*` 结构选择器去改组件内部——要调的东西都应该有变量，没有就提需求加变量。
+3. （有调色板时，第 2 步改为覆盖 `--bim-palette-*`，见下）不要重写整套 `--bim-*`，也不要写 `.bim-*` 结构选择器去改组件内部——要调的东西都应该有变量，没有就提需求加变量。
+
+**调色板（推荐给有自己品牌色的宿主）**：`tokens.css` 之后再 `import 'book-index-ui/palette.css'`，然后在 `:root` 里**只覆盖约 20 个 `--bim-palette-*`**（`paper` `raise` `tint` `tint-2` `ink` `ink-2` `ink-3` `aux` `accent` `accent-deep` `gold` `gold-ink` `blue` `blue-soft` `purple` `purple-soft` `green` `amber` `red` `book` `shade`）。语义变量（链接、类型徽章、警告条、高亮、分隔线……）全部由调色板推出，不必逐个重写；宿主有自己的令牌体系时把调色板接过去，换主题自动跟随。不引 `palette.css` 则保持 `tokens.css` 的默认值（VS Code 扩展等不受影响）。调色板的名字与默认值、推导关系见 `src/styles/tokens.ts` 的 `BIM_PALETTE` / `BIM_PALETTE_MAP`。
 
 内置主题（indigo、ink）在 `themes.css`，用 `<html data-theme="…">` 切换；宿主自己用品牌色接管的，不必引。版式（`data-layout="boxed"`，界栏）在 tokens.css 里。
 

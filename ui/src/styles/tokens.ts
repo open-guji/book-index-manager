@@ -419,11 +419,88 @@ export const BIM_LAYOUTS = {
 
 export type BimLayoutName = 'airy' | keyof typeof BIM_LAYOUTS;
 
+/**
+ * 调色板（品牌色）：宿主只需覆盖 `--bim-palette-*`（约 20 个），语义变量全部由它推出。
+ * 生成 `palette.css`（发布为 `book-index-ui/palette.css`）：在 tokens.css 之后引入、**再**覆盖调色板。
+ * 不引 palette.css 的宿主（VS Code 扩展等）不受影响——tokens.css 的语义默认值一个字没动。
+ * 默认取值 = 开源古籍站的朱砂主题；宿主有自己的令牌体系时，把调色板接过去即可（随主题切换自动跟随）。
+ */
+export const BIM_PALETTE = {
+    'paper': { value: '#faf7f2', note: '页底' },
+    'raise': { value: '#fffdf9', note: '抬起的面（卡片、检索框）' },
+    'tint': { value: '#f3eee6', note: '分组底、悬停' },
+    'tint-2': { value: '#ebe4d9', note: '再深一阶：悬停／选中，也是细线色' },
+    'ink': { value: '#26211c', note: '正文、标题' },
+    'ink-2': { value: '#5f564d', note: '次要文字' },
+    'ink-3': { value: '#948a7e', note: '最浅的墨（只做装饰，不拿来写字）' },
+    'aux': { value: '#6f6457', note: '辅助字（标签、注记）：须在 paper / tint 上对比度 ≥4.5' },
+    'accent': { value: '#9e2a2b', note: '强调色（朱）：链接、主按钮、选中态' },
+    'accent-deep': { value: '#7a1c1f', note: '强调色的深一阶（悬停）' },
+    'gold': { value: '#a37b43', note: '泥金：点缀、警告条、高亮' },
+    'gold-ink': { value: '#8a6320', note: '泥金的字色（警告字、彩色标记字）' },
+    'blue': { value: '#2f6a8d', note: '蓝：丛编、序' },
+    'blue-soft': { value: '#3a6b8a', note: '蓝（压暗一档）：文字资源、关系上行' },
+    'purple': { value: '#6a4a86', note: '紫：专名条目' },
+    'purple-soft': { value: '#7a5192', note: '紫（浅一档）：图文资源' },
+    'green': { value: '#3f7d54', note: '绿：正式、已完成' },
+    'amber': { value: '#b5762e', note: '琥珀：草稿、缺册、平行关系' },
+    'red': { value: '#a8322c', note: '红：佚失' },
+    'book': { value: 'var(--bim-palette-accent)', note: '「书」类标记色；默认随强调色，宿主在强调色是蓝灰的主题里想保留红时单独设' },
+    'shade': { value: 'rgba(40, 36, 31, 0.25)', note: '疏朗版式提要卡的投影色（含透明度）' },
+} as const;
+
+export type BimPaletteName = keyof typeof BIM_PALETTE;
+
+const P = (n: BimPaletteName) => `var(--bim-palette-${n})`;
+const MIX = (n: BimPaletteName, pct: number, other = 'transparent') => `color-mix(in srgb, ${P(n)} ${pct}%, ${other})`;
+
+/** 语义变量 ← 调色板的推导（palette.css 里 :root 的声明）；表里没有的变量保持 tokens.css 的默认值 */
+export const BIM_PALETTE_MAP = {
+    // 底色与文字
+    'bg': P('raise'), 'bg-subtle': P('paper'), 'widget-bg': P('paper'), 'sidebar-bg': P('tint'),
+    'fg': P('ink'), 'desc-fg': P('ink-2'), 'muted': P('aux'),
+    // 描边
+    'widget-border': P('tint-2'), 'border': P('tint-2'), 'input-border': P('tint-2'), 'focus-border': P('accent'),
+    // 输入控件
+    'input-bg': P('raise'), 'input-fg': P('ink'),
+    // 主色
+    'primary': P('accent'), 'primary-fg': '#ffffff', 'primary-soft': MIX('accent', 12), 'primary-bg': MIX('accent', 8),
+    'link': P('accent'), 'link-fg': P('accent'),
+    'list-hover-bg': P('tint'), 'list-active-bg': MIX('accent', 8),
+    'tag-bg': P('tint'), 'accent-bg': P('gold'),
+    // 条目类型与状态
+    'type-book': P('book'), 'type-work': P('gold'), 'type-collection': P('blue'), 'type-entity': P('purple'),
+    'status-draft': P('amber'), 'status-official': P('green'),
+    // 资源
+    'restype-text': P('blue-soft'), 'restype-image': P('amber'), 'restype-text-image': P('purple-soft'), 'missing-fg': P('amber'),
+    'colormode-bw-bg': P('tint'), 'colormode-bw-fg': P('ink-2'), 'colormode-color-bg': MIX('gold', 14), 'colormode-color-fg': P('gold-ink'),
+    'progress-active': P('gold'), 'progress-done': P('green'), 'progress-todo': P('ink-3'),
+    // 警告条
+    'warn-bg': MIX('gold', 14), 'warn-border': MIX('gold', 40), 'warn-fg': P('gold-ink'),
+    // 整理本
+    'highlight-bg': MIX('gold', 28), 'section-lei': P('gold'), 'section-shu': P('book'), 'section-xu': P('blue'),
+    'section-kaozhen': P('ink-2'), 'section-tag-fg': P('accent'), 'matchstate-fg': P('gold'),
+    // 版本传承与关系
+    'lost-fg': P('red'), 'relation-up': P('blue-soft'), 'relation-down': P('green'), 'relation-flat': P('amber'),
+    'cover-accent': P('gold'),
+    // 详情页
+    'page-bg': P('paper'), 'row-hover-bg': P('tint'), 'selection-bg': MIX('gold', 30),
+    'band-bg': P('tint'), 'band-bg-hover': P('tint-2'),
+    'ink': P('ink'), 'body-fg': P('ink'), 'quiet-fg': P('ink-2'), 'meta-fg': P('ink-2'),
+    'aux-fg': P('aux'), 'label-fg': P('aux'), 'hint-fg': P('aux'),
+    'accent': P('accent'), 'accent-deep': P('accent-deep'), 'flag-bg': MIX('accent', 8),
+    'rule-strong': P('tint-2'), 'rule': P('tint-2'), 'rule-dashed': P('tint-2'),
+    'rule-accent-soft': MIX('accent', 24, P('paper')),
+    'card-bg': P('raise'), 'zebra-bg': MIX('tint', 60), 'tint-bg': P('tint'),
+    'fr-shadow': `0 1px 0 var(--bim-rule), 0 12px 32px -18px ${P('shade')}`,
+} as const satisfies Partial<Record<BimTokenName, string>>;
+
 /** `all` = variables.css 全文（兼容旧入口 book-index-ui/styles）；`tokens` = :root ＋ 版式；`themes` = 仅主题块 */
-export type BimCssPart = 'all' | 'tokens' | 'themes';
+export type BimCssPart = 'all' | 'tokens' | 'themes' | 'palette';
 
 /** 生成 variables.css / tokens.css / themes.css 的全文（`npm run gen:tokens` 调用） */
 export function bimTokensCss(part: BimCssPart = 'all'): string {
+    if (part === 'palette') return bimPaletteCss();
     const wantRoot = part !== 'themes';
     const wantThemes = part !== 'tokens';
     const wantLayouts = part !== 'themes';
@@ -481,5 +558,28 @@ export function bimTokensCss(part: BimCssPart = 'all'): string {
         }
     }
     out.push('');
+    return out.join('\n');
+}
+
+/** palette.css：调色板默认值 ＋ 语义变量的推导（在 tokens.css 之后引入；宿主在其后覆盖 `--bim-palette-*`） */
+export function bimPaletteCss(): string {
+    const out = [
+        '/**',
+        ' * book-index-ui 调色板（palette.css）—— 由 src/styles/tokens.ts 生成，勿手改；',
+        ' * 改完 tokens.ts 后运行 `npm run gen:tokens`。',
+        ' *',
+        ' * 用法：宿主依次引 tokens.css、palette.css，再在自己的 :root 里只覆盖 `--bim-palette-*`（约 20 个）；',
+        ' * 语义变量（--bim-link、--bim-type-*、--bim-warn-* …）全部由调色板推出，不必逐个重写。',
+        ' * 不引本文件 = 保持 tokens.css 的默认值（VS Code 扩展等）。',
+        ' */',
+        ':root {',
+        '    /* ==== 调色板 ==== */',
+    ];
+    for (const [name, p] of Object.entries(BIM_PALETTE)) {
+        out.push(`    /* ${p.note} */`, `    --bim-palette-${name}: ${p.value};`);
+    }
+    out.push('', '    /* ==== 由调色板推出的语义变量 ==== */');
+    for (const [name, v] of Object.entries(BIM_PALETTE_MAP)) out.push(`    --bim-${name}: ${v};`);
+    out.push('}', '');
     return out.join('\n');
 }

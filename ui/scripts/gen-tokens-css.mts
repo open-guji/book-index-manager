@@ -6,7 +6,7 @@ import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { bimTokensCss } from '../src/styles/tokens.ts';
 
-for (const [file, part] of [['variables.css', 'all'], ['tokens.css', 'tokens'], ['themes.css', 'themes']] as const) {
+for (const [file, part] of [['variables.css', 'all'], ['tokens.css', 'tokens'], ['themes.css', 'themes'], ['palette.css', 'palette']] as const) {
     const out = fileURLToPath(new URL(`../src/styles/${file}`, import.meta.url));
     writeFileSync(out, bimTokensCss(part));
     console.log(`wrote ${out}`);
