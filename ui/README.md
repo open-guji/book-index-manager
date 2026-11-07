@@ -97,7 +97,9 @@ import 'book-index-ui/styles'                // 旧入口＝tokens.css ＋ theme
 - 偏好（字号、字体、自然段、专名线…）存 `localStorage['bim-reader-prefs']`，首帧用默认值，SSR 安全。
 - 宿主若有吸顶导航，设 `--bim-reader-top`（如 `60px`）。
 
-书影接口：`TextReader` 的 `resolveImages(chapterKey)` 返回当卷的 `ReaderPageImage[]`（可异步）——每页一张图，URL 由宿主给，可带 `width/height` 与逐字框 `boxes`（暂定格式 `bim-charbox-v0`：原图像素坐标 `x/y/w/h`，可选 `char`/`textOffset`/`confidence`）。其他格式的框设 `boxFormat` 并用 `renderImageOverlay` 自己画，这是与 CV 交付格式对齐前的扩展点。没有影像时书影区默认收起（`imagePanel="auto"`），点工具条「书影」可看占位。
+书影接口（推荐）：给 `TextReader` 一个 `resolveFacsimile(bookId, vol)`，返回该 IIIF 册的 `ReaderPageImage[]`——阅读器自己按章条目的 cord 找出册号再调它，宿主不必碰 `loadReaderFiles`／`iiifVolumeOf`。需要完全接管时用下面的 `resolveImages`（优先于 `resolveFacsimile`）。
+
+书影接口（接管）：`TextReader` 的 `resolveImages(chapterKey)` 返回当卷的 `ReaderPageImage[]`（可异步）——每页一张图，URL 由宿主给，可带 `width/height` 与逐字框 `boxes`（暂定格式 `bim-charbox-v0`：原图像素坐标 `x/y/w/h`，可选 `char`/`textOffset`/`confidence`）。其他格式的框设 `boxFormat` 并用 `renderImageOverlay` 自己画，这是与 CV 交付格式对齐前的扩展点。没有影像时书影区默认收起（`imagePanel="auto"`），点工具条「书影」可看占位。
 
 版本下拉框（overview#235，同一 owner 有多份全文时用）：`ReaderShell` 的四个 props——
 
@@ -110,7 +112,9 @@ import 'book-index-ui/styles'                // 旧入口＝tokens.css ＋ theme
 
 配套两个导出（`book-index-ui` 根入口与 `components/Reader`）：`readerVersionsFromFullText(entries)` 把 book-text 的 `WorkFullTextEntry[]` 换成 `ReaderVersion[]`（顺序不变，清单已按「哪份最好」排好）；`pickReaderVersion(versions, key?)` 给出当前选中的一份（key 有效用它，否则 primary，再否则第一份），宿主用它决定该载入哪份 toc / 正文。
 
-**`resolveImages` 要用 `useCallback`（或模块级函数）包一层**：组件按 `[resolveImages, 当前卷]` 重新取书影，每次渲染都传一个新函数会反复请求。
+插件接口里的定位与修饰（`ReaderApi`）：`locate({ cp })` 的 `cp` 是**格序**（`api.cells` 的下标，阅读顺序，从 0 数），不是全章码点偏移（网站旧版 DOM 的 `data-ft-cp`）；按内容定位用 `locate({ text })`。整理本、Markdown 等无逐字格位的章，`api.cells` 为空，`api.textCells` 给出按渲染文字数出的格（anchor `t:<序>:1`），`decorate` 以它为 key 即可修饰（`tone`／`bg`／`fg`／`underline`／`focus`，经 CSS Custom Highlight API 画，不改 DOM；`sub`／`insertAfter`／`title` 在这类章里不支持）。
+
+**`resolveImages`／`resolveFacsimile` 要用 `useCallback`（或模块级函数）包一层**：组件按 `[resolveImages, 当前卷]` 重新取书影，每次渲染都传一个新函数会反复请求。
 
 ### 正文实体标注（`EntityText`，overview#389）
 

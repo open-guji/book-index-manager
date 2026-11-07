@@ -262,6 +262,52 @@ describe('无逐字格位的文本章：locate({text}) / scrollTo', () => {
     });
 });
 
+describe('无逐字格位的文本章：decorate 经 textCells 画到文字上', () => {
+    const mdTransport = {
+        getItem: async () => ({ title: '某書' }),
+        getTextManifest: async () => ({ id: 'w1', versions: [{ key: 'v1', kind: 'wikisource', label: '維基文庫', source: 'wikisource' }] }),
+        getTextIndex: async () => ({ chapters: [{ n: 1, file: '001', title: '卷一' }] }),
+        getChapter: async () => ({ md: '## 卷一\n\n天地玄黃，宇宙洪荒。', json: null }),
+    } as unknown as IndexStorage;
+
+    it('textCells 按渲染文字数格（anchor t:序:1）；decorate 的结果注册成高亮，同样式相邻字并成一段，换章/卸载清理', async () => {
+        const store = new Map<string, { ranges: Range[] }>();
+        const g = globalThis as unknown as { CSS?: unknown; Highlight?: unknown };
+        const origCss = g.CSS, origHl = g.Highlight;
+        g.Highlight = class { ranges: Range[]; constructor(...r: Range[]) { this.ranges = r; } };
+        g.CSS = { highlights: { set: (n: string, h: { ranges: Range[] }) => store.set(n, h), delete: (n: string) => store.delete(n) } };
+        let api: ReaderApi | null = null;
+        const plugin: ReaderPlugin = {
+            id: 'cmp',
+            overlay: (a) => { api = a; return null; },
+            decorate: (a) => {
+                const m = new Map<string, import('../../src/components/Reader/plugins').CellDecoration>();
+                a.textCells.forEach((c) => { if ('玄黃黄宇'.includes(c.char)) m.set(c.anchor, { tone: 'omit' }); });
+                return m;
+            },
+        };
+        try {
+            const view = render(
+                <LocaleProvider>
+                    <TextReader id="w1" transport={mdTransport} versionKey="v1" chapter="001" plugins={[plugin]} />
+                </LocaleProvider>,
+            );
+            await waitFor(() => expect(screen.getByText(/宇宙洪荒/)).toBeTruthy(), { timeout: 5000 });
+            await waitFor(() => expect(api!.textCells.map(c => c.char).join('')).toMatch(/天地玄[黃黄]，宇宙洪荒/));
+            expect(api!.cells.length).toBe(0);
+            expect(api!.textCells[0].anchor).toBe('t:0:1');
+            await waitFor(() => expect(store.size).toBe(1));
+            const ranges = [...store.values()][0].ranges;
+            // 玄黃 相邻并成一段，宇 单独一段
+            expect(ranges.map(r => r.toString())).toEqual([expect.stringMatching(/^玄[黃黄]$/), '宇']);
+            view.unmount();
+            expect(store.size).toBe(0);
+        } finally {
+            g.CSS = origCss; g.Highlight = origHl;
+        }
+    });
+});
+
 describe('无格位的文本章：选中文字也出选字浮条', () => {
     const mdTransport = {
         getItem: async () => ({ title: '某書' }),
