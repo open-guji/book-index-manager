@@ -9,7 +9,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { TextReader } from '../../src/components/TextReader';
 import { ImagePanel, trimRect } from '../../src/components/Reader/ImagePanel';
-import { fullImageTrimRect, type PageWarpData } from '../../src/components/Reader/GujiWarpCanvas';
+import { fullImageTrimRect, applyH, validH, pageDataToSource, type PageWarpData } from '../../src/components/Reader/GujiWarpCanvas';
 import { detectFrameFromGray } from '../../src/components/Reader/frame-detect';
 import { adaptCharCord } from '../../src/core/guji-char-cord';
 import type { IndexStorage } from '../../src/storage/types';
@@ -201,7 +201,7 @@ describe('L2 · 输入葉码跳转', () => {
 
 describe('L2 · 保留空白／去空白', () => {
     const openSettings = () => fireEvent.click(screen.getByRole('button', { name: /閱讀設置|阅读设置/ }));
-    const box = () => screen.getByLabelText(/書影保留空白|书影保留空白/) as HTMLInputElement;
+    const box = () => screen.getByLabelText(/顯示完整書頁|显示完整书页/) as HTMLInputElement;
 
     it('设置面板里只有一个书影留白控件（勾选框），没有重复的「去空白／保留空白」按钮和「图文对读」徽章', async () => {
         await setup();
@@ -212,24 +212,24 @@ describe('L2 · 保留空白／去空白', () => {
         expect(document.querySelector('.bim-rd-badge-warp')).toBeNull();
     });
 
-    it('默认保留空白；取消勾选书影画布的 preserveMargins 变 false，再勾回 true', async () => {
+    it('默认不显示完整书页（只看内容区）；勾选书影画布的 preserveMargins 变 true，再取消回 false', async () => {
         await setup();
-        expect(stub().getAttribute('data-preserve')).toBe('true');
-        openSettings();
-        expect(box().checked).toBe(true);
-        fireEvent.click(box());
         expect(stub().getAttribute('data-preserve')).toBe('false');
+        openSettings();
         expect(box().checked).toBe(false);
         fireEvent.click(box());
         expect(stub().getAttribute('data-preserve')).toBe('true');
+        expect(box().checked).toBe(true);
+        fireEvent.click(box());
+        expect(stub().getAttribute('data-preserve')).toBe('false');
     });
 
     it('图源已裁去空白（版本 facsimile.trimmed）：不显示勾选框，书影画布一律整图，已存的偏好不被改写', async () => {
-        localStorage.setItem('bim-reader-prefs', JSON.stringify({ v: 2, pageBreaks: true, preserveMargins: false }));
+        localStorage.setItem('bim-reader-prefs', JSON.stringify({ v: 3, pageBreaks: true, preserveMargins: false }));
         await setup({ transport: trimmedTransport });
         expect(stub().getAttribute('data-preserve')).toBe('true');
         openSettings();
-        expect(screen.queryByLabelText(/書影保留空白|书影保留空白/)).toBeNull();
+        expect(screen.queryByLabelText(/顯示完整書頁|显示完整书页/)).toBeNull();
         expect(JSON.parse(localStorage.getItem('bim-reader-prefs')!).preserveMargins).toBe(false);
     });
 
@@ -237,12 +237,12 @@ describe('L2 · 保留空白／去空白', () => {
         await setup();
         openSettings();
         fireEvent.click(box());
-        expect(JSON.parse(localStorage.getItem('bim-reader-prefs')!).preserveMargins).toBe(false);
+        expect(JSON.parse(localStorage.getItem('bim-reader-prefs')!).preserveMargins).toBe(true);
         cleanup();
         await setup();
-        await waitFor(() => expect(stub().getAttribute('data-preserve')).toBe('false'));
+        await waitFor(() => expect(stub().getAttribute('data-preserve')).toBe('true'));
         openSettings();
-        expect(box().checked).toBe(false);
+        expect(box().checked).toBe(true);
     });
 });
 
@@ -310,6 +310,52 @@ describe('L2 · 去空白裁到版框：detectFrameFromGray + fullImageTrimRect(
         expect(r2.x).toBeCloseTo(35, 3);
         // 没有检测结果：老行为（字框 ± 3%）
         expect(fullImageTrimRect(page([700, 400, 760, 480]), null)).toEqual({ x: 670, y: 370, w: 120, h: 140 });
+    });
+});
+
+describe('页面范围（bim:page）：H 变换与内容区裁切', () => {
+    const page = (b: [number, number, number, number], extra: Partial<PageWarpData> = {}): PageWarpData => ({
+        page_id: 'p:5', title: '', image_size: [1000, 1400], total_warped_w: 1000,
+        columns: [{ col: 1, warped_w: 1000, warped_h: 1400, offset_x: 0, strips: [], chars: [{ id: 'c0', char: '字', slot: 1, pos: 1, bbox_col: b }] }],
+        ...extra,
+    });
+    const I = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+    it('applyH／validH：单位阵、平移、透视；退化与非数字不可用', () => {
+        expect(applyH(I, 3, 4)).toEqual([3, 4]);
+        expect(applyH([1, 0, 10, 0, 1, 20, 0, 0, 1], 3, 4)).toEqual([13, 24]);
+        const [x, y] = applyH([2, 0, 0, 0, 2, 0, 0, 0, 2], 3, 4); // 齐次：整体缩放不改点
+        expect([x, y]).toEqual([3, 4]);
+        expect(validH(I)).toBe(true);
+        expect(validH([1, 0, 0, 0, 1, 0, 0, 0])).toBe(false);
+        expect(validH([1, 0, 0, 0, 1, 0, 0, 0, 0])).toBe(false);
+        expect(validH([1, 0, 0, 0, 1, 0, 0, NaN, 1])).toBe(false);
+    });
+    it('pageDataToSource：平移＋缩放后字框与源图尺寸一致，字框不变形（缩放 2、平移 (100,50)）', () => {
+        const H = [2, 0, 100, 0, 2, 50, 0, 0, 1];
+        const out = pageDataToSource(page([200, 300, 300, 400]), { src: { w: 2200, h: 2900 }, H, content: [0, 0, 1000, 1400] });
+        expect(out.image_size).toEqual([2200, 2900]);
+        expect(out.columns[0].chars[0].bbox_col).toEqual([500, 650, 700, 850]);
+        expect(out.columns[0].offset_x).toBe(0);
+    });
+    it('pageDataToSource：透视时取四角映射的外接矩形，包住映射后的四角；offset_x 计入', () => {
+        const H = [1, 0.02, 0, -0.01, 1, 0, 0, 0, 1];
+        const pd = page([100, 100, 200, 200]);
+        pd.columns[0].offset_x = 50;
+        const [a, b, c, d] = pageDataToSource(pd, { src: { w: 1000, h: 1400 }, H, content: [0, 0, 1000, 1400] }).columns[0].chars[0].bbox_col;
+        for (const [x, y] of [[150, 100], [250, 100], [250, 200], [150, 200]]) {
+            const [u, v] = applyH(H, x, y);
+            expect(u).toBeGreaterThanOrEqual(a - 1e-9); expect(u).toBeLessThanOrEqual(c + 1e-9);
+            expect(v).toBeGreaterThanOrEqual(b - 1e-9); expect(v).toBeLessThanOrEqual(d + 1e-9);
+        }
+    });
+    it('有内容区时裁到内容区（不再用图像检测），字框伸出内容区则并进来', () => {
+        const content: [number, number, number, number] = [100, 180, 800, 1040];
+        const r = fullImageTrimRect(page([700, 400, 760, 480]), null, content)!;
+        expect([r.x, r.y, r.w, r.h]).toEqual([100, 180, 800, 1040]);
+        const r2 = fullImageTrimRect(page([50, 400, 120, 480]), null, content)!;
+        expect(r2.x).toBeCloseTo(50 - 5, 6);
+        // 内容区坏值（非有限、零宽）：退回老行为
+        expect(fullImageTrimRect(page([700, 400, 760, 480]), null, [NaN, 0, 1, 1])).toEqual({ x: 670, y: 370, w: 120, h: 140 });
     });
 });
 

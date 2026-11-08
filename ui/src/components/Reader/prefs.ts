@@ -69,7 +69,7 @@ export interface ReaderPrefs {
     quoteStyle: QuoteStyle;
     /** 字形；null = 跟站点繁简（L5 接线） */
     scriptMode: ReaderScriptMode | null;
-    /** 书影保留空白（L2 接线） */
+    /** 显示完整书页（L2 接线；存储键沿用 preserveMargins）。开＝源图整幅，关（默认）＝只看本页版框内容区 */
     preserveMargins: boolean;
 }
 
@@ -86,7 +86,7 @@ export const DEFAULT_READER_PREFS: ReaderPrefs = {
     showWorks: true,
     quoteStyle: 'original',
     scriptMode: null,
-    preserveMargins: true,
+    preserveMargins: false,
 };
 
 /** 可选字号档位；默认 18 在中间偏下 */
@@ -94,8 +94,8 @@ export const FONT_SIZE_STEPS = [15, 16, 17, 18, 20, 22, 24] as const;
 export const DEFAULT_FONT_SIZE = 18;
 
 const STORAGE_KEY = 'bim-reader-prefs';
-/** 存档格式版本；2＝分页线默认关、书名默认书名号之后的存档 */
-const PREFS_VERSION = 2;
+/** 存档格式版本；2＝分页线默认关、书名默认书名号之后的存档；3＝「显示完整书页」默认关之后的存档（旧存档里的 preserveMargins 是整包写回的旧默认，不算用户选的） */
+const PREFS_VERSION = 3;
 /** W7 草稿用过的键；读到就迁过来，只读不写 */
 const LEGACY_MODE_KEY = 'bim-reading-mode';
 
@@ -115,7 +115,8 @@ export function loadReaderPrefs(): ReaderPrefs {
         if (p.workLinks === false) out.workLinks = false;
         if (p.fontFamily === 'kai' || p.fontFamily === 'system') out.fontFamily = p.fontFamily;
         // 分页线、书名标法 2026-10-19 改了默认（不分页、书名号）；旧存档（无 v）里这两项是整包写回的旧默认，不算用户选的
-        const v2 = (p as { v?: unknown }).v === PREFS_VERSION;
+        const pv = (p as { v?: unknown }).v;
+        const v2 = pv === 2 || pv === PREFS_VERSION;
         if (v2 && typeof p.pageBreaks === 'boolean') out.pageBreaks = p.pageBreaks;
         if (typeof p.pageIndicatorY === 'number' && Number.isFinite(p.pageIndicatorY)
             && p.pageIndicatorY >= PAGE_INDICATOR_Y_RANGE[0] && p.pageIndicatorY <= PAGE_INDICATOR_Y_RANGE[1]) out.pageIndicatorY = p.pageIndicatorY;
@@ -123,7 +124,7 @@ export function loadReaderPrefs(): ReaderPrefs {
         if (p.showWorks === false) out.showWorks = false;
         if (p.quoteStyle === 'modern' || p.quoteStyle === 'classic') out.quoteStyle = p.quoteStyle;
         if (p.scriptMode === 'orig' || p.scriptMode === 'hant' || p.scriptMode === 'hans') out.scriptMode = p.scriptMode;
-        if (p.preserveMargins === false) out.preserveMargins = false;
+        if (pv === PREFS_VERSION && typeof p.preserveMargins === 'boolean') out.preserveMargins = p.preserveMargins;
     } catch { /* 存储不可用：用默认值 */ }
     return out;
 }

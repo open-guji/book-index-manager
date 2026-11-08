@@ -3,6 +3,7 @@ import type { CellDecoration } from './plugins';
 import { StripWarpRenderer, StripTransform } from './StripWarpRenderer';
 import { bim } from '../../styles/tokens';
 import { detectImageFrame, type FrameFraction } from './frame-detect';
+import type { PageExtent } from './types';
 
 export interface CharGeometry {
   id: string;
@@ -71,7 +72,12 @@ export interface PageWarpData {
  * 所有字框的外接矩形，四周各留 3%（按短边算）。有透视 strip 的页走原来的版心裁切，这里返回 null；
  * 没有字框、框退化、或几乎没裁掉东西（≥98%）也返回 null（保持整图）。
  */
-export function fullImageTrimRect(pageData: PageWarpData, frame?: FrameFraction | null): { x: number; y: number; w: number; h: number } | null {
+export function fullImageTrimRect(
+  pageData: PageWarpData,
+  frame?: FrameFraction | null,
+  /** 页面范围里的内容区（P 坐标 x,y,w,h）：有它就以它为准（不再用图像检测），字框并进来保证字不被切 */
+  content?: [number, number, number, number] | null,
+): { x: number; y: number; w: number; h: number } | null {
   const [W, H] = pageData.image_size || [0, 0];
   if (!(W > 0) || !(H > 0)) return null;
   if (pageData.columns.some((c) => (c.strips?.length ?? 0) > 0)) return null;
@@ -94,7 +100,11 @@ export function fullImageTrimRect(pageData: PageWarpData, frame?: FrameFraction 
   if (!(x1 > x0) || !(y1 > y0)) return null;
   const pad = Math.min(W, H) * 0.03;
   let ax0 = x0 - pad, ay0 = y0 - pad, ax1 = x1 + pad, ay1 = y1 + pad;
-  if (frame) {
+  if (content && content.every(Number.isFinite) && content[2] > 0 && content[3] > 0) {
+    const cp = Math.min(W, H) * 0.005;
+    ax0 = Math.min(x0 - cp, content[0]); ay0 = Math.min(y0 - cp, content[1]);
+    ax1 = Math.max(x1 + cp, content[0] + content[2]); ay1 = Math.max(y1 + cp, content[1] + content[3]);
+  } else if (frame) {
     // 图里检测到版框：以版框（外加 1.5% 的边）为准，字框并进来保证字不被切；这一轴没检测到就仍按字框 ± 3%
     const fp = Math.min(W, H) * 0.015;
     ay0 = Math.min(y0 - fp, frame.y0 * H - fp); ay1 = Math.max(y1 + fp, frame.y1 * H + fp);
@@ -105,6 +115,56 @@ export function fullImageTrimRect(pageData: PageWarpData, frame?: FrameFraction 
   if (!(w > 0) || !(h > 0)) return null;
   if (w >= W * 0.98 && h >= H * 0.98) return null;
   return { x, y, w, h };
+}
+
+/** 3×3（行优先 9 个数）齐次变换作用于一点 */
+export function applyH(H: number[], x: number, y: number): [number, number] {
+  const w = H[6] * x + H[7] * y + H[8] || 1;
+  return [(H[0] * x + H[1] * y + H[2]) / w, (H[3] * x + H[4] * y + H[5]) / w];
+}
+
+/** H 是不是可用的 9 个有限数，且在原点附近不退化 */
+export function validH(H: unknown): H is number[] {
+  return Array.isArray(H) && H.length === 9 && H.every((v) => typeof v === 'number' && Number.isFinite(v)) && Math.abs((H as number[])[8]) > 1e-9;
+}
+
+/** 一个 P 坐标矩形经 H 映到 S，取外接矩形 [x0,y0,x1,y1] */
+function mapRectAabb(H: number[], x0: number, y0: number, x1: number, y1: number): [number, number, number, number] {
+  const pts = [applyH(H, x0, y0), applyH(H, x1, y0), applyH(H, x1, y1), applyH(H, x0, y1)];
+  const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+  return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+}
+
+/**
+ * 「显示完整书页」开、有源图档时：把整幅页的字框从页图坐标（P）换到源图坐标（S），其余下游（画布、高亮、命中、插图框）
+ * 原样按 S 画。字框取四角映射后的外接矩形；插图框同理。只用于没有透视 strip 的整图页。
+ */
+export function pageDataToSource(pd: PageWarpData, extent: PageExtent): PageWarpData {
+  const H = extent.H;
+  return {
+    ...pd,
+    image_size: [extent.src.w, extent.src.h],
+    columns: pd.columns.map((col) => ({
+      ...col,
+      offset_x: 0,
+      chars: col.chars.map((ch) => {
+        const [a, b, c, d] = ch.bbox_col;
+        const [x0, y0, x1, y1] = mapRectAabb(H, col.offset_x + a, b, col.offset_x + c, d);
+        return { ...ch, bbox_col: [x0, y0, x1, y1] as [number, number, number, number] };
+      }),
+    })),
+    ...(pd.figBlocks
+      ? { figBlocks: pd.figBlocks.map((f) => ({ ...f, box: mapRectAabb(H, f.box[0], f.box[1], f.box[2], f.box[3]) })) }
+      : {}),
+  };
+}
+
+function validContent(c: unknown): c is [number, number, number, number] {
+  return Array.isArray(c) && c.length === 4 && c.every((v) => typeof v === 'number' && Number.isFinite(v)) && c[2] > 0 && c[3] > 0;
+}
+function scaleContent(c: [number, number, number, number], from: [number, number], to: [number, number]): [number, number, number, number] {
+  const kx = from[0] > 0 ? to[0] / from[0] : 1, ky = from[1] > 0 ? to[1] / from[1] : 1;
+  return [c[0] * kx, c[1] * ky, c[2] * kx, c[3] * ky];
 }
 
 const TONE_COLORS: Record<string, { bg?: string; fg: string }> = {
@@ -126,6 +186,8 @@ export interface GujiWarpCanvasProps {
   selectedCharIds: Set<string>;
   hoveredCharId?: string | null;
   preserveMargins?: boolean;
+  /** 页面范围（IIIF `bim:page`）：有它时「去空白」按内容区裁，「完整」且有源图档时显示源图整幅 */
+  extent?: PageExtent;
   onCharClick?: (charId: string) => void;
   onCharHover?: (charId: string | null) => void;
   /** 当前选中的插图块（图 id，点正文里的插图块选中）：实线加重显示 */
@@ -239,8 +301,9 @@ export function fitToImageAspect(pageData: PageWarpData, real: { w: number; h: n
 }
 
 export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
-  imageUrl,
-  pageData: pageDataProp,
+  imageUrl: imageUrlProp,
+  pageData: pageDataPage,
+  extent,
   selectedCharIds,
   hoveredCharId,
   decorations,
@@ -251,6 +314,14 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   onFigBlockClick,
   renderScale = 1,
 }) => {
+  // 「显示完整书页」开、整图页、有源图档和可用的 H：显示源图整幅，字框从页图坐标（P）换到源图坐标（S）
+  const sourceMode = useMemo(
+    () => !!(preserveMargins && extent?.src.url && extent.src.w > 0 && extent.src.h > 0 && validH(extent.H)
+      && !pageDataPage.columns.some((c) => (c.strips?.length ?? 0) > 0)),
+    [preserveMargins, extent, pageDataPage],
+  );
+  const imageUrl = sourceMode ? extent!.src.url! : imageUrlProp;
+  const pageDataProp = useMemo(() => (sourceMode ? pageDataToSource(pageDataPage, extent!) : pageDataPage), [sourceMode, pageDataPage, extent]);
   // 真图的长宽（按地址记，换页后旧值作废）：整图页以它为准，见 fitToImageAspect
   const [realSize, setRealSize] = useState<{ url: string; w: number; h: number } | null>(null);
   const pageData = useMemo(
@@ -358,8 +429,12 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
     if (!isFullImage) return null;
     const [W, H] = pageData.image_size || [0, 0];
     if (!(W > 0) || !(H > 0)) return null;
-    return (!preserveMargins && fullImageTrimRect(pageData, frameInfo && frameInfo.url === imageUrl ? frameInfo.frame : null)) || { x: 0, y: 0, w: W, h: H };
-  }, [pageData, preserveMargins, isFullImage, frameInfo, imageUrl]);
+    // 内容区在页图坐标里；真图比例与数据里的 image_size 不一致时 pageData 已按真图缩放过 y，内容区同步缩放
+    const content = !sourceMode && extent && validContent(extent.content)
+      ? scaleContent(extent.content, pageDataPage.image_size, pageData.image_size)
+      : null;
+    return (!preserveMargins && fullImageTrimRect(pageData, frameInfo && frameInfo.url === imageUrl ? frameInfo.frame : null, content)) || { x: 0, y: 0, w: W, h: H };
+  }, [pageData, pageDataPage, preserveMargins, isFullImage, frameInfo, imageUrl, extent, sourceMode]);
 
   const contentW = totalWarpedW + (banxin ? banxin.total_w : 0);
   const totalDisplayW = crop ? crop.w : contentW + margins.left + margins.right;
