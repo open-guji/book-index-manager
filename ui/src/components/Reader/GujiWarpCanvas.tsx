@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState, useMemo, useCallba
 import type { CellDecoration } from './plugins';
 import { StripWarpRenderer, StripTransform } from './StripWarpRenderer';
 import { bim } from '../../styles/tokens';
+import { detectImageFrame, type FrameFraction } from './frame-detect';
 
 export interface CharGeometry {
   id: string;
@@ -70,7 +71,7 @@ export interface PageWarpData {
  * 所有字框的外接矩形，四周各留 3%（按短边算）。有透视 strip 的页走原来的版心裁切，这里返回 null；
  * 没有字框、框退化、或几乎没裁掉东西（≥98%）也返回 null（保持整图）。
  */
-export function fullImageTrimRect(pageData: PageWarpData): { x: number; y: number; w: number; h: number } | null {
+export function fullImageTrimRect(pageData: PageWarpData, frame?: FrameFraction | null): { x: number; y: number; w: number; h: number } | null {
   const [W, H] = pageData.image_size || [0, 0];
   if (!(W > 0) || !(H > 0)) return null;
   if (pageData.columns.some((c) => (c.strips?.length ?? 0) > 0)) return null;
@@ -92,8 +93,15 @@ export function fullImageTrimRect(pageData: PageWarpData): { x: number; y: numbe
   }
   if (!(x1 > x0) || !(y1 > y0)) return null;
   const pad = Math.min(W, H) * 0.03;
-  const x = Math.min(W, Math.max(0, x0 - pad)), y = Math.min(H, Math.max(0, y0 - pad));
-  const w = Math.min(W, Math.max(0, x1 + pad)) - x, h = Math.min(H, Math.max(0, y1 + pad)) - y;
+  let ax0 = x0 - pad, ay0 = y0 - pad, ax1 = x1 + pad, ay1 = y1 + pad;
+  if (frame) {
+    // 图里检测到版框：以版框（外加 1.5% 的边）为准，字框并进来保证字不被切；这一轴没检测到就仍按字框 ± 3%
+    const fp = Math.min(W, H) * 0.015;
+    ay0 = Math.min(y0 - fp, frame.y0 * H - fp); ay1 = Math.max(y1 + fp, frame.y1 * H + fp);
+    if (frame.x0 !== null && frame.x1 !== null) { ax0 = Math.min(x0 - fp, frame.x0 * W - fp); ax1 = Math.max(x1 + fp, frame.x1 * W + fp); }
+  }
+  const x = Math.min(W, Math.max(0, ax0)), y = Math.min(H, Math.max(0, ay0));
+  const w = Math.min(W, Math.max(0, ax1)) - x, h = Math.min(H, Math.max(0, ay1)) - y;
   if (!(w > 0) || !(h > 0)) return null;
   if (w >= W * 0.98 && h >= H * 0.98) return null;
   return { x, y, w, h };
@@ -249,6 +257,8 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
     () => fitToImageAspect(pageDataProp, realSize && realSize.url === imageUrl ? realSize : null),
     [pageDataProp, realSize, imageUrl],
   );
+  // 图里检测出的版框（按地址记）：去空白时裁到版框而不是只到字框，见 frame-detect.ts
+  const [frameInfo, setFrameInfo] = useState<{ url: string; frame: FrameFraction | null } | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   // 画布外框的显示宽度：null＝还没量到；0＝被隐藏。没有 ResizeObserver 的环境（jsdom）按「可见、满尺寸」走旧行为
@@ -348,8 +358,8 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
     if (!isFullImage) return null;
     const [W, H] = pageData.image_size || [0, 0];
     if (!(W > 0) || !(H > 0)) return null;
-    return (!preserveMargins && fullImageTrimRect(pageData)) || { x: 0, y: 0, w: W, h: H };
-  }, [pageData, preserveMargins, isFullImage]);
+    return (!preserveMargins && fullImageTrimRect(pageData, frameInfo && frameInfo.url === imageUrl ? frameInfo.frame : null)) || { x: 0, y: 0, w: W, h: H };
+  }, [pageData, preserveMargins, isFullImage, frameInfo, imageUrl]);
 
   const contentW = totalWarpedW + (banxin ? banxin.total_w : 0);
   const totalDisplayW = crop ? crop.w : contentW + margins.left + margins.right;
@@ -599,6 +609,7 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
       if (!active || !img) return;
       mainImgRef.current = img;
       loadedMainUrl.current = imageUrl;
+      setFrameInfo({ url: imageUrl, frame: detectImageFrame(img) });
       setRealSize((prev) => (prev && prev.url === imageUrl && prev.w === img.naturalWidth && prev.h === img.naturalHeight ? prev : { url: imageUrl, w: img.naturalWidth, h: img.naturalHeight }));
       const r = rendererRef.current;
       if (r) {

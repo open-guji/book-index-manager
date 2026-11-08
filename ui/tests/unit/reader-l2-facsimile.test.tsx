@@ -10,6 +10,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { TextReader } from '../../src/components/TextReader';
 import { ImagePanel, trimRect } from '../../src/components/Reader/ImagePanel';
 import { fullImageTrimRect, type PageWarpData } from '../../src/components/Reader/GujiWarpCanvas';
+import { detectFrameFromGray } from '../../src/components/Reader/frame-detect';
 import { adaptCharCord } from '../../src/core/guji-char-cord';
 import type { IndexStorage } from '../../src/storage/types';
 import type { ReaderPageImage } from '../../src/components/Reader/types';
@@ -266,6 +267,49 @@ describe('L2 · 对读画布去空白（整幅原图页）：fullImageTrimRect',
         expect(fullImageTrimRect(withStrip)).toBeNull();
         expect(fullImageTrimRect(page([]))).toBeNull();
         expect(fullImageTrimRect(page([[5, 5, 990, 1390]]))).toBeNull();
+    });
+});
+
+describe('L2 · 去空白裁到版框：detectFrameFromGray + fullImageTrimRect(frame)', () => {
+    /** 200×280 白底，画版框：上下横线（x 20–180）、左右竖线（y 40–240），中间一条竖栏线 */
+    const gray = () => {
+        const w = 200, h = 280, g = new Uint8Array(w * h).fill(255);
+        const dot = (x: number, y: number) => { g[y * w + x] = 0; };
+        for (let x = 20; x < 180; x++) { dot(x, 40); dot(x, 239); }
+        for (let y = 40; y < 240; y++) { dot(20, y); dot(179, y); dot(100, y); }
+        return { g, w, h };
+    };
+    it('找到版框（占比），上下取横线、左右取竖线', () => {
+        const { g, w, h } = gray();
+        const f = detectFrameFromGray(g, w, h)!;
+        expect(f.y0).toBeCloseTo(40 / 280, 3);
+        expect(f.y1).toBeCloseTo(240 / 280, 3);
+        expect(f.x0).toBeCloseTo(20 / 200, 3);
+        expect(f.x1).toBeCloseTo(180 / 200, 3);
+    });
+    it('没有横线（无框的书影）返回 null；只有横线时左右留 null', () => {
+        expect(detectFrameFromGray(new Uint8Array(200 * 280).fill(255), 200, 280)).toBeNull();
+        const { g, w, h } = gray();
+        for (let y = 0; y < h; y++) { g[y * w + 20] = 255; g[y * w + 179] = 255; g[y * w + 100] = 255; }
+        const f = detectFrameFromGray(g, w, h)!;
+        expect([f.x0, f.x1]).toEqual([null, null]);
+    });
+    it('有版框时裁到版框（外加 1.5%），字框并进来；少字页不再只裁到字', () => {
+        const page = (b: [number, number, number, number]): PageWarpData => ({
+            page_id: 'p:5', title: '', image_size: [1000, 1400], total_warped_w: 1000,
+            columns: [{ col: 1, warped_w: 1000, warped_h: 1400, offset_x: 0, strips: [], chars: [{ id: 'c0', char: '字', slot: 1, pos: 1, bbox_col: b }] }],
+        });
+        const frame = { x0: 0.1, x1: 0.9, y0: 0.13, y1: 0.91 };
+        const r = fullImageTrimRect(page([700, 400, 760, 480]), frame)!;
+        expect(r.x).toBeCloseTo(100 - 15, 3);
+        expect(r.y).toBeCloseTo(0.13 * 1400 - 15, 3);
+        expect(r.x + r.w).toBeCloseTo(900 + 15, 3);
+        expect(r.y + r.h).toBeCloseTo(0.91 * 1400 + 15, 3);
+        // 字框伸出版框（检测偏小）时以字框为准
+        const r2 = fullImageTrimRect(page([50, 400, 120, 480]), frame)!;
+        expect(r2.x).toBeCloseTo(35, 3);
+        // 没有检测结果：老行为（字框 ± 3%）
+        expect(fullImageTrimRect(page([700, 400, 760, 480]), null)).toEqual({ x: 670, y: 370, w: 120, h: 140 });
     });
 });
 
