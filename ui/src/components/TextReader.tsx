@@ -1058,6 +1058,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                             hoveredCharId={hoveredCharId}
                             decorations={pluginRt.decorations}
                             preserveMargins={preserveMargins}
+                            extent={imageOfPage(activePage)?.extent}
                             renderScale={zoomScale}
                             selectedFigBlock={selectedFig}
                             onFigBlockClick={(fig) => setSelectedFig(fig)}

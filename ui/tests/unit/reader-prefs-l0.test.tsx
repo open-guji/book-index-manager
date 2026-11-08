@@ -19,7 +19,7 @@ describe('prefs：默认值', () => {
     it('新字段默认值与设计表一致', () => {
         expect(DEFAULT_READER_PREFS).toMatchObject({
             pageBreaks: false, pageIndicatorY: 0.33, bookTitleStyle: 'bracket', showWorks: true,
-            properNameMode: null, quoteStyle: 'original', scriptMode: null, preserveMargins: true,
+            properNameMode: null, quoteStyle: 'original', scriptMode: null, preserveMargins: false,
         });
         expect('properNames' in DEFAULT_READER_PREFS).toBe(false);
         expect(loadReaderPrefs()).toEqual(DEFAULT_READER_PREFS);
@@ -66,7 +66,12 @@ describe('prefs：迁移', () => {
         put({ v: 2, pageBreaks: true, bookTitleStyle: 'wavy' });
         expect(loadReaderPrefs()).toMatchObject({ pageBreaks: true, bookTitleStyle: 'wavy' });
         saveReaderPrefs(loadReaderPrefs());
-        expect(JSON.parse(localStorage.getItem(KEY)!).v).toBe(2);
+        expect(JSON.parse(localStorage.getItem(KEY)!).v).toBe(3);
+        // preserveMargins 默认改为关（2026-11-08）：v2 及更早存档里的值不算用户选的，只认 v3
+        put({ v: 2, preserveMargins: true });
+        expect(loadReaderPrefs().preserveMargins).toBe(false);
+        put({ v: 3, preserveMargins: true });
+        expect(loadReaderPrefs().preserveMargins).toBe(true);
     });
 });
 
@@ -179,10 +184,10 @@ describe('设置面板：新条目只绑定偏好', () => {
         mount();
         const side = openSettings();
         const pb = side.getByRole('checkbox', { name: '顯示分葉分割線' }) as HTMLInputElement;
-        const pm = side.getByRole('checkbox', { name: '書影保留空白' }) as HTMLInputElement;
-        expect([pb.checked, pm.checked]).toEqual([false, true]);
+        const pm = side.getByRole('checkbox', { name: '顯示完整書頁' }) as HTMLInputElement;
+        expect([pb.checked, pm.checked]).toEqual([false, false]);
         fireEvent.click(pb); fireEvent.click(pm);
-        expect([lastPrefs.pageBreaks, lastPrefs.preserveMargins]).toEqual([true, false]);
+        expect([lastPrefs.pageBreaks, lastPrefs.preserveMargins]).toEqual([true, true]);
     });
 
     it('字形三态：scriptMode 为 null 时显示成跟随站点（繁）；选简体同步站点 locale，选原字不动 locale', () => {

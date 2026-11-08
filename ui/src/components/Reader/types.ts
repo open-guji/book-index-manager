@@ -28,6 +28,19 @@ export interface ReaderCharBox {
 }
 
 /** 书影的一页：一张图，外加可选的逐字框 */
+/**
+ * 页面范围（A41 书影页面范围统一规范，IIIF canvas 的 `bim:page`）：本页在源扫描图里的位置与版框内容区。
+ * 三个坐标系：P＝页图像素（字框所在）、S＝源图像素、C＝内容区（P 里的矩形）。
+ */
+export interface PageExtent {
+    /** 源扫描图：合扫图含多页；单页扫描＝本页图。`url` 缺省＝没有源图档，「完整」退化为页图整幅 */
+    src: { url?: string; w: number; h: number };
+    /** 3×3 矩阵，行优先 9 个数，P→S（页图点映射到源图点） */
+    H: number[];
+    /** 版框内容区（含框线与少许边），P 坐标 `[x, y, w, h]`；「显示完整书页」关闭时看的就是它 */
+    content: [number, number, number, number];
+}
+
 export interface ReaderPageImage {
     /** 影像 URL（宿主给出，组件原样使用） */
     url: string;
@@ -44,6 +57,8 @@ export interface ReaderPageImage {
     label?: string;
     /** 图片替代文本；缺省「书影 第 N 页」 */
     alt?: string;
+    /** 页面范围；没有时「显示完整书页」关＝运行时检测版框兜底，开＝页图整幅 */
+    extent?: PageExtent;
     /** 逐字框；格式见 `boxFormat` */
     boxes?: ReaderCharBox[];
     /**

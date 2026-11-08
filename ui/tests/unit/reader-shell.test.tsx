@@ -28,7 +28,7 @@ function Harness({ toc = MANY, images, initial = '001', onSelect }: {
     onSelect?: (k: string) => void;
 }) {
     const [active, setActive] = useState(initial);
-    const [prefs, setPrefs] = useState<ReaderPrefs>(DEFAULT_READER_PREFS);
+    const [prefs, setPrefs] = useState<ReaderPrefs>({ ...DEFAULT_READER_PREFS, preserveMargins: true });
     return (
         <ReaderShell
             title="宋史"
@@ -572,7 +572,7 @@ describe('阅读设置侧栏（overview#463）', () => {
 
 describe('正文加载中不画底部翻页卡片（GUJI-181 CLS）', () => {
     function Shell({ loading }: { loading?: boolean }) {
-        const [prefs, setPrefs] = useState<ReaderPrefs>(DEFAULT_READER_PREFS);
+        const [prefs, setPrefs] = useState<ReaderPrefs>({ ...DEFAULT_READER_PREFS, preserveMargins: true });
         return (
             <LocaleProvider>
                 <ReaderShell title="宋史" toc={FEW} activeKey="002" onSelect={() => {}} prefs={prefs}
