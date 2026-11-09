@@ -16,6 +16,16 @@ const put = (o: unknown) => localStorage.setItem(KEY, JSON.stringify(o));
 describe('prefs：默认值', () => {
     beforeEach(() => { localStorage.clear(); });
 
+    it('版心显示：默认中缝切开，只认 full／none，非法值回默认', () => {
+        expect(DEFAULT_READER_PREFS.banxinMode).toBe('cut');
+        put({ v: 3, banxinMode: 'full' });
+        expect(loadReaderPrefs().banxinMode).toBe('full');
+        put({ v: 3, banxinMode: 'none' });
+        expect(loadReaderPrefs().banxinMode).toBe('none');
+        put({ v: 3, banxinMode: 'weird' });
+        expect(loadReaderPrefs().banxinMode).toBe('cut');
+    });
+
     it('新字段默认值与设计表一致', () => {
         expect(DEFAULT_READER_PREFS).toMatchObject({
             pageBreaks: false, pageIndicatorY: 0.33, bookTitleStyle: 'bracket', showWorks: true,

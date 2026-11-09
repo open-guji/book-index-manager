@@ -26,7 +26,7 @@ import { READER_BOTTOM_BAR_QUERY, READER_CSS, READER_WIDE_QUERY } from './reader
 import { ReaderToc } from './ReaderToc';
 import { ImagePanel } from './ImagePanel';
 import { FONT_SIZE_STEPS, DEFAULT_FONT_SIZE, READER_FONT_FAMILIES, readerFontStack, stepFontSize } from './prefs';
-import type { ReaderPrefs, ReaderFontFamily, ProperNameMode, QuoteStyle, BookTitleStyle, ReaderScriptMode } from './prefs';
+import type { ReaderPrefs, ReaderFontFamily, ProperNameMode, QuoteStyle, BookTitleStyle, ReaderScriptMode, BanxinMode } from './prefs';
 import { pickReaderVersion, readerVersionOptionLabel } from './versions';
 import type { ReaderImageOverlay, ReaderPageImage, ReaderReportContext, ReaderTocItem, ReaderVersion } from './types';
 
@@ -593,6 +593,18 @@ export function ReaderShell({
                     <input type="checkbox" checked={prefs.pageBreaks} onChange={e => onPrefsChange({ pageBreaks: e.target.checked })} />
                     <span>{t('reader.pageBreaks')}</span>
                 </label>
+                {showPreserveMargins && !prefs.preserveMargins && (
+                    <SegRow<BanxinMode>
+                        label={t('reader.banxinMode')}
+                        value={prefs.banxinMode}
+                        options={[
+                            { key: 'cut', label: t('reader.banxinCut') },
+                            { key: 'full', label: t('reader.banxinFull') },
+                            { key: 'none', label: t('reader.banxinNone') },
+                        ]}
+                        onPick={v => onPrefsChange({ banxinMode: v })}
+                    />
+                )}
                 {showPreserveMargins && (
                     <label className="bim-rd-t bim-rd-chk bim-rd-sp-tg">
                         <input type="checkbox" checked={prefs.preserveMargins} onChange={e => onPrefsChange({ preserveMargins: e.target.checked })} />

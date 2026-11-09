@@ -186,6 +186,8 @@ export interface GujiWarpCanvasProps {
   selectedCharIds: Set<string>;
   hoveredCharId?: string | null;
   preserveMargins?: boolean;
+  /** 版心显示（「显示完整书页」关时有效）：cut 默认＝内容区；none＝用 `extent.views.none` 裁掉半条版心；full＝从源图取完整版心（`extent.views.full`，要 `src.url`） */
+  banxinMode?: 'cut' | 'full' | 'none';
   /** 页面范围（IIIF `bim:page`）：有它时「去空白」按内容区裁，「完整」且有源图档时显示源图整幅 */
   extent?: PageExtent;
   onCharClick?: (charId: string) => void;
@@ -308,6 +310,7 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   hoveredCharId,
   decorations,
   preserveMargins = false,
+  banxinMode = 'cut',
   onCharClick,
   onCharHover,
   selectedFigBlock,
@@ -315,10 +318,12 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   renderScale = 1,
 }) => {
   // 「显示完整书页」开、整图页、有源图档和可用的 H：显示源图整幅，字框从页图坐标（P）换到源图坐标（S）
+  // 完整版心（banxinMode=full）同样要源图：另一半的版心只在源图里
+  const fullBanxin = !preserveMargins && banxinMode === 'full' && validContent(extent?.views?.full);
   const sourceMode = useMemo(
-    () => !!(preserveMargins && extent?.src.url && extent.src.w > 0 && extent.src.h > 0 && validH(extent.H)
+    () => !!((preserveMargins || fullBanxin) && extent?.src.url && extent.src.w > 0 && extent.src.h > 0 && validH(extent.H)
       && !pageDataPage.columns.some((c) => (c.strips?.length ?? 0) > 0)),
-    [preserveMargins, extent, pageDataPage],
+    [preserveMargins, fullBanxin, extent, pageDataPage],
   );
   const imageUrl = sourceMode ? extent!.src.url! : imageUrlProp;
   const pageDataProp = useMemo(() => (sourceMode ? pageDataToSource(pageDataPage, extent!) : pageDataPage), [sourceMode, pageDataPage, extent]);
@@ -430,11 +435,19 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
     const [W, H] = pageData.image_size || [0, 0];
     if (!(W > 0) || !(H > 0)) return null;
     // 内容区在页图坐标里；真图比例与数据里的 image_size 不一致时 pageData 已按真图缩放过 y，内容区同步缩放
-    const content = !sourceMode && extent && validContent(extent.content)
-      ? scaleContent(extent.content, pageDataPage.image_size, pageData.image_size)
+    // 版心三档：full＝源图里的取景框（S 坐标，与 pageData 同坐标系）；none＝页图里裁掉半条版心；cut／缺省＝内容区
+    if (sourceMode && fullBanxin && extent?.views?.full) {
+      const r = scaleContent(extent.views.full, [extent.src.w, extent.src.h], pageData.image_size);
+      const x = Math.max(0, r[0]), y = Math.max(0, r[1]);
+      const w = Math.min(W, r[0] + r[2]) - x, h = Math.min(H, r[1] + r[3]) - y;
+      if (w > 0 && h > 0) return { x, y, w, h };
+    }
+    const pageRect = banxinMode === 'none' && validContent(extent?.views?.none) ? extent!.views!.none! : extent?.content;
+    const content = !sourceMode && extent && validContent(pageRect)
+      ? scaleContent(pageRect, pageDataPage.image_size, pageData.image_size)
       : null;
     return (!preserveMargins && fullImageTrimRect(pageData, frameInfo && frameInfo.url === imageUrl ? frameInfo.frame : null, content)) || { x: 0, y: 0, w: W, h: H };
-  }, [pageData, pageDataPage, preserveMargins, isFullImage, frameInfo, imageUrl, extent, sourceMode]);
+  }, [pageData, pageDataPage, preserveMargins, banxinMode, fullBanxin, isFullImage, frameInfo, imageUrl, extent, sourceMode]);
 
   const contentW = totalWarpedW + (banxin ? banxin.total_w : 0);
   const totalDisplayW = crop ? crop.w : contentW + margins.left + margins.right;

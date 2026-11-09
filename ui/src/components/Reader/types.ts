@@ -39,6 +39,13 @@ export interface PageExtent {
     H: number[];
     /** 版框内容区（含框线与少许边），P 坐标 `[x, y, w, h]`；「显示完整书页」关闭时看的就是它 */
     content: [number, number, number, number];
+    /**
+     * 版心显示的另外两种取景（版心＝书口、鱼尾那一列，跨在左右两个半叶之间）。`content` 是默认的「中缝切开」：
+     * 每个半叶页图只带半条版心。缺省＝这页没有版心坐标，三档都按 `content`。
+     * - `none`：不显示版心，P 坐标 `[x, y, w, h]`（在页图里把半条版心裁掉）
+     * - `full`：显示完整版心，**S 坐标** `[x, y, w, h]`（要取到另一半的版心，只能从源图里取；需要 `src.url`）
+     */
+    views?: { none?: [number, number, number, number]; full?: [number, number, number, number] };
 }
 
 export interface ReaderPageImage {
