@@ -71,7 +71,13 @@ export interface ReaderPrefs {
     scriptMode: ReaderScriptMode | null;
     /** 显示完整书页（L2 接线；存储键沿用 preserveMargins）。开＝源图整幅，关（默认）＝只看本页版框内容区 */
     preserveMargins: boolean;
+    /**
+     * 版心显示：cut＝版心从中间切开（默认，每个半叶带半条版心）、full＝显示完整版心、none＝不显示版心。
+     * 只对带版心坐标的书影有效（页面范围 `extent.views`）；「显示完整书页」开着时以它为准（整幅源图）。
+     */
+    banxinMode: BanxinMode;
 }
+export type BanxinMode = 'cut' | 'full' | 'none';
 
 export const DEFAULT_READER_PREFS: ReaderPrefs = {
     fontSize: null,
@@ -87,6 +93,7 @@ export const DEFAULT_READER_PREFS: ReaderPrefs = {
     quoteStyle: 'original',
     scriptMode: null,
     preserveMargins: false,
+    banxinMode: 'cut',
 };
 
 /** 可选字号档位；默认 18 在中间偏下 */
@@ -125,6 +132,7 @@ export function loadReaderPrefs(): ReaderPrefs {
         if (p.quoteStyle === 'modern' || p.quoteStyle === 'classic') out.quoteStyle = p.quoteStyle;
         if (p.scriptMode === 'orig' || p.scriptMode === 'hant' || p.scriptMode === 'hans') out.scriptMode = p.scriptMode;
         if (pv === PREFS_VERSION && typeof p.preserveMargins === 'boolean') out.preserveMargins = p.preserveMargins;
+        if (p.banxinMode === 'full' || p.banxinMode === 'none') out.banxinMode = p.banxinMode;
     } catch { /* 存储不可用：用默认值 */ }
     return out;
 }
