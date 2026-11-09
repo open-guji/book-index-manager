@@ -17,6 +17,7 @@ export const ENTITY_TEXT_CSS = `
 }
 .bim-et-work { text-decoration-style: wavy; }
 .bim-et-people, .bim-et-place, .bim-et-office, .bim-et-dynasty, .bim-et-reign, .bim-et-other { text-decoration-style: solid; }
+.bim-et-w + .bim-et-w { margin-inline-start: 0.14em; } /* 相邻专名线之间留缝，不连成一条 */
 .bim-et-nu, a.bim-et-nu:hover, a.bim-et-nu:focus-visible { text-decoration-line: none; }
 a.bim-et { cursor: pointer; }
 a.bim-et:hover, a.bim-et:focus-visible, .bim-et-w[data-active] > .bim-et { color: ${bim('accent')}; text-decoration-color: ${bim('accent')}; }
