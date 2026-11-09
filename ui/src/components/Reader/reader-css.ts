@@ -304,6 +304,7 @@ export const READER_CSS = `
   text-decoration-color: ${bim('quiet-fg')};
   text-decoration-skip-ink: none;
 }
+.bim-rd-pn + .bim-rd-pn { margin-inline-start: 0.14em; } /* 相邻书名线之间留缝 */
 
 /* 竖排（预留）：只在宿主打开 allowVertical 时可切换 */
 .bim-rd-vertical .bim-rd-prose {
