@@ -155,6 +155,7 @@ a.bim-d-flag:hover { text-decoration: none !important; background: ${bim('tint-b
 .bim-d-lu-pager button:disabled { cursor: default; }
 .bim-d-lu-pager button:not(:disabled):hover { text-decoration: underline; text-underline-offset: 3px; }
 .bim-d-lu-body { padding: 18px 22px 14px; min-width: 0; border-radius: 10px; background: ${bim('card-bg')}; }
+.bim-d-lu-entry + .bim-d-lu-entry { margin-top: 20px; padding-top: 16px; border-top: 1px solid ${bim('rule-strong')}; }
 .bim-d-lu-title { font-size: 17px; font-weight: 700; color: ${bim('ink')}; }
 .bim-d-quote { margin: 14px 0 0; font-family: ${bim('font-serif')}; font-size: 17px; line-height: 2;
   color: ${bim('ink')}; text-align: justify; }
