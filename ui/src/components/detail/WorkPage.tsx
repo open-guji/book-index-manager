@@ -560,13 +560,25 @@ function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
 }
 
 /** 著录分栏：左列书目名，右列选中那家的著录原文（宋体） */
-function CatalogSection({ items, transport, onNavigate, renderLink }: {
+function CatalogSection({ items: allEntries, transport, onNavigate, renderLink }: {
     items: IndexedByEntry[];
     transport?: IndexStorage;
     onNavigate?: (id: string) => void;
     renderLink?: RenderLink;
 }) {
     const { t, convert } = useI18n();
+    // 同一书目（source＋source_bid）在总目里可能多处著录（丛书子目＋部类、多版本分条、并条带入），
+    // 一家只占一个标签，各条著录在标签内依次列出；「N 家」按去重后的书目计。
+    const { items, groups } = useMemo(() => {
+        const order: IndexedByEntry[] = [];
+        const map = new Map<string, IndexedByEntry[]>();
+        for (const x of allEntries) {
+            const k = `${x.source}\u0000${x.source_bid ?? ''}`;
+            const g = map.get(k);
+            if (g) g.push(x); else { map.set(k, [x]); order.push(x); }
+        }
+        return { items: order, groups: order.map(x => map.get(`${x.source}\u0000${x.source_bid ?? ''}`)!) };
+    }, [allEntries]);
     const [sel, setSel] = useState(0);
     const cur = Math.min(sel, items.length - 1);
     const e = items[cur];
@@ -612,36 +624,40 @@ function CatalogSection({ items, transport, onNavigate, renderLink }: {
                     ))}
                 </ul>
                 <div className="bim-d-lu-body" role="tabpanel">
-                    {e.title_info && <div className="bim-d-lu-title">{convert(e.title_info)}</div>}
-                    <MetaLine
-                        className="bim-d-ui"
-                        style={{ display: 'block', marginTop: 2 }}
-                        items={[
-                            e.source_bid
-                                ? <BidLink id={e.source_bid} label={convert(e.source)} onNavigate={onNavigate} renderLink={renderLink} dense />
-                                : convert(e.source),
-                            e.section ? convert(e.section) : '',
-                            e.author_info ? `${t('label.authorInfo')} ${convert(e.author_info)}` : '',
-                            e.edition ? `${t('label.edition')} ${convert(e.edition)}` : '',
-                            e.page ?? '',
-                        ]}
-                    />
-                    {e.summary && <p className="bim-d-quote">{renderInterlinear(convert(e.summary), undefined, { t })}</p>}
-                    {e.comment && (
-                        <>
-                            <div className="bim-d-quote-label bim-d-ui">{t('section.comment')}</div>
-                            <p className="bim-d-quote">{renderInterlinear(convert(e.comment), undefined, { t })}</p>
-                        </>
-                    )}
-                    {e.additional_comment && (
-                        <>
-                            <div className="bim-d-quote-label bim-d-ui">{t('section.additionalComment')}</div>
-                            <p className="bim-d-quote">{renderInterlinear(convert(e.additional_comment), undefined, { t })}</p>
-                        </>
-                    )}
-                    {!e.summary && !e.comment && !e.additional_comment && !e.title_info && (
-                        <p className="bim-d-meta bim-d-ui" style={{ marginTop: 12 }}>{t('workPage.catalog.titleOnly')}</p>
-                    )}
+                    {groups[cur].map((x, gi) => (
+                        <div key={gi} className="bim-d-lu-entry" style={gi > 0 ? { marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--bim-d-rule, rgba(128,128,128,.25))' } : undefined}>
+                        {x.title_info && <div className="bim-d-lu-title">{convert(x.title_info)}</div>}
+                        <MetaLine
+                            className="bim-d-ui"
+                            style={{ display: 'block', marginTop: 2 }}
+                            items={[
+                                x.source_bid
+                                    ? <BidLink id={x.source_bid} label={convert(x.source)} onNavigate={onNavigate} renderLink={renderLink} dense />
+                                    : convert(x.source),
+                                x.section ? convert(x.section) : '',
+                                x.author_info ? `${t('label.authorInfo')} ${convert(x.author_info)}` : '',
+                                x.edition ? `${t('label.edition')} ${convert(x.edition)}` : '',
+                                x.page ?? '',
+                            ]}
+                        />
+                        {x.summary && <p className="bim-d-quote">{renderInterlinear(convert(x.summary), undefined, { t })}</p>}
+                        {x.comment && (
+                            <>
+                                <div className="bim-d-quote-label bim-d-ui">{t('section.comment')}</div>
+                                <p className="bim-d-quote">{renderInterlinear(convert(x.comment), undefined, { t })}</p>
+                            </>
+                        )}
+                        {x.additional_comment && (
+                            <>
+                                <div className="bim-d-quote-label bim-d-ui">{t('section.additionalComment')}</div>
+                                <p className="bim-d-quote">{renderInterlinear(convert(x.additional_comment), undefined, { t })}</p>
+                            </>
+                        )}
+                        {!x.summary && !x.comment && !x.additional_comment && !x.title_info && (
+                            <p className="bim-d-meta bim-d-ui" style={{ marginTop: 12 }}>{t('workPage.catalog.titleOnly')}</p>
+                        )}
+                        </div>
+                    ))}
                     {items.length > 1 && (
                         <div className="bim-d-lu-pager bim-d-ui">
                             {/* 首／末家不渲染空按钮（无文字、无名称，axe name-role-value 不过）：换成占位，保持两端对齐 */}
