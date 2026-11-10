@@ -625,7 +625,7 @@ function CatalogSection({ items: allEntries, transport, onNavigate, renderLink }
                 </ul>
                 <div className="bim-d-lu-body" role="tabpanel">
                     {groups[cur].map((x, gi) => (
-                        <div key={gi} className="bim-d-lu-entry" style={gi > 0 ? { marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--bim-d-rule, rgba(128,128,128,.25))' } : undefined}>
+                        <div key={gi} className="bim-d-lu-entry">
                         {x.title_info && <div className="bim-d-lu-title">{convert(x.title_info)}</div>}
                         <MetaLine
                             className="bim-d-ui"
