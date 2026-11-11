@@ -18,13 +18,14 @@ import type { IndexStorage } from '../../storage/types';
 import { useI18n } from '../../i18n';
 import { mapLimit, DETAIL_FETCH_CONCURRENCY } from '../../core/map-limit';
 import { MarkdownText } from '../common/MarkdownText';
+import { bim } from '../../styles/tokens';
 import { BidLink, renderInterlinear, type RenderLink } from './primitives';
 import {
     DetailGrid, Sec, MetaLine, TabFilter, CheckFilter, CapMore, narrowCapped, SummaryCard, SideList, CardFoot,
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import {
-    buildVersionTable, bucketResources, measureText, sourceText, sourceHref, workVersionIds, workClassification,
+    buildVersionTable, groupByCollection, relationGroups, GROUP_MIN, bucketResources, measureText, sourceText, sourceHref, workVersionIds, workClassification,
     type ResolvedVersion, type VersionRow,
 } from '../../core/detail-model';
 import { getDisplayNameFromUrl, resourceHref } from '../../core/resources';
@@ -32,6 +33,8 @@ import { AuthorByline, relationLabel, lossStatusLabel, resourceKindLabel } from 
 
 /** 首屏显示的版本行数 */
 const CAP_VERSIONS = 12;
+/** 分组模式：一组展开后先显示的行数，「显示更多」每次再加这么多 */
+const GROUP_PAGE = 50;
 /** 版本数不超过此值时一次解析全部并按年代排序 */
 const RESOLVE_ALL = 60;
 
@@ -69,11 +72,26 @@ export const WorkPage: React.FC<WorkPageProps> = ({
     const [era, setEra] = useState('');
     const [scanOnly, setScanOnly] = useState(false);
 
+    // 千本级（敦煌佛典）：按 Collection 分组折叠，行只用 `_books` 卡片；只对已展开组里显示的行取详情（要同卷／綴合标签）
+    const grouped = versionIds.length > GROUP_MIN;
+    const [open, setOpen] = useState<Record<string, number>>({});
+    const groups = useMemo(
+        () => (grouped ? groupByCollection(data._books ?? [], data.version_graph) : []),
+        [grouped, data._books, data.version_graph],
+    );
+    const shownGroups = useMemo(
+        () => (scanOnly ? groups.map(g => ({ ...g, rows: g.rows.filter(r => r.hasImage) })).filter(g => g.rows.length) : groups),
+        [groups, scanOnly],
+    );
+
     const smallSet = versionIds.length <= RESOLVE_ALL;
-    const needAll = smallSet || showAll || !!era || scanOnly;
+    const needAll = !grouped && (smallSet || showAll || !!era || scanOnly);
     const idsToResolve = useMemo(
-        () => (needAll ? versionIds : versionIds.slice(0, CAP_VERSIONS)),
-        [versionIds, needAll],
+        () => {
+            if (grouped) return shownGroups.flatMap(g => (open[g.key] ? g.rows.slice(0, open[g.key]).map(r => r.id) : []));
+            return needAll ? versionIds : versionIds.slice(0, CAP_VERSIONS);
+        },
+        [grouped, shownGroups, open, versionIds, needAll],
     );
 
     useEffect(() => {
@@ -115,8 +133,8 @@ export const WorkPage: React.FC<WorkPageProps> = ({
     }, [transport, idsToResolve, resolved]);
 
     const versions: Resolved[] = useMemo(
-        () => versionIds.map(id => resolved.get(id) ?? { id }),
-        [versionIds, resolved],
+        () => (grouped ? [] : versionIds.map(id => resolved.get(id) ?? { id })),
+        [grouped, versionIds, resolved],
     );
     const allResolved = versionIds.length > 0 && versionIds.every(id => resolved.has(id));
     /** 还有版本在解析（次级数据未到）：提要卡给晚到的「最早存世」先占一行，免得整卡下推（INT Q3 CLS） */
@@ -129,7 +147,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
         [versions, data.version_graph, era, scanOnly, byYear],
     );
     const visibleRows = showAll ? table.rows : table.rows.slice(0, CAP_VERSIONS);
-    const imageCount = table.allRows.filter(r => r.hasImage).length;
+    const imageCount = grouped ? groups.reduce((n, g) => n + g.imageCount, 0) : table.allRows.filter(r => r.hasImage).length;
     /** 收在代表行下的同版各部：「共 N 種」按版本计，不按部计 */
     const copyCount = table.allRows.reduce((n, r) => n + (r.copies?.length ?? 0), 0);
 
@@ -303,7 +321,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                     ]} />}
                 >
                     <div className="bim-d-filters bim-d-ui" data-pending={resolving && eraTabs.length === 0 && versionIds.length > 1 ? '' : undefined}>
-                        {eraTabs.length > 0 && (
+                        {!grouped && eraTabs.length > 0 && (
                             <TabFilter
                                 items={eraTabs}
                                 value={era}
@@ -318,6 +336,68 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                         />
                         <span className="bim-d-meta">{byYear ? t('workPage.sortByYear') : t('workPage.sortByCatalog')}</span>
                     </div>
+                    {grouped ? (
+                        <div className="bim-d-groups">
+                            <div className="bim-d-ui" style={{ display: 'flex', justifyContent: 'flex-end', margin: '4px 0' }}>
+                                <button
+                                    type="button"
+                                    className="bim-d-more bim-d-ui"
+                                    onClick={() => setOpen(Object.keys(open).length ? {} : Object.fromEntries(shownGroups.slice(0, 20).map(g => [g.key, GROUP_PAGE])))}
+                                >
+                                    {Object.keys(open).length ? t('workPage.groupCollapseAll') : t('workPage.groupExpandAll')}
+                                </button>
+                            </div>
+                            {shownGroups.map(g => {
+                                const shown = open[g.key] ?? 0;
+                                const rows = g.rows.slice(0, shown);
+                                return (
+                                    <details key={g.key || 'none'} open={shown > 0}
+                                        onToggle={e => {
+                                            const isOpen = (e.currentTarget as HTMLDetailsElement).open;
+                                            setOpen(prev => {
+                                                if (isOpen === (prev[g.key] > 0)) return prev;
+                                                const next = { ...prev };
+                                                if (isOpen) next[g.key] = GROUP_PAGE; else delete next[g.key];
+                                                return next;
+                                            });
+                                        }}
+                                        style={{ borderTop: `1px solid ${bim('border')}` }}>
+                                        <summary className="bim-d-ui" style={{ cursor: 'pointer', minHeight: 40, display: 'flex', alignItems: 'center', gap: 12, padding: '6px 4px' }}>
+                                            <span style={{ flex: 1 }}>{convert(g.title || t('workPage.groupUngrouped'))}</span>
+                                            <span className="bim-d-meta">{t('workPage.groupCount', { n: g.rows.length })}</span>
+                                            {g.imageCount > 0 && <span className="bim-d-flag">{t('workPage.groupImage', { n: g.imageCount })}</span>}
+                                        </summary>
+                                        {shown > 0 && (
+                                            <table className="bim-d-zt bim-d-zt-ver">
+                                                <tbody>
+                                                    {rows.map(row => {
+                                                        const r = resolved.get(row.id);
+                                                        return (
+                                                            <VersionRowView
+                                                                key={row.id}
+                                                                row={row}
+                                                                measure={r?.measure_info}
+                                                                relations={row.relations ?? (r ? relationGroups(r) : undefined)}
+                                                                loaded
+                                                                onNavigate={onNavigate}
+                                                                renderLink={renderLink}
+                                                            />
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        )}
+                                        {shown > 0 && g.rows.length > shown && (
+                                            <button type="button" className="bim-d-more bim-d-ui"
+                                                onClick={() => setOpen(prev => ({ ...prev, [g.key]: shown + GROUP_PAGE }))}>
+                                                {t('workPage.groupMore', { n: g.rows.length - shown })}
+                                            </button>
+                                        )}
+                                    </details>
+                                );
+                            })}
+                        </div>
+                    ) : (<>
                     <table className="bim-d-zt bim-d-zt-ver" data-ncap={!showAll && narrowCapped(table.rows.length) ? '' : undefined}>
                         <thead className="bim-d-ui">
                             <tr>
@@ -335,6 +415,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                                     key={`${row.id}:${resolved.has(row.id) ? 'r' : 'p'}`}
                                     row={row}
                                     measure={resolved.get(row.id)?.measure_info}
+                                    relations={row.relations}
                                     loaded={resolved.has(row.id)}
                                     onNavigate={onNavigate}
                                     renderLink={renderLink}
@@ -350,6 +431,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                     {!showAll && (
                         <CapMore total={table.rows.length} shown={visibleRows.length} unit={t('workPage.moreUnit')} onClick={() => setShowAll(true)} />
                     )}
+                    </>)}
                     {table.hasInferredEra && (
                         <p className="bim-d-meta bim-d-ui" style={{ margin: '8px 0 0', fontSize: 12 }}>
                             {t('workPage.inferredEraNote')}
@@ -497,9 +579,11 @@ function SameEditionCopies({ copies, onNavigate, renderLink }: {
 }
 
 /** 版本表一行：版本名（下附卷帙小字）｜年代｜馆藏｜「有影印」色块 */
-function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
+function VersionRowView({ row, measure, relations, loaded, onNavigate, renderLink }: {
     row: VersionRow;
     measure?: string;
+    /** 同卷／綴合等版本关系（详情解析后才有） */
+    relations?: VersionRow['relations'];
     loaded: boolean;
     onNavigate?: (id: string) => void;
     renderLink?: RenderLink;
@@ -531,6 +615,16 @@ function VersionRowView({ row, measure, loaded, onNavigate, renderLink }: {
                 {measure
                     ? <span className="bim-d-meta">{convert(measure)}</span>
                     : <span className="bim-d-meta" aria-hidden="true">&nbsp;</span>}
+                {relations && relations.length > 0 && (
+                    <span className="bim-d-meta" style={{ display: 'block', fontSize: 12 }}>
+                        {relations.map((r, i) => (
+                            <React.Fragment key={r.relation}>
+                                {i > 0 ? ' · ' : null}
+                                {convert(t('workPage.relationWith', { relation: r.relation, n: r.ids.length }))}
+                            </React.Fragment>
+                        ))}
+                    </span>
+                )}
                 {copies.length > 0 && row.summary && (
                     <span className="bim-d-zt-summary">{convert(row.summary)}</span>
                 )}

@@ -21,6 +21,7 @@ import type {
     DatingInfo,
     DescriptionSource,
     CollectionDetailData,
+    DerivedBookCard,
     WorkDetailData,
     IndexDetailData,
     ResourceEntry,
@@ -1179,6 +1180,8 @@ export interface VersionRow {
     copies?: VersionRow[];
     /** 描述首句 */
     summary?: string;
+    /** 非「同版」的版本关系（同卷／綴合…）：对方 id 按关系词分组；需详情已解析才有 */
+    relations?: { relation: string; ids: string[] }[];
     /**
      * 排序用年份：确切纪年优先，否则退到朝代起始年。
      * 与 `year` 的区别是它对「宋建安黃善夫家塾刻本」这种只知朝代的
@@ -1254,6 +1257,69 @@ export function groupSameEdition(rows: VersionRow[]): VersionRow[] {
     return out;
 }
 
+/** 版本表行上显示标签的关系：同一写卷正背／子号（同卷）、残片拼合（綴合） */
+export const ROW_RELATIONS = ['同卷', '綴合'];
+
+/** related_books 里的同卷、綴合关系，按关系词分组（同版另有收折；其余关系见谱系，不进版本表） */
+export function relationGroups(v: ResolvedVersion): { relation: string; ids: string[] }[] | undefined {
+    const m = new Map<string, string[]>();
+    for (const r of relatedItems(v)) {
+        if (!ROW_RELATIONS.includes(r.relation)) continue;
+        const ref = r.ref ?? r.book_id;
+        if (!ref) continue;
+        const list = m.get(r.relation) ?? [];
+        if (!list.includes(ref)) list.push(ref);
+        m.set(r.relation, list);
+    }
+    return m.size ? [...m].map(([relation, ids]) => ({ relation, ids })) : undefined;
+}
+
+/** 版本数超过此值：版本表按 Collection 分组折叠，行只用 `_books` 卡片，不逐条取详情（敦煌佛典一部经上千本） */
+export const GROUP_MIN = 200;
+
+/** `_books` 卡片 → 版本行（不需要详情；卷帙等次级数据没有） */
+export function cardToRow(c: DerivedBookCard, vg?: VersionGraph): VersionRow {
+    const [era = '', reign = ''] = (c.dating ?? '').split(/\s+/);
+    const base: ResolvedVersion = {
+        id: c.id, title: c.title, edition: c.edition,
+        ...(era ? { dating: { era, reign } as BookDetailData['dating'] } : {}),
+    };
+    const row = buildVersionRow(base, vg);
+    return {
+        ...row,
+        sortYear: c.y ?? row.sortYear,
+        year: c.y ?? row.year,
+        locationName: c.holder || undefined,
+        hasImage: !!c.img,
+    };
+}
+
+export interface VersionGroup {
+    key: string;
+    title: string;
+    rows: VersionRow[];
+    imageCount: number;
+}
+
+/**
+ * 按 Collection 分组（缺 coll 按馆藏 holder，再缺归「未分組」置末）。
+ * 组序＝首次出现序，组内保持卡片序（build 已按年代排）。
+ */
+export function groupByCollection(cards: DerivedBookCard[], vg?: VersionGraph): VersionGroup[] {
+    const groups = new Map<string, VersionGroup>();
+    for (const c of cards) {
+        const key = c.coll ? `c:${c.coll}` : c.holder ? `h:${c.holder}` : '';
+        const title = c.collt || c.holder || c.coll || '';
+        let g = groups.get(key);
+        if (!g) { g = { key, title, rows: [], imageCount: 0 }; groups.set(key, g); }
+        const row = cardToRow(c, vg);
+        g.rows.push(row);
+        if (row.hasImage) g.imageCount++;
+    }
+    const list = [...groups.values()];
+    return [...list.filter(g => g.key), ...list.filter(g => !g.key)];
+}
+
 export function buildVersionRow(v: ResolvedVersion, vg?: VersionGraph): VersionRow {
     const resources = v.resources || [];
     const images: ResourceEntry[] = [];
@@ -1275,6 +1341,7 @@ export function buildVersionRow(v: ResolvedVersion, vg?: VersionGraph): VersionR
         locationName: v.current_location?.name || v.provenance?.[0]?.institution || undefined,
         callNumber: holderCallNumber(holders[0]),
         copyOf: sameEditionRep(v),
+        relations: relationGroups(v),
         summary: v.summary,
         important: isCoreVersion(v.id, vg),
         group: vg?.node_groups?.[v.id],
