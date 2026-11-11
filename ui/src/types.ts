@@ -523,6 +523,10 @@ export interface DerivedBookCard {
     txt?: true;
     /** resources 项数 */
     nres?: number;
+    /** 所属 Collection id（敦煌佛典等千本作品：版本表按它分组折叠）；缺则退按 holder 分组 */
+    coll?: string;
+    /** 所属 Collection 题名（缺则用 holder／id 作组名） */
+    collt?: string;
 }
 
 /** Work `_related` 的元素：对方（Work 或 Collection）的卡片＋关系 */
