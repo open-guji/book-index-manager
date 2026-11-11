@@ -8,7 +8,7 @@
  * 版本数据靠 transport 逐条解析：≤ RESOLVE_ALL 条时一次解析全部、按年代排；
  * 更多时只解析可见行、保持录入序，读者一动筛选/展开再全量解析。
  */
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import type {
     WorkDetailData,
     IndexedByEntry,
@@ -25,8 +25,8 @@ import {
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import {
-    buildVersionTable, groupByCollection, relationGroups, GROUP_MIN, bucketResources, measureText, sourceText, sourceHref, workVersionIds, workClassification,
-    type ResolvedVersion, type VersionRow,
+    buildVersionTable, cardToRow, groupByCollection, relationGroups, GROUP_MIN, bucketResources, measureText, sourceText, sourceHref, workVersionIds, workClassification,
+    type ResolvedVersion, type VersionRow, type VersionGroup,
 } from '../../core/detail-model';
 import { getDisplayNameFromUrl, resourceHref } from '../../core/resources';
 import { AuthorByline, relationLabel, lossStatusLabel, resourceKindLabel } from './shared';
@@ -73,16 +73,57 @@ export const WorkPage: React.FC<WorkPageProps> = ({
     const [scanOnly, setScanOnly] = useState(false);
 
     // 千本级（敦煌佛典）：按 Collection 分组折叠，行只用 `_books` 卡片；只对已展开组里显示的行取详情（要同卷／綴合标签）
-    const grouped = versionIds.length > GROUP_MIN;
+    const versionTotal = Math.max(versionIds.length, data._edition_count ?? 0);
+    const grouped = versionTotal > GROUP_MIN && (versionIds.length > GROUP_MIN || !!data._book_groups?.length);
     const [open, setOpen] = useState<Record<string, number>>({});
-    const groups = useMemo(
-        () => (grouped ? groupByCollection(data._books ?? [], data.version_graph) : []),
-        [grouped, data._books, data.version_graph],
-    );
+    // `_book_groups`（契约 5）：组头（丛编题名、件数、分页数）；行优先取 `_books` 里的卡片，没有就按需读 books/ 分页文件
+    const bookGroups = data._book_groups;
+    const [pageRows, setPageRows] = useState<Record<string, { rows: VersionRow[]; loaded: number }>>({});
+    const pageLoading = useRef(new Set<string>());
+    const groups = useMemo(() => {
+        if (!grouped) return [];
+        const titles: Record<string, string> = {};
+        for (const bg of bookGroups ?? []) if (bg.id && bg.title) titles[bg.id] = bg.title;
+        const local = groupByCollection(data._books ?? [], data.version_graph, { titles, noHolderFallback: !!bookGroups });
+        if (!bookGroups) return local;
+        const byKey = new Map(local.map(g => [g.key, g]));
+        return bookGroups.map((bg): VersionGroup => {
+            const l = byKey.get(bg.g);
+            if (l && l.rows.length >= bg.n) return { ...l, title: l.title || bg.title || '' };
+            const pr = pageRows[bg.g];
+            const rows = pr?.rows ?? l?.rows ?? [];
+            return {
+                key: bg.g, title: (bg.g !== '_none' && (bg.title || l?.title)) || '', rows, total: bg.n,
+                imageCount: rows.filter(r => r.hasImage).length,
+                pagesLeft: Math.max(0, bg.pages - (pr?.loaded ?? 0)),
+            };
+        });
+    }, [grouped, data._books, data.version_graph, bookGroups, pageRows]);
     const shownGroups = useMemo(
         () => (scanOnly ? groups.map(g => ({ ...g, rows: g.rows.filter(r => r.hasImage) })).filter(g => g.rows.length) : groups),
         [groups, scanOnly],
     );
+
+    // 分页组：展开后行数不够就读下一页（200 条一页）
+    useEffect(() => {
+        if (!grouped || !transport?.getBookGroupPage) return;
+        for (const g of groups) {
+            const want = open[g.key] ?? 0;
+            if (!want || !g.pagesLeft || g.rows.length >= want || pageLoading.current.has(g.key)) continue;
+            const n = (pageRows[g.key]?.loaded ?? 0) + 1;
+            pageLoading.current.add(g.key);
+            transport.getBookGroupPage(data.id, g.key, n)
+                .then(cards => {
+                    const rows = (cards ?? []).map(c => cardToRow(c, data.version_graph));
+                    setPageRows(prev => {
+                        const old = prev[g.key];
+                        return { ...prev, [g.key]: { rows: [...(old?.rows ?? []), ...rows], loaded: n } };
+                    });
+                })
+                .catch(() => setPageRows(prev => ({ ...prev, [g.key]: { rows: prev[g.key]?.rows ?? [], loaded: n } })))
+                .finally(() => pageLoading.current.delete(g.key));
+        }
+    }, [grouped, groups, open, transport, data.id, data.version_graph, pageRows]);
 
     const smallSet = versionIds.length <= RESOLVE_ALL;
     const needAll = !grouped && (smallSet || showAll || !!era || scanOnly);
@@ -300,22 +341,22 @@ export const WorkPage: React.FC<WorkPageProps> = ({
         : [];
 
     const nav: RailNavItem[] = [];
-    if (versionIds.length) nav.push({ id: 'versions', label: t('workPage.sec.versions'), count: versionIds.length });
+    if (versionTotal) nav.push({ id: 'versions', label: t('workPage.sec.versions'), count: versionTotal });
     if (indexed.length) nav.push({ id: 'catalogs', label: t('workPage.sec.catalogs'), count: indexed.length });
     if (collectedIn.length) nav.push({ id: 'collected', label: t('workPage.sec.collected'), count: collectedIn.length });
     if (otherRelated.length) nav.push({ id: 'related', label: t('workPage.sec.related'), count: otherRelated.length });
     if (resources.length) nav.push({ id: 'resources', label: t('workPage.sec.resources'), count: resources.length });
 
-    const isEmpty = versionIds.length === 0 && indexed.length === 0;
+    const isEmpty = versionTotal === 0 && indexed.length === 0;
 
     const main = (
         <>
-            {versionIds.length > 0 && (
+            {versionTotal > 0 && (
                 <Sec
                     id="versions"
                     title={t('workPage.sec.versions')}
                     meta={<MetaLine items={[
-                        t('workPage.versionsTotal', { n: versionIds.length - copyCount }),
+                        t('workPage.versionsTotal', { n: versionTotal - copyCount }),
                         allResolved && imageCount ? t('workPage.versionsWithImage', { n: imageCount }) : '',
                         table.rows.length !== table.allRows.length ? t('workPage.versionsCurrent', { n: table.rows.length }) : '',
                     ]} />}
@@ -351,7 +392,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                                 const shown = open[g.key] ?? 0;
                                 const rows = g.rows.slice(0, shown);
                                 return (
-                                    <details key={g.key || 'none'} open={shown > 0}
+                                    <details key={g.key} open={shown > 0}
                                         onToggle={e => {
                                             const isOpen = (e.currentTarget as HTMLDetailsElement).open;
                                             setOpen(prev => {
@@ -364,7 +405,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                                         style={{ borderTop: `1px solid ${bim('border')}` }}>
                                         <summary className="bim-d-ui" style={{ cursor: 'pointer', minHeight: 40, display: 'flex', alignItems: 'center', gap: 12, padding: '6px 4px' }}>
                                             <span style={{ flex: 1 }}>{convert(g.title || t('workPage.groupUngrouped'))}</span>
-                                            <span className="bim-d-meta">{t('workPage.groupCount', { n: g.rows.length })}</span>
+                                            <span className="bim-d-meta">{t('workPage.groupCount', { n: g.total })}</span>
                                             {g.imageCount > 0 && <span className="bim-d-flag">{t('workPage.groupImage', { n: g.imageCount })}</span>}
                                         </summary>
                                         {shown > 0 && (
@@ -387,10 +428,10 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                                                 </tbody>
                                             </table>
                                         )}
-                                        {shown > 0 && g.rows.length > shown && (
+                                        {shown > 0 && g.total > shown && (
                                             <button type="button" className="bim-d-more bim-d-ui"
                                                 onClick={() => setOpen(prev => ({ ...prev, [g.key]: shown + GROUP_PAGE }))}>
-                                                {t('workPage.groupMore', { n: g.rows.length - shown })}
+                                                {t('workPage.groupMore', { n: g.total - shown })}
                                             </button>
                                         )}
                                     </details>

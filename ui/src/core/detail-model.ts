@@ -1297,27 +1297,37 @@ export function cardToRow(c: DerivedBookCard, vg?: VersionGraph): VersionRow {
 export interface VersionGroup {
     key: string;
     title: string;
+    /** 已有行（分页未读完时少于 total） */
     rows: VersionRow[];
+    /** 本组版本总数 */
+    total: number;
+    /** 已有行里有影印的数目 */
     imageCount: number;
+    /** 还没读的分页数（仅分页读取的组） */
+    pagesLeft?: number;
 }
 
 /**
  * 按 Collection 分组（缺 coll 按馆藏 holder，再缺归「未分組」置末）。
  * 组序＝首次出现序，组内保持卡片序（build 已按年代排）。
  */
-export function groupByCollection(cards: DerivedBookCard[], vg?: VersionGraph): VersionGroup[] {
+export function groupByCollection(
+    cards: DerivedBookCard[], vg?: VersionGraph, opts: { titles?: Record<string, string>; noHolderFallback?: boolean } = {},
+): VersionGroup[] {
     const groups = new Map<string, VersionGroup>();
     for (const c of cards) {
-        const key = c.coll ? `c:${c.coll}` : c.holder ? `h:${c.holder}` : '';
-        const title = c.collt || c.holder || c.coll || '';
+        // 有 `_book_groups` 时分组键与它一致（丛编 id／_none）；否则缺 coll 退按馆藏
+        const key = c.coll ? c.coll : (!opts.noHolderFallback && c.holder) ? `h:${c.holder}` : '_none';
+        const title = (c.coll && opts.titles?.[c.coll]) || c.collt || (key === '_none' ? '' : c.holder) || c.coll || '';
         let g = groups.get(key);
-        if (!g) { g = { key, title, rows: [], imageCount: 0 }; groups.set(key, g); }
+        if (!g) { g = { key, title, rows: [], total: 0, imageCount: 0 }; groups.set(key, g); }
+        g.total++;
         const row = cardToRow(c, vg);
         g.rows.push(row);
         if (row.hasImage) g.imageCount++;
     }
     const list = [...groups.values()];
-    return [...list.filter(g => g.key), ...list.filter(g => !g.key)];
+    return [...list.filter(g => g.key !== '_none'), ...list.filter(g => g.key === '_none')];
 }
 
 export function buildVersionRow(v: ResolvedVersion, vg?: VersionGraph): VersionRow {
