@@ -529,6 +529,20 @@ export interface DerivedBookCard {
     collt?: string;
 }
 
+/** Work `_book_groups` 的元素（版本数 > 200 时出）：一个丛编下的版本分组；件数多者在前，无丛编 g="_none" 排最后 */
+export interface DerivedBookGroup {
+    /** 丛编卡片（枢纽为 `{id, h:1}`，题名经 withHubTitles 补） */
+    id?: string;
+    title?: string;
+    h?: 1;
+    /** 分组键：丛编 id，无丛编为 "_none"；分页文件 `books/<work_id>/<g>/<n>.json` */
+    g: string;
+    /** 本组版本数 */
+    n: number;
+    /** 分页数（每页 200，n 从 1 起） */
+    pages: number;
+}
+
 /** Work `_related` 的元素：对方（Work 或 Collection）的卡片＋关系 */
 export interface DerivedRelatedCard {
     id: string;
@@ -715,6 +729,8 @@ export interface WorkDetailData extends BaseDetailData {
     version_graph?: VersionGraph;
     /** build 产物：掛在本作品下的版本（Book 卡），有年代者在前、按年代升序 */
     _books?: DerivedBookCard[];
+    /** build 产物：版本数 > 200 时的分组（按丛编）；版本表据此折叠，各组余页按需读 `books/` 分页文件 */
+    _book_groups?: DerivedBookGroup[];
     /** build 产物：掛在本作品下的 Book 數（= `_books.length`） */
     _edition_count?: number;
     /** build 产物：分类（总目 zongmu 等，可有多条；没有只代表尚無可靠依據） */

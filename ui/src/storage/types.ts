@@ -139,6 +139,9 @@ export interface IndexStorage {
     /** 某实体（或 Work）被专名号标出的出处，第 page 页（从 1 起）；没有出处或取不到返回 null */
     getMentions?(id: string, item?: string): Promise<MentionsIndex | MentionsBookChapters | null>;
 
+    /** 千本级作品的版本分页：`books/<workId>/<g>/<n>.json`（Book 卡数组，每页 200，n 从 1 起）；没有该文件返回 null */
+    getBookGroupPage?(workId: string, g: string, n: number): Promise<import('../types').DerivedBookCard[] | null>;
+
     /** 获取版本传承图数据 */
     getLineageGraph?(workId: string): Promise<LineageGraph | null>;
 

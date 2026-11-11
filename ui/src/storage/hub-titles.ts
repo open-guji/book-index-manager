@@ -13,7 +13,7 @@ import type { HubMap, IndexStorage } from './types';
 type Obj = Record<string, unknown>;
 
 /** 可能含枢纽卡片的派生数组 */
-const HUB_ARRAYS = ['_related', '_catalogs', '_collections', '_members', '_children'] as const;
+const HUB_ARRAYS = ['_related', '_catalogs', '_collections', '_members', '_children', '_book_groups'] as const;
 
 const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !Array.isArray(v);
 /** 枢纽引用：`{id, h:1}`（志书著录 `_catalogs` 里是 `{bid, h:1}`），无 title */

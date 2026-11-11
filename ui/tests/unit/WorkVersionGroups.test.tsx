@@ -23,6 +23,7 @@ describe('groupByCollection', () => {
             { id: '1', coll: 'cA', collt: 'A' }, { id: '2', holder: '國圖' }, { id: '3' }, { id: '4', coll: 'cA', collt: 'A', img: true },
         ]);
         expect(gs.map(g => [g.title, g.rows.map(r => r.id)])).toEqual([['A', ['1', '4']], ['國圖', ['2']], ['', ['3']]]);
+        expect(gs.map(g => g.total)).toEqual([2, 1, 1]);
         expect(gs[0].imageCount).toBe(1);
     });
     it('relationGroups 排除同版，按关系词归并', () => {
@@ -50,5 +51,29 @@ describe('WorkPage 千本分组', () => {
         expect((getItem as unknown as ReturnType<typeof vi.fn>).mock.calls.filter(c => String(c[0]).startsWith('b')).length).toBe(0);
         fireEvent.click(screen.getByText('英國國家圖書館敦煌文獻'));
         await waitFor(() => expect(screen.getByText(/同卷 1/)).toBeTruthy());
+    });
+
+    it('契约 5：有 _book_groups 且 _books 为空时，展开组才读 books/ 分页文件', async () => {
+        const w = {
+            id: 'w2', type: 'work', title: '妙法蓮華經', _edition_count: 450,
+            _books: [],
+            _book_groups: [
+                { id: 'cA', title: '英國國家圖書館敦煌文獻', g: 'cA', n: 250, pages: 2 },
+                { g: '_none', n: 201, pages: 2 },
+            ],
+        } as unknown as IndexDetailData;
+        const page = vi.fn(async (_w: string, g: string, n: number) =>
+            Array.from({ length: n === 1 ? 200 : 50 }, (_, i) => ({ id: `${g}-${n}-${i}`, title: '妙法蓮華經', edition: `寫卷${g}${n}${i}` })));
+        const tp = {
+            getItem: vi.fn(async (id: string) => (id === 'w2' ? w : { id })), getEntry: vi.fn(async () => null),
+            getLineageGraph: vi.fn(async () => null), getTextManifest: vi.fn(async () => null), getTextIndex: vi.fn(async () => null),
+            getBookGroupPage: page,
+        };
+        render(<BookDetailLayout id="w2" transport={tp as never} initialDetail={w} activeTab="basic" onTabChange={() => {}} />);
+        expect(page).not.toHaveBeenCalled();
+        fireEvent.click(screen.getByText('英國國家圖書館敦煌文獻'));
+        await waitFor(() => expect(page).toHaveBeenCalledWith('w2', 'cA', 1));
+        await waitFor(() => expect(screen.getByText('寫卷cA10')).toBeTruthy());
+        expect(page).toHaveBeenCalledTimes(1);
     });
 });
