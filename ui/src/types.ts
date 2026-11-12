@@ -555,6 +555,18 @@ export interface DerivedRelatedCard {
     note?: string;
 }
 
+/** Book／Collection `_related` 的元素（build_derived 契约 5）：对方 Book 或 Collection 的卡片＋原关系词 */
+export interface DerivedBookRelatedCard {
+    id: string;
+    t?: 'book' | 'collection';
+    title?: string;
+    edition?: string;
+    h?: 1;
+    /** 原关系词（同卷／綴合／同版…）；related_books 里没写关系的为 'related' */
+    relation?: string;
+    direction?: 'out' | 'in';
+}
+
 /** Work `_classifications` 的元素 */
 export interface DerivedClassification {
     scheme: string;
@@ -625,6 +637,8 @@ export interface BookDetailData extends BaseDetailData {
     location_history?: LocationInfo[];
     /** 非源流关联：id 字符串（旧）或 {book_id, relation?, …}（新，版本关系 06 稿；读时用 relatedBookIds／relatedItems） */
     related_books?: Array<string | RelatedBookEntry>;
+    /** build 产物（契约 5 起）：对称关系两侧并集，带对方卡片与原关系词（同卷／綴合…；无词为 related）；读时用 symmetricRelatedItems */
+    _related?: DerivedBookRelatedCard[];
     /** 版本传承信息（用于版本图） */
     lineage?: BookLineage;
     /** 行款／装帧／尺寸／品相（2026-09-28 S2b）；四内容子段全为空串时目录侧不写本对象 */

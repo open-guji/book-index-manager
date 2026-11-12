@@ -9,6 +9,7 @@ import type {
     BaseEditionEntry,
     BookDetailData,
     BookLineage,
+    DerivedBookRelatedCard,
     LineageConfidence,
     LineageDerivation,
     LineageRelation,
@@ -66,6 +67,29 @@ export function relatedItems(book: {
                 evidence: r.evidence,
             });
         }
+    }
+    return out;
+}
+
+/**
+ * 对称关系的两侧并集：本书 related_books 里带 relation 的对象项，加上 build 产物 `_related`
+ * 里对方存储、指向本书的 Book 项（契约 5 起带原关系词）。对称关系只存一侧，单读 related_books
+ * 会让另一侧看不到「同卷」「綴合」。按 (对方 id, 关系词) 去重，本书存储的那条优先（带 evidence）。
+ * 只给详情页与版本表用；版本图仍只读 related_books（两侧都读会成两条边）。
+ */
+export function symmetricRelatedItems(book: {
+    related_books?: Array<string | RelatedBookEntry>;
+    _related?: DerivedBookRelatedCard[];
+}): LineageSibling[] {
+    const out = relatedItems(book);
+    const seen = new Set(out.map(r => `${r.book_id}|${r.relation}`));
+    for (const c of book._related ?? []) {
+        if (!c || !c.id || (c.t && c.t !== 'book')) continue;
+        if (!c.relation || c.relation === 'related') continue;
+        const key = `${c.id}|${c.relation}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push({ book_id: c.id, relation: c.relation, confidence: undefined as unknown as LineageConfidence });
     }
     return out;
 }

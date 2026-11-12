@@ -64,6 +64,8 @@ export const bookPage = defineMessages({
         reconstructed: '擬構祖本',
         thisEdition: '本版',
         derivatives: '翻刻 · 衍生',
+        /** 同卷（同一写卷正背／子号）、綴合（残片拼合）：对称关系，单列一行 */
+        scroll: '同卷 · 綴合',
         appendix: '附記',
     },
 }, {
@@ -129,6 +131,7 @@ export const bookPage = defineMessages({
         reconstructed: '拟构祖本',
         thisEdition: '本版',
         derivatives: '翻刻 · 衍生',
+        scroll: '同卷 · 缀合',
         appendix: '附记',
     },
 });
