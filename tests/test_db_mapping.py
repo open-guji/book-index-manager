@@ -94,8 +94,8 @@ ENTITIES = [
 
 
 def test_table_count():
-    # 目录 34 张（含 build_meta）＋ book-text 19 张
-    assert len(TABLES) == 53
+    # 目录 36 张（含 build_meta）＋ book-text 19 张
+    assert len(TABLES) == 55
     assert len([t for t in TABLES if t.startswith(('bt_', 'fragment'))]) == 19
     for name in ('alt_name', 'related_record', 'id_map', 'build_meta'):
         assert name in TABLES
@@ -114,7 +114,7 @@ def test_audit_fields_have_no_columns():
 
 def test_ddl_generates():
     sql = ddl.schema_sql()
-    assert sql.count('CREATE TABLE') == 53
+    assert sql.count('CREATE TABLE') == 55
     assert 'CREATE TABLE id_map' in sql and 'PRIMARY KEY (old_id, kind, src, direct_into)' in sql
     cons = ddl.constraints_sql()
     assert 'book_seal_mark' in cons and 'NOT VALID' in cons
@@ -195,6 +195,25 @@ SCHEMA_DIR = os.environ.get('BOOK_INDEX_SCHEMA') or os.path.join(os.path.dirname
 @pytest.mark.skipif(not os.path.isdir(SCHEMA_DIR), reason='没有 book-index 的 schema/json（CI 会取）')
 def test_schema_coverage():
     from book_index_manager.db.coverage import check
+    from book_index_manager.db.mapping import PENDING_SCHEMA
     errors, warns = check(SCHEMA_DIR)
     assert errors == [], errors
-    assert warns == [], warns
+    assert [w for w in warns if not any(p + '：' in w for p in PENDING_SCHEMA)] == [], warns
+
+
+def test_person_offices():
+    doc = {'id': 'hixhd2h9bf2a', 'type': 'entity', 'subtype': 'people', 'primary_name': '王安石',
+           'offices': [{'office_id': 'hixioff1', 'text': '知揚州', 'place_id': 'hixiplc1', 'start': 1067, 'end': 1069,
+                        'date_text': '熙寧元年', 'basis': '承前文年號',
+                        'sources': [{'title': '《宋史》·王安石傳', 'source_bid': 'd59f2gonq7sy', 'details': '出知揚州'},
+                                    {'title': '另一來源'}]},
+                       {'office_id': 'hixioff2', 'text': '贈太傅', 'posthumous': True, 'sources': [{'title': '同上'}]}]}
+    rows = shred(RECORDS['Entity'], copy.deepcopy(doc)).t
+    po = rows['person_office']
+    assert [(r['seq'], r['office_id'], r.get('start_year'), r.get('posthumous')) for r in po] == [
+        (0, 'hixioff1', 1067, None), (1, 'hixioff2', None, True)]
+    assert po[0]['notes'] == {'basis': '承前文年號'}
+    assert [(r['oseq'], r['seq'], r['title']) for r in rows['person_office_source']] == [
+        (0, 0, '《宋史》·王安石傳'), (0, 1, '另一來源'), (1, 0, '同上')]
+    bad, _ = roundtrip(RECORDS['Entity'], [copy.deepcopy(doc)])
+    assert bad == []

@@ -279,6 +279,13 @@ ENTITY = Record(
         'group_ids': _rel('in_group', 'group_ids'),
         'relations': _rel('person', 'relations', {'entity_id': C(col='dst'), 'type': C(col='kind'), 'basis': N,
                                                   'sources': N}, scalar=False),
+        # 人物任官（2026-11-12 A12 统一方案）：一项一行，出处另表；反向「历任者」「某地长官」由库查询派生
+        'offices': Kid('person_office', {'office_id': C(), 'text': C(), 'kind': C(), 'posthumous': C('bool'),
+                                         'declined': C('bool'), 'place_id': C(), 'institution_id': C(),
+                                         'start': C('int', 'start_year'), 'end': C('int', 'end_year'),
+                                         'date_text': C(), 'basis': N},
+                       sub={'sources': Kid('person_office_source', {'title': C(), 'url': C(), 'details': C(),
+                                                                    'source_bid': C()}, parent='oseq')}),
         'merged_into': ID_MAP,
         'description.sources': DESC_SOURCES,
     },
@@ -286,6 +293,9 @@ ENTITY = Record(
 )
 
 RECORDS = {r.name: r for r in (WORK, BOOK, COLLECTION, ENTITY)}
+
+# 映射先于 schema 落地的字段（coverage 对它们报 WARN 属预期）。对应 schema PR 合并后从这里删掉。
+PENDING_SCHEMA = ('Entity.offices',)   # A12 人物任官，统一方案 2026-11-12
 
 # 跨记录引用：(表, 列, 目标主表)。生成 NOT VALID 外键与悬空检查；目标可能是几类之一的（如 work_relation.dst
 # 可指 Collection、related_record.dst 可指 Book 或 Collection）只出悬空检查、不加外键。
@@ -300,6 +310,10 @@ REFS = [
     ('person', 'native_place_entity_id', ('entity',)),
     ('office', 'base_office_id', ('entity',)),
     ('place_history_dynasty', 'dynasty_id', ('entity',)),
+    ('person_office', 'office_id', ('entity',)),
+    ('person_office', 'place_id', ('entity',)),
+    ('person_office', 'institution_id', ('entity',)),
+    ('person_office_source', 'source_bid', ('work', 'book')),
     ('entity_relation', 'dst', ('entity',)),
     ('work_relation', 'dst', ('work', 'collection')),
     ('related_record', 'dst', ('book', 'collection')),
@@ -329,6 +343,9 @@ INDEXES = [
     'CREATE INDEX ON entity_relation (dst, rel)',
     'CREATE INDEX ON entity_external_id (key, value)',
     'CREATE INDEX ON place_history_dynasty (dynasty_id)',
+    'CREATE INDEX ON person_office (office_id)',
+    'CREATE INDEX ON person_office (place_id)',
+    'CREATE INDEX ON person_office_source (source_bid)',
     'CREATE INDEX ON id_map (live_id)',
 ]
 

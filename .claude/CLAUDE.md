@@ -27,7 +27,7 @@ book-index-manager/
 │   ├── logger.py             # 日志
 │   └── exceptions.py         # 异常定义
 ├── scripts/                  # 批处理脚本
-├── tests/                    # pytest（323）
+├── tests/                    # pytest（324）
 ├── ui/                       # npm 包 book-index-ui：网站索引页全部 React 组件（详情页在 src/components/detail/）
 └── pyproject.toml            # 包配置
 ```
