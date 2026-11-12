@@ -66,4 +66,5 @@ python -m book_index_manager.db build --root ../book-index --dsn "host=… dbnam
 
 加字段：在 `mapping.py` 给它一个去处（列、`N`、明细表或 `extra_ok`），否则 coverage 报 ERROR（bim CI 会取 book-index 的 schema/json 跑这一条）。
 删字段：从映射里删，否则 coverage 报 WARN。表结构有变，重新生成 book-index 的 `schema/db/schema.sql`。
+映射先于 schema 落地（两仓 CI 互等时）：先合映射，并把字段记进 `mapping.PENDING_SCHEMA`（coverage 测试放过它的 WARN），schema PR 合并后再删掉。
 改表结构前先告诉专名（A12）、文本（A33）、搜索（A42）。
