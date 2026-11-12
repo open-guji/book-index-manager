@@ -295,7 +295,7 @@ ENTITY = Record(
 RECORDS = {r.name: r for r in (WORK, BOOK, COLLECTION, ENTITY)}
 
 # 映射先于 schema 落地的字段（coverage 对它们报 WARN 属预期）。对应 schema PR 合并后从这里删掉。
-PENDING_SCHEMA = ('Entity.offices',)   # A12 人物任官，统一方案 2026-11-12
+PENDING_SCHEMA = ()
 
 # 跨记录引用：(表, 列, 目标主表)。生成 NOT VALID 外键与悬空检查；目标可能是几类之一的（如 work_relation.dst
 # 可指 Collection、related_record.dst 可指 Book 或 Collection）只出悬空检查、不加外键。
