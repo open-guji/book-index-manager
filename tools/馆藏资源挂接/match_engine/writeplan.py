@@ -14,6 +14,8 @@ SITES = {
     # C3 台湾国图（2026-10-26）：url＝按書號的 GET 检索（详情页带会话令牌）；记录号＝書號
     'ncltw': dict(id='ncl-tw', name='古籍與特藏文獻資源（臺灣國家圖書館）', short_name='臺灣國圖', prefix='ncltw-',
                   label='{holder}藏本：{edition}', default_holder='臺灣國家圖書館'),
+    # L5 牛津 Bodleian（2026-11-12）：url＝Digital Bodleian 对象页；记录号＝站方 UUID
+    'bodleian': dict(id='bodleian', name='牛津大學博德利圖書館 Digital Bodleian', short_name='牛津', prefix='bodleian-', label='牛津博德利圖書館藏本：{edition}'),
     # C3 韩国 KORCIS（2026-10-26）：影像在韩国国立中央图书馆数字馆藏；url＝按国中自馆控制号（KOL…）的 GET 检索；记录号＝KORCIS rec_key
     'korcis': dict(id='nlk', name='韓國古文獻綜合目錄 KORCIS（韓國國立中央圖書館）', short_name='韓國國中', prefix='korcis-',
                    label='韓國國立中央圖書館數字化藏本：{edition}'),
@@ -104,6 +106,13 @@ def make_item(source, rec, types=('image',)):
         owner = (rec.get('extra') or {}).get('owner') or '國家圖書館'
         if owner != '國家圖書館':     # 站方含合作馆影像（柏克萊等），label 与 holder 写实际藏馆
             md['holder'] = NCLTW_HOLDER.get(owner, owner)
+        url = rec['url']
+    elif source == 'bodleian':
+        rid = rec['source_record_id']
+        md = dict(bodleian_record=rid, iiif_manifest=rec['image_url'])
+        hid = (rec.get('extra') or {}).get('holding_id') or ''
+        if hid:
+            md['shelfmark'] = hid
         url = rec['url']
     elif source == 'korcis':
         rid = rec['source_record_id']
