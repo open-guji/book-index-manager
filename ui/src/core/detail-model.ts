@@ -35,7 +35,7 @@ import { getResourceTypes } from '../types';
 import { getTypeGroupKey, mergeVolumeResources, volumeStats } from './resources';
 import { getT } from '../i18n/translate';
 import type { TFunction } from '../i18n/translate';
-import { relatedItems } from './lineage-graph';
+import { relatedItems, symmetricRelatedItems } from './lineage-graph';
 
 // ══════════════════════════════════════════════════════════════
 // 朝代 / 年代推断
@@ -1151,6 +1151,8 @@ export interface ResolvedVersion {
     provenance?: BookDetailData['provenance'];
     lineage?: BookDetailData['lineage'];
     related_books?: BookDetailData['related_books'];
+    /** build 产物：对称关系两侧并集（同卷／綴合在对方存储时靠它） */
+    _related?: BookDetailData['_related'];
     /** 结构化年代（S2-L 后 publication_info.year 并入此处，推断函数靠它还原） */
     dating?: BookDetailData['dating'];
     /** 描述首句（同版组代表行显示用） */
@@ -1263,7 +1265,7 @@ export const ROW_RELATIONS = ['同卷', '綴合'];
 /** related_books 里的同卷、綴合关系，按关系词分组（同版另有收折；其余关系见谱系，不进版本表） */
 export function relationGroups(v: ResolvedVersion): { relation: string; ids: string[] }[] | undefined {
     const m = new Map<string, string[]>();
-    for (const r of relatedItems(v)) {
+    for (const r of symmetricRelatedItems(v)) {
         if (!ROW_RELATIONS.includes(r.relation)) continue;
         const ref = r.ref ?? r.book_id;
         if (!ref) continue;

@@ -155,6 +155,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                         provenance: b.provenance,
                         lineage: b.lineage,
                         related_books: b.related_books,
+                        _related: b._related,
                         dating: b.dating,
                         measure_info: b.measure_info,
                         summary: firstSentence((raw as { description?: { text?: string } } | null)?.description?.text),
