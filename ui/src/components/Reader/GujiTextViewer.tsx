@@ -13,6 +13,9 @@ import type { GujiFigure } from '../../core/guji-pages';
 import { FigBlock, FigCell, copyTextWithFigures } from './GujiFigureParts';
 import { sameDecoration, type CellDecoration } from './plugins';
 
+/** 无法识别字在阅读页的暂用显示（Sheldon 2026-11-13 定；将来换私用区字符或别的方案） */
+const UNK_SHOWN = '？';
+
 export interface PunctEntry {
   /** 缺省时按 `<anchor>#<序号>` 补 */
   id?: string;
@@ -1049,7 +1052,8 @@ const PageSection = React.memo(function PageSection({
     }
     return m;
   }, [pGroup, convert]);
-  const show = (ch: { id: string; char: string }) => shown.get(ch.id) ?? ch.char;
+  // 无法识别字（char v0.5 unk）：底字是 □（复制、选区仍按格位），显示「？」，将来换私用区字符后这里自然不再走
+  const show = (ch: { id: string; char: string; unk?: string }) => (ch.unk ? UNK_SHOWN : shown.get(ch.id) ?? ch.char);
   const { t } = useI18n();
   // 外挂标点：按显示偏好改写（引号样式、隐去书名号）；改完为空的不出节点。没传偏好＝原样
   const punct = (p: PunctEntry) => {
@@ -1121,10 +1125,10 @@ const PageSection = React.memo(function PageSection({
                     data-page-start={pageStarts.get(ch.id)}
                     {...decoAttrs(decorations?.get(ch.id))}
                     style={decoStyle(decorations?.get(ch.id))}
-                    className={`guji-text-char${decoClass(decorations?.get(ch.id))}${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${ch.lacuna || (ch.pending && ch.char === '□') ? ' is-lacuna' : ''}${ch.pending ? ' is-pending' : ''}${ch.lacuna && ch.guess_c ? ' has-guess' : ''}${ch.guess ? ' is-guess' : ''}${ch.zi ? ' is-zi' : ''}${start?.raised ? ' is-raised' : ''}`}
+                    className={`guji-text-char${decoClass(decorations?.get(ch.id))}${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${ch.lacuna || (ch.pending && ch.char === '□') ? ' is-lacuna' : ''}${ch.unk ? ' is-unk' : ''}${ch.pending ? ' is-pending' : ''}${ch.lacuna && ch.guess_c ? ' has-guess' : ''}${ch.guess ? ' is-guess' : ''}${ch.zi ? ' is-zi' : ''}${start?.raised ? ' is-raised' : ''}`}
                     data-raised={start?.raised || undefined}
                     data-guji-guess={ch.lacuna && ch.guess_c ? ch.guess_c : undefined}
-                    title={decorations?.get(ch.id)?.title ?? (ch.pending ? t('reader.pendingReason', { label: convert ? convert(pendingReasonLabel(ch.pending)) : pendingReasonLabel(ch.pending) }) : ch.lacuna ? (ch.guess_c ? t('reader.lacunaGuess', { guess: convert ? convert(ch.guess_c) : ch.guess_c }) : t('detail.lacuna')) : ch.zi ? t('detail.composedChar', { label: ch.zi }) : ch.guess ? t('reader.charGuess') : undefined)}
+                    title={decorations?.get(ch.id)?.title ?? (ch.unk ? t('reader.unkChar', { label: convert ? convert(ch.unk) : ch.unk }) : ch.pending ? t('reader.pendingReason', { label: convert ? convert(pendingReasonLabel(ch.pending)) : pendingReasonLabel(ch.pending) }) : ch.lacuna ? (ch.guess_c ? t('reader.lacunaGuess', { guess: convert ? convert(ch.guess_c) : ch.guess_c }) : t('detail.lacuna')) : ch.zi ? t('detail.composedChar', { label: ch.zi }) : ch.guess ? t('reader.charGuess') : undefined)}
                   >
                     {show(ch)}
                   </span>{decorations?.get(ch.id)?.insertAfter && <span className="bim-cd-ins" aria-hidden="true" data-cd-ins={decorations.get(ch.id)!.insertAfter} />}</>}

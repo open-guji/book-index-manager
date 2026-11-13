@@ -25,6 +25,8 @@ export interface CharGeometry {
   pending?: string;
   /** 图片格（char v0.3 `fig`，spec/02 §4.7）：值是同章 fig.json 里的图 id；`char` 是 `□` */
   fig?: string;
+  /** 无法识别字（char v0.5 `unk`，spec/02 §4.9）：值是部件描述；`char` 是 `□`，阅读器显示「？」 */
+  unk?: string;
 }
 
 export interface ColumnGeometry {

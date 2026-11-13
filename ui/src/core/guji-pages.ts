@@ -34,6 +34,8 @@ export interface GujiPageChar {
     pending?: string;
     /** 图片格（char v0.3 `fig`，spec/02 §4.7）：本格是图不是字，值是同章 fig.json 里的图 id；`char` 仍是 `□`。连续同 id 的格是同一张图 */
     fig?: string;
+    /** 无法识别字（char v0.5 `unk`，spec/02 §4.9）：图上是字、认不出、Unicode 没有；值是部件描述（如「左王右旦」）。`char` 仍是 `□`，阅读器暂显示「？」 */
+    unk?: string;
 }
 
 /** 列类别（spec/02 §4.3、§4.7）：`blank` 空列（无字）、`banxin` 版心列、`figure` 图列（插图块，无字）；缺省正文列 */
