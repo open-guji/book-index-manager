@@ -39,8 +39,8 @@ const LANES = new Set(['main', 'solo', 'jz_r', 'jz_l']);
 const KINDS = new Set(['body', 'banxin', 'blank']);
 
 /** 格的可选字段（spec/02 §4.4）：只收合法值，缺省不带键——旧数据的输出与改前逐字段一致 */
-function cellExtras(cell: Record<string, any>): Pick<GujiPageChar, 'lane' | 'lacuna' | 'guess_c' | 'guess' | 'zi' | 'fig' | 'pending'> {
-    const out: Pick<GujiPageChar, 'lane' | 'lacuna' | 'guess_c' | 'guess' | 'zi' | 'fig' | 'pending'> = {};
+function cellExtras(cell: Record<string, any>): Pick<GujiPageChar, 'lane' | 'lacuna' | 'guess_c' | 'guess' | 'zi' | 'fig' | 'pending' | 'unk'> {
+    const out: Pick<GujiPageChar, 'lane' | 'lacuna' | 'guess_c' | 'guess' | 'zi' | 'fig' | 'pending' | 'unk'> = {};
     if (typeof cell.lane === 'string' && LANES.has(cell.lane) && cell.lane !== 'main') out.lane = cell.lane as GujiPageChar['lane'];
     if (cell.lacuna === true) out.lacuna = true;
     // 推测字只认阙文格上的（spec/02 §4.6：与 lacuna 同在、与 guess 互斥）；别处出现的按格式不对丢掉
@@ -54,6 +54,11 @@ function cellExtras(cell: Record<string, any>): Pick<GujiPageChar, 'lane' | 'lac
     // 图片格（spec/02 §4.7）：`c` 必须是 □，与 lacuna／guess／guess_c／zi 互斥；格式不对的当普通格
     if (typeof cell.fig === 'string' && FIG_ID.test(cell.fig) && cell.c === '□' && !cell.lacuna && !cell.guess && cell.guess_c === undefined && cell.zi === undefined) {
         out.fig = cell.fig;
+    }
+    // 无法识别字（spec/02 §4.9，char v0.5）：`c` 必须是 □，非空、不含空白和花括号，与 lacuna／guess／guess_c／zi／fig／pending_reason 互斥；格式不对的当普通格
+    if (typeof cell.unk === 'string' && /^[^\s{}]+$/.test(cell.unk) && cell.c === '□' && !cell.lacuna && !cell.guess && cell.guess_c === undefined
+        && cell.zi === undefined && cell.fig === undefined && cell.pending_reason === undefined) {
+        out.unk = cell.unk;
     }
     return out;
 }
