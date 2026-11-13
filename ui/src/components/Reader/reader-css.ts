@@ -581,6 +581,7 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 .guji-text-char.is-solo { font-size: 0.8em; opacity: 0.9; } /* 单行小注：和夹注同样缩小，但不是双行 */
 .guji-text-char.is-lacuna { color: ${bim('meta-fg')}; border: 1px dashed currentColor; border-radius: 2px; padding: 0 0.08em; } /* 阙文：虚线框□ */
 .guji-text-char.is-pending { cursor: help; text-decoration: underline dotted; text-underline-offset: 0.2em; } /* 待审格（char v0.4 pending_reason）：机器给了字的加点线下划线，没给字的同阙文虚线框；悬停出原因 */
+.guji-text-char.is-unk { color: ${bim('meta-fg')}; border: 1px dashed currentColor; border-radius: 2px; padding: 0 0.08em; cursor: help; } /* 无法识别字（char v0.5 unk）：显示「？」，虚线框，悬停出部件描述 */
 .guji-text-char.is-lacuna.has-guess { cursor: help; } /* 阙文带推测字（char v0.2 guess_c）：样式同阙文，悬停出推测字 */
 .guji-text-char.is-guess { color: ${bim('meta-fg')}; text-decoration: underline dotted; text-underline-offset: 0.2em; } /* 残字：灰字加点线 */
 .guji-text-char.is-zi { border: 1px solid color-mix(in srgb, currentColor 40%, transparent); border-radius: 2px; padding: 0 0.12em; margin: 0 0.05em; } /* 组字：细框，同 .bim-zi */
