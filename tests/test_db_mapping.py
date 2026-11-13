@@ -74,6 +74,7 @@ ENTITIES = [
      'qualifier': {'kind': '加官', 'name': '同平章事'}, 'institution_ref': 'hixi1ubqbwv7',
      'superiors': [{'id': 'hixi1ubqbwv6', 'start': 1082, 'note': '元豐改制'}]},
     {'id': 'hixiclzgh2iu', 'type': 'entity', 'subtype': 'place', 'primary_name': '橫州', 'place_level': 'concept',
+     'geo_kind': '河流', 'generic': True, 'polity_dynasty_id': 'hixi1ubjrxgp', 'site_kind': '塔',
      'modern': {'text': '廣西橫州市', 'adcode': '450181'},
      'history': [{'name': '橫州', 'level': '州', 'start': 916, 'end': 1125, 'note': '據遼史',
                   'dynasty_ids': ['hixi1ubjrxgp', 'hixi1ubjrxgq']}, {'name': '寧浦', 'level': '縣', 'start': 1126,

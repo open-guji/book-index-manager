@@ -247,7 +247,8 @@ ENTITY = Record(
                        {'rank': Flat({'text': C(col='rank_text'), 'basis': N}),
                         'qualifier': Flat({'kind': C(col='qualifier_kind'), 'name': C(col='qualifier_name'),
                                            'note': C(col='qualifier_note'), 'target': C(col='qualifier_target')})}),
-        'place': Side('place', {'concept_id': C(), 'place_level': C()},
+        'place': Side('place', {'concept_id': C(), 'place_level': C(), 'geo_kind': C(), 'generic': C('bool'),
+                                'polity_dynasty_id': C(), 'site_kind': C()},
                       {'modern': Flat({'text': C(col='modern_text'), 'relation': C(col='modern_relation'),
                                        'adcode': C(col='modern_adcode'), 'note': C(col='modern_note')})}),
         'seal': Side('seal', {'seal_text': C(), 'seal_kind': C(), 'seal_style': C(), 'seal_form': C(),
@@ -295,7 +296,7 @@ ENTITY = Record(
 RECORDS = {r.name: r for r in (WORK, BOOK, COLLECTION, ENTITY)}
 
 # 映射先于 schema 落地的字段（coverage 对它们报 WARN 属预期）。对应 schema PR 合并后从这里删掉。
-PENDING_SCHEMA = ()
+PENDING_SCHEMA = ('Entity.geo_kind', 'Entity.generic', 'Entity.polity_dynasty_id', 'Entity.site_kind')   # A12 地名山川／古國／建築，2026-11-13
 
 # 跨记录引用：(表, 列, 目标主表)。生成 NOT VALID 外键与悬空检查；目标可能是几类之一的（如 work_relation.dst
 # 可指 Collection、related_record.dst 可指 Book 或 Collection）只出悬空检查、不加外键。
@@ -310,6 +311,7 @@ REFS = [
     ('person', 'native_place_entity_id', ('entity',)),
     ('office', 'base_office_id', ('entity',)),
     ('place_history_dynasty', 'dynasty_id', ('entity',)),
+    ('place', 'polity_dynasty_id', ('entity',)),
     ('person_office', 'office_id', ('entity',)),
     ('person_office', 'place_id', ('entity',)),
     ('person_office', 'institution_id', ('entity',)),
