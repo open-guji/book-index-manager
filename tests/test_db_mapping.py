@@ -69,7 +69,7 @@ ENTITIES = [
      'relations': [{'type': '祖', 'entity_id': 'hixhd2h9bf1e', 'basis': '家譜', 'sources': ['甲']}],
      'description': {'sources': ['《清史稿》']}, 'todo': [{'what': '待核'}], 'suppressed_fields': ['dates'],
      'alt_names_extra_none': None},
-    {'id': 'hixi1ubqbwv8', 'type': 'entity', 'subtype': 'office', 'primary_name': '中書令', 'office_level': 'concrete',
+    {'id': 'hixi1ubqbwv8', 'type': 'entity', 'subtype': 'office', 'primary_name': '中書令', 'office_level': 'concrete', 'office_scope': '地方官',
      'function': '掌詔命', 'function_basis': '職官志', 'rank': {'text': '正二品', 'basis': '唐六典'},
      'qualifier': {'kind': '加官', 'name': '同平章事'}, 'institution_ref': 'hixi1ubqbwv7',
      'superiors': [{'id': 'hixi1ubqbwv6', 'start': 1082, 'note': '元豐改制'}]},
