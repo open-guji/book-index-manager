@@ -13,6 +13,7 @@ import type {
     WorkDetailData,
     IndexedByEntry,
     ResourceEntry,
+    DerivedContentsItem,
 } from '../../types';
 import type { IndexStorage } from '../../storage/types';
 import { useI18n } from '../../i18n';
@@ -26,6 +27,7 @@ import {
 } from './layout';
 import {
     buildVersionTable, cardToRow, groupByCollection, relationGroups, GROUP_MIN, bucketResources, measureText, sourceText, sourceHref, workVersionIds, workClassification,
+    formatCollectedPosition, formatVolumeIndex,
     type ResolvedVersion, type VersionRow, type VersionGroup,
 } from '../../core/detail-model';
 import { getDisplayNameFromUrl, resourceHref } from '../../core/resources';
@@ -199,6 +201,17 @@ export const WorkPage: React.FC<WorkPageProps> = ({
         [data._related],
     );
     const collectedIn = related.filter(r => r.relation === 'collected_in');
+    /** 「收入」的卷次与次序在源档 related_works 上（`_related` 不带），按对方 id 取 */
+    const collectedPos = useMemo(() => {
+        const out = new Map<string, string>();
+        for (const r of data.related_works || []) {
+            if (r.relation !== 'collected_in' || out.has(r.id)) continue;
+            const pos = formatCollectedPosition(r.volume_index, r.order, data.subtype, m.workPage.pos);
+            if (pos) out.set(r.id, pos);
+        }
+        return out;
+    }, [data.related_works, data.subtype, m.workPage.pos]);
+    const contentsTotal = data._contents?.total ?? 0;
     const otherRelated = useMemo(() => {
         const order = ['part_of', 'has_part', 'studied_by', 'studies', 'preceded_by', 'followed_by'];
         const rank = (r?: string) => { const i = order.indexOf(r ?? ''); return i < 0 ? order.length : i; };
@@ -343,11 +356,12 @@ export const WorkPage: React.FC<WorkPageProps> = ({
     const nav: RailNavItem[] = [];
     if (versionTotal) nav.push({ id: 'versions', label: t('workPage.sec.versions'), count: versionTotal });
     if (indexed.length) nav.push({ id: 'catalogs', label: t('workPage.sec.catalogs'), count: indexed.length });
+    if (contentsTotal) nav.push({ id: 'contents', label: t('workPage.sec.contents'), count: contentsTotal });
     if (collectedIn.length) nav.push({ id: 'collected', label: t('workPage.sec.collected'), count: collectedIn.length });
     if (otherRelated.length) nav.push({ id: 'related', label: t('workPage.sec.related'), count: otherRelated.length });
     if (resources.length) nav.push({ id: 'resources', label: t('workPage.sec.resources'), count: resources.length });
 
-    const isEmpty = versionTotal === 0 && indexed.length === 0;
+    const isEmpty = versionTotal === 0 && indexed.length === 0 && !contentsTotal;
 
     const main = (
         <>
@@ -485,6 +499,10 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                 <CatalogSection items={indexed} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
             )}
 
+            {contentsTotal > 0 && data._contents && (
+                <ContentsSection workId={data.id} info={data._contents} transport={transport} onNavigate={onNavigate} renderLink={renderLink} />
+            )}
+
             {/*
               * 什么都没有的作品：生产仓 9 万余部里有数百部既无版本、也无著录——
               * 中栏只剩空白，读者不知道是没数据还是页面坏了。给一句说明。
@@ -520,6 +538,7 @@ export const WorkPage: React.FC<WorkPageProps> = ({
                 id="collected"
                 title={t('workPage.sec.collected')}
                 items={collectedIn.map(r => link(r.id, r.title))}
+                metas={collectedIn.map(r => collectedPos.get(r.id) ?? '')}
             />
             <SideList
                 id="related"
@@ -815,6 +834,87 @@ function CatalogSection({ items: allEntries, transport, onNavigate, renderLink }
                     )}
                 </div>
             </div>
+        </Sec>
+    );
+}
+
+/**
+ * 总集篇目（build 契约 6 的 `_contents`）：被单篇诗文 collected_in 指向的总集、别集、选本，
+ * 按卷次、卷内次序列出所收各篇；每页 200 条，按页向 transport 取 contents/<id>/<n>.json。
+ * 卷次只在与上一行不同时写出，读起来就是按卷分组。宿主没有 getWorkContents 时只出总数。
+ */
+function ContentsSection({ workId, info, transport, onNavigate, renderLink }: {
+    workId: string;
+    info: { total: number; pages: number };
+    transport?: IndexStorage;
+    onNavigate?: (id: string) => void;
+    renderLink?: RenderLink;
+}) {
+    const { t, convert } = useI18n();
+    const [page, setPage] = useState(1);
+    const [rows, setRows] = useState<DerivedContentsItem[] | null>(null);
+    const [failed, setFailed] = useState(false);
+    const canLoad = !!transport?.getWorkContents;
+
+    useEffect(() => {
+        if (!transport?.getWorkContents) return;
+        let cancelled = false;
+        setRows(null);
+        setFailed(false);
+        transport.getWorkContents(workId, page)
+            .then(d => { if (!cancelled) { if (d) setRows(d); else setFailed(true); } })
+            .catch(() => { if (!cancelled) setFailed(true); });
+        return () => { cancelled = true; };
+    }, [transport, workId, page]);
+
+    const pager = info.pages > 1 ? (
+        <div className="bim-d-filters bim-d-ui">
+            <button type="button" className="bim-d-tab" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
+                {t('workPage.contents.prev')}
+            </button>
+            <span className="bim-d-meta">{t('workPage.contents.page', { page, pages: info.pages })}</span>
+            <button type="button" className="bim-d-tab" disabled={page >= info.pages} onClick={() => setPage(p => p + 1)}>
+                {t('workPage.contents.next')}
+            </button>
+        </div>
+    ) : null;
+
+    return (
+        <Sec id="contents" title={t('workPage.sec.contents')} meta={<MetaLine items={[t('workPage.contents.meta', { n: info.total })]} />}>
+            {canLoad && pager}
+            {canLoad && !rows && !failed && <p className="bim-d-meta bim-d-ui" style={{ margin: 0 }}>{t('workPage.contents.loading')}</p>}
+            {canLoad && failed && <p className="bim-d-meta bim-d-ui" style={{ margin: 0 }}>{t('workPage.contents.error')}</p>}
+            {rows && rows.length > 0 && (
+                <table className="bim-d-zt">
+                    <thead className="bim-d-ui">
+                        <tr>
+                            <th>{t('workPage.contents.vol')}</th>
+                            <th>{t('workPage.contents.title')}</th>
+                            <th>{t('workPage.contents.author')}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows.map((r, i) => {
+                            const vol = formatVolumeIndex(r.vol);
+                            const prev = i > 0 ? formatVolumeIndex(rows[i - 1].vol) : null;
+                            return (
+                                <tr key={r.id}>
+                                    <td className={`bim-d-zt-sub bim-d-zt-nowrap${vol && vol !== prev ? '' : ' bim-d-zt-blank'}`}>
+                                        {vol && vol !== prev ? vol : null}
+                                    </td>
+                                    <td className="bim-d-zt-main">
+                                        <BidLink id={r.id} label={convert(r.title ?? r.id)} onNavigate={onNavigate} renderLink={renderLink} dense />
+                                    </td>
+                                    <td className={`bim-d-zt-sub bim-d-zt-nowrap${r.au?.length ? '' : ' bim-d-zt-blank'}`}>
+                                        {r.au?.length ? convert(r.au.join('、')) : null}
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            )}
+            {canLoad && rows && pager}
         </Sec>
     );
 }

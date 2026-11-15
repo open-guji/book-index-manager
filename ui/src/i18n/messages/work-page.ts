@@ -27,6 +27,7 @@ export const workPage = defineMessages({
         versions: '版本',
         catalogs: '著錄',
         collected: '收入叢編',
+        contents: '篇目',
         related: '相關書目',
         resources: '在線資源',
     },
@@ -56,6 +57,10 @@ export const workPage = defineMessages({
     inferredEraNote: '部分年代據版本題名推斷，非著錄原文',
     empty: '尚未著錄該作品的版本與書目收錄。',
     relatedCount: '{n} 部',
+    /** 「收入」位置：卷次、卷内次序（诗词曲论首，其余论篇） */
+    pos: { vol: '卷{n}', shou: '第{n}首', pian: '第{n}篇' },
+    /** 总集篇目（build `_contents`） */
+    contents: { meta: '共 {n} 篇', vol: '卷', title: '篇名', author: '作者', prev: '上一頁', next: '下一頁', page: '第 {page}／{pages} 頁', loading: '載入中…', error: '篇目暫時無法載入。' },
     hasImage: '有影印',
     catalog: {
         meta: '歷代書目 {n} 家',
@@ -90,6 +95,7 @@ export const workPage = defineMessages({
         versions: '版本',
         catalogs: '著录',
         collected: '收入丛编',
+        contents: '篇目',
         related: '相关书目',
         resources: '在线资源',
     },
@@ -119,6 +125,10 @@ export const workPage = defineMessages({
     inferredEraNote: '部分年代据版本题名推断，非著录原文',
     empty: '尚未著录该作品的版本与书目收录。',
     relatedCount: '{n} 部',
+    /** 「收入」位置：卷次、卷内次序（诗词曲论首，其余论篇） */
+    pos: { vol: '卷{n}', shou: '第{n}首', pian: '第{n}篇' },
+    /** 总集篇目（build `_contents`） */
+    contents: { meta: '共 {n} 篇', vol: '卷', title: '篇名', author: '作者', prev: '上一页', next: '下一页', page: '第 {page}／{pages} 页', loading: '载入中…', error: '篇目暂时无法载入。' },
     hasImage: '有影印',
     catalog: {
         meta: '历代书目 {n} 家',

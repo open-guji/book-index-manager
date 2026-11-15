@@ -19,7 +19,7 @@
  *   Entity.related_people[]                 → 右栏旁栏清单
  */
 import React, { useState, useEffect, useMemo } from 'react';
-import type { EntityDetailData, AltName, WorkDetailData } from '../../types';
+import type { EntityDetailData, AltName, WorkDetailData, DerivedEntityWork } from '../../types';
 import type { IndexStorage } from '../../storage/types';
 import { useI18n, type TFunction } from '../../i18n';
 import { MarkdownText } from '../common/MarkdownText';
@@ -30,13 +30,15 @@ import {
     type CardFact, type RailNavItem, type RailLink,
 } from './layout';
 import { bim } from '../../styles/tokens';
-import { measureText, normalizeRole, roleFacets, workClassification, type RoleClass } from '../../core/detail-model';
+import { isPieceSubtype, measureText, normalizeRole, roleFacets, workClassification, type RoleClass } from '../../core/detail-model';
 import { SealFigure } from './SealFigure';
 import { MentionsSection } from './MentionsSection';
 import { mapLimit, DETAIL_FETCH_CONCURRENCY } from '../../core/map-limit';
 
 /** 桌面 cap，与作品页版本表同一量级 */
 const CAP_WORKS = 16;
+/** 单篇诗文表首屏行数 */
+const CAP_PIECES = 30;
 
 export interface EntityPageProps {
     data: EntityDetailData;
@@ -135,7 +137,9 @@ export const EntityPage: React.FC<EntityPageProps> = ({
     const [resolved, setResolved] = useState<Map<string, ResolvedWork>>(new Map());
     const [mentionsTotal, setMentionsTotal] = useState(0);
 
-    const works = useMemo(() => data._works || [], [data._works]);
+    // 单篇诗文（Work 卡 st 为 poem/ci/qu/fu/article，契约 6）另列一表，不混进「著作」：孟浩然 267 首诗不该把几部集子挤到后面
+    const works = useMemo(() => (data._works || []).filter(w => !isPieceSubtype(w.st)), [data._works]);
+    const pieces = useMemo(() => (data._works || []).filter(w => isPieceSubtype(w.st)), [data._works]);
     const allRows: WorkRow[] = useMemo(() => works.map(w => {
         const r = resolved.get(w.work_id);
         return {
@@ -239,8 +243,9 @@ export const EntityPage: React.FC<EntityPageProps> = ({
         }
         const n = works.length;
         if (n) out.push({ label: t('entityPage.fact.works'), value: t('entityPage.nZhong', { n }) });
+        if (pieces.length) out.push({ label: t('entityPage.fact.pieces'), value: t('entityPage.nPian', { n: pieces.length }) });
         return out;
-    }, [works, mainNames, convert, t]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [works, pieces, mainNames, convert, t]); // eslint-disable-line react-hooks/exhaustive-deps
 
     /** 副题「字元晦，號晦庵」：各取第一个 */
     const firstOf = (types: string[]) => nameGroups.find(g => types.includes(g.label))?.names[0];
@@ -381,6 +386,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
     const nav: RailNavItem[] = [
         ...(showPicks && !picksPending ? [{ id: 'featured', label: t('entityPage.sec.featured'), count: picks.length }] : []),
         ...(allRows.length ? [{ id: 'works', label: t('entityPage.sec.allWorks'), count: allRows.length }] : []),
+        ...(pieces.length ? [{ id: 'pieces', label: t('entityPage.sec.pieces'), count: pieces.length }] : []),
         ...(mentionsTotal ? [{ id: 'mentions', label: t('mentions.title'), count: mentionsTotal }] : []),
         ...(extLinks.length ? [{ id: 'external', label: t('entityPage.sec.external'), count: extLinks.length }] : []),
     ];
@@ -413,10 +419,16 @@ export const EntityPage: React.FC<EntityPageProps> = ({
         </Sec>
     ) : null;
 
+    const piecesSec = pieces.length ? (
+        <PiecesSection pieces={pieces} onNavigate={onNavigate} renderLink={renderLink} />
+    ) : null;
+
     const main = allRows.length === 0 ? (<>
-        <Sec title={t('entityPage.sec.works')}>
-            <p className="bim-d-meta bim-d-ui" style={{ margin: 0 }}>{t('entityPage.empty')}</p>
-        </Sec>
+        {piecesSec ?? (
+            <Sec title={t('entityPage.sec.works')}>
+                <p className="bim-d-meta bim-d-ui" style={{ margin: 0 }}>{t('entityPage.empty')}</p>
+            </Sec>
+        )}
         {mentionsSec}
     </>) : (<>
         {picksSec}
@@ -491,6 +503,7 @@ export const EntityPage: React.FC<EntityPageProps> = ({
                 <CapMore total={filtered.length} shown={visible.length} unit={t('entityPage.moreUnit')} onClick={() => setShowAll(true)} />
             )}
         </Sec>
+        {piecesSec}
         {mentionsSec}
     </>);
 
@@ -508,3 +521,74 @@ export const EntityPage: React.FC<EntityPageProps> = ({
 
     return <DetailGrid railTop={railTop} back={back} nav={nav} railLinks={railLinks} main={main} card={card} side={side} />;
 };
+
+/**
+ * 单篇诗文表：只用 `_works` 卡上已有的信息（题名、体裁 st、职任、有无全文），不逐条取详情——
+ * 一位诗人动辄几百首，逐条取就是几百个请求。体裁多于一种时给页签筛。
+ */
+function PiecesSection({ pieces, onNavigate, renderLink }: {
+    pieces: DerivedEntityWork[];
+    onNavigate?: (id: string) => void;
+    renderLink?: RenderLink;
+}) {
+    const { t, convert, messages: m } = useI18n();
+    const [kind, setKind] = useState('');
+    const [showAll, setShowAll] = useState(false);
+    const kindLabel = (st?: string) => (st ? (m.workSubtype as Record<string, string>)[st] ?? convert(st) : '');
+    const tabs = useMemo(() => {
+        const n = new Map<string, number>();
+        for (const p of pieces) n.set(p.st || '', (n.get(p.st || '') ?? 0) + 1);
+        if (n.size < 2) return [];
+        return [
+            { key: '', label: `${t('detail.roleAll')} ${pieces.length}` },
+            ...[...n.entries()].sort((a, b) => b[1] - a[1]).map(([k, c]) => ({ key: k, label: `${kindLabel(k)} ${c}` })),
+        ];
+    }, [pieces, t]); // eslint-disable-line react-hooks/exhaustive-deps
+    const filtered = kind ? pieces.filter(p => (p.st || '') === kind) : pieces;
+    const visible = showAll ? filtered : filtered.slice(0, CAP_PIECES);
+    return (
+        <Sec
+            id="pieces"
+            title={t('entityPage.sec.pieces')}
+            meta={<MetaLine items={[
+                t('entityPage.nPian', { n: pieces.length }),
+                filtered.length !== pieces.length ? t('entityPage.current', { n: filtered.length }) : '',
+            ]} />}
+        >
+            {tabs.length > 0 && (
+                <div className="bim-d-filters bim-d-ui">
+                    <TabFilter items={tabs} value={kind} onChange={k => { setKind(k); setShowAll(false); }} />
+                </div>
+            )}
+            <table className="bim-d-zt" data-ncap={!showAll && narrowCapped(filtered.length) ? '' : undefined}>
+                <thead className="bim-d-ui">
+                    <tr>
+                        <th>{t('entityPage.piece.title')}</th>
+                        <th>{t('entityPage.piece.kind')}</th>
+                        <th>{t('entityPage.col.role')}</th>
+                        <th aria-label={t('entityPage.piece.text')} />
+                    </tr>
+                </thead>
+                <tbody>
+                    {visible.map(p => (
+                        <tr key={p.work_id}>
+                            <td className="bim-d-zt-main">
+                                <BidLink id={p.work_id} label={convert(p.title ?? p.work_id)} onNavigate={onNavigate} renderLink={renderLink} dense />
+                            </td>
+                            <td className="bim-d-zt-sub bim-d-zt-nowrap">{kindLabel(p.st)}</td>
+                            <td className={`bim-d-zt-sub bim-d-zt-nowrap${p.role ? '' : ' bim-d-zt-blank'}`}>
+                                {p.role ? convert(p.role) : <span className="bim-d-zt-empty">—</span>}
+                            </td>
+                            <td className={p.txt ? undefined : 'bim-d-zt-blank'} style={{ textAlign: 'right' }}>
+                                {p.txt && <span className="bim-d-flag bim-d-ui">{t('entityPage.piece.hasText')}</span>}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            {!showAll && (
+                <CapMore total={filtered.length} shown={visible.length} unit={t('entityPage.piece.moreUnit')} onClick={() => setShowAll(true)} />
+            )}
+        </Sec>
+    );
+}
