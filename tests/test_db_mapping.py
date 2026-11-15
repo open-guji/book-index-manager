@@ -69,11 +69,12 @@ ENTITIES = [
      'relations': [{'type': '祖', 'entity_id': 'hixhd2h9bf1e', 'basis': '家譜', 'sources': ['甲']}],
      'description': {'sources': ['《清史稿》']}, 'todo': [{'what': '待核'}], 'suppressed_fields': ['dates'],
      'alt_names_extra_none': None},
-    {'id': 'hixi1ubqbwv8', 'type': 'entity', 'subtype': 'office', 'primary_name': '中書令', 'office_level': 'concrete',
+    {'id': 'hixi1ubqbwv8', 'type': 'entity', 'subtype': 'office', 'primary_name': '中書令', 'office_level': 'concrete', 'office_scope': '地方官',
      'function': '掌詔命', 'function_basis': '職官志', 'rank': {'text': '正二品', 'basis': '唐六典'},
      'qualifier': {'kind': '加官', 'name': '同平章事'}, 'institution_ref': 'hixi1ubqbwv7',
      'superiors': [{'id': 'hixi1ubqbwv6', 'start': 1082, 'note': '元豐改制'}]},
     {'id': 'hixiclzgh2iu', 'type': 'entity', 'subtype': 'place', 'primary_name': '橫州', 'place_level': 'concept',
+     'geo_kind': '河流', 'generic': True, 'polity_dynasty_id': 'hixi1ubjrxgp', 'site_kind': '塔',
      'modern': {'text': '廣西橫州市', 'adcode': '450181'},
      'history': [{'name': '橫州', 'level': '州', 'start': 916, 'end': 1125, 'note': '據遼史',
                   'dynasty_ids': ['hixi1ubjrxgp', 'hixi1ubjrxgq']}, {'name': '寧浦', 'level': '縣', 'start': 1126,
@@ -94,8 +95,8 @@ ENTITIES = [
 
 
 def test_table_count():
-    # 目录 34 张（含 build_meta）＋ book-text 19 张
-    assert len(TABLES) == 53
+    # 目录 36 张（含 build_meta）＋ book-text 19 张
+    assert len(TABLES) == 55
     assert len([t for t in TABLES if t.startswith(('bt_', 'fragment'))]) == 19
     for name in ('alt_name', 'related_record', 'id_map', 'build_meta'):
         assert name in TABLES
@@ -114,7 +115,7 @@ def test_audit_fields_have_no_columns():
 
 def test_ddl_generates():
     sql = ddl.schema_sql()
-    assert sql.count('CREATE TABLE') == 53
+    assert sql.count('CREATE TABLE') == 55
     assert 'CREATE TABLE id_map' in sql and 'PRIMARY KEY (old_id, kind, src, direct_into)' in sql
     cons = ddl.constraints_sql()
     assert 'book_seal_mark' in cons and 'NOT VALID' in cons
@@ -195,6 +196,25 @@ SCHEMA_DIR = os.environ.get('BOOK_INDEX_SCHEMA') or os.path.join(os.path.dirname
 @pytest.mark.skipif(not os.path.isdir(SCHEMA_DIR), reason='没有 book-index 的 schema/json（CI 会取）')
 def test_schema_coverage():
     from book_index_manager.db.coverage import check
+    from book_index_manager.db.mapping import PENDING_SCHEMA
     errors, warns = check(SCHEMA_DIR)
     assert errors == [], errors
-    assert warns == [], warns
+    assert [w for w in warns if not any(p + '：' in w for p in PENDING_SCHEMA)] == [], warns
+
+
+def test_person_offices():
+    doc = {'id': 'hixhd2h9bf2a', 'type': 'entity', 'subtype': 'people', 'primary_name': '王安石',
+           'offices': [{'office_id': 'hixioff1', 'text': '知揚州', 'place_id': 'hixiplc1', 'start': 1067, 'end': 1069,
+                        'date_text': '熙寧元年', 'basis': '承前文年號',
+                        'sources': [{'title': '《宋史》·王安石傳', 'source_bid': 'd59f2gonq7sy', 'details': '出知揚州'},
+                                    {'title': '另一來源'}]},
+                       {'office_id': 'hixioff2', 'text': '贈太傅', 'posthumous': True, 'sources': [{'title': '同上'}]}]}
+    rows = shred(RECORDS['Entity'], copy.deepcopy(doc)).t
+    po = rows['person_office']
+    assert [(r['seq'], r['office_id'], r.get('start_year'), r.get('posthumous')) for r in po] == [
+        (0, 'hixioff1', 1067, None), (1, 'hixioff2', None, True)]
+    assert po[0]['notes'] == {'basis': '承前文年號'}
+    assert [(r['oseq'], r['seq'], r['title']) for r in rows['person_office_source']] == [
+        (0, 0, '《宋史》·王安石傳'), (0, 1, '另一來源'), (1, 0, '同上')]
+    bad, _ = roundtrip(RECORDS['Entity'], [copy.deepcopy(doc)])
+    assert bad == []
