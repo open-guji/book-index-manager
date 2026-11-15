@@ -21,7 +21,7 @@ ENUMS = {
     'edition_type': ('刻本', '抄本', '稿本', '活字本', '石印本', '油印本', '曬印本', '鉛印本', '影印本', '套印本', '拓本',
                      '印刷本', '其他'),
     'loss_status': ('lost', 'partially_extant', 'extant', 'undetermined'),
-    'work_subtype': ('book', 'article', 'poem', 'chapter'),
+    'work_subtype': ('book', 'article', 'poem', 'ci', 'qu', 'fu', 'chapter'),
     'coll_subtype': ('work_collection', 'book_collection'),
     'entity_subtype': ('people', 'collective', 'dynasty', 'reign', 'office', 'place', 'seal', 'publisher'),
     'attested_status': ('extant', 'lost', 'partial', 'not_seen'),
@@ -151,7 +151,7 @@ DESCRIPTION = Flat({'text': C(col='description_text')})
 
 WORK = Record(
     'Work', 'work', 'W', {'type': 'work'},
-    cols=dict(COMMON, subtype=C('work_subtype'), original_title=C(), dynasty=C(), period=C(), period_upper=C(),
+    cols=dict(COMMON, subtype=C('work_subtype'), original_title=C(), incipit=C(), dynasty=C(), period=C(), period_upper=C(),
               loss_status=C('loss_status'), authenticity=C(), additional_works=C('jsonb')),
     flat={'description': DESCRIPTION},
     notes=('title_basis', 'dynasty_basis', 'period_basis', 'period_upper_basis', 'loss_status_evidence',
@@ -297,7 +297,7 @@ ENTITY = Record(
 RECORDS = {r.name: r for r in (WORK, BOOK, COLLECTION, ENTITY)}
 
 # 映射先于 schema 落地的字段（coverage 对它们报 WARN 属预期）。对应 schema PR 合并后从这里删掉。
-PENDING_SCHEMA = ()
+PENDING_SCHEMA = ('Work.incipit',)   # 单篇诗文首句，用户 2026-11-14 定
 
 # 跨记录引用：(表, 列, 目标主表)。生成 NOT VALID 外键与悬空检查；目标可能是几类之一的（如 work_relation.dst
 # 可指 Collection、related_record.dst 可指 Book 或 Collection）只出悬空检查、不加外键。

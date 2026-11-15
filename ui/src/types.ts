@@ -723,7 +723,7 @@ export interface WorkDetailData extends BaseDetailData {
     _collections?: DerivedCollectionRef[];
     /** @deprecated 源档已无此字段（分类在 classification/ 成员档）；详情页读 `_classifications` */
     classification?: WorkClassification;
-    /** Work 子類（book / article / poem / chapter） */
+    /** Work 子類（book / article / poem / ci / qu / fu / chapter） */
     subtype?: string;
 }
 

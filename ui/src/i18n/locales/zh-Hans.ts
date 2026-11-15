@@ -328,7 +328,7 @@ export const zhHans: CoreMessages = {
         bu: '部',
         items: '条',
     },
-    workSubtype: { book: '书', article: '篇', poem: '诗', chapter: '篇章' },
+    workSubtype: { book: '书', article: '文', poem: '诗', ci: '词', qu: '曲', fu: '赋', chapter: '篇章' },
     colorMode: { bw: '黑白', color: '彩色' },
     misc: {
         noResources: '暂无资源信息',
