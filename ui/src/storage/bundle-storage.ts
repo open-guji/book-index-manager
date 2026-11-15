@@ -9,6 +9,7 @@ import type {
     ResourceProgress,
     RecommendedData,
     VolumeBookMapping,
+    DerivedContentsItem,
 } from '../types';
 import type { IndexCounts, HubMap } from './types';
 import { normalizeCatalog } from '../core/normalize-catalog';
@@ -549,6 +550,15 @@ export class BundleStorage implements IndexStorage {
         // fetchJson 会自动拼 ?v=version，无需手动加。
         try {
             return await this.fetchJson<any>(`${this.basePath}/items/${workId}/lineage_graph.json`);
+        } catch {
+            return null;
+        }
+    }
+
+    async getWorkContents(workId: string, page: number): Promise<DerivedContentsItem[] | null> {
+        try {
+            const d = await this.fetchJson<DerivedContentsItem[]>(`${this.basePath}/contents/${workId}/${page}.json`);
+            return Array.isArray(d) ? d : null;
         } catch {
             return null;
         }
