@@ -45,11 +45,12 @@ SITES.update({
     'kyoto': dict(id='kyoto-rmda', name='京都大学貴重資料デジタルアーカイブ', short_name='京大', prefix='kyoto-', label='京大藏本{edition}'),   # A9续
     'kansai': dict(id='kansai', name='關西大學 KU-ORCAS（經 Japan Search）', short_name='關西大', prefix='kansai-', label='關西大藏本{edition}'),   # L5
     'kyu': dict(id='kyujanggak', name='首爾大學奎章閣韓國學研究院 古典籍', short_name='奎章閣', prefix='kyu-', label='奎章閣藏本{edition}'),   # L5
+    'hku': dict(id='hku-fpsl', name='香港大學馮平山圖書館 善本書影像庫', short_name='港大', prefix='hku-', label='港大藏本{edition}'),   # L5
 })
 ARC_HOLDER = {'UCLA': 'UCLA', 'Art Institute of Chicago': '芝加哥藝術博物館', 'Berkeley': '加州大學柏克萊分校', 'Leiden': '萊頓民族學博物館',
               'British Museum': '大英博物館', 'MRAH': '布魯塞爾藝術歷史博物館', 'Marega': '梵蒂岡 Marega 文庫', 'arc_ritsumeikan': '立命館'}
-JPC1 = ('utokyo', 'ioc', 'shoryobu', 'keio', 'arc', 'nagoya', 'kyoto', 'kansai', 'kyu')
-_JPC1_KEY = dict(utokyo='utokyo_record', ioc='ioc_nu', shoryobu='shoryobu_id', keio='keio_record', arc='arc_record', nagoya='nagoya_record', kyoto='kyoto_record', kansai='kansai_record', kyu='kyu_record')
+JPC1 = ('utokyo', 'ioc', 'shoryobu', 'keio', 'arc', 'nagoya', 'kyoto', 'kansai', 'kyu', 'hku')
+_JPC1_KEY = dict(utokyo='utokyo_record', ioc='ioc_nu', shoryobu='shoryobu_id', keio='keio_record', arc='arc_record', nagoya='nagoya_record', kyoto='kyoto_record', kansai='kansai_record', kyu='kyu_record', hku='hku_record')
 VAGUE_EDITION = {'', '刊', '写', '寫', '刻', '抄', '鈔'}
 
 
