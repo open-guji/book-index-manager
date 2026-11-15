@@ -317,7 +317,7 @@ export interface CoreMessages {
         items: string;
     };
     /** Work.subtype → 中文。数据里是英文枚举，直出会在标题旁露出 `chapter`/`poem` */
-    workSubtype: { book: string; article: string; poem: string; chapter: string };
+    workSubtype: { book: string; article: string; poem: string; ci: string; qu: string; fu: string; chapter: string };
     colorMode: { bw: string; color: string };
     misc: {
         noResources: string;

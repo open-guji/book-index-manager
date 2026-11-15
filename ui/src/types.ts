@@ -555,6 +555,21 @@ export interface DerivedRelatedCard {
     note?: string;
 }
 
+/** 总集篇目分页 contents/<id>/<n>.json 的一项：Work 卡＋卷次 `vol`／次序 `ord`（契约 6） */
+export interface DerivedContentsItem {
+    id: string;
+    title?: string;
+    /** 枢纽：无 title，名称见 _hubs.json */
+    h?: 1;
+    st?: string;
+    dyn?: string;
+    au?: string[];
+    txt?: true;
+    img?: true;
+    vol?: number | string | number[];
+    ord?: number;
+}
+
 /** Work `_classifications` 的元素 */
 export interface DerivedClassification {
     scheme: string;
@@ -605,6 +620,8 @@ export interface DerivedMemberCard {
 export interface DerivedEntityWork {
     work_id: string;
     title?: string;
+    /** Work.subtype（契约 6 起；book 与缺省不写）。poem/ci/qu/fu/article 是单篇诗文 */
+    st?: string;
     role?: string;
     dyn?: string;
     nb?: number;
@@ -724,7 +741,15 @@ export interface WorkDetailData extends BaseDetailData {
     /** @deprecated 同上 */
     collections?: string[];
     /** 源档字段（编辑器用；不带对方题名）。详情页读 `_related` */
-    related_works?: { id: string; title: string; relation?: 'part_of' | 'has_part' | 'collected_in' | 'text_carried_by' | 'studied_by' | 'preceded_by' | 'followed_by' | 'related' | (string & {}); note?: string }[];
+    related_works?: {
+        id: string; title: string;
+        relation?: 'part_of' | 'has_part' | 'collected_in' | 'text_carried_by' | 'studied_by' | 'preceded_by' | 'followed_by' | 'related' | (string & {});
+        note?: string;
+        /** 只用于 collected_in：在总集里的卷次（数字、卷号数组或「卷上」之类字符串） */
+        volume_index?: number | string | number[];
+        /** 只用于 collected_in：卷内第几篇（从 1 起） */
+        order?: number;
+    }[];
     /** 版本传承图（多版本作品如红楼梦、十三经等） */
     version_graph?: VersionGraph;
     /** build 产物：掛在本作品下的版本（Book 卡），有年代者在前、按年代升序 */
@@ -741,9 +766,11 @@ export interface WorkDetailData extends BaseDetailData {
     _catalogs?: DerivedCatalogCard[];
     /** build 产物：所属丛编 */
     _collections?: DerivedCollectionRef[];
+    /** build 产物（契约 6）：被单篇 collected_in 指向的总集篇目数与分页数；篇目在 contents/<id>/<n>.json（见 getWorkContents） */
+    _contents?: { total: number; pages: number };
     /** @deprecated 源档已无此字段（分类在 classification/ 成员档）；详情页读 `_classifications` */
     classification?: WorkClassification;
-    /** Work 子類（book / article / poem / chapter） */
+    /** Work 子類（book / article / poem / ci / qu / fu / chapter） */
     subtype?: string;
 }
 
