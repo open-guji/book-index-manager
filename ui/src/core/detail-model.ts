@@ -1678,6 +1678,52 @@ export function formatVolumeRange(volumes: number[], unitVolume = '冊'): string
 }
 
 // ══════════════════════════════════════════════════════════════
+// 单篇诗文（2026-11-15 方案 A：collected_in 带卷次／次序，总集侧 build 出 `_contents`）
+// ══════════════════════════════════════════════════════════════
+
+/** 单篇诗文的 subtype：诗、词、曲、赋、文。人物页把这几类从「著作」里分出去 */
+export const PIECE_SUBTYPES = ['poem', 'ci', 'qu', 'fu', 'article'] as const;
+
+export function isPieceSubtype(st: string | null | undefined): boolean {
+    return !!st && (PIECE_SUBTYPES as readonly string[]).includes(st);
+}
+
+/** 卷次：数字 → 「159」；数组 → 连续「159–160」否则「1、3」；字符串原样 */
+export function formatVolumeIndex(v: number | string | number[] | null | undefined): string {
+    if (v == null || v === '') return '';
+    if (Array.isArray(v)) {
+        const a = v.filter(n => Number.isFinite(n));
+        if (!a.length) return '';
+        if (a.length === 1) return String(a[0]);
+        const sorted = [...a].sort((x, y) => x - y);
+        return sorted[sorted.length - 1] - sorted[0] + 1 === sorted.length
+            ? `${sorted[0]}–${sorted[sorted.length - 1]}`
+            : sorted.join('、');
+    }
+    return String(v);
+}
+
+/**
+ * 「收入」位置：「卷159 · 第3首」。词量按体裁：诗词曲论「首」，其余论「篇」。
+ * `labels` 给各段模板（{n} 占位），由调用方从 i18n 取。
+ */
+export function formatCollectedPosition(
+    vol: number | string | number[] | null | undefined,
+    order: number | null | undefined,
+    subtype: string | null | undefined,
+    labels: { vol: string; shou: string; pian: string },
+): string {
+    const parts: string[] = [];
+    const v = formatVolumeIndex(vol);
+    if (v) parts.push(labels.vol.replace('{n}', v));
+    if (typeof order === 'number' && order > 0) {
+        const tpl = subtype === 'poem' || subtype === 'ci' || subtype === 'qu' ? labels.shou : labels.pian;
+        parts.push(tpl.replace('{n}', String(order)));
+    }
+    return parts.join(' · ');
+}
+
+// ══════════════════════════════════════════════════════════════
 // facts 列（intro 右侧）
 // ══════════════════════════════════════════════════════════════
 
