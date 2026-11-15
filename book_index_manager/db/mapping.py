@@ -159,7 +159,8 @@ WORK = Record(
     kids=dict(common_kids(),
               additional_titles=TITLE_ALT,
               related_works=Kid('work_relation', {'id': C(col='dst', notnull=True), 'relation': C(notnull=True),
-                                                  'note': N}, owner='src')),
+                                                  'note': N, 'volume_index': C('jsonb'),
+                                                  'order': C('int', col='orig_order')}, owner='src')),
     extra_ok=('title_emendation', 'version_graph', 'collection_scale', 'publication_info', 'appendix'),
 )
 
@@ -297,7 +298,7 @@ ENTITY = Record(
 RECORDS = {r.name: r for r in (WORK, BOOK, COLLECTION, ENTITY)}
 
 # 映射先于 schema 落地的字段（coverage 对它们报 WARN 属预期）。对应 schema PR 合并后从这里删掉。
-PENDING_SCHEMA = ('Work.incipit',)   # 单篇诗文首句，用户 2026-11-14 定
+PENDING_SCHEMA = ('related_works[].volume_index（work_relation）', 'related_works[].order（work_relation）')   # 单篇诗文「收入」带卷次，用户 2026-11-15 定（方案 A）
 
 # 跨记录引用：(表, 列, 目标主表)。生成 NOT VALID 外键与悬空检查；目标可能是几类之一的（如 work_relation.dst
 # 可指 Collection、related_record.dst 可指 Book 或 Collection）只出悬空检查、不加外键。
