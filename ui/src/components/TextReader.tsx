@@ -48,6 +48,9 @@ import { useChapterEntities, type ReaderEntityResolver } from './Reader/useChapt
 import { headingKey, headingsFromPunct, nestHeadings, parseHeadingKey, sanitizeHeadings, type HeadingNode, type TextHeading } from '../core/text-headings';
 
 /** 对读章：章条目同时声明了逐字文本与像素框（char_file＋cord_file），正文由对读数据排出，版本目录下没有 .txt */
+/** 书影预取的页偏移，由近及远：后面三页、前面一页（缓存上限 8 张，够放当前页＋这 4 张） */
+const PREFETCH_OFFSETS = [1, 2, 3, -1];
+
 export function isDuiduChapter(c: Pick<TextChapter, 'char_file' | 'cord_file' | 'has_json'> | null | undefined): boolean {
     return !!c && !c.has_json && typeof c.char_file === 'string' && !!c.char_file && typeof c.cord_file === 'string' && !!c.cord_file;
 }
@@ -766,14 +769,15 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         else if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); flipPage(1); }
     }, [flipPage]);
 
-    // 预取前后各一页的书影：滚动时下一页已在缓存里，不用等网络。
+    // 预取后面三页、前面一页的书影（由近及远）：滚动时下几页已在缓存里，不用等网络。
+    // 用的是 loadImage，与正式显示同一缓存键（同一 URL，经宿主取图钩子），不会为同一页发第二次请求。
     // 书影栏不可见（手机端收起、尚未展开）时不预取——原先照下照解码，手机首屏白白多十几张图（GUJI-629）
     const facsimileRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         if (!warpData) return;
         const panel = facsimileRef.current;
         if (!panel || panel.offsetWidth === 0) return;
-        for (const d of [1, -1]) {
+        for (const d of PREFETCH_OFFSETS) {
             const u = imageUrlOfPage(activePage + d);
             if (u) void loadImage(u);
         }
