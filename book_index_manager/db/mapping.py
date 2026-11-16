@@ -151,7 +151,7 @@ DESCRIPTION = Flat({'text': C(col='description_text')})
 
 WORK = Record(
     'Work', 'work', 'W', {'type': 'work'},
-    cols=dict(COMMON, subtype=C('work_subtype'), original_title=C(), incipit=C(), dynasty=C(), period=C(), period_upper=C(),
+    cols=dict(COMMON, subtype=C('work_subtype'), original_title=C(), incipit=C(), dynasty=C(), period=C(), period_upper=C(), region=C(),
               loss_status=C('loss_status'), authenticity=C(), additional_works=C('jsonb')),
     flat={'description': DESCRIPTION},
     notes=('title_basis', 'dynasty_basis', 'period_basis', 'period_upper_basis', 'loss_status_evidence',
