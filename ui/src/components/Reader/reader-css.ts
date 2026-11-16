@@ -515,15 +515,17 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 }
 .guji-text-reflow-view {
   width: 100%;
-  max-width: 760px;
+  /* 随字号走：与外层 .bim-rd-col 同为 50em，不再卡死窄宽度（宽屏时两侧留白过大）；--bimrd-fs 未设时 18px（同 DEFAULT_FONT_SIZE；原先写死 20px，字号设置对它无效） */
+  max-width: 50em;
   margin: 0 auto;
+  font-size: var(--bimrd-fs, 18px);
   user-select: text;
 }
 .guji-reflow-paragraph {
-  margin: 0 0 1.4rem 0;
-  text-indent: 2.7rem;
+  margin: 0 0 1.1em 0;
+  text-indent: 2.16em;
   font-family: var(--bimrd-ff, var(--bim-font-serif, "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif));
-  font-size: 1.25rem;
+  font-size: 1em; /* 继承 .guji-text-reflow-view 的 --bimrd-fs，字号设置才生效 */
   letter-spacing: 0.02em;
   color: ${bim('ink')};
   text-align: justify;
@@ -535,13 +537,13 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
   font-family: var(--bimrd-ff, var(--bim-font-serif, "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif));
   color: ${bim('ink')};
   font-weight: 700;
-  margin: 2rem 0 1rem;
+  margin: 1.6em 0 0.8em;
   scroll-margin-top: 96px;
 }
-.guji-reflow-heading.guji-reflow-h1 { font-size: 1.6rem; letter-spacing: 0.08em; }
-.guji-reflow-heading.guji-reflow-h2 { font-size: 1.4rem; letter-spacing: 0.05em; }
-.guji-reflow-heading.guji-reflow-h3 { font-size: 1.25rem; letter-spacing: 0.02em; margin: 1.6rem 0 0.8rem; }
-.guji-reflow-heading.guji-reflow-h4, .guji-reflow-heading.guji-reflow-h5, .guji-reflow-heading.guji-reflow-h6 { font-size: 1.25rem; letter-spacing: 0.02em; font-weight: 600; margin: 1.4rem 0 0.7rem; }
+.guji-reflow-heading.guji-reflow-h1 { font-size: 1.28em; letter-spacing: 0.08em; }
+.guji-reflow-heading.guji-reflow-h2 { font-size: 1.12em; letter-spacing: 0.05em; }
+.guji-reflow-heading.guji-reflow-h3 { font-size: 1em; letter-spacing: 0.02em; margin: 1.3em 0 0.65em; }
+.guji-reflow-heading.guji-reflow-h4, .guji-reflow-heading.guji-reflow-h5, .guji-reflow-heading.guji-reflow-h6 { font-size: 1em; letter-spacing: 0.02em; font-weight: 600; margin: 1.1em 0 0.55em; }
 .guji-text-scroll-v {
   writing-mode: vertical-rl;
   text-orientation: upright;
@@ -555,7 +557,7 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
   display: inline-block;
   vertical-align: top;
   font-family: var(--bimrd-ff, var(--bim-font-serif, "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif));
-  font-size: 1.35rem;
+  font-size: calc(var(--bimrd-fs, 18px) * 1.08);
   letter-spacing: 0;
   margin-left: 18px;
   user-select: text;
