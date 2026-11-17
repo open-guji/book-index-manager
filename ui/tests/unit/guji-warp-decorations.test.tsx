@@ -27,8 +27,10 @@ describe('GujiWarpCanvas · 插件修饰', () => {
         const g1 = gs[0];
         expect(g1.getAttribute('data-cd')).toBe('warn');
         expect(g1.hasAttribute('data-cd-focus')).toBe(true);
-        expect(g1.querySelector('text[data-cd-sub]')?.textContent).toBe('訂');
-        expect(g1.querySelector('text[data-cd-ins]')?.textContent).toBe('之');
+        // 下标、插入字画成字框旁的小标签（单独一层，在所有修饰之上）
+        expect(container.querySelector('g[data-cd-sub]')?.textContent).toBe('訂');
+        expect(container.querySelector('g[data-cd-ins]')?.textContent).toBe('之');
+        expect(container.querySelector('g[data-cd-sub] rect')).not.toBeNull();
         const g2 = gs[1];
         expect(g2.querySelector('rect')?.getAttribute('fill')).toBe('#abc');
         expect(g2.querySelector('line')?.getAttribute('stroke')).toBe('#123');
