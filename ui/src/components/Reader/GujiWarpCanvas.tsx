@@ -177,6 +177,28 @@ const TONE_COLORS: Record<string, { bg?: string; fg: string }> = {
   omit: { bg: bim('danger-soft-bg'), fg: bim('danger') },
 };
 /** 修饰在书影画布上的颜色：自定义 bg／fg 优先，其次 tone，缺省取强调色 */
+/**
+ * 书影上的对照字标签：一字一行竖排，纸色底、类别色细边、类别色字。左缘对齐 left，竖直方向以 cy 为中心
+ * （下标＝字的中线；字后插入＝本字与下一字的交界）。
+ */
+function CdBadge({ text, attr, left, cy, fs, fg }: { text: string; attr: 'data-cd-sub' | 'data-cd-ins'; left: number; cy: number; fs: number; fg: string }) {
+  const chars = Array.from(text);
+  const lh = fs * 1.04;
+  const padX = fs * 0.16;
+  const padY = fs * 0.14;
+  const w = fs + padX * 2;
+  const h = chars.length * lh + padY * 2;
+  const top = cy - h / 2;
+  return (
+    <g {...{ [attr]: text }}>
+      <rect x={left} y={top} width={w} height={h} rx={fs * 0.22} fill={bim('bg')} fillOpacity={0.94} stroke={fg} strokeWidth={Math.max(1.5, fs * 0.07)} />
+      {chars.map((c, i) => (
+        <text key={i} x={left + w / 2} y={top + padY + lh * i + fs * 0.86} fontSize={fs} fontWeight={600} textAnchor="middle" fill={fg}>{c}</text>
+      ))}
+    </g>
+  );
+}
+
 function decoColors(d: CellDecoration): { bg?: string; fg: string } {
   const t = (d.tone && TONE_COLORS[d.tone]) || undefined;
   return { bg: d.bg ?? t?.bg, fg: d.fg ?? t?.fg ?? bim('accent') };
@@ -863,7 +885,6 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
           const d = decorations.get(item.id);
           if (!d) return null;
           const col = decoColors(d);
-          const fs = Math.max(10, item.w * 0.42);
           return (
             <g key={`cd-${item.id}`} data-cd={d.tone ?? ''} data-cd-focus={d.focus ? '' : undefined} pointerEvents="none">
               {col.bg && <rect x={item.x} y={item.y} width={item.w} height={item.h} fill={col.bg} fillOpacity={0.35} />}
@@ -872,8 +893,22 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
                   strokeDasharray={d.underline === 'dotted' ? '2 5' : d.underline === 'dashed' ? '10 6' : undefined} />
               )}
               {d.focus && <rect x={item.x} y={item.y} width={item.w} height={item.h} fill="none" stroke={bim('accent')} strokeWidth={4} />}
-              {d.sub && <text data-cd-sub={d.sub} x={item.x + item.w} y={item.y + item.h - 2} fontSize={fs} textAnchor="end" fill={col.fg}>{d.sub}</text>}
-              {d.insertAfter && <text data-cd-ins={d.insertAfter} x={item.x + item.w / 2} y={item.y + item.h + fs} fontSize={fs} textAnchor="middle" fill={col.fg}>{d.insertAfter}</text>}
+            </g>
+          );
+        })}
+
+        {/* 1a'. 修饰里的下标／字后插入字：画成竖排小标签，贴在字框右缘外的行间空隙里（纸色底＋类别色边）。
+             不再叠在字框里的墨字上（看不清），也不往下压住下一个字；单独一遍画在所有修饰之上，免得被邻字的色块盖住。 */}
+        {decorations && decorations.size > 0 && flatChars.map((item) => {
+          const d = decorations.get(item.id);
+          if (!d || (!d.sub && !d.insertAfter)) return null;
+          const fg = decoColors(d).fg;
+          const fs = Math.max(12, item.w * 0.46);
+          const left = item.x + item.w - fs * 0.12;
+          return (
+            <g key={`cdb-${item.id}`} pointerEvents="none">
+              {d.sub && <CdBadge text={d.sub} attr="data-cd-sub" left={left} cy={item.y + item.h / 2} fs={fs} fg={fg} />}
+              {d.insertAfter && <CdBadge text={d.insertAfter} attr="data-cd-ins" left={left} cy={item.y + item.h} fs={fs} fg={fg} />}
             </g>
           );
         })}
