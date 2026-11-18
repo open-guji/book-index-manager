@@ -642,7 +642,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       centerWithRetries(ch, pageLockUntil);
     } else {
       const block = ch.closest<HTMLElement>('.guji-reflow-paragraph') ?? ch;
-      block.scrollIntoView({ behavior: 'auto', block: 'start' });
+      alignWithRetries(block, pageLockUntil);
     }
     if (!isNaN(page)) latest.current.onVisiblePageChange?.(page);
   }, [scrollToAnchor, reflowPages, shownCount, allShown, ensurePageShown, charOrder, charIndex]);
@@ -854,6 +854,28 @@ function centerWithRetries(ch: HTMLElement, pageLockUntil: React.MutableRefObjec
         pageLockUntil.current = Date.now() + 800;
         ch.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
       }
+    }
+    if (k === all.length - 1) evs.forEach((e) => window.removeEventListener(e, stop));
+  }, ms));
+}
+
+/**
+ * 把段落 el 滚到视口顶（单点链接 `#页:列:格`）。和 centerWithRetries 同理：上方各页是 content-visibility: auto 的占位，
+ * 滚过去后才排出真实高度，目标会被挤走，一次滚动落点不稳（同一链接每次打开落在不同页）。
+ * 头 1.5 秒里目标离第一次落点漂了就再对齐；读者自己动了就不再管
+ */
+function alignWithRetries(el: HTMLElement, pageLockUntil: React.MutableRefObject<number>) {
+  pageLockUntil.current = Date.now() + 800;
+  el.scrollIntoView({ behavior: 'instant', block: 'start' });
+  const home = el.getBoundingClientRect().top;
+  let userMoved = false;
+  const stop = () => { userMoved = true; };
+  const evs = ['wheel', 'touchstart', 'keydown', 'mousedown'] as const;
+  evs.forEach((e) => window.addEventListener(e, stop, { once: true, passive: true }));
+  [120, 350, 700, 1100, 1500].forEach((ms, k, all) => setTimeout(() => {
+    if (!userMoved && el.isConnected && Math.abs(el.getBoundingClientRect().top - home) > 4) {
+      pageLockUntil.current = Date.now() + 800;
+      el.scrollIntoView({ behavior: 'instant', block: 'start' });
     }
     if (k === all.length - 1) evs.forEach((e) => window.removeEventListener(e, stop));
   }, ms));
