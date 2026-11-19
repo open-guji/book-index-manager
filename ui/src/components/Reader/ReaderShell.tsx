@@ -596,6 +596,7 @@ export function ReaderShell({
                 {showPreserveMargins && !prefs.preserveMargins && (
                     <SegRow<BanxinMode>
                         label={t('reader.banxinMode')}
+                        title={t('reader.banxinTitle')}
                         value={prefs.banxinMode}
                         options={[
                             { key: 'cut', label: t('reader.banxinCut') },
