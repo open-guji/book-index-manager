@@ -115,6 +115,19 @@ describe('正文：标题段', () => {
         expect(merged.querySelectorAll('p.guji-reflow-paragraph')).toHaveLength(1);
     });
 
+    it('scrollToAnchor.highlight：宿主地址跳来的单点标出那个字，目录点标题（无 highlight）不标', () => {
+        const { restore } = recordScrolls();
+        try {
+            const hit = mount(doc, punct, { scrollToAnchor: { anchor: '39:3:1', nonce: 1, highlight: true } }).container;
+            expect(hit.querySelectorAll('.guji-hl')).toHaveLength(1);
+            expect(hit.querySelector('.guji-hl')?.getAttribute('data-char-id')).toBe('39:3:1');
+            const plain = mount(doc, punct, { scrollToAnchor: { anchor: '39:3:1', nonce: 1 } }).container;
+            expect(plain.querySelectorAll('.guji-hl')).toHaveLength(0);
+        } finally {
+            restore();
+        }
+    });
+
     it('scrollToAnchor：滚到标题段并把书影页报给宿主', () => {
         const { scrolled, restore } = recordScrolls();
         try {
