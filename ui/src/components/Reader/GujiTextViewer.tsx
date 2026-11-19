@@ -13,6 +13,9 @@ import type { GujiFigure } from '../../core/guji-pages';
 import { FigBlock, FigCell, copyTextWithFigures } from './GujiFigureParts';
 import { sameDecoration, type CellDecoration } from './plugins';
 
+/** 无法识别字在阅读页的暂用显示（Sheldon 2026-11-13 定；将来换私用区字符或别的方案） */
+const UNK_SHOWN = '？';
+
 export interface PunctEntry {
   /** 缺省时按 `<anchor>#<序号>` 补 */
   id?: string;
@@ -639,7 +642,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       centerWithRetries(ch, pageLockUntil);
     } else {
       const block = ch.closest<HTMLElement>('.guji-reflow-paragraph') ?? ch;
-      block.scrollIntoView({ behavior: 'auto', block: 'start' });
+      alignWithRetries(block, pageLockUntil);
     }
     if (!isNaN(page)) latest.current.onVisiblePageChange?.(page);
   }, [scrollToAnchor, reflowPages, shownCount, allShown, ensurePageShown, charOrder, charIndex]);
@@ -856,6 +859,28 @@ function centerWithRetries(ch: HTMLElement, pageLockUntil: React.MutableRefObjec
   }, ms));
 }
 
+/**
+ * 把段落 el 滚到视口顶（单点链接 `#页:列:格`）。和 centerWithRetries 同理：上方各页是 content-visibility: auto 的占位，
+ * 滚过去后才排出真实高度，目标会被挤走，一次滚动落点不稳（同一链接每次打开落在不同页）。
+ * 头 1.5 秒里目标离第一次落点漂了就再对齐；读者自己动了就不再管
+ */
+function alignWithRetries(el: HTMLElement, pageLockUntil: React.MutableRefObject<number>) {
+  pageLockUntil.current = Date.now() + 800;
+  el.scrollIntoView({ behavior: 'instant', block: 'start' });
+  const home = el.getBoundingClientRect().top;
+  let userMoved = false;
+  const stop = () => { userMoved = true; };
+  const evs = ['wheel', 'touchstart', 'keydown', 'mousedown'] as const;
+  evs.forEach((e) => window.addEventListener(e, stop, { once: true, passive: true }));
+  [120, 350, 700, 1100, 1500].forEach((ms, k, all) => setTimeout(() => {
+    if (!userMoved && el.isConnected && Math.abs(el.getBoundingClientRect().top - home) > 4) {
+      pageLockUntil.current = Date.now() + 800;
+      el.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }
+    if (k === all.length - 1) evs.forEach((e) => window.removeEventListener(e, stop));
+  }, ms));
+}
+
 /** 分批渲染：首批与之后每批大约多少字（GUJI-632）。首批要盖住第一屏（手机上约 4 屏）；每批在 CPU 降速 4–6 倍下约 0.3 秒 */
 const FIRST_BATCH_CHARS = 1800;
 const BATCH_CHARS = 800;
@@ -1049,7 +1074,8 @@ const PageSection = React.memo(function PageSection({
     }
     return m;
   }, [pGroup, convert]);
-  const show = (ch: { id: string; char: string }) => shown.get(ch.id) ?? ch.char;
+  // 无法识别字（char v0.5 unk）：底字是 □（复制、选区仍按格位），显示「？」，将来换私用区字符后这里自然不再走
+  const show = (ch: { id: string; char: string; unk?: string }) => (ch.unk ? UNK_SHOWN : shown.get(ch.id) ?? ch.char);
   const { t } = useI18n();
   // 外挂标点：按显示偏好改写（引号样式、隐去书名号）；改完为空的不出节点。没传偏好＝原样
   const punct = (p: PunctEntry) => {
@@ -1121,10 +1147,10 @@ const PageSection = React.memo(function PageSection({
                     data-page-start={pageStarts.get(ch.id)}
                     {...decoAttrs(decorations?.get(ch.id))}
                     style={decoStyle(decorations?.get(ch.id))}
-                    className={`guji-text-char${decoClass(decorations?.get(ch.id))}${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${ch.lacuna || (ch.pending && ch.char === '□') ? ' is-lacuna' : ''}${ch.pending ? ' is-pending' : ''}${ch.lacuna && ch.guess_c ? ' has-guess' : ''}${ch.guess ? ' is-guess' : ''}${ch.zi ? ' is-zi' : ''}${start?.raised ? ' is-raised' : ''}`}
+                    className={`guji-text-char${decoClass(decorations?.get(ch.id))}${selected.has(ch.id) ? ' is-selected' : ''}${ch.sub ? ' is-sub' : ''}${ch.lane === 'solo' ? ' is-solo' : ''}${ch.lacuna || (ch.pending && ch.char === '□') ? ' is-lacuna' : ''}${ch.unk ? ' is-unk' : ''}${ch.pending ? ' is-pending' : ''}${ch.lacuna && ch.guess_c ? ' has-guess' : ''}${ch.guess ? ' is-guess' : ''}${ch.zi ? ' is-zi' : ''}${start?.raised ? ' is-raised' : ''}`}
                     data-raised={start?.raised || undefined}
                     data-guji-guess={ch.lacuna && ch.guess_c ? ch.guess_c : undefined}
-                    title={decorations?.get(ch.id)?.title ?? (ch.pending ? t('reader.pendingReason', { label: convert ? convert(pendingReasonLabel(ch.pending)) : pendingReasonLabel(ch.pending) }) : ch.lacuna ? (ch.guess_c ? t('reader.lacunaGuess', { guess: convert ? convert(ch.guess_c) : ch.guess_c }) : t('detail.lacuna')) : ch.zi ? t('detail.composedChar', { label: ch.zi }) : ch.guess ? t('reader.charGuess') : undefined)}
+                    title={decorations?.get(ch.id)?.title ?? (ch.unk ? t('reader.unkChar', { label: convert ? convert(ch.unk) : ch.unk }) : ch.pending ? t('reader.pendingReason', { label: convert ? convert(pendingReasonLabel(ch.pending)) : pendingReasonLabel(ch.pending) }) : ch.lacuna ? (ch.guess_c ? t('reader.lacunaGuess', { guess: convert ? convert(ch.guess_c) : ch.guess_c }) : t('detail.lacuna')) : ch.zi ? t('detail.composedChar', { label: ch.zi }) : ch.guess ? t('reader.charGuess') : undefined)}
                   >
                     {show(ch)}
                   </span>{decorations?.get(ch.id)?.insertAfter && <span className="bim-cd-ins" aria-hidden="true" data-cd-ins={decorations.get(ch.id)!.insertAfter} />}</>}

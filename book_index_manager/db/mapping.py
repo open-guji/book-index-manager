@@ -21,7 +21,7 @@ ENUMS = {
     'edition_type': ('刻本', '抄本', '稿本', '活字本', '石印本', '油印本', '曬印本', '鉛印本', '影印本', '套印本', '拓本',
                      '印刷本', '其他'),
     'loss_status': ('lost', 'partially_extant', 'extant', 'undetermined'),
-    'work_subtype': ('book', 'article', 'poem', 'chapter'),
+    'work_subtype': ('book', 'article', 'poem', 'ci', 'qu', 'fu', 'chapter'),
     'coll_subtype': ('work_collection', 'book_collection'),
     'entity_subtype': ('people', 'collective', 'dynasty', 'reign', 'office', 'place', 'seal', 'publisher'),
     'attested_status': ('extant', 'lost', 'partial', 'not_seen'),
@@ -151,7 +151,7 @@ DESCRIPTION = Flat({'text': C(col='description_text')})
 
 WORK = Record(
     'Work', 'work', 'W', {'type': 'work'},
-    cols=dict(COMMON, subtype=C('work_subtype'), original_title=C(), dynasty=C(), period=C(), period_upper=C(),
+    cols=dict(COMMON, subtype=C('work_subtype'), original_title=C(), incipit=C(), dynasty=C(), period=C(), period_upper=C(), region=C(),
               loss_status=C('loss_status'), authenticity=C(), additional_works=C('jsonb')),
     flat={'description': DESCRIPTION},
     notes=('title_basis', 'dynasty_basis', 'period_basis', 'period_upper_basis', 'loss_status_evidence',
@@ -159,7 +159,8 @@ WORK = Record(
     kids=dict(common_kids(),
               additional_titles=TITLE_ALT,
               related_works=Kid('work_relation', {'id': C(col='dst', notnull=True), 'relation': C(notnull=True),
-                                                  'note': N}, owner='src')),
+                                                  'note': N, 'volume_index': C('jsonb'),
+                                                  'order': C('int', col='orig_order')}, owner='src')),
     extra_ok=('title_emendation', 'version_graph', 'collection_scale', 'publication_info', 'appendix'),
 )
 
@@ -242,12 +243,14 @@ ENTITY = Record(
         'collective': Side('collective', {'concept_id': C(), 'collective_kind': C(), 'institution_level': C(),
                                           'function': C(), 'function_basis': N}),
         'publisher': Side('publisher', {'publisher_kind': C(), 'status': C()}),
-        'office': Side('office', {'concept_id': C(), 'office_level': C(), 'office_class': C(), 'function': C(),
+        'office': Side('office', {'concept_id': C(), 'office_level': C(), 'office_class': C(), 'office_scope': C(),
+                                  'function': C(),
                                   'base_office_id': C(), 'function_basis': N},
                        {'rank': Flat({'text': C(col='rank_text'), 'basis': N}),
                         'qualifier': Flat({'kind': C(col='qualifier_kind'), 'name': C(col='qualifier_name'),
                                            'note': C(col='qualifier_note'), 'target': C(col='qualifier_target')})}),
-        'place': Side('place', {'concept_id': C(), 'place_level': C()},
+        'place': Side('place', {'concept_id': C(), 'place_level': C(), 'geo_kind': C(), 'generic': C('bool'),
+                                'polity_dynasty_id': C(), 'site_kind': C()},
                       {'modern': Flat({'text': C(col='modern_text'), 'relation': C(col='modern_relation'),
                                        'adcode': C(col='modern_adcode'), 'note': C(col='modern_note')})}),
         'seal': Side('seal', {'seal_text': C(), 'seal_kind': C(), 'seal_style': C(), 'seal_form': C(),
@@ -279,6 +282,13 @@ ENTITY = Record(
         'group_ids': _rel('in_group', 'group_ids'),
         'relations': _rel('person', 'relations', {'entity_id': C(col='dst'), 'type': C(col='kind'), 'basis': N,
                                                   'sources': N}, scalar=False),
+        # 人物任官（2026-11-12 A12 统一方案）：一项一行，出处另表；反向「历任者」「某地长官」由库查询派生
+        'offices': Kid('person_office', {'office_id': C(), 'text': C(), 'kind': C(), 'posthumous': C('bool'),
+                                         'declined': C('bool'), 'place_id': C(), 'institution_id': C(),
+                                         'start': C('int', 'start_year'), 'end': C('int', 'end_year'),
+                                         'date_text': C(), 'basis': N},
+                       sub={'sources': Kid('person_office_source', {'title': C(), 'url': C(), 'details': C(),
+                                                                    'source_bid': C()}, parent='oseq')}),
         'merged_into': ID_MAP,
         'description.sources': DESC_SOURCES,
     },
@@ -286,6 +296,9 @@ ENTITY = Record(
 )
 
 RECORDS = {r.name: r for r in (WORK, BOOK, COLLECTION, ENTITY)}
+
+# 映射先于 schema 落地的字段（coverage 对它们报 WARN 属预期）。对应 schema PR 合并后从这里删掉。
+PENDING_SCHEMA = ('related_works[].volume_index（work_relation）', 'related_works[].order（work_relation）')   # 单篇诗文「收入」带卷次，用户 2026-11-15 定（方案 A）
 
 # 跨记录引用：(表, 列, 目标主表)。生成 NOT VALID 外键与悬空检查；目标可能是几类之一的（如 work_relation.dst
 # 可指 Collection、related_record.dst 可指 Book 或 Collection）只出悬空检查、不加外键。
@@ -300,6 +313,11 @@ REFS = [
     ('person', 'native_place_entity_id', ('entity',)),
     ('office', 'base_office_id', ('entity',)),
     ('place_history_dynasty', 'dynasty_id', ('entity',)),
+    ('place', 'polity_dynasty_id', ('entity',)),
+    ('person_office', 'office_id', ('entity',)),
+    ('person_office', 'place_id', ('entity',)),
+    ('person_office', 'institution_id', ('entity',)),
+    ('person_office_source', 'source_bid', ('work', 'book')),
     ('entity_relation', 'dst', ('entity',)),
     ('work_relation', 'dst', ('work', 'collection')),
     ('related_record', 'dst', ('book', 'collection')),
@@ -329,6 +347,9 @@ INDEXES = [
     'CREATE INDEX ON entity_relation (dst, rel)',
     'CREATE INDEX ON entity_external_id (key, value)',
     'CREATE INDEX ON place_history_dynasty (dynasty_id)',
+    'CREATE INDEX ON person_office (office_id)',
+    'CREATE INDEX ON person_office (place_id)',
+    'CREATE INDEX ON person_office_source (source_bid)',
     'CREATE INDEX ON id_map (live_id)',
 ]
 

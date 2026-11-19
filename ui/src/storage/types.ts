@@ -150,6 +150,9 @@ export interface IndexStorage {
     /** 获取 Work 下的分类目录 */
     getWorkCatalog?(workId: string): Promise<Array<{ source: string; data: unknown }> | null>;
 
+    /** 总集篇目第 page 页（从 1 起；build 契约 6 的 contents/<id>/<page>.json）。没有返回 null */
+    getWorkContents?(workId: string, page: number): Promise<import('../types').DerivedContentsItem[] | null>;
+
     /** 获取目录书（藝文志、補志等）整理進度 */
     getCatalogProgress?(): Promise<ResourceProgress | null>;
 

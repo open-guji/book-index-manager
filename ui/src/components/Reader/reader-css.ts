@@ -515,15 +515,17 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 }
 .guji-text-reflow-view {
   width: 100%;
-  max-width: 760px;
+  /* 随字号走：与外层 .bim-rd-col 同为 50em，不再卡死窄宽度（宽屏时两侧留白过大）；--bimrd-fs 未设时 18px（同 DEFAULT_FONT_SIZE；原先写死 20px，字号设置对它无效） */
+  max-width: 50em;
   margin: 0 auto;
+  font-size: var(--bimrd-fs, 18px);
   user-select: text;
 }
 .guji-reflow-paragraph {
-  margin: 0 0 1.4rem 0;
-  text-indent: 2.7rem;
+  margin: 0 0 1.1em 0;
+  text-indent: 2.16em;
   font-family: var(--bimrd-ff, var(--bim-font-serif, "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif));
-  font-size: 1.25rem;
+  font-size: 1em; /* 继承 .guji-text-reflow-view 的 --bimrd-fs，字号设置才生效 */
   letter-spacing: 0.02em;
   color: ${bim('ink')};
   text-align: justify;
@@ -535,13 +537,13 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
   font-family: var(--bimrd-ff, var(--bim-font-serif, "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif));
   color: ${bim('ink')};
   font-weight: 700;
-  margin: 2rem 0 1rem;
+  margin: 1.6em 0 0.8em;
   scroll-margin-top: 96px;
 }
-.guji-reflow-heading.guji-reflow-h1 { font-size: 1.6rem; letter-spacing: 0.08em; }
-.guji-reflow-heading.guji-reflow-h2 { font-size: 1.4rem; letter-spacing: 0.05em; }
-.guji-reflow-heading.guji-reflow-h3 { font-size: 1.25rem; letter-spacing: 0.02em; margin: 1.6rem 0 0.8rem; }
-.guji-reflow-heading.guji-reflow-h4, .guji-reflow-heading.guji-reflow-h5, .guji-reflow-heading.guji-reflow-h6 { font-size: 1.25rem; letter-spacing: 0.02em; font-weight: 600; margin: 1.4rem 0 0.7rem; }
+.guji-reflow-heading.guji-reflow-h1 { font-size: 1.28em; letter-spacing: 0.08em; }
+.guji-reflow-heading.guji-reflow-h2 { font-size: 1.12em; letter-spacing: 0.05em; }
+.guji-reflow-heading.guji-reflow-h3 { font-size: 1em; letter-spacing: 0.02em; margin: 1.3em 0 0.65em; }
+.guji-reflow-heading.guji-reflow-h4, .guji-reflow-heading.guji-reflow-h5, .guji-reflow-heading.guji-reflow-h6 { font-size: 1em; letter-spacing: 0.02em; font-weight: 600; margin: 1.1em 0 0.55em; }
 .guji-text-scroll-v {
   writing-mode: vertical-rl;
   text-orientation: upright;
@@ -555,7 +557,7 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
   display: inline-block;
   vertical-align: top;
   font-family: var(--bimrd-ff, var(--bim-font-serif, "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif));
-  font-size: 1.35rem;
+  font-size: calc(var(--bimrd-fs, 18px) * 1.08);
   letter-spacing: 0;
   margin-left: 18px;
   user-select: text;
@@ -608,6 +610,7 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 .guji-text-char.is-solo { font-size: 0.8em; opacity: 0.9; } /* 单行小注：和夹注同样缩小，但不是双行 */
 .guji-text-char.is-lacuna { color: ${bim('meta-fg')}; border: 1px dashed currentColor; border-radius: 2px; padding: 0 0.08em; } /* 阙文：虚线框□ */
 .guji-text-char.is-pending { cursor: help; text-decoration: underline dotted; text-underline-offset: 0.2em; } /* 待审格（char v0.4 pending_reason）：机器给了字的加点线下划线，没给字的同阙文虚线框；悬停出原因 */
+.guji-text-char.is-unk { color: ${bim('meta-fg')}; border: 1px dashed currentColor; border-radius: 2px; padding: 0 0.08em; cursor: help; } /* 无法识别字（char v0.5 unk）：显示「？」，虚线框，悬停出部件描述 */
 .guji-text-char.is-lacuna.has-guess { cursor: help; } /* 阙文带推测字（char v0.2 guess_c）：样式同阙文，悬停出推测字 */
 .guji-text-char.is-guess { color: ${bim('meta-fg')}; text-decoration: underline dotted; text-underline-offset: 0.2em; } /* 残字：灰字加点线 */
 .guji-text-char.is-zi { border: 1px solid color-mix(in srgb, currentColor 40%, transparent); border-radius: 2px; padding: 0 0.12em; margin: 0 0.05em; } /* 组字：细框，同 .bim-zi */

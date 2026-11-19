@@ -149,6 +149,24 @@ describe('阅读器显示：新字段', () => {
         expect(c.getAttribute('title')).toBe('待審：原因不明');
     });
 
+    it('unk（char v0.5）：无法识别字显示「？」，悬停出部件描述；格式不对的当普通格', () => {
+        const pages = adaptCharCord(charDoc([
+            cell('3:1:1', '□', { unk: '左王右旦' }),
+            cell('3:1:2', '□', { unk: '左王右旦', lacuna: true }),
+            cell('3:1:3', '旦', { unk: '左王右旦' }),
+            cell('3:1:4', '□', { unk: '' }),
+        ]));
+        const ch = pages[0].columns[0].chars;
+        expect(ch[0].unk).toBe('左王右旦');
+        for (const c of ch.slice(1)) expect('unk' in c).toBe(false);
+        const { container } = mount(pages);
+        const a = el(container, '3:1:1');
+        expect(a.classList.contains('is-unk')).toBe(true);
+        expect(a.textContent).toBe('？');
+        expect(a.getAttribute('title')).toBe('無法識別字：左王右旦');
+        expect(el(container, '3:1:4').textContent).toBe('□');
+    });
+
     it('lacuna：缺字框 □，带「闕文」提示；不是正文字', () => {
         const { container } = mount(adaptCharCord(charDoc([cell('3:1:1', '□', { lacuna: true }), cell('3:1:2', '□')])));
         const a = el(container, '3:1:1'), b = el(container, '3:1:2');
