@@ -32,7 +32,8 @@ import {
 } from '../../core/detail-model';
 import { AuthorByline, ResourceGroupList, ResourceRow, splitResources } from './shared';
 import { VersionLineageView } from '../VersionLineageView';
-import { derivedItems, relatedItems, relatedBookIds, type LineageGraph } from '../../core/lineage-graph';
+import { derivedItems, symmetricRelatedItems, relatedBookIds, type LineageGraph } from '../../core/lineage-graph';
+import { ROW_RELATIONS } from '../../core/detail-model';
 
 /** 同作品版本：全部解析后按年代排的上限（再多就只取前几条，不排） */
 const SIBLINGS_SORT_MAX = 40;
@@ -190,7 +191,7 @@ export const BookPage: React.FC<BookPageProps> = ({
     const lineage = data.lineage;
     const lineageBookIds = useMemo(() => [
         ...derivedItems(data).filter(d => d.ref_type === 'book').map(d => d.ref),
-        ...relatedItems(data).map(r => r.book_id),
+        ...symmetricRelatedItems(data).map(r => r.book_id),
     ].filter(Boolean), [data]);
     useEffect(() => {
         if (!transport || lineageBookIds.length === 0) { setLineageRefs(new Map()); return; }
@@ -374,7 +375,7 @@ export const BookPage: React.FC<BookPageProps> = ({
     /** 章节单位：小说「回」，其余「章」「卷」——取第一章章名的末字 */
     const chapUnit = convert((chapters[0] && splitChapterTitle(chapters[0].title)[0].slice(-1)) || '') || tr('bookPage.chapterUnit');
     const chapterCountText = tr('bookPage.chapterCount', { n: chapters.length, unit: chapUnit });
-    const hasLineage = !!(derivedItems(data).length || relatedItems(data).length || data.appendix?.length);
+    const hasLineage = !!(derivedItems(data).length || symmetricRelatedItems(data).length || data.appendix?.length);
 
     const nav: RailNavItem[] = [];
     const imagesTitle = hasPhysicalOnly ? tr('bookPage.sec.physical') : tr('bookPage.sec.images');
@@ -693,8 +694,11 @@ function LineageFlow({ data, heading, yearText, refName, onNavigate, renderLink 
     const ancestors = derived.filter(d => d.ref_type !== 'book');
     const bases = derived.filter(d => d.ref_type === 'book' && d.relation === '底本');
     const others = derived.filter(d => d.ref_type === 'book' && d.relation !== '底本');
-    const related = relatedItems(data);
-    const hasFlow = derived.length > 0 || related.length > 0;
+    const allRelated = symmetricRelatedItems(data);
+    /** 同卷／綴合：对称关系，不是翻刻衍生，单列一行 */
+    const scroll = allRelated.filter(r => ROW_RELATIONS.includes(r.relation));
+    const related = allRelated.filter(r => !ROW_RELATIONS.includes(r.relation));
+    const hasFlow = derived.length > 0 || allRelated.length > 0;
 
     const conf = (c?: LineageConfidence) => (c && CONFIDENCE_KEYS.has(c)
         ? t('bookPage.confidenceNote', { c: t(`bookPage.confidence.${c}` as MessageKey) })
@@ -743,6 +747,19 @@ function LineageFlow({ data, heading, yearText, refName, onNavigate, renderLink 
                             </div>
                         )}
                     </li>
+                    {scroll.length > 0 && (
+                        <li className="bim-d-lf-node bim-d-lf-out" data-testid="lineage-scroll">
+                            <span className="bim-d-lf-out-h bim-d-ui">{t('bookPage.lineage.scroll')}</span>
+                            <span className="bim-d-lf-chips">
+                                {scroll.map((r, i) => (
+                                    <span key={i} className="bim-d-lf-chip" title={r.evidence ? convert(r.evidence) : undefined}>
+                                        {link(r.book_id, refName(r.book_id))}
+                                        <span className="bim-d-meta">{convert(r.relation)}</span>
+                                    </span>
+                                ))}
+                            </span>
+                        </li>
+                    )}
                     {related.length > 0 && (
                         <li className="bim-d-lf-node bim-d-lf-out">
                             <span className="bim-d-lf-out-h bim-d-ui">{t('bookPage.lineage.derivatives')}</span>
