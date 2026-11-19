@@ -461,11 +461,12 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     }, [manifest, versionKey, loadIndex, chapterMeta, effectiveChapter, versionControlled, chapterControlled, notify]);
 
     // ── 章内标题：目录点标题、宿主给 anchor → 滚到该段；正文滚动 → 目录高亮当前标题 ──
-    const [pendingAnchor, setPendingAnchor] = useState<{ chapter: string; anchor: string; nonce: number } | null>(null);
+    const [pendingAnchor, setPendingAnchor] = useState<{ chapter: string; anchor: string; nonce: number; highlight?: boolean } | null>(null);
     const [visibleHeading, setVisibleHeading] = useState<{ chapter: string; anchor: string } | null>(null);
     const anchorNonce = useRef(0);
-    const goToAnchor = useCallback((chapter: string, anchor: string) => {
-        setPendingAnchor({ chapter, anchor, nonce: ++anchorNonce.current });
+    // highlight：宿主地址（#页:列:格）带来的跳转要把那个格子标出来；目录点标题、插件滚动不标
+    const goToAnchor = useCallback((chapter: string, anchor: string, highlight?: boolean) => {
+        setPendingAnchor({ chapter, anchor, nonce: ++anchorNonce.current, ...(highlight ? { highlight: true } : {}) });
         setVisibleHeading({ chapter, anchor });
     }, []);
 
@@ -487,7 +488,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
     useEffect(() => {
         if (!anchorProp || !effectiveChapter || anchorProp === lastAnchorProp.current) return;
         lastAnchorProp.current = anchorProp;
-        goToAnchor(effectiveChapter, anchorProp);
+        goToAnchor(effectiveChapter, anchorProp, true);
     }, [anchorProp, effectiveChapter, goToAnchor]);
     useEffect(() => { if (!anchorProp) lastAnchorProp.current = null; }, [anchorProp]);
 
