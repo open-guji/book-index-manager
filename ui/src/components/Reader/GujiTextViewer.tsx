@@ -51,7 +51,7 @@ export interface GujiTextViewerProps {
    * 要求把某字（格位 key，一般是标题首字）所在的段滚到视口顶部（点目录里的标题）；`nonce` 变了才触发。
    * 那个字还没渲染出来（换章、数据在路上）就等它出来再滚，每个 nonce 只滚一次。
    */
-  scrollToAnchor?: { anchor: string; nonce: number } | null;
+  scrollToAnchor?: { anchor: string; nonce: number; highlight?: boolean } | null;
   /** 视口参考线所在的标题变了（标题首字的格位 key；参考线在第一个标题之上时为 null）。目录据此高亮当前标题 */
   onVisibleHeadingChange?: (anchor: string | null) => void;
   /**
@@ -642,7 +642,8 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
       centerWithRetries(ch, pageLockUntil);
     } else {
       const block = ch.closest<HTMLElement>('.guji-reflow-paragraph') ?? ch;
-      alignWithRetries(block, pageLockUntil);
+      if (scrollToAnchor.highlight) { ch.classList.add('guji-hl'); highlighted.current.push(ch); }
+      alignWithRetries(block, ch, () => (refYRef.current === null ? 120 : refYRef.current * window.innerHeight), pageLockUntil);
     }
     if (!isNaN(page)) latest.current.onVisiblePageChange?.(page);
   }, [scrollToAnchor, reflowPages, shownCount, allShown, ensurePageShown, charOrder, charIndex]);
@@ -860,22 +861,31 @@ function centerWithRetries(ch: HTMLElement, pageLockUntil: React.MutableRefObjec
 }
 
 /**
- * 把段落 el 滚到视口顶（单点链接 `#页:列:格`）。和 centerWithRetries 同理：上方各页是 content-visibility: auto 的占位，
- * 滚过去后才排出真实高度，目标会被挤走，一次滚动落点不稳（同一链接每次打开落在不同页）。
- * 头 1.5 秒里目标离第一次落点漂了就再对齐；读者自己动了就不再管
+ * 单点链接 `#页:列:格`：先把所在段落滚到视口顶（粗定位，也逼上方占位页排出真实高度），
+ * 再把那个字所在的行精确对到页指示头（参考线）所在的位置，这样指针指的页与链接一致。
+ * `getY()` 返回参考线的视口 y（像素）。和 centerWithRetries 同理：上方各页是 content-visibility: auto 的占位，
+ * 滚过去后才排出真实高度，目标会被挤走；头 1.5 秒里目标离参考线超过 4px 就再对一次，读者自己动了就不再管
  */
-function alignWithRetries(el: HTMLElement, pageLockUntil: React.MutableRefObject<number>) {
+function alignWithRetries(block: HTMLElement, ch: HTMLElement, getY: () => number, pageLockUntil: React.MutableRefObject<number>) {
+  const fine = () => {
+    const r = ch.getBoundingClientRect();
+    const dy = r.top + r.height / 2 - getY();
+    if (Number.isFinite(dy) && Math.abs(dy) > 1 && typeof window.scrollBy === 'function') window.scrollBy({ top: dy, behavior: 'instant' as ScrollBehavior });
+  };
   pageLockUntil.current = Date.now() + 800;
-  el.scrollIntoView({ behavior: 'instant', block: 'start' });
-  const home = el.getBoundingClientRect().top;
+  block.scrollIntoView({ behavior: 'instant', block: 'start' });
+  fine();
   let userMoved = false;
   const stop = () => { userMoved = true; };
   const evs = ['wheel', 'touchstart', 'keydown', 'mousedown'] as const;
   evs.forEach((e) => window.addEventListener(e, stop, { once: true, passive: true }));
   [120, 350, 700, 1100, 1500].forEach((ms, k, all) => setTimeout(() => {
-    if (!userMoved && el.isConnected && Math.abs(el.getBoundingClientRect().top - home) > 4) {
-      pageLockUntil.current = Date.now() + 800;
-      el.scrollIntoView({ behavior: 'instant', block: 'start' });
+    if (!userMoved && ch.isConnected) {
+      const r = ch.getBoundingClientRect();
+      if (Math.abs(r.top + r.height / 2 - getY()) > 4) {
+        pageLockUntil.current = Date.now() + 800;
+        fine();
+      }
     }
     if (k === all.length - 1) evs.forEach((e) => window.removeEventListener(e, stop));
   }, ms));
