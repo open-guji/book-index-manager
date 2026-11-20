@@ -173,3 +173,25 @@ def test_flat_inside_kid_items():
     assert (s1['anchor_start'], s1['target_id'], s1['extra']) == ('a', 'E1', {'target': {'odd': 1}})
     assert s2['extra'] == {'anchor': {'_present': 1}, 'span': {'start_offset': 'x', '_present': 1}, 'group': 'g'}
     assert s2['target_multi'] == [{'entity_id': 'W1'}]
+
+
+def test_changed_ids_in_shallow_clone(tmp_path):
+    """服务器上的克隆是 --depth 1：上次建到的提交不在本地时，changed_ids 自己把它取回来。"""
+    src = str(tmp_path / 'src')
+    os.makedirs(src)
+    g = lambda r, *a: subprocess.run(['git', '-C', r] + list(a), check=True, capture_output=True, text=True).stdout
+    g(src, 'init', '-q')
+    g(src, 'config', 'uploadpack.allowAnySHA1InWant', 'true')
+    p = os.path.join(src, 'Work', 'a', 'b', 'c')
+    os.makedirs(p)
+    _write(os.path.join(p, 'd59df01avcw0-甲.json'), '{}')
+    g(src, 'add', '-A')
+    g(src, '-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '-m', 'c1')
+    c1 = g(src, 'rev-parse', 'HEAD').strip()
+    _write(os.path.join(p, 'd59df01avcw1-乙.json'), '{}')
+    g(src, 'add', '-A')
+    g(src, '-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '-m', 'c2')
+    dst = str(tmp_path / 'dst')
+    subprocess.run(['git', 'clone', '-q', '--depth', '1', 'file://' + src, dst], check=True)
+    ch, other = changed_ids(dst, c1)
+    assert ch['Work'] == {'d59df01avcw1'} and not other
