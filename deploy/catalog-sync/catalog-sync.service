@@ -1,0 +1,13 @@
+[Unit]
+Description=目录库同步（book-index／book-text → 服务器 latest 库）
+After=network-online.target postgresql.service
+
+[Service]
+Type=oneshot
+# 内存上限：服务器规矩是单个重活不超 4G，先给 1.5G（方案第四节）；超了被杀，由日志看到。
+MemoryMax=1536M
+MemorySwapMax=0
+Nice=10
+ExecStart=%h/catalog/book-index-manager/deploy/catalog-sync/catalog-sync.sh
+StandardOutput=append:%h/catalog/log/sync.log
+StandardError=append:%h/catalog/log/sync.log

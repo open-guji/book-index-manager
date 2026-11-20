@@ -1,0 +1,10 @@
+[Unit]
+Description=每 15 分钟同步一次目录库
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=15min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
