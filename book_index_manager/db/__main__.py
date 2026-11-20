@@ -6,6 +6,8 @@
       拆表再还原、逐条比对；不给 --dsn 只在内存里做，给了就真灌进 PostgreSQL 再读回。
   python -m book_index_manager.db build --root DIR --dsn DSN [--full] [--verify]
       建库：表结构没变就按 git diff 增量，否则全量；id_map 装墓碑、台账、升格表并解到现行记录。
+  python -m book_index_manager.db check --dsn DSN
+      跑 checks.sql（悬空引用、id_map 解不到等），每条都应 0 行；有一条不为 0 退出码 1。
 """
 import argparse
 import collections
@@ -41,6 +43,8 @@ def main(argv=None):
     p.add_argument('--full', action='store_true', help='不管上次建到哪，整库重建')
     p.add_argument('--verify', action='store_true', help='建完把四类记录还原，与文件逐条比对')
     p.add_argument('--text-root', help='book-text 仓根目录：给了就把它的 manifest、版本 index.json、辑佚一起进库')
+    p = sp.add_parser('check')
+    p.add_argument('--dsn', required=True)
     p = sp.add_parser('roundtrip')
     p.add_argument('--root', required=True, help='book-index 仓根目录')
     p.add_argument('--type', action='append', choices=sorted(RECORDS))
@@ -63,6 +67,23 @@ def main(argv=None):
             print('WARN ', w)
         print('coverage：ERROR %d　WARN %d' % (len(errors), len(warns)))
         return 1 if errors else 0
+
+    if a.cmd == 'check':
+        from .ddl import checks_sql
+        from .pg import _psycopg
+        psycopg, _ = _psycopg()
+        bad = 0
+        with psycopg.connect(a.dsn) as conn, conn.cursor() as cur:
+            for q in checks_sql().splitlines():
+                if not q.startswith('SELECT'):
+                    continue
+                cur.execute('SELECT count(*) FROM (%s) t' % q.rstrip(';'))
+                n = cur.fetchone()[0]
+                if n:
+                    bad += 1
+                    print('检查不过：%s → %d 行' % (q[:80], n))
+        print('checks 不过 %d 条' % bad)
+        return 1 if bad else 0
 
     if a.cmd == 'build':
         from .build import build, verify
