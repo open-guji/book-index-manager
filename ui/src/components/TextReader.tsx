@@ -741,7 +741,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         if (next === undefined || next === cur) return;
         goToPage(next);
     }, [pageNumbers, goToPage]);
-    // 输入葉码跳转：越界夹到首／末页；列表里没有的页号（跳号）取最近的一页；非数字返回 null（调用方还原输入框）
+    // 输入页码跳转：越界夹到首／末页；列表里没有的页号（跳号）取最近的一页；非数字返回 null（调用方还原输入框）
     const resolveTypedPage = useCallback((raw: string): number | null => {
         const m = raw.trim().match(/^\d+$/);
         if (!m || pageNumbers.length === 0) return null;
@@ -792,7 +792,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         if (info && info.width > 0 && info.height > 0) {
             return {
                 page_id: `p:${activePage}`,
-                title: `第${activePage}葉`,
+                title: `第${activePage}頁`,
                 image_size: [info.width, info.height],
                 total_warped_w: info.width,
                 columns: [{
@@ -832,7 +832,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         }
         return {
             page_id: `p:${activePage}`,
-            title: `第${activePage}葉`,
+            title: `第${activePage}頁`,
             image_size: [iw, ih],
             total_warped_w: iw,
             columns: pInfo ? pInfo.columns.map((col: any) => {
@@ -1083,10 +1083,10 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                         />
                         )}</HoverBound>
                     </ZoomPanBox>
-                    {/* 页导航在书影图片正下方：箭头点击区 ≥ 40×40（触屏），「第 x 葉」的数字可输入（回车／失焦跳转，越界夹取，非数字还原） */}
+                    {/* 页导航在书影图片正下方：箭头点击区 ≥ 40×40（触屏），「第 x 頁」的数字可输入（回车／失焦跳转，越界夹取，非数字还原） */}
                     <div data-testid="facsimile-pager" role="group" aria-label={t('reader.facsimilePager')}
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '6px 4px 0', fontSize: 13, color: bim('meta-fg') }}>
-                        <button type="button" className="bim-rd-t" data-testid="facsimile-prev" aria-label="上一葉"
+                        <button type="button" className="bim-rd-t" data-testid="facsimile-prev" aria-label="上一頁"
                             style={{ minWidth: 40, minHeight: 40, fontSize: 20, lineHeight: 1 }}
                             disabled={activeIdx <= 0} onClick={() => flipPage(-1)}>‹</button>
                         <span data-warp-page={activePage} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '1px 8px', background: bim('rule'), borderRadius: 10 }}>
@@ -1108,9 +1108,9 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                                 onBlur={commitPageDraft}
                                 style={{ width: `${Math.max(2, String(pageDraft ?? activePage).length) + 1}ch`, minHeight: 28, textAlign: 'center', font: 'inherit', border: `1px solid ${bim('rule')}`, borderRadius: 4, background: 'transparent', color: 'inherit' }}
                             />
-                            葉
+                            頁
                         </span>
-                        <button type="button" className="bim-rd-t" data-testid="facsimile-next" aria-label="下一葉"
+                        <button type="button" className="bim-rd-t" data-testid="facsimile-next" aria-label="下一頁"
                             style={{ minWidth: 40, minHeight: 40, fontSize: 20, lineHeight: 1 }}
                             disabled={activeIdx < 0 || activeIdx >= pageNumbers.length - 1} onClick={() => flipPage(1)}>›</button>
                     </div>

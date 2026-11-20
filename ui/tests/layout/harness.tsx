@@ -44,7 +44,7 @@ function Canvas() {
     const info = pages.find(p => p.page === 3)!;
     const pageData: PageWarpData = {
         page_id: `p:${info.page}`,
-        title: `第${info.page}葉`,
+        title: `第${info.page}頁`,
         image_size: [info.width, info.height],
         total_warped_w: info.width,
         columns: [{
@@ -82,7 +82,7 @@ function TightCanvas() {
     const boxes: [number, number, number, number][] = [];
     for (let c = 0; c < 8; c++) for (let r = 0; r < 12; r++) boxes.push([40 + c * 150, 40 + r * 150, 40 + c * 150 + 110, 40 + r * 150 + 110]);
     const pageData: PageWarpData = {
-        page_id: 'p:1', title: '第1葉', image_size: [W, H], total_warped_w: W,
+        page_id: 'p:1', title: '第1頁', image_size: [W, H], total_warped_w: W,
         columns: [{ col: 1, warped_w: W, warped_h: H, offset_x: 0, strips: [], chars: boxes.map((b, i) => ({ id: `1:1:${i}`, char: '字', slot: i, pos: i, bbox_col: b })) }],
     };
     const [url, setUrl] = useState('');

@@ -66,7 +66,7 @@ export interface GujiTextViewerProps {
   buildEntityHref?: (id: string) => string;
   /** 已不再调用（0.60.0 起条目页一律在新标签页打开，不打断阅读）；保留只为兼容旧宿主 */
   onEntityNavigate?: (id: string, e: React.MouseEvent<HTMLAnchorElement>) => void;
-  /** 是否画分叶分割线（「第 N 葉」）；false＝连续阅读，DOM 里不出现分割元素。缺省 true */
+  /** 是否画分叶分割线（「第 N 頁」）；false＝连续阅读，DOM 里不出现分割元素。缺省 true */
   pageBreaks?: boolean;
   /**
    * 页指示头在视口高度的位置（0.1–0.9）。传了（且传了 `onVisiblePageChange`）就在正文左缘画一个可拖的小三角，
@@ -1125,7 +1125,7 @@ const PageSection = React.memo(function PageSection({
             style={{ padding: '0 12px', fontWeight: 500 }}
             data-page-label={pGroup.label}
             title={pGroup.label ? `${pGroup.page}` : undefined}
-          >第 {pGroup.label ?? pGroup.page} 葉</span>
+          >第 {pGroup.label ?? pGroup.page} 頁</span>
           <div style={{ flex: 1, height: '1px', background: bim('rule') }} />
         </div>
       )}

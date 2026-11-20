@@ -9,7 +9,7 @@ import { render } from '@testing-library/react';
 import { GujiWarpCanvas, fitToImageAspect, type PageWarpData } from '../../src/components/Reader/GujiWarpCanvas';
 
 const page = (W: number, H: number, box: [number, number, number, number]): PageWarpData => ({
-    page_id: 'p:1', title: '第1葉', image_size: [W, H], total_warped_w: W,
+    page_id: 'p:1', title: '第1頁', image_size: [W, H], total_warped_w: W,
     columns: [{ col: 1, warped_w: W, warped_h: H, offset_x: 0, strips: [], chars: [{ id: '1:1:1', char: '字', slot: 1, pos: 1, bbox_col: box }] }],
 });
 

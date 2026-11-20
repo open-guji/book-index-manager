@@ -193,7 +193,7 @@ describe('设置面板：新条目只绑定偏好', () => {
     it('版式：分叶分割线、保留空白两个开关', () => {
         mount();
         const side = openSettings();
-        const pb = side.getByRole('checkbox', { name: '顯示分葉分割線' }) as HTMLInputElement;
+        const pb = side.getByRole('checkbox', { name: '顯示分頁分割線' }) as HTMLInputElement;
         const pm = side.getByRole('checkbox', { name: '顯示完整書頁' }) as HTMLInputElement;
         expect([pb.checked, pm.checked]).toEqual([false, false]);
         fireEvent.click(pb); fireEvent.click(pm);

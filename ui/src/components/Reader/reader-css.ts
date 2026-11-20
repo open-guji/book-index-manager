@@ -152,12 +152,23 @@ export const READER_CSS = `
 .bim-rd-toc {
   grid-column: 1;
   position: sticky; top: calc(${TOP} + var(--bimrd-bar-h));
-  width: 248px; height: calc(100vh - ${TOP} - var(--bimrd-bar-h));
+  width: var(--bimrd-toc-w, 248px); height: calc(100vh - ${TOP} - var(--bimrd-bar-h));
   overflow-y: auto; overscroll-behavior: contain;
   padding: 0 10px 40px;
   background: ${bim('sidebar-bg')};
 }
 .bim-rd[data-toc="closed"] .bim-rd-toc { display: none; }
+/* 目录右缘的拖拽条：和目录同样吸顶、同高，叠在目录右边缘上；只在宽屏侧栏出现 */
+.bim-rd-toc-grip {
+  grid-column: 1; grid-row: 1; justify-self: end; z-index: 2;
+  position: sticky; top: calc(${TOP} + var(--bimrd-bar-h));
+  width: 9px; margin-right: -4px; height: calc(100vh - ${TOP} - var(--bimrd-bar-h));
+  cursor: col-resize; touch-action: none; background: transparent;
+}
+.bim-rd-toc-grip:hover, .bim-rd-toc-grip:focus-visible, .bim-rd-toc-grip[data-active] {
+  background: linear-gradient(to right, transparent 4px, ${bim('accent')} 4px, ${bim('accent')} 6px, transparent 6px);
+}
+.bim-rd[data-toc="closed"] .bim-rd-toc-grip { display: none; }
 .bim-rd-scrim { display: none; }
 /* 目录标题与搜索框吸在目录顶上：长目录滚动时关闭键、搜索框不跟着滚走 */
 .bim-rd-toc-top { position: sticky; top: 0; z-index: 1; padding-top: 16px; background: ${bim('sidebar-bg')}; }
@@ -428,6 +439,7 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
     box-shadow: ${bim('shadow-dialog')};
   }
   .bim-rd[data-toc="auto"] .bim-rd-toc { display: none; }
+  .bim-rd-toc-grip { display: none; }
   .bim-rd[data-toc="open"] .bim-rd-scrim {
     display: block; position: fixed; inset: 0; z-index: 45; background: ${bim('backdrop')};
   }
