@@ -200,6 +200,9 @@ def changed_ids(root, since):
     """git diff since..HEAD 里四类记录的 {类型: {id}}，以及台账／升格表有没有动。"""
     out = {n: set() for n in DIRS}
     other = False
+    # 服务器上的克隆是浅的（--depth 1，全历史太大），上次建到的提交不在本地：单取那一个提交，git diff 只需要两端的树
+    if subprocess.run(['git', '-C', root, 'cat-file', '-e', since + '^{commit}'], capture_output=True).returncode:
+        git(root, 'fetch', '-q', '--depth', '1', 'origin', since)
     diff = git(root, 'diff', '--name-status', '--no-renames', '-z', since, 'HEAD', '--',
                *DIRS, 'promotions', LEDGER_DIR)
     parts = diff.split('\0')
