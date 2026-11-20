@@ -213,6 +213,21 @@ def changed_ids(root, since):
     return out, other
 
 
+CHANGELOG_SQL = (
+    'CREATE TABLE IF NOT EXISTS change_log ('
+    'seq bigserial PRIMARY KEY, at timestamptz NOT NULL DEFAULT now(), '
+    'type text NOT NULL, id text NOT NULL, op text NOT NULL)')
+
+
+def _log_changes(cur, rows):
+    """改动表：每次建库把动过的记录记一行（type=四类目录名／id_map／book_text，op=upsert／delete／full）。
+    库晋升成 rel 时随库复制，两个 rel 之间的改动 = seq 区间；搜索据此推差量。全量重建时表随 schema 一起清掉，
+    第一行是 ('*','*','full')，读的人遇到它就全量重来。"""
+    cur.execute(CHANGELOG_SQL)
+    if rows:
+        cur.executemany('INSERT INTO change_log (type, id, op) VALUES (%s, %s, %s)', rows)
+
+
 def _dirty(root):
     st = git(root, 'status', '--porcelain', '--', *DIRS, 'promotions', LEDGER_DIR)
     return [l for l in st.splitlines() if l.strip()]
@@ -275,6 +290,7 @@ def build(root, dsn, full=False, text_root=None, log=print):
         if mode == 'full':
             cur.execute('DROP SCHEMA public CASCADE; CREATE SCHEMA public;')
             cur.execute(schema_sql())
+            _log_changes(cur, [('*', '*', 'full')])
             for name, rec in DIRS.items():
                 rows = Rows()
                 n = shred_files(rec, record_paths(root, name), rows)
@@ -294,11 +310,17 @@ def build(root, dsn, full=False, text_root=None, log=print):
                 n = shred_files(rec, record_paths(root, name, ids), rows)
                 copy_rows(cur, rows)
                 stats[name] = {'changed': len(ids), 'present': n}
+                cur.execute('SELECT id FROM %s WHERE id = ANY(%%s)' % rec.table, (sorted(ids),))
+                have = {x for (x,) in cur.fetchall()}
+                _log_changes(cur, [(name, i, 'upsert' if i in have else 'delete') for i in sorted(ids)])
                 log('%s：改动 %d 个 id，现存 %d 条，%.0fs' % (name, len(ids), n, time.time() - t0))
             if other or any(ch.values()):
                 stats['id_map_ledger'] = _load_ledgers(cur, root)
+                _log_changes(cur, [('id_map', '*', 'upsert')])
         if text_root and (mode == 'full' or meta[2] != text_head):
             stats['book_text'] = _load_booktext(cur, text_root, log, t0)
+            if mode == 'incremental':
+                _log_changes(cur, [('book_text', '*', 'upsert')])
         elif mode == 'incremental':
             text_head = meta[2]      # 这次没给 book-text 或它没变：记录照旧
         ok, bad = resolve_live(cur)
@@ -343,9 +365,9 @@ def verify(root, dsn, text_root=None, log=print):
     return bad
 
 
-def read_records(dsn, name=None):
+def read_records(dsn, name=None, ids=None):
     """从库里还原四类记录：{类型目录名: {id: (相对路径, doc)}}。相对路径 = `{类型}/{c1}/{c2}/{c3}/{file_name}`，
-    与工作区文件一致（`_build/` 由库产出时用）。name 只取一类。"""
+    与工作区文件一致（`_build/` 由库产出时用）。name 只取一类；ids 只取这些 id（增量用，库里没有的 id 不出现）。"""
     from .pg import fetch_rows
     from .shred import restore
     psycopg, _ = _psycopg()
@@ -354,9 +376,18 @@ def read_records(dsn, name=None):
         for n, rec in DIRS.items():
             if name and n != name:
                 continue
-            cur.execute('SELECT id, file_name FROM %s' % rec.table)
+            if ids is None:
+                cur.execute('SELECT id, file_name FROM %s' % rec.table)
+                where = None
+            else:
+                want = sorted(ids)
+                cur.execute('SELECT id, file_name FROM %s WHERE id = ANY(%%s)' % rec.table, (want,))
+                where = {}
+                for table in tables_of(rec):
+                    t = TABLES[table]
+                    where[table] = ('%s = ANY(%%s)' % ('id' if 'id' in t.pk else t.pk[0]), (want,))
             fn = dict(cur.fetchall())
-            back = restore(rec, fetch_rows(cur, tables_of(rec)))
+            back = restore(rec, fetch_rows(cur, tables_of(rec), where))
             out[n] = {i: ('/'.join((n,) + tuple(shard_dirs(i)) + (fn.get(i) or i + '.json',)), d)
                       for i, d in sorted(back.items())}
     return out

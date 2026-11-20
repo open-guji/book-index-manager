@@ -14,6 +14,14 @@ jobs:
   python-tests:
     name: pytest (book_index_manager)
     runs-on: ubuntu-latest
+    services:
+      postgres:        # 目录库版本／改动表的测试要一台真库（tests/test_db_release.py）
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: pw
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
       - uses: actions/checkout@v4
       # 目录库映射的「schema 有、映射没有」检查要读 book-index 的 schema/json（只取这一个目录）
@@ -29,10 +37,11 @@ jobs:
       - name: Install
         run: |
           pip install -e .
-          pip install pytest
+          pip install pytest "psycopg[binary]"
       - name: Run pytest
         env:
           BOOK_INDEX_SCHEMA: book-index/schema/json
+          BIM_TEST_DSN: host=localhost user=postgres password=pw dbname=postgres
         run: pytest tests/ -v
 
   ui-unit:

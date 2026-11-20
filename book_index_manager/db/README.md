@@ -14,6 +14,7 @@ git 里的 JSON 是唯一真源。本目录把它拆进 PostgreSQL 的规范化�
 | `pg.py` | COPY 进库、读回（要 `psycopg` 3，bim 本身不依赖） |
 | `coverage.py` | 「schema 有、映射没有」检查 |
 | `build.py` | 建库：全量或按 git diff 增量；id_map 合进台账与升格表，`live_id` 沿链解到现行记录 |
+| `release.py` | 版本：latest／stable／rN（`catalog_meta` 库的 rel、pointer、setting 表）；晋升、回滚、冻结、解析 DSN、两 rel 间的改动 |
 | `booktext.py` | book-text 元数据（manifest、版本 index.json、辑佚）读文件、补 id，供建库与还原比对 |
 
 ## 命令
@@ -68,3 +69,14 @@ python -m book_index_manager.db build --root ../book-index --dsn "host=… dbnam
 删字段：从映射里删，否则 coverage 报 WARN。表结构有变，重新生成 book-index 的 `schema/db/schema.sql`。
 映射先于 schema 落地（两仓 CI 互等时）：先合映射，并把字段记进 `mapping.PENDING_SCHEMA`（coverage 测试放过它的 WARN），schema PR 合并后再删掉。
 改表结构前先告诉专名（A12）、文本（A33）、搜索（A42）。
+
+## 版本与改动表（常驻服务器时用；方案 §十一）
+
+- **latest**（`catalog_latest`）：只有 catalog-sync 写，跟 git main。**stable**：网站、搜索只读它，晋升出来的只读副本 `catalog_rN`，N 递增，stable 之外留最近 2 个旧的。
+- `db release --dsn ADMIN_DSN init|status|promote [--contract N] [--force]|rollback N|freeze|unfreeze|resolve REF [--name]|changes A B`
+  （ADMIN_DSN 要有 CREATEDB，库名随意）。晋升条件：`db check` 全 0、比 stable 新、距上次晋升满 1 小时；复制用 `CREATE DATABASE … TEMPLATE`，
+  期间禁 latest 新连接并踢掉读者，所以只在 catalog-sync 持锁时调用（`CATALOG_ADMIN_DSN` 配了就每轮自动调）。
+- 读者先 `resolve stable|latest|rN` 得 DSN，再 `read_records(dsn, name=None, ids=None)`；`ids` 只取这些 id，增量用。
+- **改动表 `change_log`**（seq, at, type, id, op）：每次建库写——全量重建先写 `('*','*','full')`（读者遇到就全量重来），增量对每个改动 id 写 `upsert`／`delete`，台账变动写 `('id_map','*','upsert')`，book-text 重灌写 `('book_text','*','upsert')`。
+  rel 记了晋升时的 `last_seq`，两 rel 之间改动 = `changes A B`（用 B 库里 seq 在 (A.last_seq, B.last_seq] 的行）。不在 `TABLES` 里，不进还原比对。
+- 测试 `tests/test_db_release.py` 要真 PostgreSQL：设 `BIM_TEST_DSN`（有建库权限），没设就跳过；CI 起了 postgres 服务。
