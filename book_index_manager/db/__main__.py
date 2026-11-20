@@ -2,6 +2,8 @@
 
   python -m book_index_manager.db ddl [--constraints|--checks] 打印建表语句（或外键、悬空检查）
   python -m book_index_manager.db coverage --schema DIR        「schema 有、映射没有」检查，有 ERROR 退出码 1
+  python -m book_index_manager.db release --dsn ADMIN_DSN init|status|promote|rollback N|freeze|unfreeze|resolve REF|changes A B
+      版本：latest（随 main）与 stable（网站、搜索读）、晋升出的 rN；详见 release.py。
   python -m book_index_manager.db roundtrip --root DIR [--type T …] [--dsn DSN] [--keep] [--create]
       拆表再还原、逐条比对；不给 --dsn 只在内存里做，给了就真灌进 PostgreSQL 再读回。
   python -m book_index_manager.db build --root DIR --dsn DSN [--full] [--verify]
@@ -45,6 +47,24 @@ def main(argv=None):
     p.add_argument('--text-root', help='book-text 仓根目录：给了就把它的 manifest、版本 index.json、辑佚一起进库')
     p = sp.add_parser('check')
     p.add_argument('--dsn', required=True)
+    p = sp.add_parser('release', help='版本：latest／stable／rN（见 release.py）')
+    p.add_argument('--dsn', required=True, help='有建库权限的连接串，库名随意')
+    rs = p.add_subparsers(dest='rcmd', required=True)
+    rs.add_parser('init')
+    rs.add_parser('status')
+    q = rs.add_parser('promote')
+    q.add_argument('--contract', type=int, help='这次对应的 _build 契约版本，记进 rel')
+    q.add_argument('--force', action='store_true', help='跳过「距上次晋升满一小时」')
+    q = rs.add_parser('rollback')
+    q.add_argument('n', type=int)
+    rs.add_parser('freeze')
+    rs.add_parser('unfreeze')
+    q = rs.add_parser('resolve')
+    q.add_argument('ref', help='stable／latest／rN')
+    q.add_argument('--name', action='store_true', help='只打库名，不打 DSN')
+    q = rs.add_parser('changes')
+    q.add_argument('since', type=int, help='起点 rel 号')
+    q.add_argument('until', type=int, help='终点 rel 号')
     p = sp.add_parser('roundtrip')
     p.add_argument('--root', required=True, help='book-index 仓根目录')
     p.add_argument('--type', action='append', choices=sorted(RECORDS))
@@ -67,6 +87,10 @@ def main(argv=None):
             print('WARN ', w)
         print('coverage：ERROR %d　WARN %d' % (len(errors), len(warns)))
         return 1 if errors else 0
+
+    if a.cmd == 'release':
+        from .release import main as release_main
+        return release_main(a)
 
     if a.cmd == 'check':
         from .ddl import checks_sql
