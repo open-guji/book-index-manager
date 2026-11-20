@@ -596,3 +596,21 @@ describe('正文加载中不画底部翻页卡片（GUJI-181 CLS）', () => {
         expect(container.querySelector('.bim-rd-pager')).not.toBeNull();
     });
 });
+
+describe('目录宽度可拖', () => {
+    afterEach(() => localStorage.clear());
+    it('键盘左右键调宽并记住，双击还原；下次渲染读回', () => {
+        const { container, unmount } = render(<Harness toc={FEW} />);
+        const body = () => container.querySelector('.bim-rd-body') as HTMLElement;
+        const grip = () => screen.getByTestId('toc-grip');
+        expect(body().style.getPropertyValue('--bimrd-toc-w')).toBe('248px');
+        fireEvent.keyDown(grip(), { key: 'ArrowRight' });
+        expect(body().style.getPropertyValue('--bimrd-toc-w')).toBe('264px');
+        expect(localStorage.getItem('bim-rd-toc-w')).toBe('264');
+        unmount();
+        const again = render(<Harness toc={FEW} />);
+        expect((again.container.querySelector('.bim-rd-body') as HTMLElement).style.getPropertyValue('--bimrd-toc-w')).toBe('264px');
+        fireEvent.doubleClick(screen.getByTestId('toc-grip'));
+        expect((again.container.querySelector('.bim-rd-body') as HTMLElement).style.getPropertyValue('--bimrd-toc-w')).toBe('248px');
+    });
+});

@@ -250,7 +250,7 @@ describe('阅读器显示：新字段', () => {
         ] };
         const { container } = mount(adaptCharCord(doc));
         const dividers = Array.from(container.querySelectorAll('.guji-page-divider span')).map(s => s.textContent).filter(Boolean);
-        expect(dividers).toEqual(['第 二 葉', '第 5 葉']); // 首页不画分隔
+        expect(dividers).toEqual(['第 二 頁', '第 5 頁']); // 首页不画分隔
     });
 
     it('缺字段 = 旧行为：不带任何新类名／属性／占位', () => {

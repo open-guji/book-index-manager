@@ -124,7 +124,7 @@ describe('L2 · 页导航下移', () => {
             expect(parseInt(b.style.minHeight, 10)).toBeGreaterThanOrEqual(40);
             expect(b.getAttribute('aria-label')).toBeTruthy();
         }
-        expect(input().getAttribute('aria-label')).toMatch(/叶码|葉碼/);
+        expect(input().getAttribute('aria-label')).toMatch(/页码|頁碼/);
         expect(screen.getByTestId('facsimile-pager').getAttribute('aria-label')).toBeTruthy();
     });
 });

@@ -7,7 +7,7 @@ import { fireEvent, render } from '@testing-library/react';
 import { GujiWarpCanvas, type PageWarpData } from '../../src/components/Reader/GujiWarpCanvas';
 
 const pageData: PageWarpData = {
-    page_id: 'p:149', title: '第149葉', image_size: [1000, 1400], total_warped_w: 1000,
+    page_id: 'p:149', title: '第149頁', image_size: [1000, 1400], total_warped_w: 1000,
     columns: [{ col: 1, warped_w: 1000, warped_h: 1400, offset_x: 0, strips: [], chars: [{ id: '149:1:1', char: '前', slot: 1, pos: 1, bbox_col: [900, 100, 960, 160] }] }],
     figBlocks: [{ id: 'p149-fig1', box: [100, 300, 700, 900] }],
 };

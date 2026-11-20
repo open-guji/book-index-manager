@@ -8,7 +8,7 @@ import { GujiWarpCanvas, type PageWarpData } from '../../src/components/Reader/G
 import type { CellDecoration } from '../../src/components/Reader/plugins';
 
 const pageData: PageWarpData = {
-    page_id: 'p:3', title: '第3葉', image_size: [1000, 1400], total_warped_w: 1000,
+    page_id: 'p:3', title: '第3頁', image_size: [1000, 1400], total_warped_w: 1000,
     columns: [{ col: 1, warped_w: 1000, warped_h: 1400, offset_x: 0, strips: [], chars: [
         { id: '3:1:1', char: '欽', slot: 1, pos: 1, bbox_col: [900, 100, 960, 160] },
         { id: '3:1:2', char: '定', slot: 2, pos: 2, bbox_col: [900, 170, 960, 230] },

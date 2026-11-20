@@ -30,6 +30,11 @@ import type { ReaderPrefs, ReaderFontFamily, ProperNameMode, QuoteStyle, BookTit
 import { pickReaderVersion, readerVersionOptionLabel } from './versions';
 import type { ReaderImageOverlay, ReaderPageImage, ReaderReportContext, ReaderTocItem, ReaderVersion } from './types';
 
+const TOC_W_KEY = 'bim-rd-toc-w';
+const TOC_W_DEFAULT = 248;
+const TOC_W_MIN = 180;
+const TOC_W_MAX = 520;
+
 export type PanelState = 'auto' | 'open' | 'closed';
 
 export interface ReaderShellPluginSetting {
@@ -364,6 +369,29 @@ export function ReaderShell({
     const barRef = useRef<HTMLDivElement>(null);
     const textRef = useRef<HTMLDivElement>(null);
     const tocRef = useRef<HTMLDivElement>(null);
+    // 目录宽度（宽屏侧栏）：拖右缘或键盘左右键调，记在 localStorage；抽屉模式不受影响
+    const [tocW, setTocW] = useState(TOC_W_DEFAULT);
+    const tocWRef = useRef(TOC_W_DEFAULT);
+    const [tocDrag, setTocDrag] = useState(false);
+    const applyTocW = useCallback((w: number, save: boolean) => {
+        const v = Math.min(TOC_W_MAX, Math.max(TOC_W_MIN, Math.round(w)));
+        tocWRef.current = v; setTocW(v);
+        if (save) { try { localStorage.setItem(TOC_W_KEY, String(v)); } catch { /* 无存储就不记 */ } }
+    }, []);
+    useEffect(() => {
+        try { const n = Number(localStorage.getItem(TOC_W_KEY)); if (n) applyTocW(n, false); } catch { /* ignore */ }
+    }, [applyTocW]);
+    const onTocGripDown = (e: React.PointerEvent<HTMLElement>) => {
+        e.preventDefault();
+        const x0 = e.clientX, w0 = tocWRef.current;
+        setTocDrag(true);
+        const move = (ev: PointerEvent) => applyTocW(w0 + ev.clientX - x0, false);
+        const up = () => {
+            window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up);
+            setTocDrag(false); applyTocW(tocWRef.current, true);
+        };
+        window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
+    };
     const tocBtnRef = useRef<HTMLButtonElement>(null);
 
     const isWide = useMediaQuery(READER_WIDE_QUERY, true);
@@ -788,7 +816,7 @@ export function ReaderShell({
                 </div>
             </div>
 
-            <div className="bim-rd-body">
+            <div className="bim-rd-body" style={{ ['--bimrd-toc-w' as string]: `${tocW}px` }}>
                 <div
                     className="bim-rd-toc"
                     id={tocId}
@@ -813,6 +841,9 @@ export function ReaderShell({
                     </div>
                     <ReaderToc items={toc} activeKey={tocActiveKey !== undefined ? tocActiveKey : activeKey} onSelect={handleSelect} />
                 </div>
+                <div className="bim-rd-toc-grip" role="separator" aria-orientation="vertical" aria-label={t('reader.tocResize')} tabIndex={0} data-testid="toc-grip"
+                    data-active={tocDrag ? '' : undefined} onPointerDown={onTocGripDown} onDoubleClick={() => applyTocW(TOC_W_DEFAULT, true)}
+                    onKeyDown={e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); applyTocW(tocWRef.current + (e.key === 'ArrowRight' ? 16 : -16), true); } }} />
                 <div className="bim-rd-scrim" aria-hidden="true" onClick={() => closeDrawer(true)} />
 
                 <aside className="bim-rd-img" aria-label={t('reader.images')} ref={imgAsideRef}>
