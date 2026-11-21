@@ -607,6 +607,10 @@ describe('目录宽度可拖', () => {
         fireEvent.keyDown(grip(), { key: 'ArrowRight' });
         expect(body().style.getPropertyValue('--bimrd-toc-w')).toBe('264px');
         expect(localStorage.getItem('bim-rd-toc-w')).toBe('264');
+        // axe：role=separator 且可聚焦时必须有 aria-valuenow（0.66.16-rc.3）
+        expect(grip().getAttribute('aria-valuenow')).toBe('264');
+        expect(grip().getAttribute('aria-valuemin')).toBe('180');
+        expect(grip().getAttribute('aria-valuemax')).toBe('520');
         unmount();
         const again = render(<Harness toc={FEW} />);
         expect((again.container.querySelector('.bim-rd-body') as HTMLElement).style.getPropertyValue('--bimrd-toc-w')).toBe('264px');

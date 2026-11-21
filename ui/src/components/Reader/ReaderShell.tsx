@@ -841,7 +841,7 @@ export function ReaderShell({
                     </div>
                     <ReaderToc items={toc} activeKey={tocActiveKey !== undefined ? tocActiveKey : activeKey} onSelect={handleSelect} />
                 </div>
-                <div className="bim-rd-toc-grip" role="separator" aria-orientation="vertical" aria-label={t('reader.tocResize')} tabIndex={0} data-testid="toc-grip"
+                <div className="bim-rd-toc-grip" role="separator" aria-orientation="vertical" aria-valuenow={tocW} aria-valuemin={TOC_W_MIN} aria-valuemax={TOC_W_MAX} aria-label={t('reader.tocResize')} tabIndex={0} data-testid="toc-grip"
                     data-active={tocDrag ? '' : undefined} onPointerDown={onTocGripDown} onDoubleClick={() => applyTocW(TOC_W_DEFAULT, true)}
                     onKeyDown={e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); applyTocW(tocWRef.current + (e.key === 'ArrowRight' ? 16 : -16), true); } }} />
                 <div className="bim-rd-scrim" aria-hidden="true" onClick={() => closeDrawer(true)} />
