@@ -150,7 +150,7 @@ export const READER_CSS = `
 
 /* 目录：宽屏是侧栏 */
 .bim-rd-toc {
-  grid-column: 1;
+  grid-column: 1; grid-row: 1;
   position: sticky; top: calc(${TOP} + var(--bimrd-bar-h));
   width: var(--bimrd-toc-w, 248px); height: calc(100vh - ${TOP} - var(--bimrd-bar-h));
   overflow-y: auto; overscroll-behavior: contain;
