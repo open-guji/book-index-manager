@@ -138,6 +138,8 @@ export { createTextApi } from './core/text-api';
 // 阅读数据读取：按章条目的声明取对读文件、阅读页的版本列表规则（原在宿主里，现收进包）
 export { loadReaderChapter, loadReaderFiles, loadFigUrls, volumeFromChar, readerVersions, readerManifest } from './core/reader-data';
 export type { ReaderChapterData, ReaderChapterFiles, ReaderLoadOptions } from './core/reader-data';
+export { adaptGaps, gapNoteOf } from './core/gaps';
+export type { ReaderGap } from './core/gaps';
 export type { TextApi } from './core/text-api';
 export {
     isTextKey, isChapterSegment, matchChapterAcrossVersions, pickTextVersion, textVersionLabel,

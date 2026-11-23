@@ -10,6 +10,7 @@ import { PAGE_INDICATOR_Y_RANGE, type BookTitleStyle } from './prefs';
 import { transformMark, type MarkOpts, type QuoteStyle } from './marks';
 import type { EntitySummaryLoader, EntitySummaryTransport } from '../EntityText/summary';
 import type { GujiFigure } from '../../core/guji-pages';
+import type { ReaderGap } from '../../core/gaps';
 import { FigBlock, FigCell, copyTextWithFigures } from './GujiFigureParts';
 import { sameDecoration, type CellDecoration } from './plugins';
 
@@ -92,6 +93,8 @@ export interface GujiTextViewerProps {
   onFigureBlockClick?: (info: { page: number; fig: string; box?: [number, number, number, number] }) => void;
   /** 插件给字的修饰（格位 key → 修饰）。按页分桶，没变的页不重渲染；图片格不画。不传＝无修饰 */
   decorations?: ReadonlyMap<string, CellDecoration>;
+  /** 缺页（`adaptGaps` 的结果）：在 `afterPage` 那页正文之后单起一行 `note`（样式与正文区分，可选可复制）；afterPage 为 0 的排在第一页之前。不传＝没有 */
+  gaps?: readonly ReaderGap[];
 }
 
 const defaultHref = (id: string) => `/item/${encodeURIComponent(id)}`;
@@ -151,6 +154,7 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
   figUrl,
   onFigureBlockClick,
   decorations,
+  gaps,
 }) => {
   const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -364,6 +368,16 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
     setBatch((b) => (b.n >= need ? b : { ...b, n: need }));
   }, []);
   const shownPages = allShown ? reflowPages : reflowPages.slice(0, shownCount);
+  // 缺页注记归到「页号 ≤ afterPage 的最后一页」之后（那页没有文字也照样挂在前一页后面）；排在第一页之前的归 key −1
+  const gapsAfter = useMemo(() => {
+    const m = new Map<number, ReaderGap[]>();
+    for (const g of gaps ?? []) {
+      let key = -1;
+      for (const pg of reflowPages) { if (pg.page <= g.afterPage) key = pg.page; else break; }
+      m.set(key, [...(m.get(key) ?? []), g]);
+    }
+    return m;
+  }, [gaps, reflowPages]);
 
   // 每页的占位高度估计（content-visibility: auto 的 contain-intrinsic-size）：屏幕外的页不排版、不绘制，
   // 滚过一次后浏览器记住真实高度（auto）。每页只带自己的字数、段数（不变的 CSS 变量），每行字数与行高挂在容器的
@@ -810,9 +824,10 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
         />
       )}
       <div className="guji-text-reflow-view">
+        {gapsAfter.get(-1)?.map((g) => <GapNote key={`gap-${g.afterPage}`} gap={g} convert={convert} />)}
         {shownPages.map((pGroup, idx) => (
+          <React.Fragment key={`page-sec-${pGroup.page}`}>
           <PageSection
-            key={`page-sec-${pGroup.page}`}
             pGroup={pGroup}
             first={idx === 0}
             pageBreaks={pageBreaks}
@@ -830,11 +845,22 @@ export const GujiTextViewer: React.FC<GujiTextViewerProps> = ({
             figures={figures}
             figUrl={figUrl}
           />
+          {gapsAfter.get(pGroup.page)?.map((g) => <GapNote key={`gap-${g.afterPage}`} gap={g} convert={convert} />)}
+          </React.Fragment>
         ))}
       </div>
     </div>
   );
 };
+
+/** 缺页注记：一行，样式与正文区分（灰、小一号、居中、虚线框）；文字是导出端给的现成 note，随正文一起可选可复制 */
+function GapNote({ gap, convert }: { gap: ReaderGap; convert?: (s: string) => string }) {
+  return (
+    <p className="guji-gap-note" data-gap-after={gap.afterPage} data-gap-kind={gap.kind} role="note">
+      {convert ? convert(gap.note) : gap.note}
+    </p>
+  );
+}
 
 /**
  * 把字 ch 滚到视口中间。'instant' 而不用 'auto'：站点 html 设了 scroll-behavior: smooth，'auto' 会变成动画，动画途中目标还在挪。

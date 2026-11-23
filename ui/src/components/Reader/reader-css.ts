@@ -289,7 +289,7 @@ export const READER_CSS = `
 }
 .bim-rd-prose p { margin: 0.5em 0; text-indent: 2em; }
 .bim-rd-prose .bim-rd-noindent { text-indent: 0; }
-.bim-rd-prose h2, .bim-rd-prose h3, .bim-rd-prose h4 { font-family: ${bim('font-reading')}; color: ${bim('ink')}; line-height: 1.6; letter-spacing: 0.04em; }
+.bim-rd-prose h2, .bim-rd-prose h3, .bim-rd-prose h4 { font-family: ${bim('font-reading')}; color: ${bim('ink')}; letter-spacing: 0.04em; }
 .bim-rd-prose h2 { font-size: 1.2em; font-weight: 700; margin: 1.6em 0 0.6em; }
 .bim-rd-prose h3 { font-size: 1.06em; font-weight: 700; margin: 1.4em 0 0.3em; }
 .bim-rd-prose h4 { font-size: 1em; font-weight: 700; margin: 1.2em 0 0.2em; }
@@ -642,6 +642,13 @@ button.bim-rd-pg:hover { border-color: ${bim('accent')}; }
 .guji-fig-block .guji-fig-img.is-svg { position: static; display: inline-block; width: min(100%, 40em); height: auto; }
 .guji-fig-caption { margin-top: 0.4em; color: ${bim('meta-fg')}; font-size: 0.8em; }
 .guji-fig-block .guji-fig-missing { display: inline-block; padding: 1em 2em; }
+/* 缺页：文字版注记一行（与正文区分）、书影占位卡（灰底） */
+.guji-gap-note { margin: 1.2rem auto; padding: 0.5em 1em; max-width: 32em; text-align: center; font-size: 0.82rem; letter-spacing: 0.04em; color: ${bim('meta-fg')}; background: ${bim('rule')}; border: 1px dashed ${bim('meta-fg')}; border-radius: 6px; font-family: var(--bim-font-ui, inherit); }
+.bim-fx-gap { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.bim-fx-gap-card { width: min(100%, 360px); aspect-ratio: 3 / 4; max-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6em; padding: 1.5em; text-align: center; color: ${bim('meta-fg')}; background: ${bim('rule')}; border: 1px dashed ${bim('meta-fg')}; border-radius: 8px; }
+.bim-fx-gap-card b { font-size: 1.5rem; letter-spacing: 0.3em; margin-right: -0.3em; }
+.bim-fx-gap-card span { font-size: 0.9rem; }
+.bim-fx-gap-card small { font-size: 0.75rem; opacity: 0.8; }
 /* 夜间：刻本黑字白底的像素图反色；SVG 已用 currentColor。站点还没有夜间主题，约定宿主在 <html> 上设 data-color-scheme="dark"（或 data-theme="night"） */
 :root[data-color-scheme="dark"] .guji-fig-img[data-raster], :root[data-theme="night"] .guji-fig-img[data-raster] { filter: invert(1) hue-rotate(180deg); }
 /* 抬头（is-raised／data-raised）：横排重排里不做位移——原件的“高一格”在重排后只会显成首字偏高；类名和属性保留给结构识别 */
