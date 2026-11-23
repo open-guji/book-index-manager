@@ -7,6 +7,7 @@
  *   - `punct_file`：标点；`entity_file`：专名实体；
  *   - `norm_file`（可选）：异体字归一表；未声明或取不到都当没有；
  *   - `fig_file`（可选，char v0.3）：图表（图片格、插图块的说明与文件）；同样取不到当没有；
+ *   - `gaps_file`（可选，guji-gaps/0.1）：缺页（原书缺或未拍的页，按图片页号），取不到当没有；
  *   - `warp_file`（可选）：手工透视矫正的样张（PageWarpData 的 base，含版心与对偶页拼接），取不到当没有；
  *   - `reader_*_file`：阅读器瘦身副本（打包时生成），有就先取它，取不到回落原文件。
  * 这些文件在同一章里按格位 key（`页:列:格[子列]`）对上。
@@ -16,6 +17,7 @@
 import type { IndexStorage } from '../storage/types';
 import type { TextManifest, TextVersion } from './text-model';
 import { adaptCharCord, adaptFig } from './guji-char-cord';
+import { adaptGaps } from './gaps';
 import { adaptPunctJson, iiifVolumeOf, type GujiPageInfo } from './guji-pages';
 import type { PageWarpData } from '../components/Reader/GujiWarpCanvas';
 
@@ -58,6 +60,8 @@ export interface ReaderChapterFiles {
     fig?: unknown;
     /** 声明了 `warp_file` 才有这个键；取不到为 null */
     warp?: unknown;
+    /** 声明了 `gaps_file` 才有这个键；取不到为 null（缺页文件缺了只是不显示缺页，不影响阅读） */
+    gaps?: unknown;
     /** 声明了 `cord_file` 但这次没取（窄屏不显示书影栏）：cord 为 null，正文照常排，只是没有字框 */
     cordSkipped?: boolean;
 }
@@ -128,11 +132,12 @@ export function loadReaderFiles(
     const normFile = fileField(ch, 'norm_file');
     const figFile = fileField(ch, 'fig_file');
     const warpFile = fileField(ch, 'warp_file');
-    const cacheKey = [id, key, charFile, readerChar, cordFile, readerCord, punctFile, readerPunct, entityFile, readerEntity, normFile, figFile, warpFile, base].map((s) => s ?? '').join('|');
+    const gapsFile = fileField(ch, 'gaps_file');
+    const cacheKey = [id, key, charFile, readerChar, cordFile, readerCord, punctFile, readerPunct, entityFile, readerEntity, normFile, figFile, warpFile, gapsFile, base].map((s) => s ?? '').join('|');
     let p = filesCache.get(cacheKey);
     if (!p) {
         p = (async () => {
-            const [char, cord, punct, entity, norm, fig, warp] = await Promise.all([
+            const [char, cord, punct, entity, norm, fig, warp, gaps] = await Promise.all([
                 getPreferred(storage, base, id, key, readerChar, charFile),
                 cordFile ? getPreferred(storage, base, id, key, readerCord, cordFile) : null,
                 punctFile ? getPreferred(storage, base, id, key, readerPunct, punctFile) : null,
@@ -140,12 +145,14 @@ export function loadReaderFiles(
                 normFile ? getJson(storage, base, id, key, normFile) : null,
                 figFile ? getJson(storage, base, id, key, figFile) : null,
                 warpFile ? getJson(storage, base, id, key, warpFile) : null,
+                gapsFile ? getJson(storage, base, id, key, gapsFile) : null,
             ]);
             if (!char || (cordFile && !cord)) return null;
             return {
                 char, cord, punct, entity, norm: norm ?? null,
                 ...(figFile ? { fig: fig ?? null } : {}),
                 ...(warpFile ? { warp: warp ?? null } : {}),
+                ...(gapsFile ? { gaps: gaps ?? null } : {}),
                 ...(cordSkipped ? { cordSkipped: true } : {}),
             };
         })();
@@ -232,6 +239,8 @@ export async function loadReaderChapter(
         punctuations: adaptPunctJson(files.punct),
         // 章条目声明了 norm_file 且取到了（哪怕是空表）＝自校文本，「原字」档可选；外来文本没有，置灰
         hasNorm: files.norm != null,
+        // 缺页：声明了 gaps_file 且取到了才有；没有就不带这个键
+        ...(files.gaps ? (() => { const g = adaptGaps(files.gaps); return g.length ? { gaps: g } : {}; })() : {}),
         ...fig,
     } as unknown as PageWarpData;
     const iiifVolume = files.cord ? iiifVolumeOf(files.cord) : files.cordSkipped ? volumeFromChar(files.char) : null;

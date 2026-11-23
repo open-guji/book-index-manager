@@ -40,6 +40,8 @@ import {
 import { GujiWarpCanvas, loadImage, type PageWarpData } from './Reader/GujiWarpCanvas';
 import type { GujiPageInfo } from '../core/guji-pages';
 import { GujiTextViewer } from './Reader/GujiTextViewer';
+import { GapCard } from './Reader/GapCard';
+import type { ReaderGap } from '../core/gaps';
 import { ZoomPanBox, type ZoomPanHandle } from './Reader/ZoomPanBox';
 import { iiifVolumeOf } from '../core/guji-pages';
 import { loadReaderChapter, loadReaderFiles, volumeFromChar, readerVersions as filterReaderVersions, type ReaderChapterData } from '../core/reader-data';
@@ -734,13 +736,46 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
             setScrollTarget(t => ({ page: next, nonce: (t?.nonce ?? 0) + 1 }));
         }
     }, [pageInfos]);
+    // 缺页：缺在第 afterPage 张图之后的占位卡，书影翻页时算「多一步」，不占页号。挂在「页号 ≤ afterPage 的最后一页」之后；
+    // afterPage 在第一页之前（0）的挂在第一页之前。viewGap 记着正在看哪张占位卡，换页（含滚动联动）即作废
+    const gapList = useMemo<ReaderGap[]>(() => {
+        const g = (warpData as any)?.gaps;
+        return Array.isArray(g) ? (g as ReaderGap[]) : [];
+    }, [warpData]);
+    const gapAfterPage = useMemo(() => {
+        const m = new Map<number, ReaderGap>();
+        for (const g of gapList) {
+            let anchor: number | null = null;
+            for (const p of pageNumbers) { if (p <= g.afterPage) anchor = p; else break; }
+            if (anchor !== null && !m.has(anchor)) m.set(anchor, g);
+        }
+        return m;
+    }, [gapList, pageNumbers]);
+    const gapBeforeFirst = useMemo(() => (pageNumbers.length > 0 ? gapList.find(g => g.afterPage < pageNumbers[0]) ?? null : null), [gapList, pageNumbers]);
+    const [viewGap, setViewGap] = useState<{ page: number; pos: 'before' | 'after' } | null>(null);
+    useEffect(() => { if (viewGap && viewGap.page !== activePage) setViewGap(null); }, [viewGap, activePage]);
+    const shownGap = viewGap && viewGap.page === activePage
+        ? (viewGap.pos === 'before' ? gapBeforeFirst : gapAfterPage.get(activePage) ?? null)
+        : null;
     const flipPage = useCallback((delta: number) => {
         const cur = activePageRef.current;
         const i = pageNumbers.indexOf(cur);
+        // 正在看占位卡：后翻＝过了缺页（「之后」卡到下一页，「之前」卡到本页）；前翻＝回到「之后」卡所在的那页
+        if (viewGap && viewGap.page === cur) {
+            if (delta > 0) {
+                setViewGap(null);
+                if (viewGap.pos === 'after') { const n = pageNumbers[i + 1]; if (n !== undefined) goToPage(n); }
+            } else if (viewGap.pos === 'after') setViewGap(null);
+            return;
+        }
+        if (delta > 0 && gapAfterPage.has(cur)) { setViewGap({ page: cur, pos: 'after' }); return; }
+        if (delta < 0 && i === 0 && gapBeforeFirst) { setViewGap({ page: cur, pos: 'before' }); return; }
         const next = pageNumbers[i < 0 ? 0 : i + delta];
         if (next === undefined || next === cur) return;
         goToPage(next);
-    }, [pageNumbers, goToPage]);
+        // 往回翻进一页，而那页后面有缺页：先停在占位卡上
+        if (delta < 0 && gapAfterPage.has(next)) setViewGap({ page: next, pos: 'after' });
+    }, [pageNumbers, goToPage, viewGap, gapAfterPage, gapBeforeFirst]);
     // 输入页码跳转：越界夹到首／末页；列表里没有的页号（跳号）取最近的一页；非数字返回 null（调用方还原输入框）
     const resolveTypedPage = useCallback((raw: string): number | null => {
         const m = raw.trim().match(/^\d+$/);
@@ -761,6 +796,11 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
         if (target !== null) goToPage(target);
     }, [resolveTypedPage, goToPage]);
     const activeIdx = pageNumbers.indexOf(activePage);
+    const lastPage = activeIdx >= 0 && activeIdx >= pageNumbers.length - 1;
+    const viewingAfter = !!shownGap && viewGap?.pos === 'after';
+    const viewingBefore = !!shownGap && viewGap?.pos === 'before';
+    const canFlipPrev = viewingAfter || (!shownGap && (activeIdx > 0 || (activeIdx === 0 && !!gapBeforeFirst)));
+    const canFlipNext = activeIdx >= 0 && (viewingBefore || (viewingAfter ? !lastPage : (!lastPage || gapAfterPage.has(activePage))));
     // 键盘翻页只在书影区获得焦点时响应，不占用全局方向键（正文滚动要用）
     const onFacsimileKeyDown = useCallback((e: React.KeyboardEvent) => {
         if (e.altKey || e.ctrlKey || e.metaKey) return;
@@ -1054,6 +1094,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                             </span>
                         </div>
                     </div>
+                    {shownGap ? <GapCard gap={shownGap} convert={convert} /> : (
                     <ZoomPanBox ref={zoomRef} resetKey={activePage} onScaleChange={setZoomScale} style={{ flex: 1, minHeight: 0 }}>
                         <HoverBound store={hover}>{(hoveredCharId) => (
                         <GujiWarpCanvas
@@ -1083,12 +1124,13 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                         />
                         )}</HoverBound>
                     </ZoomPanBox>
+                    )}
                     {/* 页导航在书影图片正下方：箭头点击区 ≥ 40×40（触屏），「第 x 頁」的数字可输入（回车／失焦跳转，越界夹取，非数字还原） */}
                     <div data-testid="facsimile-pager" role="group" aria-label={t('reader.facsimilePager')}
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '6px 4px 0', fontSize: 13, color: bim('meta-fg') }}>
                         <button type="button" className="bim-rd-t" data-testid="facsimile-prev" aria-label="上一頁"
                             style={{ minWidth: 40, minHeight: 40, fontSize: 20, lineHeight: 1 }}
-                            disabled={activeIdx <= 0} onClick={() => flipPage(-1)}>‹</button>
+                            disabled={!canFlipPrev} onClick={() => flipPage(-1)}>‹</button>
                         <span data-warp-page={activePage} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '1px 8px', background: bim('rule'), borderRadius: 10 }}>
                             第
                             <input
@@ -1110,9 +1152,10 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                             />
                             頁
                         </span>
+                        {shownGap && <span data-testid="facsimile-gap-flag" style={{ fontSize: 12 }}>{viewingBefore ? '之前缺頁' : '之後缺頁'}</span>}
                         <button type="button" className="bim-rd-t" data-testid="facsimile-next" aria-label="下一頁"
                             style={{ minWidth: 40, minHeight: 40, fontSize: 20, lineHeight: 1 }}
-                            disabled={activeIdx < 0 || activeIdx >= pageNumbers.length - 1} onClick={() => flipPage(1)}>›</button>
+                            disabled={!canFlipNext} onClick={() => flipPage(1)}>›</button>
                     </div>
                 </div>
             ) : undefined}
@@ -1187,6 +1230,7 @@ const TextReaderBody: React.FC<TextReaderProps & { prefsState: ReturnType<typeof
                         quoteStyle={prefs.quoteStyle}
                         bookTitleStyle={prefs.bookTitleStyle}
                         showWorks={prefs.showWorks}
+                        gaps={gapList}
                     />
                     )}</HoverBound>
                 </article>
