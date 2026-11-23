@@ -5,7 +5,9 @@
  * - 逐字框（`bim-charbox-v0`）画成 SVG 叠在图上，viewBox 用原图像素，随显示尺寸缩放；
  * - 其他格式的框交给 `renderOverlay`（与 CV 交付格式对齐前的扩展点）。
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import type { ReaderGap } from '../../core/gaps';
+import { GapCard } from './GapCard';
 import type { ReaderImageOverlay, ReaderPageImage } from './types';
 import { bim } from '../../styles/tokens';
 import { useI18n } from '../../i18n/use-i18n';
@@ -52,7 +54,7 @@ export function trimRect(page: ReaderPageImage): { x: number; y: number; w: numb
     return { x, y, w, h };
 }
 
-export function ImagePanel({ pages, loading, page: pageProp, onPageChange, renderOverlay, preserveMargins = true }: {
+export function ImagePanel({ pages, loading, page: pageProp, onPageChange, renderOverlay, preserveMargins = true, gaps, convert }: {
     pages: ReaderPageImage[] | null;
     loading?: boolean;
     /** 受控页码（0 起）；不传则内部管理 */
@@ -61,6 +63,10 @@ export function ImagePanel({ pages, loading, page: pageProp, onPageChange, rende
     renderOverlay?: ReaderImageOverlay;
     /** true＝显示整张书影含四周空白（默认）；false＝按逐字框裁到版心，裁不了的图（无框、带自定义叠加层）保持原样 */
     preserveMargins?: boolean;
+    /** 缺页（`adaptGaps` 的结果）：缺在第 afterPage 张图（按 `pageNo`，没有就按序号）之后，翻页时多一步灰底占位卡，不占页号 */
+    gaps?: readonly ReaderGap[];
+    /** 繁简转换（显示用），只作用于占位卡文字 */
+    convert?: (s: string) => string;
 }) {
     const { t } = useI18n();
     const [inner, setInner] = useState(0);
@@ -68,6 +74,19 @@ export function ImagePanel({ pages, loading, page: pageProp, onPageChange, rende
     const setPage = (p: number) => { if (onPageChange) onPageChange(p); else setInner(p); };
     // 换了一卷（pages 变了）回到第一页
     useEffect(() => { if (pageProp === undefined) setInner(0); }, [pages, pageProp]);
+    // 缺页：挂在「页号 ≤ afterPage 的最后一张图」之后；没有这样的图（afterPage 在第一张之前）的挂在第一张之前
+    const { gapAfter, gapBefore } = useMemo(() => {
+        const after = new Map<number, ReaderGap>();
+        let before: ReaderGap | null = null;
+        for (const g of gaps ?? []) {
+            let idx = -1;
+            (pages ?? []).forEach((p, j) => { if ((p.pageNo ?? j + 1) <= g.afterPage) idx = j; });
+            if (idx < 0) before = before ?? g;
+            else if (!after.has(idx)) after.set(idx, g);
+        }
+        return { gapAfter: after, gapBefore: before };
+    }, [gaps, pages]);
+    const [gv, setGv] = useState<{ idx: number; pos: 'before' | 'after' } | null>(null);
 
     if (loading) {
         return <div className="bim-rd-img-box"><div className="bim-rd-img-empty">{t('reader.imagesLoading')}</div></div>;
@@ -87,10 +106,25 @@ export function ImagePanel({ pages, loading, page: pageProp, onPageChange, rende
     const cur = pages[i];
     const label = cur.label ?? `${i + 1}`;
     const trim = !preserveMargins && !renderOverlay ? trimRect(cur) : null;
+    const shownGap = gv && gv.idx === i ? (gv.pos === 'before' ? gapBefore : gapAfter.get(i) ?? null) : null;
+    const hasGaps = gapAfter.size > 0 || !!gapBefore;
+    const flip = (d: number) => {
+        if (shownGap) {
+            if (d > 0) { setGv(null); if (gv!.pos === 'after' && i < pages.length - 1) setPage(i + 1); }
+            else if (gv!.pos === 'after') setGv(null);
+            return;
+        }
+        if (d > 0) { if (gapAfter.has(i)) setGv({ idx: i, pos: 'after' }); else setPage(i + 1); return; }
+        if (i === 0) { if (gapBefore) setGv({ idx: 0, pos: 'before' }); return; }
+        setPage(i - 1);
+        if (gapAfter.has(i - 1)) setGv({ idx: i - 1, pos: 'after' });
+    };
+    const canPrev = shownGap ? gv!.pos === 'after' : i > 0 || !!gapBefore;
+    const canNext = shownGap ? (gv!.pos === 'before' || i < pages.length - 1) : i < pages.length - 1 || gapAfter.has(i);
     return (
         <>
             <div className="bim-rd-img-box">
-                {trim ? (
+                {shownGap ? <GapCard gap={shownGap} convert={convert} /> : trim ? (
                     <figure className="bim-rd-img-fig bim-rd-img-trimmed" data-trim={`${Math.round(trim.x)},${Math.round(trim.y)},${Math.round(trim.w)},${Math.round(trim.h)}`}
                         style={{ aspectRatio: `${trim.w} / ${trim.h}`, overflow: 'hidden', width: '100%', maxWidth: `calc((100vh - 200px) * ${trim.w / trim.h})` }}>
                         <img
@@ -116,11 +150,11 @@ export function ImagePanel({ pages, loading, page: pageProp, onPageChange, rende
                 </figure>
                 )}
             </div>
-            {pages.length > 1 && (
+            {(pages.length > 1 || hasGaps) && (
                 <div className="bim-rd-img-pager">
-                    <button type="button" className="bim-rd-t" aria-label={t('reader.prevImage')} disabled={i === 0} onClick={() => setPage(i - 1)}>‹</button>
-                    <span aria-live="polite">{cur.label ?? `${i + 1} / ${pages.length}`}</span>
-                    <button type="button" className="bim-rd-t" aria-label={t('reader.nextImage')} disabled={i === pages.length - 1} onClick={() => setPage(i + 1)}>›</button>
+                    <button type="button" className="bim-rd-t" aria-label={t('reader.prevImage')} disabled={!canPrev} onClick={() => flip(-1)}>‹</button>
+                    <span aria-live="polite">{cur.label ?? `${i + 1} / ${pages.length}`}{shownGap ? (convert ?? ((x: string) => x))(gv!.pos === 'before' ? '　之前缺頁' : '　之後缺頁') : ''}</span>
+                    <button type="button" className="bim-rd-t" aria-label={t('reader.nextImage')} disabled={!canNext} onClick={() => flip(1)}>›</button>
                 </div>
             )}
         </>

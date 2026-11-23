@@ -146,3 +146,19 @@ describe('TextReader 书影缺页占位卡', () => {
         expect(wp()).toBe('20');
     });
 });
+
+describe('ImagePanel 缺页（窄屏书影抽屉）', () => {
+    it('按 pageNo 对位：第 20 张之后多一步占位卡，再点「›」到第 21 张', async () => {
+        const { ImagePanel } = await import('../../src/components/Reader/ImagePanel');
+        const pages = [20, 21].map(n => ({ pageNo: n, url: `u${n}`, label: `第${n}頁` }));
+        render(<LocaleProvider locale="zh-Hans"><ImagePanel pages={pages} gaps={adaptGaps(raw)} /></LocaleProvider>);
+        const next = () => screen.getByLabelText(/下一|next/i) as HTMLButtonElement;
+        fireEvent.click(next());
+        expect(screen.getByTestId('facsimile-gap').textContent).toContain('卷九叶九、叶十');
+        fireEvent.click(next());
+        expect(screen.queryByTestId('facsimile-gap')).toBeNull();
+        expect(next().disabled).toBe(true);
+        fireEvent.click(screen.getByLabelText(/上一|prev/i));
+        expect(screen.getByTestId('facsimile-gap')).toBeTruthy();
+    });
+});
