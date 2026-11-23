@@ -359,6 +359,8 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
   );
   // 图里检测出的版框（按地址记）：去空白时裁到版框而不是只到字框，见 frame-detect.ts
   const [frameInfo, setFrameInfo] = useState<{ url: string; frame: FrameFraction | null } | null>(null);
+  const hasContentRef = useRef(false);
+  hasContentRef.current = validContent(extent?.content);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   // 画布外框的显示宽度：null＝还没量到；0＝被隐藏。没有 ResizeObserver 的环境（jsdom）按「可见、满尺寸」走旧行为
@@ -721,7 +723,8 @@ export const GujiWarpCanvas: React.FC<GujiWarpCanvasProps> = ({
       if (!active || !img) return;
       mainImgRef.current = img;
       loadedMainUrl.current = imageUrl;
-      setFrameInfo({ url: imageUrl, frame: detectImageFrame(img) });
+      // 有页面范围（bim:page）的页按 extent.content 裁，不再逐页读像素检测；检测只给没有 bim:page 的书影兜底
+      setFrameInfo({ url: imageUrl, frame: hasContentRef.current ? null : detectImageFrame(img) });
       setRealSize((prev) => (prev && prev.url === imageUrl && prev.w === img.naturalWidth && prev.h === img.naturalHeight ? prev : { url: imageUrl, w: img.naturalWidth, h: img.naturalHeight }));
       const r = rendererRef.current;
       if (r) {
