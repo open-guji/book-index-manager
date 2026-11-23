@@ -106,6 +106,9 @@ def main(argv=None):
                 if n:
                     bad += 1
                     print('检查不过：%s → %d 行' % (q[:80], n))
+                    cur.execute('%s LIMIT 5' % q.rstrip(';'))
+                    for row in cur.fetchall():
+                        print('    样例：%s' % (row,))
         print('checks 不过 %d 条' % bad)
         return 1 if bad else 0
 
