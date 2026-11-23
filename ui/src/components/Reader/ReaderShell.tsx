@@ -85,6 +85,8 @@ export interface ReaderShellProps {
     images?: ReaderPageImage[] | null;
     imagesLoading?: boolean;
     renderImageOverlay?: ReaderImageOverlay;
+    /** 缺页（`adaptGaps` 的结果）：窄屏书影抽屉里翻页多一步占位卡；宽屏的书影栏由宿主的 customImagePanel 自己处理 */
+    gaps?: readonly import('../../core/gaps').ReaderGap[];
     /** 书影区初始状态：auto = 有影像才展开 */
     imagePanel?: PanelState;
 
@@ -347,7 +349,7 @@ function selectedInText(root: HTMLElement | null): string | undefined {
 export function ReaderShell({
     title, subtitle,
     toc, activeKey, tocActiveKey, onSelect, tocHeader, tocCaption,
-    images, imagesLoading, renderImageOverlay, imagePanel = 'auto',
+    images, imagesLoading, renderImageOverlay, gaps, imagePanel = 'auto',
     prefs, onPrefsChange, paragraphToggle, properNameToggle = true, allowVertical, origScriptAvailable = true,
     byline, current, workLinkToggle, rail, onReportError, revisedAt,
     backHref, backLabel: backLabelProp, bottomBar = true,
@@ -849,7 +851,7 @@ export function ReaderShell({
                 <aside className="bim-rd-img" aria-label={t('reader.images')} ref={imgAsideRef}>
                     {imgOpen && (
                         customImagePanel ? customImagePanel : (
-                            <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} preserveMargins={prefs.preserveMargins} />
+                            <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} preserveMargins={prefs.preserveMargins} gaps={gaps} convert={convert} />
                         )
                     )}
                 </aside>
@@ -975,7 +977,7 @@ export function ReaderShell({
                         </div>
                         {sheet === 'img' ? (
                             <div className="bim-rd-sheet-img">
-                                <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} preserveMargins={prefs.preserveMargins} />
+                                <ImagePanel pages={images ?? null} loading={imagesLoading} renderOverlay={renderImageOverlay} preserveMargins={prefs.preserveMargins} gaps={gaps} convert={convert} />
                             </div>
                         ) : settingsPanel}
                     </div>
