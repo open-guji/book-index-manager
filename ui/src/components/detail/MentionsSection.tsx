@@ -1,7 +1,7 @@
 /**
  * 「古籍中的出處」：某实体（人物、地名、官名……，或 Work）在哪些古籍的哪些章被专名号标出（A12 专名出处反查）。
  * 数据是打包时由 book-text 的专名号派生的 `mentions/<id>.json`（transport.getMentions，schema mentions/v2），本节进入视口才取。
- * 上半是摘录（至多 20 条，带上下文，链到阅读页并高亮该处 `#起~止`）；下半按书列章，
+ * 上半是摘录（至多 20 条，带上下文，链到阅读页并高亮该处：有 u 用 `?u=起~止`，否则 `#起~止`）；下半按书列章，
  * 章行链到阅读页 `#e=<id>`，在那里标出本章全部并可逐处跳。热门实体的章目录按书另取（展开时才取）。
  */
 import React, { useEffect, useRef, useState } from 'react';
@@ -18,9 +18,13 @@ const BOOK_STEP = 30;
 const readBase = (item: string, key: string, chapter: string) =>
     `/read/${item}${key && key !== 'default' ? `/${key}` : ''}/${chapter}`;
 
-/** 一处例子的阅读页地址（与站点 readerPath 同形）＋格位范围 */
+const isU = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v > 0;
+
+/** 一处例子的阅读页地址（与站点 readerPath 同形）：有字格永久编号就用 `?u=起~止`（重切不漂），没有退回格位范围 `#起~止` */
 export function mentionHref(m: MentionItem): string {
-    return `${readBase(m.item, m.key, m.chapter)}#${m.start}~${m.end}`;
+    const base = readBase(m.item, m.key, m.chapter);
+    if (isU(m.u)) return `${base}?u=${m.u}${isU(m.ue) && m.ue !== m.u ? `~${m.ue}` : ''}`;
+    return `${base}#${m.start}~${m.end}`;
 }
 
 /** 一章的阅读页地址：`#e=` 带该章 entity 文件里实际写的 id（草稿、墓碑时与现行 id 不同） */
