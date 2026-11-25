@@ -239,6 +239,9 @@ export interface MentionItem {
     chapter: string;
     start: string;
     end: string;
+    /** 起止字格的永久编号 u（guji-char v0.6；数据有 u 时才带）。有就生成 `?u=` 深链，跨重切不漂 */
+    u?: number;
+    ue?: number;
     text: string;
     heading?: string;
     before: string;
