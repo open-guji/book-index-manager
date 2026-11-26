@@ -227,6 +227,10 @@ class MyStorage implements IndexStorage {
 
 `book-index-ui` 读写的数据格式与 Python 端 `book-index-manager` CLI 完全一致。详见 [根 README](../README.md) 的"存储结构"和"Manager API 对照表"。
 
+**字格永久编号 u**（guji-char v0.6）：格位 `a`（`页:列:格`）是位置，重切会变；`u` 是册内永久身份。char 数据每格带 `u`。凡是指向一格的链接都优先写 `?u=`：
+- 专名出处 `MentionItem` 带 `u`／`ue`（起止格的 u，`ue` 与 `u` 同时可省），`mentionHref()` 生成 `/read/<书>/<册>?u=<u>[~<ue>]`；没有 u 时退回 `#起~止`。
+- 宿主（网站）负责解析 `?u=`、兼容旧的 `#页:列:格`／`?cell=`，用法与例子见 kaiyuanguji-web `docs/字格永久编号u.md`。
+
 **关键约束**：文件名清洗（`cleanName`）的 CJK 范围 TS/Python 必须一致——见 [tests/unit/cleanName.test.ts](tests/unit/cleanName.test.ts) 的跨语言 fixture。
 
 ## 开发
