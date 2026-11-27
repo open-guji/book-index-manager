@@ -1,0 +1,74 @@
+name: Move book-index-ui dist-tag
+
+# 手动触发：把 book-index-ui 的 dist-tag（默认 stable）拨到指定版本，一键完成。
+# 网站（kaiyuanguji-web）构建时测试站取 latest、正式站取 stable；要让正式站用上某一版 UI：
+#   1) 在这里把 stable 拨到该版本；2) 让网站重新构建一次并晋升（Deploy）。
+# 回退：同样用本工作流把 stable 拨回旧版本。
+#
+# 需要仓库 secret NPM_TOKEN：npm 的 Granular Access Token，对 book-index-ui 有读写权限
+# （Trusted Publishing 的 OIDC 只管 publish，不能改 dist-tag）。
+# 版本留空 = 取当前 latest 指向的版本（最常见：「把 stable 追到 latest」）。
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '要移动的 dist-tag'
+        type: choice
+        options: [stable, latest, next]
+        default: stable
+      version:
+        description: '目标版本（如 0.66.17）；留空＝当前 latest 指向的版本'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-dist-tag
+  cancel-in-progress: false
+
+jobs:
+  move:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      - name: 解析目标版本并核对
+        id: v
+        env:
+          TAG: ${{ inputs.tag }}
+          VER_IN: ${{ inputs.version }}
+        run: |
+          VER="${VER_IN//[[:space:]]/}"
+          if [ -z "$VER" ]; then VER=$(npm view book-index-ui@latest version --prefer-online); fi
+          case "$VER" in ''|*[!A-Za-z0-9.-]*) echo "::error::版本号不合法：$VER"; exit 1;; esac
+          GOT=$(npm view "book-index-ui@$VER" version --prefer-online 2>/dev/null || true)
+          [ "$GOT" = "$VER" ] || { echo "::error::npm 上没有 book-index-ui@$VER"; exit 1; }
+          # 预发布版本不能当 stable／latest
+          case "$VER" in *-*) if [ "$TAG" != next ]; then echo "::error::预发布版本 $VER 只能放到 next"; exit 1; fi;; esac
+          echo "ver=$VER" >> "$GITHUB_OUTPUT"
+          echo "before: $(npm view book-index-ui dist-tags --json --prefer-online | tr -d '\n ')"
+      - name: 移动 dist-tag
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          TAG: ${{ inputs.tag }}
+          VER: ${{ steps.v.outputs.ver }}
+        run: |
+          [ -n "$NODE_AUTH_TOKEN" ] || { echo "::error::仓库 secret NPM_TOKEN 未配置"; exit 1; }
+          npm dist-tag add "book-index-ui@$VER" "$TAG"
+      - name: 核对
+        env:
+          TAG: ${{ inputs.tag }}
+          VER: ${{ steps.v.outputs.ver }}
+        run: |
+          for i in $(seq 1 12); do
+            got=$(npm view "book-index-ui@$TAG" version --prefer-online 2>/dev/null || true)
+            if [ "$got" = "$VER" ]; then
+              echo "✅ book-index-ui 标签 $TAG → $VER" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::移动后 2 分钟内 $TAG 仍不是 $VER"; exit 1
