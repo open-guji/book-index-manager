@@ -5,8 +5,10 @@ name: Move book-index-ui dist-tag
 #   1) 在这里把 stable 拨到该版本；2) 让网站重新构建一次并晋升（Deploy）。
 # 回退：同样用本工作流把 stable 拨回旧版本。
 #
-# 需要仓库 secret NPM_TOKEN：npm 的 Granular Access Token，对 book-index-ui 有读写权限
-# （Trusted Publishing 的 OIDC 只管 publish，不能改 dist-tag）。
+# 走 npm Trusted Publishing（OIDC），不存任何 npm token、不会到期。前提（一次性，npmjs.com 上设置）：
+#   book-index-ui → Settings → Trusted publishing → 再加一个 GitHub Actions 发布者：
+#   open-guji / book-index-manager / ui-dist-tag.yml，并勾上「Allow npm dist-tag」（默认关）。
+#   需要 npm CLI ≥ 11.21.0 或 ≥ 12.2.0（下面装最新 npm），Node ≥ 22.14。
 # 版本留空 = 取当前 latest 指向的版本（最常见：「把 stable 追到 latest」）。
 on:
   workflow_dispatch:
@@ -22,6 +24,7 @@ on:
         default: ''
 
 permissions:
+  id-token: write   # OIDC，Trusted Publishing 必需
   contents: read
 
 concurrency:
@@ -34,8 +37,10 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
+      - name: npm 最新版（dist-tag 的 OIDC 需要 ≥ 11.21.0）
+        run: npm install -g npm@latest && npm --version
       - name: 解析目标版本并核对
         id: v
         env:
@@ -53,11 +58,9 @@ jobs:
           echo "before: $(npm view book-index-ui dist-tags --json --prefer-online | tr -d '\n ')"
       - name: 移动 dist-tag
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           TAG: ${{ inputs.tag }}
           VER: ${{ steps.v.outputs.ver }}
         run: |
-          [ -n "$NODE_AUTH_TOKEN" ] || { echo "::error::仓库 secret NPM_TOKEN 未配置"; exit 1; }
           npm dist-tag add "book-index-ui@$VER" "$TAG"
       - name: 核对
         env:
